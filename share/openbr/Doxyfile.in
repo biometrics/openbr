@@ -717,7 +717,16 @@ EXCLUDE_PATTERNS       = */core/*
 # wildcard * is used, a substring. Examples: ANamespace, AClass,
 # AClass::ANamespace, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        = br::FactoryInstance
+EXCLUDE_SYMBOLS        = br::FactoryInstance \
+                         CT8* \
+                         FRsdk* \
+                         PP4* \
+                         PP5* \
+                         TopSurf* \
+                         Matrix* \
+                         pHash* \
+                         FST3* \
+                         CascadeResourceMaker
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
