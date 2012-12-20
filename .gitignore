@@ -1,0 +1,26 @@
+#Repository specific
+build*
+
+#Generic
+*.log
+*.user
+
+#Latex
+*.aux
+*.nav
+*.out
+*.snm
+*.toc
+
+#QtCreator
+*CMakeLists.txt.user*
+
+#R
+*.RData
+*.Rhistory
+
+#Subversion
+*.svn*
+
+#Synology
+*.DS*

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>glyphicons_190_circle_plus@2x.png</file>
+    </qresource>
+</RCC>

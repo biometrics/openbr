@@ -1,0 +1,320 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2012 The MITRE Corporation                                      *
+ *                                                                           *
+ * Licensed under the Apache License, Version 2.0 (the "License");           *
+ * you may not use this file except in compliance with the License.          *
+ * You may obtain a copy of the License at                                   *
+ *                                                                           *
+ *     http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                           *
+ * Unless required by applicable law or agreed to in writing, software       *
+ * distributed under the License is distributed on an "AS IS" BASIS,         *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ * See the License for the specific language governing permissions and       *
+ * limitations under the License.                                            *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#include <openbr_plugin.h>
+
+#include "core/common.h"
+#include "core/qtutils.h"
+
+using namespace br;
+
+/**** ALGORITHM_CORE ****/
+struct AlgorithmCore
+{
+    QSharedPointer<Transform> transform;
+    QSharedPointer<Distance> distance;
+
+    AlgorithmCore(const QString &name)
+    {
+        this->name = name;
+        init(name);
+    }
+
+    bool isClassifier() const
+    {
+        return distance.isNull();
+    }
+
+    void train(const QString &inputs, const QString &model)
+    {
+        TemplateList data(TemplateList::fromInput(inputs));
+
+        if (transform.isNull()) qFatal("AlgorithmCore::train null transform.");
+        qDebug("%d training files", data.size());
+
+        QTime time; time.start();
+        qDebug("Training Enrollment");
+        transform->train(data);
+
+        if (!distance.isNull()) {
+            qDebug("Projecting Enrollment");
+            data >> *transform;
+
+            qDebug("Training Comparison");
+            distance->train(data);
+        }
+
+        if (!model.isEmpty()) {
+            qDebug("Storing %s", qPrintable(QFileInfo(model).fileName()));
+            store(model);
+        }
+
+        qDebug("Training Time (sec): %d", time.elapsed()/1000);
+    }
+
+    void store(const QString &model) const
+    {
+        // Create stream
+        QByteArray data;
+        QDataStream out(&data, QFile::WriteOnly);
+
+        // Serialize algorithm to stream
+        out << name;
+        transform->store(out);
+        const bool hasComparer = !distance.isNull();
+        out << hasComparer;
+        if (hasComparer) distance->store(out);
+        out << Globals->classes;
+
+        // Compress and save to file
+        QtUtils::writeFile(model, data);
+    }
+
+    void load(const QString &model)
+    {
+        // Load from file and decompress
+        QByteArray data;
+        QtUtils::readFile(model, data);
+
+        // Create stream
+        QDataStream in(&data, QFile::ReadOnly);
+
+        // Load algorithm
+        in >> name; init(Globals->abbreviations.contains(name) ? Globals->abbreviations[name] : name);
+        transform->load(in);
+        bool hasDistance; in >> hasDistance;
+        if (hasDistance) distance->load(in);
+        in >> Globals->classes;
+    }
+
+    File getMemoryGallery(const File &file) const
+    {
+        return name + file.baseName() + file.hash() + ".mem";
+    }
+
+    FileList enroll(File input, File gallery = File())
+    {
+        if (gallery.isNull()) gallery = getMemoryGallery(input);
+
+        QScopedPointer<Gallery> g(Gallery::make(gallery));
+        FileList fileList = g->files();
+        if (!fileList.isEmpty() && g->isUniversal()) return fileList; // Already enrolled
+
+        const TemplateList i(TemplateList::fromInput(input));
+        if (i.isEmpty()) return FileList(); // Nothing to enroll
+
+        if (transform.isNull()) qFatal("AlgorithmCore::enroll null transform.");
+        const int blocks = Globals->blocks(i.size());
+        Globals->currentStep = 0;
+        Globals->totalSteps = i.size();
+        Globals->startTime.start();
+
+        const int subBlockSize = 4*std::max(1, Globals->parallelism);
+        const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
+        int totalCount = 0, failureCount = 0;
+        double totalBytes = 0;
+        for (int block=0; block<blocks; block++) {
+            for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
+                TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
+                if (data.isEmpty()) break;
+                const int numFiles = data.size();
+
+                data >> *transform;
+                g->writeBlock(data);
+                const FileList newFiles = data.files();
+                fileList.append(newFiles);
+
+                totalCount += newFiles.size();
+                failureCount += newFiles.failures();
+                totalBytes += data.bytes<double>();
+                Globals->currentStep += numFiles;
+                Globals->printStatus();
+            }
+        }
+
+        const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
+        if (!Globals->quiet && (Globals->totalSteps > 1))
+            fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
+                    speed, totalBytes/totalCount, failureCount, totalCount);
+        Globals->totalSteps = 0;
+
+        return fileList;
+    }
+
+    void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
+    {
+        gallery.reset(Gallery::make(file));
+        if (!gallery->isUniversal()) {
+            enroll(file);
+            gallery.reset(Gallery::make(getMemoryGallery(file)));
+            galleryFiles = gallery->files();
+        } else {
+            galleryFiles = gallery->files();
+        }
+    }
+
+    void compare(File targetGallery, File queryGallery, File output)
+    {
+        if (output.exists() && output.getBool("cache")) return;
+        if (queryGallery == ".") queryGallery = targetGallery;
+
+        QScopedPointer<Gallery> t, q;
+        FileList targetFiles, queryFiles;
+        retrieveOrEnroll(targetGallery, t, targetFiles);
+        retrieveOrEnroll(queryGallery, q, queryFiles);
+
+        QScopedPointer<Output> o(Output::make(output, targetFiles, queryFiles));
+
+        if (distance.isNull()) qFatal("AlgorithmCore::compare null distance.");
+        Globals->currentStep = 0;
+        Globals->totalSteps = double(targetFiles.size()) * double(queryFiles.size());
+        Globals->startTime.start();
+
+        int queryBlock = -1;
+        bool queryDone = false;
+        while (!queryDone) {
+            queryBlock++;
+            TemplateList queries = q->readBlock(&queryDone);
+
+            int targetBlock = -1;
+            bool targetDone = false;
+            while (!targetDone) {
+                targetBlock++;
+                TemplateList targets = t->readBlock(&targetDone);
+
+                o->setBlock(queryBlock, targetBlock);
+                distance->compare(targets, queries, o.data());
+
+                Globals->currentStep += double(targets.size()) * double(queries.size());
+                Globals->printStatus();
+            }
+        }
+
+        const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
+        if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);
+        Globals->totalSteps = 0;
+    }
+
+private:
+    QString name;
+
+    QString getFileName(const QString &description) const
+    {
+        foreach (const QString &folder, QDir(Globals->sdkPath + "/share").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
+            const QString file = Globals->sdkPath + "/share/" + folder + "/models/algorithms/" + description;
+            if (QFileInfo(file).exists()) return file;
+        }
+        return "";
+    }
+
+    void init(QString description)
+    {
+        // Check if a trained binary already exists for this algorithm
+        const QString file = getFileName(description);
+        if (!file.isEmpty()) description = file;
+
+        if (QFileInfo(description).exists()) {
+            qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
+            load(description);
+            return;
+        }
+
+        // Expand abbreviated algorithms to their full strings
+        if (Globals->abbreviations.contains(description))
+            return init(Globals->abbreviations[description]);
+
+        QStringList words = description.split(':');
+        if (words.size() > 2) qFatal("AlgorithmCore::init invalid algorithm format.");
+
+        transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
+        if (words.size() > 1) distance = QSharedPointer<Distance>(Factory<Distance>::make("." + words[1]));
+    }
+};
+
+
+class AlgorithmManager : public Initializer
+{
+    Q_OBJECT
+
+public:
+    static QHash<QString, QSharedPointer<AlgorithmCore> > algorithms;
+    static QMutex algorithmsLock;
+
+    void initialize() const {}
+
+    void finalize() const
+    {
+        algorithms.clear();
+    }
+
+    static QSharedPointer<AlgorithmCore> getAlgorithm(const QString &algorithm)
+    {
+        if (algorithm.isEmpty()) qFatal("AlgorithmManager::getAlgorithm no default algorithm set.");
+
+        if (!algorithms.contains(algorithm)) {
+            algorithmsLock.lock();
+            if (!algorithms.contains(algorithm))
+                algorithms.insert(algorithm, QSharedPointer<AlgorithmCore>(new AlgorithmCore(algorithm)));
+            algorithmsLock.unlock();
+        }
+
+        return algorithms[algorithm];
+    }
+};
+
+QHash<QString, QSharedPointer<AlgorithmCore> > AlgorithmManager::algorithms;
+QMutex AlgorithmManager::algorithmsLock;
+
+BR_REGISTER(Initializer, AlgorithmManager)
+
+bool br::IsClassifier(const QString &algorithm)
+{
+    qDebug("Checking if %s is a classifier", qPrintable(algorithm));
+    return AlgorithmManager::getAlgorithm(algorithm)->isClassifier();
+}
+
+void br::Train(const QString &inputs, const File &model)
+{
+    qDebug("Training on %s to %s", qPrintable(inputs), qPrintable(model.flat()));
+    AlgorithmManager::getAlgorithm(model.getString("algorithm"))->train(inputs, model);
+}
+
+FileList br::Enroll(const File &input, const File &gallery)
+{
+    qDebug("Enrolling %s%s", qPrintable(input.flat()),
+                             gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
+    return AlgorithmManager::getAlgorithm(gallery.getString("algorithm"))->enroll(input, gallery);
+}
+
+void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
+{
+    qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
+                                    qPrintable(queryGallery.flat()),
+                                    output.isNull() ? "" : qPrintable(" to " + output.flat()));
+    AlgorithmManager::getAlgorithm(output.getString("algorithm"))->compare(targetGallery, queryGallery, output);
+}
+
+QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm)
+{
+    return AlgorithmManager::getAlgorithm(algorithm)->transform;
+}
+
+QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorithm)
+{
+    return AlgorithmManager::getAlgorithm(algorithm)->distance;
+}
+
+#include "core.moc"

@@ -1,0 +1,24 @@
+#include <windows.h>
+
+IDI_ICON1 ICON "${NATIVE_ICON}"
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION ${CPACK_PACKAGE_VERSION_MAJOR},${CPACK_PACKAGE_VERSION_MINOR},${CPACK_PACKAGE_VERSION_PATCH},0
+
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",        "${CPACK_PACKAGE_VENDOR}"
+            VALUE "ProductName",        "${CPACK_PACKAGE_NAME}"
+            VALUE "ProductVersion",     "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
+            VALUE "LegalCopyright",     "Copyright ${CPACK_PACKAGE_VENDOR} ${PACKAGE_YEAR}"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+

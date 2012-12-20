@@ -1,0 +1,5 @@
+find_path(TOPSURF_DIR topsurf/topsurf.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
+mark_as_advanced(TOPSURF_DIR)
+include_directories(${TOPSURF_DIR})
+aux_source_directory(${TOPSURF_DIR}/topsurf TOPSURF_SRC)
+aux_source_directory(${TOPSURF_DIR}/topsurf/flann TOPSURF_FLANN_SRC)

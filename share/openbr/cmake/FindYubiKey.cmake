@@ -1,0 +1,15 @@
+find_path(YUBIKEY_DIR yubikey.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
+mark_as_advanced(YUBIKEY_DIR)
+include_directories(${YUBIKEY_DIR})
+if(MSVC)
+  include_directories(${YUBIKEY_DIR}/stdbool)
+endif()
+
+if(NOT TARGET yubikey)
+  set(YUBIKEY_SRC ${YUBIKEY_DIR}/ykaes.c ${YUBIKEY_DIR}/ykcrc.c ${YUBIKEY_DIR}/ykhex.c ${YUBIKEY_DIR}/ykmodhex.c ${YUBIKEY_DIR}/yktoken.c)
+  if(WIN32)
+    set_source_files_properties(${YUBIKEY_SRC} PROPERTIES LANGUAGE CXX)
+  endif()
+endif()
+
+set(YUBIKEY_LICENSE ${YUBIKEY_DIR}/COPYING)

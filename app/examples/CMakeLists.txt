@@ -1,0 +1,8 @@
+file(GLOB EXAMPLES *.cpp)
+foreach(EXAMPLE ${EXAMPLES})
+  get_filename_component(EXAMPLE_BASENAME ${EXAMPLE} NAME_WE)
+  set(EXAMPLE_TARGET "br-${EXAMPLE_BASENAME}")
+  add_executable(${EXAMPLE_TARGET} ${EXAMPLE})
+  target_link_libraries(${EXAMPLE_TARGET} openbr)
+  add_test("${EXAMPLE_BASENAME}_test" ${EXAMPLE_TARGET})
+endforeach()
