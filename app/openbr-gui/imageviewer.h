@@ -25,7 +25,6 @@
 #include <QResizeEvent>
 #include <QString>
 #include <QWidget>
-
 #include <openbr_export.h>
 
 namespace br
