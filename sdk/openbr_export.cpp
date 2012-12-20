@@ -36,7 +36,8 @@
 /*!
  * \page about About
  *
- * \em OpenBR is a <a href="http://www.mitre.org/">MITRE</a> internal research project to facilitate prototyping new biometric algorithms and evaluating commercial systems.
+ * \em OpenBR was developed as a <a href="http://www.mitre.org/">MITRE</a> internal research project to facilitate prototyping new biometric algorithms and evaluating commercial systems.
+ * It has been open sourced with the hope of providing a common framework for algorithm development and evaluation.
  *
  * OpenBR is written entirely in C/C++ and follows the <a href="http://semver.org">Semantic Versioning</a> convention for publishing releases.
  * The project uses the <a href="http://www.cmake.org">CMake</a> build system and depends on <a href="http://qt-project.org">Qt 4.8</a> and <a href="http://opencv.org">OpenCV 2.4.3</a>.
@@ -44,7 +45,6 @@
  *
  * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev@googlegroups.com</a>
  * - Continuous integration server: <a href="http://my.cdash.org/index.php?project=OpenBR">CDash</a>
- * - BTS POC: Emma Taborsky \<etaborsky@mitre.org\>, Nick Orlans \<norlans@mitre.org\>
  *
  * \authors Josh Klontz \cite jklontz
  * \authors Mark Burge \cite mburge
@@ -93,7 +93,7 @@ $ export DYLD_FRAMEWORK_PATH=../lib:${DYLD_FRAMEWORK_PATH}
  * \section installation_done Start Working
  * To test for successful installation:
 \verbatim
-$ cd bin
+$ cd bin/
 $ br -help
 \endverbatim
  */
@@ -344,6 +344,8 @@ $ br -help
  * \page tutorial Tutorial
  * \brief An end-to-end example covering experimental setup, algorithm development, and performance evaluation on the <a href="http://yann.lecun.com/exdb/mnist/
 ">MNIST Handwritten Digits Dataset</a>.
+ *
+ * Under construction, please check back soon!
  */
 
 /*!
