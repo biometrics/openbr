@@ -44,6 +44,7 @@
  * The \ref bee and the conventions established in the <a href="MBGC_file_overview.pdf">MBGC File Overview</a> for experimental setup are used for evaluating algorithm performance.
  *
  * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev at googlegroups.com</a>
+ * - IRC channel: <a href="http://webchat.freenode.net">openbr</a>
  * - Continuous integration server: <a href="http://my.cdash.org/index.php?project=OpenBR">CDash</a>
  *
  * \authors Josh Klontz \cite jklontz
