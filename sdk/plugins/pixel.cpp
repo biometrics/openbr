@@ -22,7 +22,7 @@ using namespace br;
 /*!
  * \ingroup transforms
  * \brief Treat each pixel as a classification task
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class PerPixelClassifier : public MetaTransform
 {
@@ -187,7 +187,7 @@ BR_REGISTER(Transform, PerPixelClassifier)
 /*!
  * \ingroup transforms
  * \brief Construct feature vectors of neighboring pixels
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class Neighbors: public UntrainableMetaTransform
 {
@@ -230,7 +230,7 @@ BR_REGISTER(Transform, Neighbors)
 /*!
  * \ingroup transforms
  * \brief To binary vector
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class ToBinaryVector: public UntrainableMetaTransform
 {

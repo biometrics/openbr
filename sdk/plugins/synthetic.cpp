@@ -25,7 +25,7 @@ using namespace br;
 /*!
  * \ingroup transforms
  * \brief Prediction using only the red wavelength; magic numbers from jmp
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class RedLinearRegression : public UntrainableTransform
 {
@@ -61,7 +61,7 @@ BR_REGISTER(Transform, RedLinearRegression)
 /*!
  * \ingroup transforms
  * \brief Prediction with magic numbers from jmp; must get input as blue;green;red
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class OrigLinearRegression : public UntrainableMetaTransform
 {

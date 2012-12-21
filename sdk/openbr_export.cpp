@@ -49,7 +49,7 @@
  * \authors Josh Klontz \cite jklontz
  * \authors Mark Burge \cite mburge
  * \authors Brendan Klare \cite bklare
- * \authors E. Taborsky \cite etaborsky
+ * \authors E. Taborsky \cite mmtaborsky
  *
  * Please submit a pull request to add yourself to the authors list!
  */

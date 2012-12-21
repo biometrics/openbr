@@ -30,7 +30,7 @@ using namespace br;
  * \ingroup initializers
  * \brief Initialize Neurotech SDK 4
  * \author Josh Klontz \cite jklontz
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class NT4Initializer : public Initializer
 {
@@ -71,7 +71,7 @@ BR_REGISTER(Initializer, NT4Initializer)
 /*!
  * \brief Neurotech context
  * \author Josh Klontz \cite jklontz
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 struct NT4Context
 {
@@ -266,7 +266,7 @@ struct NT4Context
  * \ingroup transforms
  * \brief Neurotech face detection
  * \author Josh Klontz \cite jklontz
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class NT4DetectFace : public UntrainableTransform
 {
@@ -358,7 +358,7 @@ BR_REGISTER(Transform, NT4EnrollFace)
 /*!
  * \ingroup transforms
  * \brief Enroll iris in Neurotech SDK 4
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class NT4EnrollIris : public UntrainableTransform
 {
@@ -416,7 +416,7 @@ BR_REGISTER(Transform, NT4EnrollIris)
  * \ingroup distances
  * \brief Compare templates with Neurotech SDK 4
  * \author Josh Klontz \cite jklontz
- * \author E. Taborsky \cite etaborsky
+ * \author E. Taborsky \cite mmtaborsky
  */
 class NT4Compare : public Distance
 {
