@@ -121,9 +121,13 @@ option(BR_BUILD_DOCUMENTATION "Build Documentation (Requires doxygen and latex)"
 if(${BR_BUILD_DOCUMENTATION})
   find_package(Doxygen REQUIRED)
   configure_file(${BR_SHARE_DIR}/Doxyfile.in Doxyfile)
+  configure_file(${BR_SHARE_DIR}/DoxygenHeader.html header.html)
+  configure_file(${BR_SHARE_DIR}/DoxygenFooter.html footer.html)
+  configure_file(${BR_SHARE_DIR}/DoxygenCustom.css customdoxygen.css)
   add_custom_target(doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/share/openbr/MBGC_file_overview.pdf ${CMAKE_CURRENT_BINARY_DIR}/html/MBGC_file_overview.pdf COPYONLY)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION .)
+
 
   option(BR_BUILD_DOCUMENTATION_PDF "Build PDF Documentation")
   if(${BR_BUILD_DOCUMENTATION_PDF})

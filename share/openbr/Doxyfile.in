@@ -662,7 +662,8 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = ${CMAKE_CURRENT_SOURCE_DIR}/sdk \
-                         ${CMAKE_CURRENT_SOURCE_DIR}/app/br
+                         ${CMAKE_CURRENT_SOURCE_DIR}/app/br \
+								${CMAKE_CURRENT_SOURCE_DIR}/share/openbr/header.html
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
