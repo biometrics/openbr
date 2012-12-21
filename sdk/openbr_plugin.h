@@ -53,9 +53,15 @@
  * #include <openbr_plugin.h>
  * \endcode
  *
+ * \par Development
  * Plugins should be developed in <tt>sdk/plugins/</tt>.
- * They may optionally include a <tt>.cmake</tt> file to control build configuration.
- * See <tt>sdk/plugins/misc.cpp</tt> for examples of simple plugins.
+ * See this folder for numerous examples of existing plugins to follow when writing your own.
+ * Plugins may optionally include a <tt>.cmake</tt> file to control build configuration.
+ *
+ * \par Documentation
+ * Plugin documentation should include at least three lines providing the plugin abstraction, a brief explanation, and author.
+ * If multiple authors are specified, the last author is assumed to be the current maintainer of the plugin.
+ * Plugin authors are encouraged to <tt>\\cite</tt> relevant papers by adding them to <tt>share/openbr/openbr.bib</tt>.
  */
 
 namespace br
