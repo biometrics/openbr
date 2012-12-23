@@ -1,3 +1,6 @@
 [submodule "data"]
 	path = data
 	url = https://github.com/biometrics/openbr-data.git
+[submodule "share/openbr/models"]
+	path = share/openbr/models
+	url = https://github.com/biometrics/openbr-models.git
