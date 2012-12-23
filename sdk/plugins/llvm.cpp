@@ -820,21 +820,21 @@ class LLVMInitializer : public Initializer
         QSharedPointer<Transform> kernel(Transform::make("stitch([scale(2),add(3)])", NULL));
 
         Template src, dst;
-//        src.m() = (Mat_<qint8>(2,2) << 1, 2, 3, 4);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<qint8>(2,2) << 1, 2, 3, 4);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
 
-//        src.m() = (Mat_<qint32>(2,2) << 1, 3, 9, 27);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<qint32>(2,2) << 1, 3, 9, 27);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
 
-//        src.m() = (Mat_<float>(2,2) << 1.5, 2.5, 3.5, 4.5);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<float>(2,2) << 1.5, 2.5, 3.5, 4.5);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
 
-//        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, 3.75, 4.75);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, 3.75, 4.75);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
     }
 
     void finalize() const

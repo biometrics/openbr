@@ -5,7 +5,7 @@ if(${BR_WITH_LLVM})
   set(LLVM_ROOT "/usr/local" CACHE PATH "Root of LLVM install.")
 
   # A bit of a sanity check:
-  if( NOT EXISTS ${LLVM_ROOT}/include/llvm )
+  if (NOT EXISTS ${LLVM_ROOT}/include/llvm)
     message(FATAL_ERROR "LLVM_ROOT (${LLVM_ROOT}) is not a valid LLVM install")
   endif()
 
@@ -18,8 +18,7 @@ if(${BR_WITH_LLVM})
   link_directories(${LLVM_LIBRARY_DIRS})
   add_definitions(${LLVM_DEFINITIONS})
 
-  # Let's suppose we want to build a JIT compiler with support for
-  # binary code (no interpreter):
+  # Let's suppose we want to build a JIT compiler with support for binary code:
   llvm_map_components_to_libraries(REQ_LLVM_LIBRARIES jit native)
 
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${REQ_LLVM_LIBRARIES})
