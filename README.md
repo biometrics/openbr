@@ -1,1 +1,1 @@
-Open Source Biometrics and Evaluation
+www.openbiometrics.org
