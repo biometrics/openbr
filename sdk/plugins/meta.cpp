@@ -362,11 +362,8 @@ class LoadStoreTransform : public MetaTransform
 
     QString getFileName() const
     {
-        foreach (const QString &folder, QDir(Globals->sdkPath + "/share").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
-            const QString file = Globals->sdkPath + "/share/" + folder + "/models/transforms/" + baseName;
-            if (QFileInfo(file).exists()) return file;
-        }
-        return "";
+        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
+        return QFileInfo(file).exists() ? file : QString();
     }
 
     bool tryLoad()

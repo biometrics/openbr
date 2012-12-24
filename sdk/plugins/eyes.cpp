@@ -68,7 +68,7 @@ public:
         Scalar t1, t2;
 
         // Open the eye locator model
-        file.setFileName(Globals->sdkPath + "/share/mm/models/EyeLocatorASEF128x128.fel");
+        file.setFileName(Globals->sdkPath + "/share/openbr/models/EyeLocatorASEF128x128.fel");
         bool success = file.open(QFile::ReadOnly); if (!success) qFatal("ASEFEyes::ASEFEyes failed to open %s for reading.", qPrintable(file.fileName()));
 
         // Check the first line

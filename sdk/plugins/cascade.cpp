@@ -30,7 +30,7 @@ class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
 public:
     CascadeResourceMaker(const QString &model)
     {
-        file = Globals->sdkPath + "/share/mm/models/";
+        file = Globals->sdkPath + "/share/openbr/models/";
         if      (model == "Ear")         file += "haarcascades/haarcascade_ear.xml";
         else if (model == "Eye")         file += "haarcascades/eye_tree_eyeglasses.xml";
         else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";

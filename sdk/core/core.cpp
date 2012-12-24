@@ -213,11 +213,8 @@ private:
 
     QString getFileName(const QString &description) const
     {
-        foreach (const QString &folder, QDir(Globals->sdkPath + "/share").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
-            const QString file = Globals->sdkPath + "/share/" + folder + "/models/algorithms/" + description;
-            if (QFileInfo(file).exists()) return file;
-        }
-        return "";
+        const QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
+        return QFileInfo(file).exists() ? file : QString();
     }
 
     void init(QString description)
