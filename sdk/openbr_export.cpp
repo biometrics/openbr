@@ -27,32 +27,9 @@
  * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
  *
  * \section get_started Get Started
- * - \ref about
  * - \ref installation
  * - \ref examples
  * - \ref tutorial
- */
-
-/*!
- * \page about About
- *
- * \em OpenBR was developed as a <a href="http://www.mitre.org/">MITRE</a> internal research project to facilitate prototyping new biometric algorithms and evaluating commercial systems.
- * It has been open sourced with the hope of providing a common framework for algorithm development and evaluation.
- *
- * OpenBR is written entirely in C/C++ and follows the <a href="http://semver.org">Semantic Versioning</a> convention for publishing releases.
- * The project uses the <a href="http://www.cmake.org">CMake</a> build system and depends on <a href="http://qt-project.org">Qt 4.8</a> and <a href="http://opencv.org">OpenCV 2.4.3</a>.
- * The \ref bee and the conventions established in the <a href="MBGC_file_overview.pdf">MBGC File Overview</a> for experimental setup are used for evaluating algorithm performance.
- *
- * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev at googlegroups.com</a>
- * - IRC channel: <a href="http://webchat.freenode.net">openbr</a>
- * - Continuous integration server: <a href="http://my.cdash.org/index.php?project=OpenBR">CDash</a>
- *
- * \authors Josh Klontz \cite jklontz
- * \authors Mark Burge \cite mburge
- * \authors Brendan Klare \cite bklare
- * \authors E. Taborsky \cite mmtaborsky
- *
- * Please submit a pull request to add yourself to the authors list!
  */
 
 /*!
