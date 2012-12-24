@@ -113,20 +113,23 @@ $ br -help
  *   \code
  *   $ cd /c
  *   $ git clone https://github.com/biometrics/openbr.git
+ *   $ cd openbr
+ *   $ git submodule init
+ *   $ git submodule update
  *   \endcode
  * -# Finally time to actually build OpenBR:
  *   -# From the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt" and enter:
  *   \code
- *   $ cd C:\mm
+ *   $ cd C:\openbr
  *   $ mkdir build-msvc2012
  *   $ cd build-msvc2012
- *   $ cmake -G "NMake Makefiles" -D OpenCV_DIR="C:\OpenCV-2.4.3-msvc2012\build" -D QT_QMAKE_EXECUTABLE="C:\Qt\4.8.4\bin\qmake" ..
+ *   $ cmake -G "NMake Makefiles" -D OpenCV_DIR="C:/OpenCV-2.4.3-msvc2012/build" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" ..
  *   $ nmake
  *   \endcode
  * -# To package OpenBR:
  *   -# From the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt" and enter:
  *   \code
- *   $ cd C:\mm
+ *   $ cd C:\openbr\build-msvc2012
  *   $ nmake package
  *   \endcode
  */
@@ -164,13 +167,16 @@ $ br -help
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  *   -# Launch "Git Bash" and clone OpenBR:
  *   \code
- *   $ git clone https://github.com/biometrics/openbr.git
  *   $ cd /c
+ *   $ git clone https://github.com/biometrics/openbr.git
+ *   $ cd openbr
+ *   $ git submodule init
+ *   $ git submodule update
  *   \endcode
  * -# Finally time to build OpenBR:
  *   -# Double-click "C:\mingw64\mingw64env.cmd" and enter:
  *   \code
- *   $ cd C:\mm
+ *   $ cd C:\openbr
  *   $ mkdir build-mingw64
  *   $ cd build-mingw64
  *   $ cmake -G "MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D OpenCV_DIR="C:\OpenCV-2.4.3-mingw64\build" -D QT_QMAKE_EXECUTABLE="C:\qt-everywhere-opensource-src-4.8.4\bin\qmake" ..
@@ -180,7 +186,7 @@ $ br -help
  *  -# <a href="http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?download">Download NSIS 2.46</a> and install.
  *  -# Double-click "C:\mingw64\mingw64env.cmd" and enter:
  *  \code
- *  $ cd C:\mm\build-mingw64
+ *  $ cd C:\openbr\build-mingw64
  *  $ mingw32-make package
  *  \endcode
  */
@@ -212,10 +218,13 @@ $ br -help
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
  * $ git clone https://github.com/biometrics/openbr.git
+ * $ cd openbr
+ * $ git submodule init
+ * $ git submodule update
  * \endcode
  * -# Finally time to build OpenBR:
  * \code
- * $ cd mm
+ * $ cd openbr
  * $ mkdir build
  * $ cd build
  * $ cmake ..
@@ -223,8 +232,8 @@ $ br -help
  * \endcode
  * -# To package OpenBR <a href="https://developer.apple.com/downloads/index.action#">Download Auxilary Tools for Xcode</a>, drag "PackageMaker" to "Applications", then package:
  * \code
- * $ cd mm/build
- * $ sudo make package # PackageMaker requires sudo
+ * $ cd openbr/build
+ * $ make package # PackageMaker may require sudo
  * \endcode
  */
 
@@ -257,10 +266,13 @@ $ br -help
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
  * $ git clone https://github.com/biometrics/openbr.git
+ * $ cd openbr
+ * $ git submodule init
+ * $ git submodule update
  * \endcode
  * -# Finally time to build OpenBR:
  * \code
- * $ cd mm
+ * $ cd openbr
  * $ mkdir build
  * $ cd build
  * $ cmake ..
@@ -268,7 +280,7 @@ $ br -help
  * \endcode
  * -# To package OpenBR:
  * \code
- * $ cd mm/build
+ * $ cd openbr/build
  * $ make package
  * \endcode
  */
@@ -298,6 +310,14 @@ $ br -help
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
  * $ git clone https://github.com/biometrics/openbr.git
+ * $ cd openbr
+ * $ git submodule init
+ * $ git submodule update
+ * \endcode
+ * -# To package OpenBR:
+ * \code
+ * $ cd openbr/build
+ * $ make package
  * \endcode
  */
 
