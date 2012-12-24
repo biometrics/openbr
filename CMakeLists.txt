@@ -180,7 +180,7 @@ if(CMAKE_HOST_WIN32)
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
   endif()
 elseif(CMAKE_HOST_APPLE)
-  set(CPACK_BINARY_TGZ ON)
+  set(CPACK_BINARY_TBZ2 ON)
   set(CPACK_BINARY_BUNDLE ON)
 
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "README.txt" COPYONLY)
@@ -196,7 +196,7 @@ else()
   set(CPACK_BINARY_DEB ON)
 
   # DEB
-  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "jklontz@ieee.org")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "josh.klontz@gmail.com")
 endif()
 
 include(CPack)
