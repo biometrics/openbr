@@ -1211,5 +1211,5 @@ void Distance::compareBlock(const TemplateList &target, const TemplateList &quer
 {
     for (int i=0; i<query.size(); i++)
         for (int j=0; j<target.size(); j++)
-            output->setRelative(a * (compare(target[j], query[i]) - b), i+queryOffset, j+targetOffset);
+            output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
 }

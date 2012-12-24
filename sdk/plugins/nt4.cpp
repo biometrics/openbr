@@ -424,18 +424,7 @@ class NT4Compare : public Distance
 
     Resource<NT4Context> contexts;
 
-    /*
-    void compareBlock(const TemplateList &target, const TemplateList &query, const QSharedPointer<Output> &output, int queryOffset) const
-    {
-        (void) target;
-        (void) query;
-        qFatal("NT4Compare::compareBlock shoud never be called");
-        return;
-    }
-    */
-
-
-    float compare(const br::Template &a, const br::Template &b) const
+    float _compare(const br::Template &a, const br::Template &b) const
     {
         const float DefaultNonMatchScore = 0;
 

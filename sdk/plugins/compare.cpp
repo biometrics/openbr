@@ -47,7 +47,7 @@ public:
 private:
     BR_PROPERTY(Metric, metric, L2)
 
-    float compare(const Template &a, const Template &b) const
+    float _compare(const Template &a, const Template &b) const
     {
         if ((a.m().size != b.m().size) ||
             (a.m().type() != b.m().type()))
@@ -125,7 +125,7 @@ class UCharL1 : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float _compare(const Template &a, const Template &b) const
     {
         return l1(a.m().data, b.m().data, a.m().total());
     }
@@ -143,7 +143,7 @@ class PackedUCharL1 : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float _compare(const Template &a, const Template &b) const
     {
         return packed_l1(a.m().data, b.m().data, a.m().total());
     }
@@ -160,7 +160,7 @@ class Identical : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float _compare(const Template &a, const Template &b) const
     {
         const Mat &am = a.m();
         const Mat &bm = b.m();

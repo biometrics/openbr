@@ -240,7 +240,7 @@ struct BR_EXPORT FileList : public QList<File>
  * \brief A list of matrices associated with a file.
  *
  * The br::Template is one of the workhorse classes in OpenBR.
- * A template represents a biometric at various stages of enrollment and can be modified br::Transform and compared to other templates with br::Comparer.
+ * A template represents a biometric at various stages of enrollment and can be modified br::Transform and compared to other templates with br::Distance.
  *
  * While there exist many cases (ex. video enrollment, multiple face detects, per-patch subspace learning, ...) where the template will contain more than one matrix,
  * in most cases templates have exactly one matrix in their list representing a single image at various stages of enrollment.
@@ -980,10 +980,11 @@ public:
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
     virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
-    virtual float compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
+    inline float compare(const Template &target, const Template &query) const { return a * (_compare(target, query) - b); } /*!< \brief Compute the normalized distance between two templates. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;
+    virtual float _compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
 };
 
 /*!
