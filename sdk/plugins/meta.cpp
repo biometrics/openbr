@@ -173,9 +173,16 @@ class ChainTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        (void) src;
-        (void) dst;
-        qFatal("Chain::project not supported for single templates.");
+        dst = src;
+        foreach (const Transform *f, transforms) {
+            try {
+                dst >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->name()));
+                dst = Template(src.file);
+                dst.file.setBool("FTE");
+            }
+        }
     }
 
     void project(const TemplateList &src, TemplateList &dst) const

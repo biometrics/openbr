@@ -76,6 +76,7 @@ void File::append(const File &other)
 
 QList<File> File::split() const
 {
+    if (name.isEmpty()) return QList<File>();
     if (!contains("separator")) return QList<File>() << *this;
     return split(value("separator").toString());
 }

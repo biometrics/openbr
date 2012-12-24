@@ -20,23 +20,37 @@
 //      -compare ../share/openbr/images/S354-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg \
 //      -compare ../share/openbr/images/S024-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg
 
-#include <openbr.h>
+#include <openbr_plugin.h>
 
 int main(int argc, char *argv[])
 {
-    br_initialize(argc, argv);
-
-    // Specify how to enroll and compare images
-    br_set_property("algorithm", "FaceRecognition");
+    br::Context::initialize(argc, argv);
 
     // Enroll exactly one template per image
-    br_set_property("forceEnrollment", "true");
+    br::Globals->forceEnrollment = true;
 
-    // Images taken from MEDS-II dataset: http://www.nist.gov/itl/iad/ig/sd32.cfm
-    br_compare("../share/openbr/images/S354-01-t10_01.jpg", "../share/openbr/images/S354-02-t10_01.jpg");
-    br_compare("../share/openbr/images/S024-01-t10_01.jpg", "../share/openbr/images/S354-02-t10_01.jpg");
+    // Retrieve classes for enrolling and comparing templates using the FaceRecognition algorithm
+    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("FaceRecognition");
+    QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm("FaceRecognition");
 
-    br_finalize();
+    // Initialize templates
+    br::Template queryA("../data/MEDS/img/S354-02-t10_01.jpg");
+    br::Template queryB("../data/MEDS/img/S024-01-t10_01.jpg");
+    br::Template target("../data/MEDS/img/S354-01-t10_01.jpg");
+
+    // Enroll templates
+    queryA >> *transform;
+    queryB >> *transform;
+    target >> *transform;
+
+    // Compare templates
+    float comparisonA = distance->compare(target, queryA);
+    float comparisonB = distance->compare(target, queryB);
+
+    printf("Genuine match score: %.3f\n", comparisonA); // Scores above 1 are strong matches
+    printf("Impostor match score: %.3f\n", comparisonB); // Scores below 0.5 are strong non-matches
+
+    br::Context::finalize();
     return 0;
 }
 //! [compare_faces]

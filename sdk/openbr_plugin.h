@@ -254,18 +254,19 @@ struct Template : public QList<cv::Mat>
     File file; /*!< \brief The file from which the template is constructed. */
     Template() {}
     Template(const File &_file) : file(_file) {} /*!< \brief Initialize #file. */
-    Template(const File &_file, const cv::Mat &mat) : file(_file) { QList<cv::Mat>::append(mat); } /*!< \brief Initialize #file and append a matrix. */
+    Template(const File &_file, const cv::Mat &mat) : file(_file) { append(mat); } /*!< \brief Initialize #file and append a matrix. */
+    Template(const cv::Mat &mat) { append(mat); } /*!< \brief Append a matrix. */
 
     inline const cv::Mat &m() const { static const cv::Mat NullMatrix;
                                       return isEmpty() ? qFatal("Template::m() empty template."), NullMatrix : last(); } /*!< \brief Idiom to treat the template as a matrix. */
-    inline cv::Mat &m() { return isEmpty() ? QList<cv::Mat>::append(cv::Mat()), last() : last(); } /*!< \brief Idiom to treat the template as a matrix. */
+    inline cv::Mat &m() { return isEmpty() ? append(cv::Mat()), last() : last(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline cv::Mat &operator=(const cv::Mat &other) { return m() = other; } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator const cv::Mat&() const { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator cv::Mat&() { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator cv::_InputArray() const { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator cv::_OutputArray() { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline bool isNull() const { return isEmpty() || !m().data; } /*!< \brief Returns \c true if the template is empty or has no matrix data, \c false otherwise. */
-    inline void merge(const Template &other) { QList<cv::Mat>::append(other); file.append(other.file); } /*!< \brief Append the contents of another template. */
+    inline void merge(const Template &other) { append(other); file.append(other.file); } /*!< \brief Append the contents of another template. */
 
     /*!
      * \brief Returns the total number of bytes in all the matrices.
