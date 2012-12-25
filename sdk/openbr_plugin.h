@@ -62,6 +62,12 @@
  * Plugin documentation should include at least three lines providing the plugin abstraction, a brief explanation, and author.
  * If multiple authors are specified, the last author is assumed to be the current maintainer of the plugin.
  * Plugin authors are encouraged to <tt>\\cite</tt> relevant papers by adding them to <tt>share/openbr/openbr.bib</tt>.
+ *
+ * \section examples Examples
+ * - \ref cpp_compare_faces
+ * \subsection cpp_compare_faces Compare Faces
+ * \ref cli_compare_faces "Command Line Interface Equivalent"
+ * \snippet app/examples/compare_faces.cpp compare_faces
  */
 
 namespace br
@@ -743,7 +749,7 @@ private:
 };
 
 /*!
- * \ingroup Outputs
+ * \ingroup outputs
  * \brief Plugin derived base class for storing outputs as matrices.
  */
 class BR_EXPORT MatrixOutput : public Output

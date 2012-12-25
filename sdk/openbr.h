@@ -49,6 +49,12 @@ extern "C" {
  * \code
  * $ ls include/br/java
  * \endcode
+ *
+ * \section examples Examples
+ * - \ref c_evaluate_face_recognition
+ * \subsection c_evaluate_face_recognition Evaluate Face Recognition
+ * \ref cli_evaluate_face_recognition "Command Line Interface Equivalent"
+ * \snippet app/examples/evaluate_face_recognition.cpp evaluate_face_recognition
  */
 
 /*!

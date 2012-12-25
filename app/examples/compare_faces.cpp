@@ -14,12 +14,18 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-//! [compare_faces]
-// Command line equivalent:
-// $ br -algorithm FaceRecognition -forceEnrollment \
-//      -compare ../share/openbr/images/S354-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg \
-//      -compare ../share/openbr/images/S024-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg
+/*!
+ * \ingroup cli
+ * \page cli_compare_faces Compare Faces
+ * \ref cpp_compare_faces "Source Equivalent"
+ * \code
+ * $ br -algorithm FaceRecognition -forceEnrollment \
+ *      -compare ../share/openbr/images/S354-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg \
+ *      -compare ../share/openbr/images/S024-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg
+ * \endcode
+ */
 
+//! [compare_faces]
 #include <openbr_plugin.h>
 
 int main(int argc, char *argv[])
@@ -35,7 +41,7 @@ int main(int argc, char *argv[])
 
     // Initialize templates
     br::Template queryA("../data/MEDS/img/S354-02-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S024-01-t10_01.jpg");
+    br::Template queryB("../data/MEDS/img/S386-04-t10_01.jpg");
     br::Template target("../data/MEDS/img/S354-01-t10_01.jpg");
 
     // Enroll templates

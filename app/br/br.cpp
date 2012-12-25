@@ -30,7 +30,9 @@
  * $ br -help
  * \endcode
  *
- * See \ref examples for common use cases.
+ * \section cli_examples Examples
+ * - \ref cli_compare_faces
+ * - \ref cli_evaluate_face_recognition
  */
 
 static void help()

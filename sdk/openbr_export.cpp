@@ -28,7 +28,6 @@
  *
  * \section get_started Get Started
  * - \ref installation
- * - \ref examples
  * - \ref tutorial
  */
 
@@ -319,23 +318,6 @@ $ br -help
  * $ cd openbr/build
  * $ make package
  * \endcode
- */
-
-/*!
- * \page examples Examples
- * \brief Source code example applications and their equivalent \ref cli expressions.
- *
- * Many examples make heavy use of the \ref bee and the conventions established in the <a href="MBGC_file_overview.pdf">MBGC File Overview</a> for experimental setup.
- * - \ref compare_faces
- * - \ref compare_face_galleries
- * - \ref evaluate_face_recognition
- *
- * \section compare_faces Compare Faces
- * \snippet app/examples/compare_faces.cpp compare_faces
- * \section compare_face_galleries Compare Face Galleries
- * \snippet app/examples/compare_face_galleries.cpp compare_face_galleries
- * \section evaluate_face_recognition Evaluate Face Recognition
- * \snippet app/examples/evaluate_face_recognition.cpp evaluate_face_recognition
  */
 
 /*!
