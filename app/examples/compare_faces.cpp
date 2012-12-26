@@ -20,13 +20,21 @@
  * \ref cpp_compare_faces "Source Equivalent"
  * \code
  * $ br -algorithm FaceRecognition \
- *      -compare ../share/openbr/images/S354-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg \
- *      -compare ../share/openbr/images/S024-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg
+ *      -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S354-02-t10_01.jpg \
+ *      -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S386-04-t10_01.jpg
  * \endcode
  */
 
 //! [compare_faces]
 #include <openbr_plugin.h>
+
+static void printTemplate(const br::Template &t)
+{
+    printf("%s eyes: (%d, %d) (%d, %d)\n",
+           qPrintable(t.file.fileName()),
+           t.file.getInt("Affine_0_X"), t.file.getInt("Affine_0_Y"),
+           t.file.getInt("Affine_1_X"), t.file.getInt("Affine_1_Y"));
+}
 
 int main(int argc, char *argv[])
 {
@@ -37,14 +45,18 @@ int main(int argc, char *argv[])
     QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm("FaceRecognition");
 
     // Initialize templates
-    br::Template queryA("../data/MEDS/img/S354-02-t10_01.jpg");
+    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
     br::Template queryB("../data/MEDS/img/S386-04-t10_01.jpg");
-    br::Template target("../data/MEDS/img/S354-01-t10_01.jpg");
+    br::Template target("../data/MEDS/img/S354-02-t10_01.jpg");
 
     // Enroll templates
     queryA >> *transform;
     queryB >> *transform;
     target >> *transform;
+
+    printTemplate(queryA);
+    printTemplate(queryB);
+    printTemplate(target);
 
     // Compare templates
     float comparisonA = distance->compare(target, queryA);

@@ -19,13 +19,13 @@
  * \page cli_evaluate_face_recognition Evaluate Face Recognition
  * \ref c_evaluate_face_recognition "Source Equivalent"
  * \code
- * $ br -algorithm FaceRecognition -path ../share/openbr/images/ \
+ * $ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
  *      -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
  *      -enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
  *      -compare target.gal query.gal scores.mtx \
  *      -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
  *      -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
- *      -eval ../data/MEDS/simmat/COTS.mtx MEDS.mask Algorithm_Dataset/COTS_MEDS.csv \
+ *      -eval ../data/MEDS/simmat/COTS_MEDS.mtx MEDS.mask Algorithm_Dataset/COTS_MEDS.csv \
  *      -plot Algorithm_Dataset/FaceRecognition_MEDS.csv Algorithm_Dataset/COTS_MEDS.csv MEDS
  * \endcode
  */
