@@ -603,7 +603,7 @@ br::Context::Context()
 
     parallelism = std::max(1, QThread::idealThreadCount());
     blockSize = parallelism * ((sizeof(void*) == 4) ? 128 : 1024);
-    profiling = quiet = verbose = false;
+    quiet = verbose = false;
     currentStep = totalSteps = 0;
     enrollAll = false;
 }
@@ -821,7 +821,9 @@ void Output::setRelative(float value, int i, int j)
 Output *Output::make(const File &file, const FileList &targetFiles, const FileList &queryFiles)
 {
     Output *output = NULL;
-    foreach (const File &subfile, file.split()) {
+    FileList files = file.split();
+    if (files.isEmpty()) files.append(File());
+    foreach (const File &subfile, files) {
         Output *newOutput = Factory<Output>::make(subfile);
         newOutput->initialize(targetFiles, queryFiles);
         newOutput->next = QSharedPointer<Output>(output);
