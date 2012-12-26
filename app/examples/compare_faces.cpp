@@ -19,7 +19,7 @@
  * \page cli_compare_faces Compare Faces
  * \ref cpp_compare_faces "Source Equivalent"
  * \code
- * $ br -algorithm FaceRecognition -forceEnrollment \
+ * $ br -algorithm FaceRecognition \
  *      -compare ../share/openbr/images/S354-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg \
  *      -compare ../share/openbr/images/S024-01-t10_01.jpg ../share/openbr/images/S354-02-t10_01.jpg
  * \endcode
@@ -31,9 +31,6 @@
 int main(int argc, char *argv[])
 {
     br::Context::initialize(argc, argv);
-
-    // Enroll exactly one template per image
-    br::Globals->forceEnrollment = true;
 
     // Retrieve classes for enrolling and comparing templates using the FaceRecognition algorithm
     QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("FaceRecognition");

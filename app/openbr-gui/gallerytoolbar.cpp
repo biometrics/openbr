@@ -117,7 +117,7 @@ void br::GalleryToolBar::checkWebcam()
 void br::GalleryToolBar::enrollmentFinished()
 {
     if (files.isEmpty()) {
-        if (!input.getBool("forceEnrollment") && !tbWebcam.isChecked()) {
+        if (input.getBool("enrollAll") && !tbWebcam.isChecked()) {
             QMessageBox msgBox;
             msgBox.setText("Quality test failed.");
             msgBox.setInformativeText("Enroll anyway?");
@@ -127,7 +127,7 @@ void br::GalleryToolBar::enrollmentFinished()
 
             if (ret == QMessageBox::Ok) {
                 br::File file = input;
-                file.setBool("forceEnrollment");
+                file.setBool("enrollAll", false);
                 enroll(file);
             }
         }
@@ -151,7 +151,6 @@ void br::GalleryToolBar::mean()
     const QString file = QString("%1/mean/%2.png").arg(br_scratch_path(), input.baseName()+input.hash());
     br_set_property("CENTER_TRAIN_B", qPrintable(file));
     br::File trainingFile = input;
-    trainingFile.setBool("forceEnrollment");
     br_train(qPrintable(trainingFile.flat()), "[algorithm=MedianFace]");
     enroll(file);
 }

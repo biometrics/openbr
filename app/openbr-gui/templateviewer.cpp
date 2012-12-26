@@ -212,7 +212,7 @@ void TemplateViewer::mousePressEvent(QMouseEvent *event)
         landmarks[index] = getImagePoint(event->pos());
         qSort(landmarks.begin(), landmarks.end(), lessThan);
         if (!landmarks.contains(QPointF()))
-            emit selectedInput(file.name+QString("[Affine_0_X=%1, Affine_0_Y=%2, Affine_1_X=%3, Affine_1_Y=%4, forceEnrollment]").arg(QString::number(landmarks[0].x()),
+            emit selectedInput(file.name+QString("[Affine_0_X=%1, Affine_0_Y=%2, Affine_1_X=%3, Affine_1_Y=%4]").arg(QString::number(landmarks[0].x()),
                                                                                                                                       QString::number(landmarks[0].y()),
                                                                                                                                       QString::number(landmarks[1].x()),
                                                                                                                                       QString::number(landmarks[1].y())));

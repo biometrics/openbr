@@ -19,7 +19,7 @@
  * \page cli_evaluate_face_recognition Evaluate Face Recognition
  * \ref c_evaluate_face_recognition "Source Equivalent"
  * \code
- * $ br -algorithm FaceRecognition -forceEnrollment -path ../share/openbr/images/ \
+ * $ br -algorithm FaceRecognition -path ../share/openbr/images/ \
  *      -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
  *      -enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
  *      -compare target.gal query.gal scores.mtx \
@@ -39,9 +39,6 @@ int main(int argc, char *argv[])
 
     // Equivalent to 'Globals->algorithm = "FaceRecognion";' in C++ API
     br_set_property("algorithm", "FaceRecognition");
-
-    // Equivalent to 'Globals->forceEnrollment = true;' in C++ API
-    br_set_property("forceEnrollment", "true");
 
     // Equivalent to 'Globals->path = "../data/MEDS/img/";' in C++ API
     br_set_property("path", "../data/MEDS/img/");

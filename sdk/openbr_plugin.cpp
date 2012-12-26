@@ -605,7 +605,7 @@ br::Context::Context()
     blockSize = parallelism * ((sizeof(void*) == 4) ? 128 : 1024);
     profiling = quiet = verbose = false;
     currentStep = totalSteps = 0;
-    forceEnrollment = false;
+    enrollAll = false;
 }
 
 int br::Context::blocks(int size) const

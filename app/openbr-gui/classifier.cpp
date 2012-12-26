@@ -37,8 +37,6 @@ void Classifier::setClassification(const QString &key, const QString &value)
 /*** PRIVATE ***/
 void Classifier::_classify(File file)
 {
-    file.setBool("forceEnrollment");
-
     QString key, value;
     foreach (const File &f, Enroll(file.flat(), File("[algorithm=" + algorithm + "]"))) {
         qDebug() << f.flat();

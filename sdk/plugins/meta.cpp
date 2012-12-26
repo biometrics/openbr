@@ -29,7 +29,7 @@ static TemplateList Simplified(const TemplateList &templates)
     TemplateList simplified;
     foreach (const Template &t, templates) {
         if (t.isEmpty()) {
-            if (t.file.getBool("forceEnrollment"))
+            if (!t.file.getBool("enrollAll"))
                 simplified.append(t);
             continue;
         }
@@ -43,7 +43,7 @@ static TemplateList Simplified(const TemplateList &templates)
         const int ROIStep = ROIs.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || t.file.getBool("forceEnrollment")) {
+            if (!fte || !t.file.getBool("enrollAll")) {
                 simplified.append(Template(t.file, t[i]));
                 simplified.last().file.setROIs(ROIs.mid(i*ROIStep, ROIStep));
                 simplified.last().file.setLandmarks(landmarks.mid(i*landmarkStep, landmarkStep));

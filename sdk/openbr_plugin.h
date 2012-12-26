@@ -117,7 +117,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  * Key             | Value          | Description
  * ---             | ----           | -----------
  * path            | QString        | Resolve complete file paths from file names
- * forceEnrollment | bool           | Enroll exactly one template per file
+ * enrollAll       | bool           | Enroll zero or more templates per file
  * separator       | QString        | Sperate #name into multiple files
  * Input_Index     | int            | Index of a template in a template list
  * Label           | float          | Classification/Regression class
@@ -424,7 +424,7 @@ public:
     Q_PROPERTY(QString mostRecentMessage READ get_mostRecentMessage WRITE set_mostRecentMessage RESET reset_mostRecentMessage)
     Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
     Q_PROPERTY(double totalSteps READ get_totalSteps WRITE set_totalSteps RESET reset_totalSteps)
-    Q_PROPERTY(bool forceEnrollment READ get_forceEnrollment WRITE set_forceEnrollment RESET reset_forceEnrollment)
+    Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(QString, sdkPath, "")
     BR_PROPERTY(QString, algorithm, "")
     BR_PROPERTY(QString, log, "")
@@ -437,7 +437,7 @@ public:
     BR_PROPERTY(QString, mostRecentMessage, "")
     BR_PROPERTY(double, currentStep, 0)
     BR_PROPERTY(double, totalSteps, 0)
-    BR_PROPERTY(bool, forceEnrollment, false)
+    BR_PROPERTY(bool, enrollAll, false)
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */

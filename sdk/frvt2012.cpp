@@ -30,7 +30,6 @@ static const int frvt2012_template_size = 768;
 static void initialize(const string &configuration_location)
 {
     if (Globals == NULL) Context::initialize(0, NULL, QString::fromStdString(configuration_location));
-    Globals->forceEnrollment = true;
     Globals->quiet = true;
     Globals->parallelism = 0;
 }
@@ -126,7 +125,6 @@ int32_t SdkEstimator::estimate_age(const ONEFACE &input_face, int32_t &age)
 {
     TemplateList templates;
     templates.append(templateFromONEFACE(input_face));
-    templates.first().file.setBool("forceEnrollment");
     templates >> *frvt2012_age_transform.data();
     age = templates.first().file.label();
     return templates.first().file.failed() ? 4 : 0;
@@ -136,7 +134,6 @@ int32_t SdkEstimator::estimate_gender(const ONEFACE &input_face, int8_t &gender,
 {
     TemplateList templates;
     templates.append(templateFromONEFACE(input_face));
-    templates.first().file.setBool("forceEnrollment");
     templates >> *frvt2012_gender_transform.data();
     mf = gender = templates.first().file.label();
     return templates.first().file.failed() ? 4 : 0;
