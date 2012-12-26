@@ -412,31 +412,76 @@ class BR_EXPORT Context : public Object
     QFile logFile;
 
 public:
+    /*!
+     * \brief Path to <tt>share/openbr/openbr.bib</tt>
+     */
     Q_PROPERTY(QString sdkPath READ get_sdkPath WRITE set_sdkPath RESET reset_sdkPath)
-    Q_PROPERTY(QString algorithm READ get_algorithm WRITE set_algorithm RESET reset_algorithm)
-    Q_PROPERTY(QString log READ get_log WRITE set_log RESET reset_log)
-    Q_PROPERTY(QString path READ get_path WRITE set_path RESET reset_path)
-    Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize)
-    Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
-    Q_PROPERTY(bool profiling READ get_profiling WRITE set_profiling RESET reset_profiling)
-    Q_PROPERTY(bool quiet READ get_quiet WRITE set_quiet RESET reset_quiet)
-    Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose)
-    Q_PROPERTY(QString mostRecentMessage READ get_mostRecentMessage WRITE set_mostRecentMessage RESET reset_mostRecentMessage)
-    Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
-    Q_PROPERTY(double totalSteps READ get_totalSteps WRITE set_totalSteps RESET reset_totalSteps)
-    Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(QString, sdkPath, "")
+
+    /*!
+     * \brief The default algorithm to use when enrolling and comparing templates.
+     */
+    Q_PROPERTY(QString algorithm READ get_algorithm WRITE set_algorithm RESET reset_algorithm)
     BR_PROPERTY(QString, algorithm, "")
+
+    /*!
+     * \brief Optional log file to copy <tt>stderr</tt> to.
+     */
+    Q_PROPERTY(QString log READ get_log WRITE set_log RESET reset_log)
     BR_PROPERTY(QString, log, "")
+
+    /*!
+     * \brief Path to use when resolving images specified with relative paths.
+     */
+    Q_PROPERTY(QString path READ get_path WRITE set_path RESET reset_path)
     BR_PROPERTY(QString, path, "")
-    BR_PROPERTY(int, blockSize, -1)
+
+    /*!
+     * \brief The maximum number of templates to process in parallel.
+     */
+    Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize)
+    BR_PROPERTY(int, blockSize, 1)
+
+    /*!
+     * \brief The number of threads to use.
+     */
+    Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
     BR_PROPERTY(int, parallelism, 0)
-    BR_PROPERTY(bool, profiling, false)
+
+    /*!
+     * \brief If \c true no messages will be sent to the terminal, \c false by default.
+     */
+    Q_PROPERTY(bool quiet READ get_quiet WRITE set_quiet RESET reset_quiet)
     BR_PROPERTY(bool, quiet, false)
+
+    /*!
+     * \brief If \c true extra messages will be sent to the terminal, \c false by default.
+     */
+    Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose)
     BR_PROPERTY(bool, verbose, false)
+
+    /*!
+     * \brief The most resent message sent to the terminal.
+     */
+    Q_PROPERTY(QString mostRecentMessage READ get_mostRecentMessage WRITE set_mostRecentMessage RESET reset_mostRecentMessage)
     BR_PROPERTY(QString, mostRecentMessage, "")
+
+    /*!
+     * \brief Used internally to compute progress() and timeRemaining().
+     */
+    Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
     BR_PROPERTY(double, currentStep, 0)
+
+    /*!
+     * \brief Used internally to compute progress() and timeRemaining().
+     */
+    Q_PROPERTY(double totalSteps READ get_totalSteps WRITE set_totalSteps RESET reset_totalSteps)
     BR_PROPERTY(double, totalSteps, 0)
+
+    /*!
+     * \brief If \c true enroll 0 or more templates per image, otherwise (default) enroll exactly one.
+     */
+    Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(bool, enrollAll, false)
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
