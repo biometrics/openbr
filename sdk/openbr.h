@@ -38,6 +38,9 @@ extern "C" {
  * \endcode
  * <a href="http://www.cmake.org/">CMake</a> developers may wish to use <tt>share/openbr/cmake/OpenBRConfig.cmake</tt>.
  *
+ * \section managed_return_value Managed Return Value
+ * Memory for <tt>const char*</tt> return values is managed internally and guaranteed until the next call to the function.
+ *
  * \section python_api Python API
  * A Python API is available via <a href="http://www.swig.org/">SWIG</a>.
  * \code
@@ -268,10 +271,8 @@ BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *im
  * \param destination Basename for the resulting figures.
  * \param show Open <i>destination</i>.pdf using the system's default PDF viewer.
  * \return Returns \c true on success. Returns false on a failure to compile the figures due to a missing, out of date, or incomplete \c R installation.
- * \note
- * - See \ref installing_r
- * - End <i>destination</i> with <tt>.png</tt> to render as images.
- * - Run <a href="http://stat.ethz.ch/R-manual/R-devel/library/utils/html/Rscript.html">Rcript</a> on <i>destination</i><tt>.R</tt> to recompile the figures.
+ * \note This function requires a current <a href="http://www.r-project.org/">R</a> installation with the following packages:
+ * \code install.packages(c("ggplot2", "gplots", "reshape", "scales")) \endcode
  * \see br_plot_metadata
  */
 BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destination, bool show = false);

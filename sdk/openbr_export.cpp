@@ -33,6 +33,7 @@
 
 /*!
  * \page installation Installation
+ * \brief Guide to installing OpenBR
  *
  * \section installation_from_source From Source
  * Installation from source is the recommended method for getting OpenBR on your machine.
@@ -77,6 +78,8 @@ $ br -help
 
 /*!
  * \page windows_msvc Windows 7 - Visual Studio Express Edition 2012 - x64
+ * \brief Installation from source with Visual Studio.
+ *
  * -# Download and install <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop">Visual Studio 2012 Express Edition for Windows Desktop</a>
  *   -# If you need a program to mount ISO images then consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a>.
  *   -# You will have to register with Microsoft after installation, but it's free.
@@ -135,6 +138,8 @@ $ br -help
 
 /*!
  * \page windows_mingw Windows 7 - MingGW-w64 2.0 - x64
+ * \brief Installation from source with MinGW-w64.
+ *
  * -# <a href="http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.7-release/x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb.7z/download">Download MinGW-w64 GCC 4.7.2</a> and unarchive.
  *   -# Use the free open source program <a href="http://www.7-zip.org/">7-Zip</a> to unarchive.
  *   -# Copy "x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb\mingw64" to "C:\".
@@ -192,6 +197,8 @@ $ br -help
 
 /*!
  * \page osx_clang OS X Mountain Lion - Clang/LLVM 3.1 - x64
+ * \brief Installation from source with Clang.
+ *
  * -# Download and install the latest "Xcode" and "Command Line Tools" from the <a href="https://developer.apple.com/downloads/index.action#">Apple Developer Downloads</a> page.
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz">Download CMake 2.8.10.2</a> and install:
  * \code
@@ -238,6 +245,8 @@ $ br -help
 
 /*!
  * \page linux_gcc Ubuntu 12.04 LTS - GCC 4.6.3 - x64
+ * \brief Installation from source with GCC.
+ *
  * -# Install GCC 4.6.3:
  * \code
  * $ sudo apt-get update
@@ -286,6 +295,8 @@ $ br -help
 
 /*!
  * \page linux_icc Ubuntu 12.04 LTS - Intel C++ Studio XE 2013 - x64
+ * \brief Installation from source with ICC.
+ *
  * -# <a href="http://software.intel.com/en-us/non-commercial-software-development">Download Intel C++ Studio XE 2013</a> and install.
  * -# Install CMake 2.8.7:
  * \code
@@ -329,19 +340,6 @@ $ br -help
  */
 
 /*!
- * \page installing_r Installing R
- * The \c br reporting framework requires a valid \c R installation in order to generate performance figures. Please follow the instructions below.
- * -# <a href="http://watson.nci.nih.gov/cran_mirror/">Download and Install R</a>
- * -# Run \c R
- *   -# Enter the command:
- *    \code install.packages(c("ggplot2", "gplots", "reshape", "scales")) \endcode
- *   -# When prompted, select a \c mirror near you.
- *   -# Wait for the package installation to complete.
- * -# Exit \c R
- * \note Installation process requires internet access.
- */
-
-/*!
  * \page bee Biometric Evaluation Environment
  * \brief The <i>Biometric Evaluation Environment</i> (BEE) is a <a href="http://www.nist.gov/index.html">NIST</a> standard for evaluating biometric algorithms.
  *
@@ -360,9 +358,4 @@ $ br -help
  * A mask matrix (or \em mask) is a binary matrix specified on page 14 of <a href="MBGC_file_overview.pdf#page=14">MBGC File Overview</a> identifying the ground truth genuines and impostors of a corresponding \ref simmat.
  * Masks are identified with a <tt>.mask</tt> extension.
  * \see br_make_mask br_combine_masks
- */
-
-/*!
- * \page managed_return_value Managed Return Value
- * Memory for the returned value is managed internally and guaranteed until the next call to this function.
  */
