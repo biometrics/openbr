@@ -297,7 +297,7 @@ $ br -help
  * \page linux_icc Ubuntu 12.04 LTS - Intel C++ Studio XE 2013 - x64
  * \brief Installation from source with ICC.
  *
- * -# <a href="http://software.intel.com/en-us/non-commercial-software-development">Download Intel C++ Studio XE 2013</a> and install.
+ * -# Assuming you meet the eligibility requirements, <a href="http://software.intel.com/en-us/non-commercial-software-development">Download Intel C++ Studio XE 2013</a> and install.
  * -# Install CMake 2.8.7:
  * \code
  * $ sudo apt-get install cmake
@@ -324,9 +324,17 @@ $ br -help
  * $ git submodule init
  * $ git submodule update
  * \endcode
+ * -# Finally time to build OpenBR:
+ * \code
+ * $ cd openbr
+ * $ mkdir build-icc
+ * $ cd build-icc
+ * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc ..
+ * $ make
+ * \endcode
  * -# To package OpenBR:
  * \code
- * $ cd openbr/build
+ * $ cd openbr/build-icc
  * $ make package
  * \endcode
  */
