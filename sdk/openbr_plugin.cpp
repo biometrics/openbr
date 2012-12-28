@@ -415,7 +415,7 @@ QStringList Object::arguments() const
     for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isStored(this)) continue;
-        arguments.append(property.read(this).toString());
+        arguments.append(argument(i));
     }
     return arguments;
 }

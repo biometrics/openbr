@@ -325,9 +325,7 @@ public:
 
 private:
     QString mangledName(const Matrix &m) const {
-        QStringList kernelArguments;
-        for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
-            kernelArguments.append(metaObject()->property(i).read(this).toString());
+        QStringList kernelArguments = arguments();
         kernelArguments.append(m.toString());
         return "jitcv_" + name().remove("Transform") + "_" + kernelArguments.join("_");
     }
@@ -531,7 +529,8 @@ BR_REGISTER(Transform, powTransform)
  * \ingroup transforms
  * \brief LLVM sum transform
  * \author Josh Klontz \cite jklontz
- */class sumTransform : public Kernel
+ */
+class sumTransform : public Kernel
 {
     Q_OBJECT
     Q_PROPERTY(bool channels READ get_channels WRITE set_channels RESET reset_channels STORED false)
@@ -779,7 +778,7 @@ class _QuantizeTransform : public Transform
     }
 };
 
-//BR_REGISTER(Transform, _QuantizeTransform)
+BR_REGISTER(Transform, _QuantizeTransform)
 
 /*!
  * \ingroup initializers
@@ -822,24 +821,24 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
-        QSharedPointer<Transform> kernel(Transform::make("abs", NULL));
+//        QSharedPointer<Transform> kernel(Transform::make("abs", NULL));
 
-        Template src, dst;
-        src.m() = (Mat_<qint8>(2,2) << -1, -2, 3, 4);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        Template src, dst;
+//        src.m() = (Mat_<qint8>(2,2) << -1, -2, 3, 4);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
     }
 
     void finalize() const
