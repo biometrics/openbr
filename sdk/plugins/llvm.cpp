@@ -325,9 +325,11 @@ public:
 
 private:
     QString mangledName(const Matrix &m) const {
-        QStringList kernelArguments = arguments();
-        kernelArguments.append(m.toString());
-        return "jitcv_" + name().remove("Transform") + "_" + kernelArguments.join("_");
+        static QHash<QString, int> argsLUT;
+        const QString args = arguments().join(",");
+        if (!argsLUT.contains(args)) argsLUT.insert(args, argsLUT.size());
+        int uid = argsLUT.value(args);
+        return "jitcv_" + name().remove("Transform") + QString::number(uid) + "_" + m.toString();
     }
 
     Function *compile(const Matrix &m) const
