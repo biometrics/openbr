@@ -34,8 +34,6 @@ class PerPixelClassifier : public MetaTransform
     BR_PROPERTY(int, pixels, 10000)
     BR_PROPERTY(bool, orient, false)
 
-    //int matrices = 0;
-
     /*
       Bins:
       |4|3|2|
@@ -54,7 +52,7 @@ class PerPixelClassifier : public MetaTransform
 
     void rotate(Template &src, Template &dst) const
     {
-        // if temp.m.cols()%9 != 0, some error about how neighbors needs to be used.
+        if (temp.m.cols()%9 != 0) qFatal("Rotation invariance can only be used after Neighbors");
         int images =  (src.m().cols)/9;
         dst = src;
         for (int i = 0; i < images; i++){
@@ -103,29 +101,28 @@ class PerPixelClassifier : public MetaTransform
         const int length = trainingSet.length();
         int pixelsPerImage = pixels/length;
 
-        for (int i=0; i < length; i++){ // Consider using foreach loops when the induction variable is only used to index into the list
+        for (int i=0; i < length; i++){
             Template src = trainingSet.at(i);
-            //matrices = src.length();
 
             const int mats = src.length();
             const int rows = src.m().rows;
             const int cols = src.m().cols;
 
             RNG &rng = theRNG();
-            TemplateList srcPixelTemplates = TemplateList(); // Equivalent to "TemplateList srcPixelTemplates;"
+            TemplateList srcPixelTemplates;
 
             for (int m=0; m < pixelsPerImage; m++){
                 int index = rng.uniform(0, rows*cols);
-                Template temp = Template(src.file, cv::Mat(1, (mats-1), CV_32F));
-                float *ptemp = (float*)temp.m().ptr(); // I'd encourage you to always use Mat::at<>() for indexing into matrices
+                Template temp = Template(src.file, cv::Mat(1, mats, CV_32F));
+                float *ptemp = (float*)temp.m().ptr();
                 for (int n=0; n < mats; n++){
                     uchar *psrc = src[n].ptr();
-                    if (n == mats-1){
-                        temp.file.setLabel(psrc[index]);
-                    } else {
-                        ptemp[n] = psrc[index];
-                    }
+                    ptemp[n] = psrc[index];
                 }
+                cv::Mat labelMat = src.file.get("labels").value<cv::Mat>();
+                uchar* plabel = labelMat.ptr();
+                temp.file.setLabel(plabel[index]);
+
                 if (orient){
                     Template rotated;
                     rotate(temp, rotated);
@@ -136,31 +133,25 @@ class PerPixelClassifier : public MetaTransform
             }
             pixelTemplates.append(srcPixelTemplates);
         }
-        //qDebug("Count: %i", count);
-        //matrices--;
         transform->train(pixelTemplates);
     }
 
-    // Factor out the logic for creating a template at a single pixel, rotating it, and float-casting it and call it from both train() and project()?
     void project(const Template &src, Template &dst) const
     {
         const int mats = src.length();
         const int rows = src.m().rows;
         const int cols = src.m().cols;
 
-        //if (matrices == 0) matrices = src.length();
-
         dst = src; // Do we really want to copy all the src matrices into dst?
-        dst.merge(Template(src.file, cv::Mat(src.m().rows, src.m().cols, CV_32F))); // Sorry the syntax for appending a single matrix is broken, consider using dst += cv::Mat() instead for the time being
+        dst.merge(Template(src.file, cv::Mat(src.m().rows, src.m().cols, CV_32F)));
         float *pdst = (float*) dst.m().ptr();
 
         for (int r = 0; r < rows; r++){
             for (int c = 0; c < cols; c++){
-                Template temp = Template(src.file, cv::Mat(1, (mats-1), CV_32F));
-                Template dstTemp = Template(src.file, cv::Mat(1, (mats-1), CV_32F));
+                Template temp = Template(src.file, cv::Mat(1, mats, CV_32F));
+                Template dstTemp = Template(src.file, cv::Mat(1, mats, CV_32F));
 
-
-                for (int n=0; n < mats-1; n++){ // Consider using CvtFloat transform instead of doing this by hand
+                for (int n=0; n < mats; n++){
                     const uchar *psrc = src[n].ptr();
                     float *ptemp = (float*)temp[0].ptr();
                     int index = r*cols + c;
@@ -168,14 +159,12 @@ class PerPixelClassifier : public MetaTransform
                 }
 
                 if (orient){
-                    Template rotated = Template(src.file, cv::Mat(1, (mats-1), CV_32F));
+                    Template rotated = Template(src.file, cv::Mat(1, mats, CV_32F));
                     rotate(temp, rotated);
                     temp = rotated;
-                    //transform->project(rotated,dstTemp);
                 }
-                transform->project(temp,dstTemp);
 
-                //transform->project(temp, dstTemp);
+                transform->project(temp,dstTemp);
                 pdst[r*cols+c] = dstTemp.file.label();
             }
         }
@@ -200,7 +189,7 @@ class Neighbors: public UntrainableMetaTransform
         int mats = src.length();
         dst.file = src.file;
 
-        for (int n = 0; n < mats-1; n++){ //each matrix, except the last one, will be turned into 9 matrices
+        for (int n = 0; n < mats; n++){ //each matrix, except the last one, will be turned into 9 matrices
             const uchar *psrc = src[n].ptr();
             for (int i = -1; i < 2; i++){
                 for (int j = -1; j < 2; j++){ // these nine matrices are shifted versions of the original
@@ -240,16 +229,17 @@ class ToBinaryVector: public UntrainableMetaTransform
     BR_PROPERTY(br::Transform*, transform, NULL)
     BR_PROPERTY(int, length, -1)
 
+    //needs to be updated..
     void project(const Template &src, Template &dst) const
     {
 
         dst = src;
         int mats = src.length();
-        for (int i = 0; i < mats-1; i++){
+        for (int i = 0; i < mats; i++){
             // Does this actually modify the data?
             dst[i]*(1.0/255.0); //scaling the input matrices to make the svm happier
         }
-        for (int i = 0; i < length*(mats-1); i++){
+        for (int i = 0; i < length*(mats); i++){
             dst.prepend(Template(src.file, Mat::zeros(src.m().rows, src.m().cols, CV_8U)));
         }
 
@@ -262,7 +252,7 @@ class ToBinaryVector: public UntrainableMetaTransform
         int rows = transformed.m().rows;
         int cols = transformed.m().cols;
 
-        for (int i = 0; i < mats-1; i++){
+        for (int i = 0; i < mats; i++){
             uchar *ptransformed = transformed[i].ptr();
             for (int r = 0; r < rows; r++){
                 for (int c = 0; c < cols; c++){
@@ -275,5 +265,29 @@ class ToBinaryVector: public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, ToBinaryVector)
+
+/*!
+ * \ingroup transforms
+ * \brief If "labels" is specified, makes the last matrix into metadata
+ * \author E. Taborsky \cite mmtaborsky
+ */
+
+class ToMetadata: public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (dst.file.contains("labels")){
+            QVariant last = qVariantFromValue(dst.m());
+            dst.file.set("labels", last);
+            dst.pop_back();
+        }
+    }
+
+};
+
+BR_REGISTER(Transform, ToMetadata)
 
 #include "pixel.moc"
