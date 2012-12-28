@@ -754,8 +754,8 @@ BR_REGISTER(Transform, clampTransform)
 class _QuantizeTransform : public Transform
 {
     Q_OBJECT
-    Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a STORED false)
-    Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b STORED false)
+    Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
+    Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b)
     BR_PROPERTY(float, a, 1)
     BR_PROPERTY(float, b, 0)
 
