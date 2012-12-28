@@ -57,8 +57,8 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
 endif()
 
-if(${CMAKE_C_COMPILER} STREQUAL "/usr/bin/icc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd279 -wd2196")
+if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
 endif()
 
 # Configure build
