@@ -3,6 +3,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/DerivedTypes.h>
 #include <llvm/ExecutionEngine/JIT.h>
+#include <llvm/IRBuilder.h>
 #include <llvm/Module.h>
 #include <llvm/Operator.h>
 #include <llvm/PassManager.h>
@@ -15,7 +16,6 @@
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Support/ManagedStatic.h>
-#include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Transforms/Scalar.h>
 #include <openbr_plugin.h>
@@ -410,6 +410,12 @@ class StitchableKernel : public Kernel
 public:
     virtual Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const = 0; /*!< A simplification of Kernel::build() for stitchable kernels. */
 
+    virtual int preallocate(const Matrix &src, Matrix &dst) const
+    {
+        dst.copyHeader(src);
+        return dst.elements();
+    }
+
 private:
     void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const
     {
@@ -473,12 +479,6 @@ class squareTransform : public StitchableKernel
 {
     Q_OBJECT
 
-    int preallocate(const Matrix &src, Matrix &dst) const
-    {
-        dst.copyHeader(src);
-        return dst.elements();
-    }
-
     Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
     {
         (void) src;
@@ -492,7 +492,8 @@ BR_REGISTER(Transform, squareTransform)
  * \ingroup transforms
  * \brief LLVM pow transform
  * \author Josh Klontz \cite jklontz
- */class powTransform : public StitchableKernel
+ */
+class powTransform : public StitchableKernel
 {
     Q_OBJECT
     Q_PROPERTY(double exponent READ get_exponent WRITE set_exponent RESET reset_exponent STORED false)
@@ -664,12 +665,6 @@ class scaleTransform : public StitchableKernel
     Q_PROPERTY(double a READ get_a WRITE set_a RESET reset_a STORED false)
     BR_PROPERTY(double, a, 1)
 
-    int preallocate(const Matrix &src, Matrix &dst) const
-    {
-        dst.copyHeader(src);
-        return dst.elements();
-    }
-
     Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
     {
         (void) src;
@@ -678,6 +673,28 @@ class scaleTransform : public StitchableKernel
 };
 
 BR_REGISTER(Transform, scaleTransform)
+
+/*!
+ * \ingroup absTransform
+ * \brief LLVM abs transform
+ * \author Josh Klontz \cite jklontz
+ */
+class absTransform : public StitchableKernel
+{
+    Q_OBJECT
+
+    Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
+    {
+        (void) dst;
+        if (!src.isSigned()) return val;
+        if (src.isFloating()) return src.b->CreateCall(Intrinsic::getDeclaration(TheModule, Intrinsic::fabs, src.tys()), val);
+        else                  return src.b->CreateSelect(src.b->CreateICmpSLT(val, src.autoConstant(0)),
+                                                         src.b->CreateSub(src.autoConstant(0), val),
+                                                         val);
+    }
+};
+
+BR_REGISTER(Transform, absTransform)
 
 /*!
  * \ingroup transforms
@@ -689,12 +706,6 @@ class addTransform : public StitchableKernel
     Q_OBJECT
     Q_PROPERTY(double b READ get_b WRITE set_b RESET reset_b STORED false)
     BR_PROPERTY(double, b, 0)
-
-    int preallocate(const Matrix &src, Matrix &dst) const
-    {
-        dst.copyHeader(src);
-        return dst.elements();
-    }
 
     Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
     {
@@ -717,12 +728,6 @@ class clampTransform : public StitchableKernel
     Q_PROPERTY(double max READ get_max WRITE set_max RESET reset_max STORED false)
     BR_PROPERTY(double, min, -std::numeric_limits<double>::max())
     BR_PROPERTY(double, max, std::numeric_limits<double>::max())
-
-    int preallocate(const Matrix &src, Matrix &dst) const
-    {
-        dst.copyHeader(src);
-        return dst.elements();
-    }
 
     Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
     {
@@ -817,22 +822,22 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
-        QSharedPointer<Transform> kernel(Transform::make("stitch([scale(2),add(3)])", NULL));
+        QSharedPointer<Transform> kernel(Transform::make("abs", NULL));
 
         Template src, dst;
-        src.m() = (Mat_<qint8>(2,2) << 1, 2, 3, 4);
+        src.m() = (Mat_<qint8>(2,2) << -1, -2, 3, 4);
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-        src.m() = (Mat_<qint32>(2,2) << 1, 3, 9, 27);
+        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-        src.m() = (Mat_<float>(2,2) << 1.5, 2.5, 3.5, 4.5);
+        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, 3.75, 4.75);
+        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
         kernel->project(src, dst);
         qDebug() << dst.m();
     }
