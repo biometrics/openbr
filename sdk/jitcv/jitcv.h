@@ -4,15 +4,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace jitcv
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*!
  * \brief jitcv matrix
  * \author Josh Klontz \cite jklontz
  * \note Not part of the core SDK
  */
-struct Matrix
+struct jit_matrix
 {
     uint8_t *data; /*!< Data */
     uint32_t channels; /*!< Channels */
@@ -28,6 +29,7 @@ struct Matrix
                        Single-row : 1
                        Single-frame : 1 */
 
+#ifdef __cplusplus
     enum Hash { Bits = 0x00FF,
                 Floating = 0x0100,
                 Signed = 0x0200,
@@ -48,9 +50,9 @@ struct Matrix
                 f32 = 32 + Floating + Signed,
                 f64 = 64 + Floating + Signed };
 
-    Matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
+    jit_matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
 
-    Matrix(uint32_t _channels, uint32_t _columns, uint32_t _rows, uint32_t _frames, uint16_t _hash)
+    jit_matrix(uint32_t _channels, uint32_t _columns, uint32_t _rows, uint32_t _frames, uint16_t _hash)
         : data(NULL), channels(_channels), columns(_columns), rows(_rows), frames(_frames), hash(_hash)
     {
         setSingleChannel(channels == 1);
@@ -59,7 +61,7 @@ struct Matrix
         setSingleFrame(frames == 1);
     }
 
-    inline void copyHeader(const Matrix &other) { channels = other.channels; columns = other.columns; rows = other.rows; frames = other.frames; hash = other.hash; }
+    inline void copyHeader(const jit_matrix &other) { channels = other.channels; columns = other.columns; rows = other.rows; frames = other.frames; hash = other.hash; }
     inline void allocate() { deallocate(); data = new uint8_t[bytes()]; }
     inline void deallocate() { delete[] data; data = NULL; }
 
@@ -81,8 +83,14 @@ struct Matrix
     inline void setSingleFrame(bool singleFrame) { singleFrame ? hash |= SingleFrame : hash &= ~SingleFrame; }
     inline uint32_t elements() const { return channels * columns * rows * frames; }
     inline uint32_t bytes() const { return bits() / 8 * elements(); }
+#endif // __cplusplus
 };
 
-} // namespace jitcv
+typedef void (*jit_unary_function)(const jit_matrix &src, jit_matrix &dst);
+typedef void (*jit_binary_function)(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __JITCV_H
