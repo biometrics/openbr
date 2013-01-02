@@ -21,6 +21,8 @@ if(${BR_WITH_LLVM})
   # Let's suppose we want to build a JIT compiler with support for binary code:
   llvm_map_components_to_libraries(REQ_LLVM_LIBRARIES jit native)
 
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC}
+                        ${CMAKE_SOURCE_DIR}/sdk/plugins/llvm.cpp
+                        ${CMAKE_SOURCE_DIR}/sdk/jitcv/jitcv.cpp)
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${REQ_LLVM_LIBRARIES})
-  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_SOURCE_DIR}/sdk/plugins/llvm.cpp)
 endif()
