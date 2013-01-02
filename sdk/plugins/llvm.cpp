@@ -259,6 +259,13 @@ public:
     virtual int preallocate(const jit_matrix &src, jit_matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
+    void apply(const jit_matrix &src, jit_matrix &dst) const
+    {
+        const int size = preallocate(src, dst);
+        dst.allocate();
+        invoke(src, dst, size);
+    }
+
 private:
     QString mangledName(const jit_matrix &src) const
     {
@@ -356,6 +363,13 @@ public:
     BinaryKernel() : kernel(NULL), hashA(0), hashB(0) {}
     virtual int preallocate(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual void build(const MatrixBuilder &srcA, const MatrixBuilder &srcB, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
+
+    void apply(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst) const
+    {
+        const int size = preallocate(srcA, srcB, dst);
+        dst.allocate();
+        invoke(srcA, srcB, dst, size);
+    }
 
 private:
     QString mangledName(const jit_matrix &srcA, const jit_matrix &srcB) const
@@ -915,5 +929,21 @@ class LLVMInitializer : public Initializer
 };
 
 BR_REGISTER(Initializer, LLVMInitializer)
+
+void jit_unary_apply(const jit_unary_kernel &kernel, const jit_matrix &src, jit_matrix &dst)
+{
+    ((UnaryKernel*)kernel)->apply(src, dst);
+}
+
+void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst)
+{
+    ((BinaryKernel*)kernel)->apply(srcA, srcB, dst);
+}
+
+jit_unary_kernel jit_square()
+{
+    static squareTransform transform;
+    return &transform;
+}
 
 #include "llvm.moc"

@@ -86,8 +86,13 @@ struct jit_matrix
 #endif // __cplusplus
 };
 
-typedef void (*jit_unary_function)(const jit_matrix &src, jit_matrix &dst);
-typedef void (*jit_binary_function)(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst);
+typedef void* jit_unary_kernel;
+typedef void* jit_binary_kernel;
+
+jit_unary_kernel jit_square();
+
+void jit_unary_apply(const jit_unary_kernel &kernel, const jit_matrix &src, jit_matrix &dst);
+void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &src, jit_matrix &dst);
 
 #ifdef __cplusplus
 }
