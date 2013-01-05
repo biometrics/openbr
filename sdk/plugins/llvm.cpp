@@ -257,6 +257,7 @@ class UnaryKernel : public UntrainableMetaTransform
 public:
     UnaryKernel() : kernel(NULL), hash(0) {}
     virtual int preallocate(const jit_matrix &src, jit_matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
+    virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const { (void) src; (void) dst; return MatrixBuilder::constant(0); }
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
     void apply(const jit_matrix &src, jit_matrix &dst) const
@@ -267,16 +268,49 @@ public:
     }
 
 private:
-    QString mangledName(const jit_matrix &src) const
+    QString mangledName() const
     {
         static QHash<QString, int> argsLUT;
         const QString args = arguments().join(",");
         if (!argsLUT.contains(args)) argsLUT.insert(args, argsLUT.size());
         int uid = argsLUT.value(args);
-        return "jitcv_" + name().remove("Transform") + (args.isEmpty() ? QString() : QString::number(uid)) + "_" + MatrixToString(src);
+        return "jitcv_" + name().remove("Transform") + (args.isEmpty() ? QString() : QString::number(uid));
+    }
+
+    QString mangledName(const jit_matrix &src) const
+    {
+        return mangledName() + "_" + MatrixToString(src);
     }
 
     Function *compile(const jit_matrix &m) const
+    {
+        Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName()),
+                                                     Type::getVoidTy(getGlobalContext()),
+                                                     PointerType::getUnqual(TheMatrixStruct),
+                                                     PointerType::getUnqual(TheMatrixStruct),
+                                                     NULL);
+
+        Function *function = cast<Function>(c);
+        function->setCallingConv(CallingConv::C);
+
+        Function::arg_iterator args = function->arg_begin();
+        Value *src = args++;
+        src->setName("src");
+        Value *dst = args++;
+        dst->setName("dst");
+
+        BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
+        IRBuilder<> builder(entry);
+
+        Function *kernel = compileKernel(m);
+        builder.CreateCall3(kernel, src, dst, buildPreallocate(MatrixBuilder(m, src, &builder, function, "src"), MatrixBuilder(m, dst, &builder, function, "dst")));
+
+        builder.CreateRetVoid();
+
+        return kernel;
+    }
+
+    Function *compileKernel(const jit_matrix &m) const
     {
         Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName(m)),
                                                      Type::getVoidTy(getGlobalContext()),
@@ -595,6 +629,13 @@ class sumTransform : public UnaryKernel
         return dst.elements();
     }
 
+    Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const
+    {
+        (void) src;
+        (void) dst;
+        return MatrixBuilder::constant(0);
+    }
+
     void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const
     {
         Value *c, *x, *y, *t;
@@ -855,7 +896,7 @@ class LLVMInitializer : public Initializer
         TheFunctionPassManager->add(createDeadInstEliminationPass());
 
         TheExtraFunctionPassManager = new FunctionPassManager(TheModule);
-        TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
+//        TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
 //        TheExtraFunctionPassManager->add(createLoopUnrollPass(INT_MAX,8));
 
         TheMatrixStruct = StructType::create("Matrix",
@@ -867,7 +908,7 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
-        QSharedPointer<Transform> kernel(Transform::make("abs", NULL));
+        QSharedPointer<Transform> kernel(Transform::make("sum", NULL));
 
         Template src, dst;
         src.m() = (Mat_<qint8>(2,2) << -1, -2, 3, 4);
