@@ -940,6 +940,22 @@ void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &srcA, c
     ((BinaryKernel*)kernel)->apply(srcA, srcB, dst);
 }
 
+jit_unary_kernel jit_unary_make(const char *description)
+{
+    static QHash<QString, UnaryKernel*> kernels;
+    if (!kernels.contains(description))
+        kernels.insert(description, dynamic_cast<UnaryKernel*>(Transform::make(description, NULL)));
+    return jit_unary_kernel(kernels[description]);
+}
+
+jit_binary_kernel jit_binary_make(const char *description)
+{
+    static QHash<QString, BinaryKernel*> kernels;
+    if (!kernels.contains(description))
+        kernels.insert(description, dynamic_cast<BinaryKernel*>(Factory<BinaryKernel>::make(description)));
+    return jit_binary_kernel(kernels[description]);
+}
+
 jit_unary_kernel jit_square()
 {
     static squareTransform transform;
