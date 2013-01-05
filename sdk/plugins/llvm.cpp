@@ -250,8 +250,7 @@ class UnaryKernel : public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    typedef void (*kernel_t)(const jit_matrix*, jit_matrix*, quint32);
-    kernel_t kernel;
+    jit_unary_core_t kernel;
     quint16 hash;
 
 public:
@@ -265,6 +264,19 @@ public:
         const int size = preallocate(src, dst);
         dst.allocate();
         invoke(src, dst, size);
+    }
+
+    jit_unary_core_t getKernel(const jit_matrix *src) const
+    {
+        const QString functionName = mangledName(*src);
+        Function *function = TheModule->getFunction(qPrintable(functionName));
+        if (function == NULL) {
+            function = compile(*src);
+            while (TheFunctionPassManager->run(*function));
+            TheExtraFunctionPassManager->run(*function);
+            function = TheModule->getFunction(qPrintable(functionName));
+        }
+        return (jit_unary_core_t)TheExecutionEngine->getPointerToFunction(function);
     }
 
 private:
@@ -362,17 +374,7 @@ private:
             QMutexLocker locker(&compilerLock);
 
             if (src.hash != hash) {
-                const QString functionName = mangledName(src);
-
-                Function *function = TheModule->getFunction(qPrintable(functionName));
-                if (function == NULL) {
-                    function = compile(src);
-                    while (TheFunctionPassManager->run(*function));
-                    TheExtraFunctionPassManager->run(*function);
-                    function = TheModule->getFunction(qPrintable(functionName));
-                }
-
-                const_cast<UnaryKernel*>(this)->kernel = (kernel_t)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<UnaryKernel*>(this)->kernel = getKernel(&src);
                 const_cast<UnaryKernel*>(this)->hash = src.hash;
             }
         }
@@ -389,8 +391,7 @@ class BinaryKernel: public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    typedef void (*kernel_t)(const jit_matrix*, const jit_matrix*, jit_matrix*, quint32);
-    kernel_t kernel;
+    jit_binary_core_t kernel;
     quint16 hashA, hashB;
 
 public:
@@ -467,7 +468,7 @@ private:
                     function = TheModule->getFunction(qPrintable(functionName));
                 }
 
-                const_cast<BinaryKernel*>(this)->kernel = (kernel_t)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<BinaryKernel*>(this)->kernel = (jit_binary_core_t)TheExecutionEngine->getPointerToFunction(function);
                 const_cast<BinaryKernel*>(this)->hashA = srcA.hash;
                 const_cast<BinaryKernel*>(this)->hashB = srcB.hash;
             }
@@ -1001,6 +1002,11 @@ jit_unary_kernel jit_square()
 {
     static squareTransform transform;
     return &transform;
+}
+
+jit_unary_core_t jit_compile_unary_core(const void *kernel, const jit_matrix &m)
+{
+    return ((const UnaryKernel*)kernel)->getKernel(&m);
 }
 
 #include "llvm.moc"

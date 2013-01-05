@@ -97,6 +97,9 @@ void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &src, ji
 
 jit_unary_kernel jit_square();
 
+typedef void (*jit_unary_core_t)(const jit_matrix *src, jit_matrix *dst, uint32_t size);
+typedef void (*jit_binary_core_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst, uint32_t size);
+
 #ifdef __cplusplus
 }
 #endif
