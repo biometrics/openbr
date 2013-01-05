@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ALGORITHM=FaceRecognition
+ALGORITHM=OpenBR
 
 if [ ! -f evalFaceRecognition-MEDS.sh ]; then
   echo "Run this script from the scripts folder!"
