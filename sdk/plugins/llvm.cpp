@@ -320,16 +320,17 @@ public:
         invoke(src, dst, size);
     }
 
+    void optimize(Function *f) const
+    {
+        while (TheFunctionPassManager->run(*f));
+        TheExtraFunctionPassManager->run(*f);
+    }
+
     jit_unary_kernel_t getKernel(const jit_matrix *src) const
     {
         const QString functionName = mangledName(*src);
         Function *function = TheModule->getFunction(qPrintable(functionName));
-        if (function == NULL) {
-            function = compile(*src);
-            while (TheFunctionPassManager->run(*function));
-            TheExtraFunctionPassManager->run(*function);
-            function = TheModule->getFunction(qPrintable(functionName));
-        }
+        if (function == NULL) function = compile(*src);
         return (jit_unary_kernel_t)TheExecutionEngine->getPointerToFunction(function);
     }
 
@@ -351,6 +352,7 @@ private:
     Function *compile(const jit_matrix &m) const
     {
         Function *kernel = compileKernel(m);
+        optimize(kernel);
 
         Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName()),
                                                      Type::getVoidTy(getGlobalContext()),
@@ -403,6 +405,7 @@ private:
         builder.CreateCall3(builder.CreateLoad(kernelFunction), src, dst, kernelSize);
         builder.CreateRetVoid();
 
+        // optimize(function);
         return kernel;
     }
 
