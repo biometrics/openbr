@@ -4,12 +4,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+namespace jitcv
+{
+
 /*!
  * \brief jitcv matrix
  * \author Josh Klontz \cite jklontz
  * \note Not part of the core SDK
  */
-struct jit_matrix
+struct Matrix
 {
     uint8_t *data; /*!< Data */
     uint32_t channels; /*!< Channels */
@@ -45,9 +48,9 @@ struct jit_matrix
                 f32 = 32 + Floating + Signed,
                 f64 = 64 + Floating + Signed };
 
-    jit_matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
+    Matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
 
-    jit_matrix(uint32_t _channels, uint32_t _columns, uint32_t _rows, uint32_t _frames, uint16_t _hash)
+    Matrix(uint32_t _channels, uint32_t _columns, uint32_t _rows, uint32_t _frames, uint16_t _hash)
         : data(NULL), channels(_channels), columns(_columns), rows(_rows), frames(_frames), hash(_hash)
     {
         setSingleChannel(channels == 1);
@@ -56,7 +59,7 @@ struct jit_matrix
         setSingleFrame(frames == 1);
     }
 
-    inline void copyHeader(const jit_matrix &other) { channels = other.channels; columns = other.columns; rows = other.rows; frames = other.frames; hash = other.hash; }
+    inline void copyHeader(const Matrix &other) { channels = other.channels; columns = other.columns; rows = other.rows; frames = other.frames; hash = other.hash; }
     inline void allocate() { deallocate(); data = new uint8_t[bytes()]; }
     inline void deallocate() { delete[] data; data = NULL; }
 
@@ -80,12 +83,14 @@ struct jit_matrix
     inline uint32_t bytes() const { return bits() / 8 * elements(); }
 };
 
-typedef void (*jit_unary_function_t)(const jit_matrix *src, jit_matrix *dst);
-typedef void (*jit_binary_function_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst);
-typedef void (*jit_unary_kernel_t)(const jit_matrix *src, jit_matrix *dst, uint32_t size);
-typedef void (*jit_binary_kernel_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst, uint32_t size);
+typedef void (*UnaryFunction_t)(const Matrix *src, Matrix *dst);
+typedef void (*BinaryFunction_t)(const Matrix *srcA, const Matrix *srcB, Matrix *dst);
+typedef void (*UnaryKernel_t)(const Matrix *src, Matrix *dst, uint32_t size);
+typedef void (*BinaryKernel_t)(const Matrix *srcA, const Matrix *srcB, Matrix *dst, uint32_t size);
 
-jit_unary_function_t jit_unary_make(const char *description);
-jit_binary_function_t jit_binary_make(const char *description);
+UnaryFunction_t jit_unary_make(const char *description);
+BinaryFunction_t jit_binary_make(const char *description);
+
+}
 
 #endif // __JITCV_H
