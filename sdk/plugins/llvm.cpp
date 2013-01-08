@@ -140,7 +140,7 @@ struct MatrixBuilder : public jit_matrix
         }
 
         std::vector<Value*> mallocArgs;
-        mallocArgs.push_back(elementsCode()); // TODO: FIX
+        mallocArgs.push_back(bytesCode());
         setData(b->CreateCall(malloc, mallocArgs));
     }
 
@@ -165,7 +165,7 @@ struct MatrixBuilder : public jit_matrix
     Value *singleFrameCode() const { return get(SingleFrame); }
     void setSingleFrameCode(bool singleFrame) const { setBit(singleFrame, SingleFrame); }
     Value *elementsCode() const { return b->CreateMul(b->CreateMul(b->CreateMul(getChannels(), getColumns()), getRows()), getFrames()); }
-    Value *bytesCode() const { return b->CreateMul(b->CreateUDiv(bitsCode(), constant(8, 16)), elementsCode()); }
+    Value *bytesCode() const { return b->CreateMul(b->CreateUDiv(b->CreateCast(Instruction::ZExt, bitsCode(), Type::getInt32Ty(getGlobalContext())), constant(8, 32)), elementsCode()); }
 
     Value *columnStep() const { Value *columnStep = getChannels(); columnStep->setName(name+"_cStep"); return columnStep; }
     Value *rowStep() const { return b->CreateMul(getColumns(), columnStep(), name+"_rStep"); }
