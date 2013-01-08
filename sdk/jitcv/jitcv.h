@@ -4,10 +4,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*!
  * \brief jitcv matrix
  * \author Josh Klontz \cite jklontz
@@ -29,7 +25,6 @@ struct jit_matrix
                        Single-row : 1
                        Single-frame : 1 */
 
-#ifdef __cplusplus
     enum Hash { Bits = 0x00FF,
                 Floating = 0x0100,
                 Signed = 0x0200,
@@ -83,25 +78,14 @@ struct jit_matrix
     inline void setSingleFrame(bool singleFrame) { singleFrame ? hash |= SingleFrame : hash &= ~SingleFrame; }
     inline uint32_t elements() const { return channels * columns * rows * frames; }
     inline uint32_t bytes() const { return bits() / 8 * elements(); }
-#endif // __cplusplus
 };
 
-typedef void* jit_unary_kernel;
-typedef void* jit_binary_kernel;
+typedef void (*jit_unary_function_t)(const jit_matrix *src, jit_matrix *dst);
+typedef void (*jit_binary_function_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst);
+typedef void (*jit_unary_kernel_t)(const jit_matrix *src, jit_matrix *dst, uint32_t size);
+typedef void (*jit_binary_kernel_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst, uint32_t size);
 
-jit_unary_kernel jit_unary_make(const char *description);
-jit_binary_kernel jit_binary_make(const char *description);
-
-void jit_unary_apply(const jit_unary_kernel &kernel, const jit_matrix &src, jit_matrix &dst);
-void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &src, jit_matrix &dst);
-
-jit_unary_kernel jit_square();
-
-typedef void (*jit_unary_core_t)(const jit_matrix *src, jit_matrix *dst, uint32_t size);
-typedef void (*jit_binary_core_t)(const jit_matrix *srcA, const jit_matrix *srcB, jit_matrix *dst, uint32_t size);
-
-#ifdef __cplusplus
-}
-#endif
+jit_unary_function_t jit_unary_make(const char *description);
+jit_binary_function_t jit_binary_make(const char *description);
 
 #endif // __JITCV_H

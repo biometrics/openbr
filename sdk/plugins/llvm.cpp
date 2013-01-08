@@ -304,7 +304,7 @@ class UnaryKernel : public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    jit_unary_core_t kernel;
+    jit_unary_kernel_t kernel;
     quint16 hash;
 
 public:
@@ -320,7 +320,7 @@ public:
         invoke(src, dst, size);
     }
 
-    jit_unary_core_t getKernel(const jit_matrix *src) const
+    jit_unary_kernel_t getKernel(const jit_matrix *src) const
     {
         const QString functionName = mangledName(*src);
         Function *function = TheModule->getFunction(qPrintable(functionName));
@@ -330,7 +330,7 @@ public:
             TheExtraFunctionPassManager->run(*function);
             function = TheModule->getFunction(qPrintable(functionName));
         }
-        return (jit_unary_core_t)TheExecutionEngine->getPointerToFunction(function);
+        return (jit_unary_kernel_t)TheExecutionEngine->getPointerToFunction(function);
     }
 
 private:
@@ -475,7 +475,7 @@ class BinaryKernel: public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    jit_binary_core_t kernel;
+    jit_binary_kernel_t kernel;
     quint16 hashA, hashB;
 
 public:
@@ -552,7 +552,7 @@ private:
                     function = TheModule->getFunction(qPrintable(functionName));
                 }
 
-                const_cast<BinaryKernel*>(this)->kernel = (jit_binary_core_t)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<BinaryKernel*>(this)->kernel = (jit_binary_kernel_t)TheExecutionEngine->getPointerToFunction(function);
                 const_cast<BinaryKernel*>(this)->hashA = srcA.hash;
                 const_cast<BinaryKernel*>(this)->hashB = srcB.hash;
             }
@@ -1062,41 +1062,16 @@ class LLVMInitializer : public Initializer
 
 BR_REGISTER(Initializer, LLVMInitializer)
 
-void jit_unary_apply(const jit_unary_kernel &kernel, const jit_matrix &src, jit_matrix &dst)
+jit_unary_function_t jit_unary_make(const char *description)
 {
-    ((UnaryKernel*)kernel)->apply(src, dst);
+    (void) description;
+    return NULL;
 }
 
-void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst)
+jit_binary_function_t jit_binary_make(const char *description)
 {
-    ((BinaryKernel*)kernel)->apply(srcA, srcB, dst);
-}
-
-jit_unary_kernel jit_unary_make(const char *description)
-{
-    static QHash<QString, UnaryKernel*> kernels;
-    if (!kernels.contains(description))
-        kernels.insert(description, dynamic_cast<UnaryKernel*>(Transform::make(description, NULL)));
-    return jit_unary_kernel(kernels[description]);
-}
-
-jit_binary_kernel jit_binary_make(const char *description)
-{
-    static QHash<QString, BinaryKernel*> kernels;
-    if (!kernels.contains(description))
-        kernels.insert(description, dynamic_cast<BinaryKernel*>(Factory<BinaryKernel>::make(description)));
-    return jit_binary_kernel(kernels[description]);
-}
-
-jit_unary_kernel jit_square()
-{
-    static squareTransform transform;
-    return &transform;
-}
-
-jit_unary_core_t jit_compile_unary_core(const void *kernel, const jit_matrix &m)
-{
-    return ((const UnaryKernel*)kernel)->getKernel(&m);
+    (void) description;
+    return NULL;
 }
 
 #include "llvm.moc"
