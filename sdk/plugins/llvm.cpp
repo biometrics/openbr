@@ -144,7 +144,28 @@ struct MatrixBuilder : public jit_matrix
         setData(b->CreateCall(malloc, mallocArgs));
     }
 
+    Value *get(int mask) const { return b->CreateAnd(getHash(), constant(mask, 16)); }
+    void set(int value, int mask) const { setHash(b->CreateOr(b->CreateAnd(getHash(), constant(~mask, 16)), b->CreateAnd(constant(value, 16), constant(mask, 16)))); }
+    void setBit(bool on, int mask) const { on ? setHash(b->CreateOr(getHash(), constant(mask, 16))) : setHash(b->CreateAnd(getHash(), constant(~mask, 16))); }
+
+    Value *bitsCode() const { return get(Bits); }
+    void setBitsCode(int bits) const { set(bits, Bits); }
+    Value *isFloatingCode() const { return get(Floating); }
+    void setFloatingCode(bool isFloating) const { if (isFloating) setSignedCode(true); setBit(isFloating, Floating); }
+    Value *isSignedCode() const { return get(Signed); }
+    void setSignedCode(bool isSigned) const { setBit(isSigned, Signed); }
+    Value *typeCode() const { return get(Bits + Floating + Signed); }
+    void setTypeCode(int type) const { set(type, Bits + Floating + Signed); }
+    Value *singleChannelCode() const { return get(SingleChannel); }
+    void setSingleChannelCode(bool singleChannel) const { setBit(singleChannel, SingleChannel); }
+    Value *singleColumnCode() const { return get(SingleColumn); }
+    void setSingleColumnCode(bool singleColumn) { setBit(singleColumn, SingleColumn); }
+    Value *singleRowCode() const { return get(SingleRow); }
+    void setSingleRowCode(bool singleRow) const { setBit(singleRow, SingleRow); }
+    Value *singleFrameCode() const { return get(SingleFrame); }
+    void setSingleFrameCode(bool singleFrame) const { setBit(singleFrame, SingleFrame); }
     Value *elementsCode() const { return b->CreateMul(b->CreateMul(b->CreateMul(getChannels(), getColumns()), getRows()), getFrames()); }
+    Value *bytesCode() const { return b->CreateMul(b->CreateUDiv(bitsCode(), constant(8, 16)), elementsCode()); }
 
     Value *columnStep() const { Value *columnStep = getChannels(); columnStep->setName(name+"_cStep"); return columnStep; }
     Value *rowStep() const { return b->CreateMul(getColumns(), columnStep(), name+"_rStep"); }
