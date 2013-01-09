@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_qwt_abstract_slider.html" title="An abstract base class for slider widgets." alt="" coords="211,83,336,112"/>
+<area shape="rect" id="node17" href="$class_qwt_counter.html" title="The Counter Widget." alt="" coords="360,83,451,112"/>
+<area shape="rect" id="node5" href="$class_qwt_dial.html" title="QwtDial class provides a rounded range control." alt="" coords="96,160,163,189"/>
+<area shape="rect" id="node11" href="$class_qwt_knob.html" title="The Knob Widget." alt="" coords="187,160,261,189"/>
+<area shape="rect" id="node13" href="$class_qwt_slider.html" title="The Slider Widget." alt="" coords="285,160,363,189"/>
+<area shape="rect" id="node15" href="$class_qwt_wheel.html" title="The Wheel Widget." alt="" coords="387,160,469,189"/>
+<area shape="rect" id="node7" href="$class_qwt_analog_clock.html" title="An analog clock." alt="" coords="5,237,123,267"/>
+<area shape="rect" id="node9" href="$class_qwt_compass.html" title="A Compass Widget." alt="" coords="147,237,245,267"/>
+</map>

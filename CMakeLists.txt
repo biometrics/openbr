@@ -67,7 +67,7 @@ if(${BR_EMBEDDED})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
   set(QT_DEPENDENCIES QtCore)
 else()
-  set(QT_DEPENDENCIES QtCore QtGui QtNetwork QtOpenGL QtSql QtXml)
+  set(QT_DEPENDENCIES QtCore QtGui QtNetwork QtOpenGL QtSql QtSvg QtXml)
 endif()
 
 option(BR_DISTRIBUTED "Target distributed memory models")

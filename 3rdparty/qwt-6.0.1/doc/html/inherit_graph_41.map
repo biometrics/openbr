@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QPointF \&gt;" alt="" coords="5,85,187,115"/>
+<area shape="rect" id="node3" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QPointF \&gt;" alt="" coords="236,5,447,35"/>
+<area shape="rect" id="node7" href="$class_qwt_c_pointer_data.html" title="Data class containing two pointers to memory blocks of doubles." alt="" coords="280,59,403,88"/>
+<area shape="rect" id="node9" href="$class_qwt_point_array_data.html" title="Interface for iterating over two QVector&lt;double&gt; objects." alt="" coords="275,112,408,141"/>
+<area shape="rect" id="node11" href="$class_qwt_synthetic_point_data.html" title="Synthetic point data." alt="" coords="263,165,420,195"/>
+<area shape="rect" id="node5" href="$class_qwt_point_series_data.html" title="Interface for iterating over an array of points." alt="" coords="496,5,635,35"/>
+</map>
