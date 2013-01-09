@@ -129,14 +129,14 @@ struct MatrixBuilder : public Matrix
         setHash(other.getHash());
     }
 
-    void allocate() const {
+    void allocateCode() const {
         Function *malloc = TheModule->getFunction("malloc");
         if (!malloc) {
             PointerType *mallocReturn = Type::getInt8PtrTy(getGlobalContext());
             std::vector<Type*> mallocParams;
             mallocParams.push_back(Type::getInt32Ty(getGlobalContext()));
             FunctionType* mallocType = FunctionType::get(mallocReturn, mallocParams, false);
-            malloc = Function::Create(mallocType, GlobalValue::ExternalLinkage, "malloc");
+            malloc = Function::Create(mallocType, GlobalValue::ExternalLinkage, "malloc", TheModule);
             malloc->setCallingConv(CallingConv::C);
         }
 
@@ -392,7 +392,7 @@ private:
 
         BasicBlock *getKernel = BasicBlock::Create(getGlobalContext(), "get_kernel", function);
         BasicBlock *preallocate = BasicBlock::Create(getGlobalContext(), "preallocate", function);
-        Value *hashTest = builder.CreateICmpNE(mb.getHash(), kernelHash, "hash_fail_test");
+        Value *hashTest = builder.CreateICmpNE(mb.getHash(), builder.CreateLoad(kernelHash), "hash_fail_test");
         builder.CreateCondBr(hashTest, getKernel, preallocate);
 
         builder.SetInsertPoint(getKernel);
@@ -401,12 +401,19 @@ private:
         builder.CreateBr(preallocate);
         builder.SetInsertPoint(preallocate);
         Value *kernelSize = buildPreallocate(mb, nb);
-        nb.allocate();
 
+        BasicBlock *allocate = BasicBlock::Create(getGlobalContext(), "allocate", function);
+        builder.CreateBr(allocate);
+        builder.SetInsertPoint(allocate);
+        nb.allocateCode();
+
+        BasicBlock *callKernel = BasicBlock::Create(getGlobalContext(), "call_kernel", function);
+        builder.CreateBr(callKernel);
+        builder.SetInsertPoint(callKernel);
         builder.CreateCall3(builder.CreateLoad(kernelFunction), src, dst, kernelSize);
         builder.CreateRetVoid();
 
-        // optimize(function);
+        optimize(function);
         return kernel;
     }
 
@@ -991,7 +998,7 @@ class LLVMInitializer : public Initializer
         TheFunctionPassManager->add(createDeadInstEliminationPass());
 
         TheExtraFunctionPassManager = new FunctionPassManager(TheModule);
-//        TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
+        TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
 //        TheExtraFunctionPassManager->add(createLoopUnrollPass(INT_MAX,8));
 
         TheMatrixStruct = StructType::create("Matrix",
@@ -1010,17 +1017,17 @@ class LLVMInitializer : public Initializer
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
     }
 
     void finalize() const
