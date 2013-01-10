@@ -136,6 +136,25 @@ class PipeTransform : public MetaTransform
             Transform::project(src, dst);
         }
     }
+
+    void projectBack(const Template &dst, Template &src) const
+    {
+        src = dst;
+        //reverse order in which transforms are processed
+        int length = transforms.length();
+        //foreach (const Transform *f, transforms) {
+        for (int i = 0; i < length; i++){
+            Transform *f = transforms.at(length - i - 1);
+            try {
+                src >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->name()));
+                src = Template(src.file);
+                src.file.setBool("FTE");
+            }
+        }
+    }
+
 };
 
 BR_REGISTER(Transform, PipeTransform)
@@ -191,6 +210,24 @@ class ChainTransform : public MetaTransform
         for (int i=0; i<transforms.size(); i++) {
             dst >> *transforms[i];
             dst = Simplified(dst);
+        }
+    }
+
+    void projectBack(const Template &dst, Template &src) const
+    {
+        src = dst;
+        //reverse order in which transforms are processed
+        int length = transforms.length();
+        //foreach (const Transform *f, transforms) {
+        for (int i = 0; i < length; i++){
+            Transform *f = transforms.at(length - i - 1);
+            try {
+                src >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->name()));
+                src = Template(src.file);
+                src.file.setBool("FTE");
+            }
         }
     }
 };

@@ -133,7 +133,15 @@ struct AlgorithmCore
                 if (data.isEmpty()) break;
                 const int numFiles = data.size();
 
-                data >> *transform;
+                if (!Globals->backProject){
+                    data >> *transform;
+                } else {
+                    // I don't really know if this makes sense.
+                    //TemplateList dst;
+                    transform->backProject(data, data);
+                    //data = dst;
+                }
+
                 g->writeBlock(data);
                 const FileList newFiles = data.files();
                 fileList.append(newFiles);
