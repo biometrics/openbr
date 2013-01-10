@@ -208,4 +208,31 @@ class RemoveTransform : public UntrainableMetaTransform
 BR_REGISTER(Transform, RemoveTransform)
 //! [example_transform]
 
+/*!
+ * \ingroup transforms
+ * \brief Rename metadata
+ * \author Josh Klontz \cite jklontz
+ */
+class RenameTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString find READ get_find WRITE set_find RESET reset_find STORED false)
+    Q_PROPERTY(QString replace READ get_replace WRITE set_replace RESET reset_replace STORED false)
+    BR_PROPERTY(QString, find, "")
+    BR_PROPERTY(QString, replace, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        foreach (const QString &key, dst.file.localKeys())
+            if (key.contains(find)) {
+                QString newKey = QString(key).replace(find, replace);
+                dst.file.insert(newKey, dst.file.get(key));
+                dst.file.remove(key);
+            }
+    }
+};
+
+BR_REGISTER(Transform, RenameTransform)
+
 #include "misc.moc"
