@@ -2,8 +2,6 @@ if(NOT ${BR_EMBEDDED})
   include_directories(.)
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-  find_package(Qwt REQUIRED)
-
   file(GLOB SRC *.cpp)
   file(GLOB HEADERS *.h)
   qt4_add_resources(ICONS icons/icons.qrc) # Don't forget to modify initialize.cpp
