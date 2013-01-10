@@ -240,7 +240,8 @@ void br_train(const char *input, const char *model)
 
 void br_train_n(int num_inputs, const char *inputs[], const char *model)
 {
-    Train(QtUtils::toStringList(num_inputs, inputs).join(";"), model);
+    if (num_inputs > 1) Train(QtUtils::toStringList(num_inputs, inputs).join(";")+"(separator=;)", File(model));
+    else                Train(File(inputs[0]), model);
 }
 
 const char *br_version()
