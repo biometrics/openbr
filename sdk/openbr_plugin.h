@@ -703,6 +703,7 @@ protected:
 
         const QString abstraction = baseClassName();
         if (name.endsWith(abstraction)) name = name.left(name.size()-abstraction.size());
+        if (name.startsWith("br::")) name = name.right(name.size()-4);
         if (registry->contains(name)) qFatal("%s registry already contains object named: %s", qPrintable(abstraction), qPrintable(name));
         registry->insert(name, this);
     }
