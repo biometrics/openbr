@@ -124,18 +124,6 @@ if(${BR_BUILD_DOCUMENTATION})
   add_custom_target(doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/share/openbr/MBGC_file_overview.pdf ${CMAKE_CURRENT_BINARY_DIR}/html/MBGC_file_overview.pdf COPYONLY)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION .)
-
-
-  option(BR_BUILD_DOCUMENTATION_PDF "Build PDF Documentation")
-  if(${BR_BUILD_DOCUMENTATION_PDF})
-    include(${BR_SHARE_DIR}/cmake/UseLATEX.cmake)
-    add_custom_command(OUTPUT latex/refman.aux DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.tex COMMAND ${PDFLATEX_COMPILER} refman WORKING_DIRECTORY latex)
-    add_custom_command(OUTPUT latex/refman.bbl DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.aux COMMAND ${BIBTEX_COMPILER} refman WORKING_DIRECTORY latex)
-    add_custom_command(OUTPUT latex/refman.dvi DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.bbl COMMAND ${PDFLATEX_COMPILER} refman WORKING_DIRECTORY latex)
-    add_custom_command(OUTPUT latex/refman.log DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.bbl latex/refman.dvi COMMAND ${PDFLATEX_COMPILER} refman WORKING_DIRECTORY latex)
-    add_custom_target(doc_pdf ALL echo DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/refman.log doc) # Trigger latex build process
-    install(FILES ${CMAKE_BINARY_DIR}/latex/refman.pdf DESTINATION .)
-  endif()
 endif()
 
 # Install
