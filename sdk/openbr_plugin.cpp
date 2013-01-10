@@ -606,6 +606,7 @@ br::Context::Context()
     quiet = verbose = false;
     currentStep = totalSteps = 0;
     enrollAll = false;
+    backProject = false;
 }
 
 int br::Context::blocks(int size) const
@@ -1046,6 +1047,8 @@ private:
         }
     }
 
+
+
     void store(QDataStream &stream) const
     {
         const int size = transforms.size();
@@ -1153,6 +1156,12 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
         else                                                      _project (this, &src[i], &dst[i]);
     if (Globals->parallelism) Globals->trackFutures(futures);
 }
+
+void Transform::backProject(const Template &dst, Template &src) const
+{
+    src = dst;
+}
+
 
 /* Distance - public methods */
 void Distance::train(const TemplateList &templates)
