@@ -1,0 +1,4 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$class_qwt_compass_rose.html" title="Abstract base class for a compass rose." alt="" coords="5,5,136,35"/>
+<area shape="rect" id="node3" href="$class_qwt_simple_compass_rose.html" title="A simple rose for QwtCompass." alt="" coords="184,5,355,35"/>
+</map>

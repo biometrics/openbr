@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$class_qwt_plot_raster_item.html" title="A class, which displays raster data." alt="" coords="21,160,152,189"/>
+<area shape="rect" id="node4" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="40,83,133,112"/>
+<area shape="rect" id="node6" href="$class_qwt_legend_item_manager.html" title="Abstract API to bind plot items to the legend." alt="" coords="5,5,168,35"/>
+</map>

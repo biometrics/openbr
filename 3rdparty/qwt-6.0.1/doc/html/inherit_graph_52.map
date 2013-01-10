@@ -1,0 +1,4 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$class_qwt_text_label.html" title="A Widget which displays a QwtText." alt="" coords="7,5,105,35"/>
+<area shape="rect" id="node3" href="$class_qwt_legend_item.html" title="A widget representing something on a QwtLegend()." alt="" coords="155,5,267,35"/>
+</map>

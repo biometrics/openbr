@@ -1,0 +1,18 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_qwt_array_series_data.html" title="Template class for data, that is organized as QVector." alt="" coords="363,156,533,185"/>
+<area shape="rect" id="node21" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="328,73,568,103"/>
+<area shape="rect" id="node24" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QPointF \&gt;" alt="" coords="357,323,539,352"/>
+<area shape="rect" id="node33" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtSetSample \&gt;" alt="" coords="339,239,557,268"/>
+<area shape="rect" id="node36" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtPoint3D \&gt;" alt="" coords="347,5,549,35"/>
+<area shape="rect" id="node5" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="751,113,1020,143"/>
+<area shape="rect" id="node9" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QPointF \&gt;" alt="" coords="780,248,991,277"/>
+<area shape="rect" id="node13" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QwtPoint3D \&gt;" alt="" coords="769,29,1001,59"/>
+<area shape="rect" id="node17" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QwtSetSample \&gt;" alt="" coords="760,176,1011,205"/>
+<area shape="rect" id="node7" href="$class_qwt_interval_series_data.html" title="Interface for iterating over an array of intervals." alt="" coords="1075,113,1224,143"/>
+<area shape="rect" id="node11" href="$class_qwt_point_series_data.html" title="Interface for iterating over an array of points." alt="" coords="1080,248,1219,277"/>
+<area shape="rect" id="node15" href="$class_qwt_point3_d_series_data.html" title="Interface for iterating over an array of 3D points." alt="" coords="1072,29,1227,59"/>
+<area shape="rect" id="node19" href="$class_qwt_set_series_data.html" title="Interface for iterating over an array of samples." alt="" coords="1085,176,1213,205"/>
+<area shape="rect" id="node27" href="$class_qwt_c_pointer_data.html" title="Data class containing two pointers to memory blocks of doubles." alt="" coords="824,365,947,395"/>
+<area shape="rect" id="node29" href="$class_qwt_point_array_data.html" title="Interface for iterating over two QVector&lt;double&gt; objects." alt="" coords="819,419,952,448"/>
+<area shape="rect" id="node31" href="$class_qwt_synthetic_point_data.html" title="Synthetic point data." alt="" coords="807,312,964,341"/>
+</map>

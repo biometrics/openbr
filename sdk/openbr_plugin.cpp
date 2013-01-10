@@ -121,6 +121,11 @@ float File::label() const
     return Globals->classes.value(variant.toString(), -1);
 }
 
+void File::remove(const QString &key)
+{
+    m_metadata.remove(key);
+}
+
 void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_qwt_compass_magnet_needle.html" title="A magnet needle for compass widgets." alt="" coords="5,83,187,112"/>
+<area shape="rect" id="node5" href="$class_qwt_compass_wind_arrow.html" title="An indicator for the wind direction." alt="" coords="211,83,373,112"/>
+<area shape="rect" id="node7" href="$class_qwt_dial_simple_needle.html" title="A needle for dial widgets." alt="" coords="397,83,544,112"/>
+</map>
