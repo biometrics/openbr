@@ -868,6 +868,7 @@ void MatrixOutput::initialize(const FileList &targetFiles, const FileList &query
     data.create(queryFiles.size(), targetFiles.size(), CV_32FC1);
 }
 
+/* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
     if (targetFiles[column] == "Label")
@@ -880,6 +881,8 @@ void MatrixOutput::set(float value, int i, int j)
 {
     data.at<float>(i,j) = value;
 }
+
+BR_REGISTER(Output, MatrixOutput)
 
 /* Gallery - public methods */
 TemplateList Gallery::read()
@@ -1164,7 +1167,7 @@ void Distance::train(const TemplateList &templates)
 {
     const TemplateList samples = templates.mid(0, 2000);
     const QList<float> sampleLabels = samples.labels<float>();
-    QSharedPointer<MatrixOutput> memoryOutput((MatrixOutput*)Output::make("Matrix", FileList(samples.size()), FileList(samples.size())));
+    QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
     compare(samples, samples, memoryOutput.data());
 
     double genuineAccumulator, impostorAccumulator;
