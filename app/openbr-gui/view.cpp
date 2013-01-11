@@ -1,5 +1,7 @@
 #include "view.h"
 
+using namespace br;
+
 /**** VIEW ****/
 /*** PUBLIC ***/
 View::View(QWidget *parent)

@@ -1,0 +1,19 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$class_qwt_legend_item_manager.html" title="Abstract API to bind plot items to the legend." alt="" coords="5,219,168,248"/>
+<area shape="rect" id="node3" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="216,219,309,248"/>
+<area shape="rect" id="node5" href="$class_qwt_plot_abstract_series_item.html" title="Base class for plot items representing a series of samples." alt="" coords="357,85,536,115"/>
+<area shape="rect" id="node23" href="$class_qwt_plot_grid.html" title="A class which draws a coordinate grid." alt="" coords="401,139,492,168"/>
+<area shape="rect" id="node25" href="$class_qwt_plot_marker.html" title="A class for drawing markers." alt="" coords="393,192,500,221"/>
+<area shape="rect" id="node27" href="$class_qwt_plot_raster_item.html" title="A class, which displays raster data." alt="" coords="381,245,512,275"/>
+<area shape="rect" id="node31" href="$class_qwt_plot_scale_item.html" title="A class which draws a scale inside the plot canvas." alt="" coords="384,299,509,328"/>
+<area shape="rect" id="node33" href="$class_qwt_plot_svg_item.html" title="A plot item, which displays data in Scalable Vector Graphics (SVG) format." alt="" coords="389,352,504,381"/>
+<area shape="rect" id="node7" href="$class_qwt_plot_series_item.html" title="Class template for plot items representing a series of samples." alt="" coords="635,5,795,35"/>
+<area shape="rect" id="node9" href="$class_qwt_plot_series_item.html" title="QwtPlotSeriesItem\&lt; QPointF \&gt;" alt="" coords="613,59,816,88"/>
+<area shape="rect" id="node13" href="$class_qwt_plot_series_item.html" title="QwtPlotSeriesItem\&lt; QwtIntervalSample \&gt;" alt="" coords="584,112,845,141"/>
+<area shape="rect" id="node19" href="$class_qwt_plot_series_item.html" title="QwtPlotSeriesItem\&lt; QwtPoint3D \&gt;" alt="" coords="604,165,825,195"/>
+<area shape="rect" id="node11" href="$class_qwt_plot_curve.html" title="A plot item, that represents a series of points." alt="" coords="917,32,1016,61"/>
+<area shape="rect" id="node15" href="$class_qwt_plot_histogram.html" title="QwtPlotHistogram represents a series of samples, where an interval is associated with a value ( &#160;)..." alt="" coords="904,85,1029,115"/>
+<area shape="rect" id="node17" href="$class_qwt_plot_interval_curve.html" title="QwtPlotIntervalCurve represents a series of samples, where each value is associated with an interval ..." alt="" coords="897,139,1036,168"/>
+<area shape="rect" id="node21" href="$class_qwt_plot_spectro_curve.html" title="Curve that displays 3D points as dots, where the z coordinate is mapped to a color." alt="" coords="895,192,1039,221"/>
+<area shape="rect" id="node29" href="$class_qwt_plot_spectrogram.html" title="A plot item, which displays a spectrogram." alt="" coords="644,245,785,275"/>
+</map>

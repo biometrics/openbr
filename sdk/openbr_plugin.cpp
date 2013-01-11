@@ -84,7 +84,7 @@ QList<File> File::split() const
 QList<File> File::split(const QString &separator) const
 {
     QList<File> files;
-    foreach (const QString &word, name.split(separator)) {
+    foreach (const QString &word, name.split(separator, QString::SkipEmptyParts)) {
         File file(word);
         file.append(m_metadata);
         files.append(file);
@@ -119,6 +119,11 @@ float File::label() const
     }
 
     return Globals->classes.value(variant.toString(), -1);
+}
+
+void File::remove(const QString &key)
+{
+    m_metadata.remove(key);
 }
 
 void File::set(const QString &key, const QVariant &value)
@@ -368,25 +373,25 @@ TemplateList TemplateList::fromInput(const br::File &input)
 {
     TemplateList templates;
 
-    int z = 0;
-
     foreach (const br::File &file, input.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
+        // Propogate metadata
+        for (int i=0; i<newTemplates.size(); i++) {
+            newTemplates[i].file.append(input.localMetadata());
+            newTemplates[i].file.append(file.localMetadata());
+            newTemplates[i].file.insert("Input_Index", i+templates.size());
+        }
+
         if (!templates.isEmpty() && input.getBool("merge")) {
-            if (newTemplates.size() != templates.size()) qFatal("Inputs must be the same size in order to merge.");
+            if (newTemplates.size() != templates.size())
+                qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
                 templates[i].merge(newTemplates[i]);
         } else {
-            templates+=newTemplates;
+            templates += newTemplates;
         }
-        z+=1;
-    }
-
-    for (int i=0; i<templates.size(); i++) {
-        templates[i].file.append(input.localMetadata());
-        templates[i].file.insert("Input_Index", i);
     }
 
     return templates;
@@ -863,6 +868,7 @@ void MatrixOutput::initialize(const FileList &targetFiles, const FileList &query
     data.create(queryFiles.size(), targetFiles.size(), CV_32FC1);
 }
 
+/* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
     if (targetFiles[column] == "Label")
@@ -875,6 +881,8 @@ void MatrixOutput::set(float value, int i, int j)
 {
     data.at<float>(i,j) = value;
 }
+
+BR_REGISTER(Output, MatrixOutput)
 
 /* Gallery - public methods */
 TemplateList Gallery::read()
@@ -1159,7 +1167,7 @@ void Distance::train(const TemplateList &templates)
 {
     const TemplateList samples = templates.mid(0, 2000);
     const QList<float> sampleLabels = samples.labels<float>();
-    QSharedPointer<MatrixOutput> memoryOutput((MatrixOutput*)Output::make("Matrix", FileList(samples.size()), FileList(samples.size())));
+    QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
     compare(samples, samples, memoryOutput.data());
 
     double genuineAccumulator, impostorAccumulator;

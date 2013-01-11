@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="5,5,245,35"/>
+<area shape="rect" id="node3" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="295,5,564,35"/>
+<area shape="rect" id="node5" href="$class_qwt_interval_series_data.html" title="Interface for iterating over an array of intervals." alt="" coords="613,5,763,35"/>
+</map>

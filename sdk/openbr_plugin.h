@@ -186,6 +186,7 @@ struct BR_EXPORT File
     inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
     inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
+    void remove(const QString &key); /*!< \brief Remove the metadata key. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     QVariant get(const QString &key) const; /*!< \brief Returns a QVariant for the key, throwing an error if the key does not exist. */
     QVariant get(const QString &key, const QVariant &value) const; /*!< \brief Returns a QVariant for the key, returning \em defaultValue if the key does not exist. */
@@ -702,6 +703,7 @@ protected:
 
         const QString abstraction = baseClassName();
         if (name.endsWith(abstraction)) name = name.left(name.size()-abstraction.size());
+        if (name.startsWith("br::")) name = name.right(name.size()-4);
         if (registry->contains(name)) qFatal("%s registry already contains object named: %s", qPrintable(abstraction), qPrintable(name));
         registry->insert(name, this);
     }

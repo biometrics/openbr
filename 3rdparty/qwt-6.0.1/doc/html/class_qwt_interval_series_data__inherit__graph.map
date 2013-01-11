@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="59,197,328,227"/>
+<area shape="rect" id="node4" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtIntervalSample \&gt;" alt="" coords="5,101,245,131"/>
+<area shape="rect" id="node6" href="$class_qwt_series_data.html" title="Abstract interface for iterating over samples." alt="" coords="180,5,319,35"/>
+<area shape="rect" id="node8" href="$class_qwt_array_series_data.html" title="Template class for data, that is organized as QVector." alt="" coords="269,101,440,131"/>
+</map>
