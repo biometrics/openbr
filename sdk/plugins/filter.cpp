@@ -153,6 +153,7 @@ class CSDN : public UntrainableTransform
             }
         }
 
+     m.convertTo(m, CV_8UC1);
      dst = m;
 
     }
