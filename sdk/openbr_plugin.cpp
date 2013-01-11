@@ -84,7 +84,7 @@ QList<File> File::split() const
 QList<File> File::split(const QString &separator) const
 {
     QList<File> files;
-    foreach (const QString &word, name.split(separator)) {
+    foreach (const QString &word, name.split(separator, QString::SkipEmptyParts)) {
         File file(word);
         file.append(m_metadata);
         files.append(file);
@@ -373,25 +373,25 @@ TemplateList TemplateList::fromInput(const br::File &input)
 {
     TemplateList templates;
 
-    int z = 0;
-
     foreach (const br::File &file, input.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
+        // Propogate metadata
+        for (int i=0; i<newTemplates.size(); i++) {
+            newTemplates[i].file.append(input.localMetadata());
+            newTemplates[i].file.append(file.localMetadata());
+            newTemplates[i].file.insert("Input_Index", i+templates.size());
+        }
+
         if (!templates.isEmpty() && input.getBool("merge")) {
-            if (newTemplates.size() != templates.size()) qFatal("Inputs must be the same size in order to merge.");
+            if (newTemplates.size() != templates.size())
+                qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
                 templates[i].merge(newTemplates[i]);
         } else {
-            templates+=newTemplates;
+            templates += newTemplates;
         }
-        z+=1;
-    }
-
-    for (int i=0; i<templates.size(); i++) {
-        templates[i].file.append(input.localMetadata());
-        templates[i].file.insert("Input_Index", i);
     }
 
     return templates;
