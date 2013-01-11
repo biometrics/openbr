@@ -244,6 +244,7 @@ BR_REGISTER(Transform, DFFS)
 /*!
  * \ingroup transforms
  * \brief Projects input into learned Linear Discriminant Analysis subspace.
+ * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  */
 class LDA : public Transform
