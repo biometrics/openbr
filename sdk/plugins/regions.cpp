@@ -79,23 +79,27 @@ BR_REGISTER(Transform, ByRow)
 class Cat : public UntrainableMetaTransform
 {
     Q_OBJECT
+    Q_PROPERTY(int partitions READ get_partitions WRITE set_partitions RESET reset_partitions)
+    BR_PROPERTY(int, partitions, 1)
 
     void project(const Template &src, Template &dst) const
     {
-        int vals = 0;
-        foreach (const cv::Mat &m, src)
-            vals += m.total() * m.channels();
-
-        Mat cat(1, (int)vals, CV_32FC1);
-        int offset = 0;
-        foreach (const cv::Mat &m, src) {
-            size_t size = m.total() * m.elemSize();
-            memcpy(&cat.data[offset], m.ptr(), size);
-            offset += size;
-        }
-
         dst.file = src.file;
-        dst = cat;
+
+        QVector<int> sizes(partitions, 0);
+        for (int i=0; i<src.size(); i++)
+            sizes[i%partitions] += src[i].total() * src[i].channels();
+
+        foreach (int size, sizes)
+            dst.append(Mat(1, size, CV_32FC1));
+
+        QVector<int> offsets(partitions, 0);
+        for (int i=0; i<src.size(); i++) {
+            size_t size = src[i].total() * src[i].elemSize();
+            int j = i%partitions;
+            memcpy(&dst[j].data[offsets[j]], src[i].ptr(), size);
+            offsets[j] += size;
+        }
     }
 };
 
