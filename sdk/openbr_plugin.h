@@ -488,8 +488,14 @@ public:
     /*!
      * \brief Keys to use when matching templates to automatically determine non-match based on template metadata.
      */
-    Q_PROPERTY(QStringList demographicFilters READ get_demographicFilters WRITE set_demographicFilters)
+    Q_PROPERTY(QStringList demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
     BR_PROPERTY(QStringList, demographicFilters, QStringList())
+
+    /*!
+     * \brief Allowable age difference when matching templates.
+     */
+    Q_PROPERTY(float ageDelta READ get_ageDelta WRITE set_ageDelta RESET reset_ageDelta)
+    BR_PROPERTY(float, ageDelta, std::numeric_limits<float>::max())
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */

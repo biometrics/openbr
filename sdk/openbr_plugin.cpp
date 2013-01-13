@@ -1256,6 +1256,13 @@ float Distance::compare(const Template &target, const Template &query) const
         }
     }
 
+    if (Globals->ageDelta < std::numeric_limits<float>::max()) {
+        const float targetAge = target.file.getFloat("Age", -1);
+        const float queryAge = target.file.getFloat("Age", -1);
+        if ((targetAge != -1) && (queryAge != -1) && (abs(targetAge - queryAge) > Globals->ageDelta))
+            return -std::numeric_limits<float>::max();
+    }
+
     return a * (_compare(target, query) - b);
 }
 
