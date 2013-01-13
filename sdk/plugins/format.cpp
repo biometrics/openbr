@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QDate>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -177,6 +178,15 @@ class xmlFormat : public Format
                 fileNode = fileNode.nextSibling();
             }
             subject = subject.nextSibling();
+        }
+
+        // Calculate age
+        if (t.file.contains("DOB")) {
+            const QDate dob = QDate::fromString(t.file.getString("DOB").left(10), "yyyy-MM-dd");
+            const QDate current = QDate::currentDate();
+            int age = current.year() - dob.year();
+            if (current.month() < dob.month()) age--;
+            t.file.insert("Age", age);
         }
 
         return t;
