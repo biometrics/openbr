@@ -330,10 +330,14 @@ class LoadStoreTransform : public MetaTransform
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     BR_PROPERTY(QString, description, "Identity")
-    Transform *transform = NULL;
 
+    Transform *transform;
     QString baseName;
 
+public:
+    LoadStoreTransform() : transform(NULL) {}
+
+private:
     void init()
     {
         if (transform != NULL) return;
