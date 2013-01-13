@@ -377,6 +377,10 @@ TemplateList TemplateList::fromInput(const br::File &input)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
+        // If input is a Format not a Gallery
+        if (newTemplates.isEmpty())
+            newTemplates.append(input);
+
         // Propogate metadata
         for (int i=0; i<newTemplates.size(); i++) {
             newTemplates[i].file.append(input.localMetadata());
