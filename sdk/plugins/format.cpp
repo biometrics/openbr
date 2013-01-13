@@ -165,6 +165,13 @@ class xmlFormat : public Format
                     Mat m = imdecode(Mat(1, byteArray.size(), CV_8UC1, byteArray.data()), CV_LOAD_IMAGE_ANYDEPTH);
                     if (!m.data) qWarning("xmlFormat::read failed to decode image data.");
                     t.append(m);
+                } else if ((e.tagName() == "RELEASE_IMG") ||
+                           (e.tagName() == "PREBOOK_IMG") ||
+                           (e.tagName() == "LPROFILE") ||
+                           (e.tagName() == "RPROFILE")) {
+                    // Ignore these other image fields for now
+                } else {
+                    t.file.insert(e.tagName(), e.text());
                 }
 
                 fileNode = fileNode.nextSibling();
