@@ -1040,7 +1040,7 @@ public:
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
     virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
-    inline float compare(const Template &target, const Template &query) const { return a * (_compare(target, query) - b); } /*!< \brief Compute the normalized distance between two templates. */
+    float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;

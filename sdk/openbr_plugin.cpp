@@ -1238,6 +1238,22 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
     if (Globals->parallelism) Globals->trackFutures(futures);
 }
 
+float Distance::compare(const Template &target, const Template &query) const
+{
+    if (!Globals->demographicFilters.isEmpty()) {
+        // The if statement is a faster check then iterating over an empty list of filters
+        foreach (const QString &filter, Globals->demographicFilters) {
+            const QString targetMetadata = target.file.getString(filter, "");
+            const QString queryMetadata = query.file.getString(filter, "");
+            if (targetMetadata.isEmpty() || queryMetadata.isEmpty()) continue;
+            if (targetMetadata != queryMetadata) return -std::numeric_limits<float>::max();
+        }
+    }
+
+    return a * (_compare(target, query) - b);
+}
+
+/* Distance - private methods */
 void Distance::compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const
 {
     for (int i=0; i<query.size(); i++)
