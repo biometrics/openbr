@@ -90,6 +90,27 @@ BR_REGISTER(Transform, ShowTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Prints the template's file to stdout or stderr.
+ * \author Josh Klontz \cite jklontz
+ */
+class PrintTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(bool stdout READ get_stdout WRITE set_stdout RESET reset_stdout)
+    BR_PROPERTY(bool, stdout, true)
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (stdout) printf("%s\n", qPrintable(src.file.flat()));
+        else        qDebug("%s\n", qPrintable(src.file.flat()));
+    }
+};
+
+BR_REGISTER(Transform, PrintTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Sets the template's matrix data to the br::File::name.
  * \author Josh Klontz \cite jklontz
  */
