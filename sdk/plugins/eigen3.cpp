@@ -276,10 +276,10 @@ class LDA : public Transform
 
         int dimsIn = ldaTrainingSet.first().m().rows * ldaTrainingSet.first().m().cols;
 
-        // MM ensures that classes values range from 0 to numClasses-1.
-        QList<float> classes = trainingSet.labels<float>(); // PCA doesn't project metadata
+        // OpenBR ensures that class values range from 0 to numClasses-1.
+        QList<int> classes = trainingSet.labels<int>();
         QMap<int, int> classCounts = trainingSet.labelCounts();
-        int numClasses = classCounts.size();
+        const int numClasses = classCounts.size();
 
         // Map Eigen into OpenCV
         Eigen::MatrixXd data = Eigen::MatrixXd(dimsIn, instances);

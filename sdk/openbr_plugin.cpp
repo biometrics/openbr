@@ -112,13 +112,12 @@ float File::label() const
     const QVariant variant = value("Label");
     if (variant.isNull()) return -1;
 
-    if (variant.canConvert(QVariant::Double)) {
-        bool ok;
-        float val = variant.toFloat(&ok);
-        if (ok) return val;
-    }
+    if (Globals->classes.contains(variant.toString()))
+        return Globals->classes.value(variant.toString());
 
-    return Globals->classes.value(variant.toString(), -1);
+    bool ok;
+    const float val = variant.toFloat(&ok);
+    return ok ? val : -1;
 }
 
 void File::remove(const QString &key)
