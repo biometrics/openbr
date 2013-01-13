@@ -329,9 +329,8 @@ class LoadStoreTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
-    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     BR_PROPERTY(QString, description, "Identity")
-    BR_PROPERTY(br::Transform*, transform, NULL)
+    Transform *transform = NULL;
 
     QString baseName;
 
@@ -354,7 +353,7 @@ class LoadStoreTransform : public MetaTransform
         QDataStream stream(&byteArray, QFile::WriteOnly);
         stream << description;
         transform->store(stream);
-        QtUtils::writeFile(getFileName(), byteArray);
+        QtUtils::writeFile(baseName, byteArray);
     }
 
     void project(const Template &src, Template &dst) const
@@ -369,6 +368,7 @@ class LoadStoreTransform : public MetaTransform
 
     QString getFileName() const
     {
+        if (QFileInfo(baseName).exists()) return baseName;
         const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
         return QFileInfo(file).exists() ? file : QString();
     }
