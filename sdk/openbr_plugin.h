@@ -821,9 +821,9 @@ private:
 
 /*!
  * \ingroup formats
- * \brief Plugin base class for reading matrices from disk.
+ * \brief Plugin base class for reading a template from disk.
  *
- * A \em format is a br::File representing a matrix (ex. jpg image) on disk.
+ * A \em format is a br::File representing a template (ex. jpg image) on disk.
  * br::File::suffix() is used to determine which plugin should handle the format.
  */
 class BR_EXPORT Format : public Object
@@ -832,7 +832,7 @@ class BR_EXPORT Format : public Object
 
 public:
     virtual ~Format() {}
-    virtual QList<cv::Mat> read() const = 0; /*!< \brief Returns a list of matrices created by reading #br::Object::file. */
+    virtual Template read() const = 0; /*!< \brief Returns a br::Template created by reading #br::Object::file. */
 };
 
 /*!

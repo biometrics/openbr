@@ -34,18 +34,15 @@ class OpenTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
-        bool fto = false;
+        dst.file = src.file;
         foreach (const File &file, src.file.split()) {
             QScopedPointer<Format> format(Factory<Format>::make(file));
-            QList<Mat> mats = format->read();
-            if (mats.isEmpty()) {
-                qWarning("Can't open %s", qPrintable(file.flat()));
-                fto = true;
-            }
-            dst += mats;
+            Template t = format->read();
+            if (t.isEmpty()) qWarning("Can't open %s", qPrintable(file.flat()));
+            dst.append(t);
+            dst.file.append(t.file.localMetadata());
         }
-        dst.file = src.file;
-        dst.file.insert("FTO", fto);
+        dst.file.insert("FTO", dst.isEmpty());
     }
 };
 
