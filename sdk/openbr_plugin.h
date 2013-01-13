@@ -485,6 +485,12 @@ public:
     Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(bool, enrollAll, false)
 
+    /*!
+     * \brief Keys to use when matching templates to automatically determine non-match based on template metadata.
+     */
+    Q_PROPERTY(QStringList demographicFilters READ get_demographicFilters WRITE set_demographicFilters)
+    BR_PROPERTY(QStringList, demographicFilters, QStringList())
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */

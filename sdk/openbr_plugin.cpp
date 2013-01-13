@@ -455,6 +455,8 @@ QString Object::argument(int index) const
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
         return variant.value<Transform*>()->description();
+    } else if (type == "QStringList") {
+        return "[" + variant.toStringList().join(",") + "]";
     }
 
     return variant.toString();
@@ -488,6 +490,10 @@ void Object::store(QDataStream &stream) const
             stream << property.read(this).toFloat();
         } else if (type == "double") {
             stream << property.read(this).toDouble();
+        } else if (type == "QString") {
+            stream << property.read(this).toString();
+        } else if (type == "QStringList") {
+            stream << property.read(this).toStringList();
         } else {
             qFatal("Can't serialize value of type: %s", qPrintable(type));
         }
@@ -522,6 +528,14 @@ void Object::load(QDataStream &stream)
             property.write(this, value);
         } else if (type == "double") {
             double value;
+            stream >> value;
+            property.write(this, value);
+        } else if (type == "QString") {
+            QString value;
+            stream >> value;
+            property.write(this, value);
+        } else if (type == "QStringList") {
+            QStringList value;
             stream >> value;
             property.write(this, value);
         } else {
@@ -564,6 +578,8 @@ void Object::setProperty(const QString &name, const QString &value)
         }
     } else if (type == "br::Transform*") {
         variant.setValue(Transform::make(value, this));
+    } else if (type == "QStringList") {
+        variant.setValue(parse(value.mid(1, value.size()-2)));
     } else if (type == "bool") {
         if      (value.isEmpty())  variant = true;
         else if (value == "false") variant = false;
