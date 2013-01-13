@@ -17,6 +17,7 @@
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QtXml>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
 #include <openbr_plugin.h>
@@ -133,5 +134,53 @@ class webcamFormat : public Format
 };
 
 BR_REGISTER(Format, webcamFormat)
+
+#ifndef BR_EMBEDDED
+/*!
+ * \ingroup formats
+ * \brief Decodes images from Base64 xml
+ * \author Scott Klum \cite sklum
+ * \author Josh Klontz \cite jklontz
+ */
+class xmlFormat : public Format
+{
+    Q_OBJECT
+
+    QList<Mat> read() const
+    {
+        QDomDocument doc(file);
+        QFile f(file);
+        bool success;
+        success = f.open(QIODevice::ReadOnly); if (!success) qFatal("xmlFormat::read unable to open %s for reading.", qPrintable(file));
+        success = doc.setContent(&f);          if (!success) qFatal("xmlFormat::read unable to parse %s.", qPrintable(file));
+        f.close();
+
+        QList<Mat> mats;
+        QDomElement docElem = doc.documentElement();
+        QDomNode subject = docElem.firstChild();
+        while (!subject.isNull()) {
+            QDomNode fileNode = subject.firstChild();
+
+            while (!fileNode.isNull()) {
+                QDomElement e = fileNode.toElement();
+
+                if (e.tagName() == "FORMAL_IMG") {
+                    QByteArray byteArray = QByteArray::fromBase64(qPrintable(e.text()));
+                    Mat m = imdecode(Mat(1, byteArray.size(), CV_8UC1, byteArray.data()), CV_LOAD_IMAGE_ANYDEPTH);
+                    if (!m.data) qWarning("xmlFormat::read failed to decode image data.");
+                    mats.append(m);
+                }
+
+                fileNode = fileNode.nextSibling();
+            }
+            subject = subject.nextSibling();
+        }
+
+        return mats;
+    }
+};
+
+BR_REGISTER(Format, xmlFormat)
+#endif // BR_EMBEDDED
 
 #include "format.moc"
