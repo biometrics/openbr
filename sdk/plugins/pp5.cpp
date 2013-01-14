@@ -38,7 +38,7 @@ class PP5Initializer : public Initializer
 
     void initialize() const
     {
-        TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/models/pp5/"), my_license_id, my_license_key))
+        TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
         Globals->abbreviations.insert("PP5","Open+PP5Enroll!Identity:PP5Compare");
     }
 
@@ -257,7 +257,7 @@ class PP5Compare : public Distance
 
     float _compare(const Template &target, const Template &query) const
     {
-        qDebug("PP5Compare: _compare should never be called");
+        qFatal("PP5Compare: _compare should never be called");
         return 0;
     }
 
