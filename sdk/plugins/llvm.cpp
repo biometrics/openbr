@@ -65,6 +65,22 @@ static Matrix MatrixFromMat(const cv::Mat &mat)
     return m;
 }
 
+static Mat MatFromMatrix(const Matrix &m)
+{
+    int depth = -1;
+    switch (m.type()) {
+      case Matrix::u8:  depth = CV_8U;  break;
+      case Matrix::s8:  depth = CV_8S;  break;
+      case Matrix::u16: depth = CV_16U; break;
+      case Matrix::s16: depth = CV_16S; break;
+      case Matrix::s32: depth = CV_32S; break;
+      case Matrix::f32: depth = CV_32F; break;
+      case Matrix::f64: depth = CV_64F; break;
+      default:     qFatal("Unrecognized matrix depth.");
+    }
+    return Mat(m.rows, m.columns, CV_MAKETYPE(depth, m.channels), m.data).clone();
+}
+
 static void AllocateMatrixFromMat(Matrix &m, cv::Mat &mat)
 {
     int cvType = -1;
