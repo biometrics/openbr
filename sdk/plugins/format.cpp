@@ -23,6 +23,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <openbr_plugin.h>
 
+#include "core/bee.h"
+
 using namespace br;
 using namespace cv;
 
@@ -120,6 +122,50 @@ class DefaultFormat : public Format
 };
 
 BR_REGISTER(Format, DefaultFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads a NIST BEE similarity matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class mtxFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        return BEE::readSimmat(file);
+    }
+
+    void write(const Template &t) const
+    {
+        BEE::writeSimmat(t, file);
+    }
+};
+
+BR_REGISTER(Format, mtxFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads a NIST BEE mask matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class maskFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        return BEE::readMask(file);
+    }
+
+    void write(const Template &t) const
+    {
+        BEE::writeMask(t, file);
+    }
+};
+
+BR_REGISTER(Format, maskFormat)
 
 /*!
  * \ingroup formats
