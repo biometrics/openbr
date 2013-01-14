@@ -123,11 +123,9 @@ BR_EXPORT void br_confusion(const char *file, float score,
                             int *true_positives, int *false_positives, int *true_negatives, int *false_negatives);
 
 /*!
- * \brief Converts a <i>.csv</i> file to/from a \ref simmat or \ref mask.
- * \param input_matrix The input matrix.
- * \param output_matrix The output matrix.
+ * \brief Wraps br::Convert()
  */
-BR_EXPORT void br_convert(const char *input_matrix, const char *output_matrix);
+BR_EXPORT void br_convert(const char *input, const char *output);
 
 /*!
  * \brief Constructs template(s) from an input.

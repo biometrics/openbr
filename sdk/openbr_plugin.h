@@ -1080,6 +1080,13 @@ BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
 
+/*!
+ * \brief To convert between matrix/template formats.
+ * \param input The input matrix or template.
+ * \param output The output matrix or template.
+ */
+BR_EXPORT void Convert(const File &input, const File &output);
+
 /*! @}*/
 
 } // namespace br

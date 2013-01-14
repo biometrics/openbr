@@ -46,12 +46,15 @@ class csvFormat : public Format
         QStringList lines(QString(f.readAll()).split('\n'));
         f.close();
 
+        bool isUChar = true;
         QList< QList<float> > valsList;
         foreach (const QString &line, lines) {
             QList<float> vals;
             foreach (const QString &word, line.split(QRegExp(" *, *"))) {
                 bool ok;
-                vals.append(word.toFloat(&ok)); assert(ok);
+                const float val = word.toFloat(&ok);
+                vals.append(val);
+                isUChar = isUChar && (val == float(uchar(val)));
             }
             valsList.append(vals);
         }
@@ -65,6 +68,7 @@ class csvFormat : public Format
             }
         }
 
+        if (isUChar) m.convertTo(m, CV_8U);
         return Template(m);
     }
 

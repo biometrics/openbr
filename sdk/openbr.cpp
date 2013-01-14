@@ -51,17 +51,9 @@ void br_confusion(const char *file, float score, int *true_positives, int *false
     return Confusion(file, score, *true_positives, *false_positives, *true_negatives, *false_negatives);
 }
 
-void br_convert(const char *input_matrix, const char *output_matrix)
+void br_convert(const char *input, const char *output)
 {
-    QString inputSuffix = QFileInfo(input_matrix).suffix();
-    QString outputSuffix = QFileInfo(output_matrix).suffix();
-    if (inputSuffix == "csv") {
-        if (outputSuffix == "mtx") BEE::CSVToSimmat(input_matrix, output_matrix);
-        else                       BEE::CSVToMask(input_matrix, output_matrix);
-    } else {
-        if (inputSuffix == "mtx") BEE::simmatToCSV(input_matrix, output_matrix);
-        else                      BEE::maskToCSV(input_matrix, output_matrix);
-    }
+    Convert(File(input), File(output));
 }
 
 void br_enroll(const char *input, const char *gallery)
