@@ -428,23 +428,23 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
 
     RPlot p(files, destination);
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
-                            (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
-                            (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
-                            QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
-                            (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
-                            (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
-                            QString(" + scale_x_continuous(trans=\"log10\") + scale_y_continuous(trans=\"log10\")") +
-                            QString("\nggsave(\"%1\")\n").arg(p.subfile("DET"))));
-
     p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET, geom=\"line\"") +
                             (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
                             (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
-                            QString(" + scale_x_continuous(trans=\"log10\") + scale_y_continuous(labels=percent)") +
+                            QString(" + scale_x_log10() + scale_y_continuous(labels=percent)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("ROC"))));
+
+    p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
+                            (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
+                            (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
+                            QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
+                            (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
+                            (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
+                            QString(" + scale_x_log10() + scale_y_log10()") +
+                            QString("\nggsave(\"%1\")\n").arg(p.subfile("DET"))));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score%1\"").arg((p.flip ? p.majorSize : p.minorSize) > 1 ? " / " + (p.flip ? p.majorHeader : p.minorHeader) : QString()) +
