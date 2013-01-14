@@ -845,6 +845,7 @@ class BR_EXPORT Format : public Object
 public:
     virtual ~Format() {}
     virtual Template read() const = 0; /*!< \brief Returns a br::Template created by reading #br::Object::file. */
+    virtual void write(const Template &t) const = 0; /*!< \brief Writes the br::Template to #br::Object::file. */
 };
 
 /*!
@@ -1078,6 +1079,13 @@ BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
  * \see br_compare
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
+
+/*!
+ * \brief To convert between matrix/template formats.
+ * \param input The input matrix or template.
+ * \param output The output matrix or template.
+ */
+BR_EXPORT void Convert(const File &input, const File &output);
 
 /*! @}*/
 

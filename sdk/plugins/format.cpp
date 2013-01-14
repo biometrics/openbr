@@ -23,6 +23,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <openbr_plugin.h>
 
+#include "core/bee.h"
+#include "core/opencvutils.h"
+#include "core/qtutils.h"
+
 using namespace br;
 using namespace cv;
 
@@ -42,12 +46,15 @@ class csvFormat : public Format
         QStringList lines(QString(f.readAll()).split('\n'));
         f.close();
 
+        bool isUChar = true;
         QList< QList<float> > valsList;
         foreach (const QString &line, lines) {
             QList<float> vals;
             foreach (const QString &word, line.split(QRegExp(" *, *"))) {
                 bool ok;
-                vals.append(word.toFloat(&ok)); assert(ok);
+                const float val = word.toFloat(&ok);
+                vals.append(val);
+                isUChar = isUChar && (val == float(uchar(val)));
             }
             valsList.append(vals);
         }
@@ -61,7 +68,25 @@ class csvFormat : public Format
             }
         }
 
+        if (isUChar) m.convertTo(m, CV_8U);
         return Template(m);
+    }
+
+    void write(const Template &t) const
+    {
+        const Mat &m = t.m();
+        if (t.size() != 1) qFatal("csvFormat::write only supports single matrix templates.");
+        if (m.channels() != 1) qFatal("csvFormat::write only supports single channel matrices.");
+
+        QStringList lines; lines.reserve(m.rows);
+        for (int r=0; r<m.rows; r++) {
+            QStringList elements; elements.reserve(m.cols);
+            for (int c=0; c<m.cols; c++)
+                elements.append(OpenCVUtils::elemToString(m, r, c));
+            lines.append(elements.join(","));
+        }
+
+        QtUtils::writeFile(file, lines);
     }
 };
 
@@ -105,9 +130,58 @@ class DefaultFormat : public Format
 
         return t;
     }
+
+    void write(const Template &t) const
+    {
+        imwrite(file.name.toStdString(), t);
+    }
 };
 
 BR_REGISTER(Format, DefaultFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads a NIST BEE similarity matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class mtxFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        return BEE::readSimmat(file);
+    }
+
+    void write(const Template &t) const
+    {
+        BEE::writeSimmat(t, file);
+    }
+};
+
+BR_REGISTER(Format, mtxFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads a NIST BEE mask matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class maskFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        return BEE::readMask(file);
+    }
+
+    void write(const Template &t) const
+    {
+        BEE::writeMask(t, file);
+    }
+};
+
+BR_REGISTER(Format, maskFormat)
 
 /*!
  * \ingroup formats
@@ -128,6 +202,12 @@ class webcamFormat : public Format
         Mat m;
         videoCapture->read(m);
         return Template(m);
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("webcamFormat::write not supported.");
     }
 };
 
@@ -190,6 +270,12 @@ class xmlFormat : public Format
         }
 
         return t;
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("xmlFormat::write not supported.");
     }
 };
 

@@ -44,12 +44,6 @@ namespace BEE
     void writeSimmat(const cv::Mat &m, const QString &simmat, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
     void writeMask(const cv::Mat &m, const QString &mask, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
 
-    // CSV IO
-    void simmatToCSV(const QString &simmat, const QString &csv);
-    void maskToCSV(const QString &mask, const QString &csv);
-    void CSVToSimmat(const QString &csv, const QString &simmat);
-    void CSVToMask(const QString &csv, const QString &mask);
-
     // Write BEE files
     void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
     void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);

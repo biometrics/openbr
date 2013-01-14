@@ -225,64 +225,6 @@ void BEE::writeMask(const Mat &m, const QString &mask, const QString &targetSigs
     writeMatrix<Mask_t>(m, mask, targetSigset, querySigset);
 }
 
-template <typename T>
-void matrixToCSV(const QString &matrix, const QString &csv)
-{
-    qDebug("Converting %s to %s", qPrintable(matrix), qPrintable(csv));
-
-    QFile out(csv);
-    out.open(QFile::WriteOnly);
-
-    Mat m = readMatrix<T>(matrix);
-    for (int i=0; i<m.rows; i++) {
-        for (int j=0; j<m.cols; j++) {
-            out.write(qPrintable(QString::number(m.at<T>(i,j))));
-            out.write(",");
-        }
-        out.write("\n");
-    }
-}
-
-void BEE::simmatToCSV(const QString &simmat, const QString &csv)
-{
-    matrixToCSV<Simmat_t>(simmat, csv);
-}
-
-void BEE::maskToCSV(const QString &mask, const QString &csv)
-{
-    matrixToCSV<Mask_t>(mask, csv);
-}
-
-template <typename T>
-void CSVToMatrix(const QString &csv, const QString &matrix)
-{
-    qDebug("Converting %s to %s", qPrintable(csv), qPrintable(matrix));
-
-    QStringList lines = QtUtils::readLines(csv);
-    Mat m(lines.size(), lines.first().split(",", QString::SkipEmptyParts).size(), OpenCVType<T,1>::make());
-
-    for (int i=0; i<lines.size(); i++) {
-        const QStringList &words = lines[i].split(",", QString::SkipEmptyParts);
-        for (int j=0; j<words.size(); j++) {
-            bool ok;
-            m.at<T>(i, j) = words[j].toFloat(&ok);
-            if (!ok) qFatal("bee.cpp::CSVToMatrix failed to convert %s to floating point format.", qPrintable(words[j]));
-        }
-    }
-
-    writeMatrix<T>(m, matrix, "Unknown_Target", "Unknown_Query");
-}
-
-void BEE::CSVToSimmat(const QString &csv, const QString &simmat)
-{
-    CSVToMatrix<Simmat_t>(csv, simmat);
-}
-
-void BEE::CSVToMask(const QString &csv, const QString &mask)
-{
-    CSVToMatrix<Mask_t>(csv, mask);
-}
-
 void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));

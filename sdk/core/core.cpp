@@ -305,6 +305,13 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.getString("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
+void br::Convert(const File &src, const File &dst)
+{
+    QScopedPointer<Format> before(Factory<Format>::make(src));
+    QScopedPointer<Format> after(Factory<Format>::make(dst));
+    after->write(before->read());
+}
+
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm)
 {
     return AlgorithmManager::getAlgorithm(algorithm)->transform;
