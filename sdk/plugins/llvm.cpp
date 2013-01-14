@@ -65,6 +65,22 @@ static Matrix MatrixFromMat(const cv::Mat &mat)
     return m;
 }
 
+static Mat MatFromMatrix(const Matrix &m)
+{
+    int depth = -1;
+    switch (m.type()) {
+      case Matrix::u8:  depth = CV_8U;  break;
+      case Matrix::s8:  depth = CV_8S;  break;
+      case Matrix::u16: depth = CV_16U; break;
+      case Matrix::s16: depth = CV_16S; break;
+      case Matrix::s32: depth = CV_32S; break;
+      case Matrix::f32: depth = CV_32F; break;
+      case Matrix::f64: depth = CV_64F; break;
+      default:     qFatal("Unrecognized matrix depth.");
+    }
+    return Mat(m.rows, m.columns, CV_MAKETYPE(depth, m.channels), m.data).clone();
+}
+
 static void AllocateMatrixFromMat(Matrix &m, cv::Mat &mat)
 {
     int cvType = -1;
@@ -230,26 +246,29 @@ struct MatrixBuilder : public Matrix
     Value *compareLT(Value *i, Value *j) const { return isFloating() ? b->CreateFCmpOLT(i, j) : (isSigned() ? b->CreateICmpSLT(i, j) : b->CreateICmpULT(i, j)); }
     Value *compareGT(Value *i, Value *j) const { return isFloating() ? b->CreateFCmpOGT(i, j) : (isSigned() ? b->CreateICmpSGT(i, j) : b->CreateICmpUGT(i, j)); }
 
-    static PHINode *beginLoop(IRBuilder<> &builder, Function *function, BasicBlock *parent, BasicBlock **current, const Twine &name = "") {
-        *current = BasicBlock::Create(getGlobalContext(), "loop_"+name, function);
-        builder.CreateBr(*current);
-        builder.SetInsertPoint(*current);
-        PHINode *j = builder.CreatePHI(Type::getInt32Ty(getGlobalContext()), 2, name);
-        j->addIncoming(MatrixBuilder::zero(), parent);
-        return j;
-    }
-    PHINode *beginLoop(BasicBlock *parent, BasicBlock **current, const Twine &name = "") const { return beginLoop(*b, f, parent, current, name); }
-    static void endLoop(IRBuilder<> &builder, Function *function, BasicBlock *current, PHINode *j, Value *end, const Twine &name = "") {
-        BasicBlock *loop = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_end", function);
+    static PHINode *beginLoop(IRBuilder<> &builder, Function *function, BasicBlock *entry, BasicBlock *&loop, BasicBlock *&exit, Value *stop, const Twine &name = "") {
+        loop = BasicBlock::Create(getGlobalContext(), "loop_"+name, function);
         builder.CreateBr(loop);
         builder.SetInsertPoint(loop);
-        Value *increment = builder.CreateAdd(j, MatrixBuilder::one(), "increment_"+name);
-        j->addIncoming(increment, loop);
-        BasicBlock *exit = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_exit", function);
-        builder.CreateCondBr(builder.CreateICmpNE(increment, end, "loop_"+name+"_test"), current, exit);
+
+        PHINode *i = builder.CreatePHI(Type::getInt32Ty(getGlobalContext()), 2, name);
+        i->addIncoming(MatrixBuilder::zero(), entry);
+        Value *increment = builder.CreateAdd(i, MatrixBuilder::one(), "increment_"+name);
+        BasicBlock *body = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_body", function);
+        i->addIncoming(increment, body);
+
+        exit = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_exit", function);
+        builder.CreateCondBr(builder.CreateICmpEQ(i, stop, "loop_"+name+"_test"), exit, body);
+        builder.SetInsertPoint(body);
+        return i;
+    }
+    PHINode *beginLoop(BasicBlock *entry, BasicBlock *&loop, BasicBlock *&exit, Value *stop, const Twine &name = "") const { return beginLoop(*b, f, entry, loop, exit, stop, name); }
+
+    static void endLoop(IRBuilder<> &builder, BasicBlock *loop, BasicBlock *exit) {
+        builder.CreateBr(loop);
         builder.SetInsertPoint(exit);
     }
-    void endLoop(BasicBlock *current, PHINode *j, Value *end, const Twine &name = "") const { endLoop(*b, f, current, j, end, name); }
+    void endLoop(BasicBlock *loop, BasicBlock *exit) const { endLoop(*b, loop, exit); }
 
     template <typename T>
     inline static std::vector<T> toVector(T value) { std::vector<T> vector; vector.push_back(value); return vector; }
@@ -440,14 +459,14 @@ private:
         BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
         IRBuilder<> builder(entry);
 
-        BasicBlock *kernel;
-        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, &kernel, "i");
+        BasicBlock *loop, *exit;
+        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, loop, exit, len, "i");
 
         Matrix n;
         preallocate(m, n);
         build(MatrixBuilder(m, src, &builder, function, "src"), MatrixBuilder(n, dst, &builder, function, "dst"), i);
 
-        MatrixBuilder::endLoop(builder, function, kernel, i, len, "i");
+        MatrixBuilder::endLoop(builder, loop, exit);
 
         builder.CreateRetVoid();
         return function;
@@ -533,14 +552,14 @@ private:
         BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
         IRBuilder<> builder(entry);
 
-        BasicBlock *kernel;
-        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, &kernel, "i");
+        BasicBlock *loop, *exit;
+        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, loop, exit, len, "i");
 
         Matrix o;
         preallocate(m, n, o);
         build(MatrixBuilder(m, srcA, &builder, function, "srcA"), MatrixBuilder(n, srcB, &builder, function, "srcB"), MatrixBuilder(o, dst, &builder, function, "dst"), i);
 
-        MatrixBuilder::endLoop(builder, function, kernel, i, len, "i");
+        MatrixBuilder::endLoop(builder, loop, exit);
 
         builder.CreateRetVoid();
         return function;
@@ -744,53 +763,52 @@ class sumTransform : public UnaryKernel
         dst.deindex(i, &c, &x, &y, &t);
         AllocaInst *sum = dst.autoAlloca(0, "sum");
 
-        QList<PHINode*> loops;
-        QList<BasicBlock*> blocks;
-        blocks.push_back(i->getParent());
+        QList<BasicBlock*> loops, exits;
+        loops.push_back(i->getParent());
         Value *src_c, *src_x, *src_y, *src_t;
 
         if (frames && !src.singleFrame()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_t"));
-            blocks.append(block);
-            src_t = loops.last();
+            BasicBlock *loop, *exit;
+            src_t = dst.beginLoop(loops.last(), loop, exit, src.getFrames(), "src_t");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_t = t;
         }
 
         if (rows && !src.singleRow()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_y"));
-            blocks.append(block);
-            src_y = loops.last();
+            BasicBlock *loop, *exit;
+            src_y = dst.beginLoop(loops.last(), loop, exit, src.getRows(), "src_y");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_y = y;
         }
 
         if (columns && !src.singleColumn()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_x"));
-            blocks.append(block);
-            src_x = loops.last();
+            BasicBlock *loop, *exit;
+            src_x = dst.beginLoop(loops.last(), loop, exit, src.getColumns(), "src_x");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_x = x;
         }
 
         if (channels && !src.singleChannel()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_c"));
-            blocks.append(block);
-            src_c = loops.last();
+            BasicBlock *loop, *exit;
+            src_c = dst.beginLoop(loops.last(), loop, exit, src.getChannels(), "src_c");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_c = c;
         }
 
         dst.b->CreateStore(dst.add(dst.b->CreateLoad(sum), src.cast(src.load(src.aliasIndex(dst, src_c, src_x, src_y, src_t)), dst), "accumulate"), sum);
 
-        if (channels && !src.singleChannel()) dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getChannels(), "src_c");
-        if (columns && !src.singleColumn())   dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getColumns(), "src_x");
-        if (rows && !src.singleRow())         dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getRows(), "src_y");
-        if (frames && !src.singleFrame())     dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getFrames(), "src_t");
+        if (channels && !src.singleChannel()) dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (columns && !src.singleColumn())   dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (rows && !src.singleRow())         dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (frames && !src.singleFrame())     dst.endLoop(loops.takeLast(), exits.takeLast());
 
         dst.store(i, dst.b->CreateLoad(sum));
     }

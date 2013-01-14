@@ -112,13 +112,12 @@ float File::label() const
     const QVariant variant = value("Label");
     if (variant.isNull()) return -1;
 
-    if (variant.canConvert(QVariant::Double)) {
-        bool ok;
-        float val = variant.toFloat(&ok);
-        if (ok) return val;
-    }
+    if (Globals->classes.contains(variant.toString()))
+        return Globals->classes.value(variant.toString());
 
-    return Globals->classes.value(variant.toString(), -1);
+    bool ok;
+    const float val = variant.toFloat(&ok);
+    return ok ? val : -1;
 }
 
 void File::remove(const QString &key)
@@ -130,10 +129,17 @@ void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
         bool ok = false;
-        if (value.canConvert(QVariant::Double))
+        const QString valueString = value.toString();
+
+        /* We assume that if the value starts with '0'
+           then it was probably intended to to be a string UID
+           and that it's numerical value is not relevant. */
+        if (value.canConvert(QVariant::Double) &&
+            (!valueString.startsWith('0') || (valueString == "0")))
             value.toFloat(&ok);
-        if (!ok && !Globals->classes.contains(value.toString()))
-            Globals->classes.insert(value.toString(), Globals->classes.size());
+
+        if (!ok && !Globals->classes.contains(valueString))
+            Globals->classes.insert(valueString, Globals->classes.size());
     }
 
     m_metadata.insert(key, value);
@@ -377,6 +383,10 @@ TemplateList TemplateList::fromInput(const br::File &input)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
+        // If input is a Format not a Gallery
+        if (newTemplates.isEmpty())
+            newTemplates.append(input);
+
         // Propogate metadata
         for (int i=0; i<newTemplates.size(); i++) {
             newTemplates[i].file.append(input.localMetadata());
@@ -451,6 +461,8 @@ QString Object::argument(int index) const
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
         return variant.value<Transform*>()->description();
+    } else if (type == "QStringList") {
+        return "[" + variant.toStringList().join(",") + "]";
     }
 
     return variant.toString();
@@ -484,6 +496,10 @@ void Object::store(QDataStream &stream) const
             stream << property.read(this).toFloat();
         } else if (type == "double") {
             stream << property.read(this).toDouble();
+        } else if (type == "QString") {
+            stream << property.read(this).toString();
+        } else if (type == "QStringList") {
+            stream << property.read(this).toStringList();
         } else {
             qFatal("Can't serialize value of type: %s", qPrintable(type));
         }
@@ -518,6 +534,14 @@ void Object::load(QDataStream &stream)
             property.write(this, value);
         } else if (type == "double") {
             double value;
+            stream >> value;
+            property.write(this, value);
+        } else if (type == "QString") {
+            QString value;
+            stream >> value;
+            property.write(this, value);
+        } else if (type == "QStringList") {
+            QStringList value;
             stream >> value;
             property.write(this, value);
         } else {
@@ -560,6 +584,8 @@ void Object::setProperty(const QString &name, const QString &value)
         }
     } else if (type == "br::Transform*") {
         variant.setValue(Transform::make(value, this));
+    } else if (type == "QStringList") {
+        variant.setValue(parse(value.mid(1, value.size()-2)));
     } else if (type == "bool") {
         if      (value.isEmpty())  variant = true;
         else if (value == "false") variant = false;
@@ -1218,6 +1244,29 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
     if (Globals->parallelism) Globals->trackFutures(futures);
 }
 
+float Distance::compare(const Template &target, const Template &query) const
+{
+    if (!Globals->demographicFilters.isEmpty()) {
+        // The if statement is a faster check then iterating over an empty list of filters
+        foreach (const QString &filter, Globals->demographicFilters) {
+            const QString targetMetadata = target.file.getString(filter, "");
+            const QString queryMetadata = query.file.getString(filter, "");
+            if (targetMetadata.isEmpty() || queryMetadata.isEmpty()) continue;
+            if (targetMetadata != queryMetadata) return -std::numeric_limits<float>::max();
+        }
+    }
+
+    if (Globals->ageDelta < std::numeric_limits<float>::max()) {
+        const float targetAge = target.file.getFloat("Age", -1);
+        const float queryAge = target.file.getFloat("Age", -1);
+        if ((targetAge != -1) && (queryAge != -1) && (abs(targetAge - queryAge) > Globals->ageDelta))
+            return -std::numeric_limits<float>::max();
+    }
+
+    return a * (_compare(target, query) - b);
+}
+
+/* Distance - private methods */
 void Distance::compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const
 {
     for (int i=0; i<query.size(); i++)

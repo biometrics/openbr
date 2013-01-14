@@ -47,6 +47,9 @@ FileList BEE::readSigset(QString sigset, bool ignoreMetadata)
     file.close();
 
     QDomElement docElem = doc.documentElement();
+    if (docElem.nodeName() != "biometric-signature-set")
+        return fileList;
+
     QDomNode subject = docElem.firstChild();
     while (!subject.isNull()) {
         // Looping through subjects
