@@ -450,6 +450,13 @@ public:
     BR_PROPERTY(int, parallelism, 0)
 
     /*!
+     * \brief true if backProject should be used instead of project (the algorithm should be inverted)
+     */
+    Q_PROPERTY(bool backProject READ get_backProject WRITE set_backProject RESET reset_backProject)
+    BR_PROPERTY(bool, backProject, false)
+
+
+    /*!
      * \brief If \c true no messages will be sent to the terminal, \c false by default.
      */
     Q_PROPERTY(bool quiet READ get_quiet WRITE set_quiet RESET reset_quiet)
@@ -920,6 +927,8 @@ public:
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
+    virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
+    virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
     /*!
      * \brief Convenience function equivalent to project().
@@ -945,6 +954,7 @@ public:
 protected:
     Transform(bool independent = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
+
 };
 
 /*!
@@ -1011,6 +1021,7 @@ private:
     void load(QDataStream &stream) { (void) stream; }
 };
 
+
 /*!
  * \brief A br::MetaTransform that does not require training data.
  */
@@ -1058,7 +1069,7 @@ private:
 * \brief Returns \c true if the algorithm is a classifier, \c false otherwise.
 *
 * Classifers have no br::Distance associated with their br::Transform.
-* Instead they populate br::Template::file \c Label metadata fielf with the predicted class.
+* Instead they populate br::Template::file \c Label metadata field with the predicted class.
 */
 BR_EXPORT bool IsClassifier(const QString &algorithm);
 

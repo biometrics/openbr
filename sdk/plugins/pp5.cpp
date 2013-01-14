@@ -11,9 +11,9 @@
 #include <pittpatt_raw_image_io.h>
 #include <pittpatt_sdk.h>
 #include <pittpatt_license.h>
-#include <mm_plugin.h>
+#include <openbr_plugin.h>
 
-#include "common/resource.h"
+#include "core/resource.h"
 
 #define TRY(CC)                                                                                               \
 {                                                                                                             \
@@ -30,7 +30,15 @@
     if ((CC) != PPR_RAW_IMAGE_SUCCESS) qFatal("%d error (%s, %d): %s.", CC, __FILE__, __LINE__, ppr_raw_image_error_message(CC)); \
 }
 
-using namespace mm;
+using namespace br;
+
+
+/*!
+ * \ingroup initializers
+ * \brief Initialize PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
 
 class PP5Initializer : public Initializer
 {
@@ -38,8 +46,8 @@ class PP5Initializer : public Initializer
 
     void initialize() const
     {
-        TRY(ppr_initialize_sdk(qPrintable(Globals->SDKPath + "/models/pp5/"), my_license_id, my_license_key))
-        Globals->Abbreviations.insert("PP5","Open+PP5Enroll!Identity:PP5Compare");
+        TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
+        Globals->abbreviations.insert("PP5","Open+PP5Enroll!Identity:PP5Compare");
     }
 
     void finalize() const
@@ -48,7 +56,13 @@ class PP5Initializer : public Initializer
     }
 };
 
-MM_REGISTER(Initializer, PP5Initializer, "")
+BR_REGISTER(Initializer, PP5Initializer)
+
+/*!
+ * \brief PP5 context
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
 
 struct PP5Context
 {
@@ -194,11 +208,19 @@ struct PP5Context
     }
 };
 
-class PP5Enroll : public UntrainableFeature
+
+/*!
+ * \ingroup transforms
+ * \brief Enroll faces in PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
+
+class PP5Enroll : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly)
-    MM_MEMBER(bool, detectOnly)
+    BR_PROPERTY(bool, detectOnly, false)
     Resource<PP5Context> contexts;
 
     void project(const Template &src, Template &dst) const
@@ -245,12 +267,28 @@ class PP5Enroll : public UntrainableFeature
     }
 };
 
-MM_REGISTER(Feature, PP5Enroll, "bool detectOnly = 0")
+BR_REGISTER(Transform, PP5Enroll)
 
-class PP5Compare : public Comparer
+
+
+/*!
+ * \ingroup distances
+ * \brief Compare templates with PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
+
+class PP5Compare : public Distance
                  , public PP5Context
 {
     Q_OBJECT
+
+
+    float _compare(const Template &target, const Template &query) const
+    {
+        qFatal("PP5Compare: _compare should never be called");
+        return 0;
+    }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
     {
@@ -274,7 +312,7 @@ class PP5Compare : public Comparer
                 if ((query_face_id != -1) && (target_face_id != -1)) {
                     TRY(ppr_get_face_similarity_score(context, similarity_matrix, query_face_id, target_face_id, &score))
                 }
-                output->setData(score, i, j);
+                output->setRelative(score, i, j);
             }
         }
 
@@ -301,6 +339,8 @@ class PP5Compare : public Comparer
     }
 };
 
-MM_REGISTER(Comparer, PP5Compare, "")
+BR_REGISTER(Distance, PP5Compare)
+
+
 
 #include "plugins/pp5.moc"
