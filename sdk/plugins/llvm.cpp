@@ -25,6 +25,7 @@
 
 using namespace br;
 using namespace cv;
+using namespace jitcv;
 using namespace llvm;
 
 static Module *TheModule = NULL;
@@ -33,15 +34,15 @@ static FunctionPassManager *TheFunctionPassManager = NULL;
 static FunctionPassManager *TheExtraFunctionPassManager = NULL;
 static StructType *TheMatrixStruct = NULL;
 
-static QString MatrixToString(const jit_matrix &m)
+static QString MatrixToString(const Matrix &m)
 {
     return QString("%1%2%3%4%5%6%7").arg(QString::number(m.bits()), (m.isSigned() ? "s" : "u"), (m.isFloating() ? "f" : "i"),
                                          QString::number(m.singleChannel()), QString::number(m.singleColumn()), QString::number(m.singleRow()), QString::number(m.singleFrame()));
 }
 
-static jit_matrix MatrixFromMat(const cv::Mat &mat)
+static Matrix MatrixFromMat(const cv::Mat &mat)
 {
-    jit_matrix m;
+    Matrix m;
 
     if (!mat.isContinuous()) qFatal("Matrix requires continuous data.");
     m.channels = mat.channels();
@@ -50,13 +51,13 @@ static jit_matrix MatrixFromMat(const cv::Mat &mat)
     m.frames = 1;
 
     switch (mat.depth()) {
-      case CV_8U:  m.hash = jit_matrix::u8;  break;
-      case CV_8S:  m.hash = jit_matrix::s8;  break;
-      case CV_16U: m.hash = jit_matrix::u16; break;
-      case CV_16S: m.hash = jit_matrix::s16; break;
-      case CV_32S: m.hash = jit_matrix::s32; break;
-      case CV_32F: m.hash = jit_matrix::f32; break;
-      case CV_64F: m.hash = jit_matrix::f64; break;
+      case CV_8U:  m.hash = Matrix::u8;  break;
+      case CV_8S:  m.hash = Matrix::s8;  break;
+      case CV_16U: m.hash = Matrix::u16; break;
+      case CV_16S: m.hash = Matrix::s16; break;
+      case CV_32S: m.hash = Matrix::s32; break;
+      case CV_32F: m.hash = Matrix::f32; break;
+      case CV_64F: m.hash = Matrix::f64; break;
       default:     qFatal("Unrecognized matrix depth.");
     }
 
@@ -64,17 +65,33 @@ static jit_matrix MatrixFromMat(const cv::Mat &mat)
     return m;
 }
 
-static void AllocateMatrixFromMat(jit_matrix &m, cv::Mat &mat)
+static Mat MatFromMatrix(const Matrix &m)
+{
+    int depth = -1;
+    switch (m.type()) {
+      case Matrix::u8:  depth = CV_8U;  break;
+      case Matrix::s8:  depth = CV_8S;  break;
+      case Matrix::u16: depth = CV_16U; break;
+      case Matrix::s16: depth = CV_16S; break;
+      case Matrix::s32: depth = CV_32S; break;
+      case Matrix::f32: depth = CV_32F; break;
+      case Matrix::f64: depth = CV_64F; break;
+      default:     qFatal("Unrecognized matrix depth.");
+    }
+    return Mat(m.rows, m.columns, CV_MAKETYPE(depth, m.channels), m.data).clone();
+}
+
+static void AllocateMatrixFromMat(Matrix &m, cv::Mat &mat)
 {
     int cvType = -1;
     switch (m.type()) {
-      case jit_matrix::u8:  cvType = CV_8U; break;
-      case jit_matrix::s8:  cvType = CV_8S; break;
-      case jit_matrix::u16: cvType = CV_16U; break;
-      case jit_matrix::s16: cvType = CV_16S; break;
-      case jit_matrix::s32: cvType = CV_32S; break;
-      case jit_matrix::f32: cvType = CV_32F; break;
-      case jit_matrix::f64: cvType = CV_64F; break;
+      case Matrix::u8:  cvType = CV_8U; break;
+      case Matrix::s8:  cvType = CV_8S; break;
+      case Matrix::u16: cvType = CV_16U; break;
+      case Matrix::s16: cvType = CV_16S; break;
+      case Matrix::s32: cvType = CV_32S; break;
+      case Matrix::f32: cvType = CV_32F; break;
+      case Matrix::f64: cvType = CV_64F; break;
       default:          qFatal("OpenCV does not support Matrix format: %s", qPrintable(MatrixToString(m)));
     }
 
@@ -83,35 +100,89 @@ static void AllocateMatrixFromMat(jit_matrix &m, cv::Mat &mat)
     m.data = mat.data;
 }
 
-QDebug operator<<(QDebug dbg, const jit_matrix &m)
+QDebug operator<<(QDebug dbg, const Matrix &m)
 {
     dbg.nospace() << MatrixToString(m);
     return dbg;
 }
 
-struct MatrixBuilder : public jit_matrix
+struct MatrixBuilder : public Matrix
 {
     Value *m;
     IRBuilder<> *b;
     Function *f;
     Twine name;
 
-    MatrixBuilder(const jit_matrix &matrix, Value *value, IRBuilder<> *builder, Function *function, const Twine &name_)
-        : jit_matrix(matrix), m(value), b(builder), f(function), name(name_) {}
+    MatrixBuilder(const Matrix &matrix, Value *value, IRBuilder<> *builder, Function *function, const Twine &name_)
+        : Matrix(matrix), m(value), b(builder), f(function), name(name_) {}
 
-    static Value *zero() { return constant(0); }
-    static Value *one() { return constant(1); }
-    static Value *constant(int value, int bits = 32) { return Constant::getIntegerValue(Type::getInt32Ty(getGlobalContext()), APInt(bits, value)); }
-    static Value *constant(float value) { return ConstantFP::get(Type::getFloatTy(getGlobalContext()), value == 0 ? -0.0f : value); }
-    static Value *constant(double value) { return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), value == 0 ? -0.0 : value); }
-    Value *autoConstant(double value) const { return isFloating() ? ((bits() == 64) ? constant(value) : constant(float(value))) : constant(int(value), bits()); }
+    static Constant *zero() { return constant(0); }
+    static Constant *one() { return constant(1); }
+    static Constant *constant(int value, int bits = 32) { return Constant::getIntegerValue(Type::getInt32Ty(getGlobalContext()), APInt(bits, value)); }
+    static Constant *constant(float value) { return ConstantFP::get(Type::getFloatTy(getGlobalContext()), value == 0 ? -0.0f : value); }
+    static Constant *constant(double value) { return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), value == 0 ? -0.0 : value); }
+    Constant *autoConstant(double value) const { return isFloating() ? ((bits() == 64) ? constant(value) : constant(float(value))) : constant(int(value), bits()); }
     AllocaInst *autoAlloca(double value, const Twine &name = "") const { AllocaInst *alloca = b->CreateAlloca(ty(), 0, name); b->CreateStore(autoConstant(value), alloca); return alloca; }
 
-    Value *getData() const { return b->CreatePointerCast(b->CreateLoad(b->CreateStructGEP(m, 0)), ptrTy(), name+"_data"); }
-    Value *getChannels() const { return singleChannel() ? one() : b->CreateLoad(b->CreateStructGEP(m, 1), name+"_channels"); }
-    Value *getColumns() const { return singleColumn() ? one() : b->CreateLoad(b->CreateStructGEP(m, 2), name+"_columns"); }
-    Value *getRows() const { return singleRow() ? one() : b->CreateLoad(b->CreateStructGEP(m, 3), name+"_rows"); }
-    Value *getFrames() const { return singleFrame() ? one() : b->CreateLoad(b->CreateStructGEP(m, 4), name+"_frames"); }
+    Value *getData(bool cast = true) const { LoadInst *data = b->CreateLoad(b->CreateStructGEP(m, 0), name+"_data"); return cast ? b->CreatePointerCast(data, ptrTy()) : data; }
+    Value *getChannels() const { return singleChannel() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(m, 1), name+"_channels")); }
+    Value *getColumns() const { return singleColumn() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(m, 2), name+"_columns")); }
+    Value *getRows() const { return singleRow() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(m, 3), name+"_rows")); }
+    Value *getFrames() const { return singleFrame() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(m, 4), name+"_frames")); }
+    Value *getHash() const { return b->CreateLoad(b->CreateStructGEP(m, 5), name+"_hash"); }
+
+    void setData(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 0)); }
+    void setChannels(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 1)); }
+    void setColumns(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 2)); }
+    void setRows(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 3)); }
+    void setFrames(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 4)); }
+    void setHash(Value *value) const { b->CreateStore(value, b->CreateStructGEP(m, 5)); }
+
+    void copyHeaderCode(const MatrixBuilder &other) const {
+        setChannels(other.getChannels());
+        setRows(other.getRows());
+        setFrames(other.getFrames());
+        setHash(other.getHash());
+    }
+
+    void allocateCode() const {
+        Function *malloc = TheModule->getFunction("malloc");
+        if (!malloc) {
+            PointerType *mallocReturn = Type::getInt8PtrTy(getGlobalContext());
+            std::vector<Type*> mallocParams;
+            mallocParams.push_back(Type::getInt32Ty(getGlobalContext()));
+            FunctionType* mallocType = FunctionType::get(mallocReturn, mallocParams, false);
+            malloc = Function::Create(mallocType, GlobalValue::ExternalLinkage, "malloc", TheModule);
+            malloc->setCallingConv(CallingConv::C);
+        }
+
+        std::vector<Value*> mallocArgs;
+        mallocArgs.push_back(bytesCode());
+        setData(b->CreateCall(malloc, mallocArgs));
+    }
+
+    Value *get(int mask) const { return b->CreateAnd(getHash(), constant(mask, 16)); }
+    void set(int value, int mask) const { setHash(b->CreateOr(b->CreateAnd(getHash(), constant(~mask, 16)), b->CreateAnd(constant(value, 16), constant(mask, 16)))); }
+    void setBit(bool on, int mask) const { on ? setHash(b->CreateOr(getHash(), constant(mask, 16))) : setHash(b->CreateAnd(getHash(), constant(~mask, 16))); }
+
+    Value *bitsCode() const { return get(Bits); }
+    void setBitsCode(int bits) const { set(bits, Bits); }
+    Value *isFloatingCode() const { return get(Floating); }
+    void setFloatingCode(bool isFloating) const { if (isFloating) setSignedCode(true); setBit(isFloating, Floating); }
+    Value *isSignedCode() const { return get(Signed); }
+    void setSignedCode(bool isSigned) const { setBit(isSigned, Signed); }
+    Value *typeCode() const { return get(Bits + Floating + Signed); }
+    void setTypeCode(int type) const { set(type, Bits + Floating + Signed); }
+    Value *singleChannelCode() const { return get(SingleChannel); }
+    void setSingleChannelCode(bool singleChannel) const { setBit(singleChannel, SingleChannel); }
+    Value *singleColumnCode() const { return get(SingleColumn); }
+    void setSingleColumnCode(bool singleColumn) { setBit(singleColumn, SingleColumn); }
+    Value *singleRowCode() const { return get(SingleRow); }
+    void setSingleRowCode(bool singleRow) const { setBit(singleRow, SingleRow); }
+    Value *singleFrameCode() const { return get(SingleFrame); }
+    void setSingleFrameCode(bool singleFrame) const { setBit(singleFrame, SingleFrame); }
+    Value *elementsCode() const { return b->CreateMul(b->CreateMul(b->CreateMul(getChannels(), getColumns()), getRows()), getFrames()); }
+    Value *bytesCode() const { return b->CreateMul(b->CreateUDiv(b->CreateCast(Instruction::ZExt, bitsCode(), Type::getInt32Ty(getGlobalContext())), constant(8, 32)), elementsCode()); }
 
     Value *columnStep() const { Value *columnStep = getChannels(); columnStep->setName(name+"_cStep"); return columnStep; }
     Value *rowStep() const { return b->CreateMul(getColumns(), columnStep(), name+"_rStep"); }
@@ -175,31 +246,34 @@ struct MatrixBuilder : public jit_matrix
     Value *compareLT(Value *i, Value *j) const { return isFloating() ? b->CreateFCmpOLT(i, j) : (isSigned() ? b->CreateICmpSLT(i, j) : b->CreateICmpULT(i, j)); }
     Value *compareGT(Value *i, Value *j) const { return isFloating() ? b->CreateFCmpOGT(i, j) : (isSigned() ? b->CreateICmpSGT(i, j) : b->CreateICmpUGT(i, j)); }
 
-    static PHINode *beginLoop(IRBuilder<> &builder, Function *function, BasicBlock *parent, BasicBlock **current, const Twine &name = "") {
-        *current = BasicBlock::Create(getGlobalContext(), "loop_"+name, function);
-        builder.CreateBr(*current);
-        builder.SetInsertPoint(*current);
-        PHINode *j = builder.CreatePHI(Type::getInt32Ty(getGlobalContext()), 2, name);
-        j->addIncoming(MatrixBuilder::zero(), parent);
-        return j;
-    }
-    PHINode *beginLoop(BasicBlock *parent, BasicBlock **current, const Twine &name = "") const { return beginLoop(*b, f, parent, current, name); }
-    static void endLoop(IRBuilder<> &builder, Function *function, BasicBlock *current, PHINode *j, Value *end, const Twine &name = "") {
-        BasicBlock *loop = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_end", function);
+    static PHINode *beginLoop(IRBuilder<> &builder, Function *function, BasicBlock *entry, BasicBlock *&loop, BasicBlock *&exit, Value *stop, const Twine &name = "") {
+        loop = BasicBlock::Create(getGlobalContext(), "loop_"+name, function);
         builder.CreateBr(loop);
         builder.SetInsertPoint(loop);
-        Value *increment = builder.CreateAdd(j, MatrixBuilder::one(), "increment_"+name);
-        j->addIncoming(increment, loop);
-        BasicBlock *exit = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_exit", function);
-        builder.CreateCondBr(builder.CreateICmpNE(increment, end, "loop_"+name+"_test"), current, exit);
+
+        PHINode *i = builder.CreatePHI(Type::getInt32Ty(getGlobalContext()), 2, name);
+        i->addIncoming(MatrixBuilder::zero(), entry);
+        Value *increment = builder.CreateAdd(i, MatrixBuilder::one(), "increment_"+name);
+        BasicBlock *body = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_body", function);
+        i->addIncoming(increment, body);
+
+        exit = BasicBlock::Create(getGlobalContext(), "loop_"+name+"_exit", function);
+        builder.CreateCondBr(builder.CreateICmpEQ(i, stop, "loop_"+name+"_test"), exit, body);
+        builder.SetInsertPoint(body);
+        return i;
+    }
+    PHINode *beginLoop(BasicBlock *entry, BasicBlock *&loop, BasicBlock *&exit, Value *stop, const Twine &name = "") const { return beginLoop(*b, f, entry, loop, exit, stop, name); }
+
+    static void endLoop(IRBuilder<> &builder, BasicBlock *loop, BasicBlock *exit) {
+        builder.CreateBr(loop);
         builder.SetInsertPoint(exit);
     }
-    void endLoop(BasicBlock *current, PHINode *j, Value *end, const Twine &name = "") const { endLoop(*b, f, current, j, end, name); }
+    void endLoop(BasicBlock *loop, BasicBlock *exit) const { endLoop(*b, loop, exit); }
 
     template <typename T>
     inline static std::vector<T> toVector(T value) { std::vector<T> vector; vector.push_back(value); return vector; }
 
-    static Type *ty(const jit_matrix &m)
+    static Type *ty(const Matrix &m)
     {
         const int bits = m.bits();
         if (m.isFloating()) {
@@ -219,7 +293,7 @@ struct MatrixBuilder : public jit_matrix
     inline Type *ty() const { return ty(*this); }
     inline std::vector<Type*> tys() const { return toVector<Type*>(ty()); }
 
-    static Type *ptrTy(const jit_matrix &m)
+    static Type *ptrTy(const Matrix &m)
     {
         const int bits = m.bits();
         if (m.isFloating()) {
@@ -250,33 +324,119 @@ class UnaryKernel : public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    typedef void (*kernel_t)(const jit_matrix*, jit_matrix*, quint32);
-    kernel_t kernel;
+    UnaryKernel_t kernel;
     quint16 hash;
 
 public:
     UnaryKernel() : kernel(NULL), hash(0) {}
-    virtual int preallocate(const jit_matrix &src, jit_matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
+    virtual int preallocate(const Matrix &src, Matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
+    virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const { (void) src; (void) dst; return MatrixBuilder::constant(0); }
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
-    void apply(const jit_matrix &src, jit_matrix &dst) const
+    void apply(const Matrix &src, Matrix &dst) const
     {
         const int size = preallocate(src, dst);
         dst.allocate();
         invoke(src, dst, size);
     }
 
+    void optimize(Function *f) const
+    {
+        while (TheFunctionPassManager->run(*f));
+        TheExtraFunctionPassManager->run(*f);
+    }
+
+    UnaryKernel_t getKernel(const Matrix *src) const
+    {
+        const QString functionName = mangledName(*src);
+        Function *function = TheModule->getFunction(qPrintable(functionName));
+        if (function == NULL) function = compile(*src);
+        return (UnaryKernel_t)TheExecutionEngine->getPointerToFunction(function);
+    }
+
 private:
-    QString mangledName(const jit_matrix &src) const
+    QString mangledName() const
     {
         static QHash<QString, int> argsLUT;
         const QString args = arguments().join(",");
         if (!argsLUT.contains(args)) argsLUT.insert(args, argsLUT.size());
         int uid = argsLUT.value(args);
-        return "jitcv_" + name().remove("Transform") + (args.isEmpty() ? QString() : QString::number(uid)) + "_" + MatrixToString(src);
+        return "jitcv_" + name().remove("Transform") + (args.isEmpty() ? QString() : QString::number(uid));
     }
 
-    Function *compile(const jit_matrix &m) const
+    QString mangledName(const Matrix &src) const
+    {
+        return mangledName() + "_" + MatrixToString(src);
+    }
+
+    Function *compile(const Matrix &m) const
+    {
+        Function *kernel = compileKernel(m);
+        optimize(kernel);
+
+        Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName()),
+                                                     Type::getVoidTy(getGlobalContext()),
+                                                     PointerType::getUnqual(TheMatrixStruct),
+                                                     PointerType::getUnqual(TheMatrixStruct),
+                                                     NULL);
+
+        Function *function = cast<Function>(c);
+        function->setCallingConv(CallingConv::C);
+
+        Function::arg_iterator args = function->arg_begin();
+        Value *src = args++;
+        src->setName("src");
+        Value *dst = args++;
+        dst->setName("dst");
+
+        BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
+        IRBuilder<> builder(entry);
+        MatrixBuilder mb(m, src, &builder, function, "src");
+        MatrixBuilder nb(m, dst, &builder, function, "dst");
+
+        std::vector<Type*> kernelArgs;
+        kernelArgs.push_back(PointerType::getUnqual(TheMatrixStruct));
+        kernelArgs.push_back(PointerType::getUnqual(TheMatrixStruct));
+        kernelArgs.push_back(Type::getInt32Ty(getGlobalContext()));
+        PointerType *kernelType = PointerType::getUnqual(FunctionType::get(Type::getVoidTy(getGlobalContext()), kernelArgs, false));
+        QString kernelFunctionName = mangledName()+"_kernel";
+        TheModule->getOrInsertGlobal(qPrintable(kernelFunctionName), kernelType);
+        GlobalVariable *kernelFunction = TheModule->getGlobalVariable(qPrintable(kernelFunctionName));
+        kernelFunction->setInitializer(ConstantPointerNull::get(kernelType));
+
+        QString kernelHashName = mangledName()+"_hash";
+        TheModule->getOrInsertGlobal(qPrintable(kernelHashName), Type::getInt16Ty(getGlobalContext()));
+        GlobalVariable *kernelHash = TheModule->getGlobalVariable(qPrintable(kernelHashName));
+        kernelHash->setInitializer(MatrixBuilder::constant(0, 16));
+
+        BasicBlock *getKernel = BasicBlock::Create(getGlobalContext(), "get_kernel", function);
+        BasicBlock *preallocate = BasicBlock::Create(getGlobalContext(), "preallocate", function);
+        Value *hashTest = builder.CreateICmpNE(mb.getHash(), builder.CreateLoad(kernelHash), "hash_fail_test");
+        builder.CreateCondBr(hashTest, getKernel, preallocate);
+
+        builder.SetInsertPoint(getKernel);
+        builder.CreateStore(kernel, kernelFunction);
+        builder.CreateStore(mb.getHash(), kernelHash);
+        builder.CreateBr(preallocate);
+        builder.SetInsertPoint(preallocate);
+        Value *kernelSize = buildPreallocate(mb, nb);
+
+        BasicBlock *allocate = BasicBlock::Create(getGlobalContext(), "allocate", function);
+        builder.CreateBr(allocate);
+        builder.SetInsertPoint(allocate);
+        nb.allocateCode();
+
+        BasicBlock *callKernel = BasicBlock::Create(getGlobalContext(), "call_kernel", function);
+        builder.CreateBr(callKernel);
+        builder.SetInsertPoint(callKernel);
+        builder.CreateCall3(builder.CreateLoad(kernelFunction), src, dst, kernelSize);
+        builder.CreateRetVoid();
+
+        optimize(function);
+        return kernel;
+    }
+
+    Function *compileKernel(const Matrix &m) const
     {
         Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName(m)),
                                                      Type::getVoidTy(getGlobalContext()),
@@ -299,14 +459,14 @@ private:
         BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
         IRBuilder<> builder(entry);
 
-        BasicBlock *kernel;
-        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, &kernel, "i");
+        BasicBlock *loop, *exit;
+        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, loop, exit, len, "i");
 
-        jit_matrix n;
+        Matrix n;
         preallocate(m, n);
         build(MatrixBuilder(m, src, &builder, function, "src"), MatrixBuilder(n, dst, &builder, function, "dst"), i);
 
-        MatrixBuilder::endLoop(builder, function, kernel, i, len, "i");
+        MatrixBuilder::endLoop(builder, loop, exit);
 
         builder.CreateRetVoid();
         return function;
@@ -314,31 +474,21 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        const jit_matrix m(MatrixFromMat(src));
-        jit_matrix n;
+        const Matrix m(MatrixFromMat(src));
+        Matrix n;
         const int size = preallocate(m, n);
         AllocateMatrixFromMat(n, dst);
         invoke(m, n, size);
     }
 
-    void invoke(const jit_matrix &src, jit_matrix &dst, int size) const
+    void invoke(const Matrix &src, Matrix &dst, int size) const
     {
         if (src.hash != hash) {
             static QMutex compilerLock;
             QMutexLocker locker(&compilerLock);
 
             if (src.hash != hash) {
-                const QString functionName = mangledName(src);
-
-                Function *function = TheModule->getFunction(qPrintable(functionName));
-                if (function == NULL) {
-                    function = compile(src);
-                    while (TheFunctionPassManager->run(*function));
-                    TheExtraFunctionPassManager->run(*function);
-                    function = TheModule->getFunction(qPrintable(functionName));
-                }
-
-                const_cast<UnaryKernel*>(this)->kernel = (kernel_t)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<UnaryKernel*>(this)->kernel = getKernel(&src);
                 const_cast<UnaryKernel*>(this)->hash = src.hash;
             }
         }
@@ -355,16 +505,15 @@ class BinaryKernel: public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    typedef void (*kernel_t)(const jit_matrix*, const jit_matrix*, jit_matrix*, quint32);
-    kernel_t kernel;
+    BinaryKernel_t kernel;
     quint16 hashA, hashB;
 
 public:
     BinaryKernel() : kernel(NULL), hashA(0), hashB(0) {}
-    virtual int preallocate(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
+    virtual int preallocate(const Matrix &srcA, const Matrix &srcB, Matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual void build(const MatrixBuilder &srcA, const MatrixBuilder &srcB, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
-    void apply(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst) const
+    void apply(const Matrix &srcA, const Matrix &srcB, Matrix &dst) const
     {
         const int size = preallocate(srcA, srcB, dst);
         dst.allocate();
@@ -372,12 +521,12 @@ public:
     }
 
 private:
-    QString mangledName(const jit_matrix &srcA, const jit_matrix &srcB) const
+    QString mangledName(const Matrix &srcA, const Matrix &srcB) const
     {
         return "jitcv_" + name().remove("Transform") + "_" + MatrixToString(srcA) + "_" + MatrixToString(srcB);
     }
 
-    Function *compile(const jit_matrix &m, const jit_matrix &n) const
+    Function *compile(const Matrix &m, const Matrix &n) const
     {
         Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName(m, n)),
                                                      Type::getVoidTy(getGlobalContext()),
@@ -403,20 +552,20 @@ private:
         BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
         IRBuilder<> builder(entry);
 
-        BasicBlock *kernel;
-        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, &kernel, "i");
+        BasicBlock *loop, *exit;
+        PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, loop, exit, len, "i");
 
-        jit_matrix o;
+        Matrix o;
         preallocate(m, n, o);
         build(MatrixBuilder(m, srcA, &builder, function, "srcA"), MatrixBuilder(n, srcB, &builder, function, "srcB"), MatrixBuilder(o, dst, &builder, function, "dst"), i);
 
-        MatrixBuilder::endLoop(builder, function, kernel, i, len, "i");
+        MatrixBuilder::endLoop(builder, loop, exit);
 
         builder.CreateRetVoid();
         return function;
     }
 
-    void invoke(const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst, int size) const
+    void invoke(const Matrix &srcA, const Matrix &srcB, Matrix &dst, int size) const
     {
         if ((srcA.hash != hashA) || (srcB.hash != hashB)) {
             static QMutex compilerLock;
@@ -433,7 +582,7 @@ private:
                     function = TheModule->getFunction(qPrintable(functionName));
                 }
 
-                const_cast<BinaryKernel*>(this)->kernel = (kernel_t)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<BinaryKernel*>(this)->kernel = (BinaryKernel_t)TheExecutionEngine->getPointerToFunction(function);
                 const_cast<BinaryKernel*>(this)->hashA = srcA.hash;
                 const_cast<BinaryKernel*>(this)->hashB = srcB.hash;
             }
@@ -454,10 +603,16 @@ class StitchableKernel : public UnaryKernel
 public:
     virtual Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const = 0; /*!< A simplification of Kernel::build() for stitchable kernels. */
 
-    virtual int preallocate(const jit_matrix &src, jit_matrix &dst) const
+    virtual int preallocate(const Matrix &src, Matrix &dst) const
     {
         dst.copyHeader(src);
         return dst.elements();
+    }
+
+    virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const
+    {
+        dst.copyHeaderCode(src);
+        return dst.elementsCode();
     }
 
 private:
@@ -487,9 +642,9 @@ class stitchTransform : public UnaryKernel
                 qFatal("%s is not a stitchable kernel!", qPrintable(transform->name()));
     }
 
-    int preallocate(const jit_matrix &src, jit_matrix &dst) const
+    int preallocate(const Matrix &src, Matrix &dst) const
     {
-        jit_matrix tmp = src;
+        Matrix tmp = src;
         foreach (const Transform *kernel, kernels) {
             static_cast<const UnaryKernel*>(kernel)->preallocate(tmp, dst);
             tmp = dst;
@@ -543,7 +698,7 @@ class powTransform : public StitchableKernel
     Q_PROPERTY(double exponent READ get_exponent WRITE set_exponent RESET reset_exponent STORED false)
     BR_PROPERTY(double, exponent, 2)
 
-    int preallocate(const jit_matrix &src, jit_matrix &dst) const
+    int preallocate(const Matrix &src, Matrix &dst) const
     {
         dst.copyHeader(src);
         dst.setFloating(true);
@@ -588,11 +743,18 @@ class sumTransform : public UnaryKernel
     BR_PROPERTY(bool, rows, true)
     BR_PROPERTY(bool, frames, true)
 
-    int preallocate(const jit_matrix &src, jit_matrix &dst) const
+    int preallocate(const Matrix &src, Matrix &dst) const
     {
-        dst = jit_matrix(channels ? 1 : src.channels, columns ? 1 : src.columns, rows ? 1 : src.rows, frames ? 1 : src.frames, src.hash);
+        dst = Matrix(channels ? 1 : src.channels, columns ? 1 : src.columns, rows ? 1 : src.rows, frames ? 1 : src.frames, src.hash);
         dst.setBits(std::min(2*dst.bits(), dst.isFloating() ? 64 : 32));
         return dst.elements();
+    }
+
+    Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const
+    {
+        (void) src;
+        (void) dst;
+        return MatrixBuilder::constant(0);
     }
 
     void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const
@@ -601,53 +763,52 @@ class sumTransform : public UnaryKernel
         dst.deindex(i, &c, &x, &y, &t);
         AllocaInst *sum = dst.autoAlloca(0, "sum");
 
-        QList<PHINode*> loops;
-        QList<BasicBlock*> blocks;
-        blocks.push_back(i->getParent());
+        QList<BasicBlock*> loops, exits;
+        loops.push_back(i->getParent());
         Value *src_c, *src_x, *src_y, *src_t;
 
         if (frames && !src.singleFrame()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_t"));
-            blocks.append(block);
-            src_t = loops.last();
+            BasicBlock *loop, *exit;
+            src_t = dst.beginLoop(loops.last(), loop, exit, src.getFrames(), "src_t");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_t = t;
         }
 
         if (rows && !src.singleRow()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_y"));
-            blocks.append(block);
-            src_y = loops.last();
+            BasicBlock *loop, *exit;
+            src_y = dst.beginLoop(loops.last(), loop, exit, src.getRows(), "src_y");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_y = y;
         }
 
         if (columns && !src.singleColumn()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_x"));
-            blocks.append(block);
-            src_x = loops.last();
+            BasicBlock *loop, *exit;
+            src_x = dst.beginLoop(loops.last(), loop, exit, src.getColumns(), "src_x");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_x = x;
         }
 
         if (channels && !src.singleChannel()) {
-            BasicBlock *block;
-            loops.append(dst.beginLoop(blocks.last(), &block, "src_c"));
-            blocks.append(block);
-            src_c = loops.last();
+            BasicBlock *loop, *exit;
+            src_c = dst.beginLoop(loops.last(), loop, exit, src.getChannels(), "src_c");
+            loops.append(loop);
+            exits.append(exit);
         } else {
             src_c = c;
         }
 
         dst.b->CreateStore(dst.add(dst.b->CreateLoad(sum), src.cast(src.load(src.aliasIndex(dst, src_c, src_x, src_y, src_t)), dst), "accumulate"), sum);
 
-        if (channels && !src.singleChannel()) dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getChannels(), "src_c");
-        if (columns && !src.singleColumn())   dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getColumns(), "src_x");
-        if (rows && !src.singleRow())         dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getRows(), "src_y");
-        if (frames && !src.singleFrame())     dst.endLoop(blocks.takeLast(), loops.takeLast(), src.getFrames(), "src_t");
+        if (channels && !src.singleChannel()) dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (columns && !src.singleColumn())   dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (rows && !src.singleRow())         dst.endLoop(loops.takeLast(), exits.takeLast());
+        if (frames && !src.singleFrame())     dst.endLoop(loops.takeLast(), exits.takeLast());
 
         dst.store(i, dst.b->CreateLoad(sum));
     }
@@ -668,23 +829,23 @@ class castTransform : public StitchableKernel
 
 public:
      /*!< */
-    enum Type { u1 = jit_matrix::u1,
-                u8 = jit_matrix::u8,
-                u16 = jit_matrix::u16,
-                u32 = jit_matrix::u32,
-                u64 = jit_matrix::u64,
-                s8 = jit_matrix::s8,
-                s16 = jit_matrix::s16,
-                s32 = jit_matrix::s32,
-                s64 = jit_matrix::s64,
-                f16 = jit_matrix::f16,
-                f32 = jit_matrix::f32,
-                f64 = jit_matrix::f64 };
+    enum Type { u1 = Matrix::u1,
+                u8 = Matrix::u8,
+                u16 = Matrix::u16,
+                u32 = Matrix::u32,
+                u64 = Matrix::u64,
+                s8 = Matrix::s8,
+                s16 = Matrix::s16,
+                s32 = Matrix::s32,
+                s64 = Matrix::s64,
+                f16 = Matrix::f16,
+                f32 = Matrix::f32,
+                f64 = Matrix::f64 };
 
 private:
     BR_PROPERTY(Type, type, f32)
 
-    int preallocate(const jit_matrix &src, jit_matrix &dst) const
+    int preallocate(const Matrix &src, Matrix &dst) const
     {
         dst.copyHeader(src);
         dst.setType(type);
@@ -867,24 +1028,24 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
-        QSharedPointer<Transform> kernel(Transform::make("abs", NULL));
+        QSharedPointer<Transform> kernel(Transform::make("add(1)", NULL));
 
         Template src, dst;
         src.m() = (Mat_<qint8>(2,2) << -1, -2, 3, 4);
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
 
-        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
-        kernel->project(src, dst);
-        qDebug() << dst.m();
+//        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
+//        kernel->project(src, dst);
+//        qDebug() << dst.m();
     }
 
     void finalize() const
@@ -930,20 +1091,16 @@ class LLVMInitializer : public Initializer
 
 BR_REGISTER(Initializer, LLVMInitializer)
 
-void jit_unary_apply(const jit_unary_kernel &kernel, const jit_matrix &src, jit_matrix &dst)
+UnaryFunction_t jit_unary_make(const char *description)
 {
-    ((UnaryKernel*)kernel)->apply(src, dst);
+    (void) description;
+    return NULL;
 }
 
-void jit_binary_apply(const jit_binary_kernel &kernel, const jit_matrix &srcA, const jit_matrix &srcB, jit_matrix &dst)
+BinaryFunction_t jit_binary_make(const char *description)
 {
-    ((BinaryKernel*)kernel)->apply(srcA, srcB, dst);
-}
-
-jit_unary_kernel jit_square()
-{
-    static squareTransform transform;
-    return &transform;
+    (void) description;
+    return NULL;
 }
 
 #include "llvm.moc"

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_qwt_knob.html" title="The Knob Widget." alt="" coords="5,83,80,112"/>
+<area shape="rect" id="node5" href="$class_qwt_slider.html" title="The Slider Widget." alt="" coords="104,83,181,112"/>
+<area shape="rect" id="node7" href="$class_qwt_thermo.html" title="The Thermometer Widget." alt="" coords="205,83,293,112"/>
+</map>

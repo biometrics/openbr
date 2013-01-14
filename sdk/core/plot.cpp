@@ -431,7 +431,7 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
                             (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
                             (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
-                            QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_bw()") +
+                            QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
                             (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
                             QString(" + scale_x_continuous(trans=\"log10\") + scale_y_continuous(trans=\"log10\")") +
@@ -440,7 +440,7 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
     p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET, geom=\"line\"") +
                             (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
                             (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
-                            QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_bw()") +
+                            QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
                             QString(" + scale_x_continuous(trans=\"log10\") + scale_y_continuous(labels=percent)") +
@@ -449,15 +449,15 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score%1\"").arg((p.flip ? p.majorSize : p.minorSize) > 1 ? " / " + (p.flip ? p.majorHeader : p.minorHeader) : QString()) +
                             QString(", ylab=\"Frequency%1\"").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
-                            QString(") + scale_fill_manual(\"Ground Truth\", values=c(\"blue\", \"red\")) + theme_bw() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + opts(axis.text.y=theme_blank(), axis.ticks=theme_blank(), axis.text.x=theme_text(angle=-90, hjust=0))") +
+                            QString(") + scale_fill_manual(\"Ground Truth\", values=c(\"blue\", \"red\")) + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
                             (p.majorSize > 1 ? (p.minorSize > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg((p.flip ? p.majorHeader : p.minorHeader), (p.flip ? p.minorHeader : p.majorHeader)) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.majorHeader)) : QString()) +
-                            QString(" + opts(aspect.ratio=1)") +
+                            QString(" + theme(aspect.ratio=1)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("SD"))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=CMC, geom=\"line\", xlab=\"Rank\", ylab=\"Retrieval Rate\"") +
                             (p.majorSize > 1 ? QString(", colour=factor(%1)").arg(p.majorHeader) : QString()) +
                             (p.minorSize > 1 ? QString(", linetype=factor(%1)").arg(p.minorHeader) : QString()) +
-                            QString(") + theme_bw() + scale_x_continuous(limits = c(1,25), breaks = c(1,5,10,25))") +
+                            QString(") + theme_minimal() + scale_x_continuous(limits = c(1,25), breaks = c(1,5,10,25))") +
                             (p.majorSize > 1 ? getScale("colour", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minorHeader) : QString()) +
                             QString(" + scale_y_continuous(labels=percent)") +
@@ -466,28 +466,28 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
     p.file.write(qPrintable(QString("qplot(factor(%1), data=BC, geom=\"bar\", position=\"dodge\", weight=Y").arg(p.majorHeader) +
                             (p.majorSize > 1 ? QString(", fill=factor(%1)").arg(p.majorHeader) : QString()) +
                             QString(", xlab=\"%1False Accept Rate\"").arg(p.majorSize > 1 ? p.majorHeader + " / " : QString()) +
-                            QString(", ylab=\"True Accept Rate%1\") + theme_bw()").arg(p.minorSize > 1 ? " / " + p.minorHeader : QString()) +
+                            QString(", ylab=\"True Accept Rate%1\") + theme_minimal()").arg(p.minorSize > 1 ? " / " + p.minorHeader : QString()) +
                             (p.majorSize > 1 ? getScale("fill", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + facet_grid(%2 ~ X)").arg(p.minorHeader) : QString(" + facet_wrap(~ X)")) +
-                            QString(" + opts(legend.position=\"none\", axis.text.x=theme_text(angle=-90, hjust=0)) + geom_text(data=BC, aes(label=Y, y=0.05))") +
+                            QString(" + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0)) + geom_text(data=BC, aes(label=Y, y=0.05))") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("BC"))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=FAR, geom=\"line\"") +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.majorHeader : p.minorHeader) : QString()) +
-                            QString(", xlab=\"Score%1\", ylab=\"False Accept Rate\") + theme_bw()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
+                            QString(", xlab=\"Score%1\", ylab=\"False Accept Rate\") + theme_minimal()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? getScale("colour", p.flip ? p.majorHeader : p.minorHeader, p.flip ? p.majorSize : p.minorSize) : QString()) +
                             QString(" + scale_y_continuous(trans=\"log10\")") +
                             ((p.flip ? p.minorSize : p.majorSize) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minorHeader : p.majorHeader) : QString()) +
-                            QString(" + opts(aspect.ratio=1)") +
+                            QString(" + theme(aspect.ratio=1)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("FAR"))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=FRR, geom=\"line\"") +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.majorHeader : p.minorHeader) : QString()) +
-                            QString(", xlab=\"Score%1\", ylab=\"False Reject Rate\") + theme_bw()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
+                            QString(", xlab=\"Score%1\", ylab=\"False Reject Rate\") + theme_minimal()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? getScale("colour", p.flip ? p.majorHeader : p.minorHeader, p.flip ? p.majorSize : p.minorSize) : QString()) +
                             QString(" + scale_y_continuous(trans=\"log10\")") +
                             ((p.flip ? p.minorSize : p.majorSize) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minorHeader : p.majorHeader) : QString()) +
-                            QString(" + opts(aspect.ratio=1)") +
+                            QString(" + theme(aspect.ratio=1)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("FRR"))));
 
     return p.finalize(show);
@@ -499,6 +499,6 @@ bool br::PlotMetadata(const QStringList &files, const QString &columns, bool sho
 
     RPlot p(files, "PlotMetadata", false);
     foreach (const QString &column, columns.split(";"))
-        p.file.write(qPrintable(QString("qplot(%1, %2, data=data, geom=\"violin\", fill=%1) + coord_flip() + theme_bw()\nggsave(\"%2.pdf\")\n").arg(p.majorHeader, column)));
+        p.file.write(qPrintable(QString("qplot(%1, %2, data=data, geom=\"violin\", fill=%1) + coord_flip() + theme_minimal()\nggsave(\"%2.pdf\")\n").arg(p.majorHeader, column)));
     return p.finalize(show);
 }

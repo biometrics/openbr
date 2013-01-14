@@ -1,0 +1,39 @@
+QwtPlot
+{
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: qlineargradient( x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 Brown, stop: 0.5 Chocolate, stop: 1 Brown );
+}
+
+QwtPlotCanvas
+{
+    border: 1px solid White;
+    border-radius: 10px;
+    background-color: Tan;
+}
+
+QwtScaleWidget
+{
+    color: palette(light);
+}
+
+QwtTextLabel#QwtPlotTitle
+{
+    color: palette(light);
+}
+
+QwtLegend
+{
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    background: brown;
+}
+
+QwtLegendItem
+{
+    color: palette(light);
+}
+

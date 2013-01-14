@@ -14,9 +14,11 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QDate>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QtXml>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
 #include <openbr_plugin.h>
@@ -33,7 +35,7 @@ class csvFormat : public Format
 {
     Q_OBJECT
 
-    QList<Mat> read() const
+    Template read() const
     {
         QFile f(file.name);
         f.open(QFile::ReadOnly);
@@ -59,9 +61,7 @@ class csvFormat : public Format
             }
         }
 
-        QList<Mat> mats;
-        mats.append(m);
-        return mats;
+        return Template(m);
     }
 };
 
@@ -76,9 +76,9 @@ class DefaultFormat : public Format
 {
     Q_OBJECT
 
-    QList<Mat> read() const
+    Template read() const
     {
-        QList<Mat> mats;
+        Template t;
 
         if (file.name.startsWith("http://") || file.name.startsWith("www.")) {
 #ifndef BR_EMBEDDED
@@ -94,16 +94,16 @@ class DefaultFormat : public Format
             delete reply;
 
             Mat m = imdecode(Mat(1, data.size(), CV_8UC1, data.data()), 1);
-            if (m.data) mats.append(m);
+            if (m.data) t.append(m);
 #endif // BR_EMBEDDED
         } else {
             QString prefix = "";
             if (!QFileInfo(file.name).exists()) prefix = file.getString("path") + "/";
             Mat m = imread((prefix+file.name).toStdString());
-            if (m.data) mats.append(m);
+            if (m.data) t.append(m);
         }
 
-        return mats;
+        return t;
     }
 };
 
@@ -118,7 +118,7 @@ class webcamFormat : public Format
 {
     Q_OBJECT
 
-    QList<Mat> read() const
+    Template read() const
     {
         static QScopedPointer<VideoCapture> videoCapture;
 
@@ -127,11 +127,73 @@ class webcamFormat : public Format
 
         Mat m;
         videoCapture->read(m);
-
-        return QList<Mat>() << m;
+        return Template(m);
     }
 };
 
 BR_REGISTER(Format, webcamFormat)
+
+#ifndef BR_EMBEDDED
+/*!
+ * \ingroup formats
+ * \brief Decodes images from Base64 xml
+ * \author Scott Klum \cite sklum
+ * \author Josh Klontz \cite jklontz
+ */
+class xmlFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        QDomDocument doc(file);
+        QFile f(file);
+        if (!f.open(QIODevice::ReadOnly)) qFatal("xmlFormat::read unable to open %s for reading.", qPrintable(file.flat()));
+        if (!doc.setContent(&f))          qFatal("xmlFormat::read unable to parse %s.", qPrintable(file.flat()));
+        f.close();
+
+        Template t;
+        QDomElement docElem = doc.documentElement();
+        QDomNode subject = docElem.firstChild();
+        while (!subject.isNull()) {
+            QDomNode fileNode = subject.firstChild();
+
+            while (!fileNode.isNull()) {
+                QDomElement e = fileNode.toElement();
+
+                if (e.tagName() == "FORMAL_IMG") {
+                    QByteArray byteArray = QByteArray::fromBase64(qPrintable(e.text()));
+                    Mat m = imdecode(Mat(1, byteArray.size(), CV_8UC1, byteArray.data()), CV_LOAD_IMAGE_ANYDEPTH);
+                    if (!m.data) qWarning("xmlFormat::read failed to decode image data.");
+                    t.append(m);
+                } else if ((e.tagName() == "RELEASE_IMG") ||
+                           (e.tagName() == "PREBOOK_IMG") ||
+                           (e.tagName() == "LPROFILE") ||
+                           (e.tagName() == "RPROFILE")) {
+                    // Ignore these other image fields for now
+                } else {
+                    t.file.insert(e.tagName(), e.text());
+                }
+
+                fileNode = fileNode.nextSibling();
+            }
+            subject = subject.nextSibling();
+        }
+
+        // Calculate age
+        if (t.file.contains("DOB")) {
+            const QDate dob = QDate::fromString(t.file.getString("DOB").left(10), "yyyy-MM-dd");
+            const QDate current = QDate::currentDate();
+            int age = current.year() - dob.year();
+            if (current.month() < dob.month()) age--;
+            t.file.insert("Age", age);
+        }
+
+        return t;
+    }
+};
+
+BR_REGISTER(Format, xmlFormat)
+#endif // BR_EMBEDDED
 
 #include "format.moc"

@@ -110,6 +110,7 @@ struct AlgorithmCore
         if (gallery.isNull()) gallery = getMemoryGallery(input);
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
+        if (g.isNull()) return FileList();
         FileList fileList = g->files();
         if (!fileList.isEmpty() && g->isUniversal()) return fileList; // Already enrolled
 

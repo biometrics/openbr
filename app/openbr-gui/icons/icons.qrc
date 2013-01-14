@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>glyphicons_190_circle_plus@2x.png</file>
+        <file>openbr.icns</file>
+        <file>openbr.ico</file>
+        <file>openbr.png</file>
     </qresource>
 </RCC>

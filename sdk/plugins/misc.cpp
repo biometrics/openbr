@@ -34,18 +34,15 @@ class OpenTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
-        bool fto = false;
+        dst.file = src.file;
         foreach (const File &file, src.file.split()) {
             QScopedPointer<Format> format(Factory<Format>::make(file));
-            QList<Mat> mats = format->read();
-            if (mats.isEmpty()) {
-                qWarning("Can't open %s", qPrintable(file.flat()));
-                fto = true;
-            }
-            dst += mats;
+            Template t = format->read();
+            if (t.isEmpty()) qWarning("Can't open %s", qPrintable(file.flat()));
+            dst.append(t);
+            dst.file.append(t.file.localMetadata());
         }
-        dst.file = src.file;
-        dst.file.insert("FTO", fto);
+        dst.file.insert("FTO", dst.isEmpty());
     }
 };
 
@@ -90,6 +87,27 @@ class ShowTransform : public UntrainableMetaTransform
 int ShowTransform::counter = 0;
 
 BR_REGISTER(Transform, ShowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Prints the template's file to stdout or stderr.
+ * \author Josh Klontz \cite jklontz
+ */
+class PrintTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
+    BR_PROPERTY(bool, error, false)
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (error) qDebug("%s\n", qPrintable(src.file.flat()));
+        else       printf("%s\n", qPrintable(src.file.flat()));
+    }
+};
+
+BR_REGISTER(Transform, PrintTransform)
 
 /*!
  * \ingroup transforms
@@ -207,5 +225,32 @@ class RemoveTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RemoveTransform)
 //! [example_transform]
+
+/*!
+ * \ingroup transforms
+ * \brief Rename metadata
+ * \author Josh Klontz \cite jklontz
+ */
+class RenameTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString find READ get_find WRITE set_find RESET reset_find STORED false)
+    Q_PROPERTY(QString replace READ get_replace WRITE set_replace RESET reset_replace STORED false)
+    BR_PROPERTY(QString, find, "")
+    BR_PROPERTY(QString, replace, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        foreach (const QString &key, dst.file.localKeys())
+            if (key.contains(find)) {
+                QString newKey = QString(key).replace(find, replace);
+                dst.file.insert(newKey, dst.file.get(key));
+                dst.file.remove(key);
+            }
+    }
+};
+
+BR_REGISTER(Transform, RenameTransform)
 
 #include "misc.moc"

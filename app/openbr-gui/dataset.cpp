@@ -36,7 +36,7 @@ void br::Dataset::setAlgorithm(const QString &algorithm)
     this->algorithm = algorithm;
     QStringList datasets;
     QRegExp re("^" + algorithm + "_(.+).csv$");
-    foreach (const QString &file, QDir(QString("%1/share/mm/Algorithm_Dataset/").arg(br_sdk_path())).entryList())
+    foreach (const QString &file, QDir(QString("%1/share/openbr/Algorithm_Dataset/").arg(br_sdk_path())).entryList())
         if (re.indexIn(file) != -1)
             datasets.append(re.cap(1));
     qSort(datasets.begin(), datasets.end(), compareDatasets);
@@ -49,7 +49,7 @@ void br::Dataset::setAlgorithm(const QString &algorithm)
 void br::Dataset::datasetChangedTo(const QString &dataset)
 {
     emit newDataset(dataset);
-    emit newDistribution(QString("%1/share/mm/Algorithm_Dataset/%2_%3.csv").arg(br_sdk_path(), algorithm, dataset));
+    emit newDistribution(QString("%1/share/openbr/Algorithm_Dataset/%2_%3.csv").arg(br_sdk_path(), algorithm, dataset));
 }
 
 #include "moc_dataset.cpp"

@@ -8,8 +8,12 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QWidget>
+#include <openbr_export.h>
 
-class View : public QToolBar
+namespace br
+{
+
+class BR_EXPORT_GUI View : public QToolBar
 {
     Q_OBJECT
     QToolButton tbPhoto, tbRegistered, tbEnhanced, tbFeatures;
@@ -27,5 +31,7 @@ signals:
     void newFormat(QString image);
     void newCount(int count);
 };
+
+} // namespace br
 
 #endif // VIEW_H

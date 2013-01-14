@@ -186,6 +186,7 @@ struct BR_EXPORT File
     inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
     inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
+    void remove(const QString &key); /*!< \brief Remove the metadata key. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     QVariant get(const QString &key) const; /*!< \brief Returns a QVariant for the key, throwing an error if the key does not exist. */
     QVariant get(const QString &key, const QVariant &value) const; /*!< \brief Returns a QVariant for the key, returning \em defaultValue if the key does not exist. */
@@ -491,6 +492,18 @@ public:
     Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(bool, enrollAll, false)
 
+    /*!
+     * \brief Keys to use when matching templates to automatically determine non-match based on template metadata.
+     */
+    Q_PROPERTY(QStringList demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
+    BR_PROPERTY(QStringList, demographicFilters, QStringList())
+
+    /*!
+     * \brief Allowable age difference when matching templates.
+     */
+    Q_PROPERTY(float ageDelta READ get_ageDelta WRITE set_ageDelta RESET reset_ageDelta)
+    BR_PROPERTY(float, ageDelta, std::numeric_limits<float>::max())
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
@@ -709,6 +722,7 @@ protected:
 
         const QString abstraction = baseClassName();
         if (name.endsWith(abstraction)) name = name.left(name.size()-abstraction.size());
+        if (name.startsWith("br::")) name = name.right(name.size()-4);
         if (registry->contains(name)) qFatal("%s registry already contains object named: %s", qPrintable(abstraction), qPrintable(name));
         registry->insert(name, this);
     }
@@ -826,9 +840,9 @@ private:
 
 /*!
  * \ingroup formats
- * \brief Plugin base class for reading matrices from disk.
+ * \brief Plugin base class for reading a template from disk.
  *
- * A \em format is a br::File representing a matrix (ex. jpg image) on disk.
+ * A \em format is a br::File representing a template (ex. jpg image) on disk.
  * br::File::suffix() is used to determine which plugin should handle the format.
  */
 class BR_EXPORT Format : public Object
@@ -837,7 +851,7 @@ class BR_EXPORT Format : public Object
 
 public:
     virtual ~Format() {}
-    virtual QList<cv::Mat> read() const = 0; /*!< \brief Returns a list of matrices created by reading #br::Object::file. */
+    virtual Template read() const = 0; /*!< \brief Returns a br::Template created by reading #br::Object::file. */
 };
 
 /*!
@@ -1045,7 +1059,7 @@ public:
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
     virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
-    inline float compare(const Template &target, const Template &query) const { return a * (_compare(target, query) - b); } /*!< \brief Compute the normalized distance between two templates. */
+    float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;

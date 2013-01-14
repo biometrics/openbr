@@ -113,6 +113,56 @@ BR_REGISTER(Transform, DoG)
 
 /*!
  * \ingroup transforms
+ * \brief Meyers, E.; Wolf, L.
+ * “Using biologically inspired features for face processing,”
+ * Int. Journal of Computer Vision, vol. 76, no. 1, pp 93–104, 2008.
+ * \author Scott Klum \cite sklum
+ */
+
+class CSDN : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(float s READ get_s WRITE set_s RESET reset_s STORED false)
+    BR_PROPERTY(int, s, 16)
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (src.m().channels() != 1) qFatal("ContrastEq::project expected single channel source matrix.");
+
+        const int nRows = src.m().rows;
+        const int nCols = src.m().cols;
+
+        Mat m;
+        src.m().convertTo(m, CV_32FC1);
+
+        const int surround = s/2;
+
+        for ( int i = 0; i < nRows; i++ )
+        {
+            for ( int j = 0; j < nCols; j++ )
+            {
+                int width = min( j+surround, nCols ) - max( 0, j-surround );
+                int height = min( i+surround, nRows ) - max( 0, i-surround );
+
+                Rect_<int> ROI(max(0, j-surround), max(0, i-surround), width, height);
+
+                Scalar_<float> avg = mean(m(ROI));
+
+                m.at<float>(i,j) = m.at<float>(i,j) - avg[0];
+            }
+        }
+
+     m.convertTo(m, CV_8UC1);
+     dst = m;
+
+    }
+};
+
+BR_REGISTER(Transform, CSDN)
+
+/*!
+ * \ingroup transforms
  * \brief Xiaoyang Tan; Triggs, B.;
  * "Enhanced Local Texture Feature Sets for Face Recognition Under Difficult Lighting Conditions,"
  * Image Processing, IEEE Transactions on , vol.19, no.6, pp.1635-1650, June 2010
@@ -128,7 +178,7 @@ class ContrastEq : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (!src.m().channels() == 1) qFatal("ContrastEq::project expected single channel source matrix.");
+        if (src.m().channels() != 1) qFatal("ContrastEq::project expected single channel source matrix.");
 
         // Stage 1
         Mat stage1;

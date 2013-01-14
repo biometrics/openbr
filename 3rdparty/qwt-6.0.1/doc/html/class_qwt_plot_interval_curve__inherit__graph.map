@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$class_qwt_plot_series_item.html" title="QwtPlotSeriesItem\&lt; QwtIntervalSample \&gt;" alt="" coords="5,341,267,371"/>
+<area shape="rect" id="node4" href="$class_qwt_plot_abstract_series_item.html" title="Base class for plot items representing a series of samples." alt="" coords="23,165,201,195"/>
+<area shape="rect" id="node10" href="$class_qwt_plot_series_item.html" title="Class template for plot items representing a series of samples." alt="" coords="133,245,293,275"/>
+<area shape="rect" id="node6" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="65,85,159,115"/>
+<area shape="rect" id="node8" href="$class_qwt_legend_item_manager.html" title="Abstract API to bind plot items to the legend." alt="" coords="31,5,193,35"/>
+</map>

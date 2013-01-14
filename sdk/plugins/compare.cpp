@@ -42,7 +42,7 @@ public:
                   INF,
                   L1,
                   L2,
-                  CosineSimilarity };
+                  Cosine };
 
 private:
     BR_PROPERTY(Metric, metric, L2)
@@ -76,8 +76,8 @@ private:
           case L2:
             result = norm(a, b, NORM_L2);
             break;
-          case CosineSimilarity:
-            result = cosineSimilarity(a, b);
+          case Cosine:
+            result = cosine(a, b);
             break;
           default:
             qFatal("Invalid metric");
@@ -89,32 +89,28 @@ private:
         return -log(result+1);
     }
 
-    static float cosineSimilarity(const Mat &a, const Mat &b)
+    static float cosine(const Mat &a, const Mat &b)
     {
-        assert((a.type() == CV_32FC1) && (b.type() == CV_32FC1));
-        assert((a.rows == b.rows) && (a.cols == b.cols));
-
-        float denom = 0;
-        float tnum = 0;
-        float qnum = 0;
+        float dot = 0;
+        float magA = 0;
+        float magB = 0;
 
         for (int row=0; row<a.rows; row++) {
             for (int col=0; col<a.cols; col++) {
-                float target = a.at<float>(row,col);
-                float query = b.at<float>(row,col);
+                const float target = a.at<float>(row,col);
+                const float query = b.at<float>(row,col);
 
-                denom += target * query;
-                tnum += target * target;
-                qnum += query * query;
+                dot += target * query;
+                magA += target * target;
+                magB += query * query;
             }
         }
 
-        return denom / (sqrt(tnum)*sqrt(qnum));
+        return dot / (sqrt(magA)*sqrt(magB));
     }
 };
 
 BR_REGISTER(Distance, Dist)
-
 
 /*!
  * \ingroup distances
