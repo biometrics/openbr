@@ -20,13 +20,14 @@
 #include <QPair>
 #include <QString>
 #include <QVector>
+#include <openbr_plugin.h>
 
 namespace br
 {
 
 void Confusion(const QString &file, float score, int &true_positives, int &false_positives, int &true_negatives, int &false_negatives);
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv = ""); // Returns TAR @ FAR = 0.01
-bool Plot(const QStringList &files, const QString &destination, bool show = false);
+bool Plot(const QStringList &files, const br::File &destination, bool show = false);
 bool PlotMetadata(const QStringList &files, const QString &destination, bool show = false);
 
 }
