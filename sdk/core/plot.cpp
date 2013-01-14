@@ -348,13 +348,15 @@ struct RPlot
                        "SD <- data[grep(\"SD\",data$Plot),-c(1)]\n"
                        "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
                        "CMC <- data[grep(\"CMC\",data$Plot),-c(1)]\n"
-                       "rm(data)\n"
+                       "FAR$Error <- \"FAR\"\n"
+                       "FRR$Error <- \"FRR\"\n"
+                       "ERR <- rbind(FAR, FRR)\n"
+                       "rm(data, FAR, FRR)\n"
                        "\n"
                        "# Format data\n"
                        "Metadata$Y<-factor(Metadata$Y, levels=c(\"Genuine\",\"Impostor\",\"Ignored\",\"Gallery\",\"Probe\"))\n"
                        "DET$Y <- as.numeric(as.character(DET$Y))\n"
-                       "FAR$Y <- as.numeric(as.character(FAR$Y))\n"
-                       "FRR$Y <- as.numeric(as.character(FRR$Y))\n"
+                       "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n");
@@ -472,23 +474,14 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
                             QString(" + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0)) + geom_text(data=BC, aes(label=Y, y=0.05))") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("BC"))));
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=FAR, geom=\"line\"") +
+    p.file.write(qPrintable(QString("qplot(X, Y, data=ERR, geom=\"line\", linetype=Error") +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.majorHeader : p.minorHeader) : QString()) +
-                            QString(", xlab=\"Score%1\", ylab=\"False Accept Rate\") + theme_minimal()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
+                            QString(", xlab=\"Score%1\", ylab=\"Error Rate\") + theme_minimal()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
                             ((p.flip ? p.majorSize : p.minorSize) > 1 ? getScale("colour", p.flip ? p.majorHeader : p.minorHeader, p.flip ? p.majorSize : p.minorSize) : QString()) +
-                            QString(" + scale_y_continuous(trans=\"log10\")") +
+                            QString(" + scale_y_log10()") +
                             ((p.flip ? p.minorSize : p.majorSize) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minorHeader : p.majorHeader) : QString()) +
                             QString(" + theme(aspect.ratio=1)") +
-                            QString("\nggsave(\"%1\")\n").arg(p.subfile("FAR"))));
-
-    p.file.write(qPrintable(QString("qplot(X, Y, data=FRR, geom=\"line\"") +
-                            ((p.flip ? p.majorSize : p.minorSize) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.majorHeader : p.minorHeader) : QString()) +
-                            QString(", xlab=\"Score%1\", ylab=\"False Reject Rate\") + theme_minimal()").arg((p.flip ? p.minorSize : p.majorSize) > 1 ? " / " + (p.flip ? p.minorHeader : p.majorHeader) : QString()) +
-                            ((p.flip ? p.majorSize : p.minorSize) > 1 ? getScale("colour", p.flip ? p.majorHeader : p.minorHeader, p.flip ? p.majorSize : p.minorSize) : QString()) +
-                            QString(" + scale_y_continuous(trans=\"log10\")") +
-                            ((p.flip ? p.minorSize : p.majorSize) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minorHeader : p.majorHeader) : QString()) +
-                            QString(" + theme(aspect.ratio=1)") +
-                            QString("\nggsave(\"%1\")\n").arg(p.subfile("FRR"))));
+                            QString("\nggsave(\"%1\")\n").arg(p.subfile("ERR"))));
 
     return p.finalize(show);
 }
