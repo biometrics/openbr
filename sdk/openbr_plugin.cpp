@@ -1144,6 +1144,18 @@ static void _project(const Transform *transform, const Template *src, Template *
     }
 }
 
+static void _backProject(const Transform *transform, const Template *dst, Template *src)
+{
+    try {
+        transform->backProject(*dst, *src);
+    } catch (...) {
+        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->name()));
+        *src = Template(dst->file);
+        src->file.setBool("FTE");
+    }
+}
+
+
 void Transform::project(const TemplateList &src, TemplateList &dst) const
 {
     dst.reserve(src.size());
@@ -1162,6 +1174,18 @@ void Transform::backProject(const Template &dst, Template &src) const
     src = dst;
 }
 
+void Transform::backProject(const TemplateList &dst, TemplateList &src) const
+{
+    src.reserve(dst.size());
+    for (int i=0; i<dst.size(); i++) src.append(Template());
+
+    QList< QFuture<void> > futures;
+    if (Globals->parallelism) futures.reserve(dst.size());
+    for (int i=0; i<dst.size(); i++)
+        if (Globals->parallelism) futures.append(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
+        else                                                      _backProject (this, &dst[i], &src[i]);
+    if (Globals->parallelism) Globals->trackFutures(futures);
+}
 
 /* Distance - public methods */
 void Distance::train(const TemplateList &templates)

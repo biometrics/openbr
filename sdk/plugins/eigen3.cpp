@@ -52,6 +52,7 @@ public:
     PCA() : keep(0.95), drop(0), whiten(false) {}
 
 private:
+    /*
     void backProject(const Template &src, Template &dst) const
     {
         const cv::Mat &m = src;
@@ -64,6 +65,7 @@ private:
         // Do projection
         outMap = (eVecs * inMap) + mean;
     }
+    */
 
     double residualReconstructionError(const Template &src) const
     {
