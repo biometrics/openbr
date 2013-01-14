@@ -63,6 +63,12 @@ class csvFormat : public Format
 
         return Template(m);
     }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("csvFormat::write not supported.");
+    }
 };
 
 BR_REGISTER(Format, csvFormat)
@@ -105,6 +111,12 @@ class DefaultFormat : public Format
 
         return t;
     }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("csvFormat::write not supported.");
+    }
 };
 
 BR_REGISTER(Format, DefaultFormat)
@@ -128,6 +140,12 @@ class webcamFormat : public Format
         Mat m;
         videoCapture->read(m);
         return Template(m);
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("webcamFormat::write not supported.");
     }
 };
 
@@ -190,6 +208,12 @@ class xmlFormat : public Format
         }
 
         return t;
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("xmlFormat::write not supported.");
     }
 };
 
