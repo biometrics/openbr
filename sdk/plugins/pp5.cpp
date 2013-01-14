@@ -32,6 +32,14 @@
 
 using namespace br;
 
+
+/*!
+ * \ingroup initializers
+ * \brief Initialize PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
+
 class PP5Initializer : public Initializer
 {
     Q_OBJECT
@@ -49,6 +57,12 @@ class PP5Initializer : public Initializer
 };
 
 BR_REGISTER(Initializer, PP5Initializer)
+
+/*!
+ * \brief PP5 context
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
 
 struct PP5Context
 {
@@ -194,6 +208,14 @@ struct PP5Context
     }
 };
 
+
+/*!
+ * \ingroup transforms
+ * \brief Enroll faces in PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
+
 class PP5Enroll : public UntrainableTransform
 {
     Q_OBJECT
@@ -248,6 +270,13 @@ class PP5Enroll : public UntrainableTransform
 BR_REGISTER(Transform, PP5Enroll)
 
 
+
+/*!
+ * \ingroup distances
+ * \brief Compare templates with PP5
+ * \author Josh Klontz \cite jklontz
+ * \author E. Taborsky \cite mmtaborsky
+ */
 
 class PP5Compare : public Distance
                  , public PP5Context
