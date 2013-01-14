@@ -24,6 +24,8 @@
 #include <openbr_plugin.h>
 
 #include "core/bee.h"
+#include "core/opencvutils.h"
+#include "core/qtutils.h"
 
 using namespace br;
 using namespace cv;
@@ -68,8 +70,19 @@ class csvFormat : public Format
 
     void write(const Template &t) const
     {
-        (void) t;
-        qFatal("csvFormat::write not supported.");
+        const Mat &m = t.m();
+        if (t.size() != 1) qFatal("csvFormat::write only supports single matrix templates.");
+        if (m.channels() != 1) qFatal("csvFormat::write only supports single channel matrices.");
+
+        QStringList lines; lines.reserve(m.rows);
+        for (int r=0; r<m.rows; r++) {
+            QStringList elements; elements.reserve(m.cols);
+            for (int c=0; c<m.cols; c++)
+                elements.append(OpenCVUtils::elemToString(m, r, c));
+            lines.append(elements.join(","));
+        }
+
+        QtUtils::writeFile(file, lines);
     }
 };
 
@@ -116,8 +129,7 @@ class DefaultFormat : public Format
 
     void write(const Template &t) const
     {
-        (void) t;
-        qFatal("csvFormat::write not supported.");
+        imwrite(file.name.toStdString(), t);
     }
 };
 
