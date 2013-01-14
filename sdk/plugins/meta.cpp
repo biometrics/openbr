@@ -137,14 +137,14 @@ class PipeTransform : public MetaTransform
         }
     }
 
-    void projectBack(const Template &dst, Template &src) const
+    void backProject(const Template &dst, Template &src) const
     {
         src = dst;
         //reverse order in which transforms are processed
         int length = transforms.length();
         //foreach (const Transform *f, transforms) {
-        for (int i = 0; i < length; i++){
-            Transform *f = transforms.at(length - i - 1);
+        for (int i=length-1; i>=0; i--){
+            Transform *f = transforms.at(i);
             try {
                 src >> *f;
             } catch (...) {
@@ -213,14 +213,14 @@ class ChainTransform : public MetaTransform
         }
     }
 
-    void projectBack(const Template &dst, Template &src) const
+    void backProject(const Template &dst, Template &src) const
     {
         src = dst;
         //reverse order in which transforms are processed
         int length = transforms.length();
         //foreach (const Transform *f, transforms) {
-        for (int i = 0; i < length; i++){
-            Transform *f = transforms.at(length - i - 1);
+        for (int i=length-1; i>=0; i--){
+            Transform *f = transforms.at(i);
             try {
                 src >> *f;
             } catch (...) {

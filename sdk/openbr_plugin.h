@@ -929,8 +929,6 @@ public:
     virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
-
-
     /*!
      * \brief Convenience function equivalent to project().
      */
