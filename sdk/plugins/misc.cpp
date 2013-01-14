@@ -96,14 +96,14 @@ BR_REGISTER(Transform, ShowTransform)
 class PrintTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(bool stdout READ get_stdout WRITE set_stdout RESET reset_stdout)
-    BR_PROPERTY(bool, stdout, true)
+    Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
+    BR_PROPERTY(bool, error, false)
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        if (stdout) printf("%s\n", qPrintable(src.file.flat()));
-        else        qDebug("%s\n", qPrintable(src.file.flat()));
+        if (error) qDebug("%s\n", qPrintable(src.file.flat()));
+        else       printf("%s\n", qPrintable(src.file.flat()));
     }
 };
 
