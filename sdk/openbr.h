@@ -253,18 +253,17 @@ BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *im
  *
  * In order of their output, the figures are:
  * -# Metadata table
- * -# Detection Error Tradeoff (DET)
  * -# Receiver Operating Characteristic (ROC)
+ * -# Detection Error Tradeoff (DET)
  * -# Score Distribution (SD) histogram
  * -# True Accept Rate Bar Chart (BC)
  * -# Cumulative Match Characteristic (CMC)
- * -# False Accept Rate (FAR) curve
- * -# False Reject Rate (FRR) curve
+ * -# Error Rate (ERR) curve
  *
  * Several files will be created:
  * - <i>destination</i><tt>.R</tt> which is the auto-generated R script used to render the figures.
  * - <i>destination</i><tt>.pdf</tt> which has all of the figures in one file (convenient for attaching in an email).
- * - <i>destination</i><tt>_DET.pdf</tt>, ..., <i>destination</i><tt>_FAR.pdf</tt> which has each figure in a separate file (convenient for including in a presentation).
+ * - <i>destination</i><tt>_ROC.pdf</tt>, ..., <i>destination</i><tt>_ERR.pdf</tt> which has each figure in a separate file (convenient for including in a presentation).
  *
  * \param num_files Number of <tt>.csv</tt> files.
  * \param files <tt>.csv</tt> files created using \ref br_eval.
