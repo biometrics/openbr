@@ -471,7 +471,7 @@ bool br::Plot(const QStringList &files, const QString &destination, bool show)
                             QString(", ylab=\"True Accept Rate%1\") + theme_minimal()").arg(p.minorSize > 1 ? " / " + p.minorHeader : QString()) +
                             (p.majorSize > 1 ? getScale("fill", p.majorHeader, p.majorSize) : QString()) +
                             (p.minorSize > 1 ? QString(" + facet_grid(%2 ~ X)").arg(p.minorHeader) : QString(" + facet_wrap(~ X)")) +
-                            QString(" + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0)) + geom_text(data=BC, aes(label=Y, y=0.05))") +
+                            QString(" + scale_y_continuous(labels=percent) + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0)) + geom_text(data=BC, aes(label=Y, y=0.05))") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("BC"))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=ERR, geom=\"line\", linetype=Error") +
