@@ -80,14 +80,14 @@ struct AlgorithmCore
         out << Globals->classes;
 
         // Compress and save to file
-        QtUtils::writeFile(model, data);
+        QtUtils::writeFile(model, data, -1);
     }
 
     void load(const QString &model)
     {
         // Load from file and decompress
         QByteArray data;
-        QtUtils::readFile(model, data);
+        QtUtils::readFile(model, data, true);
 
         // Create stream
         QDataStream in(&data, QFile::ReadOnly);

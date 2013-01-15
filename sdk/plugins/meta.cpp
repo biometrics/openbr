@@ -394,7 +394,7 @@ private:
         QDataStream stream(&byteArray, QFile::WriteOnly);
         stream << description;
         transform->store(stream);
-        QtUtils::writeFile(baseName, byteArray);
+        QtUtils::writeFile(baseName, byteArray, -1);
     }
 
     void project(const Template &src, Template &dst) const
@@ -421,7 +421,7 @@ private:
 
         qDebug("Loading %s", qPrintable(baseName));
         QByteArray data;
-        QtUtils::readFile(file, data);
+        QtUtils::readFile(file, data, true);
         QDataStream stream(&data, QFile::ReadOnly);
         stream >> description;
         transform = Transform::make(description);

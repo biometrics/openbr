@@ -81,11 +81,12 @@ void QtUtils::readFile(const QString &file, QStringList &lines)
     f.close();
 }
 
-void QtUtils::readFile(const QString &file, QByteArray &data)
+void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 {
     QFile f(file);
     if (!f.open(QFile::ReadOnly)) qFatal("QtUtils::readFile unable to open %s for reading.", qPrintable(file));
-    data = qUncompress(f.readAll());
+    data = f.readAll();
+    if (uncompress) data = qUncompress(data);
     f.close();
 }
 

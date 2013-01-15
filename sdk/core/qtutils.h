@@ -34,10 +34,10 @@ namespace QtUtils
     QStringList getFiles(const QString &regexp);
     QStringList readLines(const QString &file);
     void readFile(const QString &file, QStringList &lines);
-    void readFile(const QString &file, QByteArray &data);
+    void readFile(const QString &file, QByteArray &data, bool uncompress = false);
     void writeFile(const QString &file, const QStringList &lines);
     void writeFile(const QString &file, const QString &data);
-    void writeFile(const QString &file, const QByteArray &data, int compression = -1);
+    void writeFile(const QString &file, const QByteArray &data, int compression = 0);
 
     /**** Directory Utilities ****/
     void touchDir(const QDir &dir);
