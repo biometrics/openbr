@@ -336,7 +336,7 @@ class matFormat : public Format
             stream.writeRawData(buffer.data(), buffer.size());
             quint64 subsystem = 0;
             quint16 version = 0x0100;
-            const char *endianness = "MI";
+            const char *endianness = "IM";
             stream.writeRawData((const char*)&subsystem, 8);
             stream.writeRawData((const char*)&version, 2);
             stream.writeRawData(endianness, 2);
