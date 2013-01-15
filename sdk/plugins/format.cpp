@@ -32,6 +32,46 @@ using namespace cv;
 
 /*!
  * \ingroup formats
+ * \brief A simple binary matrix format.
+ * \author Josh Klonyz \cite jklontz
+ * First 4 bytes indicate the number of rows.
+ * Second 4 bytes indicate the number of columns.
+ * The rest of the bytes are 32-bit floating data elements.
+ */
+class binFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        QByteArray data;
+        QtUtils::readFile(file, data);
+        return Template(file, Mat(((quint32*)data.data())[0],
+                                  ((quint32*)data.data())[1],
+                                  CV_32FC1,
+                                  data.data()+8).clone());
+    }
+
+    void write(const Template &t) const
+    {
+        Mat m;
+        t.m().convertTo(m, CV_32F);
+        if (m.channels() != 1) qFatal("binFormat::write only supports single channel matrices.");
+
+        QByteArray data;
+        QDataStream stream(&data, QFile::WriteOnly);
+        stream.writeRawData((const char*)&m.rows, 4);
+        stream.writeRawData((const char*)&m.cols, 4);
+        stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
+
+        QtUtils::writeFile(file, data);
+    }
+};
+
+BR_REGISTER(Format, binFormat)
+
+/*!
+ * \ingroup formats
  * \brief Reads a comma separated value file.
  * \author Josh Klontz \cite jklontz
  */
