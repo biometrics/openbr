@@ -18,6 +18,7 @@
 #define __QTUTILS_H
 
 #include <QByteArray>
+#include <QDataStream>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>

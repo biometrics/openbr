@@ -185,6 +185,118 @@ BR_REGISTER(Format, maskFormat)
 
 /*!
  * \ingroup formats
+ * \brief MATLAB <tt>.mat</tt> format.
+ * \author Josh Klontz \cite jklontz
+ * http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf
+ */
+class matFormat : public Format
+{
+    Q_OBJECT
+
+    struct Element
+    {
+        quint32 type, bytes;
+        QByteArray data;
+        Element() : type(0), bytes(0) {}
+        Element(QDataStream &stream)
+            : type(0), bytes(0)
+        {
+            bool error = false;
+            error |= (stream.readRawData((char*)&type, 4) != 4);
+
+            if (type >= 1 << 16) {
+                // Small data format
+                bytes = type;
+                type = type & 0x0000FFFF;
+                bytes = bytes >> 16;
+            } else {
+                // Regular format
+                error |= (stream.readRawData((char*)&bytes, 4) != 4);
+            }
+
+            data.resize(bytes);
+            error |= (int(bytes) != stream.readRawData(data.data(), bytes));
+
+            // Alignment
+            int skipBytes = (bytes < 4) ? (4 - bytes) : 0;
+            if (skipBytes != 0) error |= (skipBytes != stream.skipRawData(skipBytes));
+
+            if (error) qFatal("matFormat::Element Unexpected end of file.");
+        }
+
+        void print() const
+        {
+            qDebug() << "matFormat::Element" << type << bytes << data.size();
+        }
+    };
+
+    Template read() const
+    {
+        QByteArray byteArray;
+        QtUtils::readFile(file, byteArray);
+        QDataStream f(byteArray);
+
+        { // Check header
+            QByteArray header(128, 0);
+            f.readRawData(header.data(), 128);
+            if (!header.startsWith("MATLAB 5.0 MAT-file"))
+                qFatal("matFormat::read Invalid MAT header.");
+        }
+
+        Template t(file);
+
+        while (!f.atEnd()) {
+            Element element(f);
+
+            // miCOMPRESS
+            if (element.type == 15) {
+                element.data.prepend((char*)&element.bytes, 4); // Qt zlib wrapper requires this to preallocate the buffer
+                QDataStream uncompressed(qUncompress(element.data));
+                element = Element(uncompressed);
+            }
+
+            // miMATRIX
+            if (element.type == 14) {
+                QDataStream matrix(element.data);
+                qint32 rows = 0, columns = 0;
+                int matrixType = 0;
+                QByteArray matrixData;
+                while (!matrix.atEnd()) {
+                    Element subelement(matrix);
+                    if (subelement.type == 5) { // Dimensions array
+                        if (subelement.bytes == 8) {
+                            rows = ((qint32*)subelement.data.data())[0];
+                            columns = ((qint32*)subelement.data.data())[1];
+                        } else {
+                            qWarning("matFormat::read can only handle 2D arrays.");
+                        }
+                    } else if (subelement.type == 7) { //miSINGLE
+                        matrixType = CV_32FC1;
+                        matrixData = subelement.data;
+                    } else if (subelement.type == 9) { //miDOUBLE
+                        matrixType = CV_64FC1;
+                        matrixData = subelement.data;
+                    }
+                }
+
+                if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty())
+                    t.append(Mat(rows, columns, matrixType, matrixData.data()).clone());
+            }
+        }
+
+        return t;
+    }
+
+    void write(const Template &t) const
+    {
+
+    }
+};
+
+BR_REGISTER(Format, matFormat)
+
+/*!
+ * \ingroup formats
  * \brief Retrieves an image from a webcam.
  * \author Josh Klontz \cite jklontz
  */
