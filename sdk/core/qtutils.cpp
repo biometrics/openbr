@@ -113,7 +113,8 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     QFile f(file);
     touchDir(f);
     if (!f.open(QFile::WriteOnly)) qFatal("QtUtils::writeFile failed to open %s for writing.", qPrintable(file));
-    f.write(qCompress(data, compression));
+    if (compression == 0) f.write(data);
+    else                  f.write(qCompress(data, compression));
     f.close();
 }
 
