@@ -73,6 +73,11 @@ extern "C" {
 BR_EXPORT const char *br_about();
 
 /*!
+ * \brief Wraps br::Cat()
+ */
+BR_EXPORT void br_cat(int num_input_galleries, const char *input_galleries[], const char *output_gallery);
+
+/*!
  * \brief Clusters one or more similarity matrices into a list of subjects.
  *
  * A similarity matrix is a type of br::Output. The current clustering algorithm is a simplified implementation of \cite zhu11.

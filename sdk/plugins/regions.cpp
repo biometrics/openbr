@@ -76,7 +76,7 @@ BR_REGISTER(Transform, ByRow)
  * No requirements are placed on input matrices size and type.
  * \author Josh Klontz \cite jklontz
  */
-class Cat : public UntrainableMetaTransform
+class CatTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int partitions READ get_partitions WRITE set_partitions RESET reset_partitions)
@@ -105,7 +105,7 @@ class Cat : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Cat)
+BR_REGISTER(Transform, CatTransform)
 
 /*!
  * \ingroup transforms

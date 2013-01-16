@@ -1098,6 +1098,14 @@ BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, cons
  */
 BR_EXPORT void Convert(const File &input, const File &output);
 
+/*!
+ * \brief Concatenate several galleries into one.
+ * \param inputGalleries List of galleries to concatenate.
+ * \param outputGallery Gallery to store the concatenated result.
+ * \note outputGallery must not be in inputGalleries.
+ */
+BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGallery);
+
 /*! @}*/
 
 } // namespace br
