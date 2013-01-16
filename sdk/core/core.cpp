@@ -112,7 +112,8 @@ struct AlgorithmCore
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) return FileList();
         FileList fileList = g->files();
-        if (!fileList.isEmpty() && g->isUniversal()) return fileList; // Already enrolled
+        if (!fileList.isEmpty() && g->isUniversal() && !gallery.contains("append"))
+            return fileList; // Already enrolled
 
         const TemplateList i(TemplateList::fromInput(input));
         if (i.isEmpty()) return FileList(); // Nothing to enroll
@@ -133,13 +134,12 @@ struct AlgorithmCore
                 if (data.isEmpty()) break;
                 const int numFiles = data.size();
 
-                if (!Globals->backProject){
-                    data >> *transform;
+                if (Globals->backProject) {
+                    TemplateList backProjectedData;
+                    transform->backProject(data, backProjectedData);
+                    data = backProjectedData;
                 } else {
-                    // I don't really know if this makes sense.
-                    //TemplateList dst;
-                    transform->backProject(data, data);
-                    //data = dst;
+                    data >> *transform;
                 }
 
                 g->writeBlock(data);

@@ -60,15 +60,20 @@ class galGallery : public Gallery
     void init()
     {
         gallery.setFileName(file);
+        QtUtils::touchDir(gallery);
 
-        if (gallery.exists()) {
-            if (!gallery.open(QFile::ReadOnly)) qFatal("Can't open [%s] for reading.", qPrintable(gallery.fileName()));
-            stream.setDevice(&gallery);
+        if (file.contains("append")) {
+            if (!gallery.open(QFile::Append))
+                qFatal("Can't open [%s] for appending.", qPrintable(gallery.fileName()));
+        } else if (gallery.exists()) {
+            if (!gallery.open(QFile::ReadOnly))
+                qFatal("Can't open [%s] for reading.", qPrintable(gallery.fileName()));
         } else {
-            QtUtils::touchDir(gallery);
-            if (!gallery.open(QFile::WriteOnly)) qFatal("Can't open [%s] for writing.", qPrintable(gallery.fileName()));
-            stream.setDevice(&gallery);
+            if (!gallery.open(QFile::WriteOnly))
+                qFatal("Can't open [%s] for writing.", qPrintable(gallery.fileName()));
         }
+
+        stream.setDevice(&gallery);
     }
 
     bool isUniversal() const
