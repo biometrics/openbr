@@ -28,17 +28,17 @@ br::TransformEditor::TransformEditor(Transform *transform, QWidget *parent)
     layout.addWidget(&name);
     setLayout(&layout);
 
-    name.setCurrentIndex(name.findText(transform->name().remove("Transform")));
+    name.setCurrentIndex(name.findText(transform->objectName().remove("Transform")));
     const QMetaObject *mo = transform->metaObject();
     for (int i=mo->propertyOffset(); i<mo->propertyCount(); i++) {
         QMetaProperty mp = mo->property(i);
         const QString typeName = mp.typeName();
         if (typeName == "QList<br::Transform*>") {
             QString separator;
-            if      (transform->name() == "ChainTransform") separator = "!";
-            else if (transform->name() == "PipeTransform")  separator = "+";
-            else if (transform->name() == "ForkTransform")  separator = "/";
-            else                                            separator = "?";
+            if      (transform->objectName() == "Chain") separator = "!";
+            else if (transform->objectName() == "Pipe")  separator = "+";
+            else if (transform->objectName() == "Fork")  separator = "/";
+            else                                         separator = "?";
             parameters.append(new TransformListEditor(mp.read(transform).value< QList<br::Transform*> >(), separator, this));
         }
     }

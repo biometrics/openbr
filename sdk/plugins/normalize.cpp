@@ -23,14 +23,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Histogram equalization
  * \author Josh Klontz \cite jklontz
  */
-class EqualizeHist : public UntrainableTransform
+class EqualizeHistTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -40,14 +42,14 @@ class EqualizeHist : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, EqualizeHist)
+BR_REGISTER(Transform, EqualizeHistTransform)
 
 /*!
  * \ingroup transforms
  * \brief Normalize matrix to unit length
  * \author Josh Klontz \cite jklontz
  */
-class Normalize : public UntrainableTransform
+class NormalizeTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(NormType)
@@ -68,14 +70,14 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Normalize)
+BR_REGISTER(Transform, NormalizeTransform)
 
 /*!
  * \ingroup transforms
  * \brief Normalize each dimension based on training data.
  * \author Josh Klontz \cite jklontz
  */
-class Center : public Transform
+class CenterTransform : public Transform
 {
     Q_OBJECT
     Q_ENUMS(Method)
@@ -180,6 +182,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Center)
+BR_REGISTER(Transform, CenterTransform)
+
+} // namespace br
 
 #include "normalize.moc"

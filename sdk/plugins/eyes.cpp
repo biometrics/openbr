@@ -39,7 +39,9 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -50,7 +52,7 @@ using namespace br;
  * \author David Bolme
  * \author Josh Klontz \cite jklontz
  */
-class ASEFEyes : public UntrainableTransform
+class ASEFEyesTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -59,7 +61,7 @@ class ASEFEyes : public UntrainableTransform
     int width, height;
 
 public:
-    ASEFEyes()
+    ASEFEyesTransform()
     {
         QFile file;
         QByteArray line, lf, rf, magic_number;
@@ -186,6 +188,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, ASEFEyes)
+BR_REGISTER(Transform, ASEFEyesTransform)
+
+} // namespace br
 
 #include "eyes.moc"

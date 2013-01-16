@@ -379,7 +379,6 @@ class BR_EXPORT Object : public QObject
 public:
     File file; /*!< \brief The file used to construct the plugin. */
 
-    virtual QString name() const; /*!< \brief The plugin class name. */
     virtual void init() {} /*!< \brief Overload this function instead of the default constructor to initialize the derived class. It should be safe to call this function multiple times. */
     virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */

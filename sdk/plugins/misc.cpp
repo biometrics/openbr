@@ -20,7 +20,9 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -252,5 +254,7 @@ class RenameTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, RenameTransform)
+
+}
 
 #include "misc.moc"

@@ -20,14 +20,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Renders metadata onto the image
  * \author Josh Klontz \cite jklontz
  */
-class Draw : public UntrainableTransform
+class DrawTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
@@ -52,14 +54,14 @@ class Draw : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Draw)
+BR_REGISTER(Transform, DrawTransform)
 
 /*!
  * \ingroup transforms
  * \brief Draws a grid on the image
  * \author Josh Klontz \cite jklontz
  */
-class DrawGrid : public UntrainableTransform
+class DrawGridTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
@@ -87,14 +89,14 @@ class DrawGrid : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, DrawGrid)
+BR_REGISTER(Transform, DrawGridTransform)
 
 /*!
  * \ingroup transforms
  * \brief Remove landmarks.
  * \author Josh Klontz \cite jklontz
  */
-class Edit : public UntrainableTransform
+class EditTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -129,7 +131,7 @@ class Edit : public UntrainableTransform
 
     static void mouseCallback(int event, int x, int y, int flags, void *userdata)
     {
-        ((const Edit*)userdata)->mouseEvent(event, x, y, flags);
+        ((const EditTransform*)userdata)->mouseEvent(event, x, y, flags);
     }
 
     void mouseEvent(int event, int x, int y, int flags) const
@@ -149,9 +151,11 @@ class Edit : public UntrainableTransform
     }
 };
 
-Template Edit::currentTemplate;
-QMutex Edit::currentTemplateLock;
+Template EditTransform::currentTemplate;
+QMutex EditTransform::currentTemplateLock;
 
-BR_REGISTER(Transform, Edit)
+BR_REGISTER(Transform, EditTransform)
+
+} // namespace br
 
 #include "draw.moc"

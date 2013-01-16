@@ -20,14 +20,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Prediction using only the red wavelength; magic numbers from jmp
  * \author E. Taborsky \cite mmtaborsky
  */
-class RedLinearRegression : public UntrainableTransform
+class RedLinearRegressionTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -56,14 +58,14 @@ class RedLinearRegression : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, RedLinearRegression)
+BR_REGISTER(Transform, RedLinearRegressionTransform)
 
 /*!
  * \ingroup transforms
  * \brief Prediction with magic numbers from jmp; must get input as blue;green;red
  * \author E. Taborsky \cite mmtaborsky
  */
-class OrigLinearRegression : public UntrainableMetaTransform
+class OrigLinearRegressionTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -94,6 +96,8 @@ class OrigLinearRegression : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, OrigLinearRegression)
+BR_REGISTER(Transform, OrigLinearRegressionTransform)
+
+} // namespace br
 
 #include "synthetic.moc"

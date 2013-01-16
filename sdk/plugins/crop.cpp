@@ -20,14 +20,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Crops the regions of interest.
  * \author Josh Klontz \cite jklontz
  */
-class ROI : public UntrainableTransform
+class ROITransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -38,14 +40,14 @@ class ROI : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, ROI)
+BR_REGISTER(Transform, ROITransform)
 
 /*!
  * \ingroup transforms
  * \brief Resize the template
  * \author Josh Klontz \cite jklontz
  */
-class Resize : public UntrainableTransform
+class ResizeTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
@@ -59,14 +61,14 @@ class Resize : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Resize)
+BR_REGISTER(Transform, ResizeTransform)
 
 /*!
  * \ingroup transforms
  * \brief Limit the size of the template
  * \author Josh Klontz \cite jklontz
  */
-class LimitSize : public UntrainableTransform
+class LimitSizeTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int max READ get_max WRITE set_max RESET reset_max STORED false)
@@ -84,14 +86,14 @@ class LimitSize : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, LimitSize)
+BR_REGISTER(Transform, LimitSizeTransform)
 
 /*!
  * \ingroup transforms
  * \brief Crop out black borders
  * \author Josh Klontz \cite jklontz
  */
-class CropBlack : public UntrainableTransform
+class CropBlackTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -128,6 +130,8 @@ class CropBlack : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, CropBlack)
+BR_REGISTER(Transform, CropBlackTransform)
+
+} // namespace br
 
 #include "crop.moc"

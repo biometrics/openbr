@@ -42,7 +42,8 @@
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
 
-using namespace br;
+namespace br
+{
 
 /*!
  * \ingroup outputs
@@ -419,5 +420,7 @@ class histOutput : public Output
 };
 
 BR_REGISTER(Output, histOutput)
+
+} // namespace br
 
 #include "output.moc"

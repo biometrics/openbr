@@ -21,7 +21,8 @@
 
 #include "core/opencvutils.h"
 
-using namespace br;
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -29,7 +30,7 @@ using namespace br;
  * Knowledge Discovery and Data Mining 2(2), 1998.
  * \author Josh Klontz \cite jklontz
  */
-class SVM : public Transform
+class SVMTransform : public Transform
 {
     Q_OBJECT
     Q_ENUMS(Kernel)
@@ -66,7 +67,7 @@ private:
     float a, b;
 
 public:
-    SVM() : a(1), b(0) {}
+    SVMTransform() : a(1), b(0) {}
 
 private:
     void train(const TemplateList &_data)
@@ -153,6 +154,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, SVM)
+BR_REGISTER(Transform, SVMTransform)
+
+} // namespace br
 
 #include "svm.moc"

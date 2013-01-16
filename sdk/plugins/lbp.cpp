@@ -19,7 +19,9 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -28,7 +30,7 @@ using namespace br;
  * Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
  * \author Josh Klontz \cite jklontz
  */
-class LBP : public UntrainableTransform
+class LBPTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int radius READ get_radius WRITE set_radius RESET reset_radius STORED false)
@@ -41,7 +43,7 @@ class LBP : public UntrainableTransform
     uchar lut[256];
     uchar null;
 
-    friend class ColoredU2;
+    friend class ColoredU2Transform;
 
     /* Returns the number of 0->1 or 1->0 transitions in i */
     static int numTransitions(int i)
@@ -119,14 +121,14 @@ class LBP : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, LBP)
+BR_REGISTER(Transform, LBPTransform)
 
 /*!
  * \ingroup transforms
  * \brief For visualization of LBP patterns.
  * \author Josh Klontz \cite jklontz
  */
-class ColoredU2 : public UntrainableTransform
+class ColoredU2Transform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -150,7 +152,7 @@ class ColoredU2 : public UntrainableTransform
 
             uchar uid = 0;
             for (int i=0; i<256; i++) {
-                const int transitions = LBP::numTransitions(i);
+                const int transitions = LBPTransform::numTransitions(i);
                 int u2;
                 if   (transitions <= 2) u2 = uid++;
                 else                    u2 = 58;
@@ -187,6 +189,8 @@ class ColoredU2 : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, ColoredU2)
+BR_REGISTER(Transform, ColoredU2Transform)
+
+} // namespace br
 
 #include "lbp.moc"

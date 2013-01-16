@@ -20,14 +20,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV kmeans
  * \author Josh Klontz \cite jklontz
  */
-class KMeans : public Transform
+class KMeansTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(int k READ get_k WRITE set_k RESET reset_k)
@@ -71,6 +73,8 @@ class KMeans : public Transform
     }
 };
 
-BR_REGISTER(Transform, KMeans)
+BR_REGISTER(Transform, KMeansTransform)
+
+}
 
 #include "cluster.moc"

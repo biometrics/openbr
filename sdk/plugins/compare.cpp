@@ -20,14 +20,16 @@
 #include "core/distance_sse.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup distances
  * \brief Standard distance metrics
  * \author Josh Klontz \cite jklontz
  */
-class Dist : public Distance
+class DistDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Metric)
@@ -110,14 +112,14 @@ private:
     }
 };
 
-BR_REGISTER(Distance, Dist)
+BR_REGISTER(Distance, DistDistance)
 
 /*!
  * \ingroup distances
  * \brief Fast 8-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class UCharL1 : public Distance
+class UCharL1Distance : public Distance
 {
     Q_OBJECT
 
@@ -127,7 +129,7 @@ class UCharL1 : public Distance
     }
 };
 
-BR_REGISTER(Distance, UCharL1)
+BR_REGISTER(Distance, UCharL1Distance)
 
 
 /*!
@@ -135,7 +137,7 @@ BR_REGISTER(Distance, UCharL1)
  * \brief Fast 4-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class PackedUCharL1 : public Distance
+class PackedUCharL1Distance : public Distance
 {
     Q_OBJECT
 
@@ -145,14 +147,14 @@ class PackedUCharL1 : public Distance
     }
 };
 
-BR_REGISTER(Distance, PackedUCharL1)
+BR_REGISTER(Distance, PackedUCharL1Distance)
 
 /*!
  * \ingroup distances
  * \brief Returns \c true if the templates are identical, \c false otherwise.
  * \author Josh Klontz \cite jklontz
  */
-class Identical : public Distance
+class IdenticalDistance : public Distance
 {
     Q_OBJECT
 
@@ -168,6 +170,8 @@ class Identical : public Distance
     }
 };
 
-BR_REGISTER(Distance, Identical)
+BR_REGISTER(Distance, IdenticalDistance)
+
+} // namespace br
 
 #include "compare.moc"

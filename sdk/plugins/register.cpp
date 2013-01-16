@@ -17,17 +17,19 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr_plugin.h>
 
-using namespace cv;
-using namespace br;
-
 #include "core/opencvutils.h"
+
+using namespace cv;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Performs a two or three point registration.
  * \author Josh Klontz \cite jklontz
  */
-class Affine : public UntrainableTransform
+class AffineTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
@@ -101,14 +103,14 @@ class Affine : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Affine)
+BR_REGISTER(Transform, AffineTransform)
 
 /*!
  * \ingroup transforms
  * \brief Flips the image about an axis.
  * \author Josh Klontz \cite jklontz
  */
-class Flip : public UntrainableTransform
+class FlipTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Axis)
@@ -129,6 +131,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Flip)
+BR_REGISTER(Transform, FlipTransform)
+
+} // namespace br
 
 #include "register.moc"

@@ -20,14 +20,16 @@
 #include "core/tanh_sse.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Gamma correction
  * \author Josh Klontz \cite jklontz
  */
-class Gamma : public UntrainableTransform
+class GammaTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float gamma READ get_gamma WRITE set_gamma RESET reset_gamma)
@@ -48,14 +50,14 @@ class Gamma : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Gamma)
+BR_REGISTER(Transform, GammaTransform)
 
 /*!
  * \ingroup transforms
  * \brief Gaussian blur
  * \author Josh Klontz \cite jklontz
  */
-class Blur : public UntrainableTransform
+class BlurTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float sigma READ get_sigma WRITE set_sigma RESET reset_sigma STORED false)
@@ -67,14 +69,14 @@ class Blur : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Blur)
+BR_REGISTER(Transform, BlurTransform)
 
 /*!
  * \ingroup transforms
  * \brief Difference of gaussians
  * \author Josh Klontz \cite jklontz
  */
-class DoG : public UntrainableTransform
+class DoGTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float sigma0 READ get_sigma0 WRITE set_sigma0 RESET reset_sigma0 STORED false)
@@ -109,7 +111,7 @@ class DoG : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, DoG)
+BR_REGISTER(Transform, DoGTransform)
 
 /*!
  * \ingroup transforms
@@ -119,7 +121,7 @@ BR_REGISTER(Transform, DoG)
  * \author Scott Klum \cite sklum
  */
 
-class CSDN : public UntrainableTransform
+class CSDNTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -159,7 +161,7 @@ class CSDN : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, CSDN)
+BR_REGISTER(Transform, CSDNTransform)
 
 /*!
  * \ingroup transforms
@@ -168,7 +170,7 @@ BR_REGISTER(Transform, CSDN)
  * Image Processing, IEEE Transactions on , vol.19, no.6, pp.1635-1650, June 2010
  * \author Josh Klontz \cite jklontz
  */
-class ContrastEq : public UntrainableTransform
+class ContrastEqTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a STORED false)
@@ -216,14 +218,14 @@ class ContrastEq : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, ContrastEq)
+BR_REGISTER(Transform, ContrastEqTransform)
 
 /*!
  * \ingroup transforms
  * \brief Raise each element to the specified power.
  * \author Josh Klontz \cite jklontz
  */
-class Pow : public UntrainableTransform
+class PowTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float power READ get_power WRITE set_power RESET reset_power STORED false)
@@ -238,6 +240,8 @@ class Pow : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Pow)
+BR_REGISTER(Transform, PowTransform)
+
+} // namespace br
 
 #include "filter.moc"

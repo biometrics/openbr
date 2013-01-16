@@ -20,7 +20,8 @@
 #include "core/common.h"
 #include "core/eigenutils.h"
 
-using namespace br;
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -28,7 +29,7 @@ using namespace br;
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  */
-class PCA : public Transform
+class PCATransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float keep READ get_keep WRITE set_keep RESET reset_keep STORED false)
@@ -45,11 +46,11 @@ class PCA : public Transform
     Eigen::VectorXf mean, eVals;
     Eigen::MatrixXf eVecs;
 
-    friend class DFFS;
-    friend class LDA;
+    friend class DFFSTransform;
+    friend class LDATransform;
 
 public:
-    PCA() : keep(0.95), drop(0), whiten(false) {}
+    PCATransform() : keep(0.95), drop(0), whiten(false) {}
 
 private:
     /*
@@ -195,14 +196,14 @@ private:
     }
 };
 
-BR_REGISTER(Transform, PCA)
+BR_REGISTER(Transform, PCATransform)
 
 /*!
  * \ingroup transforms
  * \brief Computes Distance From Feature Space (DFFS) \cite moghaddam97.
  * \author Josh Klontz \cite jklontz
  */
-class DFFS : public Transform
+class DFFSTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float keep READ get_keep WRITE set_keep RESET reset_keep STORED false)
@@ -210,7 +211,7 @@ class DFFS : public Transform
     BR_PROPERTY(float, keep, 0.95)
     BR_PROPERTY(br::Transform*, transform, NULL)
 
-    PCA pca;
+    PCATransform pca;
     Transform *cvtFloat;
 
     void init()
@@ -241,7 +242,7 @@ class DFFS : public Transform
     }
 };
 
-BR_REGISTER(Transform, DFFS)
+BR_REGISTER(Transform, DFFSTransform)
 
 /*!
  * \ingroup transforms
@@ -249,7 +250,7 @@ BR_REGISTER(Transform, DFFS)
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  */
-class LDA : public Transform
+class LDATransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float pcaKeep READ get_pcaKeep WRITE set_pcaKeep RESET reset_pcaKeep STORED false)
@@ -268,7 +269,7 @@ class LDA : public Transform
         int instances = trainingSet.size();
 
         // Perform PCA dimensionality reduction
-        PCA pca;
+        PCATransform pca;
         pca.keep = pcaKeep;
         pca.train(trainingSet);
         mean = pca.mean;
@@ -294,7 +295,7 @@ class LDA : public Transform
         for (int i=0; i<numClasses; i++) classMeans.col(i) /= classCounts[i];
         for (int i=0; i<instances; i++)  data.col(i) -= classMeans.col(classes[i]);
 
-        PCA space1;
+        PCATransform space1;
 
         if (!directLDA)
         {
@@ -389,7 +390,7 @@ class LDA : public Transform
         // because each class is a vector used to compute the covariance,
         // but one degree of freedom is lost removing the global mean.
         int dim2 = std::min((int)space1.keep, numClasses-1);
-        PCA space2;
+        PCATransform space2;
         space2.keep = dim2;
         space2.train(data2);
 
@@ -421,6 +422,8 @@ class LDA : public Transform
     }
 };
 
-BR_REGISTER(Transform, LDA)
+BR_REGISTER(Transform, LDATransform)
+
+} // namespace br
 
 #include "eigen3.moc"

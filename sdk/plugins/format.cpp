@@ -27,8 +27,10 @@
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
 
-using namespace br;
 using namespace cv;
+
+namespace br
+{
 
 /*!
  * \ingroup formats
@@ -521,5 +523,7 @@ class xmlFormat : public Format
 
 BR_REGISTER(Format, xmlFormat)
 #endif // BR_EMBEDDED
+
+} // namespace br
 
 #include "format.moc"

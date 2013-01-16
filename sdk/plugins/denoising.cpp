@@ -18,14 +18,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Non-Local Means Denoising
  * \author Josh Klontz \cite jklontz
  */
-class NLMeansDenoising : public UntrainableTransform
+class NLMeansDenoisingTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float h READ get_h WRITE set_h RESET reset_h STORED false)
@@ -41,6 +43,8 @@ class NLMeansDenoising : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, NLMeansDenoising)
+BR_REGISTER(Transform, NLMeansDenoisingTransform)
+
+} // namespace br
 
 #include "denoising.moc"

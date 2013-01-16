@@ -18,14 +18,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV inpainting
  * \author Josh Klontz \cite jklontz
  */
-class Inpaint : public UntrainableTransform
+class InpaintTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Method)
@@ -53,14 +55,14 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Inpaint)
+BR_REGISTER(Transform, InpaintTransform)
 
 /*!
  * \ingroup transforms
  * \brief Fill 0 pixels with the mean of non-0 pixels.
  * \author Josh Klontz \cite jklontz
  */
-class MeanFill : public UntrainableTransform
+class MeanFillTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -71,14 +73,14 @@ class MeanFill : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, MeanFill)
+BR_REGISTER(Transform, MeanFillTransform)
 
 /*!
  * \ingroup transforms
  * \brief Fill black pixels with the specified color.
  * \author Josh Klontz \cite jklontz
  */
-class Flood : public UntrainableTransform
+class FloodTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int r READ get_r WRITE set_r RESET reset_r STORED false)
@@ -97,14 +99,14 @@ class Flood : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Flood)
+BR_REGISTER(Transform, FloodTransform)
 
 /*!
  * \ingroup transforms
  * \brief Alpha-blend two matrices
  * \author Josh Klontz \cite jklontz
  */
-class Blend : public UntrainableMetaTransform
+class BlendTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(float alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
@@ -117,6 +119,8 @@ class Blend : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Blend)
+BR_REGISTER(Transform, BlendTransform)
+
+} // namespace br
 
 #include "fill.moc"

@@ -21,14 +21,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Histograms the matrix
  * \author Josh Klontz \cite jklontz
  */
-class Hist : public UntrainableTransform
+class HistTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float max READ get_max WRITE set_max RESET reset_max STORED false)
@@ -60,14 +62,14 @@ class Hist : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Hist)
+BR_REGISTER(Transform, HistTransform)
 
 /*!
  * \ingroup transforms
  * \brief Converts each element to its rank-ordered value.
  * \author Josh Klontz \cite jklontz
  */
-class Rank : public UntrainableTransform
+class RankTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -92,14 +94,14 @@ class Rank : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Rank)
+BR_REGISTER(Transform, RankTransform)
 
 /*!
  * \ingroup transforms
  * \brief An integral histogram
  * \author Josh Klontz \cite jklontz
  */
-class IntegralHist : public UntrainableTransform
+class IntegralHistTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int bins READ get_bins WRITE set_bins RESET reset_bins STORED false)
@@ -128,14 +130,14 @@ class IntegralHist : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, IntegralHist)
+BR_REGISTER(Transform, IntegralHistTransform)
 
 /*!
  * \ingroup transforms
  * \brief Detects regions of low variance
  * \author Josh Klontz \cite jklontz
  */
-class VarianceChangeDetector : public UntrainableTransform
+class VarianceChangeDetectorTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int bins READ get_bins WRITE set_bins RESET reset_bins STORED false)
@@ -213,6 +215,8 @@ class VarianceChangeDetector : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, VarianceChangeDetector)
+BR_REGISTER(Transform, VarianceChangeDetectorTransform)
+
+} // namespace br
 
 #include "hist.moc"
