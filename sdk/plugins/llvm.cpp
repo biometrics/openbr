@@ -81,25 +81,6 @@ static Mat MatFromMatrix(const Matrix &m)
     return Mat(m.rows, m.columns, CV_MAKETYPE(depth, m.channels), m.data).clone();
 }
 
-static void AllocateMatrixFromMat(Matrix &m, cv::Mat &mat)
-{
-    int cvType = -1;
-    switch (m.type()) {
-      case Matrix::u8:  cvType = CV_8U; break;
-      case Matrix::s8:  cvType = CV_8S; break;
-      case Matrix::u16: cvType = CV_16U; break;
-      case Matrix::s16: cvType = CV_16S; break;
-      case Matrix::s32: cvType = CV_32S; break;
-      case Matrix::f32: cvType = CV_32F; break;
-      case Matrix::f64: cvType = CV_64F; break;
-      default:          qFatal("OpenCV does not support Matrix format: %s", qPrintable(MatrixToString(m)));
-    }
-
-    m.deallocate();
-    mat = Mat(m.rows, m.columns, CV_MAKETYPE(cvType, m.channels));
-    m.data = mat.data;
-}
-
 QDebug operator<<(QDebug dbg, const Matrix &m)
 {
     dbg.nospace() << MatrixToString(m);
@@ -140,6 +121,7 @@ struct MatrixBuilder : public Matrix
 
     void copyHeaderCode(const MatrixBuilder &other) const {
         setChannels(other.getChannels());
+        setColumns(other.getColumns());
         setRows(other.getRows());
         setFrames(other.getFrames());
         setHash(other.getHash());
@@ -333,25 +315,18 @@ public:
     virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const { (void) src; (void) dst; return MatrixBuilder::constant(0); }
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
-    void apply(const Matrix &src, Matrix &dst) const
-    {
-        const int size = preallocate(src, dst);
-        dst.allocate();
-        invoke(src, dst, size);
-    }
-
     void optimize(Function *f) const
     {
         while (TheFunctionPassManager->run(*f));
         TheExtraFunctionPassManager->run(*f);
     }
 
-    UnaryKernel_t getKernel(const Matrix *src) const
+    UnaryFunction_t getFunction(const Matrix *src) const
     {
-        const QString functionName = mangledName(*src);
+        const QString functionName = mangledName();
         Function *function = TheModule->getFunction(qPrintable(functionName));
         if (function == NULL) function = compile(*src);
-        return (UnaryKernel_t)TheExecutionEngine->getPointerToFunction(function);
+        return (UnaryFunction_t)TheExecutionEngine->getPointerToFunction(function);
     }
 
 private:
@@ -433,7 +408,7 @@ private:
         builder.CreateRetVoid();
 
         optimize(function);
-        return kernel;
+        return function;
     }
 
     Function *compileKernel(const Matrix &m) const
@@ -476,24 +451,9 @@ private:
     {
         const Matrix m(MatrixFromMat(src));
         Matrix n;
-        const int size = preallocate(m, n);
-        AllocateMatrixFromMat(n, dst);
-        invoke(m, n, size);
-    }
-
-    void invoke(const Matrix &src, Matrix &dst, int size) const
-    {
-        if (src.hash != hash) {
-            static QMutex compilerLock;
-            QMutexLocker locker(&compilerLock);
-
-            if (src.hash != hash) {
-                const_cast<UnaryKernel*>(this)->kernel = getKernel(&src);
-                const_cast<UnaryKernel*>(this)->hash = src.hash;
-            }
-        }
-
-        kernel(&src, &dst, size);
+        UnaryFunction_t function = getFunction(&m);
+        function(&m, &n);
+        dst.m() = MatFromMatrix(n);
     }
 };
 
