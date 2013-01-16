@@ -28,7 +28,8 @@
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
 
-using namespace br;
+namespace br
+{
 
 QDataStream &operator<<(QDataStream &stream, const Template &t)
 {
@@ -659,5 +660,7 @@ class googleGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, googleGallery)
+
+} // namespace br
 
 #include "gallery.moc"

@@ -17,14 +17,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Treat each pixel as a classification task
  * \author E. Taborsky \cite mmtaborsky
  */
-class PerPixelClassifier : public MetaTransform
+class PerPixelClassifierTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
@@ -171,14 +173,14 @@ class PerPixelClassifier : public MetaTransform
     }
 };
 
-BR_REGISTER(Transform, PerPixelClassifier)
+BR_REGISTER(Transform, PerPixelClassifierTransform)
 
 /*!
  * \ingroup transforms
  * \brief Construct feature vectors of neighboring pixels
  * \author E. Taborsky \cite mmtaborsky
  */
-class Neighbors: public UntrainableMetaTransform
+class NeighborsTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -214,14 +216,14 @@ class Neighbors: public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Neighbors)
+BR_REGISTER(Transform, NeighborsTransform)
 
 /*!
  * \ingroup transforms
  * \brief To binary vector
  * \author E. Taborsky \cite mmtaborsky
  */
-class ToBinaryVector: public UntrainableMetaTransform
+class ToBinaryVectorTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -264,7 +266,7 @@ class ToBinaryVector: public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, ToBinaryVector)
+BR_REGISTER(Transform, ToBinaryVectorTransform)
 
 /*!
  * \ingroup transforms
@@ -272,7 +274,7 @@ BR_REGISTER(Transform, ToBinaryVector)
  * \author E. Taborsky \cite mmtaborsky
  */
 
-class ToMetadata: public UntrainableMetaTransform
+class ToMetadataTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -288,6 +290,8 @@ class ToMetadata: public UntrainableMetaTransform
 
 };
 
-BR_REGISTER(Transform, ToMetadata)
+BR_REGISTER(Transform, ToMetadataTransform)
+
+} // namespace br
 
 #include "pixel.moc"

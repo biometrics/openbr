@@ -18,14 +18,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief http://en.wikipedia.org/wiki/Gabor_filter
  * \author Josh Klontz \cite jklontz
  */
-class Gabor : public UntrainableTransform
+class GaborTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Component)
@@ -53,7 +55,7 @@ private:
 
     Mat kReal, kImaginary;
 
-    friend class GaborJet;
+    friend class GaborJetTransform;
 
     static void makeWavelet(float lambda, float theta, float psi, float sigma, float gamma, Mat &kReal, Mat &kImaginary)
     {
@@ -111,29 +113,29 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Gabor)
+BR_REGISTER(Transform, GaborTransform)
 
 /*!
  * \ingroup transforms
  * \brief A vector of gabor wavelets applied at a point.
  * \author Josh Klontz \cite jklontz
  */
-class GaborJet : public UntrainableTransform
+class GaborJetTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_ENUMS(Gabor::Component)
+    Q_ENUMS(br::GaborTransform::Component)
     Q_PROPERTY(QList<float> lambdas READ get_lambdas WRITE set_lambdas RESET reset_lambdas STORED false)
     Q_PROPERTY(QList<float> thetas READ get_thetas WRITE set_thetas RESET reset_thetas STORED false)
     Q_PROPERTY(QList<float> psis READ get_psis WRITE set_psis RESET reset_psis STORED false)
     Q_PROPERTY(QList<float> sigmas READ get_sigmas WRITE set_sigmas RESET reset_sigmas STORED false)
     Q_PROPERTY(QList<float> gammas READ get_gammas WRITE set_gammas RESET reset_gammas STORED false)
-    Q_PROPERTY(Gabor::Component component READ get_component WRITE set_component RESET reset_component STORED false)
+    Q_PROPERTY(br::GaborTransform::Component component READ get_component WRITE set_component RESET reset_component STORED false)
     BR_PROPERTY(QList<float>, lambdas, QList<float>())
     BR_PROPERTY(QList<float>, thetas, QList<float>())
     BR_PROPERTY(QList<float>, psis, QList<float>())
     BR_PROPERTY(QList<float>, sigmas, QList<float>())
     BR_PROPERTY(QList<float>, gammas, QList<float>())
-    BR_PROPERTY(Gabor::Component, component, Gabor::Phase)
+    BR_PROPERTY(GaborTransform::Component, component, GaborTransform::Phase)
 
     QList<Mat> kReals, kImaginaries;
 
@@ -147,13 +149,13 @@ class GaborJet : public UntrainableTransform
                     foreach (float sigma, sigmas)
                         foreach (float gamma, gammas) {
                             Mat kReal, kImaginary;
-                            Gabor::makeWavelet(lambda, theta, psi, sigma, gamma, kReal, kImaginary);
+                            GaborTransform::makeWavelet(lambda, theta, psi, sigma, gamma, kReal, kImaginary);
                             kReals.append(kReal);
                             kImaginaries.append(kImaginary);
                         }
     }
 
-    static float response(const cv::Mat &src, const QPointF &point, const Mat &kReal, const Mat &kImaginary, Gabor::Component component)
+    static float response(const cv::Mat &src, const QPointF &point, const Mat &kReal, const Mat &kImaginary, GaborTransform::Component component)
     {
         Rect roi(std::max(std::min((int)(point.x() - kReal.cols/2.f), src.cols - kReal.cols), 0),
                  std::max(std::min((int)(point.y() - kReal.rows/2.f), src.rows - kReal.rows), 0),
@@ -161,27 +163,27 @@ class GaborJet : public UntrainableTransform
                  kReal.rows);
 
         float real = 0, imaginary = 0, magnitude = 0, phase = 0;
-        if (component != Gabor::Imaginary) {
+        if (component != GaborTransform::Imaginary) {
             Mat dst;
             multiply(src(roi), kReal, dst);
             real = sum(dst)[0];
         }
-        if (component != Gabor::Real) {
+        if (component != GaborTransform::Real) {
             Mat dst;
             multiply(src(roi), kImaginary, dst);
             imaginary = sum(dst)[0];
         }
-        if ((component == Gabor::Magnitude) || (component == Gabor::Phase)) {
+        if ((component == GaborTransform::Magnitude) || (component == GaborTransform::Phase)) {
             magnitude = sqrt(real*real + imaginary*imaginary);
             phase = atan2(imaginary, real)*180/CV_PI;
         }
 
         float dst = 0;
-        if      (component == Gabor::Real)      dst = real;
-        else if (component == Gabor::Imaginary) dst = imaginary;
-        else if (component == Gabor::Magnitude) dst = magnitude;
-        else if (component == Gabor::Phase)     dst = phase;
-        else                                    qFatal("GaborJet::response invalid component.");
+        if      (component == GaborTransform::Real)      dst = real;
+        else if (component == GaborTransform::Imaginary) dst = imaginary;
+        else if (component == GaborTransform::Magnitude) dst = magnitude;
+        else if (component == GaborTransform::Phase)     dst = phase;
+        else                                             qFatal("GaborJet::response invalid component.");
         return dst;
     }
 
@@ -195,6 +197,8 @@ class GaborJet : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, GaborJet)
+BR_REGISTER(Transform, GaborJetTransform)
+
+} // namespace br
 
 #include "wavelet.moc"

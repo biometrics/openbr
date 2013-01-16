@@ -442,11 +442,6 @@ TemplateList TemplateList::fromInput(const br::File &input)
 }
 
 /* Object - public methods */
-QString Object::name() const
-{
-    return metaObject()->className();
-}
-
 QStringList Object::parameters() const
 {
     QStringList parameters;
@@ -505,7 +500,7 @@ QString Object::argument(int index) const
 QString Object::description() const
 {
     QString argumentString = arguments().join(",");
-    return name() + (argumentString.isEmpty() ? "" : ("(" + argumentString + ")"));
+    return objectName() + (argumentString.isEmpty() ? "" : ("(" + argumentString + ")"));
 }
 
 void Object::store(QDataStream &stream) const
@@ -642,6 +637,23 @@ QStringList br::Object::parse(const QString &string, char split)
 /* Object - private methods */
 void Object::init(const File &file_)
 {
+    this->file = file_;
+
+    // Set name
+    QString name = metaObject()->className();
+    if (name.startsWith("br::")) name = name.right(name.size()-4);
+    const QMetaObject *superClass = metaObject()->superClass();
+    while (superClass != NULL) {
+        QString superClassName = superClass->className();
+        if (superClassName.startsWith("br::"))
+            superClassName = superClassName.right(superClassName.size()-4);
+        if (name.endsWith(superClassName))
+            name = name.left(name.size() - superClassName.size());
+        superClass = superClass->superClass();
+    }
+    setObjectName(name);
+
+    // Set properties
     for (int i=0; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isResettable())
@@ -649,13 +661,13 @@ void Object::init(const File &file_)
                 qFatal("Failed to reset %s::%s", metaObject()->className(), property.name());
     }
 
-    this->file = file_;
-    foreach (QString name, file.localKeys()) {
-        const QString value = file.value(name).toString();
-        if (name.startsWith("_Arg"))
-            name = metaObject()->property(metaObject()->propertyOffset()+name.mid(4).toInt()).name();
-        setProperty(name, value);
+    foreach (QString key, file.localKeys()) {
+        const QString value = file.value(key).toString();
+        if (key.startsWith("_Arg"))
+            key = metaObject()->property(metaObject()->propertyOffset()+key.mid(4).toInt()).name();
+        setProperty(key, value);
     }
+
     init();
 }
 
@@ -681,7 +693,9 @@ int br::Context::blocks(int size) const
 
 bool br::Context::contains(const QString &name)
 {
-    const char *c_name = qPrintable(name);
+    QByteArray bytes = name.toLocal8Bit();
+    const char * c_name = bytes.constData();
+
     for (int i=0; i<metaObject()->propertyCount(); i++)
         if (!strcmp(c_name, metaObject()->property(i).name()))
             return true;
@@ -1055,14 +1069,10 @@ public:
         transform->setParent(this);
         transforms.append(transform);
         file = transform->file;
+        setObjectName(transforms.first()->objectName());
     }
 
 private:
-    QString name() const
-    {
-        return transforms.first()->name();
-    }
-
     Transform *clone() const
     {
         return new Independent(transforms.first()->clone());
@@ -1206,7 +1216,7 @@ static void _project(const Transform *transform, const Template *src, Template *
     try {
         transform->project(*src, *dst);
     } catch (...) {
-        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->name()));
+        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *dst = Template(src->file);
         dst->file.setBool("FTE");
     }
@@ -1217,7 +1227,7 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
     try {
         transform->backProject(*dst, *src);
     } catch (...) {
-        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->name()));
+        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *src = Template(dst->file);
         src->file.setBool("FTE");
     }

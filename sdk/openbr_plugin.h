@@ -381,7 +381,6 @@ class BR_EXPORT Object : public QObject
 public:
     File file; /*!< \brief The file used to construct the plugin. */
 
-    virtual QString name() const; /*!< \brief The plugin class name. */
     virtual void init() {} /*!< \brief Overload this function instead of the default constructor to initialize the derived class. It should be safe to call this function multiple times. */
     virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
@@ -1099,6 +1098,14 @@ BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, cons
  * \param output The output matrix or template.
  */
 BR_EXPORT void Convert(const File &input, const File &output);
+
+/*!
+ * \brief Concatenate several galleries into one.
+ * \param inputGalleries List of galleries to concatenate.
+ * \param outputGallery Gallery to store the concatenated result.
+ * \note outputGallery must not be in inputGalleries.
+ */
+BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGallery);
 
 /*! @}*/
 

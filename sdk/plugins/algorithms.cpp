@@ -16,14 +16,15 @@
 
 #include <openbr_plugin.h>
 
-using namespace br;
+namespace br
+{
 
 /*!
  * \ingroup initializers
  * \brief Initializes global abbreviations with implemented algorithms
  * \author Josh Klontz \cite jklontz
  */
-class Algorithms : public Initializer
+class AlgorithmsInitializer : public Initializer
 {
     Q_OBJECT
 
@@ -72,6 +73,8 @@ class Algorithms : public Initializer
     }
 };
 
-BR_REGISTER(Initializer, Algorithms)
+BR_REGISTER(Initializer, AlgorithmsInitializer)
+
+} // namespace br
 
 #include "algorithms.moc"

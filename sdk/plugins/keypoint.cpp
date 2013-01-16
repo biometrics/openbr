@@ -21,14 +21,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Key Point Detector
  * \author Josh Klontz \cite jklontz
  */
-class KeyPointDetector : public UntrainableTransform
+class KeyPointDetectorTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString detector READ get_detector WRITE set_detector RESET reset_detector STORED false)
@@ -62,14 +64,14 @@ class KeyPointDetector : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, KeyPointDetector)
+BR_REGISTER(Transform, KeyPointDetectorTransform)
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Key Point Descriptor
  * \author Josh Klontz \cite jklontz
  */
-class KeyPointDescriptor : public UntrainableTransform
+class KeyPointDescriptorTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString descriptor READ get_descriptor WRITE set_descriptor RESET reset_descriptor STORED false)
@@ -100,14 +102,14 @@ class KeyPointDescriptor : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, KeyPointDescriptor)
+BR_REGISTER(Transform, KeyPointDescriptorTransform)
 
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Key Point Matcher
  * \author Josh Klontz \cite jklontz
  */
-class KeyPointMatcher : public Distance
+class KeyPointMatcherTransform : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(QString matcher READ get_matcher WRITE set_matcher RESET reset_matcher STORED false)
@@ -146,14 +148,14 @@ class KeyPointMatcher : public Distance
     }
 };
 
-BR_REGISTER(Distance, KeyPointMatcher)
+BR_REGISTER(Distance, KeyPointMatcherTransform)
 
 /*!
  * \ingroup transforms
  * \brief Specialize wrapper OpenCV SIFT wrapper
  * \author Josh Klontz \cite jklontz
  */
-class SIFTDescriptor : public UntrainableTransform
+class SIFTDescriptorTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int size READ get_size WRITE set_size RESET reset_size STORED false)
@@ -174,14 +176,14 @@ class SIFTDescriptor : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, SIFTDescriptor)
+BR_REGISTER(Transform, SIFTDescriptorTransform)
 
 /*!
  * \ingroup transforms
  * \brief Add landmarks to the template in a grid layout
  * \author Josh Klontz \cite jklontz
  */
-class Grid : public UntrainableTransform
+class GridTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
@@ -202,6 +204,8 @@ class Grid : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Grid)
+BR_REGISTER(Transform, GridTransform)
+
+} // namespace br
 
 #include "keypoint.moc"

@@ -18,14 +18,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Subdivide matrix into rectangular subregions.
  * \author Josh Klontz \cite jklontz
  */
-class RectRegions : public UntrainableTransform
+class RectRegionsTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
@@ -50,14 +52,14 @@ class RectRegions : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, RectRegions)
+BR_REGISTER(Transform, RectRegionsTransform)
 
 /*!
  * \ingroup transforms
  * \brief Turns each row into its own matrix.
  * \author Josh Klontz \cite jklontz
  */
-class ByRow : public UntrainableTransform
+class ByRowTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -68,7 +70,7 @@ class ByRow : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, ByRow)
+BR_REGISTER(Transform, ByRowTransform)
 
 /*!
  * \ingroup transforms
@@ -76,7 +78,7 @@ BR_REGISTER(Transform, ByRow)
  * No requirements are placed on input matrices size and type.
  * \author Josh Klontz \cite jklontz
  */
-class Cat : public UntrainableMetaTransform
+class CatTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int partitions READ get_partitions WRITE set_partitions RESET reset_partitions)
@@ -105,14 +107,14 @@ class Cat : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Cat)
+BR_REGISTER(Transform, CatTransform)
 
 /*!
  * \ingroup transforms
  * \brief Duplicates the template data.
  * \author Josh Klontz \cite jklontz
  */
-class Dup : public UntrainableMetaTransform
+class DupTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
@@ -125,6 +127,8 @@ class Dup : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Dup)
+BR_REGISTER(Transform, DupTransform)
+
+} // namespace br
 
 #include "regions.moc"

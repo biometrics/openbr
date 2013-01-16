@@ -22,7 +22,9 @@
 #include "core/qtutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 static TemplateList Simplified(const TemplateList &templates)
 {
@@ -119,7 +121,7 @@ class PipeTransform : public MetaTransform
             try {
                 dst >> *f;
             } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->name()));
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
                 dst.file.setBool("FTE");
             }
@@ -148,7 +150,7 @@ class PipeTransform : public MetaTransform
             try {
                 src >> *f;
             } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->name()));
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
                 src = Template(src.file);
                 src.file.setBool("FTE");
             }
@@ -197,7 +199,7 @@ class ChainTransform : public MetaTransform
             try {
                 dst >> *f;
             } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->name()));
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
                 dst.file.setBool("FTE");
             }
@@ -224,7 +226,7 @@ class ChainTransform : public MetaTransform
             try {
                 src >> *f;
             } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->name()));
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
                 src = Template(src.file);
                 src.file.setBool("FTE");
             }
@@ -264,7 +266,7 @@ class ForkTransform : public MetaTransform
             try {
                 dst.merge((*f)(src));
             } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->name()));
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
                 dst.file.setBool("FTE");
             }
@@ -456,8 +458,8 @@ class FTETransform : public Transform
 
         QList<float> vals;
         foreach (const Template &t, projectedData) {
-            if (!t.file.contains(transform->name())) qFatal("FTE::train matrix metadata missing key %s.", qPrintable(transform->name()));
-            vals.append(t.file.getFloat(transform->name()));
+            if (!t.file.contains(transform->objectName())) qFatal("FTE::train matrix metadata missing key %s.", qPrintable(transform->objectName()));
+            vals.append(t.file.getFloat(transform->objectName()));
         }
         float q1, q3;
         Common::Median(vals, &q1, &q3);
@@ -469,14 +471,16 @@ class FTETransform : public Transform
     {
         Template projectedSrc;
         transform->project(src, projectedSrc);
-        const float val = projectedSrc.file.getFloat(transform->name());
+        const float val = projectedSrc.file.getFloat(transform->objectName());
 
         dst = src;
-        dst.file.insert(transform->name(), val);
+        dst.file.insert(transform->objectName(), val);
         dst.file.insert("FTE", (val < min) || (val > max));
     }
 };
 
 BR_REGISTER(Transform, FTETransform)
+
+} // namespace br
 
 #include "meta.moc"

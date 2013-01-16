@@ -21,14 +21,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Selects a random transform.
  * \author Josh Klontz \cite jklontz
  */
-class RndTransform : public Transform
+class RndTransformTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms STORED false)
@@ -62,14 +64,14 @@ class RndTransform : public Transform
     }
 };
 
-BR_REGISTER(Transform, RndTransform)
+BR_REGISTER(Transform, RndTransformTransform)
 
 /*!
  * \ingroup transforms
  * \brief Generates a random subspace.
  * \author Josh Klontz \cite jklontz
  */
-class RndSubspace : public Transform
+class RndSubspaceTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
@@ -128,14 +130,14 @@ class RndSubspace : public Transform
     }
 };
 
-BR_REGISTER(Transform, RndSubspace)
+BR_REGISTER(Transform, RndSubspaceTransform)
 
 /*!
  * \ingroup transforms
  * \brief Selects a random region.
  * \author Josh Klontz \cite jklontz
  */
-class RndRegion : public Transform
+class RndRegionTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float x READ get_x WRITE set_x RESET reset_x)
@@ -167,14 +169,14 @@ class RndRegion : public Transform
     }
 };
 
-BR_REGISTER(Transform, RndRegion)
+BR_REGISTER(Transform, RndRegionTransform)
 
 /*!
  * \ingroup transforms
  * \brief Generates a random landmark.
  * \author Josh Klontz \cite jklontz
  */
-class RndPoint : public Transform
+class RndPointTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float x READ get_x WRITE set_x RESET reset_x)
@@ -198,6 +200,8 @@ class RndPoint : public Transform
     }
 };
 
-BR_REGISTER(Transform, RndPoint)
+BR_REGISTER(Transform, RndPointTransform)
+
+} // namespace br
 
 #include "random.moc"

@@ -17,14 +17,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Subtract two matrices.
  * \author Josh Klontz \cite jklontz
  */
-class Subtract : public UntrainableMetaTransform
+class SubtractTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -36,14 +38,14 @@ class Subtract : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, Subtract)
+BR_REGISTER(Transform, SubtractTransform)
 
 /*!
  * \ingroup transforms
  * \brief Take the absolute difference of two matrices.
  * \author Josh Klontz \cite jklontz
  */
-class AbsDiff : public UntrainableMetaTransform
+class AbsDiffTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -55,14 +57,14 @@ class AbsDiff : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, AbsDiff)
+BR_REGISTER(Transform, AbsDiffTransform)
 
 /*!
  * \ingroup transforms
  * \brief Logical AND of two matrices.
  * \author Josh Klontz \cite jklontz
  */
-class And : public UntrainableMetaTransform
+class AndTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
@@ -75,6 +77,8 @@ class And : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, And)
+BR_REGISTER(Transform, AndTransform)
+
+} // namespace br
 
 #include "reduce.moc"

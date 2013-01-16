@@ -51,7 +51,8 @@ static void help()
            "-cluster <simmat> ... <simmat> <aggressiveness> {csv}\n"
            "-makeMask <target_gallery> <query_gallery> {mask}\n"
            "-combineMasks <mask> ... <mask> {mask} (And|Or)\n"
-           "-convert <(csv,simmat,mask)> {(csv,simmat,mask)}\n"
+           "-cat <gallery> ... <gallery> {gallery}\n"
+           "-convert <template> {template}\n"
            "-reformat <target_sigset> <query_sigset> <simmat> {output}\n"
            "-evalClassification <predicted_gallery> <truth_gallery>\n"
            "-evalRegression <predicted_gallery> <truth_gallery>\n"
@@ -141,6 +142,9 @@ int main(int argc, char *argv[])
         } else if (!strcmp(fun, "combineMasks")) {
             check(parc >= 4, "Insufficient parameter count for 'combineMasks'.");
             br_combine_masks(parc-2, parv, parv[parc-2], parv[parc-1]);
+        } else if (!strcmp(fun, "cat")) {
+            check(parc >= 2, "Insufficient parameter count for 'cat'.");
+            br_cat(parc-1, parv, parv[parc-1]);
         } else if (!strcmp(fun, "convert")) {
             check(parc == 2, "Incorrect parameter count for 'convert'.");
             br_convert(parv[0], parv[1]);

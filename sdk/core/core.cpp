@@ -315,9 +315,24 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
 
 void br::Convert(const File &src, const File &dst)
 {
+    qDebug("Converting %s to %s", qPrintable(src.flat()), qPrintable(dst.flat()));
     QScopedPointer<Format> before(Factory<Format>::make(src));
     QScopedPointer<Format> after(Factory<Format>::make(dst));
     after->write(before->read());
+}
+
+void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
+{
+    qDebug("Concatenating %d galleries to %s", inputGalleries.size(), qPrintable(outputGallery));
+    foreach (const QString &inputGallery, inputGalleries)
+        if (inputGallery == outputGallery)
+            qFatal("br::Cat outputGallery must not be in inputGalleries.");
+    QScopedPointer<Gallery> og(Gallery::make(outputGallery));
+    foreach (const QString &inputGallery, inputGalleries) {
+        QScopedPointer<Gallery> ig(Gallery::make(inputGallery));
+        bool done = false;
+        while (!done) og->writeBlock(ig->readBlock(&done));
+    }
 }
 
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm)

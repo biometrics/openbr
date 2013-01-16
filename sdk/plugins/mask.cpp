@@ -18,14 +18,16 @@
 #include <openbr_plugin.h>
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Applies an eliptical mask
  * \author Josh Klontz \cite jklontz
  */
-class Mask : public UntrainableTransform
+class MaskTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -41,14 +43,14 @@ class Mask : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Mask)
+BR_REGISTER(Transform, MaskTransform)
 
 /*!
  * \ingroup transforms
  * \brief Masks image according to pixel change.
  * \author Josh Klontz \cite jklontz
  */
-class GradientMask : public UntrainableTransform
+class GradientMaskTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int delta READ get_delta WRITE set_delta RESET reset_delta STORED false)
@@ -72,14 +74,14 @@ class GradientMask : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, GradientMask)
+BR_REGISTER(Transform, GradientMaskTransform)
 
 /*!
  * \ingroup transforms
  * \brief http://worldofcameras.wordpress.com/tag/skin-detection-opencv/
  * \author Josh Klontz \cite jklontz
  */
-class SkinMask : public UntrainableTransform
+class SkinMaskTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -103,14 +105,14 @@ class SkinMask : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, SkinMask)
+BR_REGISTER(Transform, SkinMaskTransform)
 
 /*!
  * \ingroup transforms
  * \brief Morphological operator
  * \author Josh Klontz \cite jklontz
  */
-class Morph : public UntrainableTransform
+class MorphTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Op)
@@ -145,14 +147,14 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Morph)
+BR_REGISTER(Transform, MorphTransform)
 
 /*!
  * \ingroup transforms
  * \brief Set the template's label to the area of the largest convex hull.
  * \author Josh Klontz \cite jklontz
  */
-class LargestConvexArea : public UntrainableTransform
+class LargestConvexAreaTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -173,6 +175,8 @@ class LargestConvexArea : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, LargestConvexArea)
+BR_REGISTER(Transform, LargestConvexAreaTransform)
+
+} // namespace br
 
 #include "mask.moc"

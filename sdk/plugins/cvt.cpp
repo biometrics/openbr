@@ -20,14 +20,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Colorspace conversion
  * \author Josh Klontz \cite jklontz
  */
-class Cvt : public UntrainableTransform
+class CvtTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Code)
@@ -63,14 +65,14 @@ private:
     }
 };
 
-BR_REGISTER(Transform, Cvt)
+BR_REGISTER(Transform, CvtTransform)
 
 /*!
  * \ingroup transforms
  * \brief Convert to floating point format.
  * \author Josh Klontz \cite jklontz
  */
-class CvtFloat : public UntrainableTransform
+class CvtFloatTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -80,14 +82,14 @@ class CvtFloat : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, CvtFloat)
+BR_REGISTER(Transform, CvtFloatTransform)
 
 /*!
  * \ingroup transforms
  * \brief Convert to uchar format
  * \author Josh Klontz \cite jklontz
  */
-class CvtUChar : public UntrainableTransform
+class CvtUCharTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -97,14 +99,14 @@ class CvtUChar : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, CvtUChar)
+BR_REGISTER(Transform, CvtUCharTransform)
 
 /*!
  * \ingroup transforms
  * \brief Split a multi-channel matrix into several single-channel matrices.
  * \author Josh Klontz \cite jklontz
  */
-class SplitChannels : public UntrainableTransform
+class SplitChannelsTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -117,14 +119,14 @@ class SplitChannels : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, SplitChannels)
+BR_REGISTER(Transform, SplitChannelsTransform)
 
 /*!
  * \ingroup transforms
  * \brief Enforce the matrix has a certain number of channels by adding or removing channels.
  * \author Josh Klontz \cite jklontz
  */
-class EnsureChannels : public UntrainableTransform
+class EnsureChannelsTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
@@ -156,6 +158,8 @@ class EnsureChannels : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, EnsureChannels)
+BR_REGISTER(Transform, EnsureChannelsTransform)
+
+} // namespace br
 
 #include "cvt.moc"

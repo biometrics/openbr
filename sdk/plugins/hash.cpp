@@ -19,14 +19,15 @@
 
 #include "core/qtutils.h"
 
-using namespace br;
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Wraps QCryptographicHash
  * \author Josh Klontz \cite jklontz
  */
-class CryptographicHash : public UntrainableTransform
+class CryptographicHashTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Algorithm)
@@ -52,6 +53,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, CryptographicHash)
+BR_REGISTER(Transform, CryptographicHashTransform)
+
+} // namespace br
 
 #include "hash.moc"

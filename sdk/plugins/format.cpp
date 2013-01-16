@@ -27,8 +27,50 @@
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
 
-using namespace br;
 using namespace cv;
+
+namespace br
+{
+
+/*!
+ * \ingroup formats
+ * \brief A simple binary matrix format.
+ * \author Josh Klonyz \cite jklontz
+ * First 4 bytes indicate the number of rows.
+ * Second 4 bytes indicate the number of columns.
+ * The rest of the bytes are 32-bit floating data elements.
+ */
+class binFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        QByteArray data;
+        QtUtils::readFile(file, data);
+        return Template(file, Mat(((quint32*)data.data())[0],
+                                  ((quint32*)data.data())[1],
+                                  CV_32FC1,
+                                  data.data()+8).clone());
+    }
+
+    void write(const Template &t) const
+    {
+        Mat m;
+        t.m().convertTo(m, CV_32F);
+        if (m.channels() != 1) qFatal("binFormat::write only supports single channel matrices.");
+
+        QByteArray data;
+        QDataStream stream(&data, QFile::WriteOnly);
+        stream.writeRawData((const char*)&m.rows, 4);
+        stream.writeRawData((const char*)&m.cols, 4);
+        stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
+
+        QtUtils::writeFile(file, data);
+    }
+};
+
+BR_REGISTER(Format, binFormat)
 
 /*!
  * \ingroup formats
@@ -50,23 +92,20 @@ class csvFormat : public Format
         QList< QList<float> > valsList;
         foreach (const QString &line, lines) {
             QList<float> vals;
-            foreach (const QString &word, line.split(QRegExp(" *, *"))) {
+            foreach (const QString &word, line.split(QRegExp(" *, *"), QString::SkipEmptyParts)) {
                 bool ok;
                 const float val = word.toFloat(&ok);
                 vals.append(val);
                 isUChar = isUChar && (val == float(uchar(val)));
             }
-            valsList.append(vals);
+            if (!vals.isEmpty())
+                valsList.append(vals);
         }
 
-        assert((valsList.size() > 0) && (valsList[0].size() > 0));
         Mat m(valsList.size(), valsList[0].size(), CV_32FC1);
-        for (int i=0; i<valsList.size(); i++) {
-            assert(valsList[i].size() == valsList[0].size());
-            for (int j=0; j<valsList[i].size(); j++) {
+        for (int i=0; i<valsList.size(); i++)
+            for (int j=0; j<valsList[i].size(); j++)
                 m.at<float>(i,j) = valsList[i][j];
-            }
-        }
 
         if (isUChar) m.convertTo(m, CV_8U);
         return Template(m);
@@ -218,8 +257,8 @@ class matFormat : public Format
             error |= (int(bytes) != stream.readRawData(data.data(), bytes));
 
             // Alignment
-            int skipBytes = (bytes < 4) ? (4 - bytes) : 0;
-            if (skipBytes != 0) error |= (skipBytes != stream.skipRawData(skipBytes));
+            int skipBytes = (bytes < 4) ? (4 - bytes) : (8 - bytes%8)%8;
+            if (skipBytes != 0) stream.skipRawData(skipBytes);
 
             if (error) qFatal("matFormat::Element Unexpected end of file.");
         }
@@ -289,7 +328,98 @@ class matFormat : public Format
 
     void write(const Template &t) const
     {
+        QByteArray data;
+        QDataStream stream(&data, QFile::WriteOnly);
 
+        { // Header
+            QByteArray header = "MATLAB 5.0 MAT-file; Made with OpenBR | www.openbiometrics.org\n";
+            QByteArray buffer(116-header.size(), 0);
+            stream.writeRawData(header.data(), header.size());
+            stream.writeRawData(buffer.data(), buffer.size());
+            quint64 subsystem = 0;
+            quint16 version = 0x0100;
+            const char *endianness = "IM";
+            stream.writeRawData((const char*)&subsystem, 8);
+            stream.writeRawData((const char*)&version, 2);
+            stream.writeRawData(endianness, 2);
+        }
+
+        for (int i=0; i<t.size(); i++) {
+            const Mat &m = t[i];
+            if (m.channels() != 1) qFatal("matFormat::write only supports single channel matrices.");
+
+            QByteArray subdata;
+            QDataStream substream(&subdata, QFile::WriteOnly);
+
+            {  // Array Flags
+                quint32 type = 6;
+                quint32 bytes = 8;
+                quint64 arrayClass = 0;
+                switch (m.type()) {
+                  case CV_64FC1: arrayClass = 6; break;
+                  case CV_32FC1: arrayClass = 7; break;
+                  case CV_8UC1: arrayClass = 8; break;
+                  case CV_8SC1: arrayClass = 9; break;
+                  case CV_16UC1: arrayClass = 10; break;
+                  case CV_16SC1: arrayClass = 11; break;
+                  case CV_32SC1: arrayClass = 12; break;
+                  default: qFatal("matFormat::write unsupported matrix class.");
+                }
+                substream.writeRawData((const char*)&type, 4);
+                substream.writeRawData((const char*)&bytes, 4);
+                substream.writeRawData((const char*)&arrayClass, 8);
+            }
+
+            { // Dimensions Array
+                quint32 type = 5;
+                quint32 bytes = 8;
+                substream.writeRawData((const char*)&type, 4);
+                substream.writeRawData((const char*)&bytes, 4);
+                substream.writeRawData((const char*)&m.rows, 4);
+                substream.writeRawData((const char*)&m.cols, 4);
+            }
+
+            { // Array Name
+                QByteArray name(qPrintable(QString("OpenBR_%1").arg(QString::number(i))));
+                quint32 type = 1;
+                quint32 bytes = name.size();
+                QByteArray buffer((8 - bytes%8)%8, 0);
+                substream.writeRawData((const char*)&type, 4);
+                substream.writeRawData((const char*)&bytes, 4);
+                substream.writeRawData(name.data(), name.size());
+                substream.writeRawData(buffer.data(), buffer.size());
+            }
+
+            { // Real part
+                quint32 type = 0;
+                switch (m.type()) {
+                  case CV_8SC1:  type = 1; break;
+                  case CV_8UC1:  type = 2; break;
+                  case CV_16SC1: type = 3; break;
+                  case CV_16UC1: type = 4; break;
+                  case CV_32SC1: type = 5; break;
+                  case CV_32FC1: type = 7; break;
+                  case CV_64FC1: type = 9; break;
+                  default: qFatal("matFormat::write unsupported matrix type.");
+                }
+                quint32 bytes = m.elemSize() * m.rows * m.cols;
+                QByteArray buffer((8 - bytes%8)%8, 0);
+                substream.writeRawData((const char*)&type, 4);
+                substream.writeRawData((const char*)&bytes, 4);
+                substream.writeRawData((const char*)m.data, bytes);
+                substream.writeRawData(buffer.data(), buffer.size());
+            }
+
+            { // Matrix
+                quint32 type = 14;
+                quint32 bytes = subdata.size();
+                stream.writeRawData((const char*)&type, 4);
+                stream.writeRawData((const char*)&bytes, 4);
+                stream.writeRawData(subdata.data(), subdata.size());
+            }
+        }
+
+        QtUtils::writeFile(file, data);
     }
 };
 
@@ -393,5 +523,7 @@ class xmlFormat : public Format
 
 BR_REGISTER(Format, xmlFormat)
 #endif // BR_EMBEDDED
+
+} // namespace br
 
 #include "format.moc"

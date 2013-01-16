@@ -21,7 +21,9 @@
 #include "core/resource.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
 {
@@ -55,7 +57,7 @@ private:
  * \brief Wraps OpenCV cascade classifier
  * \author Josh Klontz \cite jklontz
  */
-class Cascade : public UntrainableTransform
+class CascadeTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
@@ -87,6 +89,8 @@ class Cascade : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Cascade)
+BR_REGISTER(Transform, CascadeTransform)
+
+} // namespace br
 
 #include "cascade.moc"

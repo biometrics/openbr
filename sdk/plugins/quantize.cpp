@@ -19,14 +19,16 @@
 #include "core/opencvutils.h"
 
 using namespace cv;
-using namespace br;
+
+namespace br
+{
 
 /*!
  * \ingroup transforms
  * \brief Approximate floats as uchar.
  * \author Josh Klontz \cite jklontz
  */
-class Quantize : public Transform
+class QuantizeTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
@@ -48,14 +50,14 @@ class Quantize : public Transform
     }
 };
 
-BR_REGISTER(Transform, Quantize)
+BR_REGISTER(Transform, QuantizeTransform)
 
 /*!
  * \ingroup transforms
  * \brief Approximate floats as signed bit.
  * \author Josh Klontz \cite jklontz
  */
-class Binarize : public UntrainableTransform
+class BinarizeTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -78,14 +80,14 @@ class Binarize : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Binarize)
+BR_REGISTER(Transform, BinarizeTransform)
 
 /*!
  * \ingroup transforms
  * \brief Compress two uchar into one uchar.
  * \author Josh Klontz \cite jklontz
  */
-class Pack : public UntrainableTransform
+class PackTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -104,6 +106,8 @@ class Pack : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, Pack)
+BR_REGISTER(Transform, PackTransform)
+
+} // namespace br
 
 #include "quantize.moc"
