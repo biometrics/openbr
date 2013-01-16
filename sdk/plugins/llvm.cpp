@@ -299,18 +299,18 @@ namespace br
 {
 
 /*!
- * \brief LLVM Unary Kernel
+ * \brief LLVM Unary Transform
  * \author Josh Klontz \cite jklontz
  */
-class UnaryKernel : public UntrainableMetaTransform
+class UnaryTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    UnaryKernel_t kernel;
+    UnaryKernel kernel;
     quint16 hash;
 
 public:
-    UnaryKernel() : kernel(NULL), hash(0) {}
+    UnaryTransform() : kernel(NULL), hash(0) {}
     virtual int preallocate(const Matrix &src, Matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const { (void) src; (void) dst; return MatrixBuilder::constant(0); }
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
@@ -321,12 +321,20 @@ public:
         TheExtraFunctionPassManager->run(*f);
     }
 
-    UnaryFunction_t getFunction(const Matrix *src) const
+    UnaryFunction getFunction(const Matrix *src) const
     {
         const QString functionName = mangledName();
         Function *function = TheModule->getFunction(qPrintable(functionName));
         if (function == NULL) function = compile(*src);
-        return (UnaryFunction_t)TheExecutionEngine->getPointerToFunction(function);
+        return (UnaryFunction)TheExecutionEngine->getPointerToFunction(function);
+    }
+
+    UnaryKernel getKernel(const Matrix *src) const
+    {
+        const QString functionName = mangledName(*src);
+        Function *function = TheModule->getFunction(qPrintable(functionName));
+        if (function == NULL) function = compileKernel(*src);
+        return (UnaryKernel)TheExecutionEngine->getPointerToFunction(function);
     }
 
 private:
@@ -451,7 +459,7 @@ private:
     {
         const Matrix m(MatrixFromMat(src));
         Matrix n;
-        UnaryFunction_t function = getFunction(&m);
+        UnaryFunction function = getFunction(&m);
         function(&m, &n);
         dst.m() = MatFromMatrix(n);
     }
@@ -461,15 +469,15 @@ private:
  * \brief LLVM Binary Kernel
  * \author Josh Klontz \cite jklontz
  */
-class BinaryKernel: public UntrainableMetaTransform
+class BinaryTransform: public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    BinaryKernel_t kernel;
+    BinaryKernel kernel;
     quint16 hashA, hashB;
 
 public:
-    BinaryKernel() : kernel(NULL), hashA(0), hashB(0) {}
+    BinaryTransform() : kernel(NULL), hashA(0), hashB(0) {}
     virtual int preallocate(const Matrix &srcA, const Matrix &srcB, Matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual void build(const MatrixBuilder &srcA, const MatrixBuilder &srcB, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
 
@@ -542,9 +550,9 @@ private:
                     function = TheModule->getFunction(qPrintable(functionName));
                 }
 
-                const_cast<BinaryKernel*>(this)->kernel = (BinaryKernel_t)TheExecutionEngine->getPointerToFunction(function);
-                const_cast<BinaryKernel*>(this)->hashA = srcA.hash;
-                const_cast<BinaryKernel*>(this)->hashB = srcB.hash;
+                const_cast<BinaryTransform*>(this)->kernel = (BinaryKernel)TheExecutionEngine->getPointerToFunction(function);
+                const_cast<BinaryTransform*>(this)->hashA = srcA.hash;
+                const_cast<BinaryTransform*>(this)->hashB = srcB.hash;
             }
         }
 
@@ -556,7 +564,7 @@ private:
  * \brief LLVM Stitchable Kernel
  * \author Josh Klontz \cite jklontz
  */
-class StitchableKernel : public UnaryKernel
+class StitchableTransform : public UnaryTransform
 {
     Q_OBJECT
 
@@ -589,7 +597,7 @@ private:
  * \brief LLVM stitch transform
  * \author Josh Klontz \cite jklontz
  */
-class stitchTransform : public UnaryKernel
+class stitchTransform : public UnaryTransform
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Transform*> kernels READ get_kernels WRITE set_kernels RESET reset_kernels STORED false)
@@ -598,15 +606,15 @@ class stitchTransform : public UnaryKernel
     void init()
     {
         foreach (Transform *transform, kernels)
-            if (dynamic_cast<StitchableKernel*>(transform) == NULL)
-                qFatal("%s is not a stitchable kernel!", qPrintable(transform->name()));
+            if (dynamic_cast<StitchableTransform*>(transform) == NULL)
+                qFatal("%s is not a stitchable transform!", qPrintable(transform->name()));
     }
 
     int preallocate(const Matrix &src, Matrix &dst) const
     {
         Matrix tmp = src;
         foreach (const Transform *kernel, kernels) {
-            static_cast<const UnaryKernel*>(kernel)->preallocate(tmp, dst);
+            static_cast<const UnaryTransform*>(kernel)->preallocate(tmp, dst);
             tmp = dst;
         }
         return dst.elements();
@@ -618,8 +626,8 @@ class stitchTransform : public UnaryKernel
         MatrixBuilder dst(dst_);
         Value *val = src.load(i);
         foreach (Transform *transform, kernels) {
-            static_cast<UnaryKernel*>(transform)->preallocate(src, dst);
-            val = static_cast<StitchableKernel*>(transform)->stitch(src, dst, val);
+            static_cast<UnaryTransform*>(transform)->preallocate(src, dst);
+            val = static_cast<StitchableTransform*>(transform)->stitch(src, dst, val);
             src.copyHeader(dst);
             src.m = dst.m;
         }
@@ -634,7 +642,7 @@ BR_REGISTER(Transform, stitchTransform)
  * \brief LLVM square transform
  * \author Josh Klontz \cite jklontz
  */
-class squareTransform : public StitchableKernel
+class squareTransform : public StitchableTransform
 {
     Q_OBJECT
 
@@ -652,7 +660,7 @@ BR_REGISTER(Transform, squareTransform)
  * \brief LLVM pow transform
  * \author Josh Klontz \cite jklontz
  */
-class powTransform : public StitchableKernel
+class powTransform : public StitchableTransform
 {
     Q_OBJECT
     Q_PROPERTY(double exponent READ get_exponent WRITE set_exponent RESET reset_exponent STORED false)
@@ -691,7 +699,7 @@ BR_REGISTER(Transform, powTransform)
  * \brief LLVM sum transform
  * \author Josh Klontz \cite jklontz
  */
-class sumTransform : public UnaryKernel
+class sumTransform : public UnaryTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool channels READ get_channels WRITE set_channels RESET reset_channels STORED false)
@@ -781,7 +789,7 @@ BR_REGISTER(Transform, sumTransform)
  * \brief LLVM casting transform
  * \author Josh Klontz \cite jklontz
  */
-class castTransform : public StitchableKernel
+class castTransform : public StitchableTransform
 {
     Q_OBJECT
     Q_ENUMS(Type)
@@ -825,7 +833,7 @@ BR_REGISTER(Transform, castTransform)
  * \brief LLVM scale transform
  * \author Josh Klontz \cite jklontz
  */
-class scaleTransform : public StitchableKernel
+class scaleTransform : public StitchableTransform
 {
     Q_OBJECT
     Q_PROPERTY(double a READ get_a WRITE set_a RESET reset_a STORED false)
@@ -845,7 +853,7 @@ BR_REGISTER(Transform, scaleTransform)
  * \brief LLVM abs transform
  * \author Josh Klontz \cite jklontz
  */
-class absTransform : public StitchableKernel
+class absTransform : public StitchableTransform
 {
     Q_OBJECT
 
@@ -867,7 +875,7 @@ BR_REGISTER(Transform, absTransform)
  * \brief LLVM add transform
  * \author Josh Klontz \cite jklontz
  */
-class addTransform : public StitchableKernel
+class addTransform : public StitchableTransform
 {
     Q_OBJECT
     Q_PROPERTY(double b READ get_b WRITE set_b RESET reset_b STORED false)
@@ -887,7 +895,7 @@ BR_REGISTER(Transform, addTransform)
  * \brief LLVM clamp transform
  * \author Josh Klontz \cite jklontz
  */
-class clampTransform : public StitchableKernel
+class clampTransform : public StitchableTransform
 {
     Q_OBJECT
     Q_PROPERTY(double min READ get_min WRITE set_min RESET reset_min STORED false)
@@ -995,17 +1003,17 @@ class LLVMInitializer : public Initializer
         kernel->project(src, dst);
         qDebug() << dst.m();
 
-//        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<qint32>(2,2) << -1, -3, 9, 27);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
 
-//        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<float>(2,2) << -1.5, -2.5, 3.5, 4.5);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
 
-//        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
-//        kernel->project(src, dst);
-//        qDebug() << dst.m();
+        src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
+        kernel->project(src, dst);
+        qDebug() << dst.m();
     }
 
     void finalize() const
@@ -1051,15 +1059,29 @@ class LLVMInitializer : public Initializer
 
 BR_REGISTER(Initializer, LLVMInitializer)
 
-UnaryFunction_t jit_unary_make(const char *description)
+UnaryFunction jit_make_unary_function(const char *description)
+{
+    QScopedPointer<UnaryTransform> unaryTransform(Factory<UnaryTransform>::make(description));
+    return unaryTransform->getFunction(NULL);
+}
+
+BinaryFunction jit_make_binary_function(const char *description)
 {
     (void) description;
     return NULL;
 }
 
-BinaryFunction_t jit_binary_make(const char *description)
+UnaryKernel jit_make_unary_kernel(const char *description, const Matrix *src)
+{
+    QScopedPointer<UnaryTransform> unaryTransform(Factory<UnaryTransform>::make(description));
+    return unaryTransform->getKernel(src);
+}
+
+BinaryKernel jit_make_binary_kernel(const char *description, const Matrix *srcA, const Matrix *srcB)
 {
     (void) description;
+    (void) srcA;
+    (void) srcB;
     return NULL;
 }
 
