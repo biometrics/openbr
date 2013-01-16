@@ -20,13 +20,13 @@
 
 #include "initialize.h"
 
-void br_initialize_gui()
+void br_initialize_gui(const char *sdk_path)
 {
     Q_INIT_RESOURCE(icons);
     qRegisterMetaType<br::File>("br::File");
     qRegisterMetaType<br::FileList>("br::FileList");
     qRegisterMetaType<br::Template>("br::Template");
     qRegisterMetaType<br::TemplateList>("br::TemplateList");
-    br_initialize_qt();
+    br_initialize_qt(sdk_path);
     br_set_property("log", qPrintable(QString("%1/log.txt").arg(br_scratch_path())));
 }

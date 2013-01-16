@@ -26,6 +26,8 @@
 #endif // BR_DISTRIBUTED
 #include <openbr_plugin.h>
 
+#include <algorithm>
+
 #include "version.h"
 #include "core/bee.h"
 #include "core/common.h"
@@ -355,6 +357,38 @@ QStringList FileList::names() const
     foreach (const File &file, *this)
         names.append(file);
     return names;
+}
+
+typedef std::pair<std::string,int> metadataPair;
+bool comparator( const metadataPair &l, const metadataPair &r)
+{
+    return l.first < r.first;
+}
+
+void FileList::sort(const QString& key)
+{
+    std::vector<metadataPair> metadata;
+
+    int i = 0;
+
+    foreach (const File &file, *this)
+    {
+        metadataPair pair = std::make_pair(file.get(key).toString().toStdString().c_str(), i);
+        metadata.push_back(pair);
+        i++;
+    }
+
+    std::sort(metadata.begin(), metadata.end(), comparator);
+
+    for (int j = 0; j < metadata.size(); j++)
+    {
+        this->push_back(this->at(metadata[j].second));
+    }
+
+    iterator half = this->begin();
+    half += metadata.size();
+
+    this->erase(this->begin(), half);
 }
 
 QList<float> FileList::labels() const

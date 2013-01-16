@@ -118,7 +118,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  * ---             | ----           | -----------
  * path            | QString        | Resolve complete file paths from file names
  * enrollAll       | bool           | Enroll zero or more templates per file
- * separator       | QString        | Sperate #name into multiple files
+ * separator       | QString        | Seperate #name into multiple files
  * Input_Index     | int            | Index of a template in a template list
  * Label           | float          | Classification/Regression class
  * Confidence      | float          | Classification/Regression quality
@@ -135,6 +135,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  * Yaw             | float          | Pose
  * Landmarks       | QList<QPointF> | Landmark list
  * ROIs            | QList<Rect>    | Region Of Interest (ROI) list
+ * Age             | QString        | Age used for demographic filtering
  * _*              | *              | Reserved for internal use
  */
 struct BR_EXPORT File
@@ -239,6 +240,7 @@ struct BR_EXPORT FileList : public QList<File>
 
     QStringList flat() const; /*!< \brief Returns br::File::flat() for each file in the list. */
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
+    void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
     QList<float> labels() const; /*!< \brief Returns br::File::label() for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
 };

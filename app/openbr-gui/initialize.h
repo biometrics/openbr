@@ -19,6 +19,6 @@
 
 #include <openbr_export.h>
 
-BR_EXPORT_GUI void br_initialize_gui();
+BR_EXPORT_GUI void br_initialize_gui(const char *sdk_path = "");
 
 #endif // __INITIALIZE_H
