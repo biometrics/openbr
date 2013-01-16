@@ -359,36 +359,31 @@ QStringList FileList::names() const
     return names;
 }
 
-typedef std::pair<std::string,int> metadataPair;
-bool comparator( const metadataPair &l, const metadataPair &r)
+typedef std::pair<QString,int> MetadataPair;
+static bool comparator( const MetadataPair &l, const MetadataPair &r)
 {
     return l.first < r.first;
 }
 
 void FileList::sort(const QString& key)
 {
-    std::vector<metadataPair> metadata;
+    if (this->size() <= 1) return;
 
-    int i = 0;
+    QList<MetadataPair> metadata;
 
-    foreach (const File &file, *this)
-    {
-        metadataPair pair = std::make_pair(file.get(key).toString().toStdString().c_str(), i);
-        metadata.push_back(pair);
-        i++;
+    for (int i = 0; i < this->size(); i++) {
+        MetadataPair pair = std::make_pair(this->at(i).get(key).toString(), i);
+        metadata.append(pair);
     }
 
     std::sort(metadata.begin(), metadata.end(), comparator);
 
-    for (int j = 0; j < metadata.size(); j++)
-    {
-        this->push_back(this->at(metadata[j].second));
-    }
+    FileList newList;
 
-    iterator half = this->begin();
-    half += metadata.size();
+    for (int i = 0; i < metadata.size(); i++)
+        newList.append(this->at(metadata[i].second));
 
-    this->erase(this->begin(), half);
+    *this = newList;
 }
 
 QList<float> FileList::labels() const
