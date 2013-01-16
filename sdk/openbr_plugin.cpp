@@ -647,7 +647,7 @@ int br::Context::blocks(int size) const
 
 bool br::Context::contains(const QString &name)
 {
-    QByteArray bytes = name.toLocal8Bit
+    QByteArray bytes = name.toLocal8Bit();
     const char * c_name = bytes.constData();
 
     for (int i=0; i<metaObject()->propertyCount(); i++)
