@@ -647,7 +647,9 @@ int br::Context::blocks(int size) const
 
 bool br::Context::contains(const QString &name)
 {
-    const char *c_name = qPrintable(name);
+    QByteArray bytes = name.toLocal8Bit
+    const char * c_name = bytes.constData();
+
     for (int i=0; i<metaObject()->propertyCount(); i++)
         if (!strcmp(c_name, metaObject()->property(i).name()))
             return true;
