@@ -38,7 +38,7 @@ namespace br
  * \author Josh Klonyz \cite jklontz
  * First 4 bytes indicate the number of rows.
  * Second 4 bytes indicate the number of columns.
- * The rest of the bytes are 32-bit floating data elements.
+ * The rest of the bytes are 32-bit floating data elements in row-major order.
  */
 class binFormat : public Format
 {
@@ -318,8 +318,11 @@ class matFormat : public Format
                     }
                 }
 
-                if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty())
-                    t.append(Mat(rows, columns, matrixType, matrixData.data()).clone());
+                if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty()) {
+                    Mat transposed;
+                    transpose(Mat(rows, columns, matrixType, matrixData.data()), transposed);
+                    t.append(transposed);
+                }
             }
         }
 
@@ -404,9 +407,11 @@ class matFormat : public Format
                 }
                 quint32 bytes = m.elemSize() * m.rows * m.cols;
                 QByteArray buffer((8 - bytes%8)%8, 0);
+                Mat transposed;
+                transpose(m, transposed);
                 substream.writeRawData((const char*)&type, 4);
                 substream.writeRawData((const char*)&bytes, 4);
-                substream.writeRawData((const char*)m.data, bytes);
+                substream.writeRawData((const char*)transposed.data, bytes);
                 substream.writeRawData(buffer.data(), buffer.size());
             }
 
