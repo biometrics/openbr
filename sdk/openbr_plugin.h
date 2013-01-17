@@ -875,7 +875,6 @@ class BR_EXPORT Gallery : public Object
 
 public:
     virtual ~Gallery() {}
-    virtual bool isUniversal() const = 0; /*!< \c true if the gallery can read and write complete templates, \c false otherwise. */
     TemplateList read(); /*!< \brief Retrieve all the stored templates. */
     FileList files(); /*!< \brief Retrieve all the stored template files. */
     virtual TemplateList readBlock(bool *done) = 0; /*!< \brief Retrieve a portion of the stored templates. */

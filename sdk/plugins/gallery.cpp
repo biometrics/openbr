@@ -52,51 +52,30 @@ class galGallery : public Gallery
     QFile gallery;
     QDataStream stream;
 
-    ~galGallery()
-    {
-        gallery.close();
-    }
-
     void init()
     {
         gallery.setFileName(file);
+        if (file.getBool("remove"))
+            gallery.remove();
         QtUtils::touchDir(gallery);
-
-        if (file.contains("append")) {
-            if (!gallery.open(QFile::Append))
-                qFatal("Can't open [%s] for appending.", qPrintable(gallery.fileName()));
-        } else if (gallery.exists()) {
-            if (!gallery.open(QFile::ReadOnly))
-                qFatal("Can't open [%s] for reading.", qPrintable(gallery.fileName()));
-        } else {
-            if (!gallery.open(QFile::WriteOnly))
-                qFatal("Can't open [%s] for writing.", qPrintable(gallery.fileName()));
-        }
-
+        if (!gallery.open(QFile::ReadWrite | QFile::Append))
+            qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
         stream.setDevice(&gallery);
-    }
-
-    bool isUniversal() const
-    {
-        return true;
     }
 
     TemplateList readBlock(bool *done)
     {
-        *done = false;
+        if (stream.atEnd())
+            gallery.seek(0);
 
         TemplateList templates;
-        while (templates.size() < Globals->blockSize) {
-            if (stream.atEnd()) {
-                *done = true;
-                gallery.seek(0);
-                break;
-            }
-
+        while ((templates.size() < Globals->blockSize) && !stream.atEnd()) {
             Template m;
             stream >> m;
             templates.append(m);
         }
+
+        *done = stream.atEnd();
         return templates;
     }
 
@@ -124,11 +103,6 @@ class EmptyGallery : public Gallery
     void init()
     {
         QtUtils::touchDir(QDir(file.name));
-    }
-
-    bool isUniversal() const
-    {
-        return false;
     }
 
     TemplateList readBlock(bool *done)
@@ -179,11 +153,6 @@ BR_REGISTER(Gallery, EmptyGallery)
 class DefaultGallery : public Gallery
 {
     Q_OBJECT
-
-    bool isUniversal() const
-    {
-        return false;
-    }
 
     TemplateList readBlock(bool *done)
     {
@@ -246,11 +215,6 @@ class memGallery : public Gallery
             align(MemoryGalleries::galleries[file]);
             MemoryGalleries::aligned[file] = true;
         }
-    }
-
-    bool isUniversal() const
-    {
-        return true;
     }
 
     TemplateList readBlock(bool *done)
@@ -322,11 +286,6 @@ class csvGallery : public Gallery
 
     FileList files;
 
-    bool isUniversal() const
-    {
-        return false;
-    }
-
     ~csvGallery()
     {
         if (files.isEmpty()) return;
@@ -393,11 +352,6 @@ class txtGallery : public Gallery
         if (!lines.isEmpty()) QtUtils::writeFile(file.name, lines);
     }
 
-    bool isUniversal() const
-    {
-        return false;
-    }
-
     TemplateList readBlock(bool *done)
     {
         *done = true;
@@ -429,11 +383,6 @@ class xmlGallery : public Gallery
     Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata)
     BR_PROPERTY(bool, ignoreMetadata, false)
 
-    bool isUniversal() const
-    {
-        return false;
-    }
-
     TemplateList readBlock(bool *done)
     {
         TemplateList templates;
@@ -460,11 +409,6 @@ BR_REGISTER(Gallery, xmlGallery)
 class dbGallery : public Gallery
 {
     Q_OBJECT
-
-    bool isUniversal() const
-    {
-        return false;
-    }
 
     TemplateList readBlock(bool *done)
     {
@@ -616,11 +560,6 @@ BR_REGISTER(Gallery, dbGallery)
 class googleGallery : public Gallery
 {
     Q_OBJECT
-
-    bool isUniversal() const
-    {
-        return false;
-    }
 
     TemplateList readBlock(bool *done)
     {

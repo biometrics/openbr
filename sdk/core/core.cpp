@@ -112,7 +112,7 @@ struct AlgorithmCore
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) return FileList();
         FileList fileList = g->files();
-        if (!fileList.isEmpty() && g->isUniversal() && !gallery.contains("append"))
+        if (!fileList.isEmpty() && gallery.contains("cache"))
             return fileList; // Already enrolled
 
         const TemplateList i(TemplateList::fromInput(input));
@@ -166,7 +166,7 @@ struct AlgorithmCore
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
         gallery.reset(Gallery::make(file));
-        if (!gallery->isUniversal()) {
+        if ((file.suffix() != "gal") && (file.suffix() != "mem")) {
             enroll(file);
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
