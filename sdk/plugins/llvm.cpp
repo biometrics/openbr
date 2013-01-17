@@ -103,16 +103,15 @@ struct MatrixBuilder
     static Constant *constant(double value) { return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), value == 0 ? -0.0 : value); }
     static Constant *zero() { return constant(0); }
     static Constant *one() { return constant(1); }
-
     Constant *autoConstant(double value) const { return m->isFloating() ? ((m->bits() == 64) ? constant(value) : constant(float(value))) : constant(int(value), m->bits()); }
     AllocaInst *autoAlloca(double value, const Twine &name = "") const { AllocaInst *alloca = b->CreateAlloca(ty(), 0, name); b->CreateStore(autoConstant(value), alloca); return alloca; }
 
-    Value *getData(bool cast = true) const { LoadInst *data = b->CreateLoad(b->CreateStructGEP(v, 0), name+"_data"); return cast ? b->CreatePointerCast(data, ptrTy()) : data; }
-    Value *getChannels() const { return m->singleChannel() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 1), name+"_channels")); }
-    Value *getColumns() const { return m->singleColumn() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 2), name+"_columns")); }
-    Value *getRows() const { return m->singleRow() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 3), name+"_rows")); }
-    Value *getFrames() const { return m->singleFrame() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 4), name+"_frames")); }
-    Value *getHash() const { return b->CreateLoad(b->CreateStructGEP(v, 5), name+"_hash"); }
+    Value *data(bool cast = true) const { LoadInst *data = b->CreateLoad(b->CreateStructGEP(v, 0), name+"_data"); return cast ? b->CreatePointerCast(data, ptrTy()) : data; }
+    Value *channels() const { return m->singleChannel() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 1), name+"_channels")); }
+    Value *columns() const { return m->singleColumn() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 2), name+"_columns")); }
+    Value *rows() const { return m->singleRow() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 3), name+"_rows")); }
+    Value *frames() const { return m->singleFrame() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 4), name+"_frames")); }
+    Value *hash() const { return b->CreateLoad(b->CreateStructGEP(v, 5), name+"_hash"); }
 
     void setData(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 0)); }
     void setChannels(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 1)); }
@@ -121,18 +120,18 @@ struct MatrixBuilder
     void setFrames(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 4)); }
     void setHash(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 5)); }
 
-    void copyHeaderCode(const MatrixBuilder &other) const {
-        setChannels(other.getChannels());
-        setColumns(other.getColumns());
-        setRows(other.getRows());
-        setFrames(other.getFrames());
-        setHash(other.getHash());
+    void copyHeader(const MatrixBuilder &other) const {
+        setChannels(other.channels());
+        setColumns(other.columns());
+        setRows(other.rows());
+        setFrames(other.frames());
+        setHash(other.hash());
     }
 
-    void allocateCode() const {
-        Function *malloc = TheModule->getFunction("malloc");
+    void allocate() const {
+        static Function *malloc = TheModule->getFunction("malloc");
         if (!malloc) {
-            PointerType *mallocReturn = Type::getInt8PtrTy(getGlobalContext());
+            Type *mallocReturn = Type::getInt8PtrTy(getGlobalContext());
             std::vector<Type*> mallocParams;
             mallocParams.push_back(Type::getInt32Ty(getGlobalContext()));
             FunctionType* mallocType = FunctionType::get(mallocReturn, mallocParams, false);
@@ -141,36 +140,53 @@ struct MatrixBuilder
         }
 
         std::vector<Value*> mallocArgs;
-        mallocArgs.push_back(bytesCode());
+        mallocArgs.push_back(bytes());
         setData(b->CreateCall(malloc, mallocArgs));
     }
 
-    Value *get(int mask) const { return b->CreateAnd(getHash(), constant(mask, 16)); }
-    void set(int value, int mask) const { setHash(b->CreateOr(b->CreateAnd(getHash(), constant(~mask, 16)), b->CreateAnd(constant(value, 16), constant(mask, 16)))); }
-    void setBit(bool on, int mask) const { on ? setHash(b->CreateOr(getHash(), constant(mask, 16))) : setHash(b->CreateAnd(getHash(), constant(~mask, 16))); }
+    void deallocate() const {
+        static Function *free = TheModule->getFunction("free");
+        if (!free) {
+            Type *freeReturn = Type::getVoidTy(getGlobalContext());
+            std::vector<Type*> freeParams;
+            freeParams.push_back(Type::getInt8PtrTy(getGlobalContext()));
+            FunctionType* freeType = FunctionType::get(freeReturn, freeParams, false);
+            free = Function::Create(freeType, GlobalValue::ExternalLinkage, "free", TheModule);
+            free->setCallingConv(CallingConv::C);
+        }
 
-    Value *bitsCode() const { return get(Matrix::Bits); }
-    void setBitsCode(int bits) const { set(bits, Matrix::Bits); }
-    Value *isFloatingCode() const { return get(Matrix::Floating); }
-    void setFloatingCode(bool isFloating) const { if (isFloating) setSignedCode(true); setBit(isFloating, Matrix::Floating); }
-    Value *isSignedCode() const { return get(Matrix::Signed); }
-    void setSignedCode(bool isSigned) const { setBit(isSigned, Matrix::Signed); }
-    Value *typeCode() const { return get(Matrix::Bits + Matrix::Floating + Matrix::Signed); }
-    void setTypeCode(int type) const { set(type, Matrix::Bits + Matrix::Floating + Matrix::Signed); }
-    Value *singleChannelCode() const { return get(Matrix::SingleChannel); }
-    void setSingleChannelCode(bool singleChannel) const { setBit(singleChannel, Matrix::SingleChannel); }
-    Value *singleColumnCode() const { return get(Matrix::SingleColumn); }
-    void setSingleColumnCode(bool singleColumn) { setBit(singleColumn, Matrix::SingleColumn); }
-    Value *singleRowCode() const { return get(Matrix::SingleRow); }
-    void setSingleRowCode(bool singleRow) const { setBit(singleRow, Matrix::SingleRow); }
-    Value *singleFrameCode() const { return get(Matrix::SingleFrame); }
-    void setSingleFrameCode(bool singleFrame) const { setBit(singleFrame, Matrix::SingleFrame); }
-    Value *elementsCode() const { return b->CreateMul(b->CreateMul(b->CreateMul(getChannels(), getColumns()), getRows()), getFrames()); }
-    Value *bytesCode() const { return b->CreateMul(b->CreateUDiv(b->CreateCast(Instruction::ZExt, bitsCode(), Type::getInt32Ty(getGlobalContext())), constant(8, 32)), elementsCode()); }
+        std::vector<Value*> freeArgs;
+        freeArgs.push_back(b->CreateStructGEP(v, 0));
+        b->CreateCall(free, freeArgs);
+        setData(ConstantPointerNull::get(Type::getInt8PtrTy(getGlobalContext())));
+    }
 
-    Value *columnStep() const { Value *columnStep = getChannels(); columnStep->setName(name+"_cStep"); return columnStep; }
-    Value *rowStep() const { return b->CreateMul(getColumns(), columnStep(), name+"_rStep"); }
-    Value *frameStep() const { return b->CreateMul(getRows(), rowStep(), name+"_tStep"); }
+    Value *get(int mask) const { return b->CreateAnd(hash(), constant(mask, 16)); }
+    void set(int value, int mask) const { setHash(b->CreateOr(b->CreateAnd(hash(), constant(~mask, 16)), b->CreateAnd(constant(value, 16), constant(mask, 16)))); }
+    void setBit(bool on, int mask) const { on ? setHash(b->CreateOr(hash(), constant(mask, 16))) : setHash(b->CreateAnd(hash(), constant(~mask, 16))); }
+
+    Value *bits() const { return get(Matrix::Bits); }
+    void setBits(int bits) const { set(bits, Matrix::Bits); }
+    Value *isFloating() const { return get(Matrix::Floating); }
+    void setFloating(bool isFloating) const { if (isFloating) setSigned(true); setBit(isFloating, Matrix::Floating); }
+    Value *isSigned() const { return get(Matrix::Signed); }
+    void setSigned(bool isSigned) const { setBit(isSigned, Matrix::Signed); }
+    Value *type() const { return get(Matrix::Bits + Matrix::Floating + Matrix::Signed); }
+    void setType(int type) const { set(type, Matrix::Bits + Matrix::Floating + Matrix::Signed); }
+    Value *singleChannel() const { return get(Matrix::SingleChannel); }
+    void setSingleChannel(bool singleChannel) const { setBit(singleChannel, Matrix::SingleChannel); }
+    Value *singleColumn() const { return get(Matrix::SingleColumn); }
+    void setSingleColumn(bool singleColumn) { setBit(singleColumn, Matrix::SingleColumn); }
+    Value *singleRow() const { return get(Matrix::SingleRow); }
+    void setSingleRow(bool singleRow) const { setBit(singleRow, Matrix::SingleRow); }
+    Value *singleFrame() const { return get(Matrix::SingleFrame); }
+    void setSingleFrame(bool singleFrame) const { setBit(singleFrame, Matrix::SingleFrame); }
+    Value *elements() const { return b->CreateMul(b->CreateMul(b->CreateMul(channels(), columns()), rows()), frames()); }
+    Value *bytes() const { return b->CreateMul(b->CreateUDiv(b->CreateCast(Instruction::ZExt, bits(), Type::getInt32Ty(getGlobalContext())), constant(8, 32)), elements()); }
+
+    Value *columnStep() const { Value *columnStep = channels(); columnStep->setName(name+"_cStep"); return columnStep; }
+    Value *rowStep() const { return b->CreateMul(columns(), columnStep(), name+"_rStep"); }
+    Value *frameStep() const { return b->CreateMul(rows(), rowStep(), name+"_tStep"); }
     Value *aliasColumnStep(const MatrixBuilder &other) const { return (m->channels == other.m->channels) ? other.columnStep() : columnStep(); }
     Value *aliasRowStep(const MatrixBuilder &other) const { return (m->columns == other.m->columns) ? other.rowStep() : rowStep(); }
     Value *aliasFrameStep(const MatrixBuilder &other) const { return (m->rows == other.m->rows) ? other.frameStep() : frameStep(); }
@@ -183,7 +199,9 @@ struct MatrixBuilder
     Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y) const { return m->singleRow() ? aliasIndex(other, c, x) : b->CreateAdd(b->CreateMul(y, aliasRowStep(other)), aliasIndex(other, c, x)); }
     Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y, Value *f) const { return m->singleFrame() ? aliasIndex(other, c, x, y) : b->CreateAdd(b->CreateMul(f, aliasFrameStep(other)), aliasIndex(other, c, x, y)); }
 
-    void deindex(Value *i, Value **c) const { *c = m->singleChannel() ? constant(0) : i; }
+    void deindex(Value *i, Value **c) const {
+        *c = m->singleChannel() ? constant(0) : i;
+    }
     void deindex(Value *i, Value **c, Value **x) const {
         Value *rem;
         if (m->singleColumn()) {
@@ -221,8 +239,9 @@ struct MatrixBuilder
         deindex(rem, c, x, y);
     }
 
-    LoadInst *load(Value *i) const { return b->CreateLoad(b->CreateGEP(getData(), i)); }
-    StoreInst *store(Value *i, Value *value) const { return b->CreateStore(value, b->CreateGEP(getData(), i)); }
+    LoadInst *load(Value *i) const { return b->CreateLoad(b->CreateGEP(data(), i)); }
+    StoreInst *store(Value *i, Value *value) const { return b->CreateStore(value, b->CreateGEP(data(), i)); }
+
     Value *cast(Value *i, const MatrixBuilder &dst) const { return (m->type() == dst.m->type()) ? i : b->CreateCast(CastInst::getCastOpcode(i, m->isSigned(), dst.ty(), dst.m->isSigned()), i, dst.ty()); }
     Value *add(Value *i, Value *j, const Twine &name = "") const { return m->isFloating() ? b->CreateFAdd(i, j, name) : b->CreateAdd(i, j, name); }
     Value *multiply(Value *i, Value *j, const Twine &name = "") const { return m->isFloating() ? b->CreateFMul(i, j, name) : b->CreateMul(i, j, name); }
@@ -396,12 +415,12 @@ private:
 
         BasicBlock *getKernel = BasicBlock::Create(getGlobalContext(), "get_kernel", function);
         BasicBlock *preallocate = BasicBlock::Create(getGlobalContext(), "preallocate", function);
-        Value *hashTest = builder.CreateICmpNE(mb.getHash(), builder.CreateLoad(kernelHash), "hash_fail_test");
+        Value *hashTest = builder.CreateICmpNE(mb.hash(), builder.CreateLoad(kernelHash), "hash_fail_test");
         builder.CreateCondBr(hashTest, getKernel, preallocate);
 
         builder.SetInsertPoint(getKernel);
         builder.CreateStore(kernel, kernelFunction);
-        builder.CreateStore(mb.getHash(), kernelHash);
+        builder.CreateStore(mb.hash(), kernelHash);
         builder.CreateBr(preallocate);
         builder.SetInsertPoint(preallocate);
         Value *kernelSize = buildPreallocate(mb, nb);
@@ -409,7 +428,7 @@ private:
         BasicBlock *allocate = BasicBlock::Create(getGlobalContext(), "allocate", function);
         builder.CreateBr(allocate);
         builder.SetInsertPoint(allocate);
-        nb.allocateCode();
+        nb.allocate();
 
         BasicBlock *callKernel = BasicBlock::Create(getGlobalContext(), "call_kernel", function);
         builder.CreateBr(callKernel);
@@ -581,8 +600,8 @@ public:
 
     virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const
     {
-        dst.copyHeaderCode(src);
-        return dst.elementsCode();
+        dst.copyHeader(src);
+        return dst.elements();
     }
 
 private:
@@ -739,7 +758,7 @@ class sumTransform : public UnaryTransform
 
         if (frames && !src.m->singleFrame()) {
             BasicBlock *loop, *exit;
-            src_t = dst.beginLoop(loops.last(), loop, exit, src.getFrames(), "src_t");
+            src_t = dst.beginLoop(loops.last(), loop, exit, src.frames(), "src_t");
             loops.append(loop);
             exits.append(exit);
         } else {
@@ -748,7 +767,7 @@ class sumTransform : public UnaryTransform
 
         if (rows && !src.m->singleRow()) {
             BasicBlock *loop, *exit;
-            src_y = dst.beginLoop(loops.last(), loop, exit, src.getRows(), "src_y");
+            src_y = dst.beginLoop(loops.last(), loop, exit, src.rows(), "src_y");
             loops.append(loop);
             exits.append(exit);
         } else {
@@ -757,7 +776,7 @@ class sumTransform : public UnaryTransform
 
         if (columns && !src.m->singleColumn()) {
             BasicBlock *loop, *exit;
-            src_x = dst.beginLoop(loops.last(), loop, exit, src.getColumns(), "src_x");
+            src_x = dst.beginLoop(loops.last(), loop, exit, src.columns(), "src_x");
             loops.append(loop);
             exits.append(exit);
         } else {
@@ -766,7 +785,7 @@ class sumTransform : public UnaryTransform
 
         if (channels && !src.m->singleChannel()) {
             BasicBlock *loop, *exit;
-            src_c = dst.beginLoop(loops.last(), loop, exit, src.getChannels(), "src_c");
+            src_c = dst.beginLoop(loops.last(), loop, exit, src.channels(), "src_c");
             loops.append(loop);
             exits.append(exit);
         } else {
