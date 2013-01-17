@@ -85,13 +85,13 @@ struct Matrix
 
 typedef void (*UnaryFunction)(const Matrix *src, Matrix *dst);
 typedef void (*BinaryFunction)(const Matrix *srcA, const Matrix *srcB, Matrix *dst);
-UnaryFunction jit_make_unary_function(const char *description);
-BinaryFunction jit_make_binary_function(const char *description);
+UnaryFunction makeUnaryFunction(const char *description);
+BinaryFunction makeBinaryFunction(const char *description);
 
 typedef void (*UnaryKernel)(const Matrix *src, Matrix *dst, uint32_t size);
 typedef void (*BinaryKernel)(const Matrix *srcA, const Matrix *srcB, Matrix *dst, uint32_t size);
-UnaryKernel jit_make_unary_kernel(const char *description, const Matrix *src);
-BinaryKernel jit_make_binary_kernel(const char *description, const Matrix *srcA, const Matrix *srcB);
+UnaryKernel makeUnaryKernel(const char *description, const Matrix *src);
+BinaryKernel makeBinaryKernel(const char *description, const Matrix *srcA, const Matrix *srcB);
 
 }
 
