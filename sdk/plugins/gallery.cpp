@@ -262,7 +262,7 @@ class memGallery : public Gallery
 
         TemplateList templates = MemoryGalleries::galleries[file].mid(block*Globals->blockSize, Globals->blockSize);
         *done = (templates.size() < Globals->blockSize);
-        block = done ? 0 : block+1;
+        block = *done ? 0 : block+1;
         return templates;
     }
 
