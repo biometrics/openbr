@@ -344,7 +344,7 @@ private:
         const QString args = arguments().join(",");
         if (!argsLUT.contains(args)) argsLUT.insert(args, argsLUT.size());
         int uid = argsLUT.value(args);
-        return "jitcv_" + name().remove("Transform") + (args.isEmpty() ? QString() : QString::number(uid));
+        return "jitcv_" + objectName() + (args.isEmpty() ? QString() : QString::number(uid));
     }
 
     QString mangledName(const Matrix &src) const
@@ -491,7 +491,7 @@ public:
 private:
     QString mangledName(const Matrix &srcA, const Matrix &srcB) const
     {
-        return "jitcv_" + name().remove("Transform") + "_" + MatrixToString(srcA) + "_" + MatrixToString(srcB);
+        return "jitcv_" + objectName() + "_" + MatrixToString(srcA) + "_" + MatrixToString(srcB);
     }
 
     Function *compile(const Matrix &m, const Matrix &n) const
@@ -607,7 +607,7 @@ class stitchTransform : public UnaryTransform
     {
         foreach (Transform *transform, kernels)
             if (dynamic_cast<StitchableTransform*>(transform) == NULL)
-                qFatal("%s is not a stitchable transform!", qPrintable(transform->name()));
+                qFatal("%s is not a stitchable transform!", qPrintable(transform->objectName()));
     }
 
     int preallocate(const Matrix &src, Matrix &dst) const
@@ -953,7 +953,7 @@ class _QuantizeTransform : public Transform
     }
 };
 
-BR_REGISTER(Transform, _QuantizeTransform)
+// BR_REGISTER(Transform, _QuantizeTransform)
 
 /*!
  * \ingroup initializers
