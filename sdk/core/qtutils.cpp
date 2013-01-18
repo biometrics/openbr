@@ -18,6 +18,7 @@
 #include <QDebug>
 #ifndef BR_EMBEDDED
 #include <QDesktopServices>
+#include <QLocalSocket>
 #endif // BR_EMBEDDED
 #include <QFile>
 #include <QFileInfo>
@@ -92,30 +93,37 @@ void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 
 void QtUtils::writeFile(const QString &file, const QStringList &lines)
 {
-    writeFile(file, lines.join("\n") + "\n");
+    writeFile(file, lines.join("\n"));
 }
 
 void QtUtils::writeFile(const QString &file, const QString &data)
 {
-    if (QFileInfo(file).baseName() == "terminal") {
-        printf("%s", qPrintable(data));
-    } else {
-        QFile f(file);
-        touchDir(f);
-        if (!f.open(QFile::WriteOnly)) qFatal("QtUtils::writeFile failed to open %s for writing.", qPrintable(file));
-        f.write(qPrintable(data));
-        f.close();
-    }
+    writeFile(file, data.toLocal8Bit());
 }
 
 void QtUtils::writeFile(const QString &file, const QByteArray &data, int compression)
 {
-    QFile f(file);
-    touchDir(f);
-    if (!f.open(QFile::WriteOnly)) qFatal("QtUtils::writeFile failed to open %s for writing.", qPrintable(file));
-    if (compression == 0) f.write(data);
-    else                  f.write(qCompress(data, compression));
-    f.close();
+    const QString baseName = QFileInfo(file).baseName();
+    const QByteArray contents = (compression == 0) ? data : qCompress(data, compression);
+    if (baseName == "terminal") {
+        printf("%s", qPrintable(contents));
+    }
+#ifndef BR_EMBEDDED
+    else if (baseName.endsWith("socket")) {
+        QLocalSocket socket;
+        socket.connectToServer(file, QLocalSocket::WriteOnly);
+        socket.write(data);
+        socket.close();
+    }
+#endif // BR_EMBEDDED
+    else {
+        QFile f(file);
+        touchDir(f);
+        if (!f.open(QFile::WriteOnly))
+            qFatal("QtUtils::writeFile failed to open %s for writing.", qPrintable(file));
+        f.write(contents);
+        f.close();
+    }
 }
 
 void QtUtils::touchDir(const QDir &dir)
