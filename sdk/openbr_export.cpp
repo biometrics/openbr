@@ -17,7 +17,7 @@
 /*!
  * \mainpage
  * \section overview Overview
- * \em OpenBR \cite openbr is a toolkit for biometric recognition and evaluation.
+ * <i>OpenBR</i> \cite openbr is a toolkit for biometric recognition and evaluation.
  * Supported use cases include training new recognition algorithms, interfacing with commercial systems, and measuring algorithm performance.
  * Free algorithms are also available for specific modalities including face recognition, face gender \& age estimation, face quality, and document classification.
  *
