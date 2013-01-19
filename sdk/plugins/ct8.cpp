@@ -270,7 +270,12 @@ protected:
 struct CT8Detect : public UntrainableTransform
                  , public CT8Context
 {
+public:
     Q_OBJECT
+
+    Q_PROPERTY(float minRelEyeDistance READ get_minRelEyeDistance WRITE set_minRelEyeDistance RESET reset_minRelEyeDistance STORED false)
+    Q_PROPERTY(float maxRelEyeDistance READ get_maxRelEyeDistance WRITE set_maxRelEyeDistance RESET reset_maxRelEyeDistance STORED false)
+
     // Perform face, then eye detection using the facevacs SDK
     void project(const Template &src, Template &dst) const
     {
@@ -279,8 +284,7 @@ struct CT8Detect : public UntrainableTransform
             FRsdk::CountedPtr<FRsdk::ImageBody> i(new FRsdk::OpenCVImageBody(src));
             FRsdk::Image img(i);
             
-            // .01 here should be a parameter -cao
-            FRsdk::Face::LocationSet faceLocations = faceFinder->find(img, 0.01f);
+            FRsdk::Face::LocationSet faceLocations = faceFinder->find(img, minRelEyeDistance, maxRelEyeDistance);
             
             // If the face finder doesn't find anything mark the output as a failure
             if (faceLocations.empty() ) {
@@ -324,6 +328,9 @@ struct CT8Detect : public UntrainableTransform
 
         if (!Globals->enrollAll && dst.isEmpty()) dst += Mat();
     }
+private:
+    BR_PROPERTY(float, minRelEyeDistance, 0.01f)
+    BR_PROPERTY(float, maxRelEyeDistance, 0.4f)
 };
 
 BR_REGISTER(Transform, CT8Detect)
