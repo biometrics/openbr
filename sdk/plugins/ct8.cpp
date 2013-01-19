@@ -11,22 +11,31 @@
 #include <exception>
 #include <string>
 #include <vector>
-#include <mm_plugin.h>
+#include <openbr_plugin.h>
 
-#include "model.h"
-#include "resource.h"
+#include "core/resource.h"
 
 using namespace cv;
-using namespace mm;
+using namespace br;
 
 namespace FRsdk {
+    // Construct a FaceVACS sdk ImageBody from an opencv Mat
     struct OpenCVImageBody : public ImageBody
     {
         OpenCVImageBody(const Mat &m, const std::string& _name = "")
             : w(m.cols), h(m.rows), b(0), rgb(0), n(_name)
         {
-            buildRgbRepresentation(m);
-            buildByteRepresentation();
+            // The ImageBody only needs to construct a grayscale or rgb
+            // representation (whichever is indicated by isColor()), not both.
+            if (m.channels() == 1) {
+                is_color = false;
+                buildByteRepresentation(m);
+            }
+            else {
+                buildRgbRepresentation(m);
+                is_color = true;
+            }
+            
         }
 
         ~OpenCVImageBody()
@@ -35,7 +44,7 @@ namespace FRsdk {
             delete[] b;
         }
 
-        bool isColor() const { return true; }
+        bool isColor() const { return is_color; }
         unsigned int height() const { return h; }
         unsigned int width() const { return w; }
         const Byte* grayScaleRepresentation() const { return b; }
@@ -58,26 +67,20 @@ namespace FRsdk {
             }
         }
 
-        void buildByteRepresentation()
+        void buildByteRepresentation(const Mat & m)
         {
             b = new Byte[w*h];
-            Rgb* colorp = rgb;
             Byte* grayp = b;
             for( unsigned int i = 0; i < h; i++ ) {
                 for( unsigned int k = 0; k < w; k++ ) {
-                    float f = (float) colorp->r;
-                    f += (float) colorp->g;
-                    f += (float) colorp->b;
-                    f /= 3.0f;
-                    if( f > 255.0f) f = 255.0f;
-                    *grayp = (Byte) f;
-                    colorp++;
+                    *grayp = (Byte) m.at<uchar>(i,k);
                     grayp++;
                 }
             }
         }
 
     private:
+        bool is_color;
         unsigned int w;
         unsigned int h;
         Byte* b;
@@ -86,6 +89,10 @@ namespace FRsdk {
     };
 
 
+    // Enrollment::FeedbackBody subclasses are used as a set of callbacks
+    // during facevacs enrollment. This class keeps track of whether or not
+    // enrollment has failed (checkable via firValid()), and the extracted fir
+    // (getFir)
     struct EnrolOpenCVFeedback : public Enrollment::FeedbackBody
     {
         EnrolOpenCVFeedback(Mat *_m)
@@ -94,14 +101,11 @@ namespace FRsdk {
 
         EnrolOpenCVFeedback() {}
 
-        void start()
-        {
-            firvalid = false;
-        }
+        void start() { firvalid = false; }
 
         void processingImage(const FRsdk::Image& img) { (void) img; }
         void eyesFound( const FRsdk::Eyes::Location& eyeLoc) { (void) eyeLoc; }
-        void eyesNotFound() {}
+        void eyesNotFound() { firvalid = false;}
         void sampleQualityTooLow() {}
         void sampleQuality(const float& f) { (void) f; }
 
@@ -113,7 +117,7 @@ namespace FRsdk {
             firvalid = true;
         }
 
-        void failure() {}
+        void failure() { firvalid = false; }
         void end() {}
 
         const FRsdk::FIR& getFir() const
@@ -122,10 +126,7 @@ namespace FRsdk {
             return *fir;
         }
 
-        bool firValid() const
-        {
-            return firvalid;
-        }
+        bool firValid() const { return firvalid; }
 
     private:
         FRsdk::CountedPtr<FRsdk::FIR> fir;
@@ -139,16 +140,14 @@ struct CT8Initialize : public Initializer
 {    
     static FRsdk::Configuration* CT8Configuration;
 
+    // ct8 plugin initialization, load a FRsdk config file, and register
+    // the shortcut for using FaceVACS feature extraction/comparison
     void initialize() const
     {
-        QFile file(":/3rdparty/ct8/activationkey.cfg");
-        file.open(QFile::ReadOnly);
-        QByteArray data = file.readAll();
-        file.close();
-        std::istringstream istream(QString(data).arg(Globals.SDKPath+"/models/ct8").toStdString());
-
         try {
-            CT8Configuration = new FRsdk::Configuration(istream);
+            // Need to do something different wrt getting the config file location -cao
+            CT8Configuration = new FRsdk::Configuration("C:/FVSDK_8_6_0/etc/frsdk.cfg");
+            Globals->abbreviations.insert("CT8","Open+CT8Detect!CT8Enroll:CT8Compare");
         } catch (std::exception &e) {
             qWarning("CT8Initialize Exception: %s", e.what());
             CT8Configuration = NULL;
@@ -164,17 +163,20 @@ struct CT8Initialize : public Initializer
 
 FRsdk::Configuration* CT8Initialize::CT8Configuration = NULL;
 
-MM_REGISTER(Initializer, CT8Initialize, false)
+BR_REGISTER(Initializer, CT8Initialize)
 
-
-class CT8EnrollmentProcessorResource : public Resource<FRsdk::Enrollment::Processor>
+// Adaptor class adding a default constructor to FRsdk::Enrollment::Processor
+// so that it can be used with Resource
+class CT8EnrollmentProcessor : public FRsdk::Enrollment::Processor
 {
-    QSharedPointer<FRsdk::Enrollment::Processor> make() const
+public:
+    CT8EnrollmentProcessor() : FRsdk::Enrollment::Processor(*CT8Initialize::CT8Configuration)
     {
-        return QSharedPointer<FRsdk::Enrollment::Processor>(new FRsdk::Enrollment::Processor(*CT8Initialize::CT8Configuration));
+        //
     }
 };
 
+typedef Resource<CT8EnrollmentProcessor> CT8EnrollmentProcessorResource;
 
 struct CT8Context
 {
@@ -185,13 +187,12 @@ struct CT8Context
             eyesFinder = new FRsdk::Eyes::Finder(*CT8Initialize::CT8Configuration);
             firBuilder = new FRsdk::FIRBuilder(*CT8Initialize::CT8Configuration);
             facialMatchingEngine = new FRsdk::FacialMatchingEngine(*CT8Initialize::CT8Configuration);
-            enrollmentProcessors.init();
         } catch (std::exception &e) {
             qFatal("CT8Context Exception: %s", e.what());
         }
     }
 
-    ~CT8Context()
+    virtual ~CT8Context()
     {
         delete faceFinder;
         delete eyesFinder;
@@ -199,26 +200,62 @@ struct CT8Context
         delete facialMatchingEngine;
     }
 
-    void enroll(const FRsdk::Image &img, const FRsdk::Eyes::Location &eyes, Mat *m) const
+    // Enroll an FRsdk::Sample (can be various types, generally an image that
+    // maybe has some extra data like detected eye locations). 
+    bool enroll(const FRsdk::Sample &sample, Mat *m) const
     {
         try {
-            FRsdk::Sample sample(FRsdk::AnnotatedImage(img, eyes));
             FRsdk::SampleSet sampleSet;
             sampleSet.push_back(sample);
 
-            FRsdk::Enrollment::Feedback enrollmentFeedback(new FRsdk::EnrolOpenCVFeedback(m));
-            int index;
-            QSharedPointer<FRsdk::Enrollment::Processor> enrollmentProcessor = enrollmentProcessors.acquire(index);
+
+            FRsdk::EnrolOpenCVFeedback * feedback_body = new FRsdk::EnrolOpenCVFeedback(m);
+            FRsdk::CountedPtr<FRsdk::Enrollment::FeedbackBody> feedback_ptr(feedback_body);
+            
+            FRsdk::Enrollment::Feedback enrollmentFeedback(feedback_ptr);
+
+            CT8EnrollmentProcessor * enrollmentProcessor = enrollmentProcessors.acquire();
             enrollmentProcessor->process(sampleSet.begin(), sampleSet.end(), enrollmentFeedback);
-            enrollmentProcessors.release(index);
+            enrollmentProcessors.release(enrollmentProcessor);
+            if (!feedback_body->firValid()) return false;
         } catch (std::exception &e) {
             qFatal("CT8Context Exception: %s", e.what());
+            return false;
         }
+        return true;
     }
 
-    static FRsdk::Position toPosition(const Point2f &point)
+
+    // Input: an image, and pre-detected eye locations, returns false if enrollment fails
+    bool enroll(const FRsdk::Image &img, const FRsdk::Eyes::Location &eyes, Mat *m) const
     {
-        return FRsdk::Position(point.x, point.y);
+        try {
+            FRsdk::Sample sample(FRsdk::AnnotatedImage(img, eyes));
+            return enroll(sample, m);
+        } catch (std::exception &e) {
+            qFatal("CT8Context Exception: %s", e.what());
+            return false;
+        }
+        return true;
+    }
+
+    // Input: an image, no eye locations (facevacs will do detection with
+    // default parameters. Returns false if enrollment fails
+    bool enroll(const FRsdk::Image &img, Mat *m) const
+    {
+        try {
+            FRsdk::Sample sample(img);
+            return enroll(sample, m);
+        } catch (std::exception &e) {
+            qFatal("CT8Context Exception: %s", e.what());
+            return false;
+        }
+        return true;
+    }
+
+	static FRsdk::Position toPosition(const QPointF &point)
+    {
+        return FRsdk::Position(point.x(), point.y());
     }
 
 protected:
@@ -230,30 +267,53 @@ protected:
 };
 
 
-struct CT8Detect : public UntrainableFeature
+struct CT8Detect : public UntrainableTransform
                  , public CT8Context
 {
+    Q_OBJECT
+    // Perform face, then eye detection using the facevacs SDK
     void project(const Template &src, Template &dst) const
     {
         try {
+            // Build an FRsdk image from the input openCV mat
             FRsdk::CountedPtr<FRsdk::ImageBody> i(new FRsdk::OpenCVImageBody(src));
             FRsdk::Image img(i);
-            FRsdk::Face::LocationSet faceLocations = faceFinder->find(img, 0.01);
+            
+            // .01 here should be a parameter -cao
+            FRsdk::Face::LocationSet faceLocations = faceFinder->find(img, 0.01f);
+            
+            // If the face finder doesn't find anything mark the output as a failure
+            if (faceLocations.empty() ) {
+                dst.file.setBool("FTE");
+                return;
+            }
 
-            QList<Rect> ROIs;
-            QList<Point2f> landmarks;
+            QList<QRectF> ROIs;
+            QList<QPointF> landmarks;
             FRsdk::Face::LocationSet::const_iterator faceLocationSetIterator = faceLocations.begin();
+            bool any_eyes = false;
+
+            // Attempt to detect eyes in any face ROIs that were detected
             while (faceLocationSetIterator != faceLocations.end()) {
                 FRsdk::Face::Location faceLocation = *faceLocationSetIterator; faceLocationSetIterator++;
                 FRsdk::Eyes::LocationSet currentEyesLocations = eyesFinder->find(img, faceLocation);
+
                 if (currentEyesLocations.size() > 0) {
-                    ROIs.append(Rect(faceLocation.pos.x(), faceLocation.pos.y(), faceLocation.width, faceLocation.width));
-                    landmarks.append(Point2f(currentEyesLocations.front().first.x(), currentEyesLocations.front().first.y()));
-                    landmarks.append(Point2f(currentEyesLocations.front().second.x(), currentEyesLocations.front().second.y()));
+                    any_eyes = true;
+                    ROIs.append(QRectF(faceLocation.pos.x(), faceLocation.pos.y(), faceLocation.width, faceLocation.width));
+                    landmarks.append(QPointF(currentEyesLocations.front().first.x(), currentEyesLocations.front().first.y()));
+                    landmarks.append(QPointF(currentEyesLocations.front().second.x(), currentEyesLocations.front().second.y()));
+
                     dst += src;
                 }
 
-                if (!Globals.EnrollAll && !dst.isEmpty()) break;
+                if (any_eyes && !Globals->enrollAll && !dst.isEmpty()) break;
+            }
+
+            // If eye detection failed, mark the output as a failure
+            if (!any_eyes) {
+                dst.file.setBool("FTE");
+                return;
             }
 
             dst.file.setROIs(ROIs);
@@ -262,61 +322,84 @@ struct CT8Detect : public UntrainableFeature
             qFatal("CT8Enroll Exception: %s", e.what());
         }
 
-        if (!Globals.EnrollAll && dst.isEmpty()) dst += Mat();
+        if (!Globals->enrollAll && dst.isEmpty()) dst += Mat();
     }
 };
 
-MM_REGISTER(Feature, CT8Detect, false)
+BR_REGISTER(Transform, CT8Detect)
 
 
-struct CT8Enroll : public UntrainableFeature
+struct CT8Enroll : public UntrainableTransform
                  , public CT8Context
 {
+    Q_OBJECT
+    // enroll an image using the facevacs sdk. Generates a facevacs "fir" which
+    // is their face representation.
     void project(const Template &src, Template &dst) const
     {
         try {
             FRsdk::CountedPtr<FRsdk::ImageBody> i(new FRsdk::OpenCVImageBody(src));
             FRsdk::Image img(i);
 
-            QList<Point2f> landmarks = src.file.landmarks();
+            // If we already have eye locations, use them 
+            QList<QPointF> landmarks = src.file.landmarks();
+            bool enroll_succeeded = false;
             if (landmarks.size() == 2) {
-                enroll(img, FRsdk::Eyes::Location(toPosition(landmarks[0]), toPosition(landmarks[1])), dst.mp());
-                dst.file.insert("CT8_First_Eye_X", landmarks[0].x);
-                dst.file.insert("CT8_First_Eye_Y", landmarks[0].y);
-                dst.file.insert("CT8_Second_Eye_X", landmarks[1].x);
-                dst.file.insert("CT8_Second_Eye_Y", landmarks[1].y);
+                enroll_succeeded = enroll(img, FRsdk::Eyes::Location(toPosition(landmarks[0]), toPosition(landmarks[1])), &(dst.m()));
 
-                QList<Rect> ROIs = src.file.ROIs();
+                // Transfer previously detectd eye and face locations to the output dst.
+                dst.file.insert("CT8_First_Eye_X", landmarks[0].x());
+                dst.file.insert("CT8_First_Eye_Y", landmarks[0].y());
+                dst.file.insert("CT8_Second_Eye_X", landmarks[1].x());
+                dst.file.insert("CT8_Second_Eye_Y", landmarks[1].y());
+
+                QList<QRectF> ROIs = src.file.ROIs();
                 if (ROIs.size() == 1) {
-                    dst.file.insert("CT8_Face_X", ROIs.first().x);
-                    dst.file.insert("CT8_Face_Y", ROIs.first().y);
-                    dst.file.insert("CT8_Face_Width", ROIs.first().width);
-                    dst.file.insert("CT8_Face_Height", ROIs.first().height);
+                    dst.file.insert("CT8_Face_X", ROIs.first().x());
+                    dst.file.insert("CT8_Face_Y", ROIs.first().y());
+                    dst.file.insert("CT8_Face_Width", ROIs.first().width());
+                    dst.file.insert("CT8_Face_Height", ROIs.first().height());
                 }
             } else {
-                dst = Mat();
+                // If we don't have eye locations already, calling enroll here
+                // will cause facevacs to perform detection using default
+                // parameters (and we will not receive the detected locations
+                // as output).
+                enroll_succeeded = enroll(img, &(dst.m()));
             }
+            // If enrollment failed, mark this image as a failure. This will
+            // typically only happen if we aren't using pre-detected eye
+            // locations
+            if (!enroll_succeeded)
+            {
+                dst.file.setBool("FTE");
+                return;
+            }
+
         } catch (std::exception &e) {
             qFatal("CT8Enroll Exception: %s", e.what());
         }
     }
 };
 
-MM_REGISTER(Feature, CT8Enroll, false)
+BR_REGISTER(Transform, CT8Enroll)
 
 
-struct CT8Compare : public ComparerBase,
+struct CT8Compare : public Distance,
                     public CT8Context
 {
-    float compare(const Mat &srcA, const Mat &srcB) const
+    Q_OBJECT
+
+    // Compare pre-extracted facevacs templates
+    float _compare(const Template &srcA, const Template &srcB) const
     {
         const float DefaultNonMatchScore = 0;
-        if (!srcA.data || !srcB.data) return DefaultNonMatchScore;
+        if (!srcA.m().data || !srcB.m().data) return DefaultNonMatchScore;
 
         float score = DefaultNonMatchScore;
         try {
-            FRsdk::FIR firA = firBuilder->build((FRsdk::Byte*)srcA.data, srcA.cols);
-            FRsdk::FIR firB = firBuilder->build((FRsdk::Byte*)srcB.data, srcB.cols);
+            FRsdk::FIR firA = firBuilder->build( (FRsdk::Byte *) srcA.m().data, srcA.m().cols);
+            FRsdk::FIR firB = firBuilder->build( (FRsdk::Byte *) srcB.m().data, srcB.m().cols);
             score = (float)facialMatchingEngine->compare(firA, firB);
         } catch (std::exception &e) {
             qFatal("CT8Compare Exception: %s", e.what());
@@ -326,5 +409,7 @@ struct CT8Compare : public ComparerBase,
     }
 };
 
-MM_REGISTER(Comparer, CT8Compare, false)
-MM_REGISTER_ALGORITHM(CT8, "Open+CT8Detect!CT8Enroll:CT8Compare")
+BR_REGISTER(Distance, CT8Compare)
+
+#include "plugins/ct8.moc"
+
