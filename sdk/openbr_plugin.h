@@ -505,6 +505,12 @@ public:
     Q_PROPERTY(float ageDelta READ get_ageDelta WRITE set_ageDelta RESET reset_ageDelta)
     BR_PROPERTY(float, ageDelta, std::numeric_limits<float>::max())
 
+    /*!
+     * \brief If \c true a template will be skipped over if its file name already exists in the gallery.
+     */
+    Q_PROPERTY(bool noDuplicates READ get_noDuplicates WRITE set_noDuplicates RESET reset_noDuplicates)
+    BR_PROPERTY(bool, noDuplicates, false)
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */

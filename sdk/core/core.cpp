@@ -124,6 +124,8 @@ struct AlgorithmCore
         Globals->totalSteps = i.size();
         Globals->startTime.start();
 
+        const bool noDuplicates = gallery.contains("noDuplicates");
+        QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
         const int subBlockSize = 4*std::max(1, Globals->parallelism);
         const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
         int totalCount = 0, failureCount = 0;
@@ -132,6 +134,10 @@ struct AlgorithmCore
             for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
                 TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
                 if (data.isEmpty()) break;
+                if (noDuplicates)
+                    for (int i=data.size()-1; i>=0; i--)
+                        if (fileNames.contains(data[i].file.name))
+                            data.removeAt(i);
                 const int numFiles = data.size();
 
                 if (Globals->backProject) {
