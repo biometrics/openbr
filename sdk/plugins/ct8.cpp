@@ -137,6 +137,12 @@ namespace FRsdk {
     };
 }
 
+/*!
+ * \ingroup initializers
+ * \brief Initialize ct8 plugin
+ * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
+ */
 struct CT8Initialize : public Initializer
 {    
     static FRsdk::Configuration* CT8Configuration;
@@ -187,7 +193,7 @@ BR_REGISTER(Initializer, CT8Initialize)
 class CT8EnrollmentProcessor : public FRsdk::Enrollment::Processor
 {
 public:
-    CT8EnrollmentProcessor() : FRsdk::Enrollment::Processor(*CT8Initialize::CT8Configuration)
+    CT8EnrollmentProcessor() : FRsdk::Enrollment::Processor(*CT8Initialize::getCT8Configuration())
     {
         //
     }
@@ -195,6 +201,11 @@ public:
 
 typedef Resource<CT8EnrollmentProcessor> CT8EnrollmentProcessorResource;
 
+/*!
+ * \brief CT8 context
+ * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
+ */
 struct CT8Context
 {
     CT8Context()
@@ -283,7 +294,12 @@ protected:
     FRsdk::FacialMatchingEngine *facialMatchingEngine;
 };
 
-
+/*!
+ * \ingroup transforms
+ * \brief Perform face and eye detection with the FaceVACS SDK.
+ * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
+ */
 struct CT8Detect : public UntrainableTransform
                  , public CT8Context
 {
@@ -352,7 +368,12 @@ private:
 
 BR_REGISTER(Transform, CT8Detect)
 
-
+/*!
+ * \ingroup transforms
+ * \brief Enroll face images using the FaceVACS SDK
+ * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
+ */
 struct CT8Enroll : public UntrainableTransform
                  , public CT8Context
 {
@@ -408,7 +429,12 @@ struct CT8Enroll : public UntrainableTransform
 
 BR_REGISTER(Transform, CT8Enroll)
 
-
+/*!
+ * \ingroup distances
+ * \brief Compare FaceVACS templates 
+ * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
+ */
 struct CT8Compare : public Distance,
                     public CT8Context
 {
