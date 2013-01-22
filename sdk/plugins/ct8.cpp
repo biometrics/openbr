@@ -18,6 +18,8 @@
 using namespace cv;
 using namespace br;
 
+#define CT8_CONFIG_PROP "ct8ConfigFile"
+
 namespace FRsdk {
     // Construct a FaceVACS sdk ImageBody from an opencv Mat
     struct OpenCVImageBody : public ImageBody
@@ -135,24 +137,39 @@ namespace FRsdk {
     };
 }
 
-
 struct CT8Initialize : public Initializer
 {    
     static FRsdk::Configuration* CT8Configuration;
-
+public:
     // ct8 plugin initialization, load a FRsdk config file, and register
     // the shortcut for using FaceVACS feature extraction/comparison
     void initialize() const
     {
         try {
-            // Need to do something different wrt getting the config file location -cao
-            CT8Configuration = new FRsdk::Configuration("C:/FVSDK_8_6_0/etc/frsdk.cfg");
+            QString store_string = QString((CT8_DIR + std::string("/etc/frsdk.cfg")).c_str());
+            Globals->setProperty(CT8_CONFIG_PROP, store_string);
+            CT8Configuration = NULL;
             Globals->abbreviations.insert("CT8","Open+CT8Detect!CT8Enroll:CT8Compare");
         } catch (std::exception &e) {
             qWarning("CT8Initialize Exception: %s", e.what());
             CT8Configuration = NULL;
         }
     }
+
+    static FRsdk::Configuration * getCT8Configuration()
+    {
+        if (!CT8Configuration) {
+            QVariant recovered_variant= Globals->property(CT8_CONFIG_PROP);
+            QString recovered_string = recovered_variant.toString();
+            try {
+                CT8Configuration = new FRsdk::Configuration(qPrintable(recovered_string));
+            } catch (std::exception &e) {
+                qFatal("CT8Initialize Exception: %s", e.what());
+            }
+        }
+        return CT8Configuration;
+    }
+
 
     void finalize() const
     {
@@ -183,10 +200,10 @@ struct CT8Context
     CT8Context()
     {
         try {
-            faceFinder = new FRsdk::Face::Finder(*CT8Initialize::CT8Configuration);
-            eyesFinder = new FRsdk::Eyes::Finder(*CT8Initialize::CT8Configuration);
-            firBuilder = new FRsdk::FIRBuilder(*CT8Initialize::CT8Configuration);
-            facialMatchingEngine = new FRsdk::FacialMatchingEngine(*CT8Initialize::CT8Configuration);
+            faceFinder = new FRsdk::Face::Finder(*CT8Initialize::getCT8Configuration());
+            eyesFinder = new FRsdk::Eyes::Finder(*CT8Initialize::getCT8Configuration());
+            firBuilder = new FRsdk::FIRBuilder(*CT8Initialize::getCT8Configuration());
+            facialMatchingEngine = new FRsdk::FacialMatchingEngine(*CT8Initialize::getCT8Configuration());
         } catch (std::exception &e) {
             qFatal("CT8Context Exception: %s", e.what());
         }

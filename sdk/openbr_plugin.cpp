@@ -581,7 +581,7 @@ void Object::setProperty(const QString &name, const QString &value)
     QString type;
     int index = metaObject()->indexOfProperty(qPrintable(name));
     if (index != -1) type = metaObject()->property(index).typeName();
-    else             return;
+    else             type = "";
 
     QVariant variant;
     if (type.startsWith("QList<") && type.endsWith(">")) {
@@ -619,9 +619,7 @@ void Object::setProperty(const QString &name, const QString &value)
         variant = value;
     }
 
-    if (!QObject::setProperty(qPrintable(name), variant))
-        qFatal("Failed to set %s::%s to: %s %s",
-               metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
+    QObject::setProperty(qPrintable(name), variant);
 }
 
 QStringList br::Object::parse(const QString &string, char split)

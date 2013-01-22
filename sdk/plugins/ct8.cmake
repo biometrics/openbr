@@ -12,4 +12,5 @@ if(${BR_WITH_CT8})
                 ${CT8_DIR_LIB}/../share/libiomp5.so
           DESTINATION lib)
   install(DIRECTORY ${CT8_DIR}/etc DESTINATION models/ct8)
+  add_definitions(-DCT8_DIR=\"${CT8_DIR}\")
 endif()
