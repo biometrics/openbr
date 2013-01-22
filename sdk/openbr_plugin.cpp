@@ -618,8 +618,9 @@ void Object::setProperty(const QString &name, const QString &value)
     } else {
         variant = value;
     }
-
-    QObject::setProperty(qPrintable(name), variant);
+    if (!QObject::setProperty(qPrintable(name), variant) && !type.isEmpty())
+        qFatal("Failed to set %s::%s to: %s %s",
+                metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
 }
 
 QStringList br::Object::parse(const QString &string, char split)
