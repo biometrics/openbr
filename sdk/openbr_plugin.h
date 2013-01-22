@@ -34,6 +34,7 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QStringList>
+#include <QThread>
 #include <QTime>
 #include <QVariant>
 #include <QVector>
@@ -394,6 +395,7 @@ public:
 
 private:
     template <typename T> friend struct Factory;
+    friend class Context;
     void init(const File &file); /*!< \brief Initializes the plugin's properties from the file's metadata. */
 };
 
@@ -439,16 +441,16 @@ public:
     BR_PROPERTY(QString, path, "")
 
     /*!
-     * \brief The maximum number of templates to process in parallel.
-     */
-    Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize)
-    BR_PROPERTY(int, blockSize, 1)
-
-    /*!
      * \brief The number of threads to use.
      */
     Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
-    BR_PROPERTY(int, parallelism, 0)
+    BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()))
+
+    /*!
+     * \brief The maximum number of templates to process in parallel.
+     */
+    Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize)
+    BR_PROPERTY(int, blockSize, parallelism * ((sizeof(void*) == 4) ? 128 : 1024))
 
     /*!
      * \brief true if backProject should be used instead of project (the algorithm should be inverted)
@@ -514,8 +516,6 @@ public:
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
-
-    Context();
 
     /*!
      * \brief Returns the suggested number of partitions \em size should be divided into for processing.

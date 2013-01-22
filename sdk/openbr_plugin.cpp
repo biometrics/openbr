@@ -667,20 +667,6 @@ void Object::init(const File &file_)
 }
 
 /* Context - public methods */
-br::Context::Context()
-{
-    QCoreApplication::setOrganizationName(COMPANY_NAME);
-    QCoreApplication::setApplicationName(PRODUCT_NAME);
-    QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
-
-    parallelism = std::max(1, QThread::idealThreadCount());
-    blockSize = parallelism * ((sizeof(void*) == 4) ? 128 : 1024);
-    quiet = verbose = false;
-    currentStep = totalSteps = 0;
-    enrollAll = false;
-    backProject = false;
-}
-
 int br::Context::blocks(int size) const
 {
     return std::ceil(1.f*size/blockSize);
@@ -757,13 +743,11 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 
 void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
 {
-    qRegisterMetaType< QList<float> >();
-    qRegisterMetaType< QList<int> >();
-    qRegisterMetaType< br::Transform* >();
-    qRegisterMetaType< QList<br::Transform*> >();
-    qRegisterMetaType< cv::Mat >();
+    if (Globals == NULL) {
+        Globals = new Context();
+        Globals->init(File());
+    }
 
-    if (Globals == NULL) Globals = new Context();
     Globals->coreApplication = QSharedPointer<QCoreApplication>(new QCoreApplication(argc, argv));
     initializeQt(sdkPath);
 
@@ -772,13 +756,27 @@ void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
     MPI_Init(&argc, &argv);
     MPI_Cobr_rank(MPI_CObr_WORLD, &rank);
     MPI_Cobr_size(MPI_CObr_WORLD, &size);
-    if (!Quiet) qDebug() << "OpenBR distributed process" << rank << "of" << size;
+    if (!quiet) qDebug() << "OpenBR distributed process" << rank << "of" << size;
 #endif // BR_DISTRIBUTED
 }
 
 void br::Context::initializeQt(QString sdkPath)
 {
-    if (Globals == NULL) Globals = new Context();
+    if (Globals == NULL) {
+        Globals = new Context();
+        Globals->init(File());
+    }
+
+    QCoreApplication::setOrganizationName(COMPANY_NAME);
+    QCoreApplication::setApplicationName(PRODUCT_NAME);
+    QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
+
+    qRegisterMetaType< QList<float> >();
+    qRegisterMetaType< QList<int> >();
+    qRegisterMetaType< br::Transform* >();
+    qRegisterMetaType< QList<br::Transform*> >();
+    qRegisterMetaType< cv::Mat >();
+
     qInstallMsgHandler(messageHandler);
 
     // Search for SDK
