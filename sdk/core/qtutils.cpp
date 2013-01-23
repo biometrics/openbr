@@ -106,6 +106,8 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     const QByteArray contents = (compression == 0) ? data : qCompress(data, compression);
     if (baseName == "terminal") {
         printf("%s", qPrintable(contents));
+    } else if (baseName == "buffer") {
+        Globals->buffer = data;
     } else {
         QFile f(file);
         touchDir(f);

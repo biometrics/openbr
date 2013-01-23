@@ -513,6 +513,12 @@ public:
     Q_PROPERTY(bool noDuplicates READ get_noDuplicates WRITE set_noDuplicates RESET reset_noDuplicates)
     BR_PROPERTY(bool, noDuplicates, false)
 
+    /*!
+     * \brief File output is redirected here if the file's basename is 'buffer', clearing previous contents.
+     */
+    Q_PROPERTY(QByteArray buffer READ get_buffer WRITE set_buffer RESET reset_buffer)
+    BR_PROPERTY(QByteArray, buffer, QByteArray())
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
