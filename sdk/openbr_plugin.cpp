@@ -1318,8 +1318,9 @@ float Distance::compare(const Template &target, const Template &query) const
     if (!Globals->demographicFilters.isEmpty()) // If statement is faster than iterating over an empty list of filters
         foreach (const QString &filter, Globals->demographicFilters.keys()) {
             const QString targetMetadata = target.file.getString(filter, "");
-            if (!targetMetadata.isEmpty() &&
-                (Globals->demographicFilters[filter].indexIn(targetMetadata) == -1))
+            if (targetMetadata.isEmpty()) continue;
+            const QRegExp re(Globals->demographicFilters[filter]);
+            if (re.indexIn(targetMetadata) == -1)
                 return -std::numeric_limits<float>::max();
         }
 

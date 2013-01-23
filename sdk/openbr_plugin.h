@@ -496,10 +496,9 @@ public:
     BR_PROPERTY(bool, enrollAll, false)
 
     /*!
-     * \brief Keys to use when matching templates to automatically determine non-match based on template metadata.
+     * \brief Regular expressions that automatically determine impostor matches based on target (gallery) template metadata.
      */
-
-    typedef QHash<QString,QRegExp> DemographicFilters;
+    typedef QHash<QString,QString> DemographicFilters;
     Q_PROPERTY(DemographicFilters demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
     BR_PROPERTY(DemographicFilters, demographicFilters, DemographicFilters())
 
