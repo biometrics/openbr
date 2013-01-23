@@ -18,7 +18,6 @@
 #include <QDebug>
 #ifndef BR_EMBEDDED
 #include <QDesktopServices>
-#include <QLocalSocket>
 #endif // BR_EMBEDDED
 #include <QFile>
 #include <QFileInfo>
@@ -93,7 +92,7 @@ void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 
 void QtUtils::writeFile(const QString &file, const QStringList &lines)
 {
-    writeFile(file, lines.join("\n"));
+    writeFile(file, lines.join("\n") + "\n");
 }
 
 void QtUtils::writeFile(const QString &file, const QString &data)
@@ -107,16 +106,7 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     const QByteArray contents = (compression == 0) ? data : qCompress(data, compression);
     if (baseName == "terminal") {
         printf("%s", qPrintable(contents));
-    }
-#ifndef BR_EMBEDDED
-    else if (baseName.endsWith("socket")) {
-        QLocalSocket socket;
-        socket.connectToServer(file, QLocalSocket::WriteOnly);
-        socket.write(data);
-        socket.close();
-    }
-#endif // BR_EMBEDDED
-    else {
+    } else {
         QFile f(file);
         touchDir(f);
         if (!f.open(QFile::WriteOnly))
