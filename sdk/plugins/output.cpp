@@ -156,6 +156,7 @@ class rrOutput : public MatrixOutput
         const bool index = file.getBool("index");
         const bool score = file.getBool("score");
         const bool invert = file.getBool("invert");
+        const float threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
 
         QStringList lines;
         for (int i=0; i<queryFiles.size(); i++) {
@@ -163,9 +164,11 @@ class rrOutput : public MatrixOutput
             if (!flat) files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
-            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit))
+            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit)) {
+                if (pair.second < threshold) break;
                 files.append((index ? QString::number(pair.second) : targetFiles[pair.second].name) +
                              (score ? "=" + QString::number(pair.first) : ""));
+            }
             lines.append(files.join(flat ? "\n" : ","));
         }
 
