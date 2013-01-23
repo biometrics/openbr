@@ -1315,22 +1315,13 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
 
 float Distance::compare(const Template &target, const Template &query) const
 {
-    if (!Globals->demographicFilters.isEmpty()) {
-        // The if statement is a faster check then iterating over an empty list of filters
-        foreach (const QString &filter, Globals->demographicFilters) {
+    if (!Globals->demographicFilters.isEmpty()) // If statement is faster than iterating over an empty list of filters
+        foreach (const QString &filter, Globals->demographicFilters.keys()) {
             const QString targetMetadata = target.file.getString(filter, "");
-            const QString queryMetadata = query.file.getString(filter, "");
-            if (targetMetadata.isEmpty() || queryMetadata.isEmpty()) continue;
-            if (targetMetadata != queryMetadata) return -std::numeric_limits<float>::max();
+            if (!targetMetadata.isEmpty() &&
+                (Globals->demographicFilters[filter].indexIn(targetMetadata) == -1))
+                return -std::numeric_limits<float>::max();
         }
-    }
-
-    if (Globals->ageDelta < std::numeric_limits<float>::max()) {
-        const float targetAge = target.file.getFloat("Age", -1);
-        const float queryAge = target.file.getFloat("Age", -1);
-        if ((targetAge != -1) && (queryAge != -1) && (abs(targetAge - queryAge) > Globals->ageDelta))
-            return -std::numeric_limits<float>::max();
-    }
 
     return a * (_compare(target, query) - b);
 }

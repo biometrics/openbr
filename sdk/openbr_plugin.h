@@ -498,14 +498,10 @@ public:
     /*!
      * \brief Keys to use when matching templates to automatically determine non-match based on template metadata.
      */
-    Q_PROPERTY(QStringList demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
-    BR_PROPERTY(QStringList, demographicFilters, QStringList())
 
-    /*!
-     * \brief Allowable age difference when matching templates.
-     */
-    Q_PROPERTY(float ageDelta READ get_ageDelta WRITE set_ageDelta RESET reset_ageDelta)
-    BR_PROPERTY(float, ageDelta, std::numeric_limits<float>::max())
+    typedef QHash<QString,QRegExp> DemographicFilters;
+    Q_PROPERTY(DemographicFilters demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
+    BR_PROPERTY(DemographicFilters, demographicFilters, DemographicFilters())
 
     /*!
      * \brief If \c true a template will be skipped over if its file name already exists in the gallery.
