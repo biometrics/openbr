@@ -109,21 +109,6 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
-static float kernelDensityBandwidth(const QList<double> &vals)
-{
-    double mean, stddev;
-    Common::MeanStdDev(vals, &mean, &stddev);
-    return pow(4 * pow(stddev, 5.0) / (3 * vals.size()), 0.2);
-}
-
-static float kernelDensityEstimation(const QList<double> &vals, double x, double h)
-{
-    double y = 0;
-    foreach (double val, vals)
-        y += exp(-pow((val-x)/h,2)/2)/sqrt(2*CV_PI);
-    return y / (vals.size() * h);
-}
-
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 {
     qDebug("Evaluating %s with %s", qPrintable(simmat), qPrintable(mask));
@@ -237,13 +222,13 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         sampledImpostorScores.append(impostorScore);
     }
 
-    const double hGenuine = kernelDensityBandwidth(sampledGenuineScores);
+    const double hGenuine = Common::KernelDensityBandwidth(sampledGenuineScores);
     foreach (double f, sampledGenuineScores)
-        lines.append(QString("KDEGenuine,%1,%2").arg(QString::number(f), QString::number(kernelDensityEstimation(sampledGenuineScores, f, hGenuine))));
+        lines.append(QString("KDEGenuine,%1,%2").arg(QString::number(f), QString::number(Common::KernelDensityEstimation(sampledGenuineScores, f, hGenuine))));
 
-    const double hImpostor = kernelDensityBandwidth(sampledImpostorScores);
+    const double hImpostor = Common::KernelDensityBandwidth(sampledImpostorScores);
     foreach (double f, sampledImpostorScores)
-        lines.append(QString("KDEImpostor,%1,%2").arg(QString::number(f), QString::number(kernelDensityEstimation(sampledImpostorScores, f, hImpostor))));
+        lines.append(QString("KDEImpostor,%1,%2").arg(QString::number(f), QString::number(Common::KernelDensityEstimation(sampledImpostorScores, f, hImpostor))));
 
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 25;

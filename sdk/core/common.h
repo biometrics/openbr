@@ -200,6 +200,33 @@ QList<T> CumSum(const QList<T> &vals)
 
 
 /****
+KernelDensityBandwidth
+    Calculate DKE bandwidth parameter 'h'
+****/
+template <typename T>
+double KernelDensityBandwidth(const QList<T> &vals)
+{
+    double mean, stddev;
+    MeanStdDev(vals, &mean, &stddev);
+    return pow(4 * pow(stddev, 5.0) / (3 * vals.size()), 0.2);
+}
+
+
+/****
+KernelDensityEstimation
+    Compute kernel density at value x with bandwidth h.
+****/
+template <typename T>
+double KernelDensityEstimation(const QList<T> &vals, double x, double h)
+{
+    double y = 0;
+    foreach (T val, vals)
+        y += exp(-pow((val-x)/h,2)/2)/sqrt(2*3.1415926353898);
+    return y / (vals.size() * h);
+}
+
+
+/****
 RandSample
     Returns a vector of n integers sampled in the range <min, max].
     If unique then there will be no repeated integers.
