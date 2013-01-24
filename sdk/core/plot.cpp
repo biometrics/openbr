@@ -443,7 +443,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
 
     RPlot p(files, destination);
 
-    p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET, geom=\"%1\"").arg((p.major.smooth || p.minor.smooth) ? "smooth" : "line") +
+    p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
@@ -452,7 +452,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(" + scale_x_log10() + scale_y_continuous(labels=percent)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("ROC"))));
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"%1\"").arg((p.major.smooth || p.minor.smooth) ? "smooth" : "line") +
+    p.file.write(qPrintable(QString("qplot(X, Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
@@ -469,7 +469,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(" + theme(aspect.ratio=1)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("SD"))));
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=CMC, geom=\"%1\", xlab=\"Rank\", ylab=\"Retrieval Rate\"").arg((p.major.smooth || p.minor.smooth) ? "smooth" : "line") +
+    p.file.write(qPrintable(QString("qplot(X, Y, data=CMC%1, xlab=\"Rank\", ylab=\"Retrieval Rate\"").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(") + theme_minimal() + scale_x_continuous(limits = c(1,25), breaks = c(1,5,10,25))") +
@@ -478,7 +478,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(" + scale_y_continuous(labels=percent)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("CMC"))));
 
-    p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
+    p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
                             QString(", xlab=\"%1False Accept Rate\"").arg(p.major.size > 1 ? p.major.header + " / " : QString()) +
                             QString(", ylab=\"True Accept Rate%1\") + theme_minimal()").arg(p.minor.size > 1 ? " / " + p.minor.header : QString()) +
@@ -487,7 +487,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(" + scale_y_continuous(labels=percent) + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0))%1").arg((p.major.smooth || p.minor.smooth) ? "" : " + geom_text(data=BC, aes(label=Y, y=0.05))") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("BC"))));
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=ERR, geom=\"%1\", linetype=Error").arg((p.major.smooth || p.minor.smooth) ? "smooth" : "line") +
+    p.file.write(qPrintable(QString("qplot(X, Y, data=ERR%1, linetype=Error").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.major.header : p.minor.header) : QString()) +
                             QString(", xlab=\"Score%1\", ylab=\"Error Rate\") + theme_minimal()").arg((p.flip ? p.minor.size : p.major.size) > 1 ? " / " + (p.flip ? p.minor.header : p.major.header) : QString()) +
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? getScale("colour", p.flip ? p.major.header : p.minor.header, p.flip ? p.major.size : p.minor.size) : QString()) +
