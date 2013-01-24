@@ -301,6 +301,16 @@ struct Template : public QList<cv::Mat>
 };
 
 /*!
+ * \brief Serialize a template.
+ */
+BR_EXPORT QDataStream &operator<<(QDataStream &stream, const Template &t);
+
+/*!
+ * \brief Deserialize a template.
+ */
+BR_EXPORT QDataStream &operator>>(QDataStream &stream, Template &t);
+
+/*!
  * \brief A list of templates.
  *
  * Convenience class for working with a list of templates.
@@ -1066,6 +1076,7 @@ public:
     virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
+    QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;

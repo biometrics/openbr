@@ -31,16 +31,6 @@
 namespace br
 {
 
-QDataStream &operator<<(QDataStream &stream, const Template &t)
-{
-    return stream << static_cast<const QList<cv::Mat>&>(t) << t.file;
-}
-
-QDataStream &operator>>(QDataStream &stream, Template &t)
-{
-    return stream >> static_cast<QList<cv::Mat>&>(t) >> t.file;
-}
-
 /*!
  * \ingroup galleries
  * \brief A binary gallery.

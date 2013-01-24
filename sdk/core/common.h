@@ -119,7 +119,7 @@ MeanStdDev
     Returns the mean and standard deviation of a vector of values.
 ****/
 template <typename T>
-void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
+void Mean(const QList<T> &vals, double *mean)
 {
     const int size = vals.size();
 
@@ -127,6 +127,19 @@ void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
     double sum = 0;
     for (int i=0; i<size; i++) sum += vals[i];
     *mean = (size == 0) ? 0 : sum / size;
+}
+
+
+/****
+MeanStdDev
+    Returns the mean and standard deviation of a vector of values.
+****/
+template <typename T>
+void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
+{
+    const int size = vals.size();
+
+    Mean(vals, mean);
 
     // Compute Standard Deviation
     double variance = 0;

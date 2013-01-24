@@ -31,6 +31,7 @@
 #include "version.h"
 #include "core/bee.h"
 #include "core/common.h"
+#include "core/opencvutils.h"
 #include "core/qtutils.h"
 
 using namespace br;
@@ -401,6 +402,17 @@ int FileList::failures() const
         if (file.getBool("FTO") || file.getBool("FTE"))
             failures++;
     return failures;
+}
+
+/* Template - global methods */
+QDataStream &br::operator<<(QDataStream &stream, const Template &t)
+{
+    return stream << static_cast<const QList<cv::Mat>&>(t) << t.file;
+}
+
+QDataStream &br::operator>>(QDataStream &stream, Template &t)
+{
+    return stream >> static_cast<QList<cv::Mat>&>(t) >> t.file;
 }
 
 /* TemplateList - public methods */
@@ -1325,6 +1337,14 @@ float Distance::compare(const Template &target, const Template &query) const
         }
 
     return a * (_compare(target, query) - b);
+}
+
+QList<float> Distance::compare(const TemplateList &targets, const Template &query) const
+{
+    QList<float> scores; scores.reserve(targets.size());
+    foreach (const Template &target, targets)
+        scores.append(compare(target, query));
+    return scores;
 }
 
 /* Distance - private methods */
