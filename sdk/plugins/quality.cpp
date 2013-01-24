@@ -74,6 +74,119 @@ class IUMTransform : public Transform
 
 BR_REGISTER(Transform, IUMTransform)
 
+/* Kernel Density Estimator */
+struct KDE
+{
+    float min, max;
+    QList<float> bins;
+
+    KDE() : min(0), max(1) {}
+    KDE(const QList<float> &scores)
+    {
+        Common::MinMax(scores, &min, &max);
+        double h = Common::KernelDensityBandwidth(scores);
+        const int size = 255;
+        bins.reserve(size);
+        for (int i=0; i<size; i++)
+            bins.append(Common::KernelDensityEstimation(scores, min + (max-min)*i/(size-1), h));
+    }
+
+    float operator()(float score) const
+    {
+        if (score <= min) return bins.first();
+        if (score >= max) return bins.last();
+        const float x = (score-min)/(max-min)*bins.size();
+        const float y1 = bins[floor(x)];
+        const float y2 = bins[ceil(x)];
+        return y1 + (y2-y1)*(x-floor(x));
+    }
+};
+
+QDataStream &operator<<(QDataStream &stream, const KDE &kde)
+{
+    return stream << kde.min << kde.max << kde.bins;
+}
+
+QDataStream &operator>>(QDataStream &stream, KDE &kde)
+{
+    return stream >> kde.min >> kde.max >> kde.bins;
+}
+
+/* Non-match Probability */
+struct NMP
+{
+    KDE genuine, impostor;
+    NMP() {}
+    NMP(const QList<float> &genuineScores, const QList<float> &impostorScores)
+        : genuine(genuineScores), impostor(impostorScores) {}
+    float operator()(float score) const { float g = genuine(score); return g / (impostor(score) + g); }
+};
+
+QDataStream &operator<<(QDataStream &stream, const NMP &nmp)
+{
+    return stream << nmp.genuine << nmp.impostor;
+}
+
+QDataStream &operator>>(QDataStream &stream, NMP &nmp)
+{
+    return stream >> nmp.genuine >> nmp.impostor;
+}
+
+/*!
+ * \ingroup distances
+ * \brief Impostor Uniqueness Distance \cite klare12
+ * \author Josh Klontz \cite jklontz
+ */
+class IUMDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    BR_PROPERTY(br::Distance*, distance, Factory<Distance>::make(".Dist(L2)"))
+
+    QList<NMP> nmps;
+
+    void train(const TemplateList &src)
+    {
+        distance->train(src);
+
+        const QList<float> labels = src.labels<float>();
+        QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(src.size()), FileList(src.size()))));
+        distance->compare(src, src, memoryOutput.data());
+
+        const int IUM_Bins = 3;
+        QVector< QList<float> > genuineScores(IUM_Bins), impostorScores(IUM_Bins);
+        for (int i=0; i<src.size(); i++)
+            for (int j=0; j<i; j++) {
+                const float score = memoryOutput.data()->data.at<float>(i, j);
+                const int bin = src[i].file.getInt("IUM_Bin");
+                if (labels[i] == labels[j]) genuineScores[bin].append(score);
+                else                        impostorScores[bin].append(score);
+            }
+
+        for (int i=0; i<IUM_Bins; i++)
+            nmps.append(NMP(genuineScores[i], impostorScores[i]));
+    }
+
+    float _compare(const Template &target, const Template &query) const
+    {
+        return nmps[query.file.getInt("IUM_Bin")](distance->compare(target, query));
+    }
+
+    void store(QDataStream &stream) const
+    {
+        distance->store(stream);
+        stream << nmps;
+    }
+
+    void load(QDataStream &stream)
+    {
+        distance->load(stream);
+        stream >> nmps;
+    }
+};
+
+BR_REGISTER(Distance, IUMDistance)
+
 } // namespace br
 
 #include "quality.moc"

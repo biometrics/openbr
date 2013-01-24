@@ -1270,44 +1270,6 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 }
 
 /* Distance - public methods */
-void Distance::train(const TemplateList &templates)
-{
-    const TemplateList samples = templates.mid(0, 2000);
-    const QList<float> sampleLabels = samples.labels<float>();
-    QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
-    compare(samples, samples, memoryOutput.data());
-
-    double genuineAccumulator, impostorAccumulator;
-    int genuineCount, impostorCount;
-    genuineAccumulator = impostorAccumulator = genuineCount = impostorCount = 0;
-
-    for (int i=0; i<samples.size(); i++) {
-        for (int j=0; j<i; j++) {
-            const float val = memoryOutput.data()->data.at<float>(i, j);
-            if (sampleLabels[i] == sampleLabels[j]) {
-                genuineAccumulator += val;
-                genuineCount++;
-            } else {
-                impostorAccumulator += val;
-                impostorCount++;
-            }
-        }
-    }
-
-    if (genuineCount == 0) { qWarning("No genuine matches."); return; }
-    if (impostorCount == 0) { qWarning("No impostor matches."); return; }
-
-    double genuineMean = genuineAccumulator / genuineCount;
-    double impostorMean = impostorAccumulator / impostorCount;
-
-    if (genuineMean == impostorMean) { qWarning("Genuines and impostors are indistinguishable."); return; }
-
-    a = 1.0/(genuineMean-impostorMean);
-    b = impostorMean;
-
-    qDebug("a = %f, b = %f", a, b);
-}
-
 void Distance::compare(const TemplateList &target, const TemplateList &query, Output *output) const
 {
     const bool stepTarget = target.size() > query.size();
@@ -1336,7 +1298,7 @@ float Distance::compare(const Template &target, const Template &query) const
                 return -std::numeric_limits<float>::max();
         }
 
-    return a * (_compare(target, query) - b);
+    return _compare(target, query);
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

@@ -1065,15 +1065,9 @@ class BR_EXPORT Distance : public Object
 {
     Q_OBJECT
 
-    // Score normalization
-    Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
-    Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b)
-    BR_PROPERTY(float, a, 1)
-    BR_PROPERTY(float, b, 0)
-
 public:
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
-    virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
+    virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
     QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
