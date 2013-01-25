@@ -252,7 +252,7 @@ private:
         if (words.size() > 2) qFatal("AlgorithmCore::init invalid algorithm format.");
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
-        if (words.size() > 1) distance = QSharedPointer<Distance>(Factory<Distance>::make("." + words[1]));
+        if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
     }
 };
 

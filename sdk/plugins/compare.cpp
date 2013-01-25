@@ -119,7 +119,7 @@ BR_REGISTER(Distance, DistDistance)
  * \brief Fast 8-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class UCharL1Distance : public Distance
+class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
@@ -129,7 +129,7 @@ class UCharL1Distance : public Distance
     }
 };
 
-BR_REGISTER(Distance, UCharL1Distance)
+BR_REGISTER(Distance, ByteL1Distance)
 
 
 /*!
@@ -137,7 +137,7 @@ BR_REGISTER(Distance, UCharL1Distance)
  * \brief Fast 4-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class PackedUCharL1Distance : public Distance
+class HalfByteL1Distance : public Distance
 {
     Q_OBJECT
 
@@ -147,7 +147,7 @@ class PackedUCharL1Distance : public Distance
     }
 };
 
-BR_REGISTER(Distance, PackedUCharL1Distance)
+BR_REGISTER(Distance, HalfByteL1Distance)
 
 /*!
  * \ingroup distances

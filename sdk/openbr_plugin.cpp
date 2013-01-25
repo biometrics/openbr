@@ -497,6 +497,8 @@ QString Object::argument(int index) const
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
         return variant.value<Transform*>()->description();
+    } else if (type == "br::Distance*") {
+        return variant.value<Distance*>()->description();
     } else if (type == "QStringList") {
         return "[" + variant.toStringList().join(",") + "]";
     }
@@ -524,6 +526,8 @@ void Object::store(QDataStream &stream) const
                 transform->store(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->store(stream);
+        } else if (type == "br::Distance*") {
+            property.read(this).value<Distance*>()->store(stream);
         } else if (type == "bool") {
             stream << property.read(this).toBool();
         } else if (type == "int") {
@@ -556,6 +560,8 @@ void Object::load(QDataStream &stream)
                 transform->load(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->load(stream);
+        } else if (type == "br::Distance*") {
+            property.read(this).value<Distance*>()->load(stream);
         } else if (type == "bool") {
             bool value;
             stream >> value;
@@ -620,6 +626,8 @@ void Object::setProperty(const QString &name, const QString &value)
         }
     } else if (type == "br::Transform*") {
         variant.setValue(Transform::make(value, this));
+    } else if (type == "br::Distance*") {
+        variant.setValue(Distance::make(value, this));
     } else if (type == "QStringList") {
         variant.setValue(parse(value.mid(1, value.size()-2)));
     } else if (type == "bool") {
@@ -630,6 +638,7 @@ void Object::setProperty(const QString &name, const QString &value)
     } else {
         variant = value;
     }
+
     if (!QObject::setProperty(qPrintable(name), variant) && !type.isEmpty())
         qFatal("Failed to set %s::%s to: %s %s",
                 metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
@@ -786,6 +795,7 @@ void br::Context::initializeQt(QString sdkPath)
     qRegisterMetaType< QList<int> >();
     qRegisterMetaType< br::Transform* >();
     qRegisterMetaType< QList<br::Transform*> >();
+    qRegisterMetaType< br::Distance* >();
     qRegisterMetaType< cv::Mat >();
 
     qInstallMsgHandler(messageHandler);
@@ -1270,42 +1280,17 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 }
 
 /* Distance - public methods */
-void Distance::train(const TemplateList &templates)
+Distance *Distance::make(QString str, QObject *parent)
 {
-    const TemplateList samples = templates.mid(0, 2000);
-    const QList<float> sampleLabels = samples.labels<float>();
-    QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
-    compare(samples, samples, memoryOutput.data());
+        // Check for custom transforms
+        if (Globals->abbreviations.contains(str))
+            return make(Globals->abbreviations[str], parent);
 
-    double genuineAccumulator, impostorAccumulator;
-    int genuineCount, impostorCount;
-    genuineAccumulator = impostorAccumulator = genuineCount = impostorCount = 0;
+        File f = "." + str;
+        Distance *distance = Factory<Distance>::make(f);
 
-    for (int i=0; i<samples.size(); i++) {
-        for (int j=0; j<i; j++) {
-            const float val = memoryOutput.data()->data.at<float>(i, j);
-            if (sampleLabels[i] == sampleLabels[j]) {
-                genuineAccumulator += val;
-                genuineCount++;
-            } else {
-                impostorAccumulator += val;
-                impostorCount++;
-            }
-        }
-    }
-
-    if (genuineCount == 0) { qWarning("No genuine matches."); return; }
-    if (impostorCount == 0) { qWarning("No impostor matches."); return; }
-
-    double genuineMean = genuineAccumulator / genuineCount;
-    double impostorMean = impostorAccumulator / impostorCount;
-
-    if (genuineMean == impostorMean) { qWarning("Genuines and impostors are indistinguishable."); return; }
-
-    a = 1.0/(genuineMean-impostorMean);
-    b = impostorMean;
-
-    qDebug("a = %f, b = %f", a, b);
+        distance->setParent(parent);
+        return distance;
 }
 
 void Distance::compare(const TemplateList &target, const TemplateList &query, Output *output) const
@@ -1336,7 +1321,7 @@ float Distance::compare(const Template &target, const Template &query) const
                 return -std::numeric_limits<float>::max();
         }
 
-    return a * (_compare(target, query) - b);
+    return _compare(target, query);
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const
