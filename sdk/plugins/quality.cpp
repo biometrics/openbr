@@ -181,7 +181,7 @@ class MPDistance : public Distance
             mps.insert(key, MP(genuineScores[key], impostorScores[key]));
     }
 
-    float _compare(const Template &target, const Template &query) const
+    float compare(const Template &target, const Template &query) const
     {
         return mps[query.file.getString(binKey, "")](distance->compare(target, query), gaussian, log);
     }
@@ -221,7 +221,7 @@ class UnitDistance : public Distance
         const TemplateList samples = templates.mid(0, 2000);
         const QList<float> sampleLabels = samples.labels<float>();
         QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
-        compare(samples, samples, memoryOutput.data());
+        Distance::compare(samples, samples, memoryOutput.data());
 
         double genuineAccumulator, impostorAccumulator;
         int genuineCount, impostorCount;
@@ -254,7 +254,7 @@ class UnitDistance : public Distance
         qDebug("a = %f, b = %f", a, b);
     }
 
-    float _compare(const Template &target, const Template &query) const
+    float compare(const Template &target, const Template &query) const
     {
         return a * (distance->compare(target, query) - b);
     }
@@ -270,10 +270,15 @@ BR_REGISTER(Distance, UnitDistance)
 class MetadataDistance : public Distance
 {
     Q_OBJECT
-    Q_PROPERTY(Distance *distance READ get_distance WRITE set_distance RESET reset_distance)
-    BR_PROPERTY(Distance*, distance, make("Dist(L2)"))
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance)
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
 
-    float _compare(const Template &a, const Template &b) const
+    void train(const TemplateList &src)
+    {
+        distance->train(src);
+    }
+
+    float compare(const Template &a, const Template &b) const
     {
         foreach (const QString &filter, Globals->demographicFilters.keys()) {
             const QString metadata = a.file.getString(filter, "");

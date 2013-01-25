@@ -126,7 +126,7 @@ class KeyPointMatcherTransform : public Distance
             qFatal("KeyPointMatcher::make failed to create DescriptorMatcher: %s", qPrintable(matcher));
     }
 
-    float _compare(const Template &a, const Template &b) const
+    float compare(const Template &a, const Template &b) const
     {
         if ((a.m().rows < 2) || (b.m().rows < 2)) return 0;
 

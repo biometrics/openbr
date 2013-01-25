@@ -441,7 +441,7 @@ struct CT8Compare : public Distance,
     Q_OBJECT
 
     // Compare pre-extracted facevacs templates
-    float _compare(const Template &srcA, const Template &srcB) const
+    float compare(const Template &srcA, const Template &srcB) const
     {
         const float DefaultNonMatchScore = 0;
         if (!srcA.m().data || !srcB.m().data) return DefaultNonMatchScore;

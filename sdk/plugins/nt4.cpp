@@ -424,7 +424,7 @@ class NT4Compare : public Distance
 
     Resource<NT4Context> contexts;
 
-    float _compare(const br::Template &a, const br::Template &b) const
+    float compare(const br::Template &a, const br::Template &b) const
     {
         const float DefaultNonMatchScore = 0;
 

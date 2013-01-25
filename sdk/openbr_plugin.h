@@ -1071,15 +1071,14 @@ public:
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
     virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
-    float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
     QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
+    virtual float compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
 
 protected:
     inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;
-    virtual float _compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
 };
 
 /*!

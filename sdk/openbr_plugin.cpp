@@ -1308,11 +1308,6 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
     if (Globals->parallelism) Globals->trackFutures(futures);
 }
 
-float Distance::compare(const Template &target, const Template &query) const
-{
-    return _compare(target, query);
-}
-
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const
 {
     QList<float> scores; scores.reserve(targets.size());

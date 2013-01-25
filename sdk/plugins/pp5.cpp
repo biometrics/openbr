@@ -284,7 +284,7 @@ class PP5Compare : public Distance
     Q_OBJECT
 
 
-    float _compare(const Template &target, const Template &query) const
+    float compare(const Template &target, const Template &query) const
     {
         qFatal("PP5Compare: _compare should never be called");
         return 0;

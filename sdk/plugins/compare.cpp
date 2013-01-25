@@ -49,7 +49,7 @@ public:
 private:
     BR_PROPERTY(Metric, metric, L2)
 
-    float _compare(const Template &a, const Template &b) const
+    float compare(const Template &a, const Template &b) const
     {
         if ((a.m().size != b.m().size) ||
             (a.m().type() != b.m().type()))
@@ -123,7 +123,7 @@ class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float _compare(const Template &a, const Template &b) const
+    float compare(const Template &a, const Template &b) const
     {
         return l1(a.m().data, b.m().data, a.m().total());
     }
@@ -141,7 +141,7 @@ class HalfByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float _compare(const Template &a, const Template &b) const
+    float compare(const Template &a, const Template &b) const
     {
         return packed_l1(a.m().data, b.m().data, a.m().total());
     }
@@ -158,7 +158,7 @@ class IdenticalDistance : public Distance
 {
     Q_OBJECT
 
-    float _compare(const Template &a, const Template &b) const
+    float compare(const Template &a, const Template &b) const
     {
         const Mat &am = a.m();
         const Mat &bm = b.m();
