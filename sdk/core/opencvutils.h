@@ -41,6 +41,7 @@ namespace OpenCVUtils
     // From image
     QString elemToString(const cv::Mat &m, int r, int c);
     float elemToFloat(const cv::Mat &m, int r, int c);
+    QString matrixToString(const cv::Mat &m);
     QStringList matrixToStringList(const cv::Mat &m);
     QList<float> matrixToVector(const cv::Mat &m);
 
