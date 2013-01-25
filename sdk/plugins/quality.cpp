@@ -18,14 +18,20 @@ class IUMTransform : public Transform
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(double mean READ get_mean WRITE set_mean RESET reset_mean)
     Q_PROPERTY(double stddev READ get_stddev WRITE set_stddev RESET reset_stddev)
-    BR_PROPERTY(br::Distance*, distance, Factory<Distance>::make(".Dist(L2)"))
+    BR_PROPERTY(br::Distance*, distance, Distance::make("Dist(L2)", this))
     BR_PROPERTY(double, mean, 0)
     BR_PROPERTY(double, stddev, 1)
     br::TemplateList impostors;
 
     float calculateIUM(const Template &probe, const TemplateList &gallery) const
     {
-        QList<float> scores = distance->compare(gallery, probe);
+        const int probeLabel = probe.file.label();
+        TemplateList subset = gallery;
+        for (int j=subset.size()-1; j>=0; j--)
+            if (subset[j].file.label() == probeLabel)
+                subset.removeAt(j);
+
+        QList<float> scores = distance->compare(subset, probe);
         float min, max;
         Common::MinMax(scores, &min, &max);
         double mean;
@@ -39,14 +45,8 @@ class IUMTransform : public Transform
         impostors = data;
 
         QList<float> iums; iums.reserve(impostors.size());
-        QList<int> labels = impostors.labels<int>();
-        for (int i=0; i<data.size(); i++) {
-            TemplateList subset = impostors;
-            for (int j=subset.size()-1; j>=0; j--)
-                if (labels[j] == labels[i])
-                    subset.removeAt(j);
-            iums.append(calculateIUM(impostors[i], subset));
-        }
+        for (int i=0; i<data.size(); i++)
+            iums.append(calculateIUM(impostors[i], impostors));
 
         Common::MeanStdDev(iums, &mean, &stddev);
     }
@@ -134,42 +134,43 @@ QDataStream &operator>>(QDataStream &stream, NMP &nmp)
 
 /*!
  * \ingroup distances
- * \brief Impostor Uniqueness Distance \cite klare12
+ * \brief Non-match Probability Distance \cite klare12
  * \author Josh Klontz \cite jklontz
  */
-class IUMDistance : public Distance
+class NMPDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
-    BR_PROPERTY(br::Distance*, distance, Factory<Distance>::make(".Dist(L2)"))
+    Q_PROPERTY(QString binKey READ get_binKey WRITE set_binKey RESET reset_binKey STORED false)
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    BR_PROPERTY(QString, binKey, "")
 
-    QList<NMP> nmps;
+    QHash<QString, NMP> nmps;
 
     void train(const TemplateList &src)
     {
         distance->train(src);
 
-        const QList<float> labels = src.labels<float>();
+        const QList<int> labels = src.labels<int>();
         QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(src.size()), FileList(src.size()))));
         distance->compare(src, src, memoryOutput.data());
 
-        const int IUM_Bins = 3;
-        QVector< QList<float> > genuineScores(IUM_Bins), impostorScores(IUM_Bins);
+        QHash< QString, QList<float> > genuineScores, impostorScores;
         for (int i=0; i<src.size(); i++)
             for (int j=0; j<i; j++) {
                 const float score = memoryOutput.data()->data.at<float>(i, j);
-                const int bin = src[i].file.getInt("IUM_Bin");
+                const QString bin = src[i].file.getString(binKey, "");
                 if (labels[i] == labels[j]) genuineScores[bin].append(score);
                 else                        impostorScores[bin].append(score);
             }
 
-        for (int i=0; i<IUM_Bins; i++)
-            nmps.append(NMP(genuineScores[i], impostorScores[i]));
+        foreach (const QString &key, genuineScores.keys())
+            nmps.insert(key, NMP(genuineScores[key], impostorScores[key]));
     }
 
     float _compare(const Template &target, const Template &query) const
     {
-        return nmps[query.file.getInt("IUM_Bin")](distance->compare(target, query));
+        return nmps[query.file.getString(binKey, "")](distance->compare(target, query));
     }
 
     void store(QDataStream &stream) const
@@ -185,7 +186,7 @@ class IUMDistance : public Distance
     }
 };
 
-BR_REGISTER(Distance, IUMDistance)
+BR_REGISTER(Distance, NMPDistance)
 
 } // namespace br
 
