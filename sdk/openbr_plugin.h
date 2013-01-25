@@ -1066,6 +1066,9 @@ class BR_EXPORT Distance : public Object
     Q_OBJECT
 
 public:
+    virtual ~Distance() {}
+    static Distance *make(QString str, QObject *parent); /*!< \brief Make a distance from a string. */
+
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
     virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
@@ -1126,6 +1129,7 @@ Q_DECLARE_METATYPE(QList<float>)
 Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(br::Transform*)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
+Q_DECLARE_METATYPE(br::Distance*)
 Q_DECLARE_METATYPE(cv::Mat)
 
 #endif // __OPENBR_PLUGIN_H

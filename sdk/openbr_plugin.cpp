@@ -497,6 +497,8 @@ QString Object::argument(int index) const
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
         return variant.value<Transform*>()->description();
+    } else if (type == "br::Distance*") {
+        return variant.value<Distance*>()->description();
     } else if (type == "QStringList") {
         return "[" + variant.toStringList().join(",") + "]";
     }
@@ -524,6 +526,8 @@ void Object::store(QDataStream &stream) const
                 transform->store(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->store(stream);
+        } else if (type == "br::Distance*") {
+            property.read(this).value<Distance*>()->store(stream);
         } else if (type == "bool") {
             stream << property.read(this).toBool();
         } else if (type == "int") {
@@ -556,6 +560,8 @@ void Object::load(QDataStream &stream)
                 transform->load(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->load(stream);
+        } else if (type == "br::Distance*") {
+            property.read(this).value<Distance*>()->load(stream);
         } else if (type == "bool") {
             bool value;
             stream >> value;
@@ -620,6 +626,8 @@ void Object::setProperty(const QString &name, const QString &value)
         }
     } else if (type == "br::Transform*") {
         variant.setValue(Transform::make(value, this));
+    } else if (type == "br::Distance*") {
+        variant.setValue(Distance::make(value, this));
     } else if (type == "QStringList") {
         variant.setValue(parse(value.mid(1, value.size()-2)));
     } else if (type == "bool") {
@@ -630,6 +638,7 @@ void Object::setProperty(const QString &name, const QString &value)
     } else {
         variant = value;
     }
+
     if (!QObject::setProperty(qPrintable(name), variant) && !type.isEmpty())
         qFatal("Failed to set %s::%s to: %s %s",
                 metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
@@ -786,6 +795,7 @@ void br::Context::initializeQt(QString sdkPath)
     qRegisterMetaType< QList<int> >();
     qRegisterMetaType< br::Transform* >();
     qRegisterMetaType< QList<br::Transform*> >();
+    qRegisterMetaType< br::Distance* >();
     qRegisterMetaType< cv::Mat >();
 
     qInstallMsgHandler(messageHandler);
@@ -1270,6 +1280,19 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 }
 
 /* Distance - public methods */
+Distance *Distance::make(QString str, QObject *parent)
+{
+        // Check for custom transforms
+        if (Globals->abbreviations.contains(str))
+            return make(Globals->abbreviations[str], parent);
+
+        File f = "." + str;
+        Distance *distance = Factory<Distance>::make(f);
+
+        distance->setParent(parent);
+        return distance;
+}
+
 void Distance::compare(const TemplateList &target, const TemplateList &query, Output *output) const
 {
     const bool stepTarget = target.size() > query.size();
