@@ -971,7 +971,6 @@ public:
 protected:
     Transform(bool independent = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
-
 };
 
 /*!
@@ -1065,18 +1064,18 @@ class BR_EXPORT Distance : public Object
 {
     Q_OBJECT
 
-    // Score normalization
-    Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
-    Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b)
-    BR_PROPERTY(float, a, 1)
-    BR_PROPERTY(float, b, 0)
-
 public:
+    virtual ~Distance() {}
+    static Distance *make(QString str, QObject *parent); /*!< \brief Make a distance from a string. */
+
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
-    virtual void train(const TemplateList &src); /*!< \brief Train the distance. */
+    virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     float compare(const Template &target, const Template &query) const; /*!< \brief Compute the normalized distance between two templates. */
     QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
+
+protected:
+    inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;
@@ -1132,6 +1131,7 @@ Q_DECLARE_METATYPE(QList<float>)
 Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(br::Transform*)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
+Q_DECLARE_METATYPE(br::Distance*)
 Q_DECLARE_METATYPE(cv::Mat)
 
 #endif // __OPENBR_PLUGIN_H
