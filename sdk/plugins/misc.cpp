@@ -99,17 +99,47 @@ class PrintTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
+    Q_PROPERTY(bool data READ get_data WRITE set_data RESET reset_data)
     BR_PROPERTY(bool, error, false)
+    BR_PROPERTY(bool, data, false)
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        if (error) qDebug("%s\n", qPrintable(src.file.flat()));
-        else       printf("%s\n", qPrintable(src.file.flat()));
+        const QString nameString = src.file.flat();
+        const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
+        if (error) qDebug("%s\n%s", qPrintable(nameString), qPrintable(dataString));
+        else       printf("%s\n%s", qPrintable(nameString), qPrintable(dataString));
     }
 };
 
 BR_REGISTER(Transform, PrintTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Checks the template for NaN values.
+ * \author Josh Klontz \cite jklontz
+ */
+class CheckTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        foreach (const Mat &m, src) {
+            Mat fm;
+            m.convertTo(fm, CV_32F);
+            const int elements = fm.rows * fm.cols * fm.channels();
+            const float *data = (const float*)fm.data;
+            for (int i=0; i<elements; i++)
+                if (data[i] != data[i])
+                    qFatal("%s NaN check failed!", qPrintable(src.file.flat()));
+        }
+    }
+};
+
+BR_REGISTER(Transform, CheckTransform)
 
 /*!
  * \ingroup transforms

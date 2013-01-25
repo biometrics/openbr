@@ -169,6 +169,30 @@ float OpenCVUtils::elemToFloat(const Mat &m, int r, int c)
     return 0;
 }
 
+QString OpenCVUtils::matrixToString(const Mat &m)
+{
+    QString result;
+    vector<Mat> mv;
+    split(m, mv);
+    if (m.rows > 1) result += "{ ";
+    for (int r=0; r<m.rows; r++) {
+        if ((m.rows > 1) && (r > 0)) result += "  ";
+        if (m.cols > 1) result += "[";
+        for (int c=0; c<m.cols; c++) {
+            if (mv.size() > 1) result += "(";
+            for (unsigned int i=0; i<mv.size()-1; i++)
+                result += OpenCVUtils::elemToString(mv[i], r, c) + ", ";
+            result += OpenCVUtils::elemToString(mv[mv.size()-1], r, c);
+            if (mv.size() > 1) result += ")";
+            if (c < m.cols - 1) result += ", ";
+        }
+        if (m.cols > 1) result += "]";
+        if (r < m.rows-1) result += "\n";
+    }
+    if (m.rows > 1) result += " }";
+    return result;
+}
+
 QStringList OpenCVUtils::matrixToStringList(const Mat &m)
 {
     QStringList results;
@@ -285,25 +309,8 @@ QDataStream &operator>>(QDataStream &stream, Mat &m)
 
 QDebug operator<<(QDebug dbg, const Mat &m)
 {
-    vector<Mat> mv;
-    split(m, mv);
-    if (m.rows > 1) dbg.nospace() << "{ ";
-    for (int r=0; r<m.rows; r++) {
-        if ((m.rows > 1) && (r > 0)) dbg.nospace() << "  ";
-        if (m.cols > 1) dbg.nospace() << "[";
-        for (int c=0; c<m.cols; c++) {
-            if (mv.size() > 1) dbg.nospace() << "(";
-            for (unsigned int i=0; i<mv.size()-1; i++)
-                dbg.nospace() << qPrintable(OpenCVUtils::elemToString(mv[i], r, c)) << ", ";
-            dbg.nospace() << qPrintable(OpenCVUtils::elemToString(mv[mv.size()-1], r, c));
-            if (mv.size() > 1) dbg.nospace() << ")";
-            if (c < m.cols - 1) dbg.nospace() << ", ";
-        }
-        if (m.cols > 1) dbg.nospace() << "]";
-        if (r < m.rows-1) dbg.nospace() << "\n";
-    }
-    if (m.rows > 1) dbg.nospace() << " }";
-    return dbg;
+    dbg.nospace() << OpenCVUtils::matrixToString(m);
+    return dbg.space();
 }
 
 QDebug operator<<(QDebug dbg, const Point &p)
