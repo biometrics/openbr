@@ -78,12 +78,14 @@ BR_REGISTER(Transform, IUMTransform)
 struct KDE
 {
     float min, max;
+    double mean, stddev;
     QList<float> bins;
 
     KDE() : min(0), max(1) {}
     KDE(const QList<float> &scores)
     {
         Common::MinMax(scores, &min, &max);
+        Common::MeanStdDev(scores, &mean, &stddev);
         double h = Common::KernelDensityBandwidth(scores);
         const int size = 255;
         bins.reserve(size);
@@ -91,8 +93,9 @@ struct KDE
             bins.append(Common::KernelDensityEstimation(scores, min + (max-min)*i/(size-1), h));
     }
 
-    float operator()(float score) const
+    float operator()(float score, bool gaussian = false) const
     {
+        if (gaussian) return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((score-mean)/stddev, 2));
         if (score <= min) return bins.first();
         if (score >= max) return bins.last();
         const float x = (score-min)/(max-min)*bins.size();
@@ -104,48 +107,58 @@ struct KDE
 
 QDataStream &operator<<(QDataStream &stream, const KDE &kde)
 {
-    return stream << kde.min << kde.max << kde.bins;
+    return stream << kde.min << kde.max << kde.mean << kde.stddev << kde.bins;
 }
 
 QDataStream &operator>>(QDataStream &stream, KDE &kde)
 {
-    return stream >> kde.min >> kde.max >> kde.bins;
+    return stream >> kde.min >> kde.max >> kde.mean >> kde.stddev >> kde.bins;
 }
 
-/* Non-match Probability */
-struct NMP
+/* Match Probability */
+struct MP
 {
     KDE genuine, impostor;
-    NMP() {}
-    NMP(const QList<float> &genuineScores, const QList<float> &impostorScores)
+    MP() {}
+    MP(const QList<float> &genuineScores, const QList<float> &impostorScores)
         : genuine(genuineScores), impostor(impostorScores) {}
-    float operator()(float score) const { float g = genuine(score); return g / (impostor(score) + g); }
+    float operator()(float score, bool gaussian = false, bool log = false) const
+    {
+        const float g = genuine(score, gaussian);
+        const float s = g / (impostor(score, gaussian) + g);
+        if (log) return (std::max(std::log10(s), -10.f) + 10)/10;
+        else     return s;
+    }
 };
 
-QDataStream &operator<<(QDataStream &stream, const NMP &nmp)
+QDataStream &operator<<(QDataStream &stream, const MP &nmp)
 {
     return stream << nmp.genuine << nmp.impostor;
 }
 
-QDataStream &operator>>(QDataStream &stream, NMP &nmp)
+QDataStream &operator>>(QDataStream &stream, MP &nmp)
 {
     return stream >> nmp.genuine >> nmp.impostor;
 }
 
 /*!
  * \ingroup distances
- * \brief Non-match Probability Distance \cite klare12
+ * \brief Match Probability \cite klare12
  * \author Josh Klontz \cite jklontz
  */
-class NMPDistance : public Distance
+class MPDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(QString binKey READ get_binKey WRITE set_binKey RESET reset_binKey STORED false)
+    Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
+    Q_PROPERTY(bool log READ get_log WRITE set_log RESET reset_log STORED false)
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
     BR_PROPERTY(QString, binKey, "")
+    BR_PROPERTY(bool, gaussian, false)
+    BR_PROPERTY(bool, log, false)
 
-    QHash<QString, NMP> nmps;
+    QHash<QString, MP> mps;
 
     void train(const TemplateList &src)
     {
@@ -165,28 +178,28 @@ class NMPDistance : public Distance
             }
 
         foreach (const QString &key, genuineScores.keys())
-            nmps.insert(key, NMP(genuineScores[key], impostorScores[key]));
+            mps.insert(key, MP(genuineScores[key], impostorScores[key]));
     }
 
     float _compare(const Template &target, const Template &query) const
     {
-        return nmps[query.file.getString(binKey, "")](distance->compare(target, query));
+        return mps[query.file.getString(binKey, "")](distance->compare(target, query), gaussian, log);
     }
 
     void store(QDataStream &stream) const
     {
         distance->store(stream);
-        stream << nmps;
+        stream << mps;
     }
 
     void load(QDataStream &stream)
     {
         distance->load(stream);
-        stream >> nmps;
+        stream >> mps;
     }
 };
 
-BR_REGISTER(Distance, NMPDistance)
+BR_REGISTER(Distance, MPDistance)
 
 } // namespace br
 
