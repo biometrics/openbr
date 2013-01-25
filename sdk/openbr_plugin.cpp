@@ -1139,8 +1139,6 @@ private:
         }
     }
 
-
-
     void store(QDataStream &stream) const
     {
         const int size = transforms.size();
@@ -1312,15 +1310,6 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
 
 float Distance::compare(const Template &target, const Template &query) const
 {
-    if (!Globals->demographicFilters.isEmpty()) // If statement is faster than iterating over an empty list of filters
-        foreach (const QString &filter, Globals->demographicFilters.keys()) {
-            const QString targetMetadata = target.file.getString(filter, "");
-            if (targetMetadata.isEmpty()) continue;
-            const QRegExp re(Globals->demographicFilters[filter]);
-            if (re.indexIn(targetMetadata) == -1)
-                return -std::numeric_limits<float>::max();
-        }
-
     return _compare(target, query);
 }
 
