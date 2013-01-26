@@ -25,7 +25,6 @@
 
 using namespace br;
 using namespace cv;
-using namespace jitcv;
 using namespace llvm;
 
 static Module *TheModule = NULL;
@@ -33,6 +32,8 @@ static ExecutionEngine *TheExecutionEngine = NULL;
 static FunctionPassManager *TheFunctionPassManager = NULL;
 static FunctionPassManager *TheExtraFunctionPassManager = NULL;
 static StructType *TheMatrixStruct = NULL;
+static Function *makeUnaryKernelFunction = NULL;
+static Function *makeBinaryKernelFunction = NULL;
 
 static QString MatrixToString(const Matrix &m)
 {
@@ -326,12 +327,21 @@ namespace br
 class UnaryTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
-
+    uint32_t fileIndex;
     UnaryKernel kernel;
-    quint16 hash;
+    uint16_t hash;
 
 public:
-    UnaryTransform() : kernel(NULL), hash(0) {}
+    static QHash<uint32_t, File> fileTable;
+
+    UnaryTransform() : fileIndex(0), kernel(NULL), hash(0) {}
+
+    void init()
+    {
+        fileIndex = fileTable.size()+1;
+        fileTable.insert(fileIndex, file);
+    }
+
     virtual int preallocate(const Matrix &src, Matrix &dst) const = 0; /*!< Preallocate destintation matrix based on source matrix. */
     virtual Value *buildPreallocate(const MatrixBuilder &src, const MatrixBuilder &dst) const { (void) src; (void) dst; return MatrixBuilder::constant(0); }
     virtual void build(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Build the kernel. */
@@ -375,9 +385,6 @@ private:
 
     Function *compile(const Matrix &m) const
     {
-        Function *kernel = compileKernel(m);
-        optimize(kernel);
-
         Constant *c = TheModule->getOrInsertFunction(qPrintable(mangledName()),
                                                      Type::getVoidTy(getGlobalContext()),
                                                      PointerType::getUnqual(TheMatrixStruct),
@@ -419,7 +426,10 @@ private:
         builder.CreateCondBr(hashTest, getKernel, preallocate);
 
         builder.SetInsertPoint(getKernel);
-        builder.CreateStore(kernel, kernelFunction);
+        builder.CreateStore(builder.CreateCall2(makeUnaryKernelFunction,
+                                                builder.CreateIntToPtr(MatrixBuilder::constant(fileIndex, 32), Type::getInt8PtrTy(getGlobalContext())),
+                                                src),
+                            kernelFunction);
         builder.CreateStore(mb.hash(), kernelHash);
         builder.CreateBr(preallocate);
         builder.SetInsertPoint(preallocate);
@@ -485,6 +495,8 @@ private:
         dst.m() = MatFromMatrix(n);
     }
 };
+
+QHash<uint32_t, File> UnaryTransform::fileTable;
 
 /*!
  * \brief LLVM Binary Kernel
@@ -1017,6 +1029,34 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
+        std::vector<Type*> unaryKernelParams;
+        unaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        unaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        unaryKernelParams.push_back(Type::getInt32Ty(getGlobalContext()));
+        Type *unaryKernelReturn = Type::getVoidTy(getGlobalContext());
+        Type *unaryKernelType = PointerType::getUnqual(FunctionType::get(unaryKernelReturn, unaryKernelParams, false));
+        std::vector<Type*> makeUnaryKernelParams;
+        makeUnaryKernelParams.push_back(Type::getInt8PtrTy(getGlobalContext()));
+        makeUnaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        FunctionType* makeUnaryKernelType = FunctionType::get(unaryKernelType, makeUnaryKernelParams, false);
+        makeUnaryKernelFunction = Function::Create(makeUnaryKernelType, GlobalValue::ExternalLinkage, "makeUnaryKernel", TheModule);
+        makeUnaryKernelFunction->setCallingConv(CallingConv::C);
+
+        std::vector<Type*> binaryKernelParams;
+        binaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        binaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        binaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        binaryKernelParams.push_back(Type::getInt32Ty(getGlobalContext()));
+        Type *binaryKernelReturn = Type::getVoidTy(getGlobalContext());
+        Type *binaryKernelType = PointerType::getUnqual(FunctionType::get(binaryKernelReturn, binaryKernelParams, false));
+        std::vector<Type*> makeBinaryKernelParams;
+        makeBinaryKernelParams.push_back(Type::getInt8PtrTy(getGlobalContext()));
+        makeBinaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        makeBinaryKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
+        FunctionType* makeBinaryKernelType = FunctionType::get(binaryKernelType, makeBinaryKernelParams, false);
+        makeBinaryKernelFunction = Function::Create(makeBinaryKernelType, GlobalValue::ExternalLinkage, "makeBinaryKernel", TheModule);
+        makeBinaryKernelFunction->setCallingConv(CallingConv::C);
+
         QSharedPointer<Transform> kernel(Transform::make("add(1)", NULL));
 
         Template src, dst;
@@ -1082,7 +1122,8 @@ BR_REGISTER(Initializer, LLVMInitializer)
 
 UnaryFunction makeUnaryFunction(const char *description)
 {
-    QScopedPointer<UnaryTransform> unaryTransform(Factory<UnaryTransform>::make(description));
+    QScopedPointer<UnaryTransform> unaryTransform(dynamic_cast<UnaryTransform*>(Transform::make(description, NULL)));
+    if (unaryTransform == NULL) qFatal("makeUnaryFunction NULL transform!");
     return unaryTransform->getFunction(NULL);
 }
 
@@ -1094,7 +1135,10 @@ BinaryFunction makeBinaryFunction(const char *description)
 
 UnaryKernel makeUnaryKernel(const char *description, const Matrix *src)
 {
-    QScopedPointer<UnaryTransform> unaryTransform(Factory<UnaryTransform>::make(description));
+    if (description == NULL) qFatal("makeUnaryKernel NULL description!");
+    const File f = long(description) < 1000 ? UnaryTransform::fileTable[long(description)] : File(description);
+    QScopedPointer<UnaryTransform> unaryTransform(dynamic_cast<UnaryTransform*>(Transform::make(f, NULL)));
+    if (unaryTransform == NULL) qFatal("makeUnaryKernel NULL transform!");
     return unaryTransform->getKernel(src);
 }
 

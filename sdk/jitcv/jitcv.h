@@ -3,9 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-namespace jitcv
-{
+#include <openbr.h>
 
 /*!
  * \brief jitcv matrix
@@ -83,16 +81,22 @@ struct Matrix
     inline uint32_t bytes() const { return bits() / 8 * elements(); }
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void (*UnaryFunction)(const Matrix *src, Matrix *dst);
 typedef void (*BinaryFunction)(const Matrix *srcA, const Matrix *srcB, Matrix *dst);
-UnaryFunction makeUnaryFunction(const char *description);
-BinaryFunction makeBinaryFunction(const char *description);
+BR_EXPORT UnaryFunction makeUnaryFunction(const char *description);
+BR_EXPORT BinaryFunction makeBinaryFunction(const char *description);
 
 typedef void (*UnaryKernel)(const Matrix *src, Matrix *dst, uint32_t size);
 typedef void (*BinaryKernel)(const Matrix *srcA, const Matrix *srcB, Matrix *dst, uint32_t size);
-UnaryKernel makeUnaryKernel(const char *description, const Matrix *src);
-BinaryKernel makeBinaryKernel(const char *description, const Matrix *srcA, const Matrix *srcB);
+BR_EXPORT UnaryKernel makeUnaryKernel(const char *description, const Matrix *src);
+BR_EXPORT BinaryKernel makeBinaryKernel(const char *description, const Matrix *srcA, const Matrix *srcB);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // __JITCV_H
