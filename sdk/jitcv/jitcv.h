@@ -90,6 +90,11 @@ typedef void (*BinaryFunction)(const Matrix *srcA, const Matrix *srcB, Matrix *d
 BR_EXPORT UnaryFunction makeUnaryFunction(const char *description);
 BR_EXPORT BinaryFunction makeBinaryFunction(const char *description);
 
+typedef uint32_t (*UnaryAllocation)(const Matrix *src, Matrix *dst);
+typedef uint32_t (*BinaryAllocation)(const Matrix *srcA, const Matrix *srcB, Matrix *dst);
+BR_EXPORT UnaryAllocation makeUnaryAllocation(const char *description, const Matrix *src);
+BR_EXPORT BinaryAllocation makeBinaryAllocation(const char *description, const Matrix *srcA, const Matrix *srcB);
+
 typedef void (*UnaryKernel)(const Matrix *src, Matrix *dst, uint32_t size);
 typedef void (*BinaryKernel)(const Matrix *srcA, const Matrix *srcB, Matrix *dst, uint32_t size);
 BR_EXPORT UnaryKernel makeUnaryKernel(const char *description, const Matrix *src);
