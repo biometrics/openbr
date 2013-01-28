@@ -267,14 +267,12 @@ void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int mi
 
 bool QtUtils::runRScript(const QString &file)
 {
-    QString RScriptExecutable = Globals->sdkPath + "/R/bin/Rscript.exe";
-    if (!QFileInfo(RScriptExecutable).exists()) RScriptExecutable = "RScript"; // Let the system resolve it
-
-    QStringList args; args << file;
     QProcess RScript;
-    RScript.start(RScriptExecutable, args);
+    RScript.start("Rscript", QStringList() << file);
     RScript.waitForFinished(-1);
-    return ((RScript.exitCode() == 0) && (RScript.error() == QProcess::UnknownError));
+    bool result = ((RScript.exitCode() == 0) && (RScript.error() == QProcess::UnknownError));
+    if (!result) qDebug("Failed to run 'Rscript', did you forget to install R?  See online documentation of 'br_plot' for required R packages.");
+    return result;
 }
 
 bool QtUtils::runDot(const QString &file)
