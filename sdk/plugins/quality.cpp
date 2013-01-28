@@ -2,8 +2,6 @@
 
 #include "core/common.h"
 
-using namespace br;
-
 namespace br
 {
 

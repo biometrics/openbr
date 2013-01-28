@@ -129,7 +129,8 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         for (int j=0; j<scores.cols; j++) {
             const BEE::Mask_t mask_val = masks.at<BEE::Mask_t>(i,j);
             const BEE::Simmat_t simmat_val = scores.at<BEE::Simmat_t>(i,j);
-            if (mask_val == BEE::DontCare) continue;
+            if ((mask_val == BEE::DontCare) ||
+                (simmat_val == -std::numeric_limits<float>::max())) continue;
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
             if (comparisons.last().genuine) genuineCount++;
             else                            impostorCount++;
@@ -139,7 +140,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     if (genuineCount == 0) qFatal("No genuine scores.");
     if (impostorCount == 0) qFatal("No impostor scores.");
 
-    qSort(comparisons);
+    std::sort(comparisons.begin(), comparisons.end());
 
     double genuineSum = 0, impostorSum = 0;
     QList<OperatingPoint> operatingPoints;

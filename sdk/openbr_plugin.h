@@ -524,6 +524,12 @@ public:
     Q_PROPERTY(QByteArray buffer READ get_buffer WRITE set_buffer RESET reset_buffer)
     BR_PROPERTY(QByteArray, buffer, QByteArray())
 
+    /*!
+     * \brief Perform k-fold cross validation.
+     */
+    Q_PROPERTY(int crossValidate READ get_crossValidate WRITE set_crossValidate RESET reset_crossValidate)
+    BR_PROPERTY(int, crossValidate, 0)
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
@@ -924,7 +930,6 @@ private:
 class BR_EXPORT Transform : public Object
 {
     Q_OBJECT
-    bool independent;
 
 public:
     Q_PROPERTY(bool relabel READ get_relabel WRITE set_relabel RESET reset_relabel STORED false)
@@ -935,6 +940,7 @@ public:
     BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
     BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
     BR_PROPERTY(float, fraction, 1)
+    bool independent, trainable;
 
     virtual ~Transform() {}
     static Transform *make(QString str, QObject *parent); /*!< \brief Make a transform from a string. */
@@ -969,7 +975,7 @@ public:
     }
 
 protected:
-    Transform(bool independent = true); /*!< \brief Construct a transform. */
+    Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
 };
 
@@ -1028,7 +1034,7 @@ class BR_EXPORT UntrainableTransform : public Transform
     Q_OBJECT
 
 protected:
-    UntrainableTransform(bool independent = true) : Transform(independent) {} /*!< \brief Construct an untrainable transform. */
+    UntrainableTransform(bool independent = true) : Transform(independent, false) {} /*!< \brief Construct an untrainable transform. */
 
 private:
     Transform *clone() const { return const_cast<UntrainableTransform*>(this); }

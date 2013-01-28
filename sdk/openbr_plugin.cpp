@@ -423,6 +423,7 @@ TemplateList TemplateList::fromInput(const br::File &input)
     foreach (const br::File &file, input.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
+        const int crossValidate = input.getInt("crossValidate");
 
         // If input is a Format not a Gallery
         if (newTemplates.isEmpty())
@@ -433,6 +434,8 @@ TemplateList TemplateList::fromInput(const br::File &input)
             newTemplates[i].file.append(input.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.insert("Input_Index", i+templates.size());
+            if (crossValidate > 0)
+                newTemplates[i].file.insert("Cross_Validation_Partition", i*crossValidate/newTemplates.size());
         }
 
         if (!templates.isEmpty() && input.getBool("merge")) {
@@ -1161,9 +1164,10 @@ private:
 };
 
 /* Transform - public methods */
-Transform::Transform(bool independent)
+Transform::Transform(bool _independent, bool _trainable)
 {
-    this->independent = independent;
+    independent = _independent;
+    trainable = _trainable;
     relabel = false;
     classes = std::numeric_limits<int>::max();
     instances = std::numeric_limits<int>::max();
