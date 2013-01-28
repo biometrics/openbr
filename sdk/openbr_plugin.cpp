@@ -889,6 +889,8 @@ void br::Context::messageHandler(QtMsgType type, const char *msg)
     }
 
     if (type == QtFatalMsg) {
+        // Write debug output then close
+        qDebug("SDK Path: %s", qPrintable(Globals->sdkPath));
         Globals->finalize();
         abort();
     }
