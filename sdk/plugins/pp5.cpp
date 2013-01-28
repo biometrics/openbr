@@ -32,7 +32,6 @@
 
 using namespace br;
 
-
 /*!
  * \ingroup initializers
  * \brief Initialize PP5
@@ -208,7 +207,6 @@ struct PP5Context
     }
 };
 
-
 /*!
  * \ingroup transforms
  * \brief Enroll faces in PP5
@@ -269,8 +267,6 @@ class PP5Enroll : public UntrainableTransform
 
 BR_REGISTER(Transform, PP5Enroll)
 
-
-
 /*!
  * \ingroup distances
  * \brief Compare templates with PP5
@@ -283,9 +279,10 @@ class PP5Compare : public Distance
 {
     Q_OBJECT
 
-
     float compare(const Template &target, const Template &query) const
     {
+        (void) target;
+        (void) query;
         qFatal("PP5Compare: _compare should never be called");
         return 0;
     }
@@ -340,7 +337,5 @@ class PP5Compare : public Distance
 };
 
 BR_REGISTER(Distance, PP5Compare)
-
-
 
 #include "plugins/pp5.moc"

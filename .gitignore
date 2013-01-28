@@ -1,5 +1,6 @@
 #Repository specific
 build*
+3rdparty/pittpatt*
 
 #Generic
 *.log
