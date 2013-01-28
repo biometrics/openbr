@@ -21,7 +21,7 @@ class IUMTransform : public Transform
     BR_PROPERTY(br::Distance*, distance, Distance::make("Dist(L2)", this))
     BR_PROPERTY(double, mean, 0)
     BR_PROPERTY(double, stddev, 1)
-    br::TemplateList impostors;
+    TemplateList impostors;
 
     float calculateIUM(const Template &probe, const TemplateList &gallery) const
     {

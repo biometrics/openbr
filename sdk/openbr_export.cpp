@@ -28,7 +28,6 @@
  *
  * \section get_started Get Started
  * - \ref installation
- * - \ref tutorial
  */
 
 /*!
@@ -337,14 +336,6 @@ $ br -help
  * $ cd openbr/build-icc
  * $ make package
  * \endcode
- */
-
-/*!
- * \page tutorial Tutorial
- * \brief An end-to-end example covering experimental setup, algorithm development, and performance evaluation on the <a href="http://yann.lecun.com/exdb/mnist/
-">MNIST Handwritten Digits Dataset</a>.
- *
- * Under construction, please check back soon!
  */
 
 /*!
