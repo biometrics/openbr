@@ -1,27 +1,27 @@
-#Repository specific
+### Repository Specific ###
 build*
 3rdparty/pittpatt*
 
-#Generic
+### Generic ###
 *.log
 *.user
 
-#Latex
+### Latex ###
 *.aux
 *.nav
 *.out
 *.snm
 *.toc
 
-#QtCreator
+### QtCreator ###
 *CMakeLists.txt.user*
 
-#R
+### R ###
 *.RData
 *.Rhistory
 
-#Subversion
+### Subversion ###
 *.svn*
 
-#Synology
+### Synology ###
 *.DS*

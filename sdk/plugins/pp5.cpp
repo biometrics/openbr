@@ -38,7 +38,6 @@ using namespace br;
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-
 class PP5Initializer : public Initializer
 {
     Q_OBJECT
@@ -62,7 +61,6 @@ BR_REGISTER(Initializer, PP5Initializer)
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-
 struct PP5Context
 {
     ppr_context_type context;
@@ -213,7 +211,6 @@ struct PP5Context
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-
 class PP5Enroll : public UntrainableTransform
 {
     Q_OBJECT
@@ -249,7 +246,7 @@ class PP5Enroll : public UntrainableTransform
             dst.file.append(PP5Context::toMetadata(face));
             dst += m;
 
-            if (src.file.getBool("ForceEnrollment")) break;
+            if (!src.file.getBool("enrollAll")) break;
         }
 
         ppr_free_face_list(face_list);
@@ -258,7 +255,7 @@ class PP5Enroll : public UntrainableTransform
 
         contexts.release(context);
 
-        if (src.file.getBool("ForceEnrollment") && dst.isEmpty()) {
+        if (!src.file.getBool("enrollAll") && dst.isEmpty()) {
             if (detectOnly) dst += src;
             else            dst += cv::Mat();
         }
@@ -273,7 +270,6 @@ BR_REGISTER(Transform, PP5Enroll)
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-
 class PP5Compare : public Distance
                  , public PP5Context
 {
@@ -283,7 +279,7 @@ class PP5Compare : public Distance
     {
         (void) target;
         (void) query;
-        qFatal("PP5Compare: _compare should never be called");
+        qFatal("PP5Compare::compare (single templates) should never be called!");
         return 0;
     }
 
