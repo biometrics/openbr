@@ -326,8 +326,14 @@ struct RPlot
         pivotItems = QVector< QSet<QString> >(pivotHeaders.size());
         foreach (const QString &fileName, files) {
             QStringList pivots = getPivots(fileName, false);
-            if (pivots.size() != pivotHeaders.size())
-                qFatal("Pivot size mismatch: [%s] [%s]", qPrintable(pivotHeaders.join(",")), qPrintable(pivots.join(",")));
+            
+            // If the number of pivots don't match, abandon the directory/filename labeling scheme
+            if (pivots.size() != pivotHeaders.size()) {
+                pivots.clear();
+                pivots.push_back(QFileInfo(fileName).completeBaseName());
+                pivotHeaders.clear();
+                pivotHeaders.push_back("File");
+            } 
             file.write(qPrintable(QString("tmp <- read.csv(\"%1\")\n").arg(fileName).replace("\\", "\\\\")));
             for (int i=0; i<pivots.size(); i++) {
                 pivotItems[i].insert(pivots[i]);
