@@ -183,8 +183,9 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         }
     }
 
-    if (operatingPoints.size() <= 2) qFatal("Insufficent genuines or impostors.");
-    operatingPoints.takeLast(); // Remove point (1,1)
+    if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
+    if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
+    if (operatingPoints.size() > 2)  operatingPoints.takeLast(); // Remove point (1,1)
 
     // Write Metadata table
     QStringList lines;
@@ -405,8 +406,8 @@ struct RPlot
         }
 
         const QString &smooth = destination.getString("smooth", "");
-        major.smooth = !smooth.isEmpty() && (major.header == smooth);
-        minor.smooth = !smooth.isEmpty() && (minor.header == smooth);
+        major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
+        minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
         if (major.smooth) major.size = 1;
         if (minor.smooth) minor.size = 1;
         if (major.size < minor.size)

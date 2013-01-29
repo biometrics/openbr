@@ -424,6 +424,7 @@ TemplateList TemplateList::fromInput(const br::File &input)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
         const int crossValidate = input.getInt("crossValidate");
+        if (crossValidate > 0) srand(0);
 
         // If input is a Format not a Gallery
         if (newTemplates.isEmpty())
@@ -434,8 +435,7 @@ TemplateList TemplateList::fromInput(const br::File &input)
             newTemplates[i].file.append(input.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.insert("Input_Index", i+templates.size());
-            if (crossValidate > 0)
-                newTemplates[i].file.insert("Cross_Validation_Partition", i*crossValidate/newTemplates.size());
+            if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
         }
 
         if (!templates.isEmpty() && input.getBool("merge")) {

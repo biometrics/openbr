@@ -271,7 +271,9 @@ bool QtUtils::runRScript(const QString &file)
     RScript.start("Rscript", QStringList() << file);
     RScript.waitForFinished(-1);
     bool result = ((RScript.exitCode() == 0) && (RScript.error() == QProcess::UnknownError));
-    if (!result) qDebug("Failed to run 'Rscript', did you forget to install R?  See online documentation of 'br_plot' for required R packages.");
+    if (!result) qDebug("Failed to run 'Rscript', did you forget to install R?  "
+                        "See online documentation of 'br_plot' for required R packages.  "
+                        "Otherwise, try running Rscript on %s to get the exact error.", qPrintable(file));
     return result;
 }
 

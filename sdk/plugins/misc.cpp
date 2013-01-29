@@ -123,6 +123,11 @@ BR_REGISTER(Transform, PrintTransform)
 class CheckTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
+    static int count;
+    int index;
+
+ public:
+    CheckTransform() : index(count++) {}
 
     void project(const Template &src, Template &dst) const
     {
@@ -134,10 +139,12 @@ class CheckTransform : public UntrainableMetaTransform
             const float *data = (const float*)fm.data;
             for (int i=0; i<elements; i++)
                 if (data[i] != data[i])
-                    qFatal("%s NaN check failed!", qPrintable(src.file.flat()));
+                    qFatal("%s NaN check %d failed!", qPrintable(src.file.flat()), index);
         }
     }
 };
+
+int CheckTransform::count = 0;
 
 BR_REGISTER(Transform, CheckTransform)
 

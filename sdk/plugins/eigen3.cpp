@@ -266,9 +266,7 @@ class LDATransform : public Transform
 
     void train(const TemplateList &_trainingSet)
     {
-        TemplateList trainingSet = _trainingSet;
-        trainingSet = TemplateList::relabel(trainingSet);
-
+        TemplateList trainingSet = TemplateList::relabel(_trainingSet);
         int instances = trainingSet.size();
 
         // Perform PCA dimensionality reduction

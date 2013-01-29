@@ -300,7 +300,8 @@ bool br::IsClassifier(const QString &algorithm)
 
 void br::Train(const QString &inputs, const File &model)
 {
-    qDebug("Training on %s to %s", qPrintable(inputs), qPrintable(model.flat()));
+    qDebug("Training on %s%s", qPrintable(inputs),
+                               model.isNull() ? "" : qPrintable(" to " + model.flat()));
     AlgorithmManager::getAlgorithm(model.getString("algorithm"))->train(inputs, model);
 }
 
