@@ -451,6 +451,19 @@ TemplateList TemplateList::fromInput(const br::File &input)
     return templates;
 }
 
+TemplateList TemplateList::relabel(const TemplateList &tl)
+{
+    QHash<int,int> labels;
+    foreach (int label, tl.labels<int>())
+        if (!labels.contains(label))
+            labels.insert(label, labels.size());
+
+    TemplateList result = tl;
+    for (int i=0; i<result.size(); i++)
+        result[i].file.setLabel(labels[result[i].file.label()]);
+    return result;
+}
+
 /* Object - public methods */
 QStringList Object::parameters() const
 {
@@ -1053,10 +1066,8 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
 
         std::random_shuffle(indices.begin(), indices.end());
         const int max = atLeast ? indices.size() : std::min(indices.size(), instances);
-        for (int j=0; j<max; j++) {
+        for (int j=0; j<max; j++)
             downsample.append(templates.value(indices[j]));
-            if (transform->relabel) downsample.last().file.insert("Label", i);
-        }
     }
 
     if (transform->fraction < 1) {
@@ -1168,7 +1179,6 @@ Transform::Transform(bool _independent, bool _trainable)
 {
     independent = _independent;
     trainable = _trainable;
-    relabel = false;
     classes = std::numeric_limits<int>::max();
     instances = std::numeric_limits<int>::max();
     fraction = 1;
@@ -1222,7 +1232,6 @@ Transform *Transform::make(QString str, QObject *parent)
 Transform *Transform::clone() const
 {
     Transform *clone = Factory<Transform>::make(file.flat());
-    clone->relabel = relabel;
     clone->classes = classes;
     clone->instances = instances;
     clone->fraction = fraction;

@@ -323,7 +323,7 @@ struct TemplateList : public QList<Template>
     TemplateList() : uniform(false) {}
     TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
     BR_EXPORT static TemplateList fromInput(const File &input); /*!< \brief Create a template list from a br::Input. */
-
+    BR_EXPORT static TemplateList relabel(const TemplateList &tl); /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     /*!
      * \brief Returns the total number of bytes in all the templates.
      */
@@ -932,11 +932,9 @@ class BR_EXPORT Transform : public Object
     Q_OBJECT
 
 public:
-    Q_PROPERTY(bool relabel READ get_relabel WRITE set_relabel RESET reset_relabel STORED false)
     Q_PROPERTY(int classes READ get_classes WRITE set_classes RESET reset_classes STORED false)
     Q_PROPERTY(int instances READ get_instances WRITE set_instances RESET reset_instances STORED false)
     Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
-    BR_PROPERTY(bool, relabel, false)
     BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
     BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
     BR_PROPERTY(float, fraction, 1)

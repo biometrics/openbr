@@ -124,21 +124,23 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(scores.rows*scores.cols);
-    int genuineCount = 0, impostorCount = 0;
+    int genuineCount = 0, impostorCount = 0, numNaNs = 0;
     for (int i=0; i<scores.rows; i++) {
         for (int j=0; j<scores.cols; j++) {
             const BEE::Mask_t mask_val = masks.at<BEE::Mask_t>(i,j);
             const BEE::Simmat_t simmat_val = scores.at<BEE::Simmat_t>(i,j);
             if ((mask_val == BEE::DontCare) ||
                 (simmat_val == -std::numeric_limits<float>::max())) continue;
+            if (simmat_val != simmat_val) { numNaNs++; continue; }
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
             if (comparisons.last().genuine) genuineCount++;
             else                            impostorCount++;
         }
     }
 
-    if (genuineCount == 0) qFatal("No genuine scores.");
-    if (impostorCount == 0) qFatal("No impostor scores.");
+    if (numNaNs > 0) qWarning("Encountered %d NaN scores!", numNaNs);
+    if (genuineCount == 0) qFatal("No genuine scores!");
+    if (impostorCount == 0) qFatal("No impostor scores!");
 
     std::sort(comparisons.begin(), comparisons.end());
 
@@ -324,7 +326,8 @@ struct RPlot
         pivotItems = QVector< QSet<QString> >(pivotHeaders.size());
         foreach (const QString &fileName, files) {
             QStringList pivots = getPivots(fileName, false);
-            if (pivots.size() != pivotHeaders.size()) qFatal("plot.cpp::initializeR pivot size mismatch.");
+            if (pivots.size() != pivotHeaders.size())
+                qFatal("Pivot size mismatch: [%s] [%s]", qPrintable(pivotHeaders.join(",")), qPrintable(pivots.join(",")));
             file.write(qPrintable(QString("tmp <- read.csv(\"%1\")\n").arg(fileName).replace("\\", "\\\\")));
             for (int i=0; i<pivots.size(); i++) {
                 pivotItems[i].insert(pivots[i]);

@@ -264,8 +264,11 @@ class LDATransform : public Transform
     Eigen::VectorXf mean;
     Eigen::MatrixXf projection;
 
-    void train(const TemplateList &trainingSet)
+    void train(const TemplateList &_trainingSet)
     {
+        TemplateList trainingSet = _trainingSet;
+        trainingSet = TemplateList::relabel(trainingSet);
+
         int instances = trainingSet.size();
 
         // Perform PCA dimensionality reduction
@@ -276,6 +279,7 @@ class LDATransform : public Transform
 
         TemplateList ldaTrainingSet;
         static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
+        ldaTrainingSet = TemplateList::relabel(ldaTrainingSet);
 
         int dimsIn = ldaTrainingSet.first().m().rows * ldaTrainingSet.first().m().cols;
 

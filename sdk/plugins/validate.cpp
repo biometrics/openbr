@@ -9,37 +9,33 @@ namespace br
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
  */
-class CrossValidateTransform : public Transform
+class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
     BR_PROPERTY(QString, description, "Identity")
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>() << make(description))
+    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
 
     void train(const TemplateList &data)
     {
-        if (!transforms.first()->trainable)
-            return;
-
         int numPartitions = 0;
         QList<int> partitions; partitions.reserve(data.size());
         foreach (const File &file, data.files()) {
             partitions.append(file.getInt("Cross_Validation_Partition", 0));
-            numPartitions = std::max(numPartitions, partitions.last());
+            numPartitions = std::max(numPartitions, partitions.last()+1);
         }
+
+        while (transforms.size() < numPartitions)
+            transforms.append(make(description));
 
         if (numPartitions < 2) {
             transforms.first()->train(data);
             return;
         }
 
-        while (transforms.size() < numPartitions)
-            transforms.append(make(description));
-
         QList< QFuture<void> > futures;
         for (int i=0; i<numPartitions; i++) {
-            qDebug() << "!!" << transforms[i]->description();
             TemplateList partitionedData = data;
             for (int j=partitionedData.size()-1; j>=0; j--)
                 if (partitions[j] == i)
@@ -47,6 +43,7 @@ class CrossValidateTransform : public Transform
             if (Globals->parallelism) futures.append(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
             else                      transforms[i]->train(partitionedData);
         }
+        Globals->trackFutures(futures);
     }
 
     void project(const Template &src, Template &dst) const

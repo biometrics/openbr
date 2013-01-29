@@ -91,7 +91,7 @@ struct KDE
             bins.append(Common::KernelDensityEstimation(scores, min + (max-min)*i/(size-1), h));
     }
 
-    float operator()(float score, bool gaussian = false) const
+    float operator()(float score, bool gaussian = true) const
     {
         if (gaussian) return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((score-mean)/stddev, 2));
         if (score <= min) return bins.first();
@@ -120,12 +120,12 @@ struct MP
     MP() {}
     MP(const QList<float> &genuineScores, const QList<float> &impostorScores)
         : genuine(genuineScores), impostor(impostorScores) {}
-    float operator()(float score, bool gaussian = false, bool log = false) const
+    float operator()(float score, bool gaussian = true) const
     {
         const float g = genuine(score, gaussian);
         const float s = g / (impostor(score, gaussian) + g);
-        if (log) return (std::max(std::log10(s), -10.f) + 10)/10;
-        else     return s;
+        if (s != s) qDebug() << "!!" << g << impostor(score, gaussian) << score << genuine.mean << genuine.stddev << impostor.mean << impostor.stddev;
+        return s;
     }
 };
 
@@ -150,11 +150,9 @@ class MPDistance : public Distance
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(QString binKey READ get_binKey WRITE set_binKey RESET reset_binKey STORED false)
     Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
-    Q_PROPERTY(bool log READ get_log WRITE set_log RESET reset_log STORED false)
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
     BR_PROPERTY(QString, binKey, "")
-    BR_PROPERTY(bool, gaussian, false)
-    BR_PROPERTY(bool, log, false)
+    BR_PROPERTY(bool, gaussian, true)
 
     QHash<QString, MP> mps;
 
@@ -170,6 +168,7 @@ class MPDistance : public Distance
         for (int i=0; i<src.size(); i++)
             for (int j=0; j<i; j++) {
                 const float score = memoryOutput.data()->data.at<float>(i, j);
+                if (score == -std::numeric_limits<float>::max()) continue;
                 const QString bin = src[i].file.getString(binKey, "");
                 if (labels[i] == labels[j]) genuineScores[bin].append(score);
                 else                        impostorScores[bin].append(score);
@@ -181,7 +180,9 @@ class MPDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        return mps[query.file.getString(binKey, "")](distance->compare(target, query), gaussian, log);
+        float rawScore = distance->compare(target, query);
+        if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
+        return mps[query.file.getString(binKey, "")](rawScore, gaussian);
     }
 
     void store(QDataStream &stream) const
