@@ -10,7 +10,7 @@ namespace br
  * \brief Impostor Uniqueness Measure \cite klare12
  * \author Josh Klontz \cite jklontz
  */
-class IUMTransform : public Transform
+class ImpostorUniquenessMeasureTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
@@ -53,8 +53,8 @@ class IUMTransform : public Transform
     {
         dst = src;
         float ium = calculateIUM(src, impostors);
-        dst.file.insert("IUM", ium);
-        dst.file.insert("IUM_Bin", ium < mean-stddev ? 0 : (ium < mean+stddev ? 1 : 2));
+        dst.file.insert("Impostor_Uniqueness_Measure", ium);
+        dst.file.insert("Impostor_Uniqueness_Measure_Bin", ium < mean-stddev ? 0 : (ium < mean+stddev ? 1 : 2));
     }
 
     void store(QDataStream &stream) const
@@ -70,7 +70,7 @@ class IUMTransform : public Transform
     }
 };
 
-BR_REGISTER(Transform, IUMTransform)
+BR_REGISTER(Transform, ImpostorUniquenessMeasureTransform)
 
 /* Kernel Density Estimator */
 struct KDE
@@ -124,7 +124,6 @@ struct MP
     {
         const float g = genuine(score, gaussian);
         const float s = g / (impostor(score, gaussian) + g);
-        if (s != s) qDebug() << "!!" << g << impostor(score, gaussian) << score << genuine.mean << genuine.stddev << impostor.mean << impostor.stddev;
         return s;
     }
 };
@@ -144,7 +143,7 @@ QDataStream &operator>>(QDataStream &stream, MP &nmp)
  * \brief Match Probability \cite klare12
  * \author Josh Klontz \cite jklontz
  */
-class MPDistance : public Distance
+class MatchProbabilityDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
@@ -198,7 +197,7 @@ class MPDistance : public Distance
     }
 };
 
-BR_REGISTER(Distance, MPDistance)
+BR_REGISTER(Distance, MatchProbabilityDistance)
 
 /*!
  * \ingroup distances
