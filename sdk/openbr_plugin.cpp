@@ -426,9 +426,9 @@ TemplateList TemplateList::fromInput(const br::File &input)
         const int crossValidate = input.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
 
-        // If input is a Format not a Gallery
+        // If file is a Format not a Gallery
         if (newTemplates.isEmpty())
-            newTemplates.append(input);
+            newTemplates.append(file);
 
         // Propogate metadata
         for (int i=0; i<newTemplates.size(); i++) {
