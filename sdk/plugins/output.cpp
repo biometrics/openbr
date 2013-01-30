@@ -57,21 +57,15 @@ class csvOutput : public MatrixOutput
     ~csvOutput()
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
-        QFile out(file);
-        bool success = out.open(QFile::WriteOnly);
-        if (!success) qFatal("Output::saveCSV failed to open %s for writing.", qPrintable((QString)file));
-        out.write("File,");
-        out.write(qPrintable(targetFiles.names().join(",")));
-        out.write("\n");
+        QStringList lines;
+        lines.append("File," + targetFiles.names().join(","));
         for (int i=0; i<queryFiles.size(); i++) {
-            out.write(qPrintable(queryFiles[i].name));
-            for (int j=0; j<targetFiles.size(); j++) {
-                out.write(",");
-                out.write(qPrintable(toString(i,j)));
-            }
-            out.write("\n");
+            QStringList words;
+            for (int j=0; j<targetFiles.size(); j++)
+                words.append(toString(i,j));
+            lines.append(queryFiles[i].name+","+words.join(","));
         }
-        out.close();
+        QtUtils::writeFile(file, lines);
     }
 };
 
