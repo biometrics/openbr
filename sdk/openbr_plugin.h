@@ -204,6 +204,7 @@ struct BR_EXPORT File
     QString getString(const QString &key, const QString &defaultValue) const; /*!< \brief Returns a string value for the key, returning \em defaultValue if the key does not exist. */
 
     QList<QPointF> landmarks() const; /*!< \brief Returns the file's landmark list. */
+    QList<QPointF> namedLandmarks() const; /*!< \brief Returns landmarks derived from metadata keys. */
     void appendLandmark(const QPointF &landmark); /*!< \brief Adds a landmark to the file's landmark list. */
     void appendLandmarks(const QList<QPointF> &landmarks); /*!< \brief Adds landmarks to the file's landmark list. */
     inline void clearLandmarks() { m_metadata["Landmarks"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */

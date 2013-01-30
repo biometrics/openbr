@@ -227,6 +227,24 @@ QList<QPointF> File::landmarks() const
     return landmarks;
 }
 
+QList<QPointF> File::namedLandmarks() const
+{
+    QList<QPointF> landmarks;
+    QStringList keys = localMetadata().keys();
+    foreach (const QString &key, keys) {
+        if (!key.endsWith("_X"))
+            continue;
+        QString keyBaseName = key.left(key.size()-2);
+        if (!keys.contains(keyBaseName+"_Y") ||
+            keys.contains(keyBaseName+"_Width") ||
+            keys.contains(keyBaseName+"_Height") ||
+            keys.contains(keyBaseName+"_Radius"))
+            continue;
+        landmarks.append(QPointF(getFloat(keyBaseName+"_X"), getFloat(keyBaseName+"_Y")));
+    }
+    return landmarks;
+}
+
 void File::appendLandmark(const QPointF &landmark)
 {
     QList<QVariant> newLandmarks = m_metadata["Landmarks"].toList();

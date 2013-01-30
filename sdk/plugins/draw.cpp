@@ -44,6 +44,9 @@ class DrawTransform : public UntrainableTransform
         QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
         foreach (const Point2f &landmark, landmarks)
             circle(dst, landmark, 3, color, -1);
+        QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedLandmarks());
+        foreach (const Point2f &landmark, namedLandmarks)
+            circle(dst, landmark, 3, color);
         QList<Rect> ROIs = OpenCVUtils::toRects(src.file.ROIs());
         foreach (const Rect ROI, ROIs)
             rectangle(dst, ROI, color);
