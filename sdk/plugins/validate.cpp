@@ -13,9 +13,9 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
-    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
     BR_PROPERTY(QString, description, "Identity")
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
+
+    QList<br::Transform*> transforms;
 
     void train(const TemplateList &data)
     {
@@ -49,6 +49,23 @@ class CrossValidateTransform : public MetaTransform
     void project(const Template &src, Template &dst) const
     {
         transforms[src.file.getInt("Cross_Validation_Partition", 0)]->project(src, dst);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << transforms.size();
+        foreach (Transform *transform, transforms)
+            transform->store(stream);
+    }
+
+    void load(QDataStream &stream)
+    {
+        int numTransforms;
+        stream >> numTransforms;
+        while (transforms.size() < numTransforms)
+            transforms.append(make(description));
+        foreach (Transform *transform, transforms)
+            transform->load(stream);
     }
 };
 
