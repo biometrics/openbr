@@ -6,12 +6,10 @@ if(${BR_WITH_PP5})
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${PP5_LIBS})
 
   if(WIN32)
-    install(CODE "file( GLOB PP5_LIB \"${PP5_DIR}/lib/*.lib\" )"
-            CODE "file( GLOB PP5_BIN \"${PP5_DIR}/lib/*.dll\" )"
-            CODE "file( INSTALL \${PP5_LIB} DESTINATION \"lib\" )"
-            CODE "file( INSTALL \${PP5_BIN} DESTINATION \"bin\" )")
+    install(DIRECTORY ${PP5_DIR}/lib/ DESTINATION bin)
   else()
     install(DIRECTORY ${PP5_DIR}/lib/ DESTINATION lib)
   endif()
+
   install(DIRECTORY ${PP5_DIR}/models/ DESTINATION share/openbr/models/pp5)
 endif()
