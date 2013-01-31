@@ -182,7 +182,7 @@ $ br -help
  *   $ cd C:\openbr
  *   $ mkdir build-mingw64
  *   $ cd build-mingw64
- *   $ cmake -G "MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D OpenCV_DIR="C:\OpenCV-2.4.3-mingw64\build" -D QT_QMAKE_EXECUTABLE="C:\qt-everywhere-opensource-src-4.8.4\bin\qmake" ..
+ *   $ cmake -G "MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D OpenCV_DIR="C:/OpenCV-2.4.3-mingw64/build" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" ..
  *   $ mingw32-make
  *   \endcode
  * -# To package OpenBR:
