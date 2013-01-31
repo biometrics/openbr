@@ -116,7 +116,7 @@ struct AlgorithmCore
             return fileList; // Already enrolled
 
         const TemplateList i(TemplateList::fromInput(input));
-        if (i.isEmpty()) return FileList(); // Nothing to enroll
+        if (i.isEmpty()) return fileList; // Nothing to enroll
 
         if (transform.isNull()) qFatal("AlgorithmCore::enroll null transform.");
         const int blocks = Globals->blocks(i.size());
