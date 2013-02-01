@@ -62,6 +62,7 @@ class galGallery : public Gallery
         while ((templates.size() < Globals->blockSize) && !stream.atEnd()) {
             Template m;
             stream >> m;
+			//qWarning("?? %s\n", qPrintable(m.file.name));
             templates.append(m);
         }
 
@@ -71,6 +72,7 @@ class galGallery : public Gallery
 
     void write(const Template &t)
     {
+		//qWarning("$$ %s\n", qPrintable(t.file.name));
         stream << t;
     }
 };

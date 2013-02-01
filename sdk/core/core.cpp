@@ -107,11 +107,13 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        FileList fileList;
+        try {
         if (gallery.isNull()) gallery = getMemoryGallery(input);
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) return FileList();
-        FileList fileList = g->files();
+        fileList = g->files();
         if (!fileList.isEmpty() && gallery.contains("cache"))
             return fileList; // Already enrolled
 
@@ -165,7 +167,9 @@ struct AlgorithmCore
             fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
                     speed, totalBytes/totalCount, failureCount, totalCount);
         Globals->totalSteps = 0;
-
+        } catch (...) {
+            qFatal("Exception triggered during enrollment!");
+        }
         return fileList;
     }
 
@@ -183,6 +187,7 @@ struct AlgorithmCore
 
     void compare(File targetGallery, File queryGallery, File output)
     {
+	    try {
         if (output.exists() && output.getBool("cache")) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
@@ -221,6 +226,9 @@ struct AlgorithmCore
         const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
         if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);
         Globals->totalSteps = 0;
+        } catch (...) {
+            qFatal("Exception triggered during comparison!");
+        }
     }
 
 private:

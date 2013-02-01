@@ -21,6 +21,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QMutex>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QString>
@@ -33,12 +34,13 @@ namespace br
 class BR_EXPORT_GUI ImageViewer : public QLabel
 {
     Q_OBJECT
+    QMutex mutex;
     QString defaultText;
     QImage src;
 
 public:
     explicit ImageViewer(QWidget *parent = 0);
-    void setDefaultText(const QString &text, bool async = false);
+    void setDefaultText(const QString &text);
     void setImage(const QString &file, bool async = false);
     void setImage(const QImage &image, bool async = false);
     void setImage(const QPixmap &pixmap, bool async = false);

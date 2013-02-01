@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <QFileDialog>
+#include <QMutexLocker>
 #include <QSizePolicy>
 #include <QTimer>
 
@@ -28,22 +29,20 @@ br::ImageViewer::ImageViewer(QWidget *parent)
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
 
-void br::ImageViewer::setDefaultText(const QString &text, bool async)
+void br::ImageViewer::setDefaultText(const QString &text)
 {
     defaultText = text;
-    updatePixmap(async);
 }
 
 void br::ImageViewer::setImage(const QString &file, bool async)
 {
     src = QImage(file);
     updatePixmap(async);
-
 }
 
 void br::ImageViewer::setImage(const QImage &image, bool async)
 {
-    src = image;
+	src = image.copy();
     updatePixmap(async);
 }
 
@@ -61,10 +60,12 @@ void br::ImageViewer::updatePixmap(bool async)
         return;
     }
 
-    if (src.isNull()) {
+	QMutexLocker locker(&mutex);
+    if (src.isNull() || size().isNull()) {
         QLabel::setPixmap(QPixmap());
-        setText(defaultText);
+        QLabel::setText(defaultText);
     } else {
+		QLabel::clear();
         QLabel::setPixmap(QPixmap::fromImage(src.scaled(size(), Qt::KeepAspectRatio)));
     }
 }
