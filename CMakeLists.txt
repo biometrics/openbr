@@ -95,7 +95,7 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${QT_LIBRARIES})
 # Find OpenCV
 find_package(OpenCV REQUIRED)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
-set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching ts video videostab)
+set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching video videostab)
 
 # Enable Testing
 include(CppcheckTargets)
