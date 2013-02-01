@@ -185,6 +185,10 @@ private:
         dst = src;
         dst.file.appendLandmark(QPointF(first_eye_x, first_eye_y));
         dst.file.appendLandmark(QPointF(second_eye_x, second_eye_y));
+        dst.file.insert("ASEF_Right_Eye_X", first_eye_x);
+        dst.file.insert("ASEF_Right_Eye_Y", first_eye_y);
+        dst.file.insert("ASEF_Left_Eye_X", second_eye_x);
+        dst.file.insert("ASEF_Left_Eye_Y", second_eye_y);
     }
 };
 
