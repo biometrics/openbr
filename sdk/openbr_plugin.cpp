@@ -328,8 +328,6 @@ void File::init(const QString &file)
         }
         name = name.left(index);
     }
-
-    if (exists()) name = QDir().relativeFilePath(name);
 }
 
 /* File - global methods */
