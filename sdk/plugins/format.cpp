@@ -490,7 +490,7 @@ class xmlFormat : public Format
 
                 if (e.tagName() == "FORMAL_IMG") {
                     QByteArray byteArray = QByteArray::fromBase64(qPrintable(e.text()));
-                    Mat m = imdecode(Mat(1, byteArray.size(), CV_8UC1, byteArray.data()), CV_LOAD_IMAGE_ANYDEPTH);
+                    Mat m = imdecode(Mat(3, byteArray.size(), CV_8UC3, byteArray.data()), CV_LOAD_IMAGE_COLOR);
                     if (!m.data) qWarning("xmlFormat::read failed to decode image data.");
                     t.append(m);
                 } else if ((e.tagName() == "RELEASE_IMG") ||
