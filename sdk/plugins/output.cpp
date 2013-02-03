@@ -241,7 +241,7 @@ class EmptyOutput : public MatrixOutput
             }
         }
 
-        printf("%s\n", qPrintable(result));
+        printf("%s", qPrintable(result));
     }
 };
 

@@ -92,7 +92,7 @@ void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 
 void QtUtils::writeFile(const QString &file, const QStringList &lines)
 {
-    writeFile(file, lines.join("\n") + "\n");
+    writeFile(file, lines.join("\n"));
 }
 
 void QtUtils::writeFile(const QString &file, const QString &data)
@@ -105,7 +105,7 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     const QString baseName = QFileInfo(file).baseName();
     const QByteArray contents = (compression == 0) ? data : qCompress(data, compression);
     if (baseName == "terminal") {
-        printf("%s", qPrintable(contents));
+        printf("%s\n", qPrintable(contents));
     } else if (baseName == "buffer") {
         Globals->buffer = data;
     } else {
