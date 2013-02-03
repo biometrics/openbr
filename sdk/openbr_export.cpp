@@ -136,7 +136,7 @@ $ br -help
  */
 
 /*!
- * \page windows_mingw Windows 7 - MingGW-w64 2.0 - x64
+ * \page windows_mingw Windows 7 - MinGW-w64 2.0 - x64
  * \brief Installation from source with MinGW-w64.
  *
  * -# <a href="http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.7-release/x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb.7z/download">Download MinGW-w64 GCC 4.7.2</a> and unarchive.
