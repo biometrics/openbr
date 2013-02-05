@@ -214,7 +214,7 @@ struct PP5Context
 class PP5Enroll : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly STORED false)
+    Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
     BR_PROPERTY(bool, detectOnly, false)
     Resource<PP5Context> contexts;
 
