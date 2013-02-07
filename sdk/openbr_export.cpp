@@ -17,7 +17,7 @@
 /*!
  * \mainpage
  * \section overview Overview
- * <i>OpenBR</i> \cite openbr is a toolkit for biometric recognition and evaluation.
+ * OpenBR \cite openbr is a toolkit for biometric recognition and evaluation.
  * Supported use cases include training new recognition algorithms, interfacing with commercial systems, and measuring algorithm performance.
  * Free algorithms are also available for specific modalities including face recognition, face gender \& age estimation, face quality, and document classification.
  *
@@ -86,17 +86,20 @@ $ br -help
  *   -# During installation setup select "add CMake to PATH".
  * -# Download and unarchive <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">OpenCV 2.4.3</a>
  *   -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
- *   -# Copy the "OpenCV-2.4.3" folder to "C:\" and rename it "OpenCV-2.4.3-msvc2012".
+ *   -# Copy the "OpenCV-2.4.3" folder to "C:\".
  *   -# From the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt" and enter:
  *   \code
- *   $ cd C:\OpenCV-2.4.3-msvc2012
- *   $ mkdir build
- *   $ cd build
- *   $ cmake -G "Visual Studio 11 Win64" -D ENABLE_PRECOMPILED_HEADERS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF ..
+ *   $ cd C:\OpenCV-2.4.3
+ *   $ mkdir build-msvc2012
+ *   $ cd build-msvc2012
+ *   $ cmake -G "NMake Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
+ *   $ nmake
+ *   $ nmake install
+ *   $ cmake -D CMAKE_BUILD_TYPE=Release ..
+ *   $ nmake
+ *   $ nmake install
+ *   $ nmake clean
  *   \endcode
- *   -# Open "C:\OpenCV-2.4.3-msvc2012\build\OpenCV.sln"
- *     -# Under the "BUILD" menu, select "Build Solution".
- *     -# Switch from "Debug" to "Release" and repeat the above step.
  * -# Download and install <a href="http://releases.qt-project.org/qt4/source/qt-win-opensource-4.8.4-vs2010.exe">Qt 4.8.4</a>
  *   -# From the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt" and enter:
  *   \code
@@ -123,13 +126,8 @@ $ br -help
  *   $ cd C:\openbr
  *   $ mkdir build-msvc2012
  *   $ cd build-msvc2012
- *   $ cmake -G "NMake Makefiles" -D OpenCV_DIR="C:/OpenCV-2.4.3-msvc2012/build" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" ..
+ *   $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *   $ nmake
- *   \endcode
- * -# To package OpenBR:
- *   -# From the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt" and enter:
- *   \code
- *   $ cd C:\openbr\build-msvc2012
  *   $ nmake package
  *   \endcode
  */
@@ -145,14 +143,19 @@ $ br -help
  *   -# During installation setup select "add CMake to PATH".
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and unarchive.
  *   -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
- *   -# Copy the "OpenCV-2.4.3" folder to "C:\" and rename it "OpenCV-2.4.3-mingw64".
+ *   -# Copy the "OpenCV-2.4.3" folder to "C:\".
  *   -# Double-click "C:\mingw64\mingw64env.cmd" and enter:
  *   \code
- *   $ cd C:\OpenCV-2.4.3-mingw64
- *   $ mkdir build
- *   $ cd build
- *   $ cmake -G "MinGW Makefiles" -D ENABLE_PRECOMPILED_HEADERS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Release ..
+ *   $ cd C:\OpenCV-2.4.3
+ *   $ mkdir build-mingw64
+ *   $ cd build-mingw64
+ *   $ cmake -G "MinGW Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
  *   $ mingw32-make
+ *   $ mingw32-make install
+ *   $ cmake -D CMAKE_BUILD_TYPE=Release
+ *   $ mingw32-make
+ *   $ mingw32-make install
+ *   $ mingw32-make clean
  *   \endcode
  * -# <a href="http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.zip">Download Qt 4.8.4</a> and unzip.
  *   -# Copy "qt-everywhere-opensource-src-4.8.4" to "C:\".
@@ -181,15 +184,9 @@ $ br -help
  *   $ cd C:\openbr
  *   $ mkdir build-mingw64
  *   $ cd build-mingw64
- *   $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D OpenCV_DIR="C:/OpenCV-2.4.3-mingw64/build" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" ..
+ *   $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *   $ mingw32-make
- *   \endcode
- * -# To package OpenBR:
- *  -# <a href="http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?download">Download NSIS 2.46</a> and install.
- *  -# Double-click "C:\mingw64\mingw64env.cmd" and enter:
- *  \code
- *  $ cd C:\openbr\build-mingw64
- *  $ mingw32-make package
+ *   $ mingw32-make package
  *  \endcode
  */
 
@@ -237,11 +234,7 @@ $ br -help
  * $ cd build
  * $ cmake ..
  * $ make
- * \endcode
- * -# To package OpenBR <a href="https://developer.apple.com/downloads/index.action#">Download Auxilary Tools for Xcode</a>, drag "PackageMaker" to "Applications", then package:
- * \code
- * $ cd openbr/build
- * $ make package # PackageMaker may require sudo
+ * $ make install
  * \endcode
  */
 
@@ -289,11 +282,7 @@ $ br -help
  * $ cd build
  * $ cmake ..
  * $ make
- * \endcode
- * -# To package OpenBR:
- * \code
- * $ cd openbr/build
- * $ make package
+ * $ make install
  * \endcode
  */
 
@@ -337,11 +326,7 @@ $ br -help
  * $ cd build-icc
  * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc ..
  * $ make
- * \endcode
- * -# To package OpenBR:
- * \code
- * $ cd openbr/build-icc
- * $ make package
+ * $ make install
  * \endcode
  */
 
