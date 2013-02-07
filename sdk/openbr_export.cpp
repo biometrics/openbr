@@ -92,7 +92,7 @@ $ br -help
  *   $ cd C:\OpenCV-2.4.3-msvc2012
  *   $ mkdir build
  *   $ cd build
- *   $ cmake -G "Visual Studio 11 Win64" -D WITH_FFMPEG=OFF ..
+ *   $ cmake -G "Visual Studio 11 Win64" -D ENABLE_PRECOMPILED_HEADERS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF ..
  *   \endcode
  *   -# Open "C:\OpenCV-2.4.3-msvc2012\build\OpenCV.sln"
  *     -# Under the "BUILD" menu, select "Build Solution".
@@ -151,7 +151,7 @@ $ br -help
  *   $ cd C:\OpenCV-2.4.3-mingw64
  *   $ mkdir build
  *   $ cd build
- *   $ cmake -G "MinGW Makefiles" -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Release ..
+ *   $ cmake -G "MinGW Makefiles" -D ENABLE_PRECOMPILED_HEADERS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Release ..
  *   $ mingw32-make
  *   \endcode
  * -# <a href="http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.zip">Download Qt 4.8.4</a> and unzip.
@@ -206,6 +206,8 @@ $ br -help
  * $ ./configure
  * $ make
  * $ sudo make install
+ * $ cd ..
+ * $ rm -r cmake-2.8.10.2
  * \endcode
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and install:
  * \code
@@ -217,6 +219,8 @@ $ br -help
  * $ cmake ..
  * $ make
  * $ sudo make install
+ * $ cd ../..
+ * $ rm -r OpenCV-2.4.3
  * \endcode
  * -# <a href="http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg">Download Qt 4.8.4</a> and install.
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
@@ -264,6 +268,8 @@ $ br -help
  * $ cmake -D CMAKE_BUILD_TYPE=Release ..
  * $ make
  * $ sudo make install
+ * $ cd ../..
+ * $ rm -r OpenCV-2.4.3
  * \endcode
  * -# Install Qt 4.8.1:
  * \code
@@ -310,6 +316,8 @@ $ br -help
  * $ cmake -D CMAKE_BUILD_TYPE=Release ..
  * $ make
  * $ sudo make install
+ * $ cd ../..
+ * $ rm -r OpenCV-2.4.3
  * \endcode
  * -# Install Qt 4.8.1:
  * \code
