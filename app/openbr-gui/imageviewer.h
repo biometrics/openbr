@@ -36,7 +36,6 @@ class BR_EXPORT_GUI ImageViewer : public QLabel
     Q_OBJECT
     QMutex mutex;
     QString defaultText;
-    QImage src;
 
 public:
     explicit ImageViewer(QWidget *parent = 0);
@@ -47,6 +46,9 @@ public:
     bool isNull() const { return src.isNull(); }
     int imageWidth() const { return src.width(); }
     int imageHeight() const { return src.height(); }
+
+protected:
+    QImage src;
 
 protected slots:
     void keyPressEvent(QKeyEvent *event);
