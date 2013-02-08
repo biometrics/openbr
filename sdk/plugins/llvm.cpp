@@ -105,26 +105,41 @@ struct MatrixBuilder
     Constant *autoConstant(double value) const { return m->isFloating() ? ((m->bits() == 64) ? constant(value) : constant(float(value))) : constant(int(value), m->bits()); }
     AllocaInst *autoAlloca(double value, const Twine &name = "") const { AllocaInst *alloca = b->CreateAlloca(ty(), 0, name); b->CreateStore(autoConstant(value), alloca); return alloca; }
 
-    Value *data(bool cast = true) const { LoadInst *data = b->CreateLoad(b->CreateStructGEP(v, 0), name+"_data"); return cast ? b->CreatePointerCast(data, ptrTy()) : data; }
-    Value *channels() const { return m->singleChannel() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 1), name+"_channels")); }
-    Value *columns() const { return m->singleColumn() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 2), name+"_columns")); }
-    Value *rows() const { return m->singleRow() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 3), name+"_rows")); }
-    Value *frames() const { return m->singleFrame() ? static_cast<Value*>(one()) : static_cast<Value*>(b->CreateLoad(b->CreateStructGEP(v, 4), name+"_frames")); }
-    Value *hash() const { return b->CreateLoad(b->CreateStructGEP(v, 5), name+"_hash"); }
+    Value *data(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 0), name+"_data"); }
+    Value *data(Value *matrix, Type *type, const Twine &name = "") const { return b->CreatePointerCast(data(matrix, name), type); }
+    Value *channels(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 1), name+"_channels"); }
+    Value *columns(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 2), name+"_columns"); }
+    Value *rows(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 3), name+"_rows"); }
+    Value *frames(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 4), name+"_frames"); }
+    Value *hash(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 5), name+"_hash"); }
 
-    void setData(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 0)); }
-    void setChannels(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 1)); }
-    void setColumns(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 2)); }
-    void setRows(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 3)); }
-    void setFrames(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 4)); }
-    void setHash(Value *value) const { b->CreateStore(value, b->CreateStructGEP(v, 5)); }
+    Value *data(bool cast = true) const { return cast ? data(v, ptrTy(), name) : data(v, name); }
+    Value *channels() const { return m->singleChannel() ? static_cast<Value*>(one()) : channels(v, name); }
+    Value *columns() const { return m->singleColumn() ? static_cast<Value*>(one()) : columns(v, name); }
+    Value *rows() const { return m->singleRow() ? static_cast<Value*>(one()) : rows(v, name); }
+    Value *frames() const { return m->singleFrame() ? static_cast<Value*>(one()) : frames(v, name); }
+    Value *hash() const { return hash(v, name); }
 
-    void copyHeader(const MatrixBuilder &other) const {
-        setChannels(other.channels());
-        setColumns(other.columns());
-        setRows(other.rows());
-        setFrames(other.frames());
-        setHash(other.hash());
+    void setData(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 0)); }
+    void setChannels(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 1)); }
+    void setColumns(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 2)); }
+    void setRows(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 3)); }
+    void setFrames(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 4)); }
+    void setHash(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 5)); }
+
+    void setData(Value *value) const { setData(v, value); }
+    void setChannels(Value *value) const { setChannels(v, value); }
+    void setColumns(Value *value) const { setColumns(v, value); }
+    void setRows(Value *value) const { setRows(v, value); }
+    void setFrames(Value *value) const { setFrames(v, value); }
+    void setHash(Value *value) const { setHash(v, value); }
+
+    void copyHeaderTo(Value *matrix) const {
+        setChannels(matrix, channels());
+        setColumns(matrix, columns());
+        setRows(matrix, rows());
+        setFrames(matrix, frames());
+        setHash(matrix, hash());
     }
 
     void deallocate() const {
@@ -222,7 +237,12 @@ struct MatrixBuilder
         deindex(rem, c, x, y);
     }
 
+    LoadInst *load(Value *matrix, Type *type, Value *i) const { return b->CreateLoad(b->CreateGEP(data(matrix, type), i)); }
     LoadInst *load(Value *i) const { return b->CreateLoad(b->CreateGEP(data(), i)); }
+    StoreInst *store(Value *matrix, Type *type, Value *i, Value *value) const { Value *d = data(matrix, type);
+                                                                                d->dump(); i->dump();
+                                                                                Value *idx = b->CreateGEP(d, i);
+                                                                                return b->CreateStore(value, idx); }
     StoreInst *store(Value *i, Value *value) const { return b->CreateStore(value, b->CreateGEP(data(), i)); }
 
     Value *cast(Value *i, const MatrixBuilder &dst) const { return (m->type() == dst.m->type()) ? i : b->CreateCast(CastInst::getCastOpcode(i, m->isSigned(), dst.ty(), dst.m->isSigned()), i, dst.ty()); }
@@ -322,8 +342,8 @@ public:
         fileTable.insert(fileIndex, file);
     }
 
-    virtual Value *preallocation(const MatrixBuilder &src, const MatrixBuilder &dst) const = 0; /*!< Allocate the destintation matrix given the source matrix. */
-    virtual void kernel(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const = 0; /*!< Run the computation given the source matrix. */
+    virtual Value *preallocation(const MatrixBuilder &src, Value *dst) const = 0; /*!< Allocate the destintation matrix given the source matrix. */
+    virtual void kernel(const MatrixBuilder &src, Value *dst, PHINode *i) const = 0; /*!< Run the computation given the source matrix. */
 
     void optimize(Function *f) const
     {
@@ -460,10 +480,9 @@ public:
             BasicBlock *entry = BasicBlock::Create(getGlobalContext(), "entry", function);
             IRBuilder<> builder(entry);
             MatrixBuilder mb(m, src, &builder, function, "src");
-            MatrixBuilder nb(NULL, dst, &builder, function, "dst");
 
-            Value *kernelSize = preallocation(mb, nb);
-            nb.setData(builder.CreateCall(malloc, nb.bytes()));
+            Value *kernelSize = preallocation(mb, dst);
+            mb.setData(dst, builder.CreateCall(malloc, kernelSize));
             builder.CreateRet(kernelSize);
 
             optimize(function);
@@ -500,8 +519,7 @@ public:
             BasicBlock *loop, *exit;
             PHINode *i = MatrixBuilder::beginLoop(builder, function, entry, loop, exit, len, "i");
 
-            Matrix n;
-            kernel(MatrixBuilder(m, src, &builder, function, "src"), MatrixBuilder(&n, dst, &builder, function, "dst"), i);
+            kernel(MatrixBuilder(m, src, &builder, function, "src"), dst, i);
 
             MatrixBuilder::endLoop(builder, loop, exit);
             builder.CreateRetVoid();
@@ -643,18 +661,18 @@ class StitchableTransform : public UnaryTransform
     Q_OBJECT
 
 public:
-    virtual Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const = 0; /*!< A simplification of Kernel::build() for stitchable kernels. */
+    virtual Value *stitch(const MatrixBuilder &src, Value *val) const = 0; /*!< A simplification of Kernel::build() for stitchable kernels. */
 
-    virtual Value *preallocation(const MatrixBuilder &src, const MatrixBuilder &dst) const
+    virtual Value *preallocation(const MatrixBuilder &src, Value *dst) const
     {
-        dst.copyHeader(src);
-        return dst.elements();
+        src.copyHeaderTo(dst);
+        return src.elements();
     }
 
 private:
-    void kernel(const MatrixBuilder &src, const MatrixBuilder &dst, PHINode *i) const
+    void kernel(const MatrixBuilder &src, Value *dst, PHINode *i) const
     {
-        dst.store(i, stitch(src, dst, src.load(i)));
+        src.store(dst, src.ty(), i, stitch(src, src.load(i)));
     }
 };
 
@@ -949,10 +967,9 @@ class addTransform : public StitchableTransform
     Q_PROPERTY(double b READ get_b WRITE set_b RESET reset_b STORED false)
     BR_PROPERTY(double, b, 0)
 
-    Value *stitch(const MatrixBuilder &src, const MatrixBuilder &dst, Value *val) const
+    Value *stitch(const MatrixBuilder &src, Value *val) const
     {
-        (void) src;
-        return dst.add(val, dst.autoConstant(b));
+        return src.add(val, src.autoConstant(b));
     }
 };
 
@@ -1064,6 +1081,11 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
+//        Matrix m(1, 2, 3, 4, Matrix::f32);
+//        UnaryAllocation allocation = makeUnaryAllocation("add(1)", &m);
+//        Matrix n;
+//        allocation(&m, &n);
+//        qDebug() << n.channels << n.rows << n.columns << n.frames << n.hash;
         QSharedPointer<Transform> kernel(Transform::make("add(1)", NULL));
 
         Template src, dst;
