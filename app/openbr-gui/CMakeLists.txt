@@ -6,7 +6,7 @@ if(NOT ${BR_EMBEDDED})
   file(GLOB HEADERS *.h)
   qt4_add_resources(ICONS icons/icons.qrc) # Don't forget to modify initialize.cpp
 
-  add_library(openbr-gui SHARED ${SRC} ${QWT_SRC} ${ICONS} ${BR_WINDOWS_RESOURCES})
+  add_library(openbr-gui SHARED ${SRC} ${QWT_SRC} ${ICONS} ${BR_RESOURCES})
   set_target_properties(openbr-gui PROPERTIES
                                    DEFINE_SYMBOL BR_LIBRARY_GUI
                                    VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}

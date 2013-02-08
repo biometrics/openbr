@@ -39,6 +39,8 @@ if(APPLE)
   set(BR_APPLE_RESOURCES ${NATIVE_ICON})
 endif()
 
+set(BR_RESOURCES ${BR_WINDOWS_RESOURCES} ${BR_APPLE_RESOURCES})
+
 if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fvisibility=hidden -fno-omit-frame-pointer")
 endif()
