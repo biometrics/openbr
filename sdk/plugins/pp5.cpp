@@ -37,6 +37,7 @@ using namespace br;
  * \brief Initialize PP5
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
+ * \warning PittPatt 5.x.x is known to NOT work with MinGW-w64 due to a segfault in ppr_initialize_sdk.
  */
 class PP5Initializer : public Initializer
 {
