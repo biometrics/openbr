@@ -27,11 +27,12 @@
  * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
  *
  * \section get_started Get Started
- * - \ref installation
+ * - \ref installation - \copybrief installation
  */
 
 /*!
  * \page installation Installation
+ * \brief A hacker's guide to building, editing, and running the source code.
  *
  * \section installation_from_source From Source
  * Installation from source is the recommended method for getting OpenBR on your machine.
@@ -139,7 +140,7 @@ $ br -help
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
  *  -# Browse to your prexisting build directory "C:\openbr\build-msvc2012" then select "Next".
- *  -# Replace the text in the "arguments" box with '-D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..' then select "Run CMake" then "Finish".
+ *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
  */
 
@@ -208,7 +209,7 @@ $ br -help
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
  *  -# Browse to your prexisting build directory "C:\openbr\build-mingw64" then select "Next".
- *  -# Replace the text in the "arguments" box with '-D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..' then select "Run CMake" then "Finish".
+ *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
  */
 
