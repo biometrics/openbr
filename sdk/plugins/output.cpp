@@ -168,7 +168,6 @@ class rrOutput : public MatrixOutput
         const int limit = file.getInt("limit", 20);
         const bool flat = file.getBool("flat");
         const bool index = file.getBool("index");
-        const bool score = file.getBool("score");
         const bool invert = file.getBool("invert");
         const bool metadata = file.getBool("metadata");
         const float threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
@@ -182,8 +181,10 @@ class rrOutput : public MatrixOutput
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit)) {
                 if (pair.first < threshold) break;
                 QString output;
-                if (score) targetFiles[pair.second].set("Score", QString::number(pair.first));
-                if (metadata) output.append(targetFiles[pair.second].flat());
+                if (metadata) {
+                    targetFiles[pair.second].set("Score", QString::number(pair.first));
+                    output.append(targetFiles[pair.second].flat());
+                }
                 else output.append(index ? QString::number(pair.second) : targetFiles[pair.second].name);
                 files.append(output);
             }
