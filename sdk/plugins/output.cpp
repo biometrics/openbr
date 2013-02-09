@@ -156,7 +156,7 @@ BR_REGISTER(Output, mtxOutput)
 /*!
  * \ingroup outputs
  * \brief Rank retrieval output.
- * \author Josh Klontz \cite jklontz
+ * \author Josh Klontz \cite jklontz Scott Klum \cite sklum
  */
 class rrOutput : public MatrixOutput
 {
@@ -182,14 +182,8 @@ class rrOutput : public MatrixOutput
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit)) {
                 if (pair.first < threshold) break;
                 QString output;
-                output.append((index ? QString::number(pair.second) : targetFiles[pair.second].name) +
-                              (score ? "=" + QString::number(pair.first) : ""));
-                if (metadata) {
-                    foreach (const QString &key, targetFiles[pair.second].localKeys()) {
-                        const QString value = targetFiles[pair.second].getString(key, "");
-                        output.append("," + key + "=" + value);
-                    }
-                }
+                if (metadata) output.append(targetFiles[pair.second].flat());
+                else output.append((index ? QString::number(pair.second) : targetFiles[pair.second].name) + (score ? "=" + QString::number(pair.first) : ""));
                 files.append(output);
             }
             lines.append(files.join(flat ? "\n" : ","));
