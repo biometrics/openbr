@@ -182,8 +182,9 @@ class rrOutput : public MatrixOutput
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit)) {
                 if (pair.first < threshold) break;
                 QString output;
+                if (score) targetFiles[pair.second].set("Score", QString::number(pair.first));
                 if (metadata) output.append(targetFiles[pair.second].flat());
-                else output.append((index ? QString::number(pair.second) : targetFiles[pair.second].name) + (score ? "=" + QString::number(pair.first) : ""));
+                else output.append(index ? QString::number(pair.second) : targetFiles[pair.second].name);
                 files.append(output);
             }
             lines.append(files.join(flat ? "\n" : ","));
