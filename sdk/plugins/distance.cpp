@@ -116,6 +116,29 @@ BR_REGISTER(Distance, DistDistance)
 
 /*!
  * \ingroup distances
+ * \brief DistDistance wrapper.
+ * \author Josh Klontz \cite jklontz
+ */
+class DefaultDistance : public Distance
+{
+    Q_OBJECT
+    Distance *distance;
+
+    void init()
+    {
+        distance = Distance::make("Dist("+file.name+")");
+    }
+
+    float compare(const Template &a, const Template &b) const
+    {
+        return distance->compare(a, b);
+    }
+};
+
+BR_REGISTER(Distance, DefaultDistance)
+
+/*!
+ * \ingroup distances
  * \brief Fast 8-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
@@ -174,4 +197,4 @@ BR_REGISTER(Distance, IdenticalDistance)
 
 } // namespace br
 
-#include "compare.moc"
+#include "distance.moc"
