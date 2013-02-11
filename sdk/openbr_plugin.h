@@ -506,10 +506,11 @@ public:
     Q_PROPERTY(bool enrollAll READ get_enrollAll WRITE set_enrollAll RESET reset_enrollAll)
     BR_PROPERTY(bool, enrollAll, false)
 
-    /*!
-     * \brief Regular expressions that automatically determine impostor matches based on target (gallery) template metadata.
-     */
     typedef QHash<QString,QStringList> Filters;
+    /*!
+     * \brief Filters that automatically determine impostor matches based on target (gallery) template metadata.
+     * \see br::FilterDistance
+     */
     Q_PROPERTY(Filters filters READ get_filters WRITE set_filters RESET reset_filters)
     BR_PROPERTY(Filters, filters, Filters())
 
