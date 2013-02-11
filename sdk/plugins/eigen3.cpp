@@ -426,6 +426,46 @@ class LDATransform : public Transform
 
 BR_REGISTER(Transform, LDATransform)
 
+/*!
+ * \ingroup distances
+ * \brief L1 distance computed using eigen.
+ * \author Josh Klontz \cite jklontz
+ */
+class L1Distance : public Distance
+{
+    Q_OBJECT
+
+    float compare(const Template &a, const Template &b) const
+    {
+        const int size = a.m().rows * a.m().cols;
+        Eigen::Map<Eigen::VectorXf> aMap((float*)a.m().data, size);
+        Eigen::Map<Eigen::VectorXf> bMap((float*)b.m().data, size);
+        return (aMap-bMap).cwiseAbs().sum();
+    }
+};
+
+BR_REGISTER(Distance, L1Distance)
+
+/*!
+ * \ingroup distances
+ * \brief L2 distance computed using eigen.
+ * \author Josh Klontz \cite jklontz
+ */
+class L2Distance : public Distance
+{
+    Q_OBJECT
+
+    float compare(const Template &a, const Template &b) const
+    {
+        const int size = a.m().rows * a.m().cols;
+        Eigen::Map<Eigen::VectorXf> aMap((float*)a.m().data, size);
+        Eigen::Map<Eigen::VectorXf> bMap((float*)b.m().data, size);
+        return (aMap-bMap).squaredNorm();
+    }
+};
+
+BR_REGISTER(Distance, L2Distance)
+
 } // namespace br
 
 #include "eigen3.moc"
