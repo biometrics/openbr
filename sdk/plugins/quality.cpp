@@ -260,37 +260,6 @@ class UnitDistance : public Distance
 
 BR_REGISTER(Distance, UnitDistance)
 
-/*!
- * \ingroup distances
- * \brief Check target metadata before matching templates.
- * \author Josh Klontz \cite jklontz
- */
-class MetadataDistance : public Distance
-{
-    Q_OBJECT
-    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance)
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-
-    void train(const TemplateList &src)
-    {
-        distance->train(src);
-    }
-
-    float compare(const Template &a, const Template &b) const
-    {
-        foreach (const QString &filter, Globals->demographicFilters.keys()) {
-            const QString metadata = a.file.getString(filter, "");
-            if (metadata.isEmpty()) continue;
-            const QRegExp re(Globals->demographicFilters[filter]);
-            if (re.indexIn(metadata) == -1)
-                return -std::numeric_limits<float>::max();
-        }
-        return distance->compare(a, b);
-    }
-};
-
-BR_REGISTER(Distance, MetadataDistance)
-
 } // namespace br
 
 #include "quality.moc"

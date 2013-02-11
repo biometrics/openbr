@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QtConcurrentRun>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr_plugin.h>
 
@@ -101,7 +102,6 @@ private:
             for (int col=0; col<a.cols; col++) {
                 const float target = a.at<float>(row,col);
                 const float query = b.at<float>(row,col);
-
                 dot += target * query;
                 magA += target * target;
                 magB += query * query;
@@ -136,6 +136,44 @@ class DefaultDistance : public Distance
 };
 
 BR_REGISTER(Distance, DefaultDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Distances in series.
+ * \author Josh Klontz \cite jklontz
+ *
+ * The templates are compared using each br::Distance in order.
+ * If the result of the comparison with any given distance is -std::numeric_limits<float>::max() then this result is returned early.
+ * Otherwise the returned result is the value of comparing the templates using the last br::Distance.
+ */
+class PipeDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
+    BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
+
+    void train(const TemplateList &data)
+    {
+        QList< QFuture<void> > futures;
+        foreach (br::Distance *distance, distances)
+            if (Globals->parallelism) futures.append(QtConcurrent::run(distance, &Distance::train, data));
+            else                      distance->train(data);
+        Globals->trackFutures(futures);
+    }
+
+    float compare(const Template &a, const Template &b) const
+    {
+        float result = -std::numeric_limits<float>::max();
+        foreach (br::Distance *distance, distances) {
+            result = distance->compare(a, b);
+            if (result == -std::numeric_limits<float>::max())
+                return result;
+        }
+        return result;
+    }
+};
+
+BR_REGISTER(Distance, PipeDistance)
 
 /*!
  * \ingroup distances

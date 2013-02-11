@@ -1136,6 +1136,7 @@ Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(br::Transform*)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
 Q_DECLARE_METATYPE(br::Distance*)
+Q_DECLARE_METATYPE(QList<br::Distance*>)
 Q_DECLARE_METATYPE(cv::Mat)
 
 #endif // __OPENBR_PLUGIN_H

@@ -522,6 +522,9 @@ QString Object::argument(int index) const
         } else if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, variant.value< QList<Transform*> >())
                 strings.append(transform->description());
+        } else if (type == "QList<br::Distance*>") {
+            foreach (Distance *distance, variant.value< QList<Distance*> >())
+                strings.append(distance->description());
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
@@ -556,6 +559,9 @@ void Object::store(QDataStream &stream) const
         if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, property.read(this).value< QList<Transform*> >())
                 transform->store(stream);
+        } else if (type == "QList<br::Distance*>") {
+            foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
+                distance->store(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->store(stream);
         } else if (type == "br::Distance*") {
@@ -590,6 +596,9 @@ void Object::load(QDataStream &stream)
         if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, property.read(this).value< QList<Transform*> >())
                 transform->load(stream);
+        } else if (type == "QList<br::Distance*>") {
+            foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
+                distance->load(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->load(stream);
         } else if (type == "br::Distance*") {
@@ -652,6 +661,11 @@ void Object::setProperty(const QString &name, const QString &value)
             QList<Transform*> values;
             foreach (const QString &string, strings)
                 values.append(Transform::make(string, this));
+            variant.setValue(values);
+        } else if (type == "QList<br::Distance*>") {
+            QList<Distance*> values;
+            foreach (const QString &string, strings)
+                values.append(Distance::make(string, this));
             variant.setValue(values);
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
@@ -828,6 +842,7 @@ void br::Context::initializeQt(QString sdkPath)
     qRegisterMetaType< br::Transform* >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< br::Distance* >();
+    qRegisterMetaType< QList<br::Distance*> >();
     qRegisterMetaType< cv::Mat >();
 
     qInstallMsgHandler(messageHandler);
@@ -1311,15 +1326,21 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 /* Distance - public methods */
 Distance *Distance::make(QString str, QObject *parent)
 {
-        // Check for custom transforms
-        if (Globals->abbreviations.contains(str))
-            return make(Globals->abbreviations[str], parent);
+    // Check for custom transforms
+    if (Globals->abbreviations.contains(str))
+        return make(Globals->abbreviations[str], parent);
 
-        File f = "." + str;
-        Distance *distance = Factory<Distance>::make(f);
+    { // Check for use of '+' as shorthand for Pipe(...)
+        QStringList words = parse(str, '+');
+        if (words.size() > 1)
+            return make("Pipe([" + words.join(",") + "])", parent);
+    }
 
-        distance->setParent(parent);
-        return distance;
+    File f = "." + str;
+    Distance *distance = Factory<Distance>::make(f);
+
+    distance->setParent(parent);
+    return distance;
 }
 
 void Distance::compare(const TemplateList &target, const TemplateList &query, Output *output) const

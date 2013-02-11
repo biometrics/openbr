@@ -79,24 +79,41 @@ BR_REGISTER(Transform, CrossValidateTransform)
 class CrossValidateDistance : public Distance
 {
     Q_OBJECT
-    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance)
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-
-    void train(const TemplateList &src)
-    {
-        distance->train(src);
-    }
 
     float compare(const Template &a, const Template &b) const
     {
         const int partitionA = a.file.getInt("Cross_Validation_Partition", 0);
         const int partitionB = b.file.getInt("Cross_Validation_Partition", 0);
-        if (partitionA != partitionB) return -std::numeric_limits<float>::max();
-        return distance->compare(a, b);
+        return (partitionA != partitionB) ? -std::numeric_limits<float>::max() : 0;
     }
 };
 
 BR_REGISTER(Distance, CrossValidateDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Checks target metadata.
+ * \author Josh Klontz \cite jklontz
+ */
+class MetadataDistance : public Distance
+{
+    Q_OBJECT
+
+    float compare(const Template &a, const Template &b) const
+    {
+        (void) b;
+        foreach (const QString &filter, Globals->demographicFilters.keys()) {
+            const QString metadata = a.file.getString(filter, "");
+            if (metadata.isEmpty()) continue;
+            const QRegExp re(Globals->demographicFilters[filter]);
+            if (re.indexIn(metadata) == -1)
+                return -std::numeric_limits<float>::max();
+        }
+        return 0;
+    }
+};
+
+BR_REGISTER(Distance, MetadataDistance)
 
 } // namespace br
 
