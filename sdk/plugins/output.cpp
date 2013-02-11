@@ -166,29 +166,23 @@ class rrOutput : public MatrixOutput
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
         const int limit = file.getInt("limit", 20);
-        const bool flat = file.getBool("flat");
-        const bool index = file.getBool("index");
-        const bool invert = file.getBool("invert");
-        const bool metadata = file.getBool("metadata");
+        const bool byLine = file.getBool("byLine");
         const float threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
 
         QStringList lines;
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            if (!flat) files.append(queryFiles[i]);
+            if (!byLine) files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
-            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), !invert).mid(0, limit)) {
+            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true, limit)) {
                 if (pair.first < threshold) break;
-                QString output;
-                if (metadata) {
-                    targetFiles[pair.second].set("Score", QString::number(pair.first));
-                    output.append(targetFiles[pair.second].flat());
-                }
-                else output.append(index ? QString::number(pair.second) : targetFiles[pair.second].name);
-                files.append(output);
+                File target = targetFiles[pair.second];
+                target.set("Score", QString::number(pair.first));
+                files.append(target.flat());
             }
-            lines.append(files.join(flat ? "\n" : ","));
+
+            lines.append(files.join(byLine ? "\n" : ","));
         }
 
         QtUtils::writeFile(file, lines);

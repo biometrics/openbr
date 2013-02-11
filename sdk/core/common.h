@@ -35,41 +35,42 @@
 namespace Common
 {
 
-/****
-Round
-    Round floating point to nearest integer.
-****/
+/*!
+ * \brief Round floating point to nearest integer.
+ */
 template <typename T>
 int round(T r)
 {
     return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
 }
 
-
-/****
-Sort
-    Returns a list of pairs sorted by value where:
-        pair.first = original value
-        pair.second = original index
-****/
+/*!
+ * \brief Returns a list of pairs sorted by value where:
+ *        pair.first = original value
+ *        pair.second = original index
+ */
 template <typename T>
-QList< QPair<T,int> > Sort(const QList<T> &vals, bool decending = false)
+QList< QPair<T,int> > Sort(const QList<T> &vals, bool decending = false, int n = std::numeric_limits<int>::max())
 {
     const int size = vals.size();
     QList< QPair<T,int> > pairs; pairs.reserve(size);
     for (int i=0; i<size; i++) pairs.append(QPair<T,int>(vals[i], i));
 
-    qSort(pairs);
-    if (decending) for (int k=0; k<size/2; k++) pairs.swap(k,size-(1+k));
+    if (n >= pairs.size()) {
+        if (decending) std::sort(pairs.begin(), pairs.end(), std::greater< QPair<T,int> >());
+        else           std::sort(pairs.begin(), pairs.end(), std::less< QPair<T,int> >());
+    } else {
+        if (decending) std::partial_sort(pairs.begin(), pairs.begin()+n, pairs.end(), std::greater< QPair<T,int> >());
+        else           std::partial_sort(pairs.begin(), pairs.begin()+n, pairs.end(), std::less< QPair<T,int> >());
+        pairs = pairs.mid(0, n);
+    }
 
     return pairs;
 }
 
-
-/****
-MinMax
-    Returns the minimum, maximum, minimum index, and maximum index of a vector of values.
-****/
+/*!
+ * \brief Returns the minimum, maximum, minimum index, and maximum index of a vector of values.
+ */
 template <typename T>
 void MinMax(const QList<T> &vals, T *min, T *max, int *min_index, int *max_index)
 {
@@ -113,11 +114,9 @@ T Max(const QList<T> &vals)
     return max;
 }
 
-
-/****
-MeanStdDev
-    Returns the mean and standard deviation of a vector of values.
-****/
+/*!
+ * \brief Returns the mean and standard deviation of a vector of values.
+ */
 template <typename T>
 void Mean(const QList<T> &vals, double *mean)
 {
@@ -129,11 +128,9 @@ void Mean(const QList<T> &vals, double *mean)
     *mean = (size == 0) ? 0 : sum / size;
 }
 
-
-/****
-MeanStdDev
-    Returns the mean and standard deviation of a vector of values.
-****/
+/*!
+ * \brief Returns the mean and standard deviation of a vector of values.
+ */
 template <typename T>
 void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
 {
@@ -150,11 +147,9 @@ void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
     *stddev = (size == 0) ? 0 : sqrt(variance/size);
 }
 
-
-/****
-Median
-    Computes the median of a list.
-****/
+/*!
+ * \brief Computes the median of a list.
+ */
 template<template<typename> class C, typename T>
 T Median(C<T> vals, T *q1 = 0, T *q3 = 0)
 {
@@ -165,11 +160,9 @@ T Median(C<T> vals, T *q1 = 0, T *q3 = 0)
     return vals[vals.size()/2];
 }
 
-
-/****
-Mode
-    Computes the mode of a list.
-****/
+/*!
+ * \brief Computes the mode of a list.
+ */
 template <typename T>
 T Mode(const QList<T> &vals)
 {
@@ -182,11 +175,9 @@ T Mode(const QList<T> &vals)
     return counts.key(Max(counts.values()));
 }
 
-
-/****
-CumSum
-    Returns the cumulative sum of a vector of values.
-****/
+/*!
+ * \brief Returns the cumulative sum of a vector of values.
+ */
 template <typename T>
 QList<T> CumSum(const QList<T> &vals)
 {
@@ -198,11 +189,9 @@ QList<T> CumSum(const QList<T> &vals)
     return cumsum;
 }
 
-
-/****
-KernelDensityBandwidth
-    Calculate DKE bandwidth parameter 'h'
-****/
+/*!
+ * \brief Calculate DKE bandwidth parameter 'h'
+ */
 template <typename T>
 double KernelDensityBandwidth(const QList<T> &vals)
 {
@@ -211,11 +200,9 @@ double KernelDensityBandwidth(const QList<T> &vals)
     return pow(4 * pow(stddev, 5.0) / (3 * vals.size()), 0.2);
 }
 
-
-/****
-KernelDensityEstimation
-    Compute kernel density at value x with bandwidth h.
-****/
+/*!
+ * \brief Compute kernel density at value x with bandwidth h.
+ */
 template <typename T>
 double KernelDensityEstimation(const QList<T> &vals, double x, double h)
 {
@@ -225,18 +212,19 @@ double KernelDensityEstimation(const QList<T> &vals, double x, double h)
     return y / (vals.size() * h);
 }
 
-
-/****
-RandSample
-    Returns a vector of n integers sampled in the range <min, max].
-    If unique then there will be no repeated integers.
-    Note: Algorithm is inefficient for unique vectors where n ~= max-min.
-****/
+/*!
+ * \brief Returns a vector of n integers sampled in the range <min, max].
+ *
+ * If unique then there will be no repeated integers.
+ * \note Algorithm is inefficient for unique vectors where n ~= max-min.
+ */
 void seedRNG();
 QList<int> RandSample(int n, int max, int min = 0, bool unique = false);
 QList<int> RandSample(int n, const QSet<int> &values, bool unique = false);
 
-/* Weighted random sample, each entry in weights should be >= 0. */
+/*!
+ * \brief Weighted random sample, each entry in weights should be >= 0.
+ */
 template <typename T>
 QList<int> RandSample(int n, const QList<T> &weights, bool unique = false)
 {
@@ -265,11 +253,9 @@ QList<int> RandSample(int n, const QList<T> &weights, bool unique = false)
     return samples;
 }
 
-
-/****
-Unique
-    See Matlab function unique() for documentation.
-****/
+/*!
+ * \brief See Matlab function unique() for documentation.
+ */
 template <typename T>
 void Unique(const QList<T> &vals, QList<T> &b, QList<int> &m, QList<int> &n)
 {
@@ -297,11 +283,9 @@ void Unique(const QList<T> &vals, QList<T> &b, QList<int> &m, QList<int> &n)
     for (int i=0; i<size; i++) n.append(b.indexOf(vals[i]));
 }
 
-
-/****
-SplitPair
-    Given a vector of pairs, constructs two new vectors from pair.first and pair.second.
-****/
+/*!
+ * \brief Given a vector of pairs, constructs two new vectors from pair.first and pair.second.
+ */
 template <typename T, typename U>
 void SplitPairs(const QList< QPair<T,U> > &pairs, QList<T> &first, QList<U> &second)
 {
@@ -314,11 +298,9 @@ void SplitPairs(const QList< QPair<T,U> > &pairs, QList<T> &first, QList<U> &sec
     }
 }
 
-
-/****
-RemoveOutliers
-    Removes values outside of 1.5 * Inner Quartile Range.
-****/
+/*!
+ * \brief Removes values outside of 1.5 * Inner Quartile Range.
+ */
 template <typename T>
 QList<T> RemoveOutliers(QList<T> vals)
 {
@@ -334,11 +316,9 @@ QList<T> RemoveOutliers(QList<T> vals)
     return newVals;
 }
 
-
-/****
-Downsample
-    Sorts and evenly downsamples a vector to size k.
-****/
+/*!
+ * \brief Sorts and evenly downsamples a vector to size k.
+ */
 template <typename T>
 QList<T> Downsample(QList<T> vals, long k)
 {
