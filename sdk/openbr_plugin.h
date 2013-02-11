@@ -509,9 +509,9 @@ public:
     /*!
      * \brief Regular expressions that automatically determine impostor matches based on target (gallery) template metadata.
      */
-    typedef QHash<QString,QString> DemographicFilters;
-    Q_PROPERTY(DemographicFilters demographicFilters READ get_demographicFilters WRITE set_demographicFilters RESET reset_demographicFilters)
-    BR_PROPERTY(DemographicFilters, demographicFilters, DemographicFilters())
+    typedef QHash<QString,QStringList> Filters;
+    Q_PROPERTY(Filters filters READ get_filters WRITE set_filters RESET reset_filters)
+    BR_PROPERTY(Filters, filters, Filters())
 
     /*!
      * \brief If \c true a template will be skipped over if its file name already exists in the gallery.

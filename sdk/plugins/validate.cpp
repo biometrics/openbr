@@ -92,28 +92,28 @@ BR_REGISTER(Distance, CrossValidateDistance)
 
 /*!
  * \ingroup distances
- * \brief Checks target metadata.
+ * \brief Checks target metadata against filters.
  * \author Josh Klontz \cite jklontz
  */
-class MetadataDistance : public Distance
+class FilterDistance : public Distance
 {
     Q_OBJECT
 
     float compare(const Template &a, const Template &b) const
     {
-        (void) b;
-        foreach (const QString &filter, Globals->demographicFilters.keys()) {
-            const QString metadata = a.file.getString(filter, "");
+        (void) b; // Query template isn't checked
+        foreach (const QString &key, Globals->filters.keys()) {
+            const QString metadata = a.file.getString(key, "");
             if (metadata.isEmpty()) continue;
-            const QRegExp re(Globals->demographicFilters[filter]);
-            if (re.indexIn(metadata) == -1)
-                return -std::numeric_limits<float>::max();
+            foreach (const QString &value, Globals->filters[key])
+                if (metadata == value) continue;
+            return -std::numeric_limits<float>::max();
         }
         return 0;
     }
 };
 
-BR_REGISTER(Distance, MetadataDistance)
+BR_REGISTER(Distance, FilterDistance)
 
 } // namespace br
 

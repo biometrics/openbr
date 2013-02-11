@@ -4,6 +4,10 @@ Under development
 
 New Features
 ------------
+* Improved demographic filtering speed
+  - br::Context::demographicFilters -> br::Context::filters
+  - MetadataDistance -> FilterDistance
+* PipeDistance
 * ImpostorUniquenessMeasureTransform
 * MatchProbabilityDistance
 * CrossValidation framework
