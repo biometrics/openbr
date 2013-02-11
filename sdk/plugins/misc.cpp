@@ -100,7 +100,7 @@ class PrintTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
     Q_PROPERTY(bool data READ get_data WRITE set_data RESET reset_data)
-    BR_PROPERTY(bool, error, false)
+    BR_PROPERTY(bool, error, true)
     BR_PROPERTY(bool, data, false)
 
     void project(const Template &src, Template &dst) const
@@ -287,6 +287,8 @@ class RenameTransform : public UntrainableMetaTransform
         }
     }
 };
+
+BR_REGISTER(Transform, RenameTransform)
 
 /*!
  * \ingroup transforms

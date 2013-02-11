@@ -47,6 +47,7 @@ class PP5Initializer : public Initializer
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
         Globals->abbreviations.insert("PP5","Open+PP5Enroll!Identity:PP5Compare");
+        Globals->abbreviations.insert("CropFace", "Open+Cvt(Gray)+PP5Enroll(true)+Rename(PP5_Landmark0_Right_Eye_X,Affine_0_X)+Rename(PP5_Landmark0_Right_Eye_Y,Affine_0_Y)+Rename(PP5_Landmark1_Left_Eye_X,Affine_1_X)+Rename(PP5_Landmark1_Left_Eye_Y,Affine_1_Y)+Affine(96,128,0.28,0.45)+Show");
     }
 
     void finalize() const
@@ -96,9 +97,11 @@ struct PP5Context
 
     static void createRawImage(const cv::Mat &src, ppr_raw_image_type &dst)
     {
-        ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
-        assert((src.type() == CV_8UC3) && src.isContinuous());
-        memcpy(dst.data, src.data, 3*src.rows*src.cols);
+        if (!src.isContinuous()) qFatal("PP5Context::createRawImage requires continuous data.");
+        if      (src.channels() == 3) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
+        else if (src.channels() == 1) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_GRAY8);
+        else                          qFatal("PP5Context::createRawImage invalid channel count.");
+        memcpy(dst.data, src.data, src.channels()*src.rows*src.cols);
     }
 
     void createMat(const ppr_face_type &src, cv::Mat &dst) const
