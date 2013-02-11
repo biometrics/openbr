@@ -126,7 +126,7 @@ class DefaultDistance : public Distance
 
     void init()
     {
-        distance = Distance::make("Dist("+file.name+")");
+        distance = Distance::make("Dist("+file.suffix()+")");
     }
 
     float compare(const Template &a, const Template &b) const
@@ -153,7 +153,6 @@ class ByteL1Distance : public Distance
 };
 
 BR_REGISTER(Distance, ByteL1Distance)
-
 
 /*!
  * \ingroup distances
