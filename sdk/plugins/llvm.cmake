@@ -23,6 +23,6 @@ if(${BR_WITH_LLVM})
 
   set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC}
                         ${CMAKE_SOURCE_DIR}/sdk/plugins/llvm.cpp
-                        ${CMAKE_SOURCE_DIR}/sdk/jitcv/jitcv.cpp)
+                        ${CMAKE_SOURCE_DIR}/sdk/likely/likely_internal.cpp)
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${REQ_LLVM_LIBRARIES})
 endif()

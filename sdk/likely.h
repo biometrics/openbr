@@ -1,14 +1,23 @@
-#ifndef __JITCV_H
-#define __JITCV_H
+#ifndef __LIKELY_H
+#define __LIKELY_H
 
 #include <stddef.h>
 #include <stdint.h>
 #include <openbr.h>
 
 /*!
- * \brief jitcv matrix
+ * \defgroup likely Literate Kernel Library
+ * \brief Experimental low-level API for programming image processing kernels on heterogeneous hardware architectures.
+ */
+
+/*!
+ * \addtogroup likely
+ *  @{
+ */
+
+/*!
+ * \brief Likely Matrix
  * \author Josh Klontz \cite jklontz
- * \note Not part of the core SDK
  */
 struct Matrix
 {
@@ -46,7 +55,7 @@ struct Matrix
                 f32 = 32 + Floating + Signed,
                 f64 = 64 + Floating + Signed };
 
-    Matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
+    /*Matrix() : data(NULL), channels(0), columns(0), rows(0), frames(0), hash(0) {}
 
     Matrix(uint32_t _channels, uint32_t _columns, uint32_t _rows, uint32_t _frames, uint16_t _hash)
         : data(NULL), channels(_channels), columns(_columns), rows(_rows), frames(_frames), hash(_hash)
@@ -59,31 +68,31 @@ struct Matrix
 
     inline void copyHeader(const Matrix &other) { channels = other.channels; columns = other.columns; rows = other.rows; frames = other.frames; hash = other.hash; }
     inline void allocate() { deallocate(); data = new uint8_t[bytes()]; }
-    inline void deallocate() { delete[] data; data = NULL; }
-
-    inline int bits() const { return hash & Bits; }
-    inline void setBits(int bits) { hash &= ~Bits; hash |= bits & Bits; }
-    inline bool isFloating() const { return hash & Floating; }
-    inline void setFloating(bool isFloating) { isFloating ? setSigned(true), hash |= Floating : hash &= ~Floating; }
-    inline bool isSigned() const { return hash & Signed; }
-    inline void setSigned(bool isSigned) { isSigned ? hash |= Signed : hash &= ~Signed; }
-    inline int type() const { return hash & (Bits + Floating + Signed); }
-    inline void setType(int type) { hash &= ~(Bits + Floating + Signed); hash |= type & (Bits + Floating + Signed); }
-    inline bool singleChannel() const { return hash & SingleChannel; }
-    inline void setSingleChannel(bool singleChannel) { singleChannel ? hash |= SingleChannel : hash &= ~SingleChannel; }
-    inline bool singleColumn() const { return hash & SingleColumn; }
-    inline void setSingleColumn(bool singleColumn) { singleColumn ? hash |= SingleColumn : hash &= ~SingleColumn; }
-    inline bool singleRow() const { return hash & SingleRow; }
-    inline void setSingleRow(bool singleRow) { singleRow ? hash |= SingleRow : hash &= ~SingleRow; }
-    inline bool singleFrame() const { return hash & SingleFrame; }
-    inline void setSingleFrame(bool singleFrame) { singleFrame ? hash |= SingleFrame : hash &= ~SingleFrame; }
-    inline uint32_t elements() const { return channels * columns * rows * frames; }
-    inline uint32_t bytes() const { return bits() / 8 * elements(); }
+    inline void deallocate() { delete[] data; data = NULL; }*/
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+BR_EXPORT int bits(const Matrix *m);
+BR_EXPORT void setBits(Matrix *m, int bits);
+BR_EXPORT bool isFloating(const Matrix *m);
+BR_EXPORT void setFloating(Matrix *m, bool isFloating);
+BR_EXPORT bool isSigned(const Matrix *m);
+BR_EXPORT void setSigned(Matrix *m, bool isSigned);
+BR_EXPORT int type(const Matrix *m);
+BR_EXPORT void setType(Matrix *m, int type);
+BR_EXPORT bool singleChannel(const Matrix *m);
+BR_EXPORT void setSingleChannel(Matrix *m, bool singleChannel);
+BR_EXPORT bool singleColumn(const Matrix *m);
+BR_EXPORT void setSingleColumn(Matrix *m, bool singleColumn);
+BR_EXPORT bool singleRow(const Matrix *m);
+BR_EXPORT void setSingleRow(Matrix *m, bool singleRow);
+BR_EXPORT bool singleFrame(const Matrix *m);
+BR_EXPORT void setSingleFrame(Matrix *m, bool singleFrame);
+BR_EXPORT uint32_t elements(const Matrix *m);
+BR_EXPORT uint32_t bytes(const Matrix *m);
 
 typedef void (*UnaryFunction)(const Matrix *src, Matrix *dst);
 typedef void (*BinaryFunction)(const Matrix *srcA, const Matrix *srcB, Matrix *dst);
@@ -100,8 +109,10 @@ typedef void (*BinaryKernel)(const Matrix *srcA, const Matrix *srcB, Matrix *dst
 BR_EXPORT UnaryKernel makeUnaryKernel(const char *description, const Matrix *src);
 BR_EXPORT BinaryKernel makeBinaryKernel(const char *description, const Matrix *srcA, const Matrix *srcB);
 
+/*! @}*/
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __JITCV_H
+#endif // __LIKELY_H
