@@ -105,9 +105,10 @@ class FilterDistance : public Distance
         foreach (const QString &key, Globals->filters.keys()) {
             const QString metadata = a.file.getString(key, "");
             if (metadata.isEmpty()) continue;
-            foreach (const QString &value, Globals->filters[key])
+            foreach (const QString &value, Globals->filters[key]) {
                 if (metadata == value) continue;
-            return -std::numeric_limits<float>::max();
+                return -std::numeric_limits<float>::max();
+            }
         }
         return 0;
     }
