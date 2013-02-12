@@ -672,7 +672,7 @@ public:
 private:
     void kernel(const MatrixBuilder &src, Value *dst, PHINode *i) const
     {
-        src.store(dst, src.ty(), i, stitch(src, src.load(i)));
+        src.store(dst, src.ptrTy(), i, stitch(src, src.load(i)));
     }
 };
 
@@ -1081,11 +1081,6 @@ class LLVMInitializer : public Initializer
                                              Type::getInt16Ty(getGlobalContext()),   // hash
                                              NULL);
 
-//        Matrix m(1, 2, 3, 4, Matrix::f32);
-//        UnaryAllocation allocation = makeUnaryAllocation("add(1)", &m);
-//        Matrix n;
-//        allocation(&m, &n);
-//        qDebug() << n.channels << n.rows << n.columns << n.frames << n.hash;
         QSharedPointer<Transform> kernel(Transform::make("add(1)", NULL));
 
         Template src, dst;
