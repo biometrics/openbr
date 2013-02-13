@@ -206,6 +206,9 @@ $ br -help
  *  \code
  *  $ "C:\Qt\qtcreator-2.6.2\bin\qtcreator.exe"
  *  \endcode
+ *  -# From the Qt Creator "Tools" menu select "Options..."
+ *  -# Under "Kits" select "Desktop (default)"
+ *  -# For "Compiler:" select "MinGW (x84 64bit)" and click "OK"
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
  *  -# Browse to your prexisting build directory "C:\openbr\build-mingw64" then select "Next".
