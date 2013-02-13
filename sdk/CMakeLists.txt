@@ -1,5 +1,3 @@
-include_directories(.)
-
 # Create version.h
 configure_file(${BR_SHARE_DIR}/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -14,8 +12,7 @@ set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                              SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}
-                             LINK_INTERFACE_LIBRARIES ""
-                             AUTOMOC TRUE)
+                             LINK_INTERFACE_LIBRARIES "")
 target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
 

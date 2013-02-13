@@ -1,8 +1,10 @@
 project(openbr)
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "Open Biometric Recognition")
 set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition and Evaluation")

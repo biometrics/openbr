@@ -1,5 +1,3 @@
-include_directories(.)
-
 if(NOT ${BR_EMBEDDED})
   find_package(Qwt REQUIRED)
 endif()

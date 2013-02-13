@@ -1,5 +1,4 @@
 if(NOT ${BR_EMBEDDED})
-  include_directories(.)
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
   file(GLOB SRC *.cpp)
@@ -11,8 +10,7 @@ if(NOT ${BR_EMBEDDED})
                                    DEFINE_SYMBOL BR_LIBRARY_GUI
                                    VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                                    SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}
-                                   LINK_INTERFACE_LIBRARIES ""
-                                   AUTOMOC TRUE)
+                                   LINK_INTERFACE_LIBRARIES "")
   target_link_libraries(openbr-gui openbr ${QT_LIBRARIES} ${OpenCV_LIBS})
   add_cppcheck(openbr-gui)
 
