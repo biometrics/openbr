@@ -70,7 +70,8 @@ public:
 
     void write(const Template &t) const
     {
-        VideoWriter videoSink(file.name.toStdString(), CV_FOURCC('x','2','6','4'), 30, t.begin()->size());
+        int fourcc = OpenCVUtils::getFourcc(); 
+        VideoWriter videoSink(file.name.toStdString(), fourcc, 30, t.begin()->size());
 
         // Did we successfully open the output file?
         if (!videoSink.isOpened() ) qFatal("Failed to open output file");

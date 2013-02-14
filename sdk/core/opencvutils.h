@@ -54,6 +54,8 @@ namespace OpenCVUtils
     QRectF fromRect(const cv::Rect &cvRect);
     QList<cv::Rect> toRects(const QList<QRectF> &qRects);
     QList<QRectF> fromRects(const QList<cv::Rect> &cvRects);
+
+    int getFourcc();
 }
 
 QDebug operator<<(QDebug dbg, const cv::Mat &m);

@@ -23,6 +23,25 @@
 
 using namespace cv;
 
+
+int OpenCVUtils::getFourcc()
+{
+    int fourcc = CV_FOURCC('x','2','6','4');
+    QVariant recovered_variant = br::Globals->property("fourcc");
+
+    if (!recovered_variant.isNull()) {
+        QString recovered_string = recovered_variant.toString();
+        if (recovered_string.length() == 4) {
+            fourcc = CV_FOURCC(recovered_string[0].toAscii(),
+                                recovered_string[1].toAscii(),
+                                recovered_string[2].toAscii(),
+                                recovered_string[3].toAscii());
+        }
+        else if (recovered_string.compare("-1")) fourcc = -1;
+    }
+    return fourcc;
+}
+
 void OpenCVUtils::saveImage(const Mat &src, const QString &file)
 {
     if (file.isEmpty()) return;

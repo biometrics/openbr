@@ -206,7 +206,8 @@ class aviGallery : public  Gallery
     void write(const Template & t)
     {
         if (videoOut.isNull() || !videoOut->isOpened()) {
-            videoOut.reset(new cv::VideoWriter(qPrintable(file.name), CV_FOURCC('x','2','6','4'), 30, t.m().size()));
+            int fourcc = OpenCVUtils::getFourcc(); 
+            videoOut.reset(new cv::VideoWriter(qPrintable(file.name), fourcc, 30, t.m().size()));
         }
 
         if (!videoOut->isOpened()) {
