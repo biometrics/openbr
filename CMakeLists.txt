@@ -82,11 +82,6 @@ if(${BR_DISTRIBUTED})
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${MPI_LIBRARY})
 endif()
 
-option(BR_EXCEPTIONS "Enable exception handling" ON)
-if(${BR_EXCEPTIONS})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EXCEPTIONS")
-endif()
-
 # Find Qt
 find_package(Qt4 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
 set(QT_USE_QTMAIN TRUE)
