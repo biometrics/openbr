@@ -53,7 +53,6 @@ public:
             qWarning("video file open failed");
             return frames;
         }
-        int res = (int) videoSource.get(CV_CAP_PROP_FOURCC);
 
         bool open = true;
         while(open) {
