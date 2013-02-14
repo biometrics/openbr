@@ -1,92 +1,92 @@
 #include "likely.h"
 
-int bits(const Matrix *m)
+int likely_bits(const likely_matrix *m)
 {
-    return m->hash & Matrix::Bits;
+    return m->hash & likely_matrix::Bits;
 }
 
-void setBits(Matrix *m, int bits)
+void likely_set_bits(likely_matrix *m, int bits)
 {
-    m->hash &= ~Matrix::Bits; m->hash |= bits & Matrix::Bits;
+    m->hash &= ~likely_matrix::Bits; m->hash |= bits & likely_matrix::Bits;
 }
 
-bool isFloating(const Matrix *m)
+bool likely_is_floating(const likely_matrix *m)
 {
-    return m->hash & Matrix::Floating;
+    return m->hash & likely_matrix::Floating;
 }
 
-void setFloating(Matrix *m, bool isFloating)
+void likely_set_floating(likely_matrix *m, bool is_floating)
 {
-    isFloating ? setSigned(m, true), m->hash |= Matrix::Floating : m->hash &= ~Matrix::Floating;
+    is_floating ? likely_set_signed(m, true), m->hash |= likely_matrix::Floating : m->hash &= ~likely_matrix::Floating;
 }
 
-bool isSigned(const Matrix *m)
+bool likely_is_signed(const likely_matrix *m)
 {
-    return m->hash & Matrix::Signed;
+    return m->hash & likely_matrix::Signed;
 }
 
-void setSigned(Matrix *m, bool isSigned)
+void likely_set_signed(likely_matrix *m, bool is_signed)
 {
-    isSigned ? m->hash |= Matrix::Signed : m->hash &= ~Matrix::Signed;
+    is_signed ? m->hash |= likely_matrix::Signed : m->hash &= ~likely_matrix::Signed;
 }
 
-int type(const Matrix *m)
+int likely_type(const likely_matrix *m)
 {
-    return m->hash & (Matrix::Bits + Matrix::Floating + Matrix::Signed);
+    return m->hash & (likely_matrix::Bits + likely_matrix::Floating + likely_matrix::Signed);
 }
 
-void setType(Matrix *m, int type)
+void likely_set_type(likely_matrix *m, int type)
 {
-    m->hash &= ~(Matrix::Bits + Matrix::Floating + Matrix::Signed);
-    m->hash |= type & (Matrix::Bits + Matrix::Floating + Matrix::Signed);
+    m->hash &= ~(likely_matrix::Bits + likely_matrix::Floating + likely_matrix::Signed);
+    m->hash |= type & (likely_matrix::Bits + likely_matrix::Floating + likely_matrix::Signed);
 }
 
-bool singleChannel(const Matrix *m)
+bool likely_is_single_channel(const likely_matrix *m)
 {
-    return m->hash & Matrix::SingleChannel;
+    return m->hash & likely_matrix::SingleChannel;
 }
 
-void setSingleChannel(Matrix *m, bool singleChannel)
+void likely_set_single_channel(likely_matrix *m, bool is_single_channel)
 {
-    singleChannel ? m->hash |= Matrix::SingleChannel : m->hash &= ~Matrix::SingleChannel;
+    is_single_channel ? m->hash |= likely_matrix::SingleChannel : m->hash &= ~likely_matrix::SingleChannel;
 }
 
-bool singleColumn(const Matrix *m)
+bool likely_is_single_column(const likely_matrix *m)
 {
-    return m->hash & Matrix::SingleColumn;
+    return m->hash & likely_matrix::SingleColumn;
 }
 
-void setSingleColumn(Matrix *m, bool singleColumn)
+void likely_set_single_column(likely_matrix *m, bool is_single_column)
 {
-    singleColumn ? m->hash |= Matrix::SingleColumn : m->hash &= ~Matrix::SingleColumn;
+    is_single_column ? m->hash |= likely_matrix::SingleColumn : m->hash &= ~likely_matrix::SingleColumn;
 }
 
-bool singleRow(const Matrix *m)
+bool likely_is_single_row(const likely_matrix *m)
 {
-    return m->hash & Matrix::SingleRow;
+    return m->hash & likely_matrix::SingleRow;
 }
 
-void setSingleRow(Matrix *m, bool singleRow)
+void likely_set_single_row(likely_matrix *m, bool is_single_row)
 {
-    singleRow ? m->hash |= Matrix::SingleRow : m->hash &= ~Matrix::SingleRow;
+    is_single_row ? m->hash |= likely_matrix::SingleRow : m->hash &= ~likely_matrix::SingleRow;
 }
 
-bool singleFrame(const Matrix *m)
+bool likely_is_single_frame(const likely_matrix *m)
 {
-    return m->hash & Matrix::SingleFrame;
+    return m->hash & likely_matrix::SingleFrame;
 }
 
-void setSingleFrame(Matrix *m, bool singleFrame)
+void likely_set_single_frame(likely_matrix *m, bool is_single_frame)
 {
-    singleFrame ? m->hash |= Matrix::SingleFrame : m->hash &= ~Matrix::SingleFrame;
+    is_single_frame ? m->hash |= likely_matrix::SingleFrame : m->hash &= ~likely_matrix::SingleFrame;
 }
 
-uint32_t elements(const Matrix *m)
+uint32_t likely_elements(const likely_matrix *m)
 {
     return m->channels * m->columns * m->rows * m->frames;
 }
 
-uint32_t bytes(const Matrix *m)
+uint32_t likely_bytes(const likely_matrix *m)
 {
-    return bits(m) / 8 * elements(m);
+    return likely_bits(m) / 8 * likely_elements(m);
 }

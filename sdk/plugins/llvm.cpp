@@ -33,15 +33,15 @@ static FunctionPassManager *TheFunctionPassManager = NULL;
 static FunctionPassManager *TheExtraFunctionPassManager = NULL;
 static StructType *TheMatrixStruct = NULL;
 
-static QString MatrixToString(const Matrix *m)
+static QString MatrixToString(const likely_matrix *m)
 {
-    return QString("%1%2%3%4%5%6%7").arg(QString::number(bits(m)), (isSigned(m) ? "s" : "u"), (isFloating(m) ? "f" : "i"),
-                                         QString::number(singleChannel(m)), QString::number(singleColumn(m)), QString::number(singleRow(m)), QString::number(singleFrame(m)));
+    return QString("%1%2%3%4%5%6%7").arg(QString::number(likely_bits(m)), (likely_is_signed(m) ? "s" : "u"), (likely_is_floating(m) ? "f" : "i"),
+                                         QString::number(likely_is_single_channel(m)), QString::number(likely_is_single_column(m)), QString::number(likely_is_single_row(m)), QString::number(likely_is_single_frame(m)));
 }
 
-static Matrix MatrixFromMat(const cv::Mat &mat)
+static likely_matrix MatrixFromMat(const cv::Mat &mat)
 {
-    Matrix m;
+    likely_matrix m;
 
     if (!mat.isContinuous()) qFatal("Matrix requires continuous data.");
     m.channels = mat.channels();
@@ -50,13 +50,13 @@ static Matrix MatrixFromMat(const cv::Mat &mat)
     m.frames = 1;
 
     switch (mat.depth()) {
-      case CV_8U:  m.hash = Matrix::u8;  break;
-      case CV_8S:  m.hash = Matrix::s8;  break;
-      case CV_16U: m.hash = Matrix::u16; break;
-      case CV_16S: m.hash = Matrix::s16; break;
-      case CV_32S: m.hash = Matrix::s32; break;
-      case CV_32F: m.hash = Matrix::f32; break;
-      case CV_64F: m.hash = Matrix::f64; break;
+      case CV_8U:  m.hash = likely_matrix::u8;  break;
+      case CV_8S:  m.hash = likely_matrix::s8;  break;
+      case CV_16U: m.hash = likely_matrix::u16; break;
+      case CV_16S: m.hash = likely_matrix::s16; break;
+      case CV_32S: m.hash = likely_matrix::s32; break;
+      case CV_32F: m.hash = likely_matrix::f32; break;
+      case CV_64F: m.hash = likely_matrix::f64; break;
       default:     qFatal("Unrecognized matrix depth.");
     }
 
@@ -64,23 +64,23 @@ static Matrix MatrixFromMat(const cv::Mat &mat)
     return m;
 }
 
-static Mat MatFromMatrix(const Matrix &m)
+static Mat MatFromMatrix(const likely_matrix &m)
 {
     int depth = -1;
-    switch (type(&m)) {
-      case Matrix::u8:  depth = CV_8U;  break;
-      case Matrix::s8:  depth = CV_8S;  break;
-      case Matrix::u16: depth = CV_16U; break;
-      case Matrix::s16: depth = CV_16S; break;
-      case Matrix::s32: depth = CV_32S; break;
-      case Matrix::f32: depth = CV_32F; break;
-      case Matrix::f64: depth = CV_64F; break;
+    switch (likely_type(&m)) {
+      case likely_matrix::u8:  depth = CV_8U;  break;
+      case likely_matrix::s8:  depth = CV_8S;  break;
+      case likely_matrix::u16: depth = CV_16U; break;
+      case likely_matrix::s16: depth = CV_16S; break;
+      case likely_matrix::s32: depth = CV_32S; break;
+      case likely_matrix::f32: depth = CV_32F; break;
+      case likely_matrix::f64: depth = CV_64F; break;
       default:     qFatal("Unrecognized matrix depth.");
     }
     return Mat(m.rows, m.columns, CV_MAKETYPE(depth, m.channels), m.data).clone();
 }
 
-QDebug operator<<(QDebug dbg, const Matrix &m)
+QDebug operator<<(QDebug dbg, const likely_matrix &m)
 {
     dbg.nospace() << MatrixToString(&m);
     return dbg;
@@ -88,13 +88,13 @@ QDebug operator<<(QDebug dbg, const Matrix &m)
 
 struct MatrixBuilder
 {
-    const Matrix *m;
+    const likely_matrix *m;
     Value *v;
     IRBuilder<> *b;
     Function *f;
     Twine name;
 
-    MatrixBuilder(const Matrix *matrix, Value *value, IRBuilder<> *builder, Function *function, const Twine &name_)
+    MatrixBuilder(const likely_matrix *matrix, Value *value, IRBuilder<> *builder, Function *function, const Twine &name_)
         : m(matrix), v(value), b(builder), f(function), name(name_) {}
 
     static Constant *constant(int value, int bits = 32) { return Constant::getIntegerValue(Type::getInt32Ty(getGlobalContext()), APInt(bits, value)); }
@@ -102,7 +102,7 @@ struct MatrixBuilder
     static Constant *constant(double value) { return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), value == 0 ? -0.0 : value); }
     static Constant *zero() { return constant(0); }
     static Constant *one() { return constant(1); }
-    Constant *autoConstant(double value) const { return ::isFloating(m) ? ((::bits(m) == 64) ? constant(value) : constant(float(value))) : constant(int(value), ::bits(m)); }
+    Constant *autoConstant(double value) const { return ::likely_is_floating(m) ? ((::likely_bits(m) == 64) ? constant(value) : constant(float(value))) : constant(int(value), ::likely_bits(m)); }
     AllocaInst *autoAlloca(double value, const Twine &name = "") const { AllocaInst *alloca = b->CreateAlloca(ty(), 0, name); b->CreateStore(autoConstant(value), alloca); return alloca; }
 
     Value *data(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 0), name+"_data"); }
@@ -114,10 +114,10 @@ struct MatrixBuilder
     Value *hash(Value *matrix, const Twine &name = "") const { return b->CreateLoad(b->CreateStructGEP(matrix, 5), name+"_hash"); }
 
     Value *data(bool cast = true) const { return cast ? data(v, ptrTy(), name) : data(v, name); }
-    Value *channels() const { return ::singleChannel(m) ? static_cast<Value*>(one()) : channels(v, name); }
-    Value *columns() const { return ::singleColumn(m) ? static_cast<Value*>(one()) : columns(v, name); }
-    Value *rows() const { return ::singleRow(m) ? static_cast<Value*>(one()) : rows(v, name); }
-    Value *frames() const { return ::singleFrame(m) ? static_cast<Value*>(one()) : frames(v, name); }
+    Value *channels() const { return ::likely_is_single_channel(m) ? static_cast<Value*>(one()) : channels(v, name); }
+    Value *columns() const { return ::likely_is_single_column(m) ? static_cast<Value*>(one()) : columns(v, name); }
+    Value *rows() const { return ::likely_is_single_row(m) ? static_cast<Value*>(one()) : rows(v, name); }
+    Value *frames() const { return ::likely_is_single_frame(m) ? static_cast<Value*>(one()) : frames(v, name); }
     Value *hash() const { return hash(v, name); }
 
     void setData(Value *matrix, Value *value) const { b->CreateStore(value, b->CreateStructGEP(matrix, 0)); }
@@ -163,22 +163,22 @@ struct MatrixBuilder
     void set(int value, int mask) const { setHash(b->CreateOr(b->CreateAnd(hash(), constant(~mask, 16)), b->CreateAnd(constant(value, 16), constant(mask, 16)))); }
     void setBit(bool on, int mask) const { on ? setHash(b->CreateOr(hash(), constant(mask, 16))) : setHash(b->CreateAnd(hash(), constant(~mask, 16))); }
 
-    Value *bits() const { return get(Matrix::Bits); }
-    void setBits(int bits) const { set(bits, Matrix::Bits); }
-    Value *isFloating() const { return get(Matrix::Floating); }
-    void setFloating(bool isFloating) const { if (isFloating) setSigned(true); setBit(isFloating, Matrix::Floating); }
-    Value *isSigned() const { return get(Matrix::Signed); }
-    void setSigned(bool isSigned) const { setBit(isSigned, Matrix::Signed); }
-    Value *type() const { return get(Matrix::Bits + Matrix::Floating + Matrix::Signed); }
-    void setType(int type) const { set(type, Matrix::Bits + Matrix::Floating + Matrix::Signed); }
-    Value *singleChannel() const { return get(Matrix::SingleChannel); }
-    void setSingleChannel(bool singleChannel) const { setBit(singleChannel, Matrix::SingleChannel); }
-    Value *singleColumn() const { return get(Matrix::SingleColumn); }
-    void setSingleColumn(bool singleColumn) { setBit(singleColumn, Matrix::SingleColumn); }
-    Value *singleRow() const { return get(Matrix::SingleRow); }
-    void setSingleRow(bool singleRow) const { setBit(singleRow, Matrix::SingleRow); }
-    Value *singleFrame() const { return get(Matrix::SingleFrame); }
-    void setSingleFrame(bool singleFrame) const { setBit(singleFrame, Matrix::SingleFrame); }
+    Value *bits() const { return get(likely_matrix::Bits); }
+    void setBits(int bits) const { set(bits, likely_matrix::Bits); }
+    Value *isFloating() const { return get(likely_matrix::Floating); }
+    void setFloating(bool isFloating) const { if (isFloating) setSigned(true); setBit(isFloating, likely_matrix::Floating); }
+    Value *isSigned() const { return get(likely_matrix::Signed); }
+    void setSigned(bool isSigned) const { setBit(isSigned, likely_matrix::Signed); }
+    Value *type() const { return get(likely_matrix::Bits + likely_matrix::Floating + likely_matrix::Signed); }
+    void setType(int type) const { set(type, likely_matrix::Bits + likely_matrix::Floating + likely_matrix::Signed); }
+    Value *singleChannel() const { return get(likely_matrix::SingleChannel); }
+    void setSingleChannel(bool singleChannel) const { setBit(singleChannel, likely_matrix::SingleChannel); }
+    Value *singleColumn() const { return get(likely_matrix::SingleColumn); }
+    void setSingleColumn(bool singleColumn) { setBit(singleColumn, likely_matrix::SingleColumn); }
+    Value *singleRow() const { return get(likely_matrix::SingleRow); }
+    void setSingleRow(bool singleRow) const { setBit(singleRow, likely_matrix::SingleRow); }
+    Value *singleFrame() const { return get(likely_matrix::SingleFrame); }
+    void setSingleFrame(bool singleFrame) const { setBit(singleFrame, likely_matrix::SingleFrame); }
     Value *elements() const { return b->CreateMul(b->CreateMul(b->CreateMul(channels(), columns()), rows()), frames()); }
     Value *bytes() const { return b->CreateMul(b->CreateUDiv(b->CreateCast(Instruction::ZExt, bits(), Type::getInt32Ty(getGlobalContext())), constant(8, 32)), elements()); }
 
@@ -189,20 +189,20 @@ struct MatrixBuilder
     Value *aliasRowStep(const MatrixBuilder &other) const { return (m->columns == other.m->columns) ? other.rowStep() : rowStep(); }
     Value *aliasFrameStep(const MatrixBuilder &other) const { return (m->rows == other.m->rows) ? other.frameStep() : frameStep(); }
 
-    Value *index(Value *c) const { return ::singleChannel(m) ? constant(0) : c; }
-    Value *index(Value *c, Value *x) const { return ::singleColumn(m) ? index(c) : b->CreateAdd(b->CreateMul(x, columnStep()), index(c)); }
-    Value *index(Value *c, Value *x, Value *y) const { return ::singleRow(m) ? index(c, x) : b->CreateAdd(b->CreateMul(y, rowStep()), index(c, x)); }
-    Value *index(Value *c, Value *x, Value *y, Value *f) const { return ::singleFrame(m) ? index(c, x, y) : b->CreateAdd(b->CreateMul(f, frameStep()), index(c, x, y)); }
-    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x) const { return ::singleColumn(m) ? index(c) : b->CreateAdd(b->CreateMul(x, aliasColumnStep(other)), index(c)); }
-    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y) const { return ::singleRow(m) ? aliasIndex(other, c, x) : b->CreateAdd(b->CreateMul(y, aliasRowStep(other)), aliasIndex(other, c, x)); }
-    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y, Value *f) const { return ::singleFrame(m) ? aliasIndex(other, c, x, y) : b->CreateAdd(b->CreateMul(f, aliasFrameStep(other)), aliasIndex(other, c, x, y)); }
+    Value *index(Value *c) const { return ::likely_is_single_channel(m) ? constant(0) : c; }
+    Value *index(Value *c, Value *x) const { return ::likely_is_single_column(m) ? index(c) : b->CreateAdd(b->CreateMul(x, columnStep()), index(c)); }
+    Value *index(Value *c, Value *x, Value *y) const { return ::likely_is_single_row(m) ? index(c, x) : b->CreateAdd(b->CreateMul(y, rowStep()), index(c, x)); }
+    Value *index(Value *c, Value *x, Value *y, Value *f) const { return ::likely_is_single_frame(m) ? index(c, x, y) : b->CreateAdd(b->CreateMul(f, frameStep()), index(c, x, y)); }
+    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x) const { return ::likely_is_single_column(m) ? index(c) : b->CreateAdd(b->CreateMul(x, aliasColumnStep(other)), index(c)); }
+    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y) const { return ::likely_is_single_row(m) ? aliasIndex(other, c, x) : b->CreateAdd(b->CreateMul(y, aliasRowStep(other)), aliasIndex(other, c, x)); }
+    Value *aliasIndex(const MatrixBuilder &other, Value *c, Value *x, Value *y, Value *f) const { return ::likely_is_single_frame(m) ? aliasIndex(other, c, x, y) : b->CreateAdd(b->CreateMul(f, aliasFrameStep(other)), aliasIndex(other, c, x, y)); }
 
     void deindex(Value *i, Value **c) const {
-        *c = ::singleChannel(m) ? constant(0) : i;
+        *c = ::likely_is_single_channel(m) ? constant(0) : i;
     }
     void deindex(Value *i, Value **c, Value **x) const {
         Value *rem;
-        if (::singleColumn(m)) {
+        if (::likely_is_single_column(m)) {
             rem = i;
             *x = constant(0);
         } else {
@@ -214,7 +214,7 @@ struct MatrixBuilder
     }
     void deindex(Value *i, Value **c, Value **x, Value **y) const {
         Value *rem;
-        if (::singleRow(m)) {
+        if (::likely_is_single_row(m)) {
             rem = i;
             *y = constant(0);
         } else {
@@ -226,7 +226,7 @@ struct MatrixBuilder
     }
     void deindex(Value *i, Value **c, Value **x, Value **y, Value **t) const {
         Value *rem;
-        if (::singleFrame(m)) {
+        if (::likely_is_single_frame(m)) {
             rem = i;
             *t = constant(0);
         } else {
@@ -245,12 +245,12 @@ struct MatrixBuilder
                                                                                 return b->CreateStore(value, idx); }
     StoreInst *store(Value *i, Value *value) const { return b->CreateStore(value, b->CreateGEP(data(), i)); }
 
-    Value *cast(Value *i, const MatrixBuilder &dst) const { return (::type(m) == ::type(dst.m)) ? i : b->CreateCast(CastInst::getCastOpcode(i, ::isSigned(m), dst.ty(), ::isSigned(dst.m)), i, dst.ty()); }
-    Value *add(Value *i, Value *j, const Twine &name = "") const { return ::isFloating(m) ? b->CreateFAdd(i, j, name) : b->CreateAdd(i, j, name); }
-    Value *multiply(Value *i, Value *j, const Twine &name = "") const { return ::isFloating(m) ? b->CreateFMul(i, j, name) : b->CreateMul(i, j, name); }
+    Value *cast(Value *i, const MatrixBuilder &dst) const { return (::likely_type(m) == ::likely_type(dst.m)) ? i : b->CreateCast(CastInst::getCastOpcode(i, ::likely_is_signed(m), dst.ty(), ::likely_is_signed(dst.m)), i, dst.ty()); }
+    Value *add(Value *i, Value *j, const Twine &name = "") const { return ::likely_is_floating(m) ? b->CreateFAdd(i, j, name) : b->CreateAdd(i, j, name); }
+    Value *multiply(Value *i, Value *j, const Twine &name = "") const { return ::likely_is_floating(m) ? b->CreateFMul(i, j, name) : b->CreateMul(i, j, name); }
 
-    Value *compareLT(Value *i, Value *j) const { return ::isFloating(m) ? b->CreateFCmpOLT(i, j) : (::isSigned(m) ? b->CreateICmpSLT(i, j) : b->CreateICmpULT(i, j)); }
-    Value *compareGT(Value *i, Value *j) const { return ::isFloating(m) ? b->CreateFCmpOGT(i, j) : (::isSigned(m) ? b->CreateICmpSGT(i, j) : b->CreateICmpUGT(i, j)); }
+    Value *compareLT(Value *i, Value *j) const { return ::likely_is_floating(m) ? b->CreateFCmpOLT(i, j) : (::likely_is_signed(m) ? b->CreateICmpSLT(i, j) : b->CreateICmpULT(i, j)); }
+    Value *compareGT(Value *i, Value *j) const { return ::likely_is_floating(m) ? b->CreateFCmpOGT(i, j) : (::likely_is_signed(m) ? b->CreateICmpSGT(i, j) : b->CreateICmpUGT(i, j)); }
 
     static PHINode *beginLoop(IRBuilder<> &builder, Function *function, BasicBlock *entry, BasicBlock *&loop, BasicBlock *&exit, Value *stop, const Twine &name = "") {
         loop = BasicBlock::Create(getGlobalContext(), "loop_"+name, function);
@@ -279,10 +279,10 @@ struct MatrixBuilder
     template <typename T>
     inline static std::vector<T> toVector(T value) { std::vector<T> vector; vector.push_back(value); return vector; }
 
-    static Type *ty(const Matrix &m)
+    static Type *ty(const likely_matrix &m)
     {
-        const int bits = ::bits(&m);
-        if (::isFloating(&m)) {
+        const int bits = ::likely_bits(&m);
+        if (::likely_is_floating(&m)) {
             if      (bits == 16) return Type::getHalfTy(getGlobalContext());
             else if (bits == 32) return Type::getFloatTy(getGlobalContext());
             else if (bits == 64) return Type::getDoubleTy(getGlobalContext());
@@ -299,10 +299,10 @@ struct MatrixBuilder
     inline Type *ty() const { return ty(*m); }
     inline std::vector<Type*> tys() const { return toVector<Type*>(ty()); }
 
-    static Type *ptrTy(const Matrix &m)
+    static Type *ptrTy(const likely_matrix &m)
     {
-        const int bits = ::bits(&m);
-        if (::isFloating(&m)) {
+        const int bits = ::likely_bits(&m);
+        if (::likely_is_floating(&m)) {
             if      (bits == 16) return Type::getHalfPtrTy(getGlobalContext());
             else if (bits == 32) return Type::getFloatPtrTy(getGlobalContext());
             else if (bits == 64) return Type::getDoublePtrTy(getGlobalContext());
@@ -351,7 +351,7 @@ public:
         TheExtraFunctionPassManager->run(*f);
     }
 
-    UnaryFunction getFunction() const
+    likely_unary_function getFunction() const
     {
         const QString name = mangledName();
         Function *function = TheModule->getFunction(qPrintable(name));
@@ -369,7 +369,7 @@ public:
                 makeAllocationParams.push_back(Type::getInt8PtrTy(getGlobalContext()));
                 makeAllocationParams.push_back(PointerType::getUnqual(TheMatrixStruct));
                 FunctionType* makeAllocationType = FunctionType::get(allocationType, makeAllocationParams, false);
-                makeAllocationFunction = Function::Create(makeAllocationType, GlobalValue::ExternalLinkage, "makeUnaryAllocation", TheModule);
+                makeAllocationFunction = Function::Create(makeAllocationType, GlobalValue::ExternalLinkage, "likely_make_unary_allocation", TheModule);
                 makeAllocationFunction->setCallingConv(CallingConv::C);
             }
 
@@ -386,7 +386,7 @@ public:
                 makeKernelParams.push_back(Type::getInt8PtrTy(getGlobalContext()));
                 makeKernelParams.push_back(PointerType::getUnqual(TheMatrixStruct));
                 FunctionType* makeUnaryKernelType = FunctionType::get(kernelType, makeKernelParams, false);
-                makeKernelFunction = Function::Create(makeUnaryKernelType, GlobalValue::ExternalLinkage, "makeUnaryKernel", TheModule);
+                makeKernelFunction = Function::Create(makeUnaryKernelType, GlobalValue::ExternalLinkage, "likely_make_unary_kernel", TheModule);
                 makeKernelFunction->setCallingConv(CallingConv::C);
             }
 
@@ -445,10 +445,10 @@ public:
             optimize(function);
         }
 
-        return (UnaryFunction)TheExecutionEngine->getPointerToFunction(function);
+        return (likely_unary_function)TheExecutionEngine->getPointerToFunction(function);
     }
 
-    UnaryAllocation getAllocation(const Matrix *m) const
+    likely_unary_allocation getAllocation(const likely_matrix *m) const
     {
         const QString name = mangledName(*m)+"_allocation";
         Function *function = TheModule->getFunction(qPrintable(name));
@@ -488,10 +488,10 @@ public:
             optimize(function);
         }
 
-        return (UnaryAllocation)TheExecutionEngine->getPointerToFunction(function);
+        return (likely_unary_allocation)TheExecutionEngine->getPointerToFunction(function);
     }
 
-    UnaryKernel getKernel(const Matrix *m) const
+    likely_unary_kernel getKernel(const likely_matrix *m) const
     {
         const QString name = mangledName(*m)+"_kernel";
         Function *function = TheModule->getFunction(qPrintable(name));
@@ -527,7 +527,7 @@ public:
             optimize(function);
         }
 
-        return (UnaryKernel)TheExecutionEngine->getPointerToFunction(function);
+        return (likely_unary_kernel)TheExecutionEngine->getPointerToFunction(function);
     }
 
 private:
@@ -540,16 +540,16 @@ private:
         return "jitcv_" + objectName() + (args.isEmpty() ? QString() : QString::number(uid));
     }
 
-    QString mangledName(const Matrix &src) const
+    QString mangledName(const likely_matrix &src) const
     {
         return mangledName() + "_" + MatrixToString(&src);
     }
 
     void project(const Template &src, Template &dst) const
     {
-        const Matrix m(MatrixFromMat(src));
-        Matrix n;
-        UnaryFunction function = getFunction();
+        const likely_matrix m(MatrixFromMat(src));
+        likely_matrix n;
+        likely_unary_function function = getFunction();
         function(&m, &n);
         dst.m() = MatFromMatrix(n);
     }
@@ -1144,20 +1144,20 @@ class LLVMInitializer : public Initializer
 
 BR_REGISTER(Initializer, LLVMInitializer)
 
-UnaryFunction makeUnaryFunction(const char *description)
+likely_unary_function likely_make_unary_function(const char *description)
 {
     QScopedPointer<UnaryTransform> unaryTransform(dynamic_cast<UnaryTransform*>(Transform::make(description, NULL)));
     if (unaryTransform == NULL) qFatal("makeUnaryFunction NULL transform!");
     return unaryTransform->getFunction();
 }
 
-BinaryFunction makeBinaryFunction(const char *description)
+likely_binary_function likely_make_binary_function(const char *description)
 {
     (void) description;
     return NULL;
 }
 
-UnaryAllocation makeUnaryAllocation(const char *description, const Matrix *src)
+likely_unary_allocation likely_make_unary_allocation(const char *description, const likely_matrix *src)
 {
     if (description == NULL) qFatal("makeUnaryAllocation NULL description!");
     const File f = long(description) < 1000 ? UnaryTransform::fileTable[long(description)] : File(description);
@@ -1166,15 +1166,15 @@ UnaryAllocation makeUnaryAllocation(const char *description, const Matrix *src)
     return unaryTransform->getAllocation(src);
 }
 
-BinaryAllocation makeBinaryAllocation(const char *description, const Matrix *srcA, const Matrix *srcB)
+likely_binary_allocation likely_make_binary_allocation(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
 {
     (void) description;
-    (void) srcA;
-    (void) srcB;
+    (void) src_a;
+    (void) src_b;
     return NULL;
 }
 
-UnaryKernel makeUnaryKernel(const char *description, const Matrix *src)
+likely_unary_kernel likely_make_unary_kernel(const char *description, const likely_matrix *src)
 {
     if (description == NULL) qFatal("makeUnaryKernel NULL description!");
     const File f = long(description) < 1000 ? UnaryTransform::fileTable[long(description)] : File(description);
@@ -1183,11 +1183,11 @@ UnaryKernel makeUnaryKernel(const char *description, const Matrix *src)
     return unaryTransform->getKernel(src);
 }
 
-BinaryKernel makeBinaryKernel(const char *description, const Matrix *srcA, const Matrix *srcB)
+likely_binary_kernel likely_make_binary_kernel(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
 {
     (void) description;
-    (void) srcA;
-    (void) srcB;
+    (void) src_a;
+    (void) src_b;
     return NULL;
 }
 
