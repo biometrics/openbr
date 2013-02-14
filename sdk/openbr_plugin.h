@@ -41,11 +41,6 @@
 #include <opencv2/core/core.hpp>
 #include <openbr.h>
 
-#ifndef BR_EXCEPTIONS
-#  define try      if (true)
-#  define catch(X) if (false)
-#endif // BR_EXCEPTIONS
-
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
  * \brief Plugin API for developing new algorithms.
