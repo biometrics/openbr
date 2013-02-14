@@ -1,0 +1,60 @@
+.TH "QwtIntervalSeriesData" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtIntervalSeriesData \- 
+.PP
+Interface for iterating over an array of intervals\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_series_data\&.h>\fP
+.PP
+Inherits \fBQwtArraySeriesData< QwtIntervalSample >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtIntervalSeriesData\fP (const QVector< \fBQwtIntervalSample\fP > &=QVector< \fBQwtIntervalSample\fP >())"
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.RI "\fICalculate the bounding rectangle\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+Interface for iterating over an array of intervals\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtIntervalSeriesData::QwtIntervalSeriesData (const QVector< \fBQwtIntervalSample\fP > &samples = \fCQVector<\fBQwtIntervalSample\fP>()\fP)"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Samples 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtIntervalSeriesData::boundingRect () const\fC [virtual]\fP"
+
+.PP
+Calculate the bounding rectangle\&. The bounding rectangle is calculated once by iterating over all points and is stored for all following requests\&.
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QwtIntervalSample >\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

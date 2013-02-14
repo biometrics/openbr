@@ -664,7 +664,7 @@ public:
     static QString scratchPath();
 
 private:
-    static void messageHandler(QtMsgType type, const char *msg);
+    static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 };
 
 /*!

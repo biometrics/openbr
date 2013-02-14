@@ -1,0 +1,494 @@
+.TH "QwtPlotMarker" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotMarker \- 
+.PP
+A class for drawing markers\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_marker\&.h>\fP
+.PP
+Inherits \fBQwtPlotItem\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBLineStyle\fP { \fBNoLine\fP, \fBHLine\fP, \fBVLine\fP, \fBCross\fP }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotMarker\fP (const QString &\fBtitle\fP=QString::null)"
+.br
+.RI "\fISets alignment to Qt::AlignCenter, and style to \fBQwtPlotMarker::NoLine\fP\&. \fP"
+.ti -1c
+.RI "\fBQwtPlotMarker\fP (const \fBQwtText\fP &\fBtitle\fP)"
+.br
+.RI "\fISets alignment to Qt::AlignCenter, and style to \fBQwtPlotMarker::NoLine\fP\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtPlotMarker\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual int \fBrtti\fP () const "
+.br
+.ti -1c
+.RI "double \fBxValue\fP () const "
+.br
+.RI "\fIReturn x Value\&. \fP"
+.ti -1c
+.RI "double \fByValue\fP () const "
+.br
+.RI "\fIReturn y Value\&. \fP"
+.ti -1c
+.RI "QPointF \fBvalue\fP () const "
+.br
+.RI "\fIReturn Value\&. \fP"
+.ti -1c
+.RI "void \fBsetXValue\fP (double)"
+.br
+.RI "\fISet X Value\&. \fP"
+.ti -1c
+.RI "void \fBsetYValue\fP (double)"
+.br
+.RI "\fISet Y Value\&. \fP"
+.ti -1c
+.RI "void \fBsetValue\fP (double, double)"
+.br
+.RI "\fISet Value\&. \fP"
+.ti -1c
+.RI "void \fBsetValue\fP (const QPointF &)"
+.br
+.RI "\fISet Value\&. \fP"
+.ti -1c
+.RI "void \fBsetLineStyle\fP (\fBLineStyle\fP st)"
+.br
+.RI "\fISet the line style\&. \fP"
+.ti -1c
+.RI "\fBLineStyle\fP \fBlineStyle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLinePen\fP (const QColor &, qreal width=0\&.0, Qt::PenStyle=Qt::SolidLine)"
+.br
+.ti -1c
+.RI "void \fBsetLinePen\fP (const QPen &p)"
+.br
+.ti -1c
+.RI "const QPen & \fBlinePen\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSymbol\fP (const \fBQwtSymbol\fP *)"
+.br
+.RI "\fIAssign a symbol\&. \fP"
+.ti -1c
+.RI "const \fBQwtSymbol\fP * \fBsymbol\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLabel\fP (const \fBQwtText\fP &)"
+.br
+.RI "\fISet the label\&. \fP"
+.ti -1c
+.RI "\fBQwtText\fP \fBlabel\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLabelAlignment\fP (Qt::Alignment)"
+.br
+.RI "\fISet the alignment of the label\&. \fP"
+.ti -1c
+.RI "Qt::Alignment \fBlabelAlignment\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLabelOrientation\fP (Qt::Orientation)"
+.br
+.RI "\fISet the orientation of the label\&. \fP"
+.ti -1c
+.RI "Qt::Orientation \fBlabelOrientation\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSpacing\fP (int)"
+.br
+.RI "\fISet the spacing\&. \fP"
+.ti -1c
+.RI "int \fBspacing\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *p, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &) const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.ti -1c
+.RI "virtual \fBQwtGraphic\fP \fBlegendIcon\fP (int index, const QSizeF &) const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawLines\fP (QPainter *, const QRectF &, const QPointF &) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawLabel\fP (QPainter *, const QRectF &, const QPointF &) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A class for drawing markers\&. 
+
+A marker can be a horizontal line, a vertical line, a symbol, a label or any combination of them, which can be drawn around a center point inside a bounding rectangle\&.
+.PP
+The \fBsetSymbol()\fP member assigns a symbol to the marker\&. The symbol is drawn at the specified point\&.
+.PP
+With \fBsetLabel()\fP, a label can be assigned to the marker\&. The \fBsetLabelAlignment()\fP member specifies where the label is drawn\&. All the Align*-constants in Qt::AlignmentFlags (see Qt documentation) are valid\&. The interpretation of the alignment depends on the marker's line style\&. The alignment refers to the center point of the marker, which means, for example, that the label would be printed left above the center point if the alignment was set to Qt::AlignLeft | Qt::AlignTop\&.
+.PP
+\fBNote:\fP
+.RS 4
+\fBQwtPlotTextLabel\fP is intended to align a text label according to the geometry of canvas ( unrelated to plot coordinates ) 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlotMarker::LineStyle\fP"
+Line styles\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLineStyle()\fP, \fBlineStyle()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINoLine \fP\fP
+No line\&. 
+.TP
+\fB\fIHLine \fP\fP
+A horizontal line\&. 
+.TP
+\fB\fIVLine \fP\fP
+A vertical line\&. 
+.TP
+\fB\fICross \fP\fP
+A crosshair\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtPlotMarker::boundingRect () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+An invalid bounding rect: QRectF(1\&.0, 1\&.0, -2\&.0, -2\&.0) 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+A width or height < 0\&.0 is ignored by the autoscaler 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotMarker::draw (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect) const\fC [virtual]\fP"
+Draw the marker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP x Scale Map 
+.br
+\fIyMap\fP y Scale Map 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas in painter coordinates 
+.RE
+.PP
+
+.PP
+Implements \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotMarker::drawLabel (QPainter *painter, const QRectF &canvasRect, const QPointF &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+Align and draw the text label of the marker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas in painter coordinates 
+.br
+\fIpos\fP Position of the marker, translated into widget coordinates
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawLabel()\fP, \fBQwtSymbol::drawSymbol()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::drawLines (QPainter *painter, const QRectF &canvasRect, const QPointF &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the lines marker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas in painter coordinates 
+.br
+\fIpos\fP Position of the marker, translated into widget coordinates
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawLabel()\fP, \fBQwtSymbol::drawSymbol()\fP 
+.RE
+.PP
+
+.SS "\fBQwtText\fP QwtPlotMarker::label () const"
+\fBReturns:\fP
+.RS 4
+the label 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLabel()\fP 
+.RE
+.PP
+
+.SS "Qt::Alignment QwtPlotMarker::labelAlignment () const"
+\fBReturns:\fP
+.RS 4
+the label alignment 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLabelAlignment()\fP, \fBsetLabelOrientation()\fP 
+.RE
+.PP
+
+.SS "Qt::Orientation QwtPlotMarker::labelOrientation () const"
+\fBReturns:\fP
+.RS 4
+the label orientation 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLabelOrientation()\fP, \fBlabelAlignment()\fP 
+.RE
+.PP
+
+.SS "\fBQwtGraphic\fP QwtPlotMarker::legendIcon (intindex, const QSizeF &size) const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Icon representing the marker on the legend
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index of the legend entry ( usually there is only one ) 
+.br
+\fIsize\fP Icon size
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLegendIconSize()\fP, \fBlegendData()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "const QPen & QwtPlotMarker::linePen () const"
+\fBReturns:\fP
+.RS 4
+the line pen 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLinePen()\fP 
+.RE
+.PP
+
+.SS "\fBQwtPlotMarker::LineStyle\fP QwtPlotMarker::lineStyle () const"
+\fBReturns:\fP
+.RS 4
+the line style 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLineStyle()\fP 
+.RE
+.PP
+
+.SS "int QwtPlotMarker::rtti () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+\fBQwtPlotItem::Rtti_PlotMarker\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotMarker::setLabel (const \fBQwtText\fP &label)"
+
+.PP
+Set the label\&. \fBParameters:\fP
+.RS 4
+\fIlabel\fP Label text 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlabel()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setLabelAlignment (Qt::Alignmentalign)"
+
+.PP
+Set the alignment of the label\&. In case of \fBQwtPlotMarker::HLine\fP the alignment is relative to the y position of the marker, but the horizontal flags correspond to the canvas rectangle\&. In case of \fBQwtPlotMarker::VLine\fP the alignment is relative to the x position of the marker, but the vertical flags correspond to the canvas rectangle\&.
+.PP
+In all other styles the alignment is relative to the marker's position\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIalign\fP Alignment\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlabelAlignment()\fP, \fBlabelOrientation()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setLabelOrientation (Qt::Orientationorientation)"
+
+.PP
+Set the orientation of the label\&. When orientation is Qt::Vertical the label is rotated by 90\&.0 degrees ( from bottom to top )\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIorientation\fP Orientation of the label
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlabelOrientation()\fP, \fBsetLabelAlignment()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setLinePen (const QColor &color, qrealwidth = \fC0\&.0\fP, Qt::PenStylestyle = \fCQt::SolidLine\fP)"
+Build and assign a line pen
+.PP
+In Qt5 the default pen width is 1\&.0 ( 0\&.0 in Qt4 ) what makes it non cosmetic ( see QPen::isCosmetic() )\&. This method has been introduced to hide this incompatibility\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcolor\fP Pen color 
+.br
+\fIwidth\fP Pen width 
+.br
+\fIstyle\fP Pen style
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+pen(), brush() 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setLinePen (const QPen &pen)"
+Specify a pen for the line\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpen\fP New pen 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlinePen()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setLineStyle (\fBLineStyle\fPstyle)"
+
+.PP
+Set the line style\&. \fBParameters:\fP
+.RS 4
+\fIstyle\fP Line style\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlineStyle()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setSpacing (intspacing)"
+
+.PP
+Set the spacing\&. When the label is not centered on the marker position, the spacing is the distance between the position and the label\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIspacing\fP Spacing 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBspacing()\fP, \fBsetLabelAlignment()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMarker::setSymbol (const \fBQwtSymbol\fP *symbol)"
+
+.PP
+Assign a symbol\&. \fBParameters:\fP
+.RS 4
+\fIsymbol\fP New symbol 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsymbol()\fP 
+.RE
+.PP
+
+.SS "int QwtPlotMarker::spacing () const"
+\fBReturns:\fP
+.RS 4
+the spacing 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSpacing()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtSymbol\fP * QwtPlotMarker::symbol () const"
+\fBReturns:\fP
+.RS 4
+the symbol 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSymbol()\fP, \fBQwtSymbol\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

@@ -1,0 +1,94 @@
+.TH "QwtPowerTransform" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPowerTransform \- 
+.PP
+A transformation using pow()  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_transform\&.h>\fP
+.PP
+Inherits \fBQwtTransform\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPowerTransform\fP (double exponent)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtPowerTransform\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual double \fBtransform\fP (double value) const "
+.br
+.ti -1c
+.RI "virtual double \fBinvTransform\fP (double value) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtTransform\fP * \fBcopy\fP () const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A transformation using pow() 
+
+\fBQwtPowerTransform\fP preserves the sign of a value\&. F\&.e\&. a transformation with a factor of 2 transforms a value of -3 to -9 and v\&.v\&. Thus \fBQwtPowerTransform\fP can be used for scales including negative values\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPowerTransform::QwtPowerTransform (doubleexponent)"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIexponent\fP Exponent 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtTransform\fP * QwtPowerTransform::copy () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Clone of the transformation 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+.SS "double QwtPowerTransform::invTransform (doublevalue) const\fC [virtual]\fP"
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Value to be transformed 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Inverse exponentiation preserving the sign 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+.SS "double QwtPowerTransform::transform (doublevalue) const\fC [virtual]\fP"
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Value to be transformed 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Exponentiation preserving the sign 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

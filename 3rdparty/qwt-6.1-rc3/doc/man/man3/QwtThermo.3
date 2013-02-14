@@ -1,0 +1,682 @@
+.TH "QwtThermo" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtThermo \- 
+.PP
+The Thermometer Widget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_thermo\&.h>\fP
+.PP
+Inherits \fBQwtAbstractScale\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBScalePos\fP { \fBNoScale\fP, \fBLeftScale\fP, \fBRightScale\fP, \fBTopScale\fP, \fBBottomScale\fP }"
+.br
+.in -1c
+.SS "Public Slots"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBsetValue\fP (double val)"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtThermo\fP (QWidget *parent=NULL)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtThermo\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetOrientation\fP (Qt::Orientation, \fBScalePos\fP)"
+.br
+.RI "\fISet the thermometer orientation and the scale position\&. \fP"
+.ti -1c
+.RI "void \fBsetScalePosition\fP (\fBScalePos\fP s)"
+.br
+.RI "\fIChange the scale position (and thermometer orientation)\&. \fP"
+.ti -1c
+.RI "\fBScalePos\fP \fBscalePosition\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSpacing\fP (int)"
+.br
+.RI "\fIChange the spacing between pipe and scale\&. \fP"
+.ti -1c
+.RI "int \fBspacing\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetBorderWidth\fP (int w)"
+.br
+.ti -1c
+.RI "int \fBborderWidth\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetFillBrush\fP (const QBrush &b)"
+.br
+.RI "\fIChange the brush of the liquid\&. \fP"
+.ti -1c
+.RI "const QBrush & \fBfillBrush\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetAlarmBrush\fP (const QBrush &b)"
+.br
+.RI "\fISpecify the liquid brush above the alarm threshold\&. \fP"
+.ti -1c
+.RI "const QBrush & \fBalarmBrush\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetAlarmLevel\fP (double v)"
+.br
+.ti -1c
+.RI "double \fBalarmLevel\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetAlarmEnabled\fP (bool tf)"
+.br
+.RI "\fIEnable or disable the alarm threshold\&. \fP"
+.ti -1c
+.RI "bool \fBalarmEnabled\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetColorMap\fP (\fBQwtColorMap\fP *)"
+.br
+.RI "\fIAssign a color map for the fill color\&. \fP"
+.ti -1c
+.RI "\fBQwtColorMap\fP * \fBcolorMap\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtColorMap\fP * \fBcolorMap\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetPipeWidth\fP (int w)"
+.br
+.ti -1c
+.RI "int \fBpipeWidth\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetRangeFlags\fP (\fBQwtInterval::BorderFlags\fP)"
+.br
+.RI "\fIExclude/Include min/max values\&. \fP"
+.ti -1c
+.RI "\fBQwtInterval::BorderFlags\fP \fBrangeFlags\fP () const "
+.br
+.ti -1c
+.RI "double \fBvalue\fP () const "
+.br
+.RI "\fIReturn the value\&. \fP"
+.ti -1c
+.RI "virtual QSize \fBsizeHint\fP () const "
+.br
+.ti -1c
+.RI "virtual QSize \fBminimumSizeHint\fP () const "
+.br
+.RI "\fIReturn a minimum size hint\&. \fP"
+.ti -1c
+.RI "void \fBsetScaleDraw\fP (\fBQwtScaleDraw\fP *)"
+.br
+.RI "\fISet a scale draw\&. \fP"
+.ti -1c
+.RI "const \fBQwtScaleDraw\fP * \fBscaleDraw\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawLiquid\fP (QPainter *, const QRect &) const "
+.br
+.ti -1c
+.RI "virtual void \fBscaleChange\fP ()"
+.br
+.RI "\fINotify a scale change\&. \fP"
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP (QPaintEvent *)"
+.br
+.ti -1c
+.RI "virtual void \fBresizeEvent\fP (QResizeEvent *)"
+.br
+.ti -1c
+.RI "virtual void \fBchangeEvent\fP (QEvent *)"
+.br
+.ti -1c
+.RI "\fBQwtScaleDraw\fP * \fBscaleDraw\fP ()"
+.br
+.ti -1c
+.RI "QRect \fBpipeRect\fP () const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The Thermometer Widget\&. 
+
+\fBQwtThermo\fP is a widget which displays a value in an interval\&. It supports:
+.IP "\(bu" 2
+a horizontal or vertical layout;
+.IP "\(bu" 2
+a range;
+.IP "\(bu" 2
+a scale;
+.IP "\(bu" 2
+an alarm level\&.
+.PP
+.PP
+.PP
+The fill colors might be calculated from an optional color map If no color map has been assigned \fBQwtThermo\fP uses the following colors/brushes from the widget palette:
+.PP
+.IP "\(bu" 2
+QPalette::Base Background of the pipe
+.IP "\(bu" 2
+QPalette::ButtonText Fill brush below the alarm level
+.IP "\(bu" 2
+QPalette::Highlight Fill brush for the values above the alarm level
+.IP "\(bu" 2
+QPalette::WindowText For the axis of the scale
+.IP "\(bu" 2
+QPalette::Text For the labels of the scale 
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtThermo::ScalePos\fP"
+Scale position\&. \fBQwtThermo\fP tries to enforce valid combinations of its orientation and scale position:
+.PP
+.IP "\(bu" 2
+Qt::Horizontal combines with NoScale, TopScale and BottomScale
+.IP "\(bu" 2
+Qt::Vertical combines with NoScale, LeftScale and RightScale
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetOrientation()\fP, \fBsetScalePosition()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINoScale \fP\fP
+No scale\&. 
+.TP
+\fB\fILeftScale \fP\fP
+The scale is left of the pipe\&. 
+.TP
+\fB\fIRightScale \fP\fP
+The scale is right of the pipe\&. 
+.TP
+\fB\fITopScale \fP\fP
+The scale is above the pipe\&. 
+.TP
+\fB\fIBottomScale \fP\fP
+The scale is below the pipe\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtThermo::QwtThermo (QWidget *parent = \fCNULL\fP)\fC [explicit]\fP"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIparent\fP Parent widget 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "const QBrush & QwtThermo::alarmBrush () const"
+Return the liquid brush ( QPalette::Highlight ) above the alarm threshold\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAlarmBrush()\fP, QWidget::palette()
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "bool QwtThermo::alarmEnabled () const"
+\fBReturns:\fP
+.RS 4
+True, when the alarm threshold is enabled\&.
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "double QwtThermo::alarmLevel () const"
+Return the alarm threshold\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAlarmLevel()\fP
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "int QwtThermo::borderWidth () const"
+Return the border width of the thermometer pipe\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetBorderWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::changeEvent (QEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Qt change event handler 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Event 
+.RE
+.PP
+
+.SS "\fBQwtColorMap\fP * QwtThermo::colorMap ()"
+\fBReturns:\fP
+.RS 4
+Color map for the fill color 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "const \fBQwtColorMap\fP * QwtThermo::colorMap () const"
+\fBReturns:\fP
+.RS 4
+Color map for the fill color 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "void QwtThermo::drawLiquid (QPainter *painter, const QRect &pipeRect) const\fC [protected]\fP, \fC [virtual]\fP"
+Redraw the liquid in thermometer pipe\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIpipeRect\fP Bounding rectangle of the pipe without borders 
+.RE
+.PP
+
+.SS "const QBrush & QwtThermo::fillBrush () const"
+Return the liquid ( QPalette::ButtonText ) brush\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetFillBrush()\fP, QWidget::palette() 
+.RE
+.PP
+
+.SS "QSize QwtThermo::minimumSizeHint () const\fC [virtual]\fP"
+
+.PP
+Return a minimum size hint\&. \fBWarning:\fP
+.RS 4
+The return value depends on the font and the scale\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsizeHint()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::paintEvent (QPaintEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Paint event handler 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Paint event 
+.RE
+.PP
+
+.SS "QRect QwtThermo::pipeRect () const\fC [protected]\fP"
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of the pipe ( without borders ) in widget coordinates 
+.RE
+.PP
+
+.SS "int QwtThermo::pipeWidth () const"
+Return the width of the pipe\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetPipeWidth()\fP 
+.RE
+.PP
+
+.SS "\fBQwtInterval::BorderFlags\fP QwtThermo::rangeFlags () const"
+\fBReturns:\fP
+.RS 4
+Range flags 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRangeFlags()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::resizeEvent (QResizeEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Resize event handler 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Resize event 
+.RE
+.PP
+
+.SS "const \fBQwtScaleDraw\fP * QwtThermo::scaleDraw () const"
+\fBReturns:\fP
+.RS 4
+the scale draw of the thermo 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScaleDraw()\fP 
+.RE
+.PP
+
+.SS "\fBQwtScaleDraw\fP * QwtThermo::scaleDraw ()\fC [protected]\fP"
+\fBReturns:\fP
+.RS 4
+the scale draw of the thermo 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScaleDraw()\fP 
+.RE
+.PP
+
+.SS "\fBQwtThermo::ScalePos\fP QwtThermo::scalePosition () const"
+Return the scale position\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScalePosition()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setAlarmBrush (const QBrush &brush)"
+
+.PP
+Specify the liquid brush above the alarm threshold\&. Changes the QPalette::Highlight brush of the palette\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbrush\fP New brush\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBalarmBrush()\fP, QWidget::setPalette()
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "void QwtThermo::setAlarmEnabled (boolon)"
+
+.PP
+Enable or disable the alarm threshold\&. \fBParameters:\fP
+.RS 4
+\fIon\fP true (disabled) or false (enabled)
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "void QwtThermo::setAlarmLevel (doublelevel)"
+Specify the alarm threshold\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlevel\fP Alarm threshold 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBalarmLevel()\fP
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "void QwtThermo::setBorderWidth (intwidth)"
+Set the border width of the pipe\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP Border width 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBborderWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setColorMap (\fBQwtColorMap\fP *colorMap)"
+
+.PP
+Assign a color map for the fill color\&. \fBParameters:\fP
+.RS 4
+\fIcolorMap\fP Color map 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The alarm threshold has no effect, when a color map has been assigned 
+.RE
+.PP
+
+.SS "void QwtThermo::setFillBrush (const QBrush &brush)"
+
+.PP
+Change the brush of the liquid\&. Changes the QPalette::ButtonText brush of the palette\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbrush\fP New brush\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBfillBrush()\fP, QWidget::setPalette() 
+.RE
+.PP
+
+.SS "void QwtThermo::setOrientation (Qt::Orientationo, \fBScalePos\fPs)"
+
+.PP
+Set the thermometer orientation and the scale position\&. The scale position NoScale disables the scale\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIo\fP orientation\&. Possible values are Qt::Horizontal and Qt::Vertical\&. The default value is Qt::Vertical\&. 
+.br
+\fIs\fP Position of the scale\&. The default value is NoScale\&.
+.RE
+.PP
+A valid combination of scale position and orientation is enforced:
+.IP "\(bu" 2
+a horizontal thermometer can have the scale positions TopScale, BottomScale or NoScale;
+.IP "\(bu" 2
+a vertical thermometer can have the scale positions LeftScale, RightScale or NoScale;
+.IP "\(bu" 2
+an invalid scale position will default to NoScale\&.
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScalePosition()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setPipeWidth (intwidth)"
+Change the width of the pipe\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP Width of the pipe 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBpipeWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setRangeFlags (\fBQwtInterval::BorderFlags\fPflags)"
+
+.PP
+Exclude/Include min/max values\&. According to the flags minValue() and maxValue() are included/excluded from the pipe\&. In case of an excluded value the corresponding tick is painted 1 pixel off of the \fBpipeRect()\fP\&.
+.PP
+F\&.e\&. when a minimum of 0\&.0 has to be displayed as an empty pipe the minValue() needs to be excluded\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIflags\fP Range flags 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBrangeFlags()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setScaleDraw (\fBQwtScaleDraw\fP *scaleDraw)"
+
+.PP
+Set a scale draw\&. For changing the labels of the scales, it is necessary to derive from \fBQwtScaleDraw\fP and overload \fBQwtScaleDraw::label()\fP\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIscaleDraw\fP ScaleDraw object, that has to be created with new and will be deleted in \fB~QwtThermo()\fP or the next call of \fBsetScaleDraw()\fP\&. 
+.RE
+.PP
+
+.SS "void QwtThermo::setScalePosition (\fBScalePos\fPscalePos)"
+
+.PP
+Change the scale position (and thermometer orientation)\&. \fBParameters:\fP
+.RS 4
+\fIscalePos\fP Position of the scale\&.
+.RE
+.PP
+A valid combination of scale position and orientation is enforced:
+.IP "\(bu" 2
+if the new scale position is LeftScale or RightScale, the scale orientation will become Qt::Vertical;
+.IP "\(bu" 2
+if the new scale position is BottomScale or TopScale, the scale orientation will become Qt::Horizontal;
+.IP "\(bu" 2
+if the new scale position is NoScale, the scale orientation will not change\&.
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetOrientation()\fP, \fBscalePosition()\fP 
+.RE
+.PP
+
+.SS "void QwtThermo::setSpacing (intspacing)"
+
+.PP
+Change the spacing between pipe and scale\&. A spacing of 0 means, that the backbone of the scale is below the pipe\&.
+.PP
+The default setting is 3 pixels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIspacing\fP Number of pixels 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBspacing()\fP; 
+.RE
+.PP
+
+.SS "void QwtThermo::setValue (doublevalue)\fC [virtual]\fP, \fC [slot]\fP"
+Set the current value\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP New Value 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBvalue()\fP 
+.RE
+.PP
+
+.SS "QSize QwtThermo::sizeHint () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+the minimum size hint 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBminimumSizeHint()\fP 
+.RE
+.PP
+
+.SS "int QwtThermo::spacing () const"
+\fBReturns:\fP
+.RS 4
+Number of pixels between pipe and scale 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSpacing()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

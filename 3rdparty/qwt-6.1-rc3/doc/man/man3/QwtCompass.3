@@ -1,0 +1,168 @@
+.TH "QwtCompass" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCompass \- 
+.PP
+A Compass Widget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_compass\&.h>\fP
+.PP
+Inherits \fBQwtDial\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtCompass\fP (QWidget *parent=NULL)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtCompass\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetRose\fP (\fBQwtCompassRose\fP *\fBrose\fP)"
+.br
+.ti -1c
+.RI "const \fBQwtCompassRose\fP * \fBrose\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtCompassRose\fP * \fBrose\fP ()"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawRose\fP (QPainter *, const QPointF &center, double radius, double north, QPalette::ColorGroup) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawScaleContents\fP (QPainter *, const QPointF &center, double radius) const "
+.br
+.ti -1c
+.RI "virtual void \fBkeyPressEvent\fP (QKeyEvent *)"
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+A Compass Widget\&. 
+
+\fBQwtCompass\fP is a widget to display and enter directions\&. It consists of a scale, an optional needle and rose\&.
+.PP
+.PP
+\fBNote:\fP
+.RS 4
+The examples/dials example shows how to use \fBQwtCompass\fP\&. 
+.RE
+.PP
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtCompass::QwtCompass (QWidget *parent = \fCNULL\fP)\fC [explicit]\fP"
+
+.PP
+Constructor\&. \fBParameters:\fP
+.RS 4
+\fIparent\fP Parent widget
+.RE
+.PP
+Create a compass widget with a scale, no needle and no rose\&. The default origin is 270\&.0 with no valid value\&. It accepts mouse and keyboard inputs and has no step size\&. The default mode is \fBQwtDial::RotateNeedle\fP\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtCompass::drawRose (QPainter *painter, const QPointF &center, doubleradius, doublenorth, QPalette::ColorGroupcg) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the compass rose
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcenter\fP Center of the compass 
+.br
+\fIradius\fP of the circle, where to paint the rose 
+.br
+\fInorth\fP Direction pointing north, in degrees counter clockwise 
+.br
+\fIcg\fP Color group 
+.RE
+.PP
+
+.SS "void QwtCompass::drawScaleContents (QPainter *painter, const QPointF &center, doubleradius) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the contents of the scale
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcenter\fP Center of the content circle 
+.br
+\fIradius\fP Radius of the content circle 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtDial\fP\&.
+.SS "void QwtCompass::keyPressEvent (QKeyEvent *kev)\fC [protected]\fP, \fC [virtual]\fP"
+Handles key events
+.PP
+Beside the keys described in \fBQwtDial::keyPressEvent\fP numbers from 1-9 (without 5) set the direction according to their position on the num pad\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisReadOnly()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtAbstractSlider\fP\&.
+.SS "const \fBQwtCompassRose\fP * QwtCompass::rose () const"
+\fBReturns:\fP
+.RS 4
+rose 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRose()\fP 
+.RE
+.PP
+
+.SS "\fBQwtCompassRose\fP * QwtCompass::rose ()"
+\fBReturns:\fP
+.RS 4
+rose 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRose()\fP 
+.RE
+.PP
+
+.SS "void QwtCompass::setRose (\fBQwtCompassRose\fP *rose)"
+Set a rose for the compass 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIrose\fP Compass rose 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The rose will be deleted, when a different rose is set or in ~QwtCompass 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBrose()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

@@ -3,7 +3,8 @@ if(NOT ${BR_EMBEDDED})
 
   # Build executable
   add_executable(br-creator WIN32 ${SRC} ${MOC} ${UIC} ${BR_RESOURCES})
-  target_link_libraries(br-creator openbr openbr-gui ${QT_LIBRARIES})
+  qt5_use_modules(br-creator ${QT_DEPENDENCIES})
+  target_link_libraries(br-creator openbr openbr-gui)
 
   # Install
   install(TARGETS br-creator RUNTIME DESTINATION bin BUNDLE DESTINATION .)

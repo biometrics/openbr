@@ -1,0 +1,110 @@
+.TH "QwtCompassWindArrow" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCompassWindArrow \- 
+.PP
+An indicator for the wind direction\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_dial_needle\&.h>\fP
+.PP
+Inherits \fBQwtDialNeedle\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBStyle\fP { \fBStyle1\fP, \fBStyle2\fP }"
+.br
+.RI "\fIStyle of the arrow\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtCompassWindArrow\fP (\fBStyle\fP, const QColor &light=Qt::white, const QColor &dark=Qt::gray)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawNeedle\fP (QPainter *, double length, QPalette::ColorGroup) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+An indicator for the wind direction\&. 
+
+\fBQwtCompassWindArrow\fP shows the direction where the wind comes from\&.
+.PP
+.IP "\(bu" 2
+QPalette::Light
+.br
+ Used for Style1, or the light half of Style2
+.IP "\(bu" 2
+QPalette::Dark
+.br
+ Used for the dark half of Style2
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtDial\fP, \fBQwtCompass\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtCompassWindArrow::Style\fP"
+
+.PP
+Style of the arrow\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIStyle1 \fP\fP
+A needle pointing to the center\&. 
+.TP
+\fB\fIStyle2 \fP\fP
+A needle pointing to the center\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtCompassWindArrow::QwtCompassWindArrow (\fBStyle\fPstyle, const QColor &light = \fCQt::white\fP, const QColor &dark = \fCQt::gray\fP)"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstyle\fP Arrow style 
+.br
+\fIlight\fP Light color 
+.br
+\fIdark\fP Dark color 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtCompassWindArrow::drawNeedle (QPainter *painter, doublelength, QPalette::ColorGroupcolorGroup) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the needle
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIlength\fP Length of the needle 
+.br
+\fIcolorGroup\fP Color group, used for painting 
+.RE
+.PP
+
+.PP
+Implements \fBQwtDialNeedle\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

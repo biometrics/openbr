@@ -62,7 +62,7 @@ FileList BEE::readSigset(QString sigset, bool ignoreMetadata)
 
             QDomElement e = fileNode.toElement();
             QDomNamedNodeMap attributes = e.attributes();
-            for (unsigned int i=0; i<attributes.length(); i++) {
+            for (int i=0; i<attributes.length(); i++) {
                 QString key = attributes.item(i).nodeName();
                 QString value = attributes.item(i).nodeValue();
 

@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_qwt_abstract_scale_draw.html" title="A abstract base class for drawing scales." alt="" coords="5,31,157,57"/>
+<area shape="rect" id="node3" href="$class_qwt_round_scale_draw.html" title="A class for drawing round scales." alt="" coords="205,5,349,32"/>
+<area shape="rect" id="node7" href="$class_qwt_scale_draw.html" title="A class for drawing scales." alt="" coords="224,56,331,83"/>
+<area shape="rect" id="node5" href="$class_qwt_compass_scale_draw.html" title="A special scale draw made for QwtCompass." alt="" coords="398,5,557,32"/>
+<area shape="rect" id="node9" href="$class_qwt_date_scale_draw.html" title="A class for drawing datetime scales." alt="" coords="411,56,543,83"/>
+</map>

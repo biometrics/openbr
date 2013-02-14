@@ -1,0 +1,7 @@
+<map id="QwtPlotMultiBarChart" name="QwtPlotMultiBarChart">
+<area shape="rect" id="node2" href="$class_qwt_plot_abstract_bar_chart.html" title="Abstract base class for bar chart items." alt="" coords="5,155,165,181"/>
+<area shape="rect" id="node4" href="$class_qwt_plot_series_item.html" title="Base class for plot items representing a series of samples." alt="" coords="54,80,180,107"/>
+<area shape="rect" id="node6" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="72,5,163,32"/>
+<area shape="rect" id="node8" href="$class_qwt_abstract_series_store.html" title="Bridge between QwtSeriesStore and QwtPlotSeriesItem." alt="" coords="195,5,351,32"/>
+<area shape="rect" id="node10" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtSetSample \&gt;" alt="" coords="190,155,407,181"/>
+</map>

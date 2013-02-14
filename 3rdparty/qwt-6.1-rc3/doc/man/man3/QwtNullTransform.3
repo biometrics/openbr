@@ -1,0 +1,84 @@
+.TH "QwtNullTransform" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtNullTransform \- 
+.PP
+Null transformation\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_transform\&.h>\fP
+.PP
+Inherits \fBQwtTransform\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtNullTransform\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtNullTransform\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual double \fBtransform\fP (double value) const "
+.br
+.ti -1c
+.RI "virtual double \fBinvTransform\fP (double value) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtTransform\fP * \fBcopy\fP () const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Null transformation\&. 
+
+\fBQwtNullTransform\fP returns the values unmodified\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtTransform\fP * QwtNullTransform::copy () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Clone of the transformation 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+.SS "double QwtNullTransform::invTransform (doublevalue) const\fC [virtual]\fP"
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Value to be transformed 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+value unmodified 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+.SS "double QwtNullTransform::transform (doublevalue) const\fC [virtual]\fP"
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Value to be transformed 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+value unmodified 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTransform\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

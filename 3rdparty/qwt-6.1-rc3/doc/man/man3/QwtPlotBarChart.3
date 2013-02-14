@@ -1,0 +1,436 @@
+.TH "QwtPlotBarChart" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotBarChart \- 
+.PP
+\fBQwtPlotBarChart\fP displays a series of a values as bars\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_barchart\&.h>\fP
+.PP
+Inherits \fBQwtPlotAbstractBarChart\fP, and \fBQwtSeriesStore< QPointF >\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBLegendMode\fP { \fBLegendChartTitle\fP, \fBLegendBarTitles\fP }"
+.br
+.RI "\fILegend modes\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotBarChart\fP (const QString &\fBtitle\fP=QString::null)"
+.br
+.ti -1c
+.RI "\fBQwtPlotBarChart\fP (const \fBQwtText\fP &\fBtitle\fP)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtPlotBarChart\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual int \fBrtti\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (const QVector< QPointF > &)"
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (const QVector< double > &)"
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (\fBQwtSeriesData\fP< QPointF > *series)"
+.br
+.ti -1c
+.RI "void \fBsetSymbol\fP (\fBQwtColumnSymbol\fP *)"
+.br
+.RI "\fIAssign a symbol\&. \fP"
+.ti -1c
+.RI "const \fBQwtColumnSymbol\fP * \fBsymbol\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLegendMode\fP (\fBLegendMode\fP)"
+.br
+.ti -1c
+.RI "\fBLegendMode\fP \fBlegendMode\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawSeries\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, int from, int to) const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.ti -1c
+.RI "virtual \fBQwtColumnSymbol\fP * \fBspecialSymbol\fP (int sampleIndex, const QPointF &) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtText\fP \fBbarTitle\fP (int sampleIndex) const "
+.br
+.RI "\fIReturn the title of a bar\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawSample\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, const \fBQwtInterval\fP &boundingInterval, int index, const QPointF &\fBsample\fP) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawBar\fP (QPainter *, int sampleIndex, const QPointF &point, const \fBQwtColumnRect\fP &) const "
+.br
+.ti -1c
+.RI "QList< \fBQwtLegendData\fP > \fBlegendData\fP () const "
+.br
+.RI "\fIReturn all information, that is needed to represent the item on the legend\&. \fP"
+.ti -1c
+.RI "\fBQwtGraphic\fP \fBlegendIcon\fP (int index, const QSizeF &) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBQwtPlotBarChart\fP displays a series of a values as bars\&. 
+
+Each bar might be customized individually by implementing a \fBspecialSymbol()\fP\&. Otherwise it is rendered using a default symbol\&.
+.PP
+Depending on its \fBorientation()\fP the bars are displayed horizontally or vertically\&. The bars cover the interval between the \fBbaseline()\fP and the value\&.
+.PP
+By activating the LegendBarTitles mode each sample will have its own entry on the legend\&.
+.PP
+The most common use case of a bar chart is to display a list of y coordinates, where the x coordinate is simply the index in the list\&. But for other situations ( f\&.e\&. when values are related to dates ) it is also possible to set x coordinates explicitly\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotMultiBarChart\fP, \fBQwtPlotHistogram\fP, \fBQwtPlotCurve::Sticks\fP, \fBQwtPlotSeriesItem::orientation()\fP, \fBQwtPlotAbstractBarChart::baseline()\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlotBarChart::LegendMode\fP"
+
+.PP
+Legend modes\&. The default setting is \fBQwtPlotBarChart::LegendChartTitle\fP\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLegendMode()\fP, \fBlegendMode()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fILegendChartTitle \fP\fP
+One entry on the legend showing the default symbol and the \fBtitle()\fP of the chart
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotItem::title()\fP 
+.RE
+.PP
+
+.TP
+\fB\fILegendBarTitles \fP\fP
+One entry for each value showing the individual symbol of the corresponding bar and the bar title\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBspecialSymbol()\fP, \fBbarTitle()\fP 
+.RE
+.PP
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlotBarChart::QwtPlotBarChart (const QString &title = \fCQString::null\fP)\fC [explicit]\fP"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP Title of the curve 
+.RE
+.PP
+
+.SS "QwtPlotBarChart::QwtPlotBarChart (const \fBQwtText\fP &title)\fC [explicit]\fP"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP Title of the curve 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtText\fP QwtPlotBarChart::barTitle (intsampleIndex) const\fC [virtual]\fP"
+
+.PP
+Return the title of a bar\&. In LegendBarTitles mode the title is displayed on the legend entry corresponding to a bar\&.
+.PP
+The default implementation is a dummy, that is intended to be overloaded\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsampleIndex\fP Index of the bar 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+An empty text 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBLegendBarTitles\fP 
+.RE
+.PP
+
+.SS "QRectF QwtPlotBarChart::boundingRect () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of all samples\&. For an empty series the rectangle is invalid\&. 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotSeriesItem\fP\&.
+.SS "void QwtPlotBarChart::drawBar (QPainter *painter, intsampleIndex, const QPointF &sample, const \fBQwtColumnRect\fP &rect) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw a bar
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIsampleIndex\fP Index of the sample represented by the bar 
+.br
+\fIsample\fP Value of the sample 
+.br
+\fIrect\fP Bounding rectangle of the bar 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::drawSample (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, const \fBQwtInterval\fP &boundingInterval, intindex, const QPointF &sample) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw a sample
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP x map 
+.br
+\fIyMap\fP y map 
+.br
+\fIcanvasRect\fP Contents rect of the canvas 
+.br
+\fIboundingInterval\fP Bounding interval of sample values 
+.br
+\fIindex\fP Index of the sample 
+.br
+\fIsample\fP Value of the sample
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawSeries()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::drawSeries (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, intfrom, intto) const\fC [virtual]\fP"
+Draw an interval of the bar chart
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP Maps x-values into pixel coordinates\&. 
+.br
+\fIyMap\fP Maps y-values into pixel coordinates\&. 
+.br
+\fIcanvasRect\fP Contents rect of the canvas 
+.br
+\fIfrom\fP Index of the first point to be painted 
+.br
+\fIto\fP Index of the last point to be painted\&. If to < 0 the curve will be painted to its last point\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+drawSymbols() 
+.RE
+.PP
+
+.PP
+Implements \fBQwtPlotSeriesItem\fP\&.
+.SS "QList< \fBQwtLegendData\fP > QwtPlotBarChart::legendData () const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Return all information, that is needed to represent the item on the legend\&. In case of LegendBarTitles an entry for each bar is returned, otherwise the chart is represented like any other plot item from its \fBtitle()\fP and the \fBlegendIcon()\fP\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtitle()\fP, \fBsetLegendMode()\fP, \fBbarTitle()\fP, \fBQwtLegend\fP, \fBQwtPlotLegendItem\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "\fBQwtGraphic\fP QwtPlotBarChart::legendIcon (intindex, const QSizeF &size) const\fC [protected]\fP, \fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Icon representing a bar or the chart on the legend
+.RE
+.PP
+When the \fBlegendMode()\fP is LegendBarTitles the icon shows the bar corresponding to index - otherwise the bar displays the default symbol\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index of the legend entry 
+.br
+\fIsize\fP Icon size
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLegendMode()\fP, \fBdrawBar()\fP, \fBQwtPlotItem::setLegendIconSize()\fP, \fBQwtPlotItem::legendData()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "\fBQwtPlotBarChart::LegendMode\fP QwtPlotBarChart::legendMode () const"
+\fBReturns:\fP
+.RS 4
+Legend mode 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLegendMode()\fP 
+.RE
+.PP
+
+.SS "int QwtPlotBarChart::rtti () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+\fBQwtPlotItem::Rtti_PlotBarChart\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotBarChart::setLegendMode (\fBLegendMode\fPmode)"
+Set the mode that decides what to display on the legend
+.PP
+In case of LegendBarTitles \fBbarTitle()\fP needs to be overloaded to return individual titles for each bar\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP New mode 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlegendMode()\fP, \fBlegendData()\fP, \fBbarTitle()\fP, \fBQwtPlotItem::ItemAttribute\fP 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::setSamples (const QVector< QPointF > &samples)"
+Initialize data with an array of points
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Vector of points 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+QVector is implicitly shared 
+.PP
+QPolygonF is derived from QVector<QPointF> 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::setSamples (const QVector< double > &samples)"
+Initialize data with an array of doubles
+.PP
+The indices in the array are taken as x coordinate, while the doubles are interpreted as y values\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Vector of y coordinates 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+QVector is implicitly shared 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::setSamples (\fBQwtSeriesData\fP< QPointF > *data)"
+Assign a series of samples
+.PP
+\fBsetSamples()\fP is just a wrapper for \fBsetData()\fP without any additional value - beside that it is easier to find for the developer\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP Data 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The item takes ownership of the data object, deleting it when its not used anymore\&. 
+.RE
+.PP
+
+.SS "void QwtPlotBarChart::setSymbol (\fBQwtColumnSymbol\fP *symbol)"
+
+.PP
+Assign a symbol\&. The bar chart will take the ownership of the symbol, hence the previously set symbol will be delete by setting a new one\&. If \fCsymbol\fP is \fCNULL\fP no symbol will be drawn\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsymbol\fP Symbol 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsymbol()\fP 
+.RE
+.PP
+
+.SS "\fBQwtColumnSymbol\fP * QwtPlotBarChart::specialSymbol (intsampleIndex, const QPointF &sample) const\fC [virtual]\fP"
+Needs to be overloaded to return a non default symbol for a specific sample
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsampleIndex\fP Index of the sample represented by the bar 
+.br
+\fIsample\fP Value of the sample
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+NULL, indicating to use the default symbol 
+.RE
+.PP
+
+.SS "const \fBQwtColumnSymbol\fP * QwtPlotBarChart::symbol () const"
+\fBReturns:\fP
+.RS 4
+Current symbol or NULL, when no symbol has been assigned 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSymbol()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

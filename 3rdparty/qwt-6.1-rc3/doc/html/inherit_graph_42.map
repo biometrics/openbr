@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_qwt_series_data.html" title="QwtSeriesData\&lt; QwtSetSample \&gt;" alt="" coords="5,12,219,39"/>
+<area shape="rect" id="node3" href="$class_qwt_array_series_data.html" title="QwtArraySeriesData\l\&lt; QwtSetSample \&gt;" alt="" coords="267,5,403,46"/>
+<area shape="rect" id="node5" href="$class_qwt_set_series_data.html" title="Interface for iterating over an array of samples." alt="" coords="451,12,576,39"/>
+</map>

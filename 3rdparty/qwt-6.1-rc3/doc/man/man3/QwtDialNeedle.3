@@ -1,0 +1,123 @@
+.TH "QwtDialNeedle" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtDialNeedle \- 
+.PP
+Base class for needles that can be used in a \fBQwtDial\fP\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_dial_needle\&.h>\fP
+.PP
+Inherited by \fBQwtCompassMagnetNeedle\fP, \fBQwtCompassWindArrow\fP, and \fBQwtDialSimpleNeedle\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtDialNeedle\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtDialNeedle\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual void \fBsetPalette\fP (const QPalette &)"
+.br
+.ti -1c
+.RI "const QPalette & \fBpalette\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *painter, const QPointF &center, double length, double direction, QPalette::ColorGroup=QPalette::Active) const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawNeedle\fP (QPainter *painter, double length, QPalette::ColorGroup colorGroup) const =0"
+.br
+.RI "\fIDraw the needle\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawKnob\fP (QPainter *, double width, const QBrush &, bool sunken) const "
+.br
+.RI "\fIDraw the knob\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+Base class for needles that can be used in a \fBQwtDial\fP\&. 
+
+\fBQwtDialNeedle\fP is a pointer that indicates a value by pointing to a specific direction\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtDial\fP, \fBQwtCompass\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtDialNeedle::draw (QPainter *painter, const QPointF &center, doublelength, doubledirection, QPalette::ColorGroupcolorGroup = \fCQPalette::Active\fP) const\fC [virtual]\fP"
+Draw the needle
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcenter\fP Center of the dial, start position for the needle 
+.br
+\fIlength\fP Length of the needle 
+.br
+\fIdirection\fP Direction of the needle, in degrees counter clockwise 
+.br
+\fIcolorGroup\fP Color group, used for painting 
+.RE
+.PP
+
+.SS "virtual void QwtDialNeedle::drawNeedle (QPainter *painter, doublelength, QPalette::ColorGroupcolorGroup) const\fC [protected]\fP, \fC [pure virtual]\fP"
+
+.PP
+Draw the needle\&. The origin of the needle is at position (0\&.0, 0\&.0 ) pointing in direction 0\&.0 ( = east )\&.
+.PP
+The painter is already initialized with translation and rotation\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIlength\fP Length of the needle 
+.br
+\fIcolorGroup\fP Color group, used for painting
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetPalette()\fP, \fBpalette()\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtCompassWindArrow\fP, \fBQwtCompassMagnetNeedle\fP, and \fBQwtDialSimpleNeedle\fP\&.
+.SS "const QPalette & QwtDialNeedle::palette () const"
+\fBReturns:\fP
+.RS 4
+the palette of the needle\&. 
+.RE
+.PP
+
+.SS "void QwtDialNeedle::setPalette (const QPalette &palette)\fC [virtual]\fP"
+Sets the palette for the needle\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpalette\fP New Palette 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

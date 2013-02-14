@@ -65,13 +65,9 @@ if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
 endif()
 
-# Configure build
 option(BR_EMBEDDED "Limit software dependencies")
 if(${BR_EMBEDDED})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
-  set(QT_DEPENDENCIES QtCore)
-else()
-  set(QT_DEPENDENCIES QtCore QtGui QtNetwork QtOpenGL QtSql QtSvg QtXml)
 endif()
 
 option(BR_DISTRIBUTED "Target distributed memory models")
@@ -85,11 +81,16 @@ if(${BR_DISTRIBUTED})
 endif()
 
 # Find Qt
-find_package(Qt4 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
-set(QT_USE_QTMAIN TRUE)
-include(${QT_USE_FILE})
-add_definitions(${QT_DEFINITIONS})
-set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${QT_LIBRARIES})
+find_package(Qt5Concurrent)
+find_package(Qt5Core)
+set(QT_DEPENDENCIES Concurrent Core)
+option(BR_EMBEDDED "Limit software dependencies")
+if(NOT ${BR_EMBEDDED})
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network OpenGL PrintSupport Sql Svg Widgets Xml)
+endif()
+foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
+  find_package(Qt5${QT_DEPENDENCY})
+endforeach()
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)

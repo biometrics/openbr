@@ -1,0 +1,5 @@
+<map id="QwtTransform" name="QwtTransform">
+<area shape="rect" id="node3" href="$class_qwt_log_transform.html" title="Logarithmic transformation." alt="" coords="5,80,128,107"/>
+<area shape="rect" id="node5" href="$class_qwt_null_transform.html" title="Null transformation." alt="" coords="153,80,276,107"/>
+<area shape="rect" id="node7" href="$class_qwt_power_transform.html" title="A transformation using pow()" alt="" coords="301,80,440,107"/>
+</map>

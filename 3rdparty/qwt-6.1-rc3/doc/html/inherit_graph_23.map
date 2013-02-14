@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_qwt_picker_machine.html" title="A state machine for QwtPicker selections." alt="" coords="5,132,136,159"/>
+<area shape="rect" id="node3" href="$class_qwt_picker_click_point_machine.html" title="A state machine for point selections." alt="" coords="185,5,373,32"/>
+<area shape="rect" id="node5" href="$class_qwt_picker_click_rect_machine.html" title="A state machine for rectangle selections." alt="" coords="186,56,371,83"/>
+<area shape="rect" id="node7" href="$class_qwt_picker_drag_point_machine.html" title="A state machine for point selections." alt="" coords="185,107,372,133"/>
+<area shape="rect" id="node9" href="$class_qwt_picker_drag_rect_machine.html" title="A state machine for rectangle selections." alt="" coords="187,157,371,184"/>
+<area shape="rect" id="node11" href="$class_qwt_picker_polygon_machine.html" title="A state machine for polygon selections." alt="" coords="190,208,367,235"/>
+<area shape="rect" id="node13" href="$class_qwt_picker_tracker_machine.html" title="A state machine for indicating mouse movements." alt="" coords="191,259,366,285"/>
+</map>

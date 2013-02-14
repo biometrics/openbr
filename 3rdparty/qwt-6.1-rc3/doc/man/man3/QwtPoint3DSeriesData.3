@@ -1,0 +1,60 @@
+.TH "QwtPoint3DSeriesData" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPoint3DSeriesData \- 
+.PP
+Interface for iterating over an array of 3D points\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_series_data\&.h>\fP
+.PP
+Inherits \fBQwtArraySeriesData< QwtPoint3D >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPoint3DSeriesData\fP (const QVector< \fBQwtPoint3D\fP > &=QVector< \fBQwtPoint3D\fP >())"
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.RI "\fICalculate the bounding rectangle\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+Interface for iterating over an array of 3D points\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPoint3DSeriesData::QwtPoint3DSeriesData (const QVector< \fBQwtPoint3D\fP > &samples = \fCQVector<\fBQwtPoint3D\fP>()\fP)"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Samples 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtPoint3DSeriesData::boundingRect () const\fC [virtual]\fP"
+
+.PP
+Calculate the bounding rectangle\&. The bounding rectangle is calculated once by iterating over all points and is stored for all following requests\&.
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QwtPoint3D >\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.
