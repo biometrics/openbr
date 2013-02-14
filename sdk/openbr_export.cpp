@@ -245,7 +245,7 @@ $ br -help
  * $ cd ../..
  * $ rm -r OpenCV-2.4.3
  * \endcode
- * -# <a href="http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg">Download Qt 4.8.4</a> and install.
+ * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-mac-opensource-5.0.1-clang-offline.dmg">Download Qt 5.0.1</a> and install.
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
  * $ git clone https://github.com/biometrics/openbr.git
@@ -258,17 +258,39 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake ..
+ * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 ..
  * $ make
  * $ make install
  * \endcode
  * -# Start hacking OpenBR!
- *  -# Download, install, and run <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-mac-opensource-2.6.2.dmg">Qt Creator</a> IDE.
+ *  -# Open Qt Creator IDE
+ *  \code
+ *  $ open ~/Qt5.0.1/Qt\ Creator.app
+ *  \endcode
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "~/openbr/CMakeLists.txt" then "Open".
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
  *  -# Select "Run CMake" then "Done".
- *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
+ *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
+ * -# Build OpenBR documentation!
+ *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.3.1.src.tar.gz">Download Doxygen 1.8.3.1</a> and install:
+ *  \code
+ *  $ cd ~/Downloads
+ *  $ tar -xf doxygen-1.8.2.src.tar.gz
+ *  $ cd doxygen-1.8.2
+ *  $ ./configure
+ *  $ make
+ *  $ sudo make install
+ *  $ cd ..
+ *  $ rm -r doxygen-1.8.2
+ *  \endcode
+ *  -# Modify build settings and recompile:
+ *  \code
+ *  $ cd ~/openbr/build
+ *  $ cmake -D BR_BUILD_DOCUMENTATION=ON ..
+ *  $ make
+ *  $ open html/index.html
+ *  \endcode
  */
 
 /*!
