@@ -129,6 +129,44 @@ class DupTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, DupTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Create matrix from landmarks.
+ * \author Scott Klum \cite sklum
+ * \todo Padding should be a percent of total image size
+ */
+
+class RectFromLandmarksTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices)
+    Q_PROPERTY(double padding READ get_padding WRITE set_padding RESET reset_padding)
+    BR_PROPERTY(QList<int>, indices, QList<int>())
+    BR_PROPERTY(double, padding, 0)
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (src.file.landmarks().isEmpty()) qFatal("No landmarks");
+
+        int minX = std::numeric_limits<int>::max();
+        int minY = minX;
+        int maxX = -std::numeric_limits<int>::max();
+        int maxY = maxX;
+
+        foreach(int index, indices) {
+            if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
+            if (src.file.landmarks()[index].x() > maxX) maxX = src.file.landmarks()[index].x();
+            if (src.file.landmarks()[index].y() < minY) minY = src.file.landmarks()[index].y();
+            if (src.file.landmarks()[index].y() > maxY) maxY = src.file.landmarks()[index].y();
+            dst.file.appendLandmark(src.file.landmarks()[index]);
+        }
+
+        dst.m() = src.m()(Rect(minX-padding/2.0, minY-padding/2.0, maxX-minX+padding, maxY-minY+padding));
+    }
+};
+
+BR_REGISTER(Transform, RectFromLandmarksTransform)
+
 } // namespace br
 
 #include "regions.moc"
