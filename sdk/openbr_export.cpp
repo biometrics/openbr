@@ -43,10 +43,11 @@
  * - \subpage linux_gcc
  * - \subpage linux_icc
  *
- * \section installation_pre_built Pre-Built
- * Following your operating system's best practices is recommended for installing the pre-built compressed archives.
- *
+ * \section installation_from_binary From Binary
+ * Pre-built releases are generally not provided, though they can be built from source using the instructions above.
+ * Generally you should follow your operating system's best practices for installing a binary package.
  * However, for temporary evaluation, one simple configuration approach is:
+ *
  * \par Linux
 \verbatim
 $ cd bin
