@@ -9,7 +9,7 @@ namespace br
  * \author Scott Klum \cite sklum
  */
 
-class STASMTransform : public UntrainableTransform
+class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -24,7 +24,7 @@ class STASMTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, STASMTransform)
+BR_REGISTER(Transform, StasmTransform)
 
 } // namespace br
 
