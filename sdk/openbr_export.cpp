@@ -130,7 +130,6 @@ $ br -help
  *   $ cd build-msvc2012
  *   $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *   $ nmake
- *   $ nmake package
  *   \endcode
  * -# Start hacking OpenBR!
  *  -# Download and install <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Qt Creator</a> IDE.
@@ -143,6 +142,13 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-msvc2012" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
+ * -# (Optional) To package OpenBR:
+ *  -# Download and install <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">NSIS 2.46</a>.
+ *  -# From the VS2012 x64 Cross Tools Command Prompt:
+ *   \code
+ *   $ cd C:\openbr\build-msvc2012
+ *   $ nmake package
+ *   \endcode
  */
 
 /*!
@@ -215,6 +221,13 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-mingw64" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
+ * -# (Optional) To package OpenBR:
+ *  -# Download and install <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">NSIS 2.46</a>.
+ *  -# From the MinGW-w64 Command Prompt:
+ *   \code
+ *   $ cd C:\openbr\build-mingw64
+ *   $ mingw32-make package
+ *   \endcode
  */
 
 /*!

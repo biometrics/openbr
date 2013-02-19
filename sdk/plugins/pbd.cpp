@@ -34,7 +34,7 @@ class PBDInitializer : public Initializer
 
     void initialize() const
     {
-        Globals->abbreviations.insert("RectFromEyes","RectFromLandmarks([9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 25],10)");
+        Globals->abbreviations.insert("RectFromEyes","RectFromLandmarks([9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 25],10,6.0)");
         Globals->abbreviations.insert("RectFromNose","RectFromLandmarks([0, 1, 2, 3, 4, 5, 6, 7, 8],10)");
         Globals->abbreviations.insert("RectFromBrow","RectFromLandmarks([15, 16, 17, 18, 19, 26, 27, 28, 29, 30],10)");
         Globals->abbreviations.insert("RectFromMouth","RectFromLandmarks([31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50],10)");
@@ -92,6 +92,8 @@ class PBDTransform : public UntrainableTransform
         // Detect potential candidates in the image
         vector<Candidate> candidates;
         pbd.detect(src.m(), depth, candidates);
+
+        if (Globals->verbose) qDebug("%li candidate detected for %s", candidates.size(), qPrintable(src.file.flat()));
 
         // Sort the candidates by score, then supress all but the candidate with the maximum score
         if (candidates.size() > 0) {

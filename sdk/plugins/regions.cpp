@@ -139,19 +139,21 @@ BR_REGISTER(Transform, DupTransform)
 class RectFromLandmarksTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices)
-    Q_PROPERTY(double padding READ get_padding WRITE set_padding RESET reset_padding)
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
+    Q_PROPERTY(double padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
+    Q_PROPERTY(double aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
     BR_PROPERTY(double, padding, 0)
+    BR_PROPERTY(double, aspectRatio, 1.0)
 
     void project(const Template &src, Template &dst) const
     {
         if (src.file.landmarks().isEmpty()) qFatal("No landmarks");
 
-        int minX = std::numeric_limits<int>::max();
-        int minY = minX;
-        int maxX = -std::numeric_limits<int>::max();
-        int maxY = maxX;
+        int minX, minY;
+        minX = minY = std::numeric_limits<int>::max();
+        int maxX, maxY;
+        maxX = maxY = -std::numeric_limits<int>::max();
 
         foreach(int index, indices) {
             if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
@@ -161,7 +163,11 @@ class RectFromLandmarksTransform : public UntrainableTransform
             dst.file.appendLandmark(src.file.landmarks()[index]);
         }
 
-        dst.m() = src.m()(Rect(minX-padding/2.0, minY-padding/2.0, maxX-minX+padding, maxY-minY+padding));
+        double width = maxX-minX+padding;
+        double height = maxY-minY+padding;
+        //double deltaHeight = ((width/aspectRatio) - height);
+
+        dst.m() = src.m()(Rect(std::max(0.0, minX-padding/2.0), std::max(0.0, minY-padding/2.0), width, height));
     }
 };
 
