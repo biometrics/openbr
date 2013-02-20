@@ -18,7 +18,7 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CMAKE_MODULE_PATH "${BR_SHARE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(PACKAGE_YEAR 2012)
 
-# Define icons
+# Define resources
 if(WIN32)
   set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr-small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.ico")
@@ -30,41 +30,14 @@ else()
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.png")
 endif()
 
-# Add resource file for Windows builds
 if(WIN32)
   configure_file(${BR_SHARE_DIR}/resources.rc.in resources.rc)
-  set(BR_WINDOWS_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
+  set(BR_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
+elseif(APPLE)
+  set(BR_RESOURCES ${NATIVE_ICON})
 endif()
 
-# Add icon file for Apple builds
-if(APPLE)
-  set(BR_APPLE_RESOURCES ${NATIVE_ICON})
-endif()
-
-set(BR_RESOURCES ${BR_WINDOWS_RESOURCES} ${BR_APPLE_RESOURCES})
-
-if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fvisibility=hidden -fno-omit-frame-pointer")
-endif()
-
-if(CMAKE_COMPILER_IS_GNUXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
-endif()
-
-if(MINGW)
-  # Fixes a linker warning
-  set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import")
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
-endif()
-
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
-endif()
-
-if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
-endif()
-
+# Build options
 option(BR_EMBEDDED "Limit software dependencies")
 if(${BR_EMBEDDED})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
@@ -96,6 +69,24 @@ endforeach()
 find_package(OpenCV REQUIRED)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching video videostab)
+
+# Compiler flags
+if(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -fvisibility=hidden -fno-omit-frame-pointer")
+  if(NOT APPLE)
+    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${_qt5Core_install_prefix}/lib)
+    if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
+    endif()
+  endif()
+else()
+  if(MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import") # Fixes a linker warning
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
+  elseif(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
+  endif()
+endif()
 
 # Enable Testing
 include(CppcheckTargets)

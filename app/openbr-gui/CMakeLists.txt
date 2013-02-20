@@ -1,5 +1,5 @@
 if(NOT ${BR_EMBEDDED})
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+  include_directories(${CMAKE_CURRENT_BINARY_DIR} ..)
 
   file(GLOB SRC *.cpp)
   file(GLOB HEADERS *.h)
