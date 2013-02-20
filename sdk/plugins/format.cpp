@@ -32,6 +32,57 @@ using namespace cv;
 namespace br
 {
 
+ /*!
+ * \ingroup formats
+ * \brief Read all frames of a video using OpenCV 
+ * \author Charles Otto \cite caotto
+ */
+class videoFormat : public Format
+{
+    Q_OBJECT
+
+public:
+    Template read() const
+    {
+        VideoCapture videoSource(file.name.toStdString());
+        videoSource.open(file.name.toStdString() );
+        
+    
+        Template frames;
+        if (!videoSource.isOpened()) {
+            qWarning("video file open failed");
+            return frames;
+        }
+
+        bool open = true;
+        while(open) {
+            cv::Mat frame;
+            open = videoSource.read(frame);
+            if (!open) break;
+
+            frames.append(cv::Mat());
+            frames.back() = frame.clone();
+        }
+
+        return frames;
+    }
+
+    void write(const Template &t) const
+    {
+        int fourcc = OpenCVUtils::getFourcc(); 
+        VideoWriter videoSink(file.name.toStdString(), fourcc, 30, t.begin()->size());
+
+        // Did we successfully open the output file?
+        if (!videoSink.isOpened() ) qFatal("Failed to open output file");
+
+        for (Template::const_iterator it = t.begin(); it!= t.end(); ++it) {
+            videoSink << *it;
+        }
+    }
+};
+
+BR_REGISTER(Format, videoFormat)
+
 /*!
  * \ingroup formats
  * \brief A simple binary matrix format.
@@ -164,7 +215,14 @@ class DefaultFormat : public Format
             QString prefix = "";
             if (!QFileInfo(file.name).exists()) prefix = file.getString("path") + "/";
             Mat m = imread((prefix+file.name).toStdString());
-            if (m.data) t.append(m);
+            if (m.data) {
+                t.append(m);
+            }
+            else {
+                videoFormat videoReader;
+                videoReader.file = file;
+                t = videoReader.read();
+            }
         }
 
         return t;
@@ -172,7 +230,14 @@ class DefaultFormat : public Format
 
     void write(const Template &t) const
     {
-        imwrite(file.name.toStdString(), t);
+        if (t.size() != 1) {
+            videoFormat videoWriter;
+            videoWriter.file = file;
+            videoWriter.write(t);
+        }
+        else {
+            imwrite(file.name.toStdString(), t);
+        }
     }
 };
 

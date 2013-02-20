@@ -42,6 +42,7 @@ class DrawTransform : public UntrainableTransform
         dst = src.m().clone();
 
         QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
+
         foreach (const Point2f &landmark, landmarks)
             circle(dst, landmark, 3, color, -1);
         QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedLandmarks());
