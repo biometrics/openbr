@@ -81,56 +81,56 @@ $ br -help
  * \brief Installation from source with Visual Studio.
  *
  * -# Download and install <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop">Visual Studio 2012 Express Edition for Windows Desktop</a>
- *   -# If you need a program to mount ISO images then consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a>.
- *   -# You will have to register with Microsoft after installation, but it's free.
- *   -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
+ *  -# If you need a program to mount ISO images then consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a>.
+ *  -# You will have to register with Microsoft after installation, but it's free.
+ *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
  * -# Download and install <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">CMake 2.8.10.2</a>
- *   -# During installation setup select "add CMake to PATH".
+ *  -# During installation setup select "add CMake to PATH".
  * -# Download and unarchive <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">OpenCV 2.4.3</a>
- *   -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
- *   -# Copy the "OpenCV-2.4.3" folder to "C:\".
- *   -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
- *   \code
- *   $ cd C:\OpenCV-2.4.3
- *   $ mkdir build-msvc2012
- *   $ cd build-msvc2012
- *   $ cmake -G "NMake Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
- *   $ nmake
- *   $ nmake install
- *   $ cmake -D CMAKE_BUILD_TYPE=Release ..
- *   $ nmake
- *   $ nmake install
- *   $ nmake clean
- *   \endcode
- * -# Download and install <a href="http://releases.qt-project.org/qt4/source/qt-win-opensource-4.8.4-vs2010.exe">Qt 4.8.4</a>
- *   -# From the VS2012 x64 Cross Tools Command Prompt:
- *   \code
- *   $ cd C:\Qt\4.8.4
- *   $ configure.exe -platform win32-msvc2012 -no-webkit
- *   $ nmake
- *   \endcode
- *   -# Select the Open Source Edition.
- *   -# Accept the license offer.
- *   -# configure.exe will take several minutes to finish.
- *   -# nmake will take several hours to finish.
+ *  -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
+ *  -# Copy the "OpenCV-2.4.3" folder to "C:\".
+ *  -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
+ *  \code
+ *  $ cd C:\OpenCV-2.4.3
+ *  $ mkdir build-msvc2012
+ *  $ cd build-msvc2012
+ *  $ cmake -G "NMake Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
+ *  $ nmake
+ *  $ nmake install
+ *  $ cmake -D CMAKE_BUILD_TYPE=Release ..
+ *  $ nmake
+ *  $ nmake install
+ *  $ nmake clean
+ *  \endcode
+ * -# <http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and install:
+ *  -# Unzip "qt-everywhere-opensource-src-5.0.1.zip"
+ *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
+ *  -# From the VS2012 x64 Cross Tools Command Prompt:
+ *  \code
+ *  $ cd C:\qt-everywhere-opensource-src-5.0.1
+ *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource
+ *  $ nmake
+ *  $ nmake install
+ *  \endcode
+ *  -# nmake will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
- *   -# Launch "Git Bash" from the Desktop and clone OpenBR:
- *   \code
- *   $ cd /c
- *   $ git clone https://github.com/biometrics/openbr.git
- *   $ cd openbr
- *   $ git submodule init
- *   $ git submodule update
- *   \endcode
+ *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
+ *  \code
+ *  $ cd /c
+ *  $ git clone https://github.com/biometrics/openbr.git
+ *  $ cd openbr
+ *  $ git submodule init
+ *  $ git submodule update
+ *  \endcode
  * -# Finally time to build OpenBR!
- *   -# From the VS2012 x64 Cross Tools Command Prompt:
- *   \code
- *   $ cd C:\openbr
- *   $ mkdir build-msvc2012
- *   $ cd build-msvc2012
- *   $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
- *   $ nmake
- *   \endcode
+ *  -# From the VS2012 x64 Cross Tools Command Prompt:
+ *  \code
+ *  $ cd C:\openbr
+ *  $ mkdir build-msvc2012
+ *  $ cd build-msvc2012
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ nmake
+ *  \endcode
  * -# Start hacking OpenBR!
  *  -# Download and install <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Qt Creator</a> IDE.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
@@ -145,10 +145,10 @@ $ br -help
  * -# (Optional) To package OpenBR:
  *  -# Download and install <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">NSIS 2.46</a>.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
- *   \code
- *   $ cd C:\openbr\build-msvc2012
- *   $ nmake package
- *   \endcode
+ *  \code
+ *  $ cd C:\openbr\build-msvc2012
+ *  $ nmake package
+ *  \endcode
  */
 
 /*!
@@ -156,56 +156,55 @@ $ br -help
  * \brief Installation from source with MinGW-w64.
  *
  * -# <a href="http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.7-release/x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb.7z/download">Download MinGW-w64 GCC 4.7.2</a> and unarchive.
- *   -# Use the free open source program <a href="http://www.7-zip.org/">7-Zip</a> to unarchive.
- *   -# Copy "x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb\mingw64" to "C:\".
+ *  -# Use the free open source program <a href="http://www.7-zip.org/">7-Zip</a> to unarchive.
+ *  -# Copy "x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb\mingw64" to "C:\".
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
- *   -# During installation setup select "add CMake to PATH".
+ *  -# During installation setup select "add CMake to PATH".
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and unarchive.
- *   -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
- *   -# Copy the "OpenCV-2.4.3" folder to "C:\".
- *   -# From the MinGW-w64 Command Prompt (double-click "C:\mingw64\mingw64env.cmd"):
- *   \code
- *   $ cd C:\OpenCV-2.4.3
- *   $ mkdir build-mingw64
- *   $ cd build-mingw64
- *   $ cmake -G "MinGW Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
- *   $ mingw32-make
- *   $ mingw32-make install
- *   $ cmake -D CMAKE_BUILD_TYPE=Release
- *   $ mingw32-make
- *   $ mingw32-make install
- *   $ mingw32-make clean
- *   \endcode
- * -# <a href="http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.zip">Download Qt 4.8.4</a> and unzip.
- *   -# Copy "qt-everywhere-opensource-src-4.8.4" to "C:\".
- *   -# From the MinGW-w64 Command Prompt:
- *   \code
- *   $ cd C:\qt-everywhere-opensource-src-4.8.4
- *   $ configure.exe
- *   $ mingw32-make
- *   \endcode
- *   -# Select the Open Source Edition.
- *   -# Accept the license offer.
- *   -# configure.exe will take several minutes to finish.
- *   -# mingw32-make will take several hours to finish.
+ *  -# If you need a program to unarchive tarballs then consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a>.
+ *  -# Copy the "OpenCV-2.4.3" folder to "C:\".
+ *  -# From the MinGW-w64 Command Prompt (double-click "C:\mingw64\mingw64env.cmd"):
+ *  \code
+ *  $ cd C:\OpenCV-2.4.3
+ *  $ mkdir build-mingw64
+ *  $ cd build-mingw64
+ *  $ cmake -G "MinGW Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
+ *  $ mingw32-make
+ *  $ mingw32-make install
+ *  $ cmake -D CMAKE_BUILD_TYPE=Release
+ *  $ mingw32-make
+ *  $ mingw32-make install
+ *  $ mingw32-make clean
+ *  \endcode
+ * -# <http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and install:
+ *  -# Unzip "qt-everywhere-opensource-src-5.0.1.zip"
+ *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
+ *  -# From the MinGW-w64 Command Prompt:
+ *  \code
+ *  $ cd C:\qt-everywhere-opensource-src-5.0.1
+ *  $ configure -prefix C:\Qt\5.0.1\mingw64 -opensource -opengl desktop
+ *  $ mingw32-make
+ *  $ mingw32-make install
+ *  \endcode
+ *  -# mingw32-make will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
- *   -# Launch "Git Bash" from the Desktop and clone OpenBR:
- *   \code
- *   $ cd /c
- *   $ git clone https://github.com/biometrics/openbr.git
- *   $ cd openbr
- *   $ git submodule init
- *   $ git submodule update
- *   \endcode
+ *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
+ *  \code
+ *  $ cd /c
+ *  $ git clone https://github.com/biometrics/openbr.git
+ *  $ cd openbr
+ *  $ git submodule init
+ *  $ git submodule update
+ *  \endcode
  * -# Finally time to build OpenBR!
- *   -# From the MinGW-w64 Command Prompt:
- *   \code
- *   $ cd C:\openbr
- *   $ mkdir build-mingw64
- *   $ cd build-mingw64
- *   $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
- *   $ mingw32-make
- *   $ mingw32-make package
+ *  -# From the MinGW-w64 Command Prompt:
+ *  \code
+ *  $ cd C:\openbr
+ *  $ mkdir build-mingw64
+ *  $ cd build-mingw64
+ *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ mingw32-make
+ *  $ mingw32-make package
  *  \endcode
  * -# Start hacking OpenBR!
  *  -# Download and install <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Qt Creator</a> IDE.
@@ -224,10 +223,10 @@ $ br -help
  * -# (Optional) To package OpenBR:
  *  -# Download and install <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">NSIS 2.46</a>.
  *  -# From the MinGW-w64 Command Prompt:
- *   \code
- *   $ cd C:\openbr\build-mingw64
- *   $ mingw32-make package
- *   \endcode
+ *  \code
+ *  $ cd C:\openbr\build-mingw64
+ *  $ mingw32-make package
+ *  \endcode
  */
 
 /*!
@@ -241,7 +240,7 @@ $ br -help
  * $ tar -xf cmake-2.8.10.2.tar.gz
  * $ cd cmake-2.8.10.2
  * $ ./configure
- * $ make
+ * $ make -j4
  * $ sudo make install
  * $ cd ..
  * $ rm -r cmake-2.8.10.2
@@ -254,7 +253,7 @@ $ br -help
  * $ mkdir build
  * $ cd build
  * $ cmake ..
- * $ make
+ * $ make -j4
  * $ sudo make install
  * $ cd ../..
  * $ rm -r OpenCV-2.4.3
@@ -273,7 +272,7 @@ $ br -help
  * $ mkdir build
  * $ cd build
  * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -D CMAKE_BUILD_TYPE=Release ..
- * $ make
+ * $ make -j4
  * $ make install
  * \endcode
  * -# Start hacking OpenBR!
@@ -293,7 +292,7 @@ $ br -help
  *  $ tar -xf doxygen-1.8.2.src.tar.gz
  *  $ cd doxygen-1.8.2
  *  $ ./configure
- *  $ make
+ *  $ make -j4
  *  $ sudo make install
  *  $ cd ..
  *  $ rm -r doxygen-1.8.2
@@ -302,7 +301,7 @@ $ br -help
  *  \code
  *  $ cd ~/openbr/build
  *  $ cmake -D BR_BUILD_DOCUMENTATION=ON ..
- *  $ make
+ *  $ make -j4
  *  $ open html/index.html
  *  \endcode
  */
@@ -316,9 +315,16 @@ $ br -help
  * $ sudo apt-get update
  * $ sudo apt-get install build-essential
  * \endcode
- * -# Install CMake 2.8.7:
+ * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz">Download CMake 2.8.10.2</a> and install:
  * \code
- * $ sudo apt-get install cmake
+ * $ cd ~/Downloads
+ * $ tar -xf cmake-2.8.10.2.tar.gz
+ * $ cd cmake-2.8.10.2
+ * $ ./configure
+ * $ make -j4
+ * $ sudo make install
+ * $ cd ..
+ * $ rm -r cmake-2.8.10.2
  * \endcode
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and install:
  * \code
@@ -328,14 +334,17 @@ $ br -help
  * $ mkdir build
  * $ cd build
  * $ cmake -D CMAKE_BUILD_TYPE=Release ..
- * $ make
+ * $ make -j4
  * $ sudo make install
  * $ cd ../..
  * $ rm -r OpenCV-2.4.3
  * \endcode
- * -# Install Qt 4.8.1:
+ * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-linux-opensource-5.0.1-x86_64-offline.run">Download Qt 5.0.1</a> and install:
  * \code
- * $ sudo apt-get install libqt4-dev
+ * $ cd ~/Downloads
+ * $ chmod +x qt-linux-opensource-5.0.1-x86_64-offline.run
+ * $ ./qt-linux-opensource-5.0.1-x86_64-offline.run
+ * $ rm qt-linux-opensource-5.0.1-x86_64-offline.run
  * \endcode
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
@@ -349,20 +358,19 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake ..
- * $ make
+ * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -D CMAKE_BUILD_TYPE=Release ..
+ * $ make -j4
  * $ make install
  * \endcode
  * -# Start hacking OpenBR!
- *  -# Install and run Qt Creator</a>.
+ *  -# Open Qt Creator IDE
  *  \code
- *  $ sudo apt-get install qtcreator
- *  $ qtcreator &
+ *  $ ~/Qt5.0.1/Tools/QtCreator/bin/qtcreator &
  *  \endcode
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "~/openbr/CMakeLists.txt" then "Open".
- *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
- *  -# Select "Run CMake" then "Done".
+ *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
+ *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
  */
 
@@ -371,9 +379,16 @@ $ br -help
  * \brief Installation from source with ICC.
  *
  * -# Assuming you meet the eligibility requirements, <a href="http://software.intel.com/en-us/non-commercial-software-development">Download Intel C++ Studio XE 2013</a> and install.
- * -# Install CMake 2.8.7:
+ * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz">Download CMake 2.8.10.2</a> and install:
  * \code
- * $ sudo apt-get install cmake
+ * $ cd ~/Downloads
+ * $ tar -xf cmake-2.8.10.2.tar.gz
+ * $ cd cmake-2.8.10.2
+ * $ ./configure
+ * $ make -j4
+ * $ sudo make install
+ * $ cd ..
+ * $ rm -r cmake-2.8.10.2
  * \endcode
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and install:
  * \code
@@ -383,14 +398,17 @@ $ br -help
  * $ mkdir build
  * $ cd build
  * $ cmake -D CMAKE_BUILD_TYPE=Release ..
- * $ make
+ * $ make -j4
  * $ sudo make install
  * $ cd ../..
  * $ rm -r OpenCV-2.4.3
  * \endcode
- * -# Install Qt 4.8.1:
+ * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-linux-opensource-5.0.1-x86_64-offline.run">Download Qt 5.0.1</a> and install:
  * \code
- * $ sudo apt-get install libqt4-dev
+ * $ cd ~/Downloads
+ * $ chmod +x qt-linux-opensource-5.0.1-x86_64-offline.run
+ * $ ./qt-linux-opensource-5.0.1-x86_64-offline.run
+ * $ rm qt-linux-opensource-5.0.1-x86_64-offline.run
  * \endcode
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>, then clone:
  * \code
@@ -404,20 +422,19 @@ $ br -help
  * $ cd openbr
  * $ mkdir build-icc
  * $ cd build-icc
- * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc ..
- * $ make
+ * $ cmake -D CMAKE_C_COMPILER=/opt/intel/bin/icc -D CMAKE_CXX_COMPILER=/opt/intel/bin/icpc -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -D CMAKE_BUILD_TYPE=Release ..
+ * $ make -j4
  * $ make install
  * \endcode
  * -# Start hacking OpenBR!
- *  -# Install and run Qt Creator</a>.
+ *  -# Open Qt Creator IDE
  *  \code
- *  $ sudo apt-get install qtcreator
- *  $ qtcreator &
+ *  $ ~/Qt5.0.1/Tools/QtCreator/bin/qtcreator &
  *  \endcode
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "~/openbr/CMakeLists.txt" then "Open".
- *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
- *  -# Select "Run CMake" then "Done".
+ *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
+ *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
  */
 
