@@ -129,8 +129,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         for (int j=0; j<scores.cols; j++) {
             const BEE::Mask_t mask_val = masks.at<BEE::Mask_t>(i,j);
             const BEE::Simmat_t simmat_val = scores.at<BEE::Simmat_t>(i,j);
-            if ((mask_val == BEE::DontCare) ||
-                (simmat_val == -std::numeric_limits<float>::max())) continue;
+            if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
             if (comparisons.last().genuine) genuineCount++;
@@ -152,6 +151,8 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     int falsePositives = 0, previousFalsePositives = 0;
     int truePositives = 0, previousTruePositives = 0;
     int index = 0;
+    float minGenuineScore = std::numeric_limits<float>::max();
+    float minImpostorScore = std::numeric_limits<float>::max();
     while (index < comparisons.size()) {
         float thresh = comparisons[index].score;
         while ((index < comparisons.size()) &&
@@ -163,12 +164,18 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
                 genuines.append(comparison.score);
                 if (firstGenuineReturns[comparison.query] < 1)
                     firstGenuineReturns[comparison.query] = abs(firstGenuineReturns[comparison.query]) + 1;
+                if ((comparison.score != -std::numeric_limits<float>::max()) &&
+                    (comparison.score < minGenuineScore))
+                    minGenuineScore = comparison.score;
             } else {
                 falsePositives++;
                 impostorSum += comparison.score;
                 impostors.append(comparison.score);
                 if (firstGenuineReturns[comparison.query] < 1)
                     firstGenuineReturns[comparison.query]--;
+                if ((comparison.score != -std::numeric_limits<float>::max()) &&
+                    (comparison.score < minImpostorScore))
+                    minImpostorScore = comparison.score;
             }
             index++;
         }
@@ -218,8 +225,10 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QList<double> sampledGenuineScores; sampledGenuineScores.reserve(points);
     QList<double> sampledImpostorScores; sampledImpostorScores.reserve(points);
     for (int i=0; i<points; i++) {
-        const float genuineScore = genuines[double(i) / double(points-1) * double(genuines.size()-1)];
-        const float impostorScore = impostors[double(i) / double(points-1) * double(impostors.size()-1)];
+        float genuineScore = genuines[double(i) / double(points-1) * double(genuines.size()-1)];
+        float impostorScore = impostors[double(i) / double(points-1) * double(impostors.size()-1)];
+        if (genuineScore == -std::numeric_limits<float>::max()) genuineScore = minGenuineScore;
+        if (impostorScore == -std::numeric_limits<float>::max()) impostorScore = minImpostorScore;
         lines.append(QString("SD,%1,Genuine").arg(QString::number(genuineScore)));
         lines.append(QString("SD,%1,Impostor").arg(QString::number(impostorScore)));
         sampledGenuineScores.append(genuineScore);

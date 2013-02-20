@@ -336,8 +336,6 @@ class PP4Compare : public Comparer,
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
     {
-        const float DefaultNonMatchScore = -1.5;
-
         ppr_gallery_type target_gallery, query_gallery;
         ppr_create_gallery(context, &target_gallery);
         ppr_create_gallery(context, &query_gallery);
@@ -352,7 +350,7 @@ class PP4Compare : public Comparer,
             int query_template_id = query_template_ids[i];
             for (int j=0; j<target_template_ids.size(); j++) {
                 int target_template_id = target_template_ids[j];
-                float score = DefaultNonMatchScore;
+                float score = -std::numeric_limits<float>::max();
                 if ((query_template_id != -1) && (target_template_id != -1)) {
                     TRY(ppr_get_similarity_matrix_element(context, similarity_matrix, query_template_id, target_template_id, &score))
                 }
