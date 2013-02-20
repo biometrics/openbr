@@ -32,10 +32,10 @@ int OpenCVUtils::getFourcc()
     if (!recovered_variant.isNull()) {
         QString recovered_string = recovered_variant.toString();
         if (recovered_string.length() == 4) {
-            fourcc = CV_FOURCC(recovered_string[0].toAscii(),
-                                recovered_string[1].toAscii(),
-                                recovered_string[2].toAscii(),
-                                recovered_string[3].toAscii());
+            fourcc = CV_FOURCC(recovered_string[0].toLatin1(),
+                                recovered_string[1].toLatin1(),
+                                recovered_string[2].toLatin1(),
+                                recovered_string[3].toLatin1());
         }
         else if (recovered_string.compare("-1")) fourcc = -1;
     }

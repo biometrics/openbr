@@ -272,7 +272,7 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 ..
+ * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -D CMAKE_BUILD_TYPE=Release ..
  * $ make
  * $ make install
  * \endcode

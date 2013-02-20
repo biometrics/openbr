@@ -288,7 +288,7 @@ bool QtUtils::runDot(const QString &file)
 void QtUtils::showFile(const QString &file)
 {
 #ifndef BR_EMBEDDED
-    QDesktopServices::openUrl(QUrl("file:///" + QFileInfo(file).absoluteFilePath()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 #else // BR_EMBEDDED
     (void) file;
 #endif // BR_EMBEDDED
