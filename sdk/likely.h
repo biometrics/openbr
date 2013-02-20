@@ -6,15 +6,15 @@
 
 #if defined BR_LIBRARY
 #  if defined _WIN32 || defined __CYGWIN__
-#    define BR_EXPORT __declspec(dllexport)
+#    define LIKELY_EXPORT __declspec(dllexport)
 #  else
-#    define BR_EXPORT __attribute__((visibility("default")))
+#    define LIKELY_EXPORT __attribute__((visibility("default")))
 #  endif
 #else
 #  if defined _WIN32 || defined __CYGWIN__
-#    define BR_EXPORT __declspec(dllimport)
+#    define LIKELY_EXPORT __declspec(dllimport)
 #  else
-#    define BR_EXPORT
+#    define LIKELY_EXPORT
 #  endif
 #endif
 
@@ -73,39 +73,29 @@ struct likely_matrix
                 f64 = 64 + Floating + Signed };
 };
 
-BR_EXPORT int  likely_bits(const likely_matrix *m);
-BR_EXPORT void likely_set_bits(likely_matrix *m, int bits);
-BR_EXPORT bool likely_is_floating(const likely_matrix *m);
-BR_EXPORT void likely_set_floating(likely_matrix *m, bool is_floating);
-BR_EXPORT bool likely_is_signed(const likely_matrix *m);
-BR_EXPORT void likely_set_signed(likely_matrix *m, bool is_signed);
-BR_EXPORT int  likely_type(const likely_matrix *m);
-BR_EXPORT void likely_set_type(likely_matrix *m, int type);
-BR_EXPORT bool likely_is_single_channel(const likely_matrix *m);
-BR_EXPORT void likely_set_single_channel(likely_matrix *m, bool is_single_channel);
-BR_EXPORT bool likely_is_single_column(const likely_matrix *m);
-BR_EXPORT void likely_set_single_column(likely_matrix *m, bool is_single_column);
-BR_EXPORT bool likely_is_single_row(const likely_matrix *m);
-BR_EXPORT void likely_set_single_row(likely_matrix *m, bool is_single_row);
-BR_EXPORT bool likely_is_single_frame(const likely_matrix *m);
-BR_EXPORT void likely_set_single_frame(likely_matrix *m, bool is_single_frame);
-BR_EXPORT uint32_t likely_elements(const likely_matrix *m);
-BR_EXPORT uint32_t likely_bytes(const likely_matrix *m);
+LIKELY_EXPORT int  likely_bits(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_bits(likely_matrix *m, int bits);
+LIKELY_EXPORT bool likely_is_floating(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_floating(likely_matrix *m, bool is_floating);
+LIKELY_EXPORT bool likely_is_signed(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_signed(likely_matrix *m, bool is_signed);
+LIKELY_EXPORT int  likely_type(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_type(likely_matrix *m, int type);
+LIKELY_EXPORT bool likely_is_single_channel(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_single_channel(likely_matrix *m, bool is_single_channel);
+LIKELY_EXPORT bool likely_is_single_column(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_single_column(likely_matrix *m, bool is_single_column);
+LIKELY_EXPORT bool likely_is_single_row(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_single_row(likely_matrix *m, bool is_single_row);
+LIKELY_EXPORT bool likely_is_single_frame(const likely_matrix *m);
+LIKELY_EXPORT void likely_set_single_frame(likely_matrix *m, bool is_single_frame);
+LIKELY_EXPORT uint32_t likely_elements(const likely_matrix *m);
+LIKELY_EXPORT uint32_t likely_bytes(const likely_matrix *m);
 
 typedef void (*likely_unary_function)(const likely_matrix *src, likely_matrix *dst);
 typedef void (*likely_binary_function)(const likely_matrix *srcA, const likely_matrix *srcB, likely_matrix *dst);
-BR_EXPORT likely_unary_function likely_make_unary_function(const char *description);
-BR_EXPORT likely_binary_function likely_make_binary_function(const char *description);
-
-typedef uint32_t (*likely_unary_allocation)(const likely_matrix *src, likely_matrix *dst);
-typedef uint32_t (*likely_binary_allocation)(const likely_matrix *srcA, const likely_matrix *srcB, likely_matrix *dst);
-BR_EXPORT likely_unary_allocation likely_make_unary_allocation(const char *description, const likely_matrix *src);
-BR_EXPORT likely_binary_allocation likely_make_binary_allocation(const char *description, const likely_matrix *src_a, const likely_matrix *src_b);
-
-typedef void (*likely_unary_kernel)(const likely_matrix *src, likely_matrix *dst, uint32_t size);
-typedef void (*likely_binary_kernel)(const likely_matrix *srcA, const likely_matrix *srcB, likely_matrix *dst, uint32_t size);
-BR_EXPORT likely_unary_kernel likely_make_unary_kernel(const char *description, const likely_matrix *src);
-BR_EXPORT likely_binary_kernel likely_make_binary_kernel(const char *description, const likely_matrix *src_a, const likely_matrix *src_b);
+LIKELY_EXPORT likely_unary_function likely_make_unary_function(const char *description);
+LIKELY_EXPORT likely_binary_function likely_make_binary_function(const char *description);
 
 #ifdef __cplusplus
 }
@@ -161,16 +151,6 @@ typedef likely_unary_function UnaryFunction;
 typedef likely_binary_function BinaryFunction;
 inline UnaryFunction makeUnaryFunction(const char *description) { return likely_make_unary_function(description); }
 inline BinaryFunction makeBinaryFunction(const char *description) { return likely_make_binary_function(description); }
-
-typedef likely_unary_allocation UnaryAllocation;
-typedef likely_binary_allocation BinaryAllocation;
-inline UnaryAllocation makeUnaryAllocation(const char *description, const Matrix &src) { return likely_make_unary_allocation(description, &src); }
-inline BinaryAllocation makeBinaryAllocation(const char *description, const Matrix &srcA, const Matrix &srcB) { return likely_make_binary_allocation(description, &srcA, &srcB); }
-
-typedef likely_unary_kernel UnaryKernel;
-typedef likely_binary_kernel BinaryKernel;
-inline UnaryKernel makeUnaryKernel(const char *description, const Matrix &src) { return likely_make_unary_kernel(description, &src); }
-inline BinaryKernel makeBinaryKernel(const char *description, const Matrix &srcA, const Matrix &srcB) { return likely_make_binary_kernel(description, &srcA, &srcB); }
 
 } // namespace likely
 

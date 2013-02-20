@@ -27,11 +27,49 @@ using namespace br;
 using namespace cv;
 using namespace llvm;
 
+typedef uint32_t (*likely_unary_allocation)(const likely_matrix *src, likely_matrix *dst);
+typedef uint32_t (*likely_binary_allocation)(const likely_matrix *srcA, const likely_matrix *srcB, likely_matrix *dst);
+typedef void (*likely_unary_kernel)(const likely_matrix *src, likely_matrix *dst, uint32_t size);
+typedef void (*likely_binary_kernel)(const likely_matrix *srcA, const likely_matrix *srcB, likely_matrix *dst, uint32_t size);
+
 static Module *TheModule = NULL;
 static ExecutionEngine *TheExecutionEngine = NULL;
 static FunctionPassManager *TheFunctionPassManager = NULL;
 static FunctionPassManager *TheExtraFunctionPassManager = NULL;
 static StructType *TheMatrixStruct = NULL;
+
+static void likely_initialize()
+{
+    InitializeNativeTarget();
+
+    TheModule = new Module("likely", getGlobalContext());
+
+    std::string error;
+    TheExecutionEngine = EngineBuilder(TheModule).setEngineKind(EngineKind::JIT).setErrorStr(&error).create();
+    if (TheExecutionEngine == NULL)
+        qFatal("Failed to create LLVM ExecutionEngine with error: %s", error.c_str());
+
+    TheFunctionPassManager = new FunctionPassManager(TheModule);
+    TheFunctionPassManager->add(createVerifierPass(PrintMessageAction));
+    TheFunctionPassManager->add(createEarlyCSEPass());
+    TheFunctionPassManager->add(createInstructionCombiningPass());
+    TheFunctionPassManager->add(createDeadCodeEliminationPass());
+    TheFunctionPassManager->add(createGVNPass());
+    TheFunctionPassManager->add(createDeadInstEliminationPass());
+
+    TheExtraFunctionPassManager = new FunctionPassManager(TheModule);
+    TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
+//        TheExtraFunctionPassManager->add(createLoopUnrollPass(INT_MAX,8));
+
+    TheMatrixStruct = StructType::create("Matrix",
+                                         Type::getInt8PtrTy(getGlobalContext()), // data
+                                         Type::getInt32Ty(getGlobalContext()),   // channels
+                                         Type::getInt32Ty(getGlobalContext()),   // columns
+                                         Type::getInt32Ty(getGlobalContext()),   // rows
+                                         Type::getInt32Ty(getGlobalContext()),   // frames
+                                         Type::getInt16Ty(getGlobalContext()),   // hash
+                                         NULL);
+}
 
 static QString MatrixToString(const likely_matrix *m)
 {
@@ -353,6 +391,8 @@ public:
 
     likely_unary_function getFunction() const
     {
+        if (TheModule == NULL) likely_initialize();
+
         const QString name = mangledName();
         Function *function = TheModule->getFunction(qPrintable(name));
 
@@ -537,7 +577,7 @@ private:
         const QString args = arguments().join(",");
         if (!argsLUT.contains(args)) argsLUT.insert(args, argsLUT.size());
         int uid = argsLUT.value(args);
-        return "jitcv_" + objectName() + (args.isEmpty() ? QString() : QString::number(uid));
+        return "likely_" + objectName() + (args.isEmpty() ? QString() : QString::number(uid));
     }
 
     QString mangledName(const likely_matrix &src) const
@@ -583,7 +623,7 @@ QHash<uint32_t, File> UnaryTransform::fileTable;
 //private:
 //    QString mangledName(const Matrix &srcA, const Matrix &srcB) const
 //    {
-//        return "jitcv_" + objectName() + "_" + MatrixToString(srcA) + "_" + MatrixToString(srcB);
+//        return "likely_" + objectName() + "_" + MatrixToString(srcA) + "_" + MatrixToString(srcB);
 //    }
 
 //    Function *compile(const Matrix &m, const Matrix &n) const
@@ -1051,36 +1091,6 @@ class LLVMInitializer : public Initializer
 
     void initialize() const
     {
-        InitializeNativeTarget();
-
-        TheModule = new Module("jitcv", getGlobalContext());
-
-        std::string error;
-        TheExecutionEngine = EngineBuilder(TheModule).setEngineKind(EngineKind::JIT).setErrorStr(&error).create();
-        if (TheExecutionEngine == NULL)
-            qFatal("Failed to create LLVM ExecutionEngine with error: %s", error.c_str());
-
-        TheFunctionPassManager = new FunctionPassManager(TheModule);
-        TheFunctionPassManager->add(createVerifierPass(PrintMessageAction));
-        TheFunctionPassManager->add(createEarlyCSEPass());
-        TheFunctionPassManager->add(createInstructionCombiningPass());
-        TheFunctionPassManager->add(createDeadCodeEliminationPass());
-        TheFunctionPassManager->add(createGVNPass());
-        TheFunctionPassManager->add(createDeadInstEliminationPass());
-
-        TheExtraFunctionPassManager = new FunctionPassManager(TheModule);
-        TheExtraFunctionPassManager->add(createPrintFunctionPass("--------------------------------------------------------------------------------", &errs()));
-//        TheExtraFunctionPassManager->add(createLoopUnrollPass(INT_MAX,8));
-
-        TheMatrixStruct = StructType::create("Matrix",
-                                             Type::getInt8PtrTy(getGlobalContext()), // data
-                                             Type::getInt32Ty(getGlobalContext()),   // channels
-                                             Type::getInt32Ty(getGlobalContext()),   // columns
-                                             Type::getInt32Ty(getGlobalContext()),   // rows
-                                             Type::getInt32Ty(getGlobalContext()),   // frames
-                                             Type::getInt16Ty(getGlobalContext()),   // hash
-                                             NULL);
-
         QSharedPointer<Transform> kernel(Transform::make("add(1)", NULL));
 
         Template src, dst;
@@ -1099,13 +1109,6 @@ class LLVMInitializer : public Initializer
         src.m() = (Mat_<double>(2,2) << 1.75, 2.75, -3.75, -4.75);
         kernel->project(src, dst);
         qDebug() << dst.m();
-    }
-
-    void finalize() const
-    {
-        delete TheFunctionPassManager;
-        delete TheExecutionEngine;
-        llvm_shutdown();
     }
 
     static void benchmark(const QString &transform)
@@ -1157,7 +1160,9 @@ likely_binary_function likely_make_binary_function(const char *description)
     return NULL;
 }
 
-likely_unary_allocation likely_make_unary_allocation(const char *description, const likely_matrix *src)
+extern "C" {
+
+LIKELY_EXPORT likely_unary_allocation likely_make_unary_allocation(const char *description, const likely_matrix *src)
 {
     if (description == NULL) qFatal("makeUnaryAllocation NULL description!");
     const File f = long(description) < 1000 ? UnaryTransform::fileTable[long(description)] : File(description);
@@ -1166,7 +1171,7 @@ likely_unary_allocation likely_make_unary_allocation(const char *description, co
     return unaryTransform->getAllocation(src);
 }
 
-likely_binary_allocation likely_make_binary_allocation(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
+LIKELY_EXPORT likely_binary_allocation likely_make_binary_allocation(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
 {
     (void) description;
     (void) src_a;
@@ -1174,7 +1179,7 @@ likely_binary_allocation likely_make_binary_allocation(const char *description, 
     return NULL;
 }
 
-likely_unary_kernel likely_make_unary_kernel(const char *description, const likely_matrix *src)
+LIKELY_EXPORT likely_unary_kernel likely_make_unary_kernel(const char *description, const likely_matrix *src)
 {
     if (description == NULL) qFatal("makeUnaryKernel NULL description!");
     const File f = long(description) < 1000 ? UnaryTransform::fileTable[long(description)] : File(description);
@@ -1183,12 +1188,14 @@ likely_unary_kernel likely_make_unary_kernel(const char *description, const like
     return unaryTransform->getKernel(src);
 }
 
-likely_binary_kernel likely_make_binary_kernel(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
+LIKELY_EXPORT likely_binary_kernel likely_make_binary_kernel(const char *description, const likely_matrix *src_a, const likely_matrix *src_b)
 {
     (void) description;
     (void) src_a;
     (void) src_b;
     return NULL;
 }
+
+} // extern "C"
 
 #include "llvm.moc"
