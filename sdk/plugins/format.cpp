@@ -44,6 +44,9 @@ class videoFormat : public Format
 public:
     Template read() const
     {
+        if (!file.exists() )
+            return Template();
+        
         VideoCapture videoSource(file.name.toStdString());
         videoSource.open(file.name.toStdString() );
         
