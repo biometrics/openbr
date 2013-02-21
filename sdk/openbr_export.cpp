@@ -107,10 +107,12 @@ $ br -help
  *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
- *  $ cd C:\qt-everywhere-opensource-src-5.0.1
+ *  $ cd qt-everywhere-opensource-src-5.0.1
  *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource
  *  $ nmake
  *  $ nmake install
+ *  $ cd ..
+ *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
  *  \endcode
  *  -# nmake will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
@@ -128,7 +130,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install" -D QT_QMAKE_EXECUTABLE="C:/Qt/4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  \endcode
  * -# Start hacking OpenBR!
@@ -181,10 +183,12 @@ $ br -help
  *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
- *  $ cd C:\qt-everywhere-opensource-src-5.0.1
+ *  $ cd qt-everywhere-opensource-src-5.0.1
  *  $ configure -prefix C:\Qt\5.0.1\mingw64 -opensource -opengl desktop
  *  $ mingw32-make
  *  $ mingw32-make install
+ *  $ cd ..
+ *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
  *  \endcode
  *  -# mingw32-make will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
