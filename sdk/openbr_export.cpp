@@ -134,11 +134,14 @@ $ br -help
  *  $ nmake
  *  \endcode
  * -# Start hacking OpenBR!
- *  -# Download and install <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Qt Creator</a> IDE.
+ *  -# Download <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Qt Creator</a> IDE and install.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
  *  $ "C:\Qt\qtcreator-2.6.2\bin\qtcreator.exe"
  *  \endcode
+ *  -# From the Qt Creator "Tools" menu select "Options..."
+ *  -# Under "Kits" select "Desktop (default)"
+ *  -# For "Compiler:" select "Microsoft Visual C++ Compiler 11.0 (amd64)" and click "OK"
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
  *  -# Browse to your prexisting build directory "C:\openbr\build-msvc2012" then select "Next".
@@ -206,7 +209,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install" -D QT_QMAKE_EXECUTABLE="C:/qt-everywhere-opensource-src-4.8.4/bin/qmake" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install;C:/Qt/5.0.1/mingw64" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *  $ mingw32-make
  *  $ mingw32-make package
  *  \endcode

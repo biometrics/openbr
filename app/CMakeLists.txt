@@ -1,5 +1,7 @@
 if(NOT ${BR_EMBEDDED})
   find_package(Qwt REQUIRED)
+  list(REMOVE_ITEM QWT_SRC ${QWT_DIR}/src/qwt_plot_glcanvas.cpp)
+  list(REMOVE_ITEM QWT_SRC ${QWT_DIR}/src/qwt_plot_renderer.cpp)
 endif()
 
 include_directories(.)

@@ -54,12 +54,10 @@ if(${BR_DISTRIBUTED})
 endif()
 
 # Find Qt
-find_package(Qt5Concurrent)
-find_package(Qt5Core)
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
 if(NOT ${BR_EMBEDDED})
-  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network OpenGL PrintSupport Sql Svg Widgets Xml)
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Network Sql Svg Widgets Xml)
 endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
