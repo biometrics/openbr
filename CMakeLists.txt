@@ -64,6 +64,7 @@ endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
 endforeach()
+set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)

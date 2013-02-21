@@ -8,7 +8,7 @@ if(NOT ${BR_EMBEDDED})
   # Build executable
   add_executable(forensicface WIN32 ${SRC} ${UIC} ${BR_RESOURCES})
   qt5_use_modules(forensicface ${QT_DEPENDENCIES})
-  target_link_libraries(forensicface openbr openbr-gui)
+  target_link_libraries(forensicface openbr openbr-gui ${BR_THIRDPARTY_LIBS})
 
   # Install
   install(TARGETS forensicface RUNTIME DESTINATION bin
