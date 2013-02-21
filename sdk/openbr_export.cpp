@@ -108,7 +108,7 @@ $ br -help
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
  *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource
+ *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource -nomake examples -nomake tests -no-opengl -no-webkit
  *  $ nmake
  *  $ nmake install
  *  $ cd ..
@@ -187,7 +187,7 @@ $ br -help
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
  *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\mingw64 -opensource -opengl desktop
+ *  $ configure -prefix C:\Qt\5.0.1\mingw64 -opensource -nomake examples -nomake tests -no-opengl -no-webkit
  *  $ mingw32-make
  *  $ mingw32-make install
  *  $ cd ..
