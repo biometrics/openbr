@@ -289,8 +289,6 @@ class PP5Compare : public Distance
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
     {
-        const float DefaultNonMatchScore = -1.5;
-
         ppr_gallery_type target_gallery, query_gallery;
         ppr_create_gallery(context, &target_gallery);
         ppr_create_gallery(context, &query_gallery);
@@ -305,7 +303,7 @@ class PP5Compare : public Distance
             int query_face_id = query_face_ids[i];
             for (int j=0; j<target_face_ids.size(); j++) {
                 int target_face_id = target_face_ids[j];
-                float score = DefaultNonMatchScore;
+                float score = -std::numeric_limits<float>::max();
                 if ((query_face_id != -1) && (target_face_id != -1)) {
                     TRY(ppr_get_face_similarity_score(context, similarity_matrix, query_face_id, target_face_id, &score))
                 }

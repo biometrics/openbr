@@ -179,13 +179,13 @@ class NEC3Compare : public BasicComparer
 
     float compare(const Template &a, const Template &b) const
     {
-        NeoFacePro::CVerifier *verifier = verifierResource.acquire();
-        float score = 0;
+        float score = -std::numeric_limits<float>::max();
         if (a.m().data && b.m().data) {
+            NeoFacePro::CVerifier *verifier = verifierResource.acquire();
             int result = verifier->Verify(a.m().data, b.m().data, &score);
             if (result != NFP_SUCCESS) qWarning("NEC3Compare verify error [%d]", result);
+            verifierResource.release(verifier);
         }
-        verifierResource.release(verifier);
         return score;
     }
 };

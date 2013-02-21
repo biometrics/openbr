@@ -239,6 +239,7 @@ struct BR_EXPORT FileList : public QList<File>
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
     void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
     QList<float> labels() const; /*!< \brief Returns br::File::label() for each file in the list. */
+    QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
 };
 

@@ -405,10 +405,18 @@ void FileList::sort(const QString& key)
 
 QList<float> FileList::labels() const
 {
-    QList<float> labels;
+    QList<float> labels; labels.reserve(size());
     foreach (const File &f, *this)
         labels.append(f.label());
     return labels;
+}
+
+QList<int> FileList::crossValidationPartitions() const
+{
+    QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
+    foreach (const File &f, *this)
+        crossValidationPartitions.append(f.getInt("Cross_Validation_Partition", 0));
+    return crossValidationPartitions;
 }
 
 int FileList::failures() const

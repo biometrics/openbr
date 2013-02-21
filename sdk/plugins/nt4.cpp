@@ -426,8 +426,6 @@ class NT4Compare : public Distance
 
     float compare(const br::Template &a, const br::Template &b) const
     {
-        const float DefaultNonMatchScore = 0;
-
         NT4Context *context = contexts.acquire();
 
         NResult result;
@@ -439,7 +437,7 @@ class NT4Compare : public Distance
         }
 
         const Mat &srcB = b;
-        float score = DefaultNonMatchScore;
+        float score = -std::numeric_limits<float>::max();
         if (srcA.data && srcB.data) {
             NInt pScore;
             result = NMIdentifyNextEx(context->matcher, srcB.data, srcB.rows*srcB.cols, NULL, &pScore);

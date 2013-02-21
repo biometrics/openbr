@@ -443,10 +443,9 @@ struct CT8Compare : public Distance,
     // Compare pre-extracted facevacs templates
     float compare(const Template &srcA, const Template &srcB) const
     {
-        const float DefaultNonMatchScore = 0;
-        if (!srcA.m().data || !srcB.m().data) return DefaultNonMatchScore;
+        float score = -std::numeric_limits<float>::max();
+        if (!srcA.m().data || !srcB.m().data) return score;
 
-        float score = DefaultNonMatchScore;
         try {
             FRsdk::FIR firA = firBuilder->build( (FRsdk::Byte *) srcA.m().data, srcA.m().cols);
             FRsdk::FIR firB = firBuilder->build( (FRsdk::Byte *) srcB.m().data, srcB.m().cols);

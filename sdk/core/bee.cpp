@@ -229,26 +229,31 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
 
-    TemplateList target(TemplateList::fromInput(targetInput));
-    TemplateList query(TemplateList::fromInput(queryInput));
-    FileList targetFiles = target.files();
-    FileList queryFiles = query.files();
+    FileList targetFiles = TemplateList::fromInput(targetInput).files();
+    FileList queryFiles = TemplateList::fromInput(queryInput).files();
     QList<float> targetLabels = targetFiles.labels();
     QList<float> queryLabels = queryFiles.labels();
+    QList<int> targetPartitions = targetFiles.crossValidationPartitions();
+    QList<int> queryPartitions = queryFiles.crossValidationPartitions();
 
     Mat vals(queryFiles.size(), targetFiles.size(), CV_8UC1);
     for (int i=0; i<queryFiles.size(); i++) {
-        const int labelA = queryLabels[i];
         const QString &fileA = queryFiles[i];
+        const int labelA = queryLabels[i];
+        const int partitionA = queryPartitions[i];
+
         for (int j=0; j<targetFiles.size(); j++) {
-            const int labelB = targetLabels[j];
             const QString &fileB = targetFiles[j];
+            const int labelB = targetLabels[j];
+            const int partitionB = targetPartitions[j];
+
             Mask_t val;
-            if      (fileA == fileB)   val = DontCare;
-            else if (labelA == -1)     val = DontCare;
-            else if (labelB == -1)     val = DontCare;
-            else if (labelA == labelB) val = Match;
-            else                       val = NonMatch;
+            if      (fileA == fileB)           val = DontCare;
+            else if (labelA == -1)             val = DontCare;
+            else if (labelB == -1)             val = DontCare;
+            else if (partitionA != partitionB) val = DontCare;
+            else if (labelA == labelB)         val = Match;
+            else                               val = NonMatch;
             vals.at<Mask_t>(i,j) = val;
         }
     }
