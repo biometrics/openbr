@@ -19,7 +19,7 @@
  * \section overview Overview
  * OpenBR \cite openbr is a toolkit for biometric recognition and evaluation.
  * Supported use cases include training new recognition algorithms, interfacing with commercial systems, and measuring algorithm performance.
- * Free algorithms are also available for specific modalities including face recognition, face gender \& age estimation, face quality, and document classification.
+ * Free algorithms are also available for specific modalities including \ref cpp_face_recognition, \ref cpp_age_estimation, and \ref cpp_gender_estimation.
  *
  * There are three modules users may interact with:
  * - \ref cli - \copybrief cli
@@ -32,7 +32,7 @@
 
 /*!
  * \page installation Installation
- * \brief A hacker's guide to building, editing, and running the source code.
+ * \brief A hacker's guide to building, editing, and running the project.
  *
  * \section installation_from_source From Source
  * Installation from source is the recommended method for getting OpenBR on your machine.
@@ -44,7 +44,7 @@
  * - \subpage linux_icc
  *
  * \section installation_from_binary From Binary
- * Pre-built releases are generally not provided, though they can be built from source using the instructions above.
+ * Pre-compiled releases are not currently provided, but they can be built from source using the instructions above.
  * Generally you should follow your operating system's best practices for installing a binary package.
  * However, for temporary evaluation, one simple configuration approach is:
  *
@@ -104,7 +104,7 @@ $ br -help
  *  \endcode
  * -# <http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and install:
  *  -# Unzip "qt-everywhere-opensource-src-5.0.1.zip"
- *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
+ *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\\README".
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
  *  $ cd qt-everywhere-opensource-src-5.0.1
@@ -183,7 +183,7 @@ $ br -help
  *  \endcode
  * -# <http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and install:
  *  -# Unzip "qt-everywhere-opensource-src-5.0.1.zip"
- *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\README".
+ *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "qt-everywhere-opensource-src-5.0.1\\README".
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
  *  $ cd qt-everywhere-opensource-src-5.0.1

@@ -16,8 +16,8 @@
 
 /*!
  * \ingroup cli
- * \page cli_compare_faces Compare Faces
- * \ref cpp_compare_faces "Source Equivalent"
+ * \page cli_face_recognition Face Recognition
+ * \ref cpp_face_recognition "C++ Equivalent"
  * \code
  * $ br -algorithm FaceRecognition \
  *      -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S354-02-t10_01.jpg \
@@ -25,7 +25,7 @@
  * \endcode
  */
 
-//! [compare_faces]
+//! [face_recognition]
 #include <openbr_plugin.h>
 
 static void printTemplate(const br::Template &t)
@@ -68,4 +68,4 @@ int main(int argc, char *argv[])
     br::Context::finalize();
     return 0;
 }
-//! [compare_faces]
+//! [face_recognition]

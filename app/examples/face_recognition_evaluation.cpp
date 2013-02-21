@@ -16,8 +16,8 @@
 
 /*!
  * \ingroup cli
- * \page cli_evaluate_face_recognition Evaluate Face Recognition
- * \ref c_evaluate_face_recognition "Source Equivalent"
+ * \page cli_face_recognition_evaluation Face Recognition Evaluation
+ * \ref c_face_recognition_evaluation "C Equivalent"
  * \code
  * $ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
  *      -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
@@ -30,7 +30,7 @@
  * \endcode
  */
 
-//! [evaluate_face_recognition]
+//! [face_recognition_evaluation]
 #include <openbr.h>
 
 int main(int argc, char *argv[])
@@ -67,4 +67,4 @@ int main(int argc, char *argv[])
     br_finalize();
     return 0;
 }
-//! [evaluate_face_recognition]
+//! [face_recognition_evaluation]

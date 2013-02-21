@@ -60,10 +60,21 @@
  * Plugin authors are encouraged to <tt>\\cite</tt> relevant papers by adding them to <tt>share/openbr/openbr.bib</tt>.
  *
  * \section examples Examples
- * - \ref cpp_compare_faces
- * \subsection cpp_compare_faces Compare Faces
- * \ref cli_compare_faces "Command Line Interface Equivalent"
- * \snippet app/examples/compare_faces.cpp compare_faces
+ * - \ref cpp_face_recognition
+ * - \ref cpp_age_estimation
+ * - \ref cpp_gender_estimation
+ *
+ * \subsection cpp_face_recognition Face Recognition
+ * \ref cli_face_recognition "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition.cpp face_recognition
+ *
+ * \subsection cpp_age_estimation Age Estimation
+ * \ref cli_age_estimation "Command Line Interface Equivalent"
+ * \snippet app/examples/age_estimation.cpp age_estimation
+ *
+ * \subsection cpp_gender_estimation Gender Estimation
+ * \ref cli_gender_estimation "Command Line Interface Equivalent"
+ * \snippet app/examples/gender_estimation.cpp gender_estimation
  */
 
 namespace br

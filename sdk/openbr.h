@@ -54,10 +54,11 @@ extern "C" {
  * \endcode
  *
  * \section examples Examples
- * - \ref c_evaluate_face_recognition
- * \subsection c_evaluate_face_recognition Evaluate Face Recognition
- * \ref cli_evaluate_face_recognition "Command Line Interface Equivalent"
- * \snippet app/examples/evaluate_face_recognition.cpp evaluate_face_recognition
+ * - \ref c_face_recognition_evaluation
+ *
+ * \subsection c_face_recognition_evaluation Face Recognition Evaluation
+ * \ref cli_face_recognition_evaluation "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition_evaluation.cpp face_recognition_evaluation
  */
 
 /*!
