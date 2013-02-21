@@ -44,6 +44,7 @@ class videoFormat : public Format
 public:
     Template read() const
     {
+        //if (file.exists()) {
         VideoCapture videoSource(file.name.toStdString());
         videoSource.open(file.name.toStdString() );
         
@@ -65,6 +66,7 @@ public:
         }
 
         return frames;
+        //}
     }
 
     void write(const Template &t) const
