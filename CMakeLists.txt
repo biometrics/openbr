@@ -118,7 +118,7 @@ endif()
 
 # Install
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
-install(DIRECTORY share DESTINATION .)
+install(DIRECTORY share data DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 include(InstallDependencies)
 install_compiler_libraries()

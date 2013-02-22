@@ -87,6 +87,7 @@ $ br -help
  * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and unarchive.
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
  *  -# Move the "OpenCV-2.4.3" folder to "C:\".
+ *  -# In "C:\OpenCV-2.4.3\modules\objdetect\src\haar.cpp" line 55, change "#ifdev CV_AVX" to "#ifdef 0".
  *  -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
  *  \code
  *  $ cd C:\OpenCV-2.4.3
