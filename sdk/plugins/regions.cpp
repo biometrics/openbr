@@ -156,11 +156,13 @@ class RectFromLandmarksTransform : public UntrainableTransform
         maxX = maxY = -std::numeric_limits<int>::max();
 
         foreach(int index, indices) {
-            if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
-            if (src.file.landmarks()[index].x() > maxX) maxX = src.file.landmarks()[index].x();
-            if (src.file.landmarks()[index].y() < minY) minY = src.file.landmarks()[index].y();
-            if (src.file.landmarks()[index].y() > maxY) maxY = src.file.landmarks()[index].y();
-            dst.file.appendLandmark(src.file.landmarks()[index]);
+            if (src.file.landmarks().size() < index+1) {
+                if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
+                if (src.file.landmarks()[index].x() > maxX) maxX = src.file.landmarks()[index].x();
+                if (src.file.landmarks()[index].y() < minY) minY = src.file.landmarks()[index].y();
+                if (src.file.landmarks()[index].y() > maxY) maxY = src.file.landmarks()[index].y();
+                dst.file.appendLandmark(src.file.landmarks()[index]);
+            }
         }
 
         double width = maxX-minX+padding;
