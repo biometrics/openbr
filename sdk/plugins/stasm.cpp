@@ -49,10 +49,9 @@ class StasmTransform : public UntrainableTransform
 
         if (nlandmarks == 0) qFatal("Unable to detect Stasm landmarks");
 
+        dst = src;
         for (int i = 0; i < nlandmarks; i++)
             dst.file.appendLandmark(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
-
-        dst.m() = src.m().clone();
     }
 };
 
