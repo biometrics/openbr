@@ -1,14 +1,9 @@
 #include <QProcess>
-<<<<<<< HEAD
 #include <stasm_dll.hpp>
 #include <opencv2/highgui/highgui.hpp>
-=======
-
-#include <stasm/stasm_dll.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
 
->>>>>>> 9cfbe4a6bc2e683ed8be044b5007ddcfcfcfcd23
 #include <openbr_plugin.h>
 
 using namespace cv;
@@ -65,8 +60,6 @@ class StasmTransform : public UntrainableTransform
         AsmSearchDll(&nlandmarks, landmarks,
                      src.file.name.toStdString().c_str(), reinterpret_cast<char*>(src.m().data), src.m().cols, src.m().rows,
                      src.m(), (src.m().channels() == 3), qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-68-1d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-76-2d.conf"));
-
-
 
         if (nlandmarks == 0) qFatal("Unable to detect Stasm landmarks");
 
