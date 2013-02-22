@@ -1,0 +1,29 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_qwt_abstract_series_store.html" title="Bridge between QwtSeriesStore and QwtPlotSeriesItem." alt="" coords="6,181,162,208"/>
+<area shape="rect" id="node3" href="$class_qwt_plot_series_item.html" title="Base class for plot items representing a series of samples." alt="" coords="265,232,391,259"/>
+<area shape="rect" id="node21" href="$class_qwt_series_store.html" title="Class storing a QwtSeriesData object." alt="" coords="257,181,399,208"/>
+<area shape="rect" id="node23" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QPointF \&gt;" alt="" coords="239,29,417,56"/>
+<area shape="rect" id="node27" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtInterval\lSample \&gt;" alt="" coords="237,283,419,325"/>
+<area shape="rect" id="node31" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtOHLCSample \&gt;" alt="" coords="211,131,445,157"/>
+<area shape="rect" id="node34" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtPoint3D \&gt;" alt="" coords="229,80,427,107"/>
+<area shape="rect" id="node37" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtSetSample \&gt;" alt="" coords="494,349,711,376"/>
+<area shape="rect" id="node5" href="$class_qwt_plot_abstract_bar_chart.html" title="Abstract base class for bar chart items." alt="" coords="522,197,683,224"/>
+<area shape="rect" id="node11" href="$class_qwt_plot_curve.html" title="A plot item, that represents a series of points." alt="" coords="553,45,652,72"/>
+<area shape="rect" id="node13" href="$class_qwt_plot_histogram.html" title="QwtPlotHistogram represents a series of samples, where an interval is associated with a value ( &#160;)..." alt="" coords="541,248,665,275"/>
+<area shape="rect" id="node15" href="$class_qwt_plot_interval_curve.html" title="QwtPlotIntervalCurve represents a series of samples, where each value is associated with an interval ..." alt="" coords="533,299,672,325"/>
+<area shape="rect" id="node17" href="$class_qwt_plot_spectro_curve.html" title="Curve that displays 3D points as dots, where the z coordinate is mapped to a color." alt="" coords="531,96,674,123"/>
+<area shape="rect" id="node19" href="$class_qwt_plot_trading_curve.html" title="QwtPlotTradingCurve illustrates movements in the price of a financial instrument over time..." alt="" coords="530,147,675,173"/>
+<area shape="rect" id="node7" href="$class_qwt_plot_bar_chart.html" title="QwtPlotBarChart displays a series of a values as bars." alt="" coords="775,147,889,173"/>
+<area shape="rect" id="node9" href="$class_qwt_plot_multi_bar_chart.html" title="QwtPlotMultiBarChart displays a series of a samples that consist each of a set of values..." alt="" coords="761,248,903,275"/>
+<area shape="rect" id="node39" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="39,577,129,604"/>
+<area shape="rect" id="node41" href="$class_qwt_plot_grid.html" title="A class which draws a coordinate grid." alt="" coords="282,552,374,579"/>
+<area shape="rect" id="node43" href="$class_qwt_plot_legend_item.html" title="A class which draws a legend inside the plot canvas." alt="" coords="261,603,395,629"/>
+<area shape="rect" id="node45" href="$class_qwt_plot_marker.html" title="A class for drawing markers." alt="" coords="275,653,381,680"/>
+<area shape="rect" id="node47" href="$class_qwt_plot_raster_item.html" title="A class, which displays raster data." alt="" coords="265,704,391,731"/>
+<area shape="rect" id="node51" href="$class_qwt_plot_scale_item.html" title="A class which draws a scale inside the plot canvas." alt="" coords="267,755,389,781"/>
+<area shape="rect" id="node54" href="$class_qwt_plot_shape_item.html" title="A plot item, which displays any graphical shape, that can be defined by a QPainterPath." alt="" coords="265,805,391,832"/>
+<area shape="rect" id="node56" href="$class_qwt_plot_svg_item.html" title="A plot item, which displays data in Scalable Vector Graphics (SVG) format." alt="" coords="271,400,385,427"/>
+<area shape="rect" id="node58" href="$class_qwt_plot_text_label.html" title="A plot item, which displays a text label." alt="" coords="267,451,389,477"/>
+<area shape="rect" id="node60" href="$class_qwt_plot_zone_item.html" title="A plot item, which displays a zone." alt="" coords="268,501,388,528"/>
+<area shape="rect" id="node49" href="$class_qwt_plot_spectrogram.html" title="A plot item, which displays a spectrogram." alt="" coords="533,704,673,731"/>
+</map>

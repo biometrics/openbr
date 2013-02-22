@@ -1,0 +1,450 @@
+.TH "QwtEventPattern" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtEventPattern \- 
+.PP
+A collection of event patterns\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_event_pattern\&.h>\fP
+.PP
+Inherited by \fBQwtPicker\fP\&.
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBKeyPattern\fP"
+.br
+.RI "\fIA pattern for key events\&. \fP"
+.ti -1c
+.RI "class \fBMousePattern\fP"
+.br
+.RI "\fIA pattern for mouse events\&. \fP"
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBMousePatternCode\fP { \fBMouseSelect1\fP, \fBMouseSelect2\fP, \fBMouseSelect3\fP, \fBMouseSelect4\fP, \fBMouseSelect5\fP, \fBMouseSelect6\fP, \fBMousePatternCount\fP }"
+.br
+.RI "\fISymbolic mouse input codes\&. \fP"
+.ti -1c
+.RI "enum \fBKeyPatternCode\fP { \fBKeySelect1\fP, \fBKeySelect2\fP, \fBKeyAbort\fP, \fBKeyLeft\fP, \fBKeyRight\fP, \fBKeyUp\fP, \fBKeyDown\fP, \fBKeyRedo\fP, \fBKeyUndo\fP, \fBKeyHome\fP, \fBKeyPatternCount\fP }"
+.br
+.RI "\fISymbolic keyboard input codes\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtEventPattern\fP ()"
+.br
+.ti -1c
+.RI "virtual \fB~QwtEventPattern\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBinitMousePattern\fP (int numButtons)"
+.br
+.ti -1c
+.RI "void \fBinitKeyPattern\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetMousePattern\fP (\fBMousePatternCode\fP, Qt::MouseButton button, Qt::KeyboardModifiers=Qt::NoModifier)"
+.br
+.ti -1c
+.RI "void \fBsetKeyPattern\fP (\fBKeyPatternCode\fP, int keyCode, Qt::KeyboardModifiers modifierCodes=Qt::NoModifier)"
+.br
+.ti -1c
+.RI "void \fBsetMousePattern\fP (const QVector< \fBMousePattern\fP > &)"
+.br
+.RI "\fIChange the mouse event patterns\&. \fP"
+.ti -1c
+.RI "void \fBsetKeyPattern\fP (const QVector< \fBKeyPattern\fP > &)"
+.br
+.RI "\fIChange the key event patterns\&. \fP"
+.ti -1c
+.RI "const QVector< \fBMousePattern\fP > & \fBmousePattern\fP () const "
+.br
+.ti -1c
+.RI "const QVector< \fBKeyPattern\fP > & \fBkeyPattern\fP () const "
+.br
+.ti -1c
+.RI "QVector< \fBMousePattern\fP > & \fBmousePattern\fP ()"
+.br
+.ti -1c
+.RI "QVector< \fBKeyPattern\fP > & \fBkeyPattern\fP ()"
+.br
+.ti -1c
+.RI "bool \fBmouseMatch\fP (\fBMousePatternCode\fP, const QMouseEvent *) const "
+.br
+.RI "\fICompare a mouse event with an event pattern\&. \fP"
+.ti -1c
+.RI "bool \fBkeyMatch\fP (\fBKeyPatternCode\fP, const QKeyEvent *) const "
+.br
+.RI "\fICompare a key event with an event pattern\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBmouseMatch\fP (const \fBMousePattern\fP &, const QMouseEvent *) const "
+.br
+.RI "\fICompare a mouse event with an event pattern\&. \fP"
+.ti -1c
+.RI "virtual bool \fBkeyMatch\fP (const \fBKeyPattern\fP &, const QKeyEvent *) const "
+.br
+.RI "\fICompare a key event with an event pattern\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+A collection of event patterns\&. 
+
+\fBQwtEventPattern\fP introduces an level of indirection for mouse and keyboard inputs\&. Those are represented by symbolic names, so the application code can be configured by individual mappings\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPicker\fP, \fBQwtPickerMachine\fP, \fBQwtPlotZoomer\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtEventPattern::KeyPatternCode\fP"
+
+.PP
+Symbolic keyboard input codes\&. Individual settings can be configured using \fBsetKeyPattern()\fP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetKeyPattern()\fP, \fBsetMousePattern()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIKeySelect1 \fP\fP
+Qt::Key_Return\&. 
+.TP
+\fB\fIKeySelect2 \fP\fP
+Qt::Key_Space\&. 
+.TP
+\fB\fIKeyAbort \fP\fP
+Qt::Key_Escape\&. 
+.TP
+\fB\fIKeyLeft \fP\fP
+Qt::Key_Left\&. 
+.TP
+\fB\fIKeyRight \fP\fP
+Qt::Key_Right\&. 
+.TP
+\fB\fIKeyUp \fP\fP
+Qt::Key_Up\&. 
+.TP
+\fB\fIKeyDown \fP\fP
+Qt::Key_Down\&. 
+.TP
+\fB\fIKeyRedo \fP\fP
+Qt::Key_Plus\&. 
+.TP
+\fB\fIKeyUndo \fP\fP
+Qt::Key_Minus\&. 
+.TP
+\fB\fIKeyHome \fP\fP
+Qt::Key_Escape\&. 
+.TP
+\fB\fIKeyPatternCount \fP\fP
+Number of key patterns\&. 
+.SS "enum \fBQwtEventPattern::MousePatternCode\fP"
+
+.PP
+Symbolic mouse input codes\&. \fBQwtEventPattern\fP implements 3 different settings for mice with 1, 2, or 3 buttons that can be activated using \fBinitMousePattern()\fP\&. The default setting is for 3 button mice\&.
+.PP
+Individual settings can be configured using \fBsetMousePattern()\fP\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinitMousePattern()\fP, \fBsetMousePattern()\fP, \fBsetKeyPattern()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMouseSelect1 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton
+.IP "\(bu" 2
+Qt::LeftButton
+.IP "\(bu" 2
+Qt::LeftButton 
+.PP
+
+.TP
+\fB\fIMouseSelect2 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton + Qt::ControlModifier
+.IP "\(bu" 2
+Qt::RightButton
+.IP "\(bu" 2
+Qt::RightButton 
+.PP
+
+.TP
+\fB\fIMouseSelect3 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton + Qt::AltModifier
+.IP "\(bu" 2
+Qt::LeftButton + Qt::AltModifier
+.IP "\(bu" 2
+Qt::MidButton 
+.PP
+
+.TP
+\fB\fIMouseSelect4 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton + Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::LeftButton + Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::LeftButton + Qt::ShiftModifier 
+.PP
+
+.TP
+\fB\fIMouseSelect5 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton + Qt::ControlButton | Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::RightButton + Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::RightButton + Qt::ShiftModifier 
+.PP
+
+.TP
+\fB\fIMouseSelect6 \fP\fP
+The default setting for 1, 2 and 3 button mice is:
+.PP
+.IP "\(bu" 2
+Qt::LeftButton + Qt::AltModifier + Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::LeftButton + Qt::AltModifier | Qt::ShiftModifier
+.IP "\(bu" 2
+Qt::MidButton + Qt::ShiftModifier 
+.PP
+
+.TP
+\fB\fIMousePatternCount \fP\fP
+Number of mouse patterns\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtEventPattern::QwtEventPattern ()"
+Constructor
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBMousePatternCode\fP, \fBKeyPatternCode\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtEventPattern::initKeyPattern ()"
+Set default mouse patterns\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBKeyPatternCode\fP 
+.RE
+.PP
+
+.SS "void QwtEventPattern::initMousePattern (intnumButtons)"
+Set default mouse patterns, depending on the number of mouse buttons
+.PP
+\fBParameters:\fP
+.RS 4
+\fInumButtons\fP Number of mouse buttons ( <= 3 ) 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBMousePatternCode\fP 
+.RE
+.PP
+
+.SS "bool QwtEventPattern::keyMatch (\fBKeyPatternCode\fPcode, const QKeyEvent *event) const"
+
+.PP
+Compare a key event with an event pattern\&. A key event matches the pattern when both have the same key value and in the state value the same key flags (Qt::KeyButtonMask) are set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcode\fP Index of the event pattern 
+.br
+\fIevent\fP Key event 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if matches
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmouseMatch()\fP 
+.RE
+.PP
+
+.SS "bool QwtEventPattern::keyMatch (const \fBKeyPattern\fP &pattern, const QKeyEvent *event) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Compare a key event with an event pattern\&. A key event matches the pattern when both have the same key value and in the state value the same key flags (Qt::KeyButtonMask) are set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpattern\fP Key event pattern 
+.br
+\fIevent\fP Key event 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if matches
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmouseMatch()\fP 
+.RE
+.PP
+
+.SS "const QVector< \fBQwtEventPattern::KeyPattern\fP > & QwtEventPattern::keyPattern () const"
+\fBReturns:\fP
+.RS 4
+Key pattern 
+.RE
+.PP
+
+.SS "QVector< \fBQwtEventPattern::KeyPattern\fP > & QwtEventPattern::keyPattern ()"
+\fBReturns:\fP
+.RS 4
+Key pattern 
+.RE
+.PP
+
+.SS "bool QwtEventPattern::mouseMatch (\fBMousePatternCode\fPcode, const QMouseEvent *event) const"
+
+.PP
+Compare a mouse event with an event pattern\&. A mouse event matches the pattern when both have the same button value and in the state value the same key flags(Qt::KeyButtonMask) are set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcode\fP Index of the event pattern 
+.br
+\fIevent\fP Mouse event 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if matches
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBkeyMatch()\fP 
+.RE
+.PP
+
+.SS "bool QwtEventPattern::mouseMatch (const \fBMousePattern\fP &pattern, const QMouseEvent *event) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Compare a mouse event with an event pattern\&. A mouse event matches the pattern when both have the same button value and in the state value the same key flags(Qt::KeyButtonMask) are set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpattern\fP Mouse event pattern 
+.br
+\fIevent\fP Mouse event 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if matches
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBkeyMatch()\fP 
+.RE
+.PP
+
+.SS "const QVector< \fBQwtEventPattern::MousePattern\fP > & QwtEventPattern::mousePattern () const"
+\fBReturns:\fP
+.RS 4
+Mouse pattern 
+.RE
+.PP
+
+.SS "QVector< \fBQwtEventPattern::MousePattern\fP > & QwtEventPattern::mousePattern ()"
+\fBReturns:\fP
+.RS 4
+Mouse pattern 
+.RE
+.PP
+
+.SS "void QwtEventPattern::setKeyPattern (\fBKeyPatternCode\fPpattern, intkey, Qt::KeyboardModifiersmodifiers = \fCQt::NoModifier\fP)"
+Change one key pattern
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpattern\fP Index of the pattern 
+.br
+\fIkey\fP Key 
+.br
+\fImodifiers\fP Keyboard modifiers
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+QKeyEvent 
+.RE
+.PP
+
+.SS "void QwtEventPattern::setMousePattern (\fBMousePatternCode\fPpattern, Qt::MouseButtonbutton, Qt::KeyboardModifiersmodifiers = \fCQt::NoModifier\fP)"
+Change one mouse pattern
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpattern\fP Index of the pattern 
+.br
+\fIbutton\fP Button 
+.br
+\fImodifiers\fP Keyboard modifiers
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+QMouseEvent 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

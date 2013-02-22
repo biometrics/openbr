@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node3" href="$class_qwt_abstract_legend.html" title="Abstract base class for legend widgets." alt="" coords="142,56,277,83"/>
+<area shape="rect" id="node7" href="$class_qwt_plot.html" title="A 2&#45;D plotting widget." alt="" coords="176,5,243,32"/>
+<area shape="rect" id="node9" href="$class_qwt_plot_canvas.html" title="Canvas of a QwtPlot." alt="" coords="155,107,263,133"/>
+<area shape="rect" id="node11" href="$class_qwt_text_label.html" title="A Widget which displays a QwtText." alt="" coords="159,157,259,184"/>
+<area shape="rect" id="node5" href="$class_qwt_legend.html" title="The legend widget." alt="" coords="341,56,429,83"/>
+<area shape="rect" id="node13" href="$class_qwt_legend_label.html" title="A widget representing something on a QwtLegend." alt="" coords="326,157,445,184"/>
+<area shape="rect" id="node14" href="$class_qwt_plot_dict.html" title="A dictionary for plot items." alt="" coords="5,5,93,32"/>
+</map>

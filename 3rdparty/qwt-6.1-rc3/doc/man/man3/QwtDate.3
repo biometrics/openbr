@@ -1,0 +1,379 @@
+.TH "QwtDate" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtDate \- 
+.PP
+A collection of methods around date/time values\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_date\&.h>\fP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBWeek0Type\fP { \fBFirstThursday\fP, \fBFirstDay\fP }"
+.br
+.ti -1c
+.RI "enum \fBIntervalType\fP { \fBMillisecond\fP, \fBSecond\fP, \fBMinute\fP, \fBHour\fP, \fBDay\fP, \fBWeek\fP, \fBMonth\fP, \fBYear\fP }"
+.br
+.ti -1c
+.RI "enum { \fBJulianDayForEpoch\fP = 2440588 }"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static QDate \fBminDate\fP ()"
+.br
+.ti -1c
+.RI "static QDate \fBmaxDate\fP ()"
+.br
+.ti -1c
+.RI "static QDateTime \fBtoDateTime\fP (double value, Qt::TimeSpec=Qt::UTC)"
+.br
+.ti -1c
+.RI "static double \fBtoDouble\fP (const QDateTime &)"
+.br
+.ti -1c
+.RI "static QDateTime \fBceil\fP (const QDateTime &, \fBIntervalType\fP)"
+.br
+.ti -1c
+.RI "static QDateTime \fBfloor\fP (const QDateTime &, \fBIntervalType\fP)"
+.br
+.ti -1c
+.RI "static QDate \fBdateOfWeek0\fP (int year, \fBWeek0Type\fP)"
+.br
+.RI "\fIDate of the first day of the first week for a year\&. \fP"
+.ti -1c
+.RI "static int \fBweekNumber\fP (const QDate &, \fBWeek0Type\fP)"
+.br
+.ti -1c
+.RI "static int \fButcOffset\fP (const QDateTime &)"
+.br
+.ti -1c
+.RI "static QString \fBtoString\fP (const QDateTime &, const QString &format, \fBWeek0Type\fP)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A collection of methods around date/time values\&. 
+
+Qt offers convenient classes for dealing with date/time values, but Qwt uses coordinate systems that are based on doubles\&. \fBQwtDate\fP offers methods to translate from QDateTime to double and v\&.v\&.
+.PP
+A double is interpreted as the number of milliseconds since 1970-01-01T00:00:00 Universal Coordinated Time - also known as 'The Epoch'\&.
+.PP
+While the range of the Julian day in Qt4 is limited to [0, MAX_INT], Qt5 stores it as qint64 offering a huge range of valid dates\&. As the significance of a double is below this ( assuming a fraction of 52 bits ) the translation is not bijective with rounding errors for dates very far from Epoch\&. For a resolution of 1 ms those start to happen for dates above the year 144683\&.
+.PP
+An axis for a date/time interval is expected to be aligned and divided in time/date units like seconds, minutes, \&.\&.\&. \fBQwtDate\fP offers several algorithms that are needed to calculate these axes\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtDateScaleEngine\fP, \fBQwtDateScaleDraw\fP, QDate, QTime 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "anonymous enum"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIJulianDayForEpoch \fP\fP
+The Julian day of 'The Epoch'\&. 
+.SS "enum \fBQwtDate::IntervalType\fP"
+Classification of an time interval
+.PP
+Time intervals needs to be classified to decide how to align and divide it\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMillisecond \fP\fP
+The interval is related to milliseconds\&. 
+.TP
+\fB\fISecond \fP\fP
+The interval is related to seconds\&. 
+.TP
+\fB\fIMinute \fP\fP
+The interval is related to minutes\&. 
+.TP
+\fB\fIHour \fP\fP
+The interval is related to hours\&. 
+.TP
+\fB\fIDay \fP\fP
+The interval is related to days\&. 
+.TP
+\fB\fIWeek \fP\fP
+The interval is related to weeks\&. 
+.TP
+\fB\fIMonth \fP\fP
+The interval is related to months\&. 
+.TP
+\fB\fIYear \fP\fP
+The interval is related to years\&. 
+.SS "enum \fBQwtDate::Week0Type\fP"
+How to identify the first week of year differs between countries\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIFirstThursday \fP\fP
+According to ISO 8601 the first week of a year is defined as 'the week with the year's first Thursday in it'\&.
+.PP
+FirstThursday corresponds to the numbering that is implemented in QDate::weekNumber()\&. 
+.TP
+\fB\fIFirstDay \fP\fP
+'The week with January 1\&.1 in it\&.'
+.PP
+In the U\&.S\&. this definition is more common than FirstThursday\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "QDateTime QwtDate::ceil (const QDateTime &dateTime, \fBIntervalType\fPintervalType)\fC [static]\fP"
+Ceil a datetime according the interval type
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdateTime\fP Datetime value 
+.br
+\fIintervalType\fP Interval type, how to ceil\&. F\&.e\&. when intervalType = QwtDate::Months, the result will be ceiled to the next beginning of a month 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBfloor()\fP 
+.RE
+.PP
+
+.SS "QDate QwtDate::dateOfWeek0 (intyear, \fBWeek0Type\fPtype)\fC [static]\fP"
+
+.PP
+Date of the first day of the first week for a year\&. The first day of a week depends on the current locale ( QLocale::firstDayOfWeek() )\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIyear\fP Year 
+.br
+\fItype\fP Option how to identify the first week 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+First day of week 0
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+QLocale::firstDayOfWeek(), \fBweekNumber()\fP 
+.RE
+.PP
+
+.SS "QDateTime QwtDate::floor (const QDateTime &dateTime, \fBIntervalType\fPintervalType)\fC [static]\fP"
+Floor a datetime according the interval type
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdateTime\fP Datetime value 
+.br
+\fIintervalType\fP Interval type, how to ceil\&. F\&.e\&. when intervalType = QwtDate::Months, the result will be ceiled to the next beginning of a month 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBfloor()\fP 
+.RE
+.PP
+
+.SS "QDate QwtDate::maxDate ()\fC [static]\fP"
+Maximum for the supported date range
+.PP
+The range of valid dates depends on how QDate stores the Julian day internally\&.
+.PP
+.IP "\(bu" 2
+For Qt4 it is 'Tue Jun 3 5874898'
+.IP "\(bu" 2
+For Qt5 it is 'Tue Dec 31 2147483647'
+.PP
+.PP
+\fBReturns:\fP
+.RS 4
+maximum of the date range 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBminDate()\fP 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The maximum differs between Qt4 and Qt5 
+.RE
+.PP
+
+.SS "QDate QwtDate::minDate ()\fC [static]\fP"
+Minimum for the supported date range
+.PP
+The range of valid dates depends on how QDate stores the Julian day internally\&.
+.PP
+.IP "\(bu" 2
+For Qt4 it is 'Tue Jan 2 -4713'
+.IP "\(bu" 2
+For Qt5 it is 'Thu Jan 1 -2147483648'
+.PP
+.PP
+\fBReturns:\fP
+.RS 4
+minimum of the date range 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmaxDate()\fP 
+.RE
+.PP
+
+.SS "QDateTime QwtDate::toDateTime (doublevalue, Qt::TimeSpectimeSpec = \fCQt::UTC\fP)\fC [static]\fP"
+Translate from double to QDateTime
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Number of milliseconds since the epoch, 1970-01-01T00:00:00 UTC 
+.br
+\fItimeSpec\fP Time specification 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Datetime value
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtoDouble()\fP, QDateTime::setMSecsSinceEpoch() 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The return datetime for Qt::OffsetFromUTC will be Qt::UTC 
+.RE
+.PP
+
+.SS "double QwtDate::toDouble (const QDateTime &dateTime)\fC [static]\fP"
+Translate from QDateTime to double
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdateTime\fP Datetime value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Number of milliseconds since 1970-01-01T00:00:00 UTC has passed\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtoDateTime()\fP, QDateTime::toMSecsSinceEpoch() 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+For values very far below or above 1970-01-01 UTC rounding errors will happen due to the limited significance of a double\&. 
+.RE
+.PP
+
+.SS "QString QwtDate::toString (const QDateTime &dateTime, const QString &format, \fBWeek0Type\fPweek0Type)\fC [static]\fP"
+Translate a datetime into a string
+.PP
+Beside the format expressions documented in QDateTime::toString() the following expressions are supported:
+.PP
+.IP "\(bu" 2
+w
+.br
+ week number: ( 1 - 53 )
+.IP "\(bu" 2
+ww
+.br
+ week number with a leading zero ( 01 - 53 )
+.PP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdateTime\fP Datetime value 
+.br
+\fIformat\fP Format string 
+.br
+\fIweek0Type\fP Specification of week 0
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+QDateTime::toString(), \fBweekNumber()\fP, \fBQwtDateScaleDraw\fP 
+.RE
+.PP
+
+.SS "int QwtDate::utcOffset (const QDateTime &dateTime)\fC [static]\fP"
+Offset in seconds from Coordinated Universal Time
+.PP
+The offset depends on the time specification of dateTime:
+.PP
+.IP "\(bu" 2
+Qt::UTC 0, dateTime has no offset
+.IP "\(bu" 2
+Qt::OffsetFromUTC returns dateTime\&.utcOffset()
+.IP "\(bu" 2
+Qt::LocalTime: number of seconds from the UTC
+.PP
+.PP
+For Qt::LocalTime the offset depends on the timezone and daylight savings\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdateTime\fP Datetime value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Offset in seconds 
+.RE
+.PP
+
+.SS "int QwtDate::weekNumber (const QDate &date, \fBWeek0Type\fPtype)\fC [static]\fP"
+Find the week number of a date
+.PP
+.IP "\(bu" 2
+\fBQwtDate::FirstThursday\fP
+.br
+ Corresponding to ISO 8601 ( see QDate::weekNumber() )\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtDate::FirstDay\fP
+.br
+ Number of weeks that have begun since \fBdateOfWeek0()\fP\&.
+.PP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdate\fP Date 
+.br
+\fItype\fP Option how to identify the first week
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Week number, starting with 1 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

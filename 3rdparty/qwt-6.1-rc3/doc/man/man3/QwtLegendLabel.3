@@ -1,0 +1,266 @@
+.TH "QwtLegendLabel" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtLegendLabel \- 
+.PP
+A widget representing something on a \fBQwtLegend\fP\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_legend_label\&.h>\fP
+.PP
+Inherits \fBQwtTextLabel\fP\&.
+.SS "Public Slots"
+
+.in +1c
+.ti -1c
+.RI "void \fBsetChecked\fP (bool on)"
+.br
+.in -1c
+.SS "Signals"
+
+.in +1c
+.ti -1c
+.RI "void \fBclicked\fP ()"
+.br
+.RI "\fISignal, when the legend item has been clicked\&. \fP"
+.ti -1c
+.RI "void \fBpressed\fP ()"
+.br
+.RI "\fISignal, when the legend item has been pressed\&. \fP"
+.ti -1c
+.RI "void \fBreleased\fP ()"
+.br
+.RI "\fISignal, when the legend item has been released\&. \fP"
+.ti -1c
+.RI "void \fBchecked\fP (bool)"
+.br
+.RI "\fISignal, when the legend item has been toggled\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtLegendLabel\fP (QWidget *parent=0)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtLegendLabel\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetData\fP (const \fBQwtLegendData\fP &)"
+.br
+.ti -1c
+.RI "const \fBQwtLegendData\fP & \fBdata\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetItemMode\fP (\fBQwtLegendData::Mode\fP)"
+.br
+.ti -1c
+.RI "\fBQwtLegendData::Mode\fP \fBitemMode\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSpacing\fP (int \fBspacing\fP)"
+.br
+.ti -1c
+.RI "int \fBspacing\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBsetText\fP (const \fBQwtText\fP &)"
+.br
+.ti -1c
+.RI "void \fBsetIcon\fP (const QPixmap &)"
+.br
+.ti -1c
+.RI "QPixmap \fBicon\fP () const "
+.br
+.ti -1c
+.RI "virtual QSize \fBsizeHint\fP () const "
+.br
+.RI "\fIReturn a size hint\&. \fP"
+.ti -1c
+.RI "bool \fBisChecked\fP () const "
+.br
+.RI "\fIReturn true, if the item is checked\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsetDown\fP (bool)"
+.br
+.RI "\fISet the item being down\&. \fP"
+.ti -1c
+.RI "bool \fBisDown\fP () const "
+.br
+.RI "\fIReturn true, if the item is down\&. \fP"
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP (QPaintEvent *)"
+.br
+.RI "\fIPaint event\&. \fP"
+.ti -1c
+.RI "virtual void \fBmousePressEvent\fP (QMouseEvent *)"
+.br
+.RI "\fIHandle mouse press events\&. \fP"
+.ti -1c
+.RI "virtual void \fBmouseReleaseEvent\fP (QMouseEvent *)"
+.br
+.RI "\fIHandle mouse release events\&. \fP"
+.ti -1c
+.RI "virtual void \fBkeyPressEvent\fP (QKeyEvent *)"
+.br
+.RI "\fIHandle key press events\&. \fP"
+.ti -1c
+.RI "virtual void \fBkeyReleaseEvent\fP (QKeyEvent *)"
+.br
+.RI "\fIHandle key release events\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+A widget representing something on a \fBQwtLegend\fP\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtLegendLabel::QwtLegendLabel (QWidget *parent = \fC0\fP)\fC [explicit]\fP"
+\fBParameters:\fP
+.RS 4
+\fIparent\fP Parent widget 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "const \fBQwtLegendData\fP & QwtLegendLabel::data () const"
+\fBReturns:\fP
+.RS 4
+Attributes of the label 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetData()\fP, \fBQwtPlotItem::legendData()\fP 
+.RE
+.PP
+
+.SS "QPixmap QwtLegendLabel::icon () const"
+\fBReturns:\fP
+.RS 4
+Pixmap representing a plot item 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetIcon()\fP 
+.RE
+.PP
+
+.SS "\fBQwtLegendData::Mode\fP QwtLegendLabel::itemMode () const"
+Return the item mode
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetItemMode()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setChecked (boolon)\fC [slot]\fP"
+Check/Uncheck a the item
+.PP
+\fBParameters:\fP
+.RS 4
+\fIon\fP check/uncheck 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetItemMode()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setData (const \fBQwtLegendData\fP &legendData)"
+Set the attributes of the legend label
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlegendData\fP Attributes of the label 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdata()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setIcon (const QPixmap &icon)"
+Assign the icon
+.PP
+\fBParameters:\fP
+.RS 4
+\fIicon\fP Pixmap representing a plot item
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBicon()\fP, \fBQwtPlotItem::legendIcon()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setItemMode (\fBQwtLegendData::Mode\fPmode)"
+Set the item mode The default is \fBQwtLegendData::ReadOnly\fP
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP Item mode 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBitemMode()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setSpacing (intspacing)"
+Change the spacing 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIspacing\fP Spacing 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBspacing()\fP, \fBQwtTextLabel::margin()\fP 
+.RE
+.PP
+
+.SS "void QwtLegendLabel::setText (const \fBQwtText\fP &text)\fC [virtual]\fP"
+Set the text to the legend item
+.PP
+\fBParameters:\fP
+.RS 4
+\fItext\fP Text label 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtTextLabel::text()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtTextLabel\fP\&.
+.SS "int QwtLegendLabel::spacing () const"
+Return the spacing 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSpacing()\fP, \fBQwtTextLabel::margin()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

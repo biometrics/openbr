@@ -1,0 +1,122 @@
+.TH "QwtOHLCSample" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtOHLCSample \- 
+.PP
+Open-High-Low-Close sample used in financial charts\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_samples\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtOHLCSample\fP (double \fBtime\fP=0\&.0, double \fBopen\fP=0\&.0, double \fBhigh\fP=0\&.0, double \fBlow\fP=0\&.0, double \fBclose\fP=0\&.0)"
+.br
+.ti -1c
+.RI "\fBQwtInterval\fP \fBboundingInterval\fP () const "
+.br
+.RI "\fICalculate the bounding interval of the OHLC values\&. \fP"
+.ti -1c
+.RI "bool \fBisValid\fP () const "
+.br
+.RI "\fICheck if a sample is valid\&. \fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "double \fBtime\fP"
+.br
+.ti -1c
+.RI "double \fBopen\fP"
+.br
+.RI "\fIOpening price\&. \fP"
+.ti -1c
+.RI "double \fBhigh\fP"
+.br
+.RI "\fIHighest price\&. \fP"
+.ti -1c
+.RI "double \fBlow\fP"
+.br
+.RI "\fILowest price\&. \fP"
+.ti -1c
+.RI "double \fBclose\fP"
+.br
+.RI "\fIClosing price\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+Open-High-Low-Close sample used in financial charts\&. 
+
+In financial charts the movement of a price in a time interval is often represented by the opening/closing prices and the lowest/highest prices in this interval\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtTradingChartData\fP 
+.RE
+.PP
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtOHLCSample::QwtOHLCSample (doublet = \fC0\&.0\fP, doubleo = \fC0\&.0\fP, doubleh = \fC0\&.0\fP, doublel = \fC0\&.0\fP, doublec = \fC0\&.0\fP)\fC [inline]\fP"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP Time value 
+.br
+\fIo\fP Open value 
+.br
+\fIh\fP High value 
+.br
+\fIl\fP Low value 
+.br
+\fIc\fP Close value 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtInterval\fP QwtOHLCSample::boundingInterval () const\fC [inline]\fP"
+
+.PP
+Calculate the bounding interval of the OHLC values\&. For valid samples the limits of this interval are always low/high\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisValid()\fP 
+.RE
+.PP
+
+.SS "bool QwtOHLCSample::isValid () const\fC [inline]\fP"
+
+.PP
+Check if a sample is valid\&. A sample is valid, when all of the following checks are true:
+.PP
+.IP "\(bu" 2
+low <= high
+.IP "\(bu" 2
+low <= open <= high
+.IP "\(bu" 2
+low <= close <= high
+.PP
+.PP
+\fBReturns:\fP
+.RS 4
+True, when the sample is valid 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "double QwtOHLCSample::time"
+Time of the sample, usually a number representing a specific interval - like a day\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

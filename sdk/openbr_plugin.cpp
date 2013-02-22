@@ -405,10 +405,18 @@ void FileList::sort(const QString& key)
 
 QList<float> FileList::labels() const
 {
-    QList<float> labels;
+    QList<float> labels; labels.reserve(size());
     foreach (const File &f, *this)
         labels.append(f.label());
     return labels;
+}
+
+QList<int> FileList::crossValidationPartitions() const
+{
+    QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
+    foreach (const File &f, *this)
+        crossValidationPartitions.append(f.getInt("Cross_Validation_Partition", 0));
+    return crossValidationPartitions;
 }
 
 int FileList::failures() const
@@ -845,7 +853,7 @@ void br::Context::initializeQt(QString sdkPath)
     qRegisterMetaType< QList<br::Distance*> >();
     qRegisterMetaType< cv::Mat >();
 
-    qInstallMsgHandler(messageHandler);
+    qInstallMessageHandler(messageHandler);
 
     // Search for SDK
     if (sdkPath.isEmpty()) {
@@ -905,7 +913,7 @@ QString br::Context::scratchPath()
     return QString("%1/%2-%3.%4").arg(QDir::homePath(), PRODUCT_NAME, QString::number(PRODUCT_VERSION_MAJOR), QString::number(PRODUCT_VERSION_MINOR));
 }
 
-void br::Context::messageHandler(QtMsgType type, const char *msg)
+void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString txt;
     switch (type) {
@@ -937,7 +945,7 @@ void br::Context::messageHandler(QtMsgType type, const char *msg)
 
     if (type == QtFatalMsg) {
         // Write debug output then close
-        qDebug("SDK Path: %s", qPrintable(Globals->sdkPath));
+        qDebug("File: %s\nFunction: %s\nLine: %d\nVersion: %d", qPrintable(context.file), qPrintable(context.function), context.line, context.version);
         Globals->finalize();
         abort();
     }

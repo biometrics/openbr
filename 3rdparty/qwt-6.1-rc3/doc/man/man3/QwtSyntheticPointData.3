@@ -1,0 +1,271 @@
+.TH "QwtSyntheticPointData" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtSyntheticPointData \- 
+.PP
+Synthetic point data\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_point_data\&.h>\fP
+.PP
+Inherits \fBQwtSeriesData< QPointF >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtSyntheticPointData\fP (size_t \fBsize\fP, const \fBQwtInterval\fP &=\fBQwtInterval\fP())"
+.br
+.ti -1c
+.RI "void \fBsetSize\fP (size_t \fBsize\fP)"
+.br
+.ti -1c
+.RI "virtual size_t \fBsize\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetInterval\fP (const \fBQwtInterval\fP &)"
+.br
+.ti -1c
+.RI "\fBQwtInterval\fP \fBinterval\fP () const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.RI "\fICalculate the bounding rectangle\&. \fP"
+.ti -1c
+.RI "virtual QPointF \fBsample\fP (size_t i) const "
+.br
+.ti -1c
+.RI "virtual double \fBy\fP (double \fBx\fP) const =0"
+.br
+.ti -1c
+.RI "virtual double \fBx\fP (uint index) const "
+.br
+.ti -1c
+.RI "virtual void \fBsetRectOfInterest\fP (const QRectF &)"
+.br
+.ti -1c
+.RI "QRectF \fBrectOfInterest\fP () const "
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+Synthetic point data\&. 
+
+\fBQwtSyntheticPointData\fP provides a fixed number of points for an interval\&. The points are calculated in equidistant steps in x-direction\&.
+.PP
+If the interval is invalid, the points are calculated for the 'rectangle of interest', what normally is the displayed area on the plot canvas\&. In this mode you get different levels of detail, when zooming in/out\&.
+.PP
+\fBExample\fP
+.RS 4
+
+.RE
+.PP
+The following example shows how to implement a sinus curve\&.
+.PP
+.PP
+.nf
+#include <cmath>
+#include <qwt_series_data.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot.h>
+#include <qapplication.h>
+
+class SinusData: public QwtSyntheticPointData
+{
+public:
+    SinusData():
+        QwtSyntheticPointData(100)
+    {
+    }
+    virtual double y(double x) const
+    {
+        return qSin(x);
+    }
+};
+
+int main(int argc, char **argv)
+{
+    QApplication a(argc, argv);
+
+    QwtPlot plot;
+    plot.setAxisScale(QwtPlot::xBottom, 0.0, 10.0);
+    plot.setAxisScale(QwtPlot::yLeft, -1.0, 1.0);
+
+    QwtPlotCurve *curve = new QwtPlotCurve("y = sin(x)");
+    curve->setData(SinusData());
+    curve->attach(&plot);
+
+    plot.show();
+    return a.exec();
+}.fi
+.PP
+ 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtSyntheticPointData::QwtSyntheticPointData (size_tsize, const \fBQwtInterval\fP &interval = \fC\fBQwtInterval\fP()\fP)"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP Number of points 
+.br
+\fIinterval\fP Bounding interval for the points
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetInterval()\fP, \fBsetSize()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtSyntheticPointData::boundingRect () const\fC [virtual]\fP"
+
+.PP
+Calculate the bounding rectangle\&. This implementation iterates over all points, what could often be implemented much faster using the characteristics of the series\&. When there are many points it is recommended to overload and reimplement this method using the characteristics of the series ( if possible )\&.
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "\fBQwtInterval\fP QwtSyntheticPointData::interval () const"
+\fBReturns:\fP
+.RS 4
+Bounding interval 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetInterval()\fP, \fBsize()\fP 
+.RE
+.PP
+
+.SS "QRectF QwtSyntheticPointData::rectOfInterest () const"
+\fBReturns:\fP
+.RS 4
+'rectangle of interest' 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRectOfInterest()\fP 
+.RE
+.PP
+
+.SS "QPointF QwtSyntheticPointData::sample (size_tindex) const\fC [virtual]\fP"
+Calculate the point from an index
+.PP
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+QPointF(x(index), y(x(index)));
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+For invalid indices ( index < 0 || index >= \fBsize()\fP ) (0, 0) is returned\&. 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "void QwtSyntheticPointData::setInterval (const \fBQwtInterval\fP &interval)"
+Set the bounding interval
+.PP
+\fBParameters:\fP
+.RS 4
+\fIinterval\fP Interval 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinterval()\fP, \fBsetSize()\fP 
+.RE
+.PP
+
+.SS "void QwtSyntheticPointData::setRectOfInterest (const QRectF &rect)\fC [virtual]\fP"
+Set a the 'rectangle of interest'
+.PP
+\fBQwtPlotSeriesItem\fP defines the current area of the plot canvas as 'rect of interest' ( \fBQwtPlotSeriesItem::updateScaleDiv()\fP )\&.
+.PP
+If \fBinterval()\fP\&.isValid() == false the x values are calculated in the interval rect\&.left() -> rect\&.right()\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBrectOfInterest()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtSeriesData< QPointF >\fP\&.
+.SS "void QwtSyntheticPointData::setSize (size_tsize)"
+Change the number of points
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP Number of points 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsize()\fP, \fBsetInterval()\fP 
+.RE
+.PP
+
+.SS "size_t QwtSyntheticPointData::size () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Number of points 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSize()\fP, \fBinterval()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "double QwtSyntheticPointData::x (uintindex) const\fC [virtual]\fP"
+Calculate a x-value from an index
+.PP
+x values are calculated by dividing an interval into equidistant steps\&. If !interval()\&.isValid() the interval is calculated from the 'rectangle of interest'\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinterval()\fP, \fBrectOfInterest()\fP, \fBy()\fP 
+.RE
+.PP
+
+.SS "virtual double QwtSyntheticPointData::y (doublex) const\fC [pure virtual]\fP"
+Calculate a y value for a x value
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx\fP x value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Corresponding y value 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

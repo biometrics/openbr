@@ -1,0 +1,200 @@
+.TH "QwtLogScaleEngine" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtLogScaleEngine \- 
+.PP
+A scale engine for logarithmic scales\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_scale_engine\&.h>\fP
+.PP
+Inherits \fBQwtScaleEngine\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtLogScaleEngine\fP (uint \fBbase\fP=10)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtLogScaleEngine\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual void \fBautoScale\fP (int maxSteps, double &x1, double &x2, double &stepSize) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtScaleDiv\fP \fBdivideScale\fP (double x1, double x2, int numMajorSteps, int numMinorSteps, double stepSize=0\&.0) const "
+.br
+.RI "\fICalculate a scale division\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtInterval\fP \fBalign\fP (const \fBQwtInterval\fP &, double stepSize) const "
+.br
+.RI "\fIAlign an interval to a step size\&. \fP"
+.ti -1c
+.RI "void \fBbuildTicks\fP (const \fBQwtInterval\fP &, double stepSize, int maxMinSteps, QList< double > ticks[\fBQwtScaleDiv::NTickTypes\fP]) const "
+.br
+.RI "\fICalculate ticks for an interval\&. \fP"
+.ti -1c
+.RI "QList< double > \fBbuildMajorTicks\fP (const \fBQwtInterval\fP &interval, double stepSize) const "
+.br
+.RI "\fICalculate major ticks for an interval\&. \fP"
+.ti -1c
+.RI "void \fBbuildMinorTicks\fP (const QList< double > &majorTicks, int maxMinorSteps, double stepSize, QList< double > &minorTicks, QList< double > &mediumTicks) const "
+.br
+.RI "\fICalculate minor/medium ticks for major ticks\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+A scale engine for logarithmic scales\&. 
+
+The step size is measured in \fIdecades\fP and the major step size will be adjusted to fit the pattern $\left\{ 1,2,3,5\right\} \cdot 10^{n}$, where n is a natural number including zero\&.
+.PP
+\fBWarning:\fP
+.RS 4
+the step size as well as the margins are measured in \fIdecades\fP\&. 
+.RE
+.PP
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtLogScaleEngine::QwtLogScaleEngine (uintbase = \fC10\fP)"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbase\fP Base of the scale engine 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetBase()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtInterval\fP QwtLogScaleEngine::align (const \fBQwtInterval\fP &interval, doublestepSize) const\fC [protected]\fP"
+
+.PP
+Align an interval to a step size\&. The limits of an interval are aligned that both are integer multiples of the step size\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIinterval\fP Interval 
+.br
+\fIstepSize\fP Step size
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Aligned interval 
+.RE
+.PP
+
+.SS "void QwtLogScaleEngine::autoScale (intmaxNumSteps, double &x1, double &x2, double &stepSize) const\fC [virtual]\fP"
+Align and divide an interval
+.PP
+\fBParameters:\fP
+.RS 4
+\fImaxNumSteps\fP Max\&. number of steps 
+.br
+\fIx1\fP First limit of the interval (In/Out) 
+.br
+\fIx2\fP Second limit of the interval (In/Out) 
+.br
+\fIstepSize\fP Step size (Out)
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleEngine::setAttribute()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtScaleEngine\fP\&.
+.SS "QList< double > QwtLogScaleEngine::buildMajorTicks (const \fBQwtInterval\fP &interval, doublestepSize) const\fC [protected]\fP"
+
+.PP
+Calculate major ticks for an interval\&. \fBParameters:\fP
+.RS 4
+\fIinterval\fP Interval 
+.br
+\fIstepSize\fP Step size
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Calculated ticks 
+.RE
+.PP
+
+.SS "void QwtLogScaleEngine::buildMinorTicks (const QList< double > &majorTicks, intmaxMinorSteps, doublestepSize, QList< double > &minorTicks, QList< double > &mediumTicks) const\fC [protected]\fP"
+
+.PP
+Calculate minor/medium ticks for major ticks\&. \fBParameters:\fP
+.RS 4
+\fImajorTicks\fP Major ticks 
+.br
+\fImaxMinorSteps\fP Maximum number of minor steps 
+.br
+\fIstepSize\fP Step size 
+.br
+\fIminorTicks\fP Array to be filled with the calculated minor ticks 
+.br
+\fImediumTicks\fP Array to be filled with the calculated medium ticks 
+.RE
+.PP
+
+.SS "void QwtLogScaleEngine::buildTicks (const \fBQwtInterval\fP &interval, doublestepSize, intmaxMinorSteps, QList< double >ticks[QwtScaleDiv::NTickTypes]) const\fC [protected]\fP"
+
+.PP
+Calculate ticks for an interval\&. \fBParameters:\fP
+.RS 4
+\fIinterval\fP Interval 
+.br
+\fImaxMinorSteps\fP Maximum number of minor steps 
+.br
+\fIstepSize\fP Step size 
+.br
+\fIticks\fP Arrays to be filled with the calculated ticks
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBbuildMajorTicks()\fP, \fBbuildMinorTicks\fP 
+.RE
+.PP
+
+.SS "\fBQwtScaleDiv\fP QwtLogScaleEngine::divideScale (doublex1, doublex2, intmaxMajorSteps, intmaxMinorSteps, doublestepSize = \fC0\&.0\fP) const\fC [virtual]\fP"
+
+.PP
+Calculate a scale division\&. \fBParameters:\fP
+.RS 4
+\fIx1\fP First interval limit 
+.br
+\fIx2\fP Second interval limit 
+.br
+\fImaxMajorSteps\fP Maximum for the number of major steps 
+.br
+\fImaxMinorSteps\fP Maximum number of minor steps 
+.br
+\fIstepSize\fP Step size\&. If stepSize == 0, the engine calculates one\&. 
+.RE
+.PP
+
+.PP
+Implements \fBQwtScaleEngine\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

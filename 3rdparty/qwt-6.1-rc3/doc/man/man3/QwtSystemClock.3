@@ -1,0 +1,75 @@
+.TH "QwtSystemClock" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtSystemClock \- 
+.PP
+\fBQwtSystemClock\fP provides high resolution clock time functions\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_system_clock\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtSystemClock\fP ()"
+.br
+.RI "\fIConstructs a null clock object\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtSystemClock\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "bool \fBisNull\fP () const "
+.br
+.ti -1c
+.RI "void \fBstart\fP ()"
+.br
+.ti -1c
+.RI "double \fBrestart\fP ()"
+.br
+.ti -1c
+.RI "double \fBelapsed\fP () const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBQwtSystemClock\fP provides high resolution clock time functions\&. 
+
+Sometimes the resolution offered by QTime ( millisecond ) is not accurate enough for implementing time measurements ( f\&.e\&. sampling )\&. \fBQwtSystemClock\fP offers a subset of the QTime functionality using higher resolution timers ( if possible )\&.
+.PP
+Precision and time intervals are multiples of milliseconds (ms)\&.
+.PP
+\fBNote:\fP
+.RS 4
+The implementation uses high-resolution performance counter on Windows, mach_absolute_time() on the Mac or POSIX timers on other systems\&. If none is available it falls back on QTimer\&. 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "double QwtSystemClock::elapsed () const"
+\fBReturns:\fP
+.RS 4
+Number of milliseconds that have elapsed since the last time \fBstart()\fP or \fBrestart()\fP was called or 0\&.0 for null clocks\&. 
+.RE
+.PP
+
+.SS "bool QwtSystemClock::isNull () const"
+\fBReturns:\fP
+.RS 4
+true if the clock has never been started\&. 
+.RE
+.PP
+
+.SS "double QwtSystemClock::restart ()"
+The start time to the current time and return the time, that is elapsed since the previous start time\&. 
+.SS "void QwtSystemClock::start ()"
+Sets the start time to the current time\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

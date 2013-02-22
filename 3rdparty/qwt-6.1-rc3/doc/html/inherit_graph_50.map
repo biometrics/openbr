@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_qwt_transform.html" title="A transformation between coordinate systems." alt="" coords="6,56,109,83"/>
+<area shape="rect" id="node3" href="$class_qwt_log_transform.html" title="Logarithmic transformation." alt="" coords="165,5,289,32"/>
+<area shape="rect" id="node5" href="$class_qwt_null_transform.html" title="Null transformation." alt="" coords="165,56,289,83"/>
+<area shape="rect" id="node7" href="$class_qwt_power_transform.html" title="A transformation using pow()" alt="" coords="157,107,296,133"/>
+</map>

@@ -1,0 +1,146 @@
+.TH "QwtPlainTextEngine" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlainTextEngine \- 
+.PP
+A text engine for plain texts\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_text_engine\&.h>\fP
+.PP
+Inherits \fBQwtTextEngine\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlainTextEngine\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtPlainTextEngine\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual double \fBheightForWidth\fP (const QFont &font, int flags, const QString &text, double width) const "
+.br
+.ti -1c
+.RI "virtual QSizeF \fBtextSize\fP (const QFont &font, int flags, const QString &text) const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *painter, const QRectF &rect, int flags, const QString &text) const "
+.br
+.RI "\fIDraw the text in a clipping rectangle\&. \fP"
+.ti -1c
+.RI "virtual bool \fBmightRender\fP (const QString &) const "
+.br
+.ti -1c
+.RI "virtual void \fBtextMargins\fP (const QFont &, const QString &, double &left, double &right, double &top, double &bottom) const "
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+A text engine for plain texts\&. 
+
+\fBQwtPlainTextEngine\fP renders texts using the basic Qt classes QPainter and QFontMetrics\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtPlainTextEngine::draw (QPainter *painter, const QRectF &rect, intflags, const QString &text) const\fC [virtual]\fP"
+
+.PP
+Draw the text in a clipping rectangle\&. A wrapper for QPainter::drawText\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIrect\fP Clipping rectangle 
+.br
+\fIflags\fP Bitwise OR of the flags used like in QPainter::drawText 
+.br
+\fItext\fP Text to be rendered 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTextEngine\fP\&.
+.SS "double QwtPlainTextEngine::heightForWidth (const QFont &font, intflags, const QString &text, doublewidth) const\fC [virtual]\fP"
+Find the height for a given width
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfont\fP Font of the text 
+.br
+\fIflags\fP Bitwise OR of the flags used like in QPainter::drawText 
+.br
+\fItext\fP Text to be rendered 
+.br
+\fIwidth\fP Width
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Calculated height 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTextEngine\fP\&.
+.SS "bool QwtPlainTextEngine::mightRender (const QString &) const\fC [virtual]\fP"
+Test if a string can be rendered by this text engine\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+Always true\&. All texts can be rendered by \fBQwtPlainTextEngine\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTextEngine\fP\&.
+.SS "void QwtPlainTextEngine::textMargins (const QFont &font, const QString &, double &left, double &right, double &top, double &bottom) const\fC [virtual]\fP"
+Return margins around the texts
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfont\fP Font of the text 
+.br
+\fIleft\fP Return 0 
+.br
+\fIright\fP Return 0 
+.br
+\fItop\fP Return value for the top margin 
+.br
+\fIbottom\fP Return value for the bottom margin 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTextEngine\fP\&.
+.SS "QSizeF QwtPlainTextEngine::textSize (const QFont &font, intflags, const QString &text) const\fC [virtual]\fP"
+Returns the size, that is needed to render text
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfont\fP Font of the text 
+.br
+\fIflags\fP Bitwise OR of the flags used like in QPainter::drawText 
+.br
+\fItext\fP Text to be rendered
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Caluclated size 
+.RE
+.PP
+
+.PP
+Implements \fBQwtTextEngine\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

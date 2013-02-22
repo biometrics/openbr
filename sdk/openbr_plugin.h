@@ -60,10 +60,21 @@
  * Plugin authors are encouraged to <tt>\\cite</tt> relevant papers by adding them to <tt>share/openbr/openbr.bib</tt>.
  *
  * \section examples Examples
- * - \ref cpp_compare_faces
- * \subsection cpp_compare_faces Compare Faces
- * \ref cli_compare_faces "Command Line Interface Equivalent"
- * \snippet app/examples/compare_faces.cpp compare_faces
+ * - \ref cpp_face_recognition
+ * - \ref cpp_age_estimation
+ * - \ref cpp_gender_estimation
+ *
+ * \subsection cpp_face_recognition Face Recognition
+ * \ref cli_face_recognition "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition.cpp face_recognition
+ *
+ * \subsection cpp_age_estimation Age Estimation
+ * \ref cli_age_estimation "Command Line Interface Equivalent"
+ * \snippet app/examples/age_estimation.cpp age_estimation
+ *
+ * \subsection cpp_gender_estimation Gender Estimation
+ * \ref cli_gender_estimation "Command Line Interface Equivalent"
+ * \snippet app/examples/gender_estimation.cpp gender_estimation
  */
 
 namespace br
@@ -239,6 +250,7 @@ struct BR_EXPORT FileList : public QList<File>
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
     void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
     QList<float> labels() const; /*!< \brief Returns br::File::label() for each file in the list. */
+    QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
 };
 
@@ -664,7 +676,7 @@ public:
     static QString scratchPath();
 
 private:
-    static void messageHandler(QtMsgType type, const char *msg);
+    static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 };
 
 /*!

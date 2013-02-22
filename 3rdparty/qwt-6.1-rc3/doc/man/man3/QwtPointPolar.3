@@ -1,0 +1,181 @@
+.TH "QwtPointPolar" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPointPolar \- 
+.PP
+A point in polar coordinates\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_point_polar\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPointPolar\fP ()"
+.br
+.ti -1c
+.RI "\fBQwtPointPolar\fP (double \fBazimuth\fP, double \fBradius\fP)"
+.br
+.ti -1c
+.RI "\fBQwtPointPolar\fP (const \fBQwtPointPolar\fP &)"
+.br
+.ti -1c
+.RI "\fBQwtPointPolar\fP (const QPointF &)"
+.br
+.ti -1c
+.RI "void \fBsetPoint\fP (const QPointF &)"
+.br
+.ti -1c
+.RI "QPointF \fBtoPoint\fP () const "
+.br
+.ti -1c
+.RI "bool \fBisValid\fP () const "
+.br
+.RI "\fIReturns true if \fBradius()\fP >= 0\&.0\&. \fP"
+.ti -1c
+.RI "bool \fBisNull\fP () const "
+.br
+.RI "\fIReturns true if \fBradius()\fP >= 0\&.0\&. \fP"
+.ti -1c
+.RI "double \fBradius\fP () const "
+.br
+.RI "\fIReturns the radius\&. \fP"
+.ti -1c
+.RI "double \fBazimuth\fP () const "
+.br
+.RI "\fIReturns the azimuth\&. \fP"
+.ti -1c
+.RI "double & \fBrRadius\fP ()"
+.br
+.RI "\fIReturns the radius\&. \fP"
+.ti -1c
+.RI "double & \fBrAzimuth\fP ()"
+.br
+.RI "\fIReturns the azimuth\&. \fP"
+.ti -1c
+.RI "void \fBsetRadius\fP (double)"
+.br
+.RI "\fISets the radius to radius\&. \fP"
+.ti -1c
+.RI "void \fBsetAzimuth\fP (double)"
+.br
+.RI "\fISets the atimuth to atimuth\&. \fP"
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBQwtPointPolar\fP &) const "
+.br
+.ti -1c
+.RI "bool \fBoperator!=\fP (const \fBQwtPointPolar\fP &) const "
+.br
+.ti -1c
+.RI "\fBQwtPointPolar\fP \fBnormalized\fP () const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A point in polar coordinates\&. 
+
+In polar coordinates a point is determined by an angle and a distance\&. See http://en.wikipedia.org/wiki/Polar_coordinate_system 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPointPolar::QwtPointPolar ()\fC [inline]\fP"
+Constructs a null point, with a radius and azimuth set to 0\&.0\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+QPointF::isNull() 
+.RE
+.PP
+
+.SS "QwtPointPolar::QwtPointPolar (doubleazimuth, doubleradius)\fC [inline]\fP"
+Constructs a point with coordinates specified by radius and azimuth\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIazimuth\fP Azimuth 
+.br
+\fIradius\fP Radius 
+.RE
+.PP
+
+.SS "QwtPointPolar::QwtPointPolar (const \fBQwtPointPolar\fP &other)\fC [inline]\fP"
+Constructs a point using the values of the point specified\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIother\fP Other point 
+.RE
+.PP
+
+.SS "QwtPointPolar::QwtPointPolar (const QPointF &p)"
+Convert and assign values from a point in Cartesian coordinates
+.PP
+\fBParameters:\fP
+.RS 4
+\fIp\fP Point in Cartesian coordinates 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetPoint()\fP, \fBtoPoint()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtPointPolar\fP QwtPointPolar::normalized () const"
+Normalize radius and azimuth
+.PP
+When the radius is < 0\&.0 it is set to 0\&.0\&. The azimuth is a value >= 0\&.0 and < 2 * M_PI\&. 
+.SS "bool QwtPointPolar::operator!= (const \fBQwtPointPolar\fP &other) const"
+Returns true if point1 is not equal to point2; otherwise returns false\&.
+.PP
+Two points are equal to each other if radius and azimuth-coordinates are the same\&. Points are not equal, when the azimuth differs, but other\&.azimuth() == \fBazimuth()\fP % (2 * PI)\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBnormalized()\fP 
+.RE
+.PP
+
+.SS "bool QwtPointPolar::operator== (const \fBQwtPointPolar\fP &other) const"
+Returns true if point1 is equal to point2; otherwise returns false\&.
+.PP
+Two points are equal to each other if radius and azimuth-coordinates are the same\&. Points are not equal, when the azimuth differs, but other\&.azimuth() == \fBazimuth()\fP % (2 * PI)\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBnormalized()\fP 
+.RE
+.PP
+
+.SS "void QwtPointPolar::setPoint (const QPointF &p)"
+Convert and assign values from a point in Cartesian coordinates 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIp\fP Point in Cartesian coordinates 
+.RE
+.PP
+
+.SS "QPointF QwtPointPolar::toPoint () const"
+Convert and return values in Cartesian coordinates
+.PP
+\fBNote:\fP
+.RS 4
+Invalid or null points will be returned as QPointF(0\&.0, 0\&.0) 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisValid()\fP, \fBisNull()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

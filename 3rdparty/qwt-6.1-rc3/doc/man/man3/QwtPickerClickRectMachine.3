@@ -1,0 +1,44 @@
+.TH "QwtPickerClickRectMachine" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPickerClickRectMachine \- 
+.PP
+A state machine for rectangle selections\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_picker_machine\&.h>\fP
+.PP
+Inherits \fBQwtPickerMachine\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPickerClickRectMachine\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual QList< \fBCommand\fP > \fBtransition\fP (const \fBQwtEventPattern\fP &, const QEvent *)"
+.br
+.RI "\fITransition\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+A state machine for rectangle selections\&. 
+
+Pressing \fBQwtEventPattern::MouseSelect1\fP starts the selection, releasing it selects the first point\&. Pressing it again selects the second point and terminates the selection\&. Pressing \fBQwtEventPattern::KeySelect1\fP also starts the selection, a second press selects the first point\&. A third one selects the second point and terminates the selection\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtEventPattern::MousePatternCode\fP, \fBQwtEventPattern::KeyPatternCode\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

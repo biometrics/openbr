@@ -1,4 +1,5 @@
 #include <QColor>
+#include <QMimeData>
 #include <QPainter>
 #include <QPen>
 #include <QUrl>
