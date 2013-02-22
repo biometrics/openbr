@@ -13,8 +13,6 @@ include_directories(${PBD_DIR}/include)
 link_directories(${PBD_DIR}/lib)
 
 find_package(Boost COMPONENTS system serialization REQUIRED)
-message(${Boost_INCLUDE_DIR})
-message(${Boost_LIBRARIES})
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Boost_LIBRARIES})

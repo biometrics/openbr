@@ -1,4 +1,4 @@
-set(BR_WITH_NEC3 OFF CACHE BOOL "Build with NEC NeoFaceDSK 3")
+set(BR_WITH_NEC3 OFF CACHE BOOL "Build with NEC NeoFaceSDK 3")
 
 if(${BR_WITH_NEC3})
   find_package(NEC3 REQUIRED)
