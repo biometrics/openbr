@@ -44,10 +44,10 @@ class StasmTransform : public UntrainableTransform
         int landmarks[500];
 
         AsmSearchDll(&nlandmarks, landmarks,
-                     src.file.name.toStdString().c_str(), reinterpret_cast<char*>(src.m().data), src.m().cols, src.m().rows,
+                     qPrintable(src.file.name), reinterpret_cast<char*>(src.m().data), src.m().cols, src.m().rows,
                      src.m(), (src.m().channels() == 3), qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-68-1d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-76-2d.conf"));
 
-        if (nlandmarks == 0) qFatal("Unable to detect Stasm landmarks");
+        if (nlandmarks == 0) qWarning("Unable to detect Stasm landmarks");
 
         dst = src;
         for (int i = 0; i < nlandmarks; i++)
