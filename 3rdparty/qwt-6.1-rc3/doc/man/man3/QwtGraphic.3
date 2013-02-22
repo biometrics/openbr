@@ -1,0 +1,595 @@
+.TH "QwtGraphic" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtGraphic \- 
+.PP
+A paint device for scalable graphics\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_graphic\&.h>\fP
+.PP
+Inherits \fBQwtNullPaintDevice\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBRenderHint\fP { \fBRenderPensUnscaled\fP = 0x1 }"
+.br
+.ti -1c
+.RI "typedef QFlags< \fBRenderHint\fP > \fBRenderHints\fP"
+.br
+.RI "\fIRender hints\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtGraphic\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBQwtGraphic\fP (const \fBQwtGraphic\fP &)"
+.br
+.RI "\fICopy constructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtGraphic\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "\fBQwtGraphic\fP & \fBoperator=\fP (const \fBQwtGraphic\fP &)"
+.br
+.RI "\fIAssignment operator\&. \fP"
+.ti -1c
+.RI "void \fBreset\fP ()"
+.br
+.RI "\fIClear all stored commands\&. \fP"
+.ti -1c
+.RI "bool \fBisNull\fP () const "
+.br
+.ti -1c
+.RI "bool \fBisEmpty\fP () const "
+.br
+.ti -1c
+.RI "void \fBrender\fP (QPainter *) const "
+.br
+.RI "\fIReplay all recorded painter commands\&. \fP"
+.ti -1c
+.RI "void \fBrender\fP (QPainter *, const QSizeF &, Qt::AspectRatioMode=Qt::IgnoreAspectRatio) const "
+.br
+.RI "\fIReplay all recorded painter commands\&. \fP"
+.ti -1c
+.RI "void \fBrender\fP (QPainter *, const QRectF &, Qt::AspectRatioMode=Qt::IgnoreAspectRatio) const "
+.br
+.RI "\fIReplay all recorded painter commands\&. \fP"
+.ti -1c
+.RI "void \fBrender\fP (QPainter *, const QPointF &, Qt::Alignment=Qt::AlignTop|Qt::AlignLeft) const "
+.br
+.RI "\fIReplay all recorded painter commands\&. \fP"
+.ti -1c
+.RI "QPixmap \fBtoPixmap\fP () const "
+.br
+.RI "\fIConvert the graphic to a QPixmap\&. \fP"
+.ti -1c
+.RI "QPixmap \fBtoPixmap\fP (const QSize &, Qt::AspectRatioMode=Qt::IgnoreAspectRatio) const "
+.br
+.RI "\fIConvert the graphic to a QPixmap\&. \fP"
+.ti -1c
+.RI "QImage \fBtoImage\fP () const "
+.br
+.RI "\fIConvert the graphic to a QImage\&. \fP"
+.ti -1c
+.RI "QImage \fBtoImage\fP (const QSize &, Qt::AspectRatioMode=Qt::IgnoreAspectRatio) const "
+.br
+.RI "\fIConvert the graphic to a QImage\&. \fP"
+.ti -1c
+.RI "QRectF \fBscaledBoundingRect\fP (double sx, double sy) const "
+.br
+.RI "\fICalculate the target rectangle for scaling the graphic\&. \fP"
+.ti -1c
+.RI "QRectF \fBboundingRect\fP () const "
+.br
+.ti -1c
+.RI "QRectF \fBcontrolPointRect\fP () const "
+.br
+.ti -1c
+.RI "const QVector
+.br
+< \fBQwtPainterCommand\fP > & \fBcommands\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetCommands\fP (QVector< \fBQwtPainterCommand\fP > &)"
+.br
+.RI "\fIAppend paint commands\&. \fP"
+.ti -1c
+.RI "void \fBsetDefaultSize\fP (const QSizeF &)"
+.br
+.RI "\fISet a default size\&. \fP"
+.ti -1c
+.RI "QSizeF \fBdefaultSize\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetRenderHint\fP (\fBRenderHint\fP, bool on=true)"
+.br
+.ti -1c
+.RI "bool \fBtestRenderHint\fP (\fBRenderHint\fP) const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual QSize \fBsizeMetrics\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawPath\fP (const QPainterPath &)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawPixmap\fP (const QRectF &, const QPixmap &, const QRectF &)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawImage\fP (const QRectF &, const QImage &, const QRectF &, Qt::ImageConversionFlags)"
+.br
+.ti -1c
+.RI "virtual void \fBupdateState\fP (const QPaintEngineState &state)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A paint device for scalable graphics\&. 
+
+\fBQwtGraphic\fP is the representation of a graphic that is tailored for scalability\&. Like QPicture it will be initialized by QPainter operations and replayed later to any target paint device\&.
+.PP
+While the usual image representations QImage and QPixmap are not scalable Qt offers two paint devices, that might be candidates for representing a vector graphic:
+.PP
+.IP "\(bu" 2
+QPicture
+.br
+ Unfortunately QPicture had been forgotten, when Qt4 introduced floating point based render engines\&. Its API is still on integers, what make it unusable for proper scaling\&.
+.PP
+.PP
+.IP "\(bu" 2
+QSvgRenderer/QSvgGenerator
+.br
+ Unfortunately QSvgRenderer hides to much information about its nodes in internal APIs, that are necessary proper layout calculations\&. Also it is derived from QObject and can't be copied like QImage/QPixmap\&. Also QSvgRenderer/QSvgGenerator are no complete SVG implementations with a questionable future in Qt 5\&.
+.PP
+.PP
+\fBQwtGraphic\fP maps all scalable drawing primitives to a QPainterPath and stores them together with the painter state changes ( pen, brush, transformation \&.\&.\&. ) in a list of QwtPaintCommands\&. For being a complete QPaintDevice it also stores pixmaps or images, what is somehow against the idea of the class, because these objects can be scaled without a loss in quality\&.
+.PP
+The main issue about scaling a \fBQwtGraphic\fP object are the pens used for drawing the outlines of the painter paths\&. While non cosmetic pens ( QPen::isCosmetic() ) are scaled with the same ratio as the path, cosmetic pens have a fixed width\&. A graphic might have paths with different pens - cosmetic and non-cosmetic\&.
+.PP
+\fBQwtGraphic\fP caches 2 different rectangles:
+.PP
+.IP "\(bu" 2
+control point rectangle
+.br
+ The control point rectangle is the bounding rectangle of all control point rectangles of the painter paths, or the target rectangle of the pixmaps/images\&.
+.PP
+.PP
+.IP "\(bu" 2
+bounding rectangle
+.br
+ The bounding rectangle extends the control point rectangle by what is needed for rendering the outline with an unscaled pen\&.
+.PP
+.PP
+Because the offset for drawing the outline depends on the shape of the painter path ( the peak of a triangle is different than the flat side ) scaling with a fixed aspect ratio always needs to be calculated from the control point rectangle\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPainterCommand\fP 
+.RE
+.PP
+
+.SH "Member Typedef Documentation"
+.PP 
+.SS "typedef QFlags<\fBRenderHint\fP> \fBQwtGraphic::RenderHints\fP"
+
+.PP
+Render hints\&. The default setting is to disable all hints 
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtGraphic::RenderHint\fP"
+Hint how to render a graphic 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRenderHint()\fP, \fBtestRenderHint()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIRenderPensUnscaled \fP\fP
+When RenderPensUnscaled is set non cosmetic pens are painted unscaled - like cosmetic pens\&. The difference to using cosmetic pens is, when the graphic is rendered to a document in a scalable vector format ( PDF, SVG ): the width of non cosmetic pens will be scaled by the document viewer\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtGraphic::QwtGraphic ()"
+
+.PP
+Constructor\&. Initializes a null graphic 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisNull()\fP 
+.RE
+.PP
+
+.SS "QwtGraphic::QwtGraphic (const \fBQwtGraphic\fP &other)"
+
+.PP
+Copy constructor\&. \fBParameters:\fP
+.RS 4
+\fIother\fP Source 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBoperator=()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtGraphic::boundingRect () const"
+The bounding rectangle is the \fBcontrolPointRect()\fP extended by the areas needed for rendering the outlines with unscaled pens\&.
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of the graphic 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcontrolPointRect()\fP, \fBscaledBoundingRect()\fP 
+.RE
+.PP
+
+.SS "const QVector< \fBQwtPainterCommand\fP > & QwtGraphic::commands () const"
+\fBReturns:\fP
+.RS 4
+List of recorded paint commands 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetCommands()\fP 
+.RE
+.PP
+
+.SS "QRectF QwtGraphic::controlPointRect () const"
+The control point rectangle is the bounding rectangle of all control points of the paths and the target rectangles of the images/pixmaps\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBboundingRect()\fP, \fBscaledBoundingRect()\fP 
+.RE
+.PP
+
+.SS "QSizeF QwtGraphic::defaultSize () const"
+\fBReturns:\fP
+.RS 4
+Default size
+.RE
+.PP
+When a non empty size has been assigned by \fBsetDefaultSize()\fP this size will be returned\&. Otherwise the default size is the size of the bounding rectangle\&.
+.PP
+The default size is used in all methods rendering the graphic, where no size is explicitly specified\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetDefaultSize()\fP, \fBboundingRect()\fP 
+.RE
+.PP
+
+.SS "void QwtGraphic::drawImage (const QRectF &rect, const QImage &image, const QRectF &subRect, Qt::ImageConversionFlagsflags)\fC [protected]\fP, \fC [virtual]\fP"
+Store a image command in the command list 
+.PP
+\fBSee Also:\fP
+.RS 4
+QPaintEngine::drawImage() 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtNullPaintDevice\fP\&.
+.SS "void QwtGraphic::drawPath (const QPainterPath &path)\fC [protected]\fP, \fC [virtual]\fP"
+Store a path command in the command list 
+.PP
+\fBSee Also:\fP
+.RS 4
+QPaintEngine::drawPath() 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtNullPaintDevice\fP\&.
+.SS "void QwtGraphic::drawPixmap (const QRectF &rect, const QPixmap &pixmap, const QRectF &subRect)\fC [protected]\fP, \fC [virtual]\fP"
+Store a image command in the command list 
+.PP
+\fBSee Also:\fP
+.RS 4
+QPaintEngine::drawPixmap() 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtNullPaintDevice\fP\&.
+.SS "bool QwtGraphic::isEmpty () const"
+\fBReturns:\fP
+.RS 4
+True, when the bounding rectangle is empty 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBboundingRect()\fP, \fBisNull()\fP 
+.RE
+.PP
+
+.SS "bool QwtGraphic::isNull () const"
+\fBReturns:\fP
+.RS 4
+True, when no painter commands have been stored 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisEmpty()\fP, \fBcommands()\fP 
+.RE
+.PP
+
+.SS "\fBQwtGraphic\fP & QwtGraphic::operator= (const \fBQwtGraphic\fP &other)"
+
+.PP
+Assignment operator\&. \fBParameters:\fP
+.RS 4
+\fIother\fP Source 
+.RE
+.PP
+
+.SS "void QwtGraphic::render (QPainter *painter) const"
+
+.PP
+Replay all recorded painter commands\&. \fBParameters:\fP
+.RS 4
+\fIpainter\fP Qt painter 
+.RE
+.PP
+
+.SS "void QwtGraphic::render (QPainter *painter, const QSizeF &size, Qt::AspectRatioModeaspectRatioMode = \fCQt::IgnoreAspectRatio\fP) const"
+
+.PP
+Replay all recorded painter commands\&. The graphic is scaled to fit into the rectangle of the given size starting at ( 0, 0 )\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Qt painter 
+.br
+\fIsize\fP Size for the scaled graphic 
+.br
+\fIaspectRatioMode\fP Mode how to scale - See Qt::AspectRatioMode 
+.RE
+.PP
+
+.SS "void QwtGraphic::render (QPainter *painter, const QRectF &rect, Qt::AspectRatioModeaspectRatioMode = \fCQt::IgnoreAspectRatio\fP) const"
+
+.PP
+Replay all recorded painter commands\&. The graphic is scaled to fit into the given rectangle
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Qt painter 
+.br
+\fIrect\fP Rectangle for the scaled graphic 
+.br
+\fIaspectRatioMode\fP Mode how to scale - See Qt::AspectRatioMode 
+.RE
+.PP
+
+.SS "void QwtGraphic::render (QPainter *painter, const QPointF &pos, Qt::Alignmentalignment = \fCQt::AlignTop | Qt::AlignLeft\fP) const"
+
+.PP
+Replay all recorded painter commands\&. The graphic is scaled to the \fBdefaultSize()\fP and aligned to a position\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Qt painter 
+.br
+\fIpos\fP Reference point, where to render 
+.br
+\fIalignment\fP Flags how to align the target rectangle to pos\&. 
+.RE
+.PP
+
+.SS "void QwtGraphic::reset ()"
+
+.PP
+Clear all stored commands\&. \fBSee Also:\fP
+.RS 4
+\fBisNull()\fP 
+.RE
+.PP
+
+.SS "QRectF QwtGraphic::scaledBoundingRect (doublesx, doublesy) const"
+
+.PP
+Calculate the target rectangle for scaling the graphic\&. \fBParameters:\fP
+.RS 4
+\fIsx\fP Horizontal scaling factor 
+.br
+\fIsy\fP Vertical scaling factor
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+In case of paths that are painted with a cosmetic pen ( see QPen::isCosmetic() ) the target rectangle is different to multiplying the bounding rectangle\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBboundingRect()\fP, \fBcontrolPointRect()\fP 
+.RE
+.PP
+
+.SS "void QwtGraphic::setCommands (QVector< \fBQwtPainterCommand\fP > &commands)"
+
+.PP
+Append paint commands\&. \fBParameters:\fP
+.RS 4
+\fIcommands\fP Paint commands 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcommands()\fP 
+.RE
+.PP
+
+.SS "void QwtGraphic::setDefaultSize (const QSizeF &size)"
+
+.PP
+Set a default size\&. The default size is used in all methods rendering the graphic, where no size is explicitly specified\&. Assigning an empty size means, that the default size will be calculated from the bounding rectangle\&.
+.PP
+The default setting is an empty size\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP Default size
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdefaultSize()\fP, \fBboundingRect()\fP 
+.RE
+.PP
+
+.SS "void QwtGraphic::setRenderHint (\fBRenderHint\fPhint, boolon = \fCtrue\fP)"
+Toggle an render hint
+.PP
+\fBParameters:\fP
+.RS 4
+\fIhint\fP Render hint 
+.br
+\fIon\fP true/false
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtestRenderHint()\fP, \fBRenderHint\fP 
+.RE
+.PP
+
+.SS "QSize QwtGraphic::sizeMetrics () const\fC [protected]\fP, \fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Ceiled \fBdefaultSize()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtNullPaintDevice\fP\&.
+.SS "bool QwtGraphic::testRenderHint (\fBRenderHint\fPhint) const"
+Test a render hint
+.PP
+\fBParameters:\fP
+.RS 4
+\fIhint\fP Render hint 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true/false 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetRenderHint()\fP, \fBRenderHint\fP 
+.RE
+.PP
+
+.SS "QImage QwtGraphic::toImage () const"
+
+.PP
+Convert the graphic to a QImage\&. All pixels of the image get initialized by 0 ( transparent ) before the graphic is scaled and rendered on it\&.
+.PP
+The format of the image is QImage::Format_ARGB32_Premultiplied\&.
+.PP
+The size of the image is the default size ( ceiled to integers ) of the graphic\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdefaultSize()\fP, \fBtoPixmap()\fP, \fBrender()\fP 
+.RE
+.PP
+
+.SS "QImage QwtGraphic::toImage (const QSize &size, Qt::AspectRatioModeaspectRatioMode = \fCQt::IgnoreAspectRatio\fP) const"
+
+.PP
+Convert the graphic to a QImage\&. All pixels of the image get initialized by 0 ( transparent ) before the graphic is scaled and rendered on it\&.
+.PP
+The format of the image is QImage::Format_ARGB32_Premultiplied\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP Size of the image 
+.br
+\fIaspectRatioMode\fP Aspect ratio how to scale the graphic
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtoPixmap()\fP, \fBrender()\fP 
+.RE
+.PP
+
+.SS "QPixmap QwtGraphic::toPixmap () const"
+
+.PP
+Convert the graphic to a QPixmap\&. All pixels of the pixmap get initialized by Qt::transparent before the graphic is scaled and rendered on it\&.
+.PP
+The size of the pixmap is the default size ( ceiled to integers ) of the graphic\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdefaultSize()\fP, \fBtoImage()\fP, \fBrender()\fP 
+.RE
+.PP
+
+.SS "QPixmap QwtGraphic::toPixmap (const QSize &size, Qt::AspectRatioModeaspectRatioMode = \fCQt::IgnoreAspectRatio\fP) const"
+
+.PP
+Convert the graphic to a QPixmap\&. All pixels of the pixmap get initialized by Qt::transparent before the graphic is scaled and rendered on it\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP Size of the image 
+.br
+\fIaspectRatioMode\fP Aspect ratio how to scale the graphic
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtoImage()\fP, \fBrender()\fP 
+.RE
+.PP
+
+.SS "void QwtGraphic::updateState (const QPaintEngineState &state)\fC [protected]\fP, \fC [virtual]\fP"
+Store a state command in the command list 
+.PP
+\fBSee Also:\fP
+.RS 4
+QPaintEngine::updateState() 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtNullPaintDevice\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

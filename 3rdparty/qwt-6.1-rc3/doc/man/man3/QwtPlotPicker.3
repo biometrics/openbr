@@ -1,0 +1,439 @@
+.TH "QwtPlotPicker" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotPicker \- 
+.PP
+\fBQwtPlotPicker\fP provides selections on a plot canvas\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_picker\&.h>\fP
+.PP
+Inherits \fBQwtPicker\fP\&.
+.PP
+Inherited by \fBQwtPlotZoomer\fP\&.
+.SS "Signals"
+
+.in +1c
+.ti -1c
+.RI "void \fBselected\fP (const QPointF &pos)"
+.br
+.ti -1c
+.RI "void \fBselected\fP (const QRectF &rect)"
+.br
+.ti -1c
+.RI "void \fBselected\fP (const QVector< QPointF > &pa)"
+.br
+.ti -1c
+.RI "void \fBappended\fP (const QPointF &pos)"
+.br
+.ti -1c
+.RI "void \fBmoved\fP (const QPointF &pos)"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotPicker\fP (QWidget *\fBcanvas\fP)"
+.br
+.RI "\fICreate a plot picker\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtPlotPicker\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "\fBQwtPlotPicker\fP (int \fBxAxis\fP, int \fByAxis\fP, QWidget *)"
+.br
+.ti -1c
+.RI "\fBQwtPlotPicker\fP (int \fBxAxis\fP, int \fByAxis\fP, \fBRubberBand\fP \fBrubberBand\fP, \fBDisplayMode\fP \fBtrackerMode\fP, QWidget *)"
+.br
+.ti -1c
+.RI "virtual void \fBsetAxis\fP (int \fBxAxis\fP, int \fByAxis\fP)"
+.br
+.ti -1c
+.RI "int \fBxAxis\fP () const "
+.br
+.RI "\fIReturn x axis\&. \fP"
+.ti -1c
+.RI "int \fByAxis\fP () const "
+.br
+.RI "\fIReturn y axis\&. \fP"
+.ti -1c
+.RI "\fBQwtPlot\fP * \fBplot\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtPlot\fP * \fBplot\fP () const "
+.br
+.ti -1c
+.RI "QWidget * \fBcanvas\fP ()"
+.br
+.ti -1c
+.RI "const QWidget * \fBcanvas\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "QRectF \fBscaleRect\fP () const "
+.br
+.ti -1c
+.RI "QRectF \fBinvTransform\fP (const QRect &) const "
+.br
+.ti -1c
+.RI "QRect \fBtransform\fP (const QRectF &) const "
+.br
+.ti -1c
+.RI "QPointF \fBinvTransform\fP (const QPoint &) const "
+.br
+.ti -1c
+.RI "QPoint \fBtransform\fP (const QPointF &) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtText\fP \fBtrackerText\fP (const QPoint &) const "
+.br
+.ti -1c
+.RI "virtual \fBQwtText\fP \fBtrackerTextF\fP (const QPointF &) const "
+.br
+.RI "\fITranslate a position into a position string\&. \fP"
+.ti -1c
+.RI "virtual void \fBmove\fP (const QPoint &)"
+.br
+.ti -1c
+.RI "virtual void \fBappend\fP (const QPoint &)"
+.br
+.ti -1c
+.RI "virtual bool \fBend\fP (bool ok=true)"
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+\fBQwtPlotPicker\fP provides selections on a plot canvas\&. 
+
+\fBQwtPlotPicker\fP is a \fBQwtPicker\fP tailored for selections on a plot canvas\&. It is set to a x-Axis and y-Axis and translates all pixel coordinates into this coordinate system\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlotPicker::QwtPlotPicker (QWidget *canvas)\fC [explicit]\fP"
+
+.PP
+Create a plot picker\&. The picker is set to those x- and y-axis of the plot that are enabled\&. If both or no x-axis are enabled, the picker is set to \fBQwtPlot::xBottom\fP\&. If both or no y-axis are enabled, it is set to \fBQwtPlot::yLeft\fP\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcanvas\fP Plot canvas to observe, also the parent object
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::autoReplot()\fP, \fBQwtPlot::replot()\fP, \fBscaleRect()\fP 
+.RE
+.PP
+
+.SS "QwtPlotPicker::QwtPlotPicker (intxAxis, intyAxis, QWidget *canvas)\fC [explicit]\fP"
+Create a plot picker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxAxis\fP Set the x axis of the picker 
+.br
+\fIyAxis\fP Set the y axis of the picker 
+.br
+\fIcanvas\fP Plot canvas to observe, also the parent object
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::autoReplot()\fP, \fBQwtPlot::replot()\fP, \fBscaleRect()\fP 
+.RE
+.PP
+
+.SS "QwtPlotPicker::QwtPlotPicker (intxAxis, intyAxis, \fBRubberBand\fPrubberBand, \fBDisplayMode\fPtrackerMode, QWidget *canvas)\fC [explicit]\fP"
+Create a plot picker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxAxis\fP X axis of the picker 
+.br
+\fIyAxis\fP Y axis of the picker 
+.br
+\fIrubberBand\fP Rubber band style 
+.br
+\fItrackerMode\fP Tracker mode 
+.br
+\fIcanvas\fP Plot canvas to observe, also the parent object
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPicker\fP, QwtPicker::setSelectionFlags(), \fBQwtPicker::setRubberBand()\fP, \fBQwtPicker::setTrackerMode\fP
+.PP
+\fBQwtPlot::autoReplot()\fP, \fBQwtPlot::replot()\fP, \fBscaleRect()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtPlotPicker::append (const QPoint &pos)\fC [protected]\fP, \fC [virtual]\fP"
+Append a point to the selection and update rubber band and tracker\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Additional point 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisActive\fP, \fBbegin()\fP, \fBend()\fP, \fBmove()\fP, \fBappended()\fP
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The \fBappended(const QPoint &)\fP, appended(const QDoublePoint &) signals are emitted\&. 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPicker\fP\&.
+.SS "void QwtPlotPicker::appended (const QPointF &pos)\fC [signal]\fP"
+A signal emitted when a point has been appended to the selection
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Position of the appended point\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBappend()\fP\&. \fBmoved()\fP 
+.RE
+.PP
+
+.SS "QWidget * QwtPlotPicker::canvas ()"
+\fBReturns:\fP
+.RS 4
+Observed plot canvas 
+.RE
+.PP
+
+.SS "const QWidget * QwtPlotPicker::canvas () const"
+\fBReturns:\fP
+.RS 4
+Observed plot canvas 
+.RE
+.PP
+
+.SS "bool QwtPlotPicker::end (boolok = \fCtrue\fP)\fC [protected]\fP, \fC [virtual]\fP"
+Close a selection setting the state to inactive\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIok\fP If true, complete the selection and emit selected signals otherwise discard the selection\&. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if the selection is accepted, false otherwise 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPicker\fP\&.
+.PP
+Reimplemented in \fBQwtPlotZoomer\fP\&.
+.SS "QRectF QwtPlotPicker::invTransform (const QRect &rect) const\fC [protected]\fP"
+Translate a rectangle from pixel into plot coordinates
+.PP
+\fBReturns:\fP
+.RS 4
+Rectangle in plot coordinates 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtransform()\fP 
+.RE
+.PP
+
+.SS "QPointF QwtPlotPicker::invTransform (const QPoint &pos) const\fC [protected]\fP"
+Translate a point from pixel into plot coordinates 
+.PP
+\fBReturns:\fP
+.RS 4
+Point in plot coordinates 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtransform()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotPicker::move (const QPoint &pos)\fC [protected]\fP, \fC [virtual]\fP"
+Move the last point of the selection
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP New position 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisActive\fP, \fBbegin()\fP, \fBend()\fP, \fBappend()\fP
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The \fBmoved(const QPoint &)\fP, moved(const QDoublePoint &) signals are emitted\&. 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPicker\fP\&.
+.SS "void QwtPlotPicker::moved (const QPointF &pos)\fC [signal]\fP"
+A signal emitted whenever the last appended point of the selection has been moved\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Position of the moved last point of the selection\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmove()\fP, \fBappended()\fP 
+.RE
+.PP
+
+.SS "\fBQwtPlot\fP * QwtPlotPicker::plot ()"
+\fBReturns:\fP
+.RS 4
+Plot widget, containing the observed plot canvas 
+.RE
+.PP
+
+.SS "const \fBQwtPlot\fP * QwtPlotPicker::plot () const"
+\fBReturns:\fP
+.RS 4
+Plot widget, containing the observed plot canvas 
+.RE
+.PP
+
+.SS "QRectF QwtPlotPicker::scaleRect () const\fC [protected]\fP"
+Return normalized bounding rectangle of the axes
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::autoReplot()\fP, \fBQwtPlot::replot()\fP\&. 
+.RE
+.PP
+
+.SS "void QwtPlotPicker::selected (const QPointF &pos)\fC [signal]\fP"
+A signal emitted in case of \fBQwtPickerMachine::PointSelection\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Selected point 
+.RE
+.PP
+
+.SS "void QwtPlotPicker::selected (const QRectF &rect)\fC [signal]\fP"
+A signal emitted in case of \fBQwtPickerMachine::RectSelection\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIrect\fP Selected rectangle 
+.RE
+.PP
+
+.SS "void QwtPlotPicker::selected (const QVector< QPointF > &pa)\fC [signal]\fP"
+A signal emitting the selected points, at the end of a selection\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpa\fP Selected points 
+.RE
+.PP
+
+.SS "void QwtPlotPicker::setAxis (intxAxis, intyAxis)\fC [virtual]\fP"
+Set the x and y axes of the picker
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxAxis\fP X axis 
+.br
+\fIyAxis\fP Y axis 
+.RE
+.PP
+
+.PP
+Reimplemented in \fBQwtPlotZoomer\fP\&.
+.SS "\fBQwtText\fP QwtPlotPicker::trackerText (const QPoint &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+Translate a pixel position into a position string
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Position in pixel coordinates 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Position string 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPicker\fP\&.
+.SS "\fBQwtText\fP QwtPlotPicker::trackerTextF (const QPointF &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Translate a position into a position string\&. In case of HLineRubberBand the label is the value of the y position, in case of VLineRubberBand the value of the x position\&. Otherwise the label contains x and y position separated by a ',' \&.
+.PP
+The format for the double to string conversion is '%\&.4f'\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpos\fP Position 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Position string 
+.RE
+.PP
+
+.SS "QRect QwtPlotPicker::transform (const QRectF &rect) const\fC [protected]\fP"
+Translate a rectangle from plot into pixel coordinates 
+.PP
+\fBReturns:\fP
+.RS 4
+Rectangle in pixel coordinates 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinvTransform()\fP 
+.RE
+.PP
+
+.SS "QPoint QwtPlotPicker::transform (const QPointF &pos) const\fC [protected]\fP"
+Translate a point from plot into pixel coordinates 
+.PP
+\fBReturns:\fP
+.RS 4
+Point in pixel coordinates 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinvTransform()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

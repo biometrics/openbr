@@ -1,0 +1,144 @@
+.TH "QwtDialSimpleNeedle" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtDialSimpleNeedle \- 
+.PP
+A needle for dial widgets\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_dial_needle\&.h>\fP
+.PP
+Inherits \fBQwtDialNeedle\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBStyle\fP { \fBArrow\fP, \fBRay\fP }"
+.br
+.RI "\fIStyle of the needle\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtDialSimpleNeedle\fP (\fBStyle\fP, bool hasKnob=true, const QColor &mid=Qt::gray, const QColor &base=Qt::darkGray)"
+.br
+.ti -1c
+.RI "void \fBsetWidth\fP (double \fBwidth\fP)"
+.br
+.ti -1c
+.RI "double \fBwidth\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawNeedle\fP (QPainter *, double length, QPalette::ColorGroup) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A needle for dial widgets\&. 
+
+The following colors are used:
+.PP
+.IP "\(bu" 2
+QPalette::Mid
+.br
+ Pointer
+.IP "\(bu" 2
+QPalette::Base
+.br
+ Knob
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtDial\fP, \fBQwtCompass\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtDialSimpleNeedle::Style\fP"
+
+.PP
+Style of the needle\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIArrow \fP\fP
+Arrow\&. 
+.TP
+\fB\fIRay \fP\fP
+A straight line from the center\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtDialSimpleNeedle::QwtDialSimpleNeedle (\fBStyle\fPstyle, boolhasKnob = \fCtrue\fP, const QColor &mid = \fCQt::gray\fP, const QColor &base = \fCQt::darkGray\fP)"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstyle\fP Style 
+.br
+\fIhasKnob\fP With/Without knob 
+.br
+\fImid\fP Middle color 
+.br
+\fIbase\fP Base color 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtDialSimpleNeedle::drawNeedle (QPainter *painter, doublelength, QPalette::ColorGroupcolorGroup) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the needle
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIlength\fP Length of the needle 
+.br
+\fIcolorGroup\fP Color group, used for painting 
+.RE
+.PP
+
+.PP
+Implements \fBQwtDialNeedle\fP\&.
+.SS "void QwtDialSimpleNeedle::setWidth (doublewidth)"
+Set the width of the needle 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP Width 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBwidth()\fP 
+.RE
+.PP
+
+.SS "double QwtDialSimpleNeedle::width () const"
+\fBReturns:\fP
+.RS 4
+the width of the needle 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetWidth()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

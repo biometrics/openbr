@@ -1,0 +1,610 @@
+.TH "QwtPlotSpectrogram" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotSpectrogram \- 
+.PP
+A plot item, which displays a spectrogram\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_spectrogram\&.h>\fP
+.PP
+Inherits \fBQwtPlotRasterItem\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBDisplayMode\fP { \fBImageMode\fP = 0x01, \fBContourMode\fP = 0x02 }"
+.br
+.ti -1c
+.RI "typedef QFlags< \fBDisplayMode\fP > \fBDisplayModes\fP"
+.br
+.RI "\fIDisplay modes\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotSpectrogram\fP (const QString &\fBtitle\fP=QString::null)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtPlotSpectrogram\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetDisplayMode\fP (\fBDisplayMode\fP, bool on=true)"
+.br
+.ti -1c
+.RI "bool \fBtestDisplayMode\fP (\fBDisplayMode\fP) const "
+.br
+.ti -1c
+.RI "void \fBsetData\fP (\fBQwtRasterData\fP *\fBdata\fP)"
+.br
+.ti -1c
+.RI "const \fBQwtRasterData\fP * \fBdata\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtRasterData\fP * \fBdata\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetColorMap\fP (\fBQwtColorMap\fP *)"
+.br
+.ti -1c
+.RI "const \fBQwtColorMap\fP * \fBcolorMap\fP () const "
+.br
+.ti -1c
+.RI "virtual \fBQwtInterval\fP \fBinterval\fP (Qt::Axis) const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBpixelHint\fP (const QRectF &) const "
+.br
+.RI "\fIPixel hint\&. \fP"
+.ti -1c
+.RI "void \fBsetDefaultContourPen\fP (const QColor &, qreal width=0\&.0, Qt::PenStyle=Qt::SolidLine)"
+.br
+.ti -1c
+.RI "void \fBsetDefaultContourPen\fP (const QPen &)"
+.br
+.RI "\fISet the default pen for the contour lines\&. \fP"
+.ti -1c
+.RI "QPen \fBdefaultContourPen\fP () const "
+.br
+.ti -1c
+.RI "virtual QPen \fBcontourPen\fP (double level) const "
+.br
+.RI "\fICalculate the pen for a contour line\&. \fP"
+.ti -1c
+.RI "void \fBsetConrecFlag\fP (\fBQwtRasterData::ConrecFlag\fP, bool on)"
+.br
+.ti -1c
+.RI "bool \fBtestConrecFlag\fP (\fBQwtRasterData::ConrecFlag\fP) const "
+.br
+.ti -1c
+.RI "void \fBsetContourLevels\fP (const QList< double > &)"
+.br
+.ti -1c
+.RI "QList< double > \fBcontourLevels\fP () const "
+.br
+.RI "\fIReturn the levels of the contour lines\&. \fP"
+.ti -1c
+.RI "virtual int \fBrtti\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *p, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &rect) const "
+.br
+.RI "\fIDraw the spectrogram\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual QImage \fBrenderImage\fP (const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &area, const QSize &imageSize) const "
+.br
+.RI "\fIRender an image from data and color map\&. \fP"
+.ti -1c
+.RI "virtual QSize \fBcontourRasterSize\fP (const QRectF &, const QRect &) const "
+.br
+.RI "\fIReturn the raster to be used by the CONREC contour algorithm\&. \fP"
+.ti -1c
+.RI "virtual \fBQwtRasterData::ContourLines\fP \fBrenderContourLines\fP (const QRectF &rect, const QSize &raster) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawContourLines\fP (QPainter *p, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const \fBQwtRasterData::ContourLines\fP &lines) const "
+.br
+.ti -1c
+.RI "void \fBrenderTile\fP (const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRect &imageRect, QImage *image) const "
+.br
+.RI "\fIRender a tile of an image\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+A plot item, which displays a spectrogram\&. 
+
+A spectrogram displays 3-dimensional data, where the 3rd dimension ( the intensity ) is displayed using colors\&. The colors are calculated from the values using a color map\&.
+.PP
+On multi-core systems the performance of the image composition can often be improved by dividing the area into tiles - each of them rendered in a different thread ( see \fBQwtPlotItem::setRenderThreadCount()\fP )\&.
+.PP
+In ContourMode contour lines are painted for the contour levels\&.
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtRasterData\fP, \fBQwtColorMap\fP, \fBQwtPlotItem::setRenderThreadCount()\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlotSpectrogram::DisplayMode\fP"
+The display mode controls how the raster data will be represented\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetDisplayMode()\fP, \fBtestDisplayMode()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIImageMode \fP\fP
+The values are mapped to colors using a color map\&. 
+.TP
+\fB\fIContourMode \fP\fP
+The data is displayed using contour lines\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlotSpectrogram::QwtPlotSpectrogram (const QString &title = \fCQString::null\fP)\fC [explicit]\fP"
+Sets the following item attributes:
+.IP "\(bu" 2
+\fBQwtPlotItem::AutoScale\fP: true
+.IP "\(bu" 2
+\fBQwtPlotItem::Legend\fP: false
+.PP
+.PP
+The z value is initialized by 8\&.0\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP Title
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotItem::setItemAttribute()\fP, \fBQwtPlotItem::setZ()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "const \fBQwtColorMap\fP * QwtPlotSpectrogram::colorMap () const"
+\fBReturns:\fP
+.RS 4
+Color Map used for mapping the intensity values to colors 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetColorMap()\fP 
+.RE
+.PP
+
+.SS "QList< double > QwtPlotSpectrogram::contourLevels () const"
+
+.PP
+Return the levels of the contour lines\&. The levels are sorted in increasing order\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcontourLevels()\fP, \fBrenderContourLines()\fP, \fBQwtRasterData::contourLines()\fP 
+.RE
+.PP
+
+.SS "QPen QwtPlotSpectrogram::contourPen (doublelevel) const\fC [virtual]\fP"
+
+.PP
+Calculate the pen for a contour line\&. The color of the pen is the color for level calculated by the color map
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlevel\fP Contour level 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Pen for the contour line 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+contourPen is only used if \fBdefaultContourPen()\fP\&.style() == Qt::NoPen
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetDefaultContourPen()\fP, \fBsetColorMap()\fP, \fBsetContourLevels()\fP 
+.RE
+.PP
+
+.SS "QSize QwtPlotSpectrogram::contourRasterSize (const QRectF &area, const QRect &rect) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Return the raster to be used by the CONREC contour algorithm\&. A larger size will improve the precision of the CONREC algorithm, but will slow down the time that is needed to calculate the lines\&.
+.PP
+The default implementation returns rect\&.size() / 2 bounded to the resolution depending on pixelSize()\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIarea\fP Rectangle, where to calculate the contour lines 
+.br
+\fIrect\fP Rectangle in pixel coordinates, where to paint the contour lines 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Raster to be used by the CONREC contour algorithm\&.
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The size will be bounded to rect\&.size()\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawContourLines()\fP, \fBQwtRasterData::contourLines()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtRasterData\fP * QwtPlotSpectrogram::data () const"
+\fBReturns:\fP
+.RS 4
+Spectrogram data 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetData()\fP 
+.RE
+.PP
+
+.SS "\fBQwtRasterData\fP * QwtPlotSpectrogram::data ()"
+\fBReturns:\fP
+.RS 4
+Spectrogram data 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetData()\fP 
+.RE
+.PP
+
+.SS "QPen QwtPlotSpectrogram::defaultContourPen () const"
+\fBReturns:\fP
+.RS 4
+Default contour pen 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetDefaultContourPen()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::draw (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect) const\fC [virtual]\fP"
+
+.PP
+Draw the spectrogram\&. \fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP Maps x-values into pixel coordinates\&. 
+.br
+\fIyMap\fP Maps y-values into pixel coordinates\&. 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas in painter coordinates
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetDisplayMode()\fP, \fBrenderImage()\fP, \fBQwtPlotRasterItem::draw()\fP, \fBdrawContourLines()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotRasterItem\fP\&.
+.SS "void QwtPlotSpectrogram::drawContourLines (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const \fBQwtRasterData::ContourLines\fP &contourLines) const\fC [protected]\fP, \fC [virtual]\fP"
+Paint the contour lines
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP Maps x-values into pixel coordinates\&. 
+.br
+\fIyMap\fP Maps y-values into pixel coordinates\&. 
+.br
+\fIcontourLines\fP Contour lines
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBrenderContourLines()\fP, \fBdefaultContourPen()\fP, \fBcontourPen()\fP 
+.RE
+.PP
+
+.SS "\fBQwtInterval\fP QwtPlotSpectrogram::interval (Qt::Axisaxis) const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Bounding interval for an axis
+.RE
+.PP
+The default implementation returns the interval of the associated raster data object\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxis\fP X, Y, or Z axis 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtRasterData::interval()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotRasterItem\fP\&.
+.SS "QRectF QwtPlotSpectrogram::pixelHint (const QRectF &area) const\fC [virtual]\fP"
+
+.PP
+Pixel hint\&. The geometry of a pixel is used to calculated the resolution and alignment of the rendered image\&.
+.PP
+The default implementation returns \fBdata()\fP->pixelHint( rect );
+.PP
+\fBParameters:\fP
+.RS 4
+\fIarea\fP In most implementations the resolution of the data doesn't depend on the requested area\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of a pixel
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotRasterItem::pixelHint()\fP, \fBQwtRasterData::pixelHint()\fP, render(), \fBrenderImage()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotRasterItem\fP\&.
+.SS "\fBQwtRasterData::ContourLines\fP QwtPlotSpectrogram::renderContourLines (const QRectF &rect, const QSize &raster) const\fC [protected]\fP, \fC [virtual]\fP"
+Calculate contour lines
+.PP
+\fBParameters:\fP
+.RS 4
+\fIrect\fP Rectangle, where to calculate the contour lines 
+.br
+\fIraster\fP Raster, used by the CONREC algorithm
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcontourLevels()\fP, \fBsetConrecFlag()\fP, \fBQwtRasterData::contourLines()\fP 
+.RE
+.PP
+
+.SS "QImage QwtPlotSpectrogram::renderImage (const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &area, const QSize &imageSize) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Render an image from data and color map\&. For each pixel of area the value is mapped into a color\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxMap\fP X-Scale Map 
+.br
+\fIyMap\fP Y-Scale Map 
+.br
+\fIarea\fP Requested area for the image in scale coordinates 
+.br
+\fIimageSize\fP Size of the requested image
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+A QImage::Format_Indexed8 or QImage::Format_ARGB32 depending on the color map\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtRasterData::value()\fP, \fBQwtColorMap::rgb()\fP, \fBQwtColorMap::colorIndex()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtPlotRasterItem\fP\&.
+.SS "void QwtPlotSpectrogram::renderTile (const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRect &tile, QImage *image) const\fC [protected]\fP"
+
+.PP
+Render a tile of an image\&. Rendering in tiles can be used to composite an image in parallel threads\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxMap\fP X-Scale Map 
+.br
+\fIyMap\fP Y-Scale Map 
+.br
+\fItile\fP Geometry of the tile in image coordinates 
+.br
+\fIimage\fP Image to be rendered 
+.RE
+.PP
+
+.SS "int QwtPlotSpectrogram::rtti () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+\fBQwtPlotItem::Rtti_PlotSpectrogram\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotSpectrogram::setColorMap (\fBQwtColorMap\fP *colorMap)"
+Change the color map
+.PP
+Often it is useful to display the mapping between intensities and colors as an additional plot axis, showing a color bar\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcolorMap\fP Color Map
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcolorMap()\fP, \fBQwtScaleWidget::setColorBarEnabled()\fP, \fBQwtScaleWidget::setColorMap()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setConrecFlag (\fBQwtRasterData::ConrecFlag\fPflag, boolon)"
+Modify an attribute of the CONREC algorithm, used to calculate the contour lines\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIflag\fP CONREC flag 
+.br
+\fIon\fP On/Off
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtestConrecFlag()\fP, \fBrenderContourLines()\fP, \fBQwtRasterData::contourLines()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setContourLevels (const QList< double > &levels)"
+Set the levels of the contour lines
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlevels\fP Values of the contour levels 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcontourLevels()\fP, \fBrenderContourLines()\fP, \fBQwtRasterData::contourLines()\fP
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+contourLevels returns the same levels but sorted\&. 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setData (\fBQwtRasterData\fP *data)"
+Set the data to be displayed
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP Spectrogram Data 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdata()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setDefaultContourPen (const QColor &color, qrealwidth = \fC0\&.0\fP, Qt::PenStylestyle = \fCQt::SolidLine\fP)"
+Build and assign the default pen for the contour lines
+.PP
+In Qt5 the default pen width is 1\&.0 ( 0\&.0 in Qt4 ) what makes it non cosmetic ( see QPen::isCosmetic() )\&. This method has been introduced to hide this incompatibility\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcolor\fP Pen color 
+.br
+\fIwidth\fP Pen width 
+.br
+\fIstyle\fP Pen style
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+pen(), brush() 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setDefaultContourPen (const QPen &pen)"
+
+.PP
+Set the default pen for the contour lines\&. If the spectrogram has a valid default contour pen a contour line is painted using the default contour pen\&. Otherwise (pen\&.style() == Qt::NoPen) the pen is calculated for each contour level using \fBcontourPen()\fP\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdefaultContourPen()\fP, \fBcontourPen()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotSpectrogram::setDisplayMode (\fBDisplayMode\fPmode, boolon = \fCtrue\fP)"
+The display mode controls how the raster data will be represented\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP Display mode 
+.br
+\fIon\fP On/Off
+.RE
+.PP
+The default setting enables ImageMode\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBDisplayMode\fP, displayMode() 
+.RE
+.PP
+
+.SS "bool QwtPlotSpectrogram::testConrecFlag (\fBQwtRasterData::ConrecFlag\fPflag) const"
+Test an attribute of the CONREC algorithm, used to calculate the contour lines\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIflag\fP CONREC flag 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true, is enabled
+.RE
+.PP
+The default setting enables \fBQwtRasterData::IgnoreAllVerticesOnLevel\fP
+.PP
+\fBSee Also:\fP
+.RS 4
+setConrecClag(), \fBrenderContourLines()\fP, \fBQwtRasterData::contourLines()\fP 
+.RE
+.PP
+
+.SS "bool QwtPlotSpectrogram::testDisplayMode (\fBDisplayMode\fPmode) const"
+The display mode controls how the raster data will be represented\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP Display mode 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+true if mode is enabled 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

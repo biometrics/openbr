@@ -1,0 +1,125 @@
+.TH "QwtCPointerData" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCPointerData \- 
+.PP
+Data class containing two pointers to memory blocks of doubles\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_point_data\&.h>\fP
+.PP
+Inherits \fBQwtSeriesData< QPointF >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtCPointerData\fP (const double *x, const double *y, size_t \fBsize\fP)"
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.RI "\fICalculate the bounding rectangle\&. \fP"
+.ti -1c
+.RI "virtual size_t \fBsize\fP () const "
+.br
+.ti -1c
+.RI "virtual QPointF \fBsample\fP (size_t i) const "
+.br
+.ti -1c
+.RI "const double * \fBxData\fP () const "
+.br
+.ti -1c
+.RI "const double * \fByData\fP () const "
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+Data class containing two pointers to memory blocks of doubles\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtCPointerData::QwtCPointerData (const double *x, const double *y, size_tsize)"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx\fP Array of x values 
+.br
+\fIy\fP Array of y values 
+.br
+\fIsize\fP Size of the x and y arrays
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The programmer must assure that the memory blocks referenced by the pointers remain valid during the lifetime of the QwtPlotCPointer object\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotCurve::setData()\fP, \fBQwtPlotCurve::setRawSamples()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QRectF QwtCPointerData::boundingRect () const\fC [virtual]\fP"
+
+.PP
+Calculate the bounding rectangle\&. The bounding rectangle is calculated once by iterating over all points and is stored for all following requests\&.
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "QPointF QwtCPointerData::sample (size_tindex) const\fC [virtual]\fP"
+Return the sample at position i
+.PP
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Sample at position i 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "size_t QwtCPointerData::size () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Size of the data set 
+.RE
+.PP
+
+.PP
+Implements \fBQwtSeriesData< QPointF >\fP\&.
+.SS "const double * QwtCPointerData::xData () const"
+\fBReturns:\fP
+.RS 4
+Array of the x-values 
+.RE
+.PP
+
+.SS "const double * QwtCPointerData::yData () const"
+\fBReturns:\fP
+.RS 4
+Array of the y-values 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

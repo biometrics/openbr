@@ -1,0 +1,12 @@
+<map id="QwtPlotSeriesItem" name="QwtPlotSeriesItem">
+<area shape="rect" id="node7" href="$class_qwt_plot_abstract_bar_chart.html" title="Abstract base class for bar chart items." alt="" coords="387,31,549,57"/>
+<area shape="rect" id="node13" href="$class_qwt_plot_curve.html" title="A plot item, that represents a series of points." alt="" coords="419,81,517,108"/>
+<area shape="rect" id="node15" href="$class_qwt_plot_histogram.html" title="QwtPlotHistogram represents a series of samples, where an interval is associated with a value ( &#160;)..." alt="" coords="406,132,530,159"/>
+<area shape="rect" id="node17" href="$class_qwt_plot_interval_curve.html" title="QwtPlotIntervalCurve represents a series of samples, where each value is associated with an interval ..." alt="" coords="399,183,537,209"/>
+<area shape="rect" id="node19" href="$class_qwt_plot_spectro_curve.html" title="Curve that displays 3D points as dots, where the z coordinate is mapped to a color." alt="" coords="397,233,539,260"/>
+<area shape="rect" id="node21" href="$class_qwt_plot_trading_curve.html" title="QwtPlotTradingCurve illustrates movements in the price of a financial instrument over time..." alt="" coords="395,284,541,311"/>
+<area shape="rect" id="node2" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="39,132,129,159"/>
+<area shape="rect" id="node4" href="$class_qwt_abstract_series_store.html" title="Bridge between QwtSeriesStore and QwtPlotSeriesItem." alt="" coords="6,183,162,209"/>
+<area shape="rect" id="node9" href="$class_qwt_plot_bar_chart.html" title="QwtPlotBarChart displays a series of a values as bars." alt="" coords="612,5,727,32"/>
+<area shape="rect" id="node11" href="$class_qwt_plot_multi_bar_chart.html" title="QwtPlotMultiBarChart displays a series of a samples that consist each of a set of values..." alt="" coords="598,56,741,83"/>
+</map>

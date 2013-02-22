@@ -34,9 +34,8 @@ public:
     {
         file = Globals->sdkPath + "/share/openbr/models/";
         if      (model == "Ear")         file += "haarcascades/haarcascade_ear.xml";
-        else if (model == "Eye")         file += "haarcascades/eye_tree_eyeglasses.xml";
+        else if (model == "Eye")         file += "haarcascades/haarcascade_eye_tree_eyeglasses.xml";
         else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";
-        else if (model == "Ocular")      file += "parojosG.xml";
         else if (model == "ProfileFace") file += "haarcascades/haarcascade_profileface.xml";
         else                             qFatal("CascadeResourceMaker::CascadeResourceMaker invalid model.");
     }

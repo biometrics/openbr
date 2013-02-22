@@ -1,0 +1,159 @@
+.TH "QwtSeriesStore< T >" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtSeriesStore< T > \- 
+.PP
+Class storing a \fBQwtSeriesData\fP object\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_series_store\&.h>\fP
+.PP
+Inherits \fBQwtAbstractSeriesStore\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtSeriesStore\fP ()"
+.br
+.RI "\fIConstructor The store contains no series\&. \fP"
+.ti -1c
+.RI "\fB~QwtSeriesStore\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetData\fP (\fBQwtSeriesData\fP< T > *series)"
+.br
+.ti -1c
+.RI "\fBQwtSeriesData\fP< T > * \fBdata\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtSeriesData\fP< T > * \fBdata\fP () const "
+.br
+.ti -1c
+.RI "T \fBsample\fP (int index) const "
+.br
+.ti -1c
+.RI "virtual size_t \fBdataSize\fP () const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBdataRect\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBsetRectOfInterest\fP (const QRectF &rect)"
+.br
+.ti -1c
+.RI "\fBQwtSeriesData\fP< T > * \fBswapData\fP (\fBQwtSeriesData\fP< T > *series)"
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+
+.SS "template<typename T>class QwtSeriesStore< T >"
+Class storing a \fBQwtSeriesData\fP object\&. 
+
+\fBQwtSeriesStore\fP and \fBQwtPlotSeriesItem\fP are intended as base classes for all plot items iterating over a series of samples\&. Both classes share a virtual base class ( \fBQwtAbstractSeriesStore\fP ) to bridge between them\&.
+.PP
+\fBQwtSeriesStore\fP offers the template based part for the plot item API, so that \fBQwtPlotSeriesItem\fP can be derived without any hassle with templates\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "template<typename T > \fBQwtSeriesData\fP< T > * \fBQwtSeriesStore\fP< T >::data ()\fC [inline]\fP"
+\fBReturns:\fP
+.RS 4
+the the series data 
+.RE
+.PP
+
+.SS "template<typename T > const \fBQwtSeriesData\fP< T > * \fBQwtSeriesStore\fP< T >::data () const\fC [inline]\fP"
+\fBReturns:\fP
+.RS 4
+the the series data 
+.RE
+.PP
+
+.SS "template<typename T > QRectF \fBQwtSeriesStore\fP< T >::dataRect () const\fC [virtual]\fP"
+Return the bounding rectangle of the series or an invalid rectangle, when no series is stored
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtSeriesData<T>::boundingRect()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtAbstractSeriesStore\fP\&.
+.SS "template<typename T > size_t \fBQwtSeriesStore\fP< T >::dataSize () const\fC [virtual]\fP"
+Return the number of samples of the series
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetData()\fP, \fBQwtSeriesData<T>::size()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtAbstractSeriesStore\fP\&.
+.SS "template<typename T > T \fBQwtSeriesStore\fP< T >::sample (intindex) const\fC [inline]\fP"
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Sample at position index 
+.RE
+.PP
+
+.SS "template<typename T> void \fBQwtSeriesStore\fP< T >::setData (\fBQwtSeriesData\fP< T > *series)"
+Assign a series of samples
+.PP
+\fBParameters:\fP
+.RS 4
+\fIseries\fP Data 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The item takes ownership of the data object, deleting it when its not used anymore\&. 
+.RE
+.PP
+
+.SS "template<typename T > void \fBQwtSeriesStore\fP< T >::setRectOfInterest (const QRectF &rect)\fC [virtual]\fP"
+Set a the 'rect of interest' for the series
+.PP
+\fBParameters:\fP
+.RS 4
+\fIrect\fP Rectangle of interest 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtSeriesData<T>::setRectOfInterest()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtAbstractSeriesStore\fP\&.
+.SS "template<typename T> \fBQwtSeriesData\fP< T > * \fBQwtSeriesStore\fP< T >::swapData (\fBQwtSeriesData\fP< T > *series)"
+Replace a series without deleting the previous one
+.PP
+\fBParameters:\fP
+.RS 4
+\fIseries\fP New series 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Previously assigned series 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

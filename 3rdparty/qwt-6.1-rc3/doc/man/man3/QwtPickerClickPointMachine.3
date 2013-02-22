@@ -1,0 +1,44 @@
+.TH "QwtPickerClickPointMachine" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPickerClickPointMachine \- 
+.PP
+A state machine for point selections\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_picker_machine\&.h>\fP
+.PP
+Inherits \fBQwtPickerMachine\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPickerClickPointMachine\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual QList< \fBCommand\fP > \fBtransition\fP (const \fBQwtEventPattern\fP &, const QEvent *)"
+.br
+.RI "\fITransition\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+A state machine for point selections\&. 
+
+Pressing \fBQwtEventPattern::MouseSelect1\fP or \fBQwtEventPattern::KeySelect1\fP selects a point\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtEventPattern::MousePatternCode\fP, \fBQwtEventPattern::KeyPatternCode\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

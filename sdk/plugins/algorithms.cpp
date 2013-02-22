@@ -39,6 +39,8 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("MedianFace", "Open!Cascade(FrontalFace)+ASEFEyes+Affine(256,256,0.37,0.45)+Center(Median)");
         Globals->abbreviations.insert("BlurredFaceDetection", "Open+LimitSize(1024)+SkinMask/(Cvt(Gray)+GradientMask)+And+Morph(Erode,16)+LargestConvexArea");
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
+        Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
+        Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
@@ -59,8 +61,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("ColoredLBP", "Open+Affine(128,128,0.37,0.45)+Cvt(Gray)+Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+ColoredU2");
 
         // Transforms
-        Globals->abbreviations.insert("SketchDetector", "(Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+RenameFirst([eyeLx,ASEF_Right_Eye_X],Affine_0_X)+RenameFirst([eyeLy,ASEF_Right_Eye_Y],Affine_0_Y)+RenameFirst([eyeRx,ASEF_Left_Eye_X],Affine_1_X)+RenameFirst([eyeRy,ASEF_Left_Eye_Y],Affine_1_Y))");
-        // Globals->abbreviations.insert("SketchDetector", "(EnsureChannels(3)+PP5Enroll(true)+RenameFirst([eyeLx,PP5_Landmark0_Right_Eye_X],Affine_0_X)+RenameFirst([eyeLy,PP5_Landmark0_Right_Eye_Y],Affine_0_Y)+RenameFirst([eyeRx,PP5_Landmark1_Left_Eye_X],Affine_1_X)+RenameFirst([eyeRy,PP5_Landmark1_Left_Eye_Y],Affine_1_Y)+Cvt(Gray))");
         Globals->abbreviations.insert("FaceDetection", "(Open+Cvt(Gray)+Cascade(FrontalFace))");
         Globals->abbreviations.insert("DenseLBP", "(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))");
         Globals->abbreviations.insert("DenseSIFT", "(Grid(10,10)+SIFTDescriptor(12)+ByRow)");

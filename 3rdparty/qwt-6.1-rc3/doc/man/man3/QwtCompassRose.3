@@ -1,0 +1,68 @@
+.TH "QwtCompassRose" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCompassRose \- 
+.PP
+Abstract base class for a compass rose\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_compass_rose\&.h>\fP
+.PP
+Inherited by \fBQwtSimpleCompassRose\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual \fB~QwtCompassRose\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual void \fBsetPalette\fP (const QPalette &p)"
+.br
+.RI "\fIAssign a palette\&. \fP"
+.ti -1c
+.RI "const QPalette & \fBpalette\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *painter, const QPointF &center, double radius, double north, QPalette::ColorGroup colorGroup=QPalette::Active) const =0"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Abstract base class for a compass rose\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "virtual void QwtCompassRose::draw (QPainter *painter, const QPointF &center, doubleradius, doublenorth, QPalette::ColorGroupcolorGroup = \fCQPalette::Active\fP) const\fC [pure virtual]\fP"
+Draw the rose
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIcenter\fP Center point 
+.br
+\fIradius\fP Radius of the rose 
+.br
+\fInorth\fP Position 
+.br
+\fIcolorGroup\fP Color group 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtSimpleCompassRose\fP\&.
+.SS "const QPalette& QwtCompassRose::palette () const\fC [inline]\fP"
+\fBReturns:\fP
+.RS 4
+Current palette 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

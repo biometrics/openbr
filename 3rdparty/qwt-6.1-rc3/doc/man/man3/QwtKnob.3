@@ -1,0 +1,599 @@
+.TH "QwtKnob" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtKnob \- 
+.PP
+The Knob Widget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_knob\&.h>\fP
+.PP
+Inherits \fBQwtAbstractSlider\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBKnobStyle\fP { \fBFlat\fP, \fBRaised\fP, \fBSunken\fP }"
+.br
+.RI "\fIStyle of the knob surface\&. \fP"
+.ti -1c
+.RI "enum \fBMarkerStyle\fP { \fBNoMarker\fP = -1, \fBTick\fP, \fBTriangle\fP, \fBDot\fP, \fBNub\fP, \fBNotch\fP }"
+.br
+.RI "\fIMarker type\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtKnob\fP (QWidget *parent=NULL)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtKnob\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetAlignment\fP (Qt::Alignment)"
+.br
+.RI "\fISet the alignment of the knob\&. \fP"
+.ti -1c
+.RI "Qt::Alignment \fBalignment\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetKnobWidth\fP (int)"
+.br
+.RI "\fIChange the knob's width\&. \fP"
+.ti -1c
+.RI "int \fBknobWidth\fP () const "
+.br
+.RI "\fIReturn the width of the knob\&. \fP"
+.ti -1c
+.RI "void \fBsetNumTurns\fP (int)"
+.br
+.RI "\fISet the number of turns\&. \fP"
+.ti -1c
+.RI "int \fBnumTurns\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetTotalAngle\fP (double angle)"
+.br
+.RI "\fISet the total angle by which the knob can be turned\&. \fP"
+.ti -1c
+.RI "double \fBtotalAngle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetKnobStyle\fP (\fBKnobStyle\fP)"
+.br
+.RI "\fISet the knob type\&. \fP"
+.ti -1c
+.RI "\fBKnobStyle\fP \fBknobStyle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetBorderWidth\fP (int bw)"
+.br
+.RI "\fISet the knob's border width\&. \fP"
+.ti -1c
+.RI "int \fBborderWidth\fP () const "
+.br
+.RI "\fIReturn the border width\&. \fP"
+.ti -1c
+.RI "void \fBsetMarkerStyle\fP (\fBMarkerStyle\fP)"
+.br
+.RI "\fISet the marker type of the knob\&. \fP"
+.ti -1c
+.RI "\fBMarkerStyle\fP \fBmarkerStyle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetMarkerSize\fP (int)"
+.br
+.RI "\fISet the size of the marker\&. \fP"
+.ti -1c
+.RI "int \fBmarkerSize\fP () const "
+.br
+.ti -1c
+.RI "virtual QSize \fBsizeHint\fP () const "
+.br
+.ti -1c
+.RI "virtual QSize \fBminimumSizeHint\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetScaleDraw\fP (\fBQwtRoundScaleDraw\fP *)"
+.br
+.ti -1c
+.RI "const \fBQwtRoundScaleDraw\fP * \fBscaleDraw\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtRoundScaleDraw\fP * \fBscaleDraw\fP ()"
+.br
+.ti -1c
+.RI "QRect \fBknobRect\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP (QPaintEvent *)"
+.br
+.ti -1c
+.RI "virtual void \fBchangeEvent\fP (QEvent *)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawKnob\fP (QPainter *, const QRectF &) const "
+.br
+.RI "\fIDraw the knob\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawFocusIndicator\fP (QPainter *) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawMarker\fP (QPainter *, const QRectF &, double arc) const "
+.br
+.RI "\fIDraw the marker at the knob's front\&. \fP"
+.ti -1c
+.RI "virtual double \fBscrolledTo\fP (const QPoint &) const "
+.br
+.RI "\fIDetermine the value for a new position of the mouse\&. \fP"
+.ti -1c
+.RI "virtual bool \fBisScrollPosition\fP (const QPoint &) const "
+.br
+.RI "\fIDetermine what to do when the user presses a mouse button\&. \fP"
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+The Knob Widget\&. 
+
+The \fBQwtKnob\fP widget imitates look and behavior of a volume knob on a radio\&. It looks similar to QDial - not to \fBQwtDial\fP\&.
+.PP
+The value range of a knob might be divided into several turns\&.
+.PP
+The layout of the knob depends on the \fBknobWidth()\fP\&.
+.PP
+.IP "\(bu" 2
+width > 0 The diameter of the knob is fixed and the knob is aligned according to the \fBalignment()\fP flags inside of the contentsRect()\&.
+.PP
+.PP
+.IP "\(bu" 2
+width <= 0 The knob is extended to the minimum of width/height of the contentsRect() and aligned in the other direction according to \fBalignment()\fP\&.
+.PP
+.PP
+Setting a fixed \fBknobWidth()\fP is helpful to align several knobs with different scale labels\&.
+.PP
+ 
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtKnob::KnobStyle\fP"
+
+.PP
+Style of the knob surface\&. Depending on the KnobStyle the surface of the knob is filled from the brushes of the widget palette()\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetKnobStyle()\fP, \fBknobStyle()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIFlat \fP\fP
+Fill the knob with a brush from QPalette::Button\&. 
+.TP
+\fB\fIRaised \fP\fP
+Build a gradient from QPalette::Midlight and QPalette::Button\&. 
+.TP
+\fB\fISunken \fP\fP
+Build a gradient from QPalette::Midlight, QPalette::Button and QPalette::Midlight 
+.SS "enum \fBQwtKnob::MarkerStyle\fP"
+
+.PP
+Marker type\&. The marker indicates the current value on the knob The default setting is a Notch marker\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMarkerStyle()\fP, \fBsetMarkerSize()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINoMarker \fP\fP
+Don't paint any marker\&. 
+.TP
+\fB\fITick \fP\fP
+Paint a single tick in QPalette::ButtonText color\&. 
+.TP
+\fB\fITriangle \fP\fP
+Paint a triangle in QPalette::ButtonText color\&. 
+.TP
+\fB\fIDot \fP\fP
+Paint a circle in QPalette::ButtonText color\&. 
+.TP
+\fB\fINub \fP\fP
+Draw a raised ellipse with a gradient build from QPalette::Light and QPalette::Mid 
+.TP
+\fB\fINotch \fP\fP
+Draw a sunken ellipse with a gradient build from QPalette::Light and QPalette::Mid 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtKnob::QwtKnob (QWidget *parent = \fCNULL\fP)\fC [explicit]\fP"
+
+.PP
+Constructor\&. Construct a knob with an angle of 270°\&. The style is \fBQwtKnob::Raised\fP and the marker style is \fBQwtKnob::Notch\fP\&. The width of the knob is set to 50 pixels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIparent\fP Parent widget
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetTotalAngle()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "Qt::Alignment QwtKnob::alignment () const"
+\fBReturns:\fP
+.RS 4
+Alignment of the knob inside of contentsRect() 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAlignment()\fP, \fBknobWidth()\fP, \fBknobRect()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::changeEvent (QEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Handle QEvent::StyleChange and QEvent::FontChange; 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Change event 
+.RE
+.PP
+
+.SS "void QwtKnob::drawFocusIndicator (QPainter *painter) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the focus indicator 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.RE
+.PP
+
+.SS "void QwtKnob::drawKnob (QPainter *painter, const QRectF &knobRect) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Draw the knob\&. \fBParameters:\fP
+.RS 4
+\fIpainter\fP painter 
+.br
+\fIknobRect\fP Bounding rectangle of the knob (without scale) 
+.RE
+.PP
+
+.SS "void QwtKnob::drawMarker (QPainter *painter, const QRectF &rect, doubleangle) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Draw the marker at the knob's front\&. \fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIrect\fP Bounding rectangle of the knob without scale 
+.br
+\fIangle\fP Angle of the marker in degrees ( clockwise, 0 at the 12 o'clock position ) 
+.RE
+.PP
+
+.SS "bool QwtKnob::isScrollPosition (const QPoint &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Determine what to do when the user presses a mouse button\&. \fBParameters:\fP
+.RS 4
+\fIpos\fP Mouse position
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fITrue,when\fP pos is inside the circle of the knob\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBscrolledTo()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtAbstractSlider\fP\&.
+.SS "QRect QwtKnob::knobRect () const"
+Calculate the bounding rectangle of the knob without the scale
+.PP
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of the knob 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBknobWidth()\fP, \fBalignment()\fP, QWidget::contentsRect() 
+.RE
+.PP
+
+.SS "\fBQwtKnob::KnobStyle\fP QwtKnob::knobStyle () const"
+\fBReturns:\fP
+.RS 4
+Marker type of the knob 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetKnobStyle()\fP, \fBsetBorderWidth()\fP 
+.RE
+.PP
+
+.SS "int QwtKnob::markerSize () const"
+\fBReturns:\fP
+.RS 4
+Marker size 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMarkerSize()\fP 
+.RE
+.PP
+
+.SS "\fBQwtKnob::MarkerStyle\fP QwtKnob::markerStyle () const"
+\fBReturns:\fP
+.RS 4
+Marker type of the knob 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMarkerStyle()\fP, \fBsetMarkerSize()\fP 
+.RE
+.PP
+
+.SS "QSize QwtKnob::minimumSizeHint () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Minimum size hint 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsizeHint()\fP 
+.RE
+.PP
+
+.SS "int QwtKnob::numTurns () const"
+\fBReturns:\fP
+.RS 4
+Number of turns\&.
+.RE
+.PP
+When the total angle is below 360° \fBnumTurns()\fP is ceiled to 1\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetNumTurns()\fP, \fBsetTotalAngle()\fP, \fBtotalAngle()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::paintEvent (QPaintEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Repaint the knob 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Paint event 
+.RE
+.PP
+
+.SS "const \fBQwtRoundScaleDraw\fP * QwtKnob::scaleDraw () const"
+\fBReturns:\fP
+.RS 4
+the scale draw of the knob 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScaleDraw()\fP 
+.RE
+.PP
+
+.SS "\fBQwtRoundScaleDraw\fP * QwtKnob::scaleDraw ()"
+\fBReturns:\fP
+.RS 4
+the scale draw of the knob 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetScaleDraw()\fP 
+.RE
+.PP
+
+.SS "double QwtKnob::scrolledTo (const QPoint &pos) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Determine the value for a new position of the mouse\&. \fBParameters:\fP
+.RS 4
+\fIpos\fP Mouse position
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Value for the mouse position 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBisScrollPosition()\fP 
+.RE
+.PP
+
+.PP
+Implements \fBQwtAbstractSlider\fP\&.
+.SS "void QwtKnob::setAlignment (Qt::Alignmentalignment)"
+
+.PP
+Set the alignment of the knob\&. Similar to a QLabel::alignment() the flags decide how to align the knob inside of contentsRect()\&.
+.PP
+The default setting is Qt::AlignCenter
+.PP
+\fBParameters:\fP
+.RS 4
+\fIalignment\fP Or'd alignment flags
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBalignment()\fP, \fBsetKnobWidth()\fP, \fBknobRect()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setBorderWidth (intborderWidth)"
+
+.PP
+Set the knob's border width\&. \fBParameters:\fP
+.RS 4
+\fIborderWidth\fP new border width 
+.RE
+.PP
+
+.SS "void QwtKnob::setKnobStyle (\fBKnobStyle\fPknobStyle)"
+
+.PP
+Set the knob type\&. \fBParameters:\fP
+.RS 4
+\fIknobStyle\fP Knob type 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBknobStyle()\fP, \fBsetBorderWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setKnobWidth (intwidth)"
+
+.PP
+Change the knob's width\&. Setting a fixed value for the diameter of the knob is helpful for aligning several knobs in a row\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP New width
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBknobWidth()\fP, \fBsetAlignment()\fP 
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+Modifies the sizePolicy() 
+.RE
+.PP
+
+.SS "void QwtKnob::setMarkerSize (intsize)"
+
+.PP
+Set the size of the marker\&. \fBSee Also:\fP
+.RS 4
+\fBmarkerSize()\fP, \fBmarkerStyle()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setMarkerStyle (\fBMarkerStyle\fPmarkerStyle)"
+
+.PP
+Set the marker type of the knob\&. \fBParameters:\fP
+.RS 4
+\fImarkerStyle\fP Marker type 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmarkerStyle()\fP, \fBsetMarkerSize()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setNumTurns (intnumTurns)"
+
+.PP
+Set the number of turns\&. When numTurns > 1 the knob can be turned several times around its axis
+.IP "\(bu" 2
+otherwise the total angle is floored to 360°\&.
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBnumTurns()\fP, \fBtotalAngle()\fP, \fBsetTotalAngle()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setScaleDraw (\fBQwtRoundScaleDraw\fP *scaleDraw)"
+Change the scale draw of the knob
+.PP
+For changing the labels of the scales, it is necessary to derive from \fBQwtRoundScaleDraw\fP and overload \fBQwtRoundScaleDraw::label()\fP\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBscaleDraw()\fP 
+.RE
+.PP
+
+.SS "void QwtKnob::setTotalAngle (doubleangle)"
+
+.PP
+Set the total angle by which the knob can be turned\&. \fBParameters:\fP
+.RS 4
+\fIangle\fP Angle in degrees\&.
+.RE
+.PP
+The angle has to be between [10, 360] degrees\&. Angles above 360 ( so that the knob can be turned several times around its axis ) have to be set using \fBsetNumTurns()\fP\&.
+.PP
+The default angle is 270 degrees\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtotalAngle()\fP, \fBsetNumTurns()\fP 
+.RE
+.PP
+
+.SS "QSize QwtKnob::sizeHint () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+\fBsizeHint()\fP 
+.RE
+.PP
+
+.SS "double QwtKnob::totalAngle () const"
+\fBReturns:\fP
+.RS 4
+the total angle 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetTotalAngle()\fP, \fBsetNumTurns()\fP, \fBnumTurns()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

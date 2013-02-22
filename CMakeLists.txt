@@ -1,11 +1,13 @@
 project(openbr)
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
-set(CPACK_PACKAGE_VENDOR "Open Biometric Recognition")
-set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition and Evaluation")
+set(CPACK_PACKAGE_VENDOR "OpenBR")
+set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 2)
@@ -16,7 +18,7 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CMAKE_MODULE_PATH "${BR_SHARE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(PACKAGE_YEAR 2012)
 
-# Define icons
+# Define resources
 if(WIN32)
   set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr-small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.ico")
@@ -28,48 +30,17 @@ else()
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.png")
 endif()
 
-# Add resource file for Windows builds
 if(WIN32)
   configure_file(${BR_SHARE_DIR}/resources.rc.in resources.rc)
-  set(BR_WINDOWS_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
+  set(BR_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
+elseif(APPLE)
+  set(BR_RESOURCES ${NATIVE_ICON})
 endif()
 
-# Add icon file for Apple builds
-if(APPLE)
-  set(BR_APPLE_RESOURCES ${NATIVE_ICON})
-endif()
-
-set(BR_RESOURCES ${BR_WINDOWS_RESOURCES} ${BR_APPLE_RESOURCES})
-
-if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fvisibility=hidden -fno-omit-frame-pointer")
-endif()
-
-if(CMAKE_COMPILER_IS_GNUXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
-endif()
-
-if(MINGW)
-  # Fixes a linker warning
-  set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import")
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
-endif()
-
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
-endif()
-
-if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
-endif()
-
-# Configure build
+# Build options
 option(BR_EMBEDDED "Limit software dependencies")
 if(${BR_EMBEDDED})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
-  set(QT_DEPENDENCIES QtCore)
-else()
-  set(QT_DEPENDENCIES QtCore QtGui QtNetwork QtOpenGL QtSql QtSvg QtXml)
 endif()
 
 option(BR_DISTRIBUTED "Target distributed memory models")
@@ -83,16 +54,38 @@ if(${BR_DISTRIBUTED})
 endif()
 
 # Find Qt
-find_package(Qt4 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
-set(QT_USE_QTMAIN TRUE)
-include(${QT_USE_FILE})
-add_definitions(${QT_DEFINITIONS})
-set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${QT_LIBRARIES})
+set(QT_DEPENDENCIES Concurrent Core)
+option(BR_EMBEDDED "Limit software dependencies")
+if(NOT ${BR_EMBEDDED})
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Svg Widgets Xml)
+endif()
+foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
+  find_package(Qt5${QT_DEPENDENCY})
+endforeach()
+set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching video videostab)
+
+# Compiler flags
+if(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -fvisibility=hidden -fno-omit-frame-pointer")
+  if(NOT APPLE)
+    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${_qt5Core_install_prefix}/lib)
+    if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel -wd2196")
+    endif()
+  endif()
+else()
+  if(MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import") # Fixes a linker warning
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
+  elseif(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
+  endif()
+endif()
 
 # Enable Testing
 include(CppcheckTargets)
@@ -125,7 +118,7 @@ endif()
 
 # Install
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
-install(DIRECTORY share DESTINATION .)
+install(DIRECTORY share data DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 include(InstallDependencies)
 install_compiler_libraries()

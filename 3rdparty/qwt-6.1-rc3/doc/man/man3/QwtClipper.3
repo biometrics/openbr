@@ -1,0 +1,112 @@
+.TH "QwtClipper" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtClipper \- 
+.PP
+Some clipping algorithms\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_clipper\&.h>\fP
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static QPolygon \fBclipPolygon\fP (const QRect &, const QPolygon &, bool closePolygon=false)"
+.br
+.ti -1c
+.RI "static QPolygon \fBclipPolygon\fP (const QRectF &, const QPolygon &, bool closePolygon=false)"
+.br
+.ti -1c
+.RI "static QPolygonF \fBclipPolygonF\fP (const QRectF &, const QPolygonF &, bool closePolygon=false)"
+.br
+.ti -1c
+.RI "static QVector< \fBQwtInterval\fP > \fBclipCircle\fP (const QRectF &, const QPointF &, double radius)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Some clipping algorithms\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "QVector< \fBQwtInterval\fP > QwtClipper::clipCircle (const QRectF &clipRect, const QPointF &center, doubleradius)\fC [static]\fP"
+Circle clipping
+.PP
+\fBclipCircle()\fP divides a circle into intervals of angles representing arcs of the circle\&. When the circle is completely inside the clip rectangle an interval [0\&.0, 2 * M_PI] is returned\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIclipRect\fP Clip rectangle 
+.br
+\fIcenter\fP Center of the circle 
+.br
+\fIradius\fP Radius of the circle
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Arcs of the circle 
+.RE
+.PP
+
+.SS "QPolygon QwtClipper::clipPolygon (const QRect &clipRect, const QPolygon &polygon, boolclosePolygon = \fCfalse\fP)\fC [static]\fP"
+Sutherland-Hodgman polygon clipping
+.PP
+\fBParameters:\fP
+.RS 4
+\fIclipRect\fP Clip rectangle 
+.br
+\fIpolygon\fP Polygon 
+.br
+\fIclosePolygon\fP True, when the polygon is closed
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Clipped polygon 
+.RE
+.PP
+
+.SS "QPolygon QwtClipper::clipPolygon (const QRectF &clipRect, const QPolygon &polygon, boolclosePolygon = \fCfalse\fP)\fC [static]\fP"
+Sutherland-Hodgman polygon clipping
+.PP
+\fBParameters:\fP
+.RS 4
+\fIclipRect\fP Clip rectangle 
+.br
+\fIpolygon\fP Polygon 
+.br
+\fIclosePolygon\fP True, when the polygon is closed
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Clipped polygon 
+.RE
+.PP
+
+.SS "QPolygonF QwtClipper::clipPolygonF (const QRectF &clipRect, const QPolygonF &polygon, boolclosePolygon = \fCfalse\fP)\fC [static]\fP"
+Sutherland-Hodgman polygon clipping
+.PP
+\fBParameters:\fP
+.RS 4
+\fIclipRect\fP Clip rectangle 
+.br
+\fIpolygon\fP Polygon 
+.br
+\fIclosePolygon\fP True, when the polygon is closed
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Clipped polygon 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

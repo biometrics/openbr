@@ -1,0 +1,1449 @@
+.TH "QwtPlot" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlot \- 
+.PP
+A 2-D plotting widget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot\&.h>\fP
+.PP
+Inherits QFrame, and \fBQwtPlotDict\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBAxis\fP { \fByLeft\fP, \fByRight\fP, \fBxBottom\fP, \fBxTop\fP, \fBaxisCnt\fP }"
+.br
+.RI "\fIAxis index\&. \fP"
+.ti -1c
+.RI "enum \fBLegendPosition\fP { \fBLeftLegend\fP, \fBRightLegend\fP, \fBBottomLegend\fP, \fBTopLegend\fP }"
+.br
+.in -1c
+.SS "Public Slots"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBreplot\fP ()"
+.br
+.RI "\fIRedraw the plot\&. \fP"
+.ti -1c
+.RI "void \fBautoRefresh\fP ()"
+.br
+.RI "\fIReplots the plot if \fBautoReplot()\fP is \fCtrue\fP\&. \fP"
+.in -1c
+.SS "Signals"
+
+.in +1c
+.ti -1c
+.RI "void \fBitemAttached\fP (\fBQwtPlotItem\fP *plotItem, bool on)"
+.br
+.ti -1c
+.RI "void \fBlegendDataChanged\fP (const QVariant &itemInfo, const QList< \fBQwtLegendData\fP > &data)"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlot\fP (QWidget *=NULL)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBQwtPlot\fP (const \fBQwtText\fP &\fBtitle\fP, QWidget *=NULL)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtPlot\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBapplyProperties\fP (const QString &)"
+.br
+.ti -1c
+.RI "QString \fBgrabProperties\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetAutoReplot\fP (bool=true)"
+.br
+.RI "\fISet or reset the autoReplot option\&. \fP"
+.ti -1c
+.RI "bool \fBautoReplot\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetPlotLayout\fP (\fBQwtPlotLayout\fP *)"
+.br
+.RI "\fIAssign a new plot layout\&. \fP"
+.ti -1c
+.RI "\fBQwtPlotLayout\fP * \fBplotLayout\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtPlotLayout\fP * \fBplotLayout\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetTitle\fP (const QString &)"
+.br
+.ti -1c
+.RI "void \fBsetTitle\fP (const \fBQwtText\fP &t)"
+.br
+.ti -1c
+.RI "\fBQwtText\fP \fBtitle\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtTextLabel\fP * \fBtitleLabel\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtTextLabel\fP * \fBtitleLabel\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetFooter\fP (const QString &)"
+.br
+.ti -1c
+.RI "void \fBsetFooter\fP (const \fBQwtText\fP &t)"
+.br
+.ti -1c
+.RI "\fBQwtText\fP \fBfooter\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtTextLabel\fP * \fBfooterLabel\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtTextLabel\fP * \fBfooterLabel\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetCanvas\fP (QWidget *)"
+.br
+.RI "\fISet the drawing canvas of the plot widget\&. \fP"
+.ti -1c
+.RI "QWidget * \fBcanvas\fP ()"
+.br
+.ti -1c
+.RI "const QWidget * \fBcanvas\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetCanvasBackground\fP (const QBrush &)"
+.br
+.RI "\fIChange the background of the plotting area\&. \fP"
+.ti -1c
+.RI "QBrush \fBcanvasBackground\fP () const "
+.br
+.ti -1c
+.RI "virtual \fBQwtScaleMap\fP \fBcanvasMap\fP (int axisId) const "
+.br
+.ti -1c
+.RI "double \fBinvTransform\fP (int axisId, int pos) const "
+.br
+.ti -1c
+.RI "double \fBtransform\fP (int axisId, double value) const "
+.br
+.RI "\fITransform a value into a coordinate in the plotting region\&. \fP"
+.ti -1c
+.RI "\fBQwtScaleEngine\fP * \fBaxisScaleEngine\fP (int axisId)"
+.br
+.ti -1c
+.RI "const \fBQwtScaleEngine\fP * \fBaxisScaleEngine\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBsetAxisScaleEngine\fP (int axisId, \fBQwtScaleEngine\fP *)"
+.br
+.ti -1c
+.RI "void \fBsetAxisAutoScale\fP (int axisId, bool on=true)"
+.br
+.RI "\fIEnable autoscaling for a specified axis\&. \fP"
+.ti -1c
+.RI "bool \fBaxisAutoScale\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBenableAxis\fP (int axisId, bool tf=true)"
+.br
+.RI "\fIEnable or disable a specified axis\&. \fP"
+.ti -1c
+.RI "bool \fBaxisEnabled\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBsetAxisFont\fP (int axisId, const QFont &f)"
+.br
+.RI "\fIChange the font of an axis\&. \fP"
+.ti -1c
+.RI "QFont \fBaxisFont\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBsetAxisScale\fP (int axisId, double min, double max, double step=0)"
+.br
+.RI "\fIDisable autoscaling and specify a fixed scale for a selected axis\&. \fP"
+.ti -1c
+.RI "void \fBsetAxisScaleDiv\fP (int axisId, const \fBQwtScaleDiv\fP &)"
+.br
+.RI "\fIDisable autoscaling and specify a fixed scale for a selected axis\&. \fP"
+.ti -1c
+.RI "void \fBsetAxisScaleDraw\fP (int axisId, \fBQwtScaleDraw\fP *)"
+.br
+.RI "\fISet a scale draw\&. \fP"
+.ti -1c
+.RI "double \fBaxisStepSize\fP (int axisId) const "
+.br
+.ti -1c
+.RI "\fBQwtInterval\fP \fBaxisInterval\fP (int axisId) const "
+.br
+.RI "\fIReturn the current interval of the specified axis\&. \fP"
+.ti -1c
+.RI "const \fBQwtScaleDiv\fP & \fBaxisScaleDiv\fP (int axisId) const "
+.br
+.RI "\fIReturn the scale division of a specified axis\&. \fP"
+.ti -1c
+.RI "const \fBQwtScaleDraw\fP * \fBaxisScaleDraw\fP (int axisId) const "
+.br
+.ti -1c
+.RI "\fBQwtScaleDraw\fP * \fBaxisScaleDraw\fP (int axisId)"
+.br
+.ti -1c
+.RI "const \fBQwtScaleWidget\fP * \fBaxisWidget\fP (int axisId) const "
+.br
+.ti -1c
+.RI "\fBQwtScaleWidget\fP * \fBaxisWidget\fP (int axisId)"
+.br
+.ti -1c
+.RI "void \fBsetAxisLabelAlignment\fP (int axisId, Qt::Alignment)"
+.br
+.ti -1c
+.RI "void \fBsetAxisLabelRotation\fP (int axisId, double rotation)"
+.br
+.ti -1c
+.RI "void \fBsetAxisTitle\fP (int axisId, const QString &)"
+.br
+.RI "\fIChange the title of a specified axis\&. \fP"
+.ti -1c
+.RI "void \fBsetAxisTitle\fP (int axisId, const \fBQwtText\fP &)"
+.br
+.RI "\fIChange the title of a specified axis\&. \fP"
+.ti -1c
+.RI "\fBQwtText\fP \fBaxisTitle\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBsetAxisMaxMinor\fP (int axisId, int maxMinor)"
+.br
+.ti -1c
+.RI "int \fBaxisMaxMinor\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBsetAxisMaxMajor\fP (int axisId, int maxMajor)"
+.br
+.ti -1c
+.RI "int \fBaxisMaxMajor\fP (int axisId) const "
+.br
+.ti -1c
+.RI "void \fBinsertLegend\fP (\fBQwtAbstractLegend\fP *, \fBLegendPosition\fP=\fBQwtPlot::RightLegend\fP, double ratio=-1\&.0)"
+.br
+.RI "\fIInsert a legend\&. \fP"
+.ti -1c
+.RI "\fBQwtAbstractLegend\fP * \fBlegend\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtAbstractLegend\fP * \fBlegend\fP () const "
+.br
+.ti -1c
+.RI "void \fBupdateLegend\fP ()"
+.br
+.ti -1c
+.RI "void \fBupdateLegend\fP (const \fBQwtPlotItem\fP *)"
+.br
+.ti -1c
+.RI "virtual QSize \fBsizeHint\fP () const "
+.br
+.ti -1c
+.RI "virtual QSize \fBminimumSizeHint\fP () const "
+.br
+.RI "\fIReturn a minimum size hint\&. \fP"
+.ti -1c
+.RI "virtual void \fBupdateLayout\fP ()"
+.br
+.RI "\fIAdjust plot content to its current size\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawCanvas\fP (QPainter *)"
+.br
+.ti -1c
+.RI "void \fBupdateAxes\fP ()"
+.br
+.RI "\fIRebuild the scales\&. \fP"
+.ti -1c
+.RI "void \fBupdateCanvasMargins\fP ()"
+.br
+.RI "\fIUpdate the canvas margins\&. \fP"
+.ti -1c
+.RI "virtual void \fBgetCanvasMarginsHint\fP (const \fBQwtScaleMap\fP maps[], const QRectF &canvasRect, double &left, double &top, double &right, double &bottom) const "
+.br
+.RI "\fICalculate the canvas margins\&. \fP"
+.ti -1c
+.RI "virtual bool \fBevent\fP (QEvent *)"
+.br
+.RI "\fIAdds handling of layout requests\&. \fP"
+.ti -1c
+.RI "virtual bool \fBeventFilter\fP (QObject *, QEvent *)"
+.br
+.RI "\fIEvent filter\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawItems\fP (QPainter *, const QRectF &, const \fBQwtScaleMap\fP maps[\fBaxisCnt\fP]) const "
+.br
+.ti -1c
+.RI "virtual QVariant \fBitemToInfo\fP (\fBQwtPlotItem\fP *) const "
+.br
+.RI "\fIBuild an information, that can be used to identify a plot item on the legend\&. \fP"
+.ti -1c
+.RI "virtual \fBQwtPlotItem\fP * \fBinfoToItem\fP (const QVariant &) const "
+.br
+.RI "\fIIdentify the plot item according to an item info object, that has bee generated from \fBitemToInfo()\fP\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBresizeEvent\fP (QResizeEvent *e)"
+.br
+.in -1c
+.SS "Static Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static bool \fBaxisValid\fP (int axisId)"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBQwtPlotItem\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A 2-D plotting widget\&. 
+
+\fBQwtPlot\fP is a widget for plotting two-dimensional graphs\&. An unlimited number of plot items can be displayed on its canvas\&. Plot items might be curves (\fBQwtPlotCurve\fP), markers (\fBQwtPlotMarker\fP), the grid (\fBQwtPlotGrid\fP), or anything else derived from \fBQwtPlotItem\fP\&. A plot can have up to four axes, with each plot item attached to an x- and a y axis\&. The scales at the axes can be explicitly set (\fBQwtScaleDiv\fP), or are calculated from the plot items, using algorithms (\fBQwtScaleEngine\fP) which can be configured separately for each axis\&.
+.PP
+The simpleplot example is a good starting point to see how to set up a plot widget\&.
+.PP
+.PP
+\fBExample\fP
+.RS 4
+The following example shows (schematically) the most simple way to use \fBQwtPlot\fP\&. By default, only the left and bottom axes are visible and their scales are computed automatically\&. 
+.PP
+.nf
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+
+QwtPlot *myPlot = new QwtPlot("Two Curves", parent);
+
+// add curves
+QwtPlotCurve *curve1 = new QwtPlotCurve("Curve 1");
+QwtPlotCurve *curve2 = new QwtPlotCurve("Curve 2");
+
+// connect or copy the data to the curves
+curve1->setData(...);
+curve2->setData(...);
+
+curve1->attach(myPlot);
+curve2->attach(myPlot);
+
+// finally, refresh the plot
+myPlot->replot();
+
+.fi
+.PP
+ 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlot::Axis\fP"
+
+.PP
+Axis index\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIyLeft \fP\fP
+Y axis left of the canvas\&. 
+.TP
+\fB\fIyRight \fP\fP
+Y axis right of the canvas\&. 
+.TP
+\fB\fIxBottom \fP\fP
+X axis below the canvas\&. 
+.TP
+\fB\fIxTop \fP\fP
+X axis above the canvas\&. 
+.TP
+\fB\fIaxisCnt \fP\fP
+Number of axes\&. 
+.SS "enum \fBQwtPlot::LegendPosition\fP"
+Position of the legend, relative to the canvas\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinsertLegend()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fILeftLegend \fP\fP
+The legend will be left from the \fBQwtPlot::yLeft\fP axis\&. 
+.TP
+\fB\fIRightLegend \fP\fP
+The legend will be right from the \fBQwtPlot::yRight\fP axis\&. 
+.TP
+\fB\fIBottomLegend \fP\fP
+The legend will be below the footer\&. 
+.TP
+\fB\fITopLegend \fP\fP
+The legend will be above the title\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlot::QwtPlot (QWidget *parent = \fCNULL\fP)\fC [explicit]\fP"
+
+.PP
+Constructor\&. \fBParameters:\fP
+.RS 4
+\fIparent\fP Parent widget 
+.RE
+.PP
+
+.SS "QwtPlot::QwtPlot (const \fBQwtText\fP &title, QWidget *parent = \fCNULL\fP)\fC [explicit]\fP"
+
+.PP
+Constructor\&. \fBParameters:\fP
+.RS 4
+\fItitle\fP Title text 
+.br
+\fIparent\fP Parent widget 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtPlot::applyProperties (const QString &)"
+This method is intended for manipulating the plot widget from a specific editor in the Qwt designer plugin\&.
+.PP
+\fBWarning:\fP
+.RS 4
+The plot editor has never been implemented\&. 
+.RE
+.PP
+
+.SS "bool QwtPlot::autoReplot () const"
+\fBReturns:\fP
+.RS 4
+true if the autoReplot option is set\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAutoReplot()\fP 
+.RE
+.PP
+
+.SS "bool QwtPlot::axisAutoScale (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+\fCtrue\fP if autoscaling is enabled 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "bool QwtPlot::axisEnabled (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+\fCtrue\fP if a specified axis is enabled 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "QFont QwtPlot::axisFont (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+the font of the scale labels for a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "\fBQwtInterval\fP QwtPlot::axisInterval (intaxisId) const"
+
+.PP
+Return the current interval of the specified axis\&. This is only a convenience function for axisScaleDiv( axisId )->interval();
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Scale interval
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDiv\fP, \fBaxisScaleDiv()\fP 
+.RE
+.PP
+
+.SS "int QwtPlot::axisMaxMajor (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+the maximum number of major ticks for a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisMaxMajor()\fP 
+.RE
+.PP
+
+.SS "int QwtPlot::axisMaxMinor (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+the maximum number of minor ticks for a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisMaxMinor()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtScaleDiv\fP & QwtPlot::axisScaleDiv (intaxisId) const"
+
+.PP
+Return the scale division of a specified axis\&. axisScaleDiv(axisId)\&.lowerBound(), axisScaleDiv(axisId)\&.upperBound() are the current limits of the axis scale\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Scale division
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDiv\fP, \fBsetAxisScaleDiv()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtScaleDraw\fP * QwtPlot::axisScaleDraw (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+the scale draw of a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+specified scaleDraw for axis, or NULL if axis is invalid\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDraw\fP 
+.RE
+.PP
+
+.SS "\fBQwtScaleDraw\fP * QwtPlot::axisScaleDraw (intaxisId)"
+\fBReturns:\fP
+.RS 4
+the scale draw of a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+specified scaleDraw for axis, or NULL if axis is invalid\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDraw\fP 
+.RE
+.PP
+
+.SS "\fBQwtScaleEngine\fP * QwtPlot::axisScaleEngine (intaxisId)"
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Scale engine for a specific axis 
+.RE
+.PP
+
+.SS "const \fBQwtScaleEngine\fP * QwtPlot::axisScaleEngine (intaxisId) const"
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Scale engine for a specific axis 
+.RE
+.PP
+
+.SS "double QwtPlot::axisStepSize (intaxisId) const"
+Return the step size parameter, that has been set in setAxisScale\&. This doesn't need to be the step size of the current scale\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+step size parameter value
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisScale()\fP 
+.RE
+.PP
+
+.SS "\fBQwtText\fP QwtPlot::axisTitle (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+the title of a specified axis 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "bool QwtPlot::axisValid (intaxisId)\fC [static]\fP, \fC [protected]\fP"
+\fBReturns:\fP
+.RS 4
+\fCtrue\fP if the specified axis exists, otherwise \fCfalse\fP 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "const \fBQwtScaleWidget\fP * QwtPlot::axisWidget (intaxisId) const"
+\fBReturns:\fP
+.RS 4
+specified axis, or NULL if axisId is invalid\&. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "\fBQwtScaleWidget\fP * QwtPlot::axisWidget (intaxisId)"
+\fBReturns:\fP
+.RS 4
+specified axis, or NULL if axisId is invalid\&. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.RE
+.PP
+
+.SS "QWidget * QwtPlot::canvas ()"
+\fBReturns:\fP
+.RS 4
+the plot's canvas 
+.RE
+.PP
+
+.SS "const QWidget * QwtPlot::canvas () const"
+\fBReturns:\fP
+.RS 4
+the plot's canvas 
+.RE
+.PP
+
+.SS "QBrush QwtPlot::canvasBackground () const"
+Nothing else than: \fBcanvas()\fP->palette()\&.brush( QPalette::Normal, QPalette::Window);
+.PP
+\fBReturns:\fP
+.RS 4
+Background brush of the plotting area\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetCanvasBackground()\fP 
+.RE
+.PP
+
+.SS "\fBQwtScaleMap\fP QwtPlot::canvasMap (intaxisId) const\fC [virtual]\fP"
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP Axis 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Map for the axis on the canvas\&. With this map pixel coordinates can translated to plot coordinates and vice versa\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleMap\fP, \fBtransform()\fP, \fBinvTransform()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::drawCanvas (QPainter *painter)\fC [virtual]\fP"
+Redraw the canvas\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter used for drawing
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+drawCanvas calls drawItems what is also used for printing\&. Applications that like to add individual plot items better overload \fBdrawItems()\fP 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawItems()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::drawItems (QPainter *painter, const QRectF &canvasRect, const \fBQwtScaleMap\fPmap[axisCnt]) const\fC [virtual]\fP"
+Redraw the canvas items\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter used for drawing 
+.br
+\fIcanvasRect\fP Bounding rectangle where to paint 
+.br
+\fImap\fP \fBQwtPlot::axisCnt\fP maps, mapping between plot and paint device coordinates
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+Usually canvasRect is contentsRect() of the plot canvas\&. Due to a bug in Qt this rectangle might be wrong for certain frame styles ( f\&.e QFrame::Box ) and it might be necessary to fix the margins manually using QWidget::setContentsMargins() 
+.RE
+.PP
+
+.SS "void QwtPlot::enableAxis (intaxisId, booltf = \fCtrue\fP)"
+
+.PP
+Enable or disable a specified axis\&. When an axis is disabled, this only means that it is not visible on the screen\&. Curves, markers and can be attached to disabled axes, and transformation of screen coordinates into values works as normal\&.
+.PP
+Only xBottom and yLeft are enabled by default\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fItf\fP \fCtrue\fP (enabled) or \fCfalse\fP (disabled) 
+.RE
+.PP
+
+.SS "bool QwtPlot::event (QEvent *event)\fC [virtual]\fP"
+
+.PP
+Adds handling of layout requests\&. \fBParameters:\fP
+.RS 4
+\fIevent\fP Event 
+.RE
+.PP
+
+.SS "bool QwtPlot::eventFilter (QObject *object, QEvent *event)\fC [virtual]\fP"
+
+.PP
+Event filter\&. The plot handles the following events for the canvas:
+.PP
+.IP "\(bu" 2
+QEvent::Resize The canvas margins might depend on its size
+.PP
+.PP
+.IP "\(bu" 2
+QEvent::ContentsRectChange The layout needs to be recalculated
+.PP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIobject\fP Object to be filtered 
+.br
+\fIevent\fP Event
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBupdateCanvasMargins()\fP, \fBupdateLayout()\fP 
+.RE
+.PP
+
+.SS "\fBQwtText\fP QwtPlot::footer () const"
+\fBReturns:\fP
+.RS 4
+Text of the footer 
+.RE
+.PP
+
+.SS "\fBQwtTextLabel\fP * QwtPlot::footerLabel ()"
+\fBReturns:\fP
+.RS 4
+Footer label widget\&. 
+.RE
+.PP
+
+.SS "const \fBQwtTextLabel\fP * QwtPlot::footerLabel () const"
+\fBReturns:\fP
+.RS 4
+Footer label widget\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::getCanvasMarginsHint (const \fBQwtScaleMap\fPmaps[], const QRectF &canvasRect, double &left, double &top, double &right, double &bottom) const\fC [virtual]\fP"
+
+.PP
+Calculate the canvas margins\&. Plot items might indicate, that they need some extra space at the borders of the canvas by the \fBQwtPlotItem::Margins\fP flag\&.
+.PP
+\fBupdateCanvasMargins()\fP, \fBQwtPlotItem::getCanvasMarginHint()\fP 
+.SS "QString QwtPlot::grabProperties () const"
+This method is intended for manipulating the plot widget from a specific editor in the Qwt designer plugin\&.
+.PP
+\fBWarning:\fP
+.RS 4
+The plot editor has never been implemented\&. 
+.RE
+.PP
+
+.SS "\fBQwtPlotItem\fP * QwtPlot::infoToItem (const QVariant &itemInfo) const\fC [virtual]\fP"
+
+.PP
+Identify the plot item according to an item info object, that has bee generated from \fBitemToInfo()\fP\&. The default implementation simply tries to unwrap a \fBQwtPlotItem\fP pointer:
+.PP
+.PP
+.nf
+if ( itemInfo\&.canConvert<QwtPlotItem *>() )
+    return qvariant_cast<QwtPlotItem *>( itemInfo );
+.fi
+.PP
+ 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitemInfo\fP Plot item 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+A plot item, when successful, otherwise a NULL pointer\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBitemToInfo()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::insertLegend (\fBQwtAbstractLegend\fP *legend, \fBQwtPlot::LegendPosition\fPpos = \fC\fBQwtPlot::RightLegend\fP\fP, doubleratio = \fC-1\&.0\fP)"
+
+.PP
+Insert a legend\&. If the position legend is \fC\fBQwtPlot::LeftLegend\fP\fP or \fC\fBQwtPlot::RightLegend\fP\fP the legend will be organized in one column from top to down\&. Otherwise the legend items will be placed in a table with a best fit number of columns from left to right\&.
+.PP
+\fBinsertLegend()\fP will set the plot widget as parent for the legend\&. The legend will be deleted in the destructor of the plot or when another legend is inserted\&.
+.PP
+Legends, that are not inserted into the layout of the plot widget need to connect to the \fBlegendDataChanged()\fP signal\&. Calling \fBupdateLegend()\fP initiates this signal for an initial update\&. When the application code wants to implement its own layout this also needs to be done for rendering plots to a document ( see \fBQwtPlotRenderer\fP )\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlegend\fP Legend 
+.br
+\fIpos\fP The legend's position\&. For top/left position the number of columns will be limited to 1, otherwise it will be set to unlimited\&.
+.br
+\fIratio\fP Ratio between legend and the bounding rectangle of title, canvas and axes\&. The legend will be shrunk if it would need more space than the given ratio\&. The ratio is limited to ]0\&.0 \&.\&. 1\&.0]\&. In case of <= 0\&.0 it will be reset to the default ratio\&. The default vertical/horizontal ratio is 0\&.33/0\&.5\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlegend()\fP, \fBQwtPlotLayout::legendPosition()\fP, \fBQwtPlotLayout::setLegendPosition()\fP 
+.RE
+.PP
+
+.SS "double QwtPlot::invTransform (intaxisId, intpos) const"
+Transform the x or y coordinate of a position in the drawing region into a value\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIpos\fP position 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The position can be an x or a y coordinate, depending on the specified axis\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::itemAttached (\fBQwtPlotItem\fP *plotItem, boolon)\fC [signal]\fP"
+A signal indicating, that an item has been attached/detached
+.PP
+\fBParameters:\fP
+.RS 4
+\fIplotItem\fP Plot item 
+.br
+\fIon\fP Attached/Detached 
+.RE
+.PP
+
+.SS "QVariant QwtPlot::itemToInfo (\fBQwtPlotItem\fP *plotItem) const\fC [virtual]\fP"
+
+.PP
+Build an information, that can be used to identify a plot item on the legend\&. The default implementation simply wraps the plot item into a QVariant object\&. When overloading \fBitemToInfo()\fP usually \fBinfoToItem()\fP needs to reimplemeted too\&.
+.PP
+.PP
+.nf
+QVariant itemInfo;
+qVariantSetValue( itemInfo, plotItem );
+.fi
+.PP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIplotItem\fP Plot item 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinfoToItem()\fP 
+.RE
+.PP
+
+.SS "\fBQwtAbstractLegend\fP * QwtPlot::legend ()"
+\fBReturns:\fP
+.RS 4
+the plot's legend 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinsertLegend()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtAbstractLegend\fP * QwtPlot::legend () const"
+\fBReturns:\fP
+.RS 4
+the plot's legend 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBinsertLegend()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::legendDataChanged (const QVariant &itemInfo, const QList< \fBQwtLegendData\fP > &data)\fC [signal]\fP"
+A signal with the attributes how to update the legend entries for a plot item\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitemInfo\fP Info about a plot item, build from \fBitemToInfo()\fP 
+.br
+\fIdata\fP Attributes of the entries ( usually <= 1 ) for the plot item\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBitemToInfo()\fP, \fBinfoToItem()\fP, \fBQwtAbstractLegend::updateLegend()\fP 
+.RE
+.PP
+
+.SS "\fBQwtPlotLayout\fP * QwtPlot::plotLayout ()"
+\fBReturns:\fP
+.RS 4
+the plot's layout 
+.RE
+.PP
+
+.SS "const \fBQwtPlotLayout\fP * QwtPlot::plotLayout () const"
+\fBReturns:\fP
+.RS 4
+the plot's layout 
+.RE
+.PP
+
+.SS "void QwtPlot::replot ()\fC [virtual]\fP, \fC [slot]\fP"
+
+.PP
+Redraw the plot\&. If the autoReplot option is not set (which is the default) or if any curves are attached to raw data, the plot has to be refreshed explicitly in order to make changes visible\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAutoReplot()\fP 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+Calls \fBcanvas()\fP->repaint, take care of infinite recursions 
+.RE
+.PP
+
+.SS "void QwtPlot::resizeEvent (QResizeEvent *e)\fC [protected]\fP, \fC [virtual]\fP"
+Resize and update internal layout 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP Resize event 
+.RE
+.PP
+
+.SS "void QwtPlot::setAutoReplot (booltf = \fCtrue\fP)"
+
+.PP
+Set or reset the autoReplot option\&. If the autoReplot option is set, the plot will be updated implicitly by manipulating member functions\&. Since this may be time-consuming, it is recommended to leave this option switched off and call \fBreplot()\fP explicitly if necessary\&.
+.PP
+The autoReplot option is set to false by default, which means that the user has to call \fBreplot()\fP in order to make changes visible\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItf\fP \fCtrue\fP or \fCfalse\fP\&. Defaults to \fCtrue\fP\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBreplot()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisAutoScale (intaxisId, boolon = \fCtrue\fP)"
+
+.PP
+Enable autoscaling for a specified axis\&. This member function is used to switch back to autoscaling mode after a fixed scale has been set\&. Autoscaling is enabled by default\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIon\fP On/Off 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisScale()\fP, \fBsetAxisScaleDiv()\fP, \fBupdateAxes()\fP
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+The autoscaling flag has no effect until \fBupdateAxes()\fP is executed ( called by \fBreplot()\fP )\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisFont (intaxisId, const QFont &f)"
+
+.PP
+Change the font of an axis\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIf\fP font 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+This function changes the font of the tick labels, not of the axis title\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisLabelAlignment (intaxisId, Qt::Alignmentalignment)"
+Change the alignment of the tick labels 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIalignment\fP Or'd Qt::AlignmentFlags see <qnamespace\&.h> 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDraw::setLabelAlignment()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisLabelRotation (intaxisId, doublerotation)"
+Rotate all tick labels 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIrotation\fP Angle in degrees\&. When changing the label rotation, the label alignment might be adjusted too\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDraw::setLabelRotation()\fP, \fBsetAxisLabelAlignment()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisMaxMajor (intaxisId, intmaxMajor)"
+Set the maximum number of major scale intervals for a specified axis
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fImaxMajor\fP maximum number of major steps 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBaxisMaxMajor()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisMaxMinor (intaxisId, intmaxMinor)"
+Set the maximum number of minor scale intervals for a specified axis
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fImaxMinor\fP maximum number of minor steps 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBaxisMaxMinor()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisScale (intaxisId, doublemin, doublemax, doublestepSize = \fC0\fP)"
+
+.PP
+Disable autoscaling and specify a fixed scale for a selected axis\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fImin\fP 
+.br
+\fImax\fP minimum and maximum of the scale 
+.br
+\fIstepSize\fP Major step size\&. If \fCstep == 0\fP, the step size is calculated automatically using the maxMajor setting\&. 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisMaxMajor()\fP, \fBsetAxisAutoScale()\fP, \fBaxisStepSize()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisScaleDiv (intaxisId, const \fBQwtScaleDiv\fP &scaleDiv)"
+
+.PP
+Disable autoscaling and specify a fixed scale for a selected axis\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIscaleDiv\fP Scale division 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAxisScale()\fP, \fBsetAxisAutoScale()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisScaleDraw (intaxisId, \fBQwtScaleDraw\fP *scaleDraw)"
+
+.PP
+Set a scale draw\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIscaleDraw\fP object responsible for drawing scales\&.
+.RE
+.PP
+By passing scaleDraw it is possible to extend \fBQwtScaleDraw\fP functionality and let it take place in \fBQwtPlot\fP\&. Please note that scaleDraw has to be created with new and will be deleted by the corresponding QwtScale member ( like a child object )\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtScaleDraw\fP, \fBQwtScaleWidget\fP 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The attributes of scaleDraw will be overwritten by those of the previous \fBQwtScaleDraw\fP\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisScaleEngine (intaxisId, \fBQwtScaleEngine\fP *scaleEngine)"
+Change the scale engine for an axis
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIscaleEngine\fP Scale engine
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBaxisScaleEngine()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisTitle (intaxisId, const QString &title)"
+
+.PP
+Change the title of a specified axis\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fItitle\fP axis title 
+.RE
+.PP
+
+.SS "void QwtPlot::setAxisTitle (intaxisId, const \fBQwtText\fP &title)"
+
+.PP
+Change the title of a specified axis\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fItitle\fP axis title 
+.RE
+.PP
+
+.SS "void QwtPlot::setCanvas (QWidget *canvas)"
+
+.PP
+Set the drawing canvas of the plot widget\&. \fBQwtPlot\fP invokes methods of the canvas as meta methods ( see QMetaObject )\&. In opposite to using conventional C++ techniques like virtual methods they allow to use canvas implementations that are derived from QWidget or QGLWidget\&.
+.PP
+The following meta methods could be implemented:
+.PP
+.IP "\(bu" 2
+\fBreplot()\fP When the canvas doesn't offer a replot method, \fBQwtPlot\fP calls update() instead\&.
+.PP
+.PP
+.IP "\(bu" 2
+borderPath() The border path is necessary to clip the content of the canvas When the canvas doesn't have any special border ( f\&.e rounded corners ) it is o\&.k\&. not to implement this method\&.
+.PP
+.PP
+The default canvas is a \fBQwtPlotCanvas\fP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcanvas\fP Canvas Widget 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcanvas()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setCanvasBackground (const QBrush &brush)"
+
+.PP
+Change the background of the plotting area\&. Sets brush to QPalette::Window of all color groups of the palette of the canvas\&. Using \fBcanvas()\fP->setPalette() is a more powerful way to set these colors\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbrush\fP New background brush 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBcanvasBackground()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setFooter (const QString &text)"
+Change the text the footer 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItext\fP New text of the footer 
+.RE
+.PP
+
+.SS "void QwtPlot::setFooter (const \fBQwtText\fP &text)"
+Change the text the footer 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItext\fP New text of the footer 
+.RE
+.PP
+
+.SS "void QwtPlot::setPlotLayout (\fBQwtPlotLayout\fP *layout)"
+
+.PP
+Assign a new plot layout\&. \fBParameters:\fP
+.RS 4
+\fIlayout\fP Layout() 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBplotLayout()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::setTitle (const QString &title)"
+Change the plot's title 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP New title 
+.RE
+.PP
+
+.SS "void QwtPlot::setTitle (const \fBQwtText\fP &title)"
+Change the plot's title 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP New title 
+.RE
+.PP
+
+.SS "QSize QwtPlot::sizeHint () const\fC [virtual]\fP"
+Return sizeHint 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBminimumSizeHint()\fP 
+.RE
+.PP
+
+.SS "\fBQwtText\fP QwtPlot::title () const"
+\fBReturns:\fP
+.RS 4
+Title of the plot 
+.RE
+.PP
+
+.SS "\fBQwtTextLabel\fP * QwtPlot::titleLabel ()"
+\fBReturns:\fP
+.RS 4
+Title label widget\&. 
+.RE
+.PP
+
+.SS "const \fBQwtTextLabel\fP * QwtPlot::titleLabel () const"
+\fBReturns:\fP
+.RS 4
+Title label widget\&. 
+.RE
+.PP
+
+.SS "double QwtPlot::transform (intaxisId, doublevalue) const"
+
+.PP
+Transform a value into a coordinate in the plotting region\&. \fBParameters:\fP
+.RS 4
+\fIaxisId\fP axis index 
+.br
+\fIvalue\fP value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+X or y coordinate in the plotting region corresponding to the value\&. 
+.RE
+.PP
+
+.SS "void QwtPlot::updateCanvasMargins ()"
+
+.PP
+Update the canvas margins\&. Plot items might indicate, that they need some extra space at the borders of the canvas by the \fBQwtPlotItem::Margins\fP flag\&.
+.PP
+\fBgetCanvasMarginsHint()\fP, \fBQwtPlotItem::getCanvasMarginHint()\fP 
+.SS "void QwtPlot::updateLayout ()\fC [virtual]\fP"
+
+.PP
+Adjust plot content to its current size\&. \fBSee Also:\fP
+.RS 4
+\fBresizeEvent()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::updateLegend ()"
+Emit \fBlegendDataChanged()\fP for all plot item
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotItem::legendData()\fP, \fBlegendDataChanged()\fP 
+.RE
+.PP
+
+.SS "void QwtPlot::updateLegend (const \fBQwtPlotItem\fP *plotItem)"
+Emit \fBlegendDataChanged()\fP for a plot item
+.PP
+\fBParameters:\fP
+.RS 4
+\fIplotItem\fP Plot item 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotItem::legendData()\fP, \fBlegendDataChanged()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

@@ -1,0 +1,290 @@
+.TH "QwtWidgetOverlay" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtWidgetOverlay \- 
+.PP
+An overlay for a widget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_widget_overlay\&.h>\fP
+.PP
+Inherits QWidget\&.
+.PP
+Inherited by QwtPickerRubberband, and QwtPickerTracker\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBMaskMode\fP { \fBNoMask\fP, \fBMaskHint\fP, \fBAlphaMask\fP }"
+.br
+.RI "\fIMask mode\&. \fP"
+.ti -1c
+.RI "enum \fBRenderMode\fP { \fBAutoRenderMode\fP, \fBCopyAlphaMask\fP, \fBDrawOverlay\fP }"
+.br
+.RI "\fIRender mode\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtWidgetOverlay\fP (QWidget *)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtWidgetOverlay\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetMaskMode\fP (\fBMaskMode\fP)"
+.br
+.RI "\fISpecify how to find the mask for the overlay\&. \fP"
+.ti -1c
+.RI "\fBMaskMode\fP \fBmaskMode\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetRenderMode\fP (\fBRenderMode\fP)"
+.br
+.ti -1c
+.RI "\fBRenderMode\fP \fBrenderMode\fP () const "
+.br
+.ti -1c
+.RI "void \fBupdateOverlay\fP ()"
+.br
+.ti -1c
+.RI "virtual bool \fBeventFilter\fP (QObject *, QEvent *)"
+.br
+.RI "\fIEvent filter\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP (QPaintEvent *event)"
+.br
+.ti -1c
+.RI "virtual void \fBresizeEvent\fP (QResizeEvent *event)"
+.br
+.ti -1c
+.RI "virtual QRegion \fBmaskHint\fP () const "
+.br
+.RI "\fICalculate an approximation for the mask\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawOverlay\fP (QPainter *painter) const =0"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+An overlay for a widget\&. 
+
+The main use case of an widget overlay is to avoid heavy repaint operation of the widget below\&.
+.PP
+F\&.e\&. in combination with the plot canvas an overlay avoid replots as the content of the canvas can be restored from its backing store\&.
+.PP
+\fBQwtWidgetOverlay\fP is an abstract base class\&. Deriving classes are supposed to reimplement the following methods:
+.PP
+.IP "\(bu" 2
+\fBdrawOverlay()\fP
+.IP "\(bu" 2
+\fBmaskHint()\fP
+.PP
+.PP
+Internally \fBQwtPlotPicker\fP uses overlays for displaying the rubber band and the tracker text\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotCanvas::BackingStore\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtWidgetOverlay::MaskMode\fP"
+
+.PP
+Mask mode\&. When using masks the widget below gets paint events for the masked regions of the overlay only\&. Otherwise Qt triggers full repaints\&. On less powerful hardware ( f\&.e embedded systems ) - or when using the raster paint engine on a remote desktop - bit blitting is a noticeable operation, that needs to be avoided\&.
+.PP
+If and how to mask depends on how expensive the calculation of the mask is and how many pixels can be excluded by the mask\&.
+.PP
+The default setting is MaskHint\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMaskMode()\fP, \fBmaskMode()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINoMask \fP\fP
+Don't use a mask\&. 
+.TP
+\fB\fIMaskHint \fP\fP
+Use \fBmaskHint()\fP as mask\&. For many situations a fast approximation is good enough and it is not necessary to build a more detailed mask ( f\&.e the bounding rectangle of a text )\&. 
+.TP
+\fB\fIAlphaMask \fP\fP
+Calculate a mask by checking the alpha values\&. Sometimes it is not possible to give a fast approximation and the mask needs to be calculated by drawing the overlay and testing the result\&.
+.PP
+When a valid \fBmaskHint()\fP is available only pixels inside this approximation are checked\&. 
+.SS "enum \fBQwtWidgetOverlay::RenderMode\fP"
+
+.PP
+Render mode\&. For calculating the alpha mask the overlay has already been painted to a temporary QImage\&. Instead of rendering the overlay twice this buffer can be copied for drawing the overlay\&.
+.PP
+On graphic systems using the raster paint engine ( QWS, Windows ) it means usually copying some memory only\&. On X11 it results in an expensive operation building a pixmap and for simple overlays it might not be recommended\&.
+.PP
+\fBNote:\fP
+.RS 4
+The render mode has no effect, when \fBmaskMode()\fP != AlphaMask\&. 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIAutoRenderMode \fP\fP
+Copy the buffer, when using the raster paint engine\&. 
+.TP
+\fB\fICopyAlphaMask \fP\fP
+Always copy the buffer\&. 
+.TP
+\fB\fIDrawOverlay \fP\fP
+Never copy the buffer\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtWidgetOverlay::QwtWidgetOverlay (QWidget *widget)"
+
+.PP
+Constructor\&. \fBParameters:\fP
+.RS 4
+\fIwidget\fP Parent widget, where the overlay is aligned to 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "virtual void QwtWidgetOverlay::drawOverlay (QPainter *painter) const\fC [protected]\fP, \fC [pure virtual]\fP"
+Draw the widget overlay 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.RE
+.PP
+
+.SS "bool QwtWidgetOverlay::eventFilter (QObject *object, QEvent *event)\fC [virtual]\fP"
+
+.PP
+Event filter\&. Resize the overlay according to the size of the parent widget\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIobject\fP Object to be filtered 
+.br
+\fIevent\fP Event 
+.RE
+.PP
+
+.SS "QRegion QwtWidgetOverlay::maskHint () const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Calculate an approximation for the mask\&. .IP "\(bu" 2
+MaskHint The hint is used as mask\&.
+.PP
+.PP
+.IP "\(bu" 2
+AlphaMask The hint is used to speed up the algorithm for calculating a mask from non transparent pixels
+.PP
+.PP
+.IP "\(bu" 2
+NoMask The hint is unused\&.
+.PP
+.PP
+The default implementation returns an invalid region indicating no hint\&. 
+.SS "\fBQwtWidgetOverlay::MaskMode\fP QwtWidgetOverlay::maskMode () const"
+\fBReturns:\fP
+.RS 4
+Mode how to find the mask for the overlay 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMaskMode()\fP 
+.RE
+.PP
+
+.SS "void QwtWidgetOverlay::paintEvent (QPaintEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Paint event 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Paint event
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawOverlay()\fP 
+.RE
+.PP
+
+.SS "\fBQwtWidgetOverlay::RenderMode\fP QwtWidgetOverlay::renderMode () const"
+\fBReturns:\fP
+.RS 4
+Render mode 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBRenderMode\fP, \fBsetRenderMode()\fP 
+.RE
+.PP
+
+.SS "void QwtWidgetOverlay::resizeEvent (QResizeEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Resize event 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Resize event 
+.RE
+.PP
+
+.SS "void QwtWidgetOverlay::setMaskMode (\fBMaskMode\fPmode)"
+
+.PP
+Specify how to find the mask for the overlay\&. \fBParameters:\fP
+.RS 4
+\fImode\fP New mode 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmaskMode()\fP 
+.RE
+.PP
+
+.SS "void QwtWidgetOverlay::setRenderMode (\fBRenderMode\fPmode)"
+Set the render mode 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP Render mode
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBRenderMode\fP, \fBrenderMode()\fP 
+.RE
+.PP
+
+.SS "void QwtWidgetOverlay::updateOverlay ()"
+Recalculate the mask and repaint the overlay 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

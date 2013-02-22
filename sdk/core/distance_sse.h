@@ -37,8 +37,8 @@ inline float l1(const uchar *a, const uchar *b, int size)
     __m128i accumulate = _mm_setzero_si128();
 
     for (int i=0; i<size; i++) {
-        __m128i A = _mm_load_si128(reinterpret_cast<const __m128i*>(a)+i);
-        __m128i B = _mm_load_si128(reinterpret_cast<const __m128i*>(b)+i);
+        __m128i A = _mm_loadu_si128(reinterpret_cast<const __m128i*>(a)+i);
+        __m128i B = _mm_loadu_si128(reinterpret_cast<const __m128i*>(b)+i);
         __m128i sad = _mm_sad_epu8(A, B);
         accumulate = _mm_add_epi64(sad, accumulate);
     }
@@ -52,9 +52,9 @@ inline float l1(const uchar *a, const uchar *b, int size)
 
 inline float l1(const uchar *a, const uchar *b, int size)
 {
-    float distance = 0;
+    int distance = 0;
     for (int i=0; i<size; i++)
-        distance += abs((float)a[i]-(float)b[i]);
+        distance += abs(a[i]-b[i]);
     return distance;
 }
 
