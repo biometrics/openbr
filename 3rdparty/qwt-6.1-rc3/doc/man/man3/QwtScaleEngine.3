@@ -1,0 +1,428 @@
+.TH "QwtScaleEngine" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtScaleEngine \- 
+.PP
+Base class for scale engines\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_scale_engine\&.h>\fP
+.PP
+Inherited by \fBQwtLinearScaleEngine\fP, and \fBQwtLogScaleEngine\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBAttribute\fP { \fBNoAttribute\fP = 0x00, \fBIncludeReference\fP = 0x01, \fBSymmetric\fP = 0x02, \fBFloating\fP = 0x04, \fBInverted\fP = 0x08 }"
+.br
+.ti -1c
+.RI "typedef QFlags< \fBAttribute\fP > \fBAttributes\fP"
+.br
+.RI "\fILayout attributes\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtScaleEngine\fP (uint \fBbase\fP=10)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtScaleEngine\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetBase\fP (uint \fBbase\fP)"
+.br
+.ti -1c
+.RI "uint \fBbase\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetAttribute\fP (\fBAttribute\fP, bool on=true)"
+.br
+.ti -1c
+.RI "bool \fBtestAttribute\fP (\fBAttribute\fP) const "
+.br
+.ti -1c
+.RI "void \fBsetAttributes\fP (\fBAttributes\fP)"
+.br
+.ti -1c
+.RI "\fBAttributes\fP \fBattributes\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetReference\fP (double \fBreference\fP)"
+.br
+.RI "\fISpecify a reference point\&. \fP"
+.ti -1c
+.RI "double \fBreference\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetMargins\fP (double lower, double upper)"
+.br
+.RI "\fISpecify margins at the scale's endpoints\&. \fP"
+.ti -1c
+.RI "double \fBlowerMargin\fP () const "
+.br
+.ti -1c
+.RI "double \fBupperMargin\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBautoScale\fP (int maxNumSteps, double &x1, double &x2, double &stepSize) const =0"
+.br
+.ti -1c
+.RI "virtual \fBQwtScaleDiv\fP \fBdivideScale\fP (double x1, double x2, int maxMajorSteps, int maxMinorSteps, double stepSize=0\&.0) const =0"
+.br
+.RI "\fICalculate a scale division\&. \fP"
+.ti -1c
+.RI "void \fBsetTransformation\fP (\fBQwtTransform\fP *)"
+.br
+.ti -1c
+.RI "\fBQwtTransform\fP * \fBtransformation\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBcontains\fP (const \fBQwtInterval\fP &, double val) const "
+.br
+.ti -1c
+.RI "QList< double > \fBstrip\fP (const QList< double > &, const \fBQwtInterval\fP &) const "
+.br
+.ti -1c
+.RI "double \fBdivideInterval\fP (double interval, int numSteps) const "
+.br
+.ti -1c
+.RI "\fBQwtInterval\fP \fBbuildInterval\fP (double v) const "
+.br
+.RI "\fIBuild an interval for a value\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+Base class for scale engines\&. 
+
+A scale engine tries to find 'reasonable' ranges and step sizes for scales\&.
+.PP
+The layout of the scale can be varied with \fBsetAttribute()\fP\&.
+.PP
+Qwt offers implementations for logarithmic and linear scales\&. 
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtScaleEngine::Attribute\fP"
+Layout attributes 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetAttribute()\fP, \fBtestAttribute()\fP, \fBreference()\fP, \fBlowerMargin()\fP, \fBupperMargin()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINoAttribute \fP\fP
+No attributes\&. 
+.TP
+\fB\fIIncludeReference \fP\fP
+Build a scale which includes the \fBreference()\fP value\&. 
+.TP
+\fB\fISymmetric \fP\fP
+Build a scale which is symmetric to the \fBreference()\fP value\&. 
+.TP
+\fB\fIFloating \fP\fP
+The endpoints of the scale are supposed to be equal the outmost included values plus the specified margins (see \fBsetMargins()\fP)\&. If this attribute is \fInot\fP set, the endpoints of the scale will be integer multiples of the step size\&. 
+.TP
+\fB\fIInverted \fP\fP
+Turn the scale upside down\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtScaleEngine::QwtScaleEngine (uintbase = \fC10\fP)\fC [explicit]\fP"
+Constructor
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbase\fP Base of the scale engine 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetBase()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBQwtScaleEngine::Attributes\fP QwtScaleEngine::attributes () const"
+Return the scale attributes 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBAttribute\fP, \fBsetAttributes()\fP, \fBtestAttribute()\fP 
+.RE
+.PP
+
+.SS "virtual void QwtScaleEngine::autoScale (intmaxNumSteps, double &x1, double &x2, double &stepSize) const\fC [pure virtual]\fP"
+Align and divide an interval
+.PP
+\fBParameters:\fP
+.RS 4
+\fImaxNumSteps\fP Max\&. number of steps 
+.br
+\fIx1\fP First limit of the interval (In/Out) 
+.br
+\fIx2\fP Second limit of the interval (In/Out) 
+.br
+\fIstepSize\fP Step size (Return value) 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtLogScaleEngine\fP, \fBQwtLinearScaleEngine\fP, and \fBQwtDateScaleEngine\fP\&.
+.SS "uint QwtScaleEngine::base () const"
+\fBReturns:\fP
+.RS 4
+base Base of the scale engine 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetBase()\fP 
+.RE
+.PP
+
+.SS "\fBQwtInterval\fP QwtScaleEngine::buildInterval (doublev) const\fC [protected]\fP"
+
+.PP
+Build an interval for a value\&. In case of v == 0\&.0 the interval is [-0\&.5, 0\&.5], otherwide it is [0\&.5 * v, 1\&.5 * v] 
+.SS "bool QwtScaleEngine::contains (const \fBQwtInterval\fP &interval, doublevalue) const\fC [protected]\fP"
+Check if an interval 'contains' a value
+.PP
+\fBParameters:\fP
+.RS 4
+\fIinterval\fP Interval 
+.br
+\fIvalue\fP Value 
+.RE
+.PP
+
+.SS "double QwtScaleEngine::divideInterval (doubleintervalSize, intnumSteps) const\fC [protected]\fP"
+Calculate a step size for an interval size
+.PP
+\fBParameters:\fP
+.RS 4
+\fIintervalSize\fP Interval size 
+.br
+\fInumSteps\fP Number of steps
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Step size 
+.RE
+.PP
+
+.SS "virtual \fBQwtScaleDiv\fP QwtScaleEngine::divideScale (doublex1, doublex2, intmaxMajorSteps, intmaxMinorSteps, doublestepSize = \fC0\&.0\fP) const\fC [pure virtual]\fP"
+
+.PP
+Calculate a scale division\&. \fBParameters:\fP
+.RS 4
+\fIx1\fP First interval limit 
+.br
+\fIx2\fP Second interval limit 
+.br
+\fImaxMajorSteps\fP Maximum for the number of major steps 
+.br
+\fImaxMinorSteps\fP Maximum number of minor steps 
+.br
+\fIstepSize\fP Step size\&. If stepSize == 0\&.0, the scaleEngine calculates one\&. 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtLogScaleEngine\fP, \fBQwtLinearScaleEngine\fP, and \fBQwtDateScaleEngine\fP\&.
+.SS "double QwtScaleEngine::lowerMargin () const"
+\fBReturns:\fP
+.RS 4
+the margin at the lower end of the scale The default margin is 0\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMargins()\fP 
+.RE
+.PP
+
+.SS "double QwtScaleEngine::reference () const"
+\fBReturns:\fP
+.RS 4
+the reference value 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetReference()\fP, \fBsetAttribute()\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setAttribute (\fBAttribute\fPattribute, boolon = \fCtrue\fP)"
+Change a scale attribute
+.PP
+\fBParameters:\fP
+.RS 4
+\fIattribute\fP Attribute to change 
+.br
+\fIon\fP On/Off
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBAttribute\fP, \fBtestAttribute()\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setAttributes (\fBAttributes\fPattributes)"
+Change the scale attribute
+.PP
+\fBParameters:\fP
+.RS 4
+\fIattributes\fP Set scale attributes 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBAttribute\fP, \fBattributes()\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setBase (uintbase)"
+Set the base of the scale engine
+.PP
+While a base of 10 is what 99\&.9% of all applications need certain scales might need a different base: f\&.e 2
+.PP
+The default setting is 10
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBbase()\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setMargins (doublelower, doubleupper)"
+
+.PP
+Specify margins at the scale's endpoints\&. \fBParameters:\fP
+.RS 4
+\fIlower\fP minimum distance between the scale's lower boundary and the smallest enclosed value 
+.br
+\fIupper\fP minimum distance between the scale's upper boundary and the greatest enclosed value
+.RE
+.PP
+Margins can be used to leave a minimum amount of space between the enclosed intervals and the boundaries of the scale\&.
+.PP
+\fBWarning:\fP
+.RS 4
+.PD 0
+.IP "\(bu" 2
+\fBQwtLogScaleEngine\fP measures the margins in decades\&.
+.PP
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBupperMargin()\fP, \fBlowerMargin()\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setReference (doubler)"
+
+.PP
+Specify a reference point\&. \fBParameters:\fP
+.RS 4
+\fIr\fP new reference value
+.RE
+.PP
+The reference point is needed if options IncludeReference or Symmetric are active\&. Its default value is 0\&.0\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBAttribute\fP 
+.RE
+.PP
+
+.SS "void QwtScaleEngine::setTransformation (\fBQwtTransform\fP *transform)"
+Assign a transformation
+.PP
+\fBParameters:\fP
+.RS 4
+\fItransform\fP Transformation
+.RE
+.PP
+The transformation object is used as factory for clones that are returned by \fBtransformation()\fP
+.PP
+The scale engine takes ownership of the transformation\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtTransform::copy()\fP, \fBtransformation()\fP 
+.RE
+.PP
+
+.SS "QList< double > QwtScaleEngine::strip (const QList< double > &ticks, const \fBQwtInterval\fP &interval) const\fC [protected]\fP"
+Remove ticks from a list, that are not inside an interval
+.PP
+\fBParameters:\fP
+.RS 4
+\fIticks\fP Tick list 
+.br
+\fIinterval\fP Interval
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Stripped tick list 
+.RE
+.PP
+
+.SS "bool QwtScaleEngine::testAttribute (\fBAttribute\fPattribute) const"
+Check if a attribute is set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIattribute\fP Attribute to be tested 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBAttribute\fP, \fBsetAttribute()\fP 
+.RE
+.PP
+
+.SS "\fBQwtTransform\fP * QwtScaleEngine::transformation () const"
+Create and return a clone of the transformation of the engine\&. When the engine has no special transformation NULL is returned, indicating no transformation\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetTransformation()\fP 
+.RE
+.PP
+
+.SS "double QwtScaleEngine::upperMargin () const"
+\fBReturns:\fP
+.RS 4
+the margin at the upper end of the scale The default margin is 0\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMargins()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

@@ -1,0 +1,6 @@
+<map id="QwtPlotSpectroCurve" name="QwtPlotSpectroCurve">
+<area shape="rect" id="node2" href="$class_qwt_plot_series_item.html" title="Base class for plot items representing a series of samples." alt="" coords="5,80,131,107"/>
+<area shape="rect" id="node4" href="$class_qwt_plot_item.html" title="Base class for items on the plot canvas." alt="" coords="23,5,113,32"/>
+<area shape="rect" id="node6" href="$class_qwt_abstract_series_store.html" title="Bridge between QwtSeriesStore and QwtPlotSeriesItem." alt="" coords="157,5,312,32"/>
+<area shape="rect" id="node8" href="$class_qwt_series_store.html" title="QwtSeriesStore\&lt; QwtPoint3D \&gt;" alt="" coords="155,80,353,107"/>
+</map>

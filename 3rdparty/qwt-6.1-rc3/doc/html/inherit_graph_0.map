@@ -1,0 +1,16 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node3" href="$class_qwt_abstract_scale.html" title="An abstract base class for widgets having a scale." alt="" coords="131,107,253,133"/>
+<area shape="rect" id="node19" href="$class_qwt_counter.html" title="The Counter Widget." alt="" coords="148,157,236,184"/>
+<area shape="rect" id="node21" href="$class_qwt_panner.html" title="QwtPanner provides panning of a widget." alt="" coords="149,208,235,235"/>
+<area shape="rect" id="node25" href="$class_qwt_scale_widget.html" title="A Widget which contains a scale." alt="" coords="133,259,251,285"/>
+<area shape="rect" id="node27" href="$class_qwt_wheel.html" title="The Wheel Widget." alt="" coords="152,309,232,336"/>
+<area shape="rect" id="node29" href="$class_qwt_widget_overlay.html" title="An overlay for a widget." alt="" coords="128,360,256,387"/>
+<area shape="rect" id="node5" href="$class_qwt_abstract_slider.html" title="An abstract base class for slider widgets with a scale." alt="" coords="305,81,429,108"/>
+<area shape="rect" id="node17" href="$class_qwt_thermo.html" title="The Thermometer Widget." alt="" coords="322,132,411,159"/>
+<area shape="rect" id="node7" href="$class_qwt_dial.html" title="QwtDial class provides a rounded range control." alt="" coords="484,31,551,57"/>
+<area shape="rect" id="node13" href="$class_qwt_knob.html" title="The Knob Widget." alt="" coords="481,81,554,108"/>
+<area shape="rect" id="node15" href="$class_qwt_slider.html" title="The Slider Widget." alt="" coords="478,132,557,159"/>
+<area shape="rect" id="node9" href="$class_qwt_analog_clock.html" title="An analog clock." alt="" coords="606,5,725,32"/>
+<area shape="rect" id="node11" href="$class_qwt_compass.html" title="A Compass Widget." alt="" coords="617,56,714,83"/>
+<area shape="rect" id="node23" href="$class_qwt_plot_panner.html" title="QwtPlotPanner provides panning of a plot canvas." alt="" coords="313,208,420,235"/>
+</map>

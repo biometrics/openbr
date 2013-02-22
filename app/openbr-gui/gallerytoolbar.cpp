@@ -1,11 +1,11 @@
 #include <QDateTime>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QIcon>
 #include <QMessageBox>
 #include <QSharedPointer>
 #include <QSize>
+#include <QStandardPaths>
 #include <QtConcurrentRun>
 #include <opencv2/highgui/highgui.hpp>
 #include <assert.h>
@@ -157,12 +157,12 @@ void br::GalleryToolBar::mean()
 
 void br::GalleryToolBar::openFile()
 {
-    enroll(QFileDialog::getOpenFileName(this, "Select Photo", QDesktopServices::storageLocation(QDesktopServices::PicturesLocation)));
+    enroll(QFileDialog::getOpenFileName(this, "Select Photo", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first()));
 }
 
 void br::GalleryToolBar::openFolder()
 {
-    enroll(QFileDialog::getExistingDirectory(this, "Select Photo Directory", QDesktopServices::storageLocation(QDesktopServices::HomeLocation)));
+    enroll(QFileDialog::getExistingDirectory(this, "Select Photo Directory", QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first()));
 }
 
 #include "moc_gallerytoolbar.cpp"

@@ -1,0 +1,357 @@
+.TH "qwtchangelog" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+qwtchangelog \- What's new in Qwt 6\&.1 
+.SH "New plot items"
+.PP
+.IP "\(bu" 2
+\fBQwtPlotBarChart\fP
+.br
+ Bar chart, see 'examples/distrowatch'
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotMultiBarChart\fP
+.br
+ Chart of grouped bars - stacked or aligned side by side\&. See 'examples/barchart'
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotTradingCurve\fP
+.br
+ Candlestick or OHLC charts typically used to describe price movements over time\&. See 'examples/stockchart'
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotShapeItem\fP
+.br
+ A plot item to display rectangles, circles, polygons and all other type of shapes ( built from intersections or unifications ), that can be expressed by a QPainterPath\&. See 'examples/itemeditor'
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotLegendItem\fP
+.br
+ A legend on the plot canvas\&. See 'examples/legends'
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotZoneItem\fP
+.br
+ A horizontal or vertical section
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotTextLabel\fP
+.br
+ In opposite to a \fBQwtPlotMarker\fP the text is not aligned to a plot coordinate but according to the geometry of the canvas ( f\&.e top/centered for a title )\&. See 'playground/curvetracker'\&.
+.PP
+.SH "Scales beyond linear and logarithmic transformations"
+.PP
+QwtScaleTransformation has been replaced by \fBQwtTransform\fP and its derived classes:
+.PP
+.IP "\(bu" 2
+\fBQwtTransform\fP
+.IP "\(bu" 2
+\fBQwtNullTransform\fP
+.IP "\(bu" 2
+\fBQwtLogTransform\fP
+.IP "\(bu" 2
+\fBQwtPowerTransform\fP
+.PP
+.PP
+Individual transformations ( f\&.e\&. different scaling for special sections ) can be implemented by overloading \fBQwtTransform\fP ( see playground/scaleengine )\&.
+.PP
+\fBQwtLinearScaleEngine\fP and \fBQwtLogScaleEngine\fP are not limited to base 10 anymore\&.
+.SS "Datetime scales"
+A set of a new classes for displaying datetime values:
+.PP
+.IP "\(bu" 2
+\fBQwtDate\fP
+.br
+ A collection of methods to convert between QDateTime and doubles
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtDateScaleEngine\fP
+.br
+ A scale engine that aligns and finds ticks in terms of datetime units\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtDateScaleDraw\fP
+.br
+ A scale draw mapping values to datetime strings\&.
+.PP
+.PP
+Scales for Qt::UTC and Qt::LocalTime are supported\&.
+.SH "Redesign of the dial and meter widgets"
+.PP
+Many parts of the class design of the dial and meter widgets were left over from the 90s ( Qwt 0\&.2, Qt 1\&.1 )\&.
+.PP
+The derivation tree is simpler and more logical:
+.PP
+.IP "\(bu" 2
+\fBQwtAbstractScale\fP is a QWidget
+.IP "\(bu" 2
+\fBQwtAbstractSlider\fP is a \fBQwtAbstractScale\fP\&. ( for sliders without scales QAbstractSlider should be the base class )
+.IP "\(bu" 2
+\fBQwtThermo\fP is also a \fBQwtAbstractScale\fP
+.IP "\(bu" 2
+\fBQwtDial\fP, \fBQwtKnob\fP, \fBQwtSlider\fP are derived from \fBQwtAbstractSlider\fP
+.IP "\(bu" 2
+\fBQwtCounter\fP is derived from QWidget
+.PP
+.PP
+QwtDoubleRange has been removed\&.
+.PP
+All classes use the terminology known from QAbstractSlider - as far as possible\&. The extended \fBsystem for scales\fP is completely supported\&.
+.SH "Basic support for an OpenGL plot canvas"
+.PP
+\fBQwtPlotGLCanvas\fP offers the option to draw plot items using an OpenGL paint engine ( QPaintEngine::OpenGL/OpenGL2 ), This is not what could be implemented with native OpenGL, but it offers hardware acceleration in environments, where the raster paint engine is the only option\&. ( f\&.e Qt4/Windows, or Qt5 on all platforms )\&.
+.PP
+\fBQwtPlotGLCanvas\fP is in an experimental state and is not recommended for average use cases\&.
+.SH "A new system for plot legends"
+.PP
+\fBQwtLegend\fP has been decoupled from \fBQwtPlot\fP and can be replaced by application specific implementations\&. Plot items and the legend exchange the information using \fBQwtLegendData\fP\&.
+.PP
+\fBQwtPlotLegendItem\fP is a new plot item that displays a legend on the plot canvas\&.
+.PP
+The following examples demonstrate how to use the new system:
+.PP
+.IP "\(bu" 2
+examples/legends
+.br
+ shows how to use the new legend system
+.IP "\(bu" 2
+examples/stockchart
+.br
+ implementats a QTreeView with checkable items as legend
+.PP
+.SH "Off-screen paint device for vector graphics"
+.PP
+\fBQwtGraphic\fP can be copied like QImage or QPixmap but is scalable like QSvgGenerator\&. It is implemented as a record/replay paint device like QPicture\&.
+.SH "QwtWidgetOverlay"
+.PP
+\fBQwtWidgetOverlay\fP is a base class for implementing widget overlays - primarily used for use cases like graphical editors or running cursors for the plot canvas\&.
+.PP
+The following examples show how to use overlays:
+.PP
+.IP "\(bu" 2
+examples/itemeditor
+.IP "\(bu" 2
+examples/curvetracker
+.PP
+.PP
+\fBQwtPicker\fP ( -> \fBQwtPlotPicker\fP, \fBQwtPlotZoomer\fP ) internally uses \fBQwtWidgetOverlay\fP now, making it easier to implement individual rubber bands\&.
+.SH "QwtSymbol"
+.PP
+New symbol types have been introduced:
+.PP
+.IP "\(bu" 2
+\fBQwtSymbol::Path\fP
+.IP "\(bu" 2
+\fBQwtSymbol::Pixmap\fP
+.IP "\(bu" 2
+\fBQwtSymbol::Graphic\fP
+.IP "\(bu" 2
+\fBQwtSymbol::SvgDocument\fP
+.PP
+.PP
+\fBQwtSymbol\fP autodetect the most performant paint strategy for a paint device what is in most situations using a QPixmap cache\&.
+.PP
+\fBQwtSymbol::setPinPoint()\fP allows to align the symbol individually, f\&.e to the position of the peak of an arrow\&.
+.SH "QwtPlotCurve"
+.PP
+Some optimizations that got lost with introducing the floating point based render code with Qwt 6\&.0 have been reenabled\&. Other specific optimizations have been added\&.
+.PP
+New paint attributes:
+.PP
+.IP "\(bu" 2
+\fBQwtPlotCurve::FilterPoints\fP
+.IP "\(bu" 2
+\fBQwtPlotCurve::MinimizeMemory\fP
+.IP "\(bu" 2
+\fBQwtPlotCurve::ImageBuffer\fP
+.PP
+.PP
+QwtPlotCurve::CacheSymbols has been removed, as caching is implemented in \fBQwtSymbol\fP now\&.
+.PP
+\fBQwtPlotCurve::drawLines()\fP, \fBQwtPlotCurve::drawDots()\fP, \fBQwtPlotCurve::drawSteps()\fP and \fBQwtPlotCurve::drawSticks()\fP are virtual now\&.
+.SH "QwtPlot"
+.PP
+A footer similar to a title has been added\&.
+.PP
+QwtPlot::ExternalLegend is obsolete with the new \fBsystem for legends\fP\&. The signals QwtPlot::legendClicked(), QwtPlot::legendChecked() have been removed\&. Applications need to connect to \fBQwtLegend::clicked()\fP and \fBQwtLegend::checked()\fP\&.
+.PP
+To support using an OpenGL canvas \fBQwtPlot::setCanvas\fP has been added\&. This has 2 important implications for the application code:
+.PP
+.IP "\(bu" 2
+\fBQwtPlot::canvas()\fP returns QWidget and needs to be casted, when using methods of \fBQwtPlotCanvas\fP\&.
+.IP "\(bu" 2
+\fBQwtPlotCanvas\fP can be created and assigned in application code, what makes it possible to derive and overload methods\&.
+.PP
+.PP
+The initialization of a plot canvas with Qwt 6\&.1 will probably look like this:
+.PP
+.PP
+.nf
+QwtPlotCanvas* canvas = new QwtPlotCanvas();
+canvas->setXY( \&.\&.\&. );
+\&.\&.\&.
+
+plot->setCanvas( canvas );
+.fi
+.PP
+.PP
+To have a consistent API \fBQwtPlot::setPlotLayout()\fP has been added,
+.SH "Other"
+.PP
+.SS "QwtScaleDiv"
+The following methods have been added:
+.PP
+.IP "\(bu" 2
+\fBQwtScaleDiv::inverted()\fP
+.IP "\(bu" 2
+\fBQwtScaleDiv::bounded()\fP
+.IP "\(bu" 2
+\fBQwtScaleDiv::isEmpty()\fP
+.IP "\(bu" 2
+\fBQwtScaleDiv::isIncreasing()\fP
+.IP "\(bu" 2
+QDebug operator
+.PP
+.PP
+The following methods have been removed:
+.PP
+.IP "\(bu" 2
+QwtScaleDiv::isValid(), QwtScaleDiv::invalidate()
+.br
+ The valid state was left over from early Qwt versions indicating a state of the autoscaler\&.
+.PP
+.SS "QwtScaleEngine"
+The following methods have been added:
+.PP
+.IP "\(bu" 2
+\fBQwtScaleEngine::setBase()\fP
+.IP "\(bu" 2
+\fBQwtScaleEngine::setTransformation()\fP
+.PP
+.SS "QwtPlotLayout"
+The following flags have been added:
+.PP
+.IP "\(bu" 2
+\fBQwtPlotLayout::IgnoreTitle\fP
+.IP "\(bu" 2
+\fBQwtPlotLayout::IgnoreFooter\fP
+.IP "\(bu" 2
+\fBQwtPlotLayout::setAlignCanvasToScale()\fP
+.PP
+.SS "QwtPlotCanvas"
+Rounded borders ( like with style sheets ) can configured using \fBQwtPlotCanvas::setBorderRadius()\fP;
+.SS "Other changes"
+.IP "\(bu" 2
+\fBQwtWeedingCurveFitter\fP
+.br
+ \fBQwtWeedingCurveFitter::setChunkSize()\fP has been added, with drastic performance improvements for huge sets of points\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotRenderer\fP The frame of the plot canvas can be rendered, what makes the result even closer to WYSWYG\&. \fBQwtPlotRenderer::exportTo()\fP has been added\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtSystemClock\fP For Qt >= 4\&.9 \fBQwtSystemClock\fP uses QElapsedTimer internally\&. As it doesn't support a similar feature, QwtSystemClock::precision() has been removed\&.
+.PP
+.PP
+.IP "\(bu" 2
+QwtPlotAbstractSeriesItem
+.br
+ QwtPlotAbstractSeriesItem has been split into \fBQwtPlotSeriesItem\fP and QwtPlotAbstractSeriesStore\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtText\fP
+.br
+ A metatype declaration has been added, so that \fBQwtText\fP can be used with QVariant\&.
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtEventPattern\fP, \fBQwtPanner\fP, \fBQwtMagnifier\fP
+.br
+ Forgotten Qt3 leftovers have been fixed: int -> Qt::KeyboardModifiers
+.PP
+.PP
+.IP "\(bu" 2
+QPen Qt5/Qt4 incompatibility The default pen width for Qt5 is 1, what makes it a non cosmetic\&. To hide this nasty incompatibility several setPen() methods have been added the build pens with a width 0\&. See QPen::isCosmetic(),
+.PP
+.PP
+.IP "\(bu" 2
+qwtUpperSampleIndex()
+.br
+ A binary search algorithm for sorted samples
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtMatrixRasterData\fP \fBQwtMatrixRasterData::setValue()\fP has been added
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPicker\fP QwtPicker::rubberBandWidget(), QwtPicker::trackerWidget() have been replaced by \fBQwtPicker::rubberBandOverlay()\fP, \fBQwtPicker::trackerOverlay()\fP\&. \fBQwtPicker::rubberBandMask()\fP has been added\&. QwtPicker::pickRect() has been replaced by \fBQwtPicker::pickArea()\fP
+.PP
+.PP
+.IP "\(bu" 2
+\fBQwtPlotItem\fP \fBQwtPlotItem::ItemInterest\fP has been added\&. \fBQwtPlotItem::setRenderThreadCount()\fP was shifted from \fBQwtPlotRasterItem\fP\&.
+.PP
+.PP
+.IP "\(bu" 2
+\&.\&.\&.
+.PP
+.SH "Summary of the new classes"
+.PP
+.IP "\(bu" 2
+\fBQwtAbstractLegend\fP
+.IP "\(bu" 2
+\fBQwtDate\fP
+.IP "\(bu" 2
+\fBQwtDateScaleDraw\fP
+.IP "\(bu" 2
+\fBQwtDateScaleEngine\fP
+.IP "\(bu" 2
+\fBQwtGraphic\fP
+.IP "\(bu" 2
+\fBQwtLegendData\fP
+.IP "\(bu" 2
+\fBQwtLegendLabel\fP
+.IP "\(bu" 2
+\fBQwtPainterCommand\fP
+.IP "\(bu" 2
+\fBQwtPixelMatrix\fP
+.IP "\(bu" 2
+\fBQwtPlotAbstractBarChart\fP
+.IP "\(bu" 2
+\fBQwtPlotBarChart\fP
+.IP "\(bu" 2
+\fBQwtPlotMultiBarChart\fP
+.IP "\(bu" 2
+\fBQwtPlotGLCanvas\fP
+.IP "\(bu" 2
+\fBQwtPlotLegendItem\fP
+.IP "\(bu" 2
+\fBQwtPlotShapeItem\fP
+.IP "\(bu" 2
+\fBQwtPlotTextLabel\fP
+.IP "\(bu" 2
+\fBQwtPlotTradingCurve\fP
+.IP "\(bu" 2
+\fBQwtPlotZoneItem\fP
+.IP "\(bu" 2
+QwtPointData
+.IP "\(bu" 2
+\fBQwtPointMapper\fP
+.IP "\(bu" 2
+\fBQwtTransform\fP, \fBQwtNullTransform\fP, \fBQwtLogTransform\fP, \fBQwtPowerTransform\fP
+.IP "\(bu" 2
+\fBQwtWidgetOverlay\fP 
+.PP
+

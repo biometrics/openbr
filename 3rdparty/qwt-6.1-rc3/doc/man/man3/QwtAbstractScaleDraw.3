@@ -1,0 +1,462 @@
+.TH "QwtAbstractScaleDraw" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtAbstractScaleDraw \- 
+.PP
+A abstract base class for drawing scales\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_abstract_scale_draw\&.h>\fP
+.PP
+Inherited by \fBQwtRoundScaleDraw\fP, and \fBQwtScaleDraw\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBScaleComponent\fP { \fBBackbone\fP = 0x01, \fBTicks\fP = 0x02, \fBLabels\fP = 0x04 }"
+.br
+.ti -1c
+.RI "typedef QFlags< \fBScaleComponent\fP > \fBScaleComponents\fP"
+.br
+.RI "\fIScale components\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtAbstractScaleDraw\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtAbstractScaleDraw\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetScaleDiv\fP (const \fBQwtScaleDiv\fP &s)"
+.br
+.ti -1c
+.RI "const \fBQwtScaleDiv\fP & \fBscaleDiv\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetTransformation\fP (\fBQwtTransform\fP *)"
+.br
+.ti -1c
+.RI "const \fBQwtScaleMap\fP & \fBscaleMap\fP () const "
+.br
+.ti -1c
+.RI "\fBQwtScaleMap\fP & \fBscaleMap\fP ()"
+.br
+.ti -1c
+.RI "void \fBenableComponent\fP (\fBScaleComponent\fP, bool enable=true)"
+.br
+.ti -1c
+.RI "bool \fBhasComponent\fP (\fBScaleComponent\fP) const "
+.br
+.ti -1c
+.RI "void \fBsetTickLength\fP (\fBQwtScaleDiv::TickType\fP, double length)"
+.br
+.ti -1c
+.RI "double \fBtickLength\fP (\fBQwtScaleDiv::TickType\fP) const "
+.br
+.ti -1c
+.RI "double \fBmaxTickLength\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSpacing\fP (double margin)"
+.br
+.RI "\fISet the spacing between tick and labels\&. \fP"
+.ti -1c
+.RI "double \fBspacing\fP () const "
+.br
+.RI "\fIGet the spacing\&. \fP"
+.ti -1c
+.RI "void \fBsetPenWidth\fP (int width)"
+.br
+.RI "\fISpecify the width of the scale pen\&. \fP"
+.ti -1c
+.RI "int \fBpenWidth\fP () const "
+.br
+.ti -1c
+.RI "virtual void \fBdraw\fP (QPainter *, const QPalette &) const "
+.br
+.RI "\fIDraw the scale\&. \fP"
+.ti -1c
+.RI "virtual \fBQwtText\fP \fBlabel\fP (double) const "
+.br
+.RI "\fIConvert a value into its representing label\&. \fP"
+.ti -1c
+.RI "virtual double \fBextent\fP (const QFont &) const =0"
+.br
+.ti -1c
+.RI "void \fBsetMinimumExtent\fP (double)"
+.br
+.RI "\fISet a minimum for the extent\&. \fP"
+.ti -1c
+.RI "double \fBminimumExtent\fP () const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawTick\fP (QPainter *painter, double value, double len) const =0"
+.br
+.ti -1c
+.RI "virtual void \fBdrawBackbone\fP (QPainter *painter) const =0"
+.br
+.ti -1c
+.RI "virtual void \fBdrawLabel\fP (QPainter *painter, double value) const =0"
+.br
+.ti -1c
+.RI "void \fBinvalidateCache\fP ()"
+.br
+.ti -1c
+.RI "const \fBQwtText\fP & \fBtickLabel\fP (const QFont &, double value) const "
+.br
+.RI "\fIConvert a value into its representing label and cache it\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+A abstract base class for drawing scales\&. 
+
+\fBQwtAbstractScaleDraw\fP can be used to draw linear or logarithmic scales\&.
+.PP
+After a scale division has been specified as a \fBQwtScaleDiv\fP object using \fBsetScaleDiv()\fP, the scale can be drawn with the \fBdraw()\fP member\&. 
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtAbstractScaleDraw::ScaleComponent\fP"
+Components of a scale 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBenableComponent()\fP, \fBhasComponent\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIBackbone \fP\fP
+Backbone = the line where the ticks are located\&. 
+.TP
+\fB\fITicks \fP\fP
+Ticks\&. 
+.TP
+\fB\fILabels \fP\fP
+Labels\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtAbstractScaleDraw::QwtAbstractScaleDraw ()"
+
+.PP
+Constructor\&. The range of the scale is initialized to [0, 100], The spacing (distance between ticks and labels) is set to 4, the tick lengths are set to 4,6 and 8 pixels 
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtAbstractScaleDraw::draw (QPainter *painter, const QPalette &palette) const\fC [virtual]\fP"
+
+.PP
+Draw the scale\&. \fBParameters:\fP
+.RS 4
+\fIpainter\fP The painter
+.br
+\fIpalette\fP Palette, text color is used for the labels, foreground color for ticks and backbone 
+.RE
+.PP
+
+.SS "virtual void QwtAbstractScaleDraw::drawBackbone (QPainter *painter) const\fC [protected]\fP, \fC [pure virtual]\fP"
+Draws the baseline of the scale 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawTick()\fP, \fBdrawLabel()\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtScaleDraw\fP, and \fBQwtRoundScaleDraw\fP\&.
+.SS "virtual void QwtAbstractScaleDraw::drawLabel (QPainter *painter, doublevalue) const\fC [protected]\fP, \fC [pure virtual]\fP"
+Draws the label for a major scale tick
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIvalue\fP Value
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawTick()\fP, \fBdrawBackbone()\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtScaleDraw\fP, and \fBQwtRoundScaleDraw\fP\&.
+.SS "virtual void QwtAbstractScaleDraw::drawTick (QPainter *painter, doublevalue, doublelen) const\fC [protected]\fP, \fC [pure virtual]\fP"
+Draw a tick
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIvalue\fP Value of the tick 
+.br
+\fIlen\fP Length of the tick
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawBackbone()\fP, \fBdrawLabel()\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtScaleDraw\fP, and \fBQwtRoundScaleDraw\fP\&.
+.SS "void QwtAbstractScaleDraw::enableComponent (\fBScaleComponent\fPcomponent, boolenable = \fCtrue\fP)"
+En/Disable a component of the scale
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcomponent\fP Scale component 
+.br
+\fIenable\fP On/Off
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBhasComponent()\fP 
+.RE
+.PP
+
+.SS "virtual double QwtAbstractScaleDraw::extent (const QFont &) const\fC [pure virtual]\fP"
+Calculate the extent
+.PP
+The extent is the distance from the baseline to the outermost pixel of the scale draw in opposite to its orientation\&. It is at least \fBminimumExtent()\fP pixels\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMinimumExtent()\fP, \fBminimumExtent()\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtScaleDraw\fP, and \fBQwtRoundScaleDraw\fP\&.
+.SS "bool QwtAbstractScaleDraw::hasComponent (\fBScaleComponent\fPcomponent) const"
+Check if a component is enabled 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBenableComponent()\fP 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::invalidateCache ()\fC [protected]\fP"
+Invalidate the cache used by \fBtickLabel()\fP
+.PP
+The cache is invalidated, when a new \fBQwtScaleDiv\fP is set\&. If the labels need to be changed\&. while the same \fBQwtScaleDiv\fP is set, \fBinvalidateCache()\fP needs to be called manually\&. 
+.SS "\fBQwtText\fP QwtAbstractScaleDraw::label (doublevalue) const\fC [virtual]\fP"
+
+.PP
+Convert a value into its representing label\&. The value is converted to a plain text using QLocale()\&.toString(value)\&. This method is often overloaded by applications to have individual labels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Label string\&. 
+.RE
+.PP
+
+.PP
+Reimplemented in \fBQwtDateScaleDraw\fP, and \fBQwtCompassScaleDraw\fP\&.
+.SS "double QwtAbstractScaleDraw::maxTickLength () const"
+\fBReturns:\fP
+.RS 4
+Length of the longest tick
+.RE
+.PP
+Useful for layout calculations 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBtickLength()\fP, \fBsetTickLength()\fP 
+.RE
+.PP
+
+.SS "double QwtAbstractScaleDraw::minimumExtent () const"
+Get the minimum extent 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBextent()\fP, \fBsetMinimumExtent()\fP 
+.RE
+.PP
+
+.SS "int QwtAbstractScaleDraw::penWidth () const"
+\fBReturns:\fP
+.RS 4
+Scale pen width 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetPenWidth()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtScaleDiv\fP & QwtAbstractScaleDraw::scaleDiv () const"
+\fBReturns:\fP
+.RS 4
+scale division 
+.RE
+.PP
+
+.SS "const \fBQwtScaleMap\fP & QwtAbstractScaleDraw::scaleMap () const"
+\fBReturns:\fP
+.RS 4
+Map how to translate between scale and pixel values 
+.RE
+.PP
+
+.SS "\fBQwtScaleMap\fP & QwtAbstractScaleDraw::scaleMap ()"
+\fBReturns:\fP
+.RS 4
+Map how to translate between scale and pixel values 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setMinimumExtent (doubleminExtent)"
+
+.PP
+Set a minimum for the extent\&. The extent is calculated from the components of the scale draw\&. In situations, where the labels are changing and the layout depends on the extent (f\&.e scrolling a scale), setting an upper limit as minimum extent will avoid jumps of the layout\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIminExtent\fP Minimum extent
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBextent()\fP, \fBminimumExtent()\fP 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setPenWidth (intwidth)"
+
+.PP
+Specify the width of the scale pen\&. \fBParameters:\fP
+.RS 4
+\fIwidth\fP Pen width 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBpenWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setScaleDiv (const \fBQwtScaleDiv\fP &scaleDiv)"
+Change the scale division 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIscaleDiv\fP New scale division 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setSpacing (doublespacing)"
+
+.PP
+Set the spacing between tick and labels\&. The spacing is the distance between ticks and labels\&. The default spacing is 4 pixels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIspacing\fP Spacing
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBspacing()\fP 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setTickLength (\fBQwtScaleDiv::TickType\fPtickType, doublelength)"
+Set the length of the ticks
+.PP
+\fBParameters:\fP
+.RS 4
+\fItickType\fP Tick type 
+.br
+\fIlength\fP New length
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+the length is limited to [0\&.\&.1000] 
+.RE
+.PP
+
+.SS "void QwtAbstractScaleDraw::setTransformation (\fBQwtTransform\fP *transformation)"
+Change the transformation of the scale 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItransformation\fP New scale transformation 
+.RE
+.PP
+
+.SS "double QwtAbstractScaleDraw::spacing () const"
+
+.PP
+Get the spacing\&. The spacing is the distance between ticks and labels\&. The default spacing is 4 pixels\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSpacing()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtText\fP & QwtAbstractScaleDraw::tickLabel (const QFont &font, doublevalue) const\fC [protected]\fP"
+
+.PP
+Convert a value into its representing label and cache it\&. The conversion between value and label is called very often in the layout and painting code\&. Unfortunately the calculation of the label sizes might be slow (really slow for rich text in Qt4), so it's necessary to cache the labels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfont\fP Font 
+.br
+\fIvalue\fP Value
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Tick label 
+.RE
+.PP
+
+.SS "double QwtAbstractScaleDraw::tickLength (\fBQwtScaleDiv::TickType\fPtickType) const"
+Return the length of the ticks
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetTickLength()\fP, \fBmaxTickLength()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

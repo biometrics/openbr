@@ -1,0 +1,101 @@
+.TH "QwtCompassMagnetNeedle" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCompassMagnetNeedle \- 
+.PP
+A magnet needle for compass widgets\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_dial_needle\&.h>\fP
+.PP
+Inherits \fBQwtDialNeedle\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBStyle\fP { \fBTriangleStyle\fP, \fBThinStyle\fP }"
+.br
+.RI "\fIStyle of the needle\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtCompassMagnetNeedle\fP (\fBStyle\fP=\fBTriangleStyle\fP, const QColor &light=Qt::white, const QColor &dark=Qt::red)"
+.br
+.RI "\fIConstructor\&. \fP"
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBdrawNeedle\fP (QPainter *, double length, QPalette::ColorGroup) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A magnet needle for compass widgets\&. 
+
+A magnet needle points to two opposite directions indicating north and south\&.
+.PP
+The following colors are used:
+.IP "\(bu" 2
+QPalette::Light
+.br
+ Used for pointing south
+.IP "\(bu" 2
+QPalette::Dark
+.br
+ Used for pointing north
+.IP "\(bu" 2
+QPalette::Base
+.br
+ Knob (ThinStyle only)
+.PP
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtDial\fP, \fBQwtCompass\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtCompassMagnetNeedle::Style\fP"
+
+.PP
+Style of the needle\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fITriangleStyle \fP\fP
+A needle with a triangular shape\&. 
+.TP
+\fB\fIThinStyle \fP\fP
+A thin needle\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void QwtCompassMagnetNeedle::drawNeedle (QPainter *painter, doublelength, QPalette::ColorGroupcolorGroup) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw the needle
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIlength\fP Length of the needle 
+.br
+\fIcolorGroup\fP Color group, used for painting 
+.RE
+.PP
+
+.PP
+Implements \fBQwtDialNeedle\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

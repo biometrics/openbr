@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node3" href="$class_qwt_magnifier.html" title="QwtMagnifier provides zooming, by magnifying in steps." alt="" coords="189,56,286,83"/>
+<area shape="rect" id="node7" href="$class_qwt_picker.html" title="QwtPicker provides selections on a widget." alt="" coords="197,5,278,32"/>
+<area shape="rect" id="node13" href="$class_qwt_plot_direct_painter.html" title="Painter object trying to paint incrementally." alt="" coords="168,157,307,184"/>
+<area shape="rect" id="node15" href="$class_qwt_plot_renderer.html" title="Renderer for exporting a plot to a document, a printer or anything else, that is supported by QPainte..." alt="" coords="178,208,297,235"/>
+<area shape="rect" id="node17" href="$class_qwt_plot_rescaler.html" title="QwtPlotRescaler takes care of fixed aspect ratios for plot scales." alt="" coords="179,107,295,133"/>
+<area shape="rect" id="node5" href="$class_qwt_plot_magnifier.html" title="QwtPlotMagnifier provides zooming, by magnifying in steps." alt="" coords="355,56,474,83"/>
+<area shape="rect" id="node9" href="$class_qwt_plot_picker.html" title="QwtPlotPicker provides selections on a plot canvas." alt="" coords="363,5,466,32"/>
+<area shape="rect" id="node11" href="$class_qwt_plot_zoomer.html" title="QwtPlotZoomer provides stacked zooming for a plot widget." alt="" coords="523,5,634,32"/>
+<area shape="rect" id="node18" href="$class_qwt_event_pattern.html" title="A collection of event patterns." alt="" coords="5,5,120,32"/>
+</map>

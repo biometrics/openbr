@@ -1,0 +1,59 @@
+.TH "QwtCurveFitter" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtCurveFitter \- 
+.PP
+Abstract base class for a curve fitter\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_curve_fitter\&.h>\fP
+.PP
+Inherited by \fBQwtSplineCurveFitter\fP, and \fBQwtWeedingCurveFitter\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual \fB~QwtCurveFitter\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual QPolygonF \fBfitCurve\fP (const QPolygonF &polygon) const =0"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtCurveFitter\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+Abstract base class for a curve fitter\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "virtual QPolygonF QwtCurveFitter::fitCurve (const QPolygonF &polygon) const\fC [pure virtual]\fP"
+Find a curve which has the best fit to a series of data points
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpolygon\fP Series of data points 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Curve points 
+.RE
+.PP
+
+.PP
+Implemented in \fBQwtWeedingCurveFitter\fP, and \fBQwtSplineCurveFitter\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

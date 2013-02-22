@@ -31,8 +31,10 @@
  * \endcode
  *
  * \section cli_examples Examples
- * - \ref cli_compare_faces
- * - \ref cli_evaluate_face_recognition
+ * - \ref cli_age_estimation
+ * - \ref cli_face_recognition
+ * - \ref cli_face_recognition_evaluation
+ * - \ref cli_gender_estimation
  */
 
 static void help()

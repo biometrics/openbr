@@ -1,0 +1,387 @@
+.TH "QwtPlotGLCanvas" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotGLCanvas \- 
+.PP
+An alternative canvas for a \fBQwtPlot\fP derived from QGLWidget\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_glcanvas\&.h>\fP
+.PP
+Inherits QGLWidget\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBShadow\fP { \fBPlain\fP = QFrame::Plain, \fBRaised\fP = QFrame::Raised, \fBSunken\fP = QFrame::Sunken }"
+.br
+.RI "\fIFrame shadow\&. \fP"
+.ti -1c
+.RI "enum \fBShape\fP { \fBNoFrame\fP = QFrame::NoFrame, \fBBox\fP = QFrame::Box, \fBPanel\fP = QFrame::Panel }"
+.br
+.RI "\fIFrame shape\&. \fP"
+.in -1c
+.SS "Public Slots"
+
+.in +1c
+.ti -1c
+.RI "void \fBreplot\fP ()"
+.br
+.RI "\fICalls repaint() \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotGLCanvas\fP (\fBQwtPlot\fP *=NULL)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "virtual \fB~QwtPlotGLCanvas\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBsetFrameStyle\fP (int style)"
+.br
+.ti -1c
+.RI "int \fBframeStyle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetFrameShadow\fP (\fBShadow\fP)"
+.br
+.ti -1c
+.RI "\fBShadow\fP \fBframeShadow\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetFrameShape\fP (\fBShape\fP)"
+.br
+.ti -1c
+.RI "\fBShape\fP \fBframeShape\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetLineWidth\fP (int)"
+.br
+.ti -1c
+.RI "int \fBlineWidth\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetMidLineWidth\fP (int)"
+.br
+.ti -1c
+.RI "int \fBmidLineWidth\fP () const "
+.br
+.ti -1c
+.RI "int \fBframeWidth\fP () const "
+.br
+.ti -1c
+.RI "QRect \fBframeRect\fP () const "
+.br
+.ti -1c
+.RI "Q_INVOKABLE QPainterPath \fBborderPath\fP (const QRect &) const "
+.br
+.ti -1c
+.RI "virtual bool \fBevent\fP (QEvent *)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBpaintEvent\fP (QPaintEvent *)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawBackground\fP (QPainter *)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawBorder\fP (QPainter *)"
+.br
+.ti -1c
+.RI "virtual void \fBdrawItems\fP (QPainter *)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+An alternative canvas for a \fBQwtPlot\fP derived from QGLWidget\&. 
+
+\fBQwtPlotGLCanvas\fP implements the very basics to act as canvas inside of a \fBQwtPlot\fP widget\&. It might be extended to a full featured alternative to \fBQwtPlotCanvas\fP in a future version of Qwt\&.
+.PP
+Even if \fBQwtPlotGLCanvas\fP is not derived from QFrame it imitates its API\&. When using style sheets it supports the box model - beside backgrounds with rounded borders\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::setCanvas()\fP, \fBQwtPlotCanvas\fP
+.RE
+.PP
+\fBNote:\fP
+.RS 4
+You might want to use the QPaintEngine::OpenGL paint engine ( see QGL::setPreferredPaintEngine() )\&. On a Linux test system QPaintEngine::OpenGL2 shows very basic problems ( wrong geometries of rectangles ) but also more advanced stuff like antialiasing doesn't work\&.
+.PP
+Another way to introduce OpenGL rendering to Qwt is to use QGLPixelBuffer or QGLFramebufferObject\&. Both type of buffers can be converted into a QImage and used in combination with a regular \fBQwtPlotCanvas\fP\&. 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlotGLCanvas::Shadow\fP"
+
+.PP
+Frame shadow\&. Unfortunately it is not possible to use QFrame::Shadow as a property of a widget that is not derived from QFrame\&. The following enum is made for the designer only\&. It is safe to use QFrame::Shadow instead\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIPlain \fP\fP
+QFrame::Plain\&. 
+.TP
+\fB\fIRaised \fP\fP
+QFrame::Raised\&. 
+.TP
+\fB\fISunken \fP\fP
+QFrame::Sunken\&. 
+.SS "enum \fBQwtPlotGLCanvas::Shape\fP"
+
+.PP
+Frame shape\&. Unfortunately it is not possible to use QFrame::Shape as a property of a widget that is not derived from QFrame\&. The following enum is made for the designer only\&. It is safe to use QFrame::Shadow instead\&.
+.PP
+\fBNote:\fP
+.RS 4
+QFrame::StyledPanel and QFrame::WinPanel are unsuported and will be displayed as QFrame::Panel\&. 
+.RE
+.PP
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlotGLCanvas::QwtPlotGLCanvas (\fBQwtPlot\fP *plot = \fCNULL\fP)\fC [explicit]\fP"
+
+.PP
+Constructor\&. \fBParameters:\fP
+.RS 4
+\fIplot\fP Parent plot widget 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::setCanvas()\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QPainterPath QwtPlotGLCanvas::borderPath (const QRect &rect) const"
+\fBReturns:\fP
+.RS 4
+Empty path 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::drawBackground (QPainter *painter)\fC [protected]\fP, \fC [virtual]\fP"
+Draw the background of the canvas 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::drawBorder (QPainter *painter)\fC [protected]\fP, \fC [virtual]\fP"
+Draw the border of the canvas 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::drawItems (QPainter *painter)\fC [protected]\fP, \fC [virtual]\fP"
+Draw the plot items 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::drawCanvas()\fP 
+.RE
+.PP
+
+.SS "bool QwtPlotGLCanvas::event (QEvent *event)\fC [virtual]\fP"
+Qt event handler for QEvent::PolishRequest and QEvent::StyleChange 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Qt Event 
+.RE
+.PP
+
+.SS "QRect QwtPlotGLCanvas::frameRect () const"
+\fBReturns:\fP
+.RS 4
+The rectangle where the frame is drawn in\&. 
+.RE
+.PP
+
+.SS "\fBQwtPlotGLCanvas::Shadow\fP QwtPlotGLCanvas::frameShadow () const"
+\fBReturns:\fP
+.RS 4
+Frame shadow 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetFrameShadow()\fP, QFrame::setFrameShadow() 
+.RE
+.PP
+
+.SS "\fBQwtPlotGLCanvas::Shape\fP QwtPlotGLCanvas::frameShape () const"
+\fBReturns:\fP
+.RS 4
+Frame shape 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetFrameShape()\fP, QFrame::frameShape() 
+.RE
+.PP
+
+.SS "int QwtPlotGLCanvas::frameStyle () const"
+\fBReturns:\fP
+.RS 4
+The bitwise OR between a \fBframeShape()\fP and a \fBframeShadow()\fP 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetFrameStyle()\fP, QFrame::frameStyle() 
+.RE
+.PP
+
+.SS "int QwtPlotGLCanvas::frameWidth () const"
+\fBReturns:\fP
+.RS 4
+Frame width depending on the style, line width and midline width\&. 
+.RE
+.PP
+
+.SS "int QwtPlotGLCanvas::lineWidth () const"
+\fBReturns:\fP
+.RS 4
+Line width of the frame 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetLineWidth()\fP, \fBmidLineWidth()\fP 
+.RE
+.PP
+
+.SS "int QwtPlotGLCanvas::midLineWidth () const"
+\fBReturns:\fP
+.RS 4
+Midline width of the frame 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetMidLineWidth()\fP, \fBlineWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::paintEvent (QPaintEvent *event)\fC [protected]\fP, \fC [virtual]\fP"
+Paint event
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevent\fP Paint event 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlot::drawCanvas()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::setFrameShadow (\fBShadow\fPshadow)"
+Set the frame shadow
+.PP
+\fBParameters:\fP
+.RS 4
+\fIshadow\fP Frame shadow 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBframeShadow()\fP, \fBsetFrameShape()\fP, QFrame::setFrameShadow() 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::setFrameShape (\fBShape\fPshape)"
+Set the frame shape
+.PP
+\fBParameters:\fP
+.RS 4
+\fIshape\fP Frame shape 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBframeShape()\fP, \fBsetFrameShadow()\fP, QFrame::frameShape() 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::setFrameStyle (intstyle)"
+Set the frame style
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstyle\fP The bitwise OR between a shape and a shadow\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBframeStyle()\fP, QFrame::setFrameStyle(), \fBsetFrameShadow()\fP, \fBsetFrameShape()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::setLineWidth (intwidth)"
+Set the frame line width
+.PP
+The default line width is 2 pixels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP Line width of the frame 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBlineWidth()\fP, \fBsetMidLineWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotGLCanvas::setMidLineWidth (intwidth)"
+Set the frame mid line width
+.PP
+The default midline width is 0 pixels\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidth\fP Midline width of the frame 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBmidLineWidth()\fP, \fBsetLineWidth()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

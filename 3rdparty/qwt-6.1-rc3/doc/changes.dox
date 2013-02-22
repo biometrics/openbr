@@ -1,0 +1,306 @@
+/*!
+\page qwtchangelog What's new in Qwt 6.1
+
+\tableofcontents
+
+\section ITEMS New plot items
+
+  - QwtPlotBarChart\n
+    Bar chart, see "examples/distrowatch"
+
+  - QwtPlotMultiBarChart\n
+    Chart of grouped bars - stacked or aligned side by side.
+    See "examples/barchart"
+
+  - QwtPlotTradingCurve\n
+    Candlestick or OHLC charts typically used to describe 
+    price movements over time. See "examples/stockchart"
+
+  - QwtPlotShapeItem\n
+    A plot item to display rectangles, circles, polygons and all
+    other type of shapes ( built from intersections or unifications ), 
+    that can be expressed by a QPainterPath.  See "examples/itemeditor"
+
+  - QwtPlotLegendItem\n
+    A legend on the plot canvas. See "examples/legends"
+
+  - QwtPlotZoneItem\n
+    A horizontal or vertical section 
+
+  - QwtPlotTextLabel\n
+    In opposite to a QwtPlotMarker the text is not aligned to a plot coordinate 
+    but according to the geometry of the canvas ( f.e top/centered for a title ).
+    See "playground/curvetracker".
+
+
+\section SCALES Scales beyond linear and logarithmic transformations
+
+QwtScaleTransformation has been replaced by QwtTransform and its derived classes:
+
+  - QwtTransform 
+  - QwtNullTransform
+  - QwtLogTransform
+  - QwtPowerTransform
+
+Individual transformations ( f.e. different scaling for special sections )
+can be implemented by overloading QwtTransform ( see playground/scaleengine ).
+
+QwtLinearScaleEngine and QwtLogScaleEngine are not limited to 
+base 10 anymore.
+
+\subsection DATETIME Datetime scales
+
+A set of a new classes for displaying datetime values:
+ 
+  - QwtDate\n
+    A collection of methods to convert between QDateTime and doubles
+
+  - QwtDateScaleEngine\n 
+    A scale engine that aligns and finds ticks in terms of datetime units.
+
+  - QwtDateScaleDraw\n
+    A scale draw mapping values to datetime strings.
+
+Scales for Qt::UTC and Qt::LocalTime are supported.
+
+\section CONTROLS Redesign of the dial and meter widgets
+
+Many parts of the class design of the dial and meter widgets were left over 
+from the 90s ( Qwt 0.2, Qt 1.1 ). 
+
+The derivation tree is simpler and more logical:
+
+  - QwtAbstractScale is a QWidget 
+  - QwtAbstractSlider is a QwtAbstractScale. 
+    ( for sliders without scales QAbstractSlider should be the base class )
+  - QwtThermo is also a QwtAbstractScale
+  - QwtDial, QwtKnob, QwtSlider are derived from QwtAbstractSlider
+  - QwtCounter is derived from QWidget
+
+QwtDoubleRange has been removed.
+
+All classes use the terminology known from QAbstractSlider - as far as possible.
+The extended \ref SCALES "system for scales" is completely supported.
+
+\section OPENGL Basic support for an OpenGL plot canvas
+
+QwtPlotGLCanvas offers the option to draw plot items using an
+OpenGL paint engine ( QPaintEngine::OpenGL/OpenGL2 ),
+This is not what could be implemented with native OpenGL,
+but it offers hardware acceleration in environments,
+where the raster paint engine is the only option. 
+( f.e Qt4/Windows, or Qt5 on all platforms ). 
+
+QwtPlotGLCanvas is in an experimental state and is not recommended for average 
+use cases. 
+
+\section LEGEND A new system for plot legends
+
+QwtLegend has been decoupled from QwtPlot and can be replaced by
+application specific implementations. Plot items and the legend
+exchange the information using QwtLegendData.
+
+QwtPlotLegendItem is a new plot item that displays a legend on the
+plot canvas.
+
+The following examples demonstrate how to use the new system:
+
+  - examples/legends\n
+    shows how to use the new legend system 
+  - examples/stockchart\n
+    implementats a QTreeView with checkable items as legend
+
+\section GRAPHIC Off-screen paint device for vector graphics
+
+QwtGraphic can be copied like QImage or QPixmap but is scalable like QSvgGenerator.
+It is implemented as a record/replay paint device like QPicture.
+
+\section OVERLAY QwtWidgetOverlay
+
+QwtWidgetOverlay is a base class for implementing widget overlays - primarily
+used for use cases like graphical editors or running cursors for the plot canvas.
+
+The following examples show how to use overlays:
+
+  - examples/itemeditor
+  - examples/curvetracker
+
+QwtPicker ( -> QwtPlotPicker, QwtPlotZoomer ) internally uses 
+QwtWidgetOverlay now, making it easier to implement individual rubber bands.
+
+\section SYMBOL QwtSymbol 
+
+New symbol types have been introduced:
+
+ - QwtSymbol::Path 
+ - QwtSymbol::Pixmap 
+ - QwtSymbol::Graphic 
+ - QwtSymbol::SvgDocument
+
+QwtSymbol autodetect the most performant paint strategy for a paint device
+what is in most situations using a QPixmap cache.
+
+QwtSymbol::setPinPoint() allows to align the symbol individually, f.e to the position
+of the peak of an arrow.
+
+\section PLOTCURVE QwtPlotCurve
+
+Some optimizations that got lost with introducing the floating point
+based render code with Qwt 6.0 have been reenabled. Other specific optimizations
+have been added.
+
+New paint attributes:
+
+  - QwtPlotCurve::FilterPoints
+  - QwtPlotCurve::MinimizeMemory
+  - QwtPlotCurve::ImageBuffer 
+
+QwtPlotCurve::CacheSymbols has been removed, as caching is implemented
+in QwtSymbol now.  
+
+QwtPlotCurve::drawLines(), QwtPlotCurve::drawDots(), 
+QwtPlotCurve::drawSteps() and QwtPlotCurve::drawSticks() are virtual now.
+
+\section PLOT QwtPlot 
+
+A footer similar to a title has been added.
+
+QwtPlot::ExternalLegend is obsolete with the 
+new \ref LEGEND "system for legends". The signals
+QwtPlot::legendClicked(), QwtPlot::legendChecked() have been
+removed. Applications need to connect to QwtLegend::clicked()
+and QwtLegend::checked().
+
+To support using an OpenGL canvas QwtPlot::setCanvas has been added.
+This has 2 important implications for the application code:
+
+  - QwtPlot::canvas() returns QWidget and needs to be casted, when
+    using methods of QwtPlotCanvas.
+  - QwtPlotCanvas can be created and assigned in application code,
+    what makes it possible to derive and overload methods. 
+
+The initialization of a plot canvas with Qwt 6.1 will probably look like
+this:
+
+\code
+  QwtPlotCanvas* canvas = new QwtPlotCanvas();
+  canvas->setXY( ... );
+  ...
+
+  plot->setCanvas( canvas );
+\endcode
+
+To have a consistent API QwtPlot::setPlotLayout() has been added,
+
+
+\section OTHER Other
+
+\subsection SCALEDIV QwtScaleDiv
+
+The following methods have been added:
+
+  - QwtScaleDiv::inverted() 
+  - QwtScaleDiv::bounded() 
+  - QwtScaleDiv::isEmpty() 
+  - QwtScaleDiv::isIncreasing() 
+  - QDebug operator
+
+The following methods have been removed:
+
+  - QwtScaleDiv::isValid(), QwtScaleDiv::invalidate()\n
+    The valid state was left over from early Qwt versions indicating
+    a state of the autoscaler.
+
+\subsection SCALEENGINE QwtScaleEngine
+
+The following methods have been added:
+
+  - QwtScaleEngine::setBase() 
+  - QwtScaleEngine::setTransformation() 
+  
+\subsection PLOTLAYOUT QwtPlotLayout
+
+The following flags have been added:
+
+  - QwtPlotLayout::IgnoreTitle
+  - QwtPlotLayout::IgnoreFooter 
+  - QwtPlotLayout::setAlignCanvasToScale()
+
+\subsection PLOTCANVAS QwtPlotCanvas
+
+Rounded borders ( like with style sheets ) can configured
+using QwtPlotCanvas::setBorderRadius();
+
+\subsection OTHERS Other changes
+
+  - QwtWeedingCurveFitter\n
+    QwtWeedingCurveFitter::setChunkSize() has been added, with drastic 
+    performance improvements for huge sets of points.
+
+  - QwtPlotRenderer
+    The frame of the plot canvas can be rendered, what makes the result
+    even closer to WYSWYG.  QwtPlotRenderer::exportTo() has been added.
+
+  - QwtSystemClock
+    For Qt >= 4.9 QwtSystemClock uses QElapsedTimer internally. As it doesn't
+    support a similar feature, QwtSystemClock::precision() has been removed.
+
+  - QwtPlotAbstractSeriesItem\n 
+    QwtPlotAbstractSeriesItem has been split into QwtPlotSeriesItem
+    and QwtPlotAbstractSeriesStore.
+
+  - QwtText\n
+    A metatype declaration has been added, so that QwtText can be used
+    with QVariant.
+    
+  - QwtEventPattern, QwtPanner, QwtMagnifier\n
+    Forgotten Qt3 leftovers have been fixed: int -> Qt::KeyboardModifiers
+
+  - QPen Qt5/Qt4 incompatibility
+    The default pen width for Qt5 is 1, what makes it a non cosmetic.
+    To hide this nasty incompatibility several setPen() methods have been added
+    the build pens with a width 0. See QPen::isCosmetic(),
+
+  - qwtUpperSampleIndex()\n
+    A binary search algorithm for sorted samples
+  
+  - QwtMatrixRasterData 
+    QwtMatrixRasterData::setValue() has been added
+
+  - QwtPicker
+     QwtPicker::rubberBandWidget(), QwtPicker::trackerWidget() have been replaced by
+     QwtPicker::rubberBandOverlay(), QwtPicker::trackerOverlay(). 
+     QwtPicker::rubberBandMask() has been added. QwtPicker::pickRect() has been 
+     replaced by QwtPicker::pickArea()
+
+  - QwtPlotItem
+    QwtPlotItem::ItemInterest has been added. QwtPlotItem::setRenderThreadCount()
+    was shifted from QwtPlotRasterItem.
+
+  - ...
+
+\section CLASSES Summary of the new classes
+
+  - QwtAbstractLegend
+  - QwtDate
+  - QwtDateScaleDraw
+  - QwtDateScaleEngine
+  - QwtGraphic
+  - QwtLegendData
+  - QwtLegendLabel
+  - QwtPainterCommand
+  - QwtPixelMatrix
+  - QwtPlotAbstractBarChart
+  - QwtPlotBarChart
+  - QwtPlotMultiBarChart
+  - QwtPlotGLCanvas
+  - QwtPlotLegendItem
+  - QwtPlotShapeItem
+  - QwtPlotTextLabel
+  - QwtPlotTradingCurve
+  - QwtPlotZoneItem
+  - QwtPointData
+  - QwtPointMapper
+  - QwtTransform, QwtNullTransform, QwtLogTransform, QwtPowerTransform
+  - QwtWidgetOverlay
+*/

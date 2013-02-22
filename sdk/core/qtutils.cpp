@@ -228,7 +228,7 @@ QStringList QtUtils::parse(QString args, char split)
     QStringList words;
     int start = 0;
     bool inQuote = false;
-    QStack<char> subexpressions;
+    QStack<QChar> subexpressions;
     for (int i=0; i<args.size(); i++) {
         if (inQuote) {
             if (args[i] == '\'')
@@ -237,7 +237,7 @@ QStringList QtUtils::parse(QString args, char split)
             if (args[i] == '\'') {
                 inQuote = true;
             } else if ((args[i] == '(') || (args[i] == '[') || (args[i] == '<') || (args[i] == '{')) {
-                subexpressions.push(args[i].toAscii());
+                subexpressions.push(args[i]);
             } else if (args[i] == ')') {
                 if (subexpressions.pop() != '(') qFatal("QtUtils::parse unexpected ')'.");
             } else if (args[i] == ']') {
@@ -288,7 +288,9 @@ bool QtUtils::runDot(const QString &file)
 void QtUtils::showFile(const QString &file)
 {
 #ifndef BR_EMBEDDED
-    QDesktopServices::openUrl(QUrl("file:///" + QFileInfo(file).absoluteFilePath()));
+    (void) file;
+    // A bug in Qt5 currently prevents us from doing this:
+    // QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 #else // BR_EMBEDDED
     (void) file;
 #endif // BR_EMBEDDED

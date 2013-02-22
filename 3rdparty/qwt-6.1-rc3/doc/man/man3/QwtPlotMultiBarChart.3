@@ -1,0 +1,525 @@
+.TH "QwtPlotMultiBarChart" 3 "Sat Jan 26 2013" "Version 6.1-rc3" "Qwt User's Guide" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+QwtPlotMultiBarChart \- 
+.PP
+\fBQwtPlotMultiBarChart\fP displays a series of a samples that consist each of a set of values\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <qwt_plot_multi_barchart\&.h>\fP
+.PP
+Inherits \fBQwtPlotAbstractBarChart\fP, and \fBQwtSeriesStore< QwtSetSample >\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBChartStyle\fP { \fBGrouped\fP, \fBStacked\fP }"
+.br
+.RI "\fIChart styles\&. \fP"
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtPlotMultiBarChart\fP (const QString &\fBtitle\fP=QString::null)"
+.br
+.ti -1c
+.RI "\fBQwtPlotMultiBarChart\fP (const \fBQwtText\fP &\fBtitle\fP)"
+.br
+.ti -1c
+.RI "virtual \fB~QwtPlotMultiBarChart\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "virtual int \fBrtti\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetBarTitles\fP (const QList< \fBQwtText\fP > &)"
+.br
+.RI "\fISet the titles for the bars\&. \fP"
+.ti -1c
+.RI "QList< \fBQwtText\fP > \fBbarTitles\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (const QVector< \fBQwtSetSample\fP > &)"
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (const QVector< QVector< double > > &)"
+.br
+.ti -1c
+.RI "void \fBsetSamples\fP (\fBQwtSeriesData\fP< \fBQwtSetSample\fP > *)"
+.br
+.ti -1c
+.RI "void \fBsetStyle\fP (\fBChartStyle\fP \fBstyle\fP)"
+.br
+.ti -1c
+.RI "\fBChartStyle\fP \fBstyle\fP () const "
+.br
+.ti -1c
+.RI "void \fBsetSymbol\fP (int barIndex, \fBQwtColumnSymbol\fP *\fBsymbol\fP)"
+.br
+.RI "\fIAdd a symbol to the symbol map\&. \fP"
+.ti -1c
+.RI "const \fBQwtColumnSymbol\fP * \fBsymbol\fP (int barIndex) const "
+.br
+.ti -1c
+.RI "void \fBresetSymbolMap\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBdrawSeries\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, int from, int to) const "
+.br
+.ti -1c
+.RI "virtual QRectF \fBboundingRect\fP () const "
+.br
+.ti -1c
+.RI "virtual QList< \fBQwtLegendData\fP > \fBlegendData\fP () const "
+.br
+.ti -1c
+.RI "virtual \fBQwtGraphic\fP \fBlegendIcon\fP (int index, const QSizeF &) const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBQwtColumnSymbol\fP * \fBsymbol\fP (int barIndex)"
+.br
+.ti -1c
+.RI "virtual \fBQwtColumnSymbol\fP * \fBspecialSymbol\fP (int sampleIndex, int valueIndex) const "
+.br
+.RI "\fICreate a symbol for special values\&. \fP"
+.ti -1c
+.RI "virtual void \fBdrawSample\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, const \fBQwtInterval\fP &boundingInterval, int index, const \fBQwtSetSample\fP &\fBsample\fP) const "
+.br
+.ti -1c
+.RI "virtual void \fBdrawBar\fP (QPainter *, int sampleIndex, int barIndex, const \fBQwtColumnRect\fP &) const "
+.br
+.ti -1c
+.RI "void \fBdrawStackedBars\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, int index, double \fBsampleWidth\fP, const \fBQwtSetSample\fP &\fBsample\fP) const "
+.br
+.ti -1c
+.RI "void \fBdrawGroupedBars\fP (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, int index, double \fBsampleWidth\fP, const \fBQwtSetSample\fP &\fBsample\fP) const "
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBQwtPlotMultiBarChart\fP displays a series of a samples that consist each of a set of values\&. 
+
+Each value is displayed as a bar, the bars of each set can be organized side by side or accumulated\&.
+.PP
+Each bar of a set is rendered by a \fBQwtColumnSymbol\fP, that is set by \fBsetSymbol()\fP\&. The bars of different sets use the same symbols\&. Exceptions are possible by overloading \fBspecialSymbol()\fP or overloading \fBdrawBar()\fP\&.
+.PP
+Depending on its \fBorientation()\fP the bars are displayed horizontally or vertically\&. The bars cover the interval between the \fBbaseline()\fP and the value\&.
+.PP
+In opposite to most other plot items, \fBQwtPlotMultiBarChart\fP returns more than one entry for the legend - one for each symbol\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBQwtPlotBarChart\fP, \fBQwtPlotHistogram\fP \fBQwtPlotSeriesItem::orientation()\fP, \fBQwtPlotAbstractBarChart::baseline()\fP 
+.RE
+.PP
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBQwtPlotMultiBarChart::ChartStyle\fP"
+
+.PP
+Chart styles\&. The default setting is \fBQwtPlotMultiBarChart::Grouped\fP\&. 
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetStyle()\fP, \fBstyle()\fP 
+.RE
+.PP
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIGrouped \fP\fP
+The bars of a set are displayed side by side\&. 
+.TP
+\fB\fIStacked \fP\fP
+The bars are displayed on top of each other accumulating to a single bar\&. All values of a set need to have the same sign\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "QwtPlotMultiBarChart::QwtPlotMultiBarChart (const QString &title = \fCQString::null\fP)\fC [explicit]\fP"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP Title of the chart 
+.RE
+.PP
+
+.SS "QwtPlotMultiBarChart::QwtPlotMultiBarChart (const \fBQwtText\fP &title)\fC [explicit]\fP"
+Constructor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP Title of the chart 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "QList< \fBQwtText\fP > QwtPlotMultiBarChart::barTitles () const"
+\fBReturns:\fP
+.RS 4
+Bar titles 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetBarTitles()\fP, \fBlegendData()\fP 
+.RE
+.PP
+
+.SS "QRectF QwtPlotMultiBarChart::boundingRect () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Bounding rectangle of all samples\&. For an empty series the rectangle is invalid\&. 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotSeriesItem\fP\&.
+.SS "void QwtPlotMultiBarChart::drawBar (QPainter *painter, intsampleIndex, intvalueIndex, const \fBQwtColumnRect\fP &rect) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw a bar
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIsampleIndex\fP Index of the sample - might be -1 when the bar is painted for the legend 
+.br
+\fIvalueIndex\fP Index of a value in a set 
+.br
+\fIrect\fP Directed target rectangle for the bar
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawSeries()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::drawGroupedBars (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, intindex, doublesampleWidth, const \fBQwtSetSample\fP &sample) const\fC [protected]\fP"
+Draw a grouped sample
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP x map 
+.br
+\fIyMap\fP y map 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas 
+.br
+\fIindex\fP Index of the sample to be painted 
+.br
+\fIsampleWidth\fP Boundng width for all bars of the smaple 
+.br
+\fIsample\fP Sample
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawSeries()\fP, \fBsampleWidth()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::drawSample (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, const \fBQwtInterval\fP &boundingInterval, intindex, const \fBQwtSetSample\fP &sample) const\fC [protected]\fP, \fC [virtual]\fP"
+Draw a sample
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP x map 
+.br
+\fIyMap\fP y map 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas 
+.br
+\fIboundingInterval\fP Bounding interval of sample values 
+.br
+\fIindex\fP Index of the sample to be painted 
+.br
+\fIsample\fP Sample value
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawSeries()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::drawSeries (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, intfrom, intto) const\fC [virtual]\fP"
+Draw an interval of the bar chart
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP Maps x-values into pixel coordinates\&. 
+.br
+\fIyMap\fP Maps y-values into pixel coordinates\&. 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas 
+.br
+\fIfrom\fP Index of the first point to be painted 
+.br
+\fIto\fP Index of the last point to be painted\&. If to < 0 the curve will be painted to its last point\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+drawSymbols() 
+.RE
+.PP
+
+.PP
+Implements \fBQwtPlotSeriesItem\fP\&.
+.SS "void QwtPlotMultiBarChart::drawStackedBars (QPainter *painter, const \fBQwtScaleMap\fP &xMap, const \fBQwtScaleMap\fP &yMap, const QRectF &canvasRect, intindex, doublesampleWidth, const \fBQwtSetSample\fP &sample) const\fC [protected]\fP"
+Draw a stacked sample
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpainter\fP Painter 
+.br
+\fIxMap\fP x map 
+.br
+\fIyMap\fP y map 
+.br
+\fIcanvasRect\fP Contents rectangle of the canvas 
+.br
+\fIindex\fP Index of the sample to be painted 
+.br
+\fIsampleWidth\fP Width of the bars 
+.br
+\fIsample\fP Sample
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawSeries()\fP, \fBsampleWidth()\fP 
+.RE
+.PP
+
+.SS "QList< \fBQwtLegendData\fP > QwtPlotMultiBarChart::legendData () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Information to be displayed on the legend
+.RE
+.PP
+The chart is represented by a list of entries - one for each bar title\&. Each element contains a bar title and an icon showing its corresponding bar\&.
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBbarTitles()\fP, \fBlegendIcon()\fP, \fBlegendIconSize()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "\fBQwtGraphic\fP QwtPlotMultiBarChart::legendIcon (intindex, const QSizeF &size) const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+Icon for representing a bar on the legend
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIindex\fP Index of the bar 
+.br
+\fIsize\fP Icon size
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+An icon showing a bar 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBdrawBar()\fP, \fBlegendData()\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotMultiBarChart::resetSymbolMap ()"
+Remove all symbols from the symbol map 
+.SS "int QwtPlotMultiBarChart::rtti () const\fC [virtual]\fP"
+\fBReturns:\fP
+.RS 4
+\fBQwtPlotItem::Rtti_PlotBarChart\fP 
+.RE
+.PP
+
+.PP
+Reimplemented from \fBQwtPlotItem\fP\&.
+.SS "void QwtPlotMultiBarChart::setBarTitles (const QList< \fBQwtText\fP > &titles)"
+
+.PP
+Set the titles for the bars\&. The titles are used for the legend\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitles\fP Bar titles
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBbarTitles()\fP, \fBlegendData()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::setSamples (const QVector< \fBQwtSetSample\fP > &samples)"
+Initialize data with an array of samples\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Vector of points 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::setSamples (const QVector< QVector< double > > &samples)"
+Initialize data with an array of samples\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsamples\fP Vector of points 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::setSamples (\fBQwtSeriesData\fP< \fBQwtSetSample\fP > *data)"
+Assign a series of samples
+.PP
+\fBsetSamples()\fP is just a wrapper for \fBsetData()\fP without any additional value - beside that it is easier to find for the developer\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP Data 
+.RE
+.PP
+\fBWarning:\fP
+.RS 4
+The item takes ownership of the data object, deleting it when its not used anymore\&. 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::setStyle (\fBChartStyle\fPstyle)"
+Set the style of the chart
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstyle\fP Chart style 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBstyle()\fP 
+.RE
+.PP
+
+.SS "void QwtPlotMultiBarChart::setSymbol (intvalueIndex, \fBQwtColumnSymbol\fP *symbol)"
+
+.PP
+Add a symbol to the symbol map\&. Assign a default symbol for drawing the bar representing all values with the same index in a set\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalueIndex\fP Index of a value in a set 
+.br
+\fIsymbol\fP Symbol used for drawing a bar
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsymbol()\fP, \fBresetSymbolMap()\fP, \fBspecialSymbol()\fP 
+.RE
+.PP
+
+.SS "\fBQwtColumnSymbol\fP * QwtPlotMultiBarChart::specialSymbol (intsampleIndex, intvalueIndex) const\fC [protected]\fP, \fC [virtual]\fP"
+
+.PP
+Create a symbol for special values\&. Usually the symbols for displaying a bar are set by setSymbols() and common for all sets\&. By overloading \fBspecialSymbol()\fP it is possible to create a temporary \fBsymbol()\fP for displaying a special value\&.
+.PP
+The symbol has to be created by new each time \fBspecialSymbol()\fP is called\&. As soon as the symbol is painted this symbol gets deleted\&.
+.PP
+When no symbol ( NULL ) is returned, the value will be displayed with the standard symbol that is used for all symbols with the same valueIndex\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsampleIndex\fP Index of the sample 
+.br
+\fIvalueIndex\fP Index of the value in the set
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+NULL, meaning that the value is not special 
+.RE
+.PP
+
+.SS "\fBQwtPlotMultiBarChart::ChartStyle\fP QwtPlotMultiBarChart::style () const"
+\fBReturns:\fP
+.RS 4
+Style of the chart 
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetStyle()\fP 
+.RE
+.PP
+
+.SS "const \fBQwtColumnSymbol\fP * QwtPlotMultiBarChart::symbol (intvalueIndex) const"
+Find a symbol in the symbol map
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalueIndex\fP Index of a value in a set 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The symbol, that had been set by \fBsetSymbol()\fP or NULL\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSymbol()\fP, \fBspecialSymbol()\fP, \fBdrawBar()\fP 
+.RE
+.PP
+
+.SS "\fBQwtColumnSymbol\fP * QwtPlotMultiBarChart::symbol (intvalueIndex)\fC [protected]\fP"
+Find a symbol in the symbol map
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalueIndex\fP Index of a value in a set 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The symbol, that had been set by \fBsetSymbol()\fP or NULL\&.
+.RE
+.PP
+\fBSee Also:\fP
+.RS 4
+\fBsetSymbol()\fP, \fBspecialSymbol()\fP, \fBdrawBar()\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Qwt User's Guide from the source code\&.

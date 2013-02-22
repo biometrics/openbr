@@ -1,0 +1,5 @@
+<map id="QwtScaleEngine" name="QwtScaleEngine">
+<area shape="rect" id="node3" href="$class_qwt_linear_scale_engine.html" title="A scale engine for linear scales." alt="" coords="5,80,157,107"/>
+<area shape="rect" id="node7" href="$class_qwt_log_scale_engine.html" title="A scale engine for logarithmic scales." alt="" coords="181,80,320,107"/>
+<area shape="rect" id="node5" href="$class_qwt_date_scale_engine.html" title="A scale engine for date/time values." alt="" coords="10,155,152,181"/>
+</map>
