@@ -18,6 +18,12 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CMAKE_MODULE_PATH "${BR_SHARE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(PACKAGE_YEAR 2012)
 
+if(${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+  set(BITNESS 64)
+else()
+  set(BITNESS 32)
+endif()
+
 # Define resources
 if(WIN32)
   set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr-small.png")

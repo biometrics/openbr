@@ -1,5 +1,6 @@
 ### Repository Specific ###
 build*
+3rdparty/LatentSDK*
 3rdparty/pittpatt*
 
 ### Generic ###
