@@ -133,8 +133,6 @@ install_qt_imageformats()
 install_opencv_libraries(OPENCV_DEPENDENCIES)
 
 # Package
-set(BR_PUBLISH_DIR ${CMAKE_BINARY_DIR} CACHE PATH "Where to publish packages")
-set(CPACK_OUTPUT_FILE_PREFIX ${BR_PUBLISH_DIR})
 set(CPACK_BINARY_BUNDLE       OFF)
 set(CPACK_BINARY_DEB          OFF)
 set(CPACK_BINARY_DRAGNDROP    OFF)
