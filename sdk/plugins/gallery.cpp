@@ -130,7 +130,7 @@ class EmptyGallery : public Gallery
         QMutexLocker diskLocker(&diskLock);
         const QString destination = file.name + "/" + t.file.baseName() + postfix + ".png";
         if (!cache || !QFileInfo(destination).exists()) {
-            if (t.isNull()) QFile::copy(t.file.name, destination);
+            if (t.isNull()) QFile::copy((t.file.exists() ? QString() : Globals->path+"/") + t.file.name, destination);
             else            OpenCVUtils::saveImage(t, destination);
         }
     }
@@ -439,7 +439,8 @@ class xmlGallery : public Gallery
 
     ~xmlGallery()
     {
-        BEE::writeSigset(file, files, ignoreMetadata);
+        if (!files.isEmpty())
+            BEE::writeSigset(file, files, ignoreMetadata);
     }
 
     TemplateList readBlock(bool *done)

@@ -215,13 +215,23 @@ class DefaultFormat : public Format
             if (m.data) t.append(m);
 #endif // BR_EMBEDDED
         } else {
-            QString prefix = "";
-            if (!QFileInfo(file.name).exists()) prefix = file.getString("path") + "/";
-            Mat m = imread((prefix+file.name).toStdString());
+            QString fileName = file.name;
+            if (!QFileInfo(fileName).exists()) {
+                fileName = file.getString("path") + "/" + file.name;
+                if (!QFileInfo(fileName).exists()) {
+                    fileName = file.fileName();
+                    if (!QFileInfo(fileName).exists()) {
+                        fileName = file.getString("path") + "/" + file.fileName();
+                        qDebug() << fileName;
+                        if (!QFileInfo(fileName).exists()) return t;
+                    }
+                }
+            }
+
+            Mat m = imread(fileName.toStdString());
             if (m.data) {
                 t.append(m);
-            }
-            else {
+            } else {
                 videoFormat videoReader;
                 videoReader.file = file;
                 t = videoReader.read();
