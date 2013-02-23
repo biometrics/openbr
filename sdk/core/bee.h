@@ -35,8 +35,8 @@ namespace BEE
     typedef uchar Mask_t;
 
     // Sigset IO
-    br::FileList readSigset(QString sigset, bool ignoreMetadata = false);
-    void writeSigset(const QString &sigset, const br::FileList &metadataList);
+    br::FileList readSigset(const QString &sigset, bool ignoreMetadata = false);
+    void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
 
     // Matrix IO
     cv::Mat readSimmat(const br::File &simmat);

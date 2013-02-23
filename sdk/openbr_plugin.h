@@ -330,6 +330,7 @@ struct TemplateList : public QList<Template>
 
     TemplateList() : uniform(false) {}
     TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
+    TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); }
     BR_EXPORT static TemplateList fromInput(const File &input); /*!< \brief Create a template list from a br::Input. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl); /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     /*!

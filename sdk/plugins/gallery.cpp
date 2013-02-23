@@ -433,22 +433,24 @@ BR_REGISTER(Gallery, txtGallery)
 class xmlGallery : public Gallery
 {
     Q_OBJECT
-    Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata)
+    Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata STORED false)
     BR_PROPERTY(bool, ignoreMetadata, false)
+    FileList files;
+
+    ~xmlGallery()
+    {
+        BEE::writeSigset(file, files, ignoreMetadata);
+    }
 
     TemplateList readBlock(bool *done)
     {
-        TemplateList templates;
-        foreach (const File &signature, BEE::readSigset(file.name, ignoreMetadata))
-            templates.append(signature);
         *done = true;
-        return templates;
+        return TemplateList(BEE::readSigset(file, ignoreMetadata));
     }
 
     void write(const Template &t)
     {
-        (void) t;
-        qFatal("Writing to an xmlGallery not supported.");
+        files.append(t.file);
     }
 };
 
@@ -471,8 +473,7 @@ class dbGallery : public Gallery
         QString subset = file.getString("subset", "");
 
 #ifndef BR_EMBEDDED
-        static QSqlDatabase db;
-        if (!db.isValid()) db = QSqlDatabase::addDatabase("QSQLITE");
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(file);
         if (!db.open()) qFatal("Failed to open SQLite database %s.", qPrintable(file.name));
 

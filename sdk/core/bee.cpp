@@ -34,7 +34,7 @@ using namespace cv;
 using namespace br;
 
 /**** BEE ****/
-FileList BEE::readSigset(QString sigset, bool ignoreMetadata)
+FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
 {
     FileList fileList;
 
@@ -90,24 +90,22 @@ FileList BEE::readSigset(QString sigset, bool ignoreMetadata)
     return fileList;
 }
 
-void BEE::writeSigset(const QString &sigset, const br::FileList &fileList)
+void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata)
 {
-    typedef QPair<QString,QString> Signature; // QPair<Subject, File>
-    QList<Signature> signatures;
-
-    foreach (const File &file, fileList)
-        signatures.append(Signature(file.subject(), file.name));
-
-    QFile file(sigset);
-    file.open(QFile::WriteOnly);
-    file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-               "<biometric-signature-set>\n");
-    foreach (const Signature &signature, signatures)
-        file.write(qPrintable(QString("\t<biometric-signature name=\"%1\">\n"
-                                      "\t\t<presentation file-name=\"%2\"/>\n"
-                                      "\t</biometric-signature>\n").arg(signature.first, signature.second)));
-    file.write("</biometric-signature-set>\n");
-    file.close();
+    QStringList lines; lines.reserve(3*files.size()+3);
+    lines.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    lines.append("<biometric-signature-set>");
+    foreach (const File &file, files) {
+        QStringList metadata;
+        if (!ignoreMetadata)
+            foreach (const QString &key, file.localKeys())
+                metadata.append(key+"=\""+file.getString(key, "?")+"\"");
+        lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
+        lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
+        lines.append("\t</biometric-signature>");
+    }
+    lines.append("</biometric-signature-set>");
+    QtUtils::writeFile(sigset, lines);
 }
 
 template <typename T>
