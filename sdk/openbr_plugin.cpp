@@ -945,7 +945,7 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 
     if (type == QtFatalMsg) {
         // Write debug output then close
-        qDebug("File: %s\nFunction: %s\nLine: %d\nVersion: %d", qPrintable(context.file), qPrintable(context.function), context.line, context.version);
+        qDebug("  File: %s\n  Function: %s\n  Line: %d", qPrintable(context.file), qPrintable(context.function), context.line);
         Globals->finalize();
         abort();
     }

@@ -1106,7 +1106,7 @@ BR_EXPORT bool IsClassifier(const QString &algorithm);
  * \brief High-level function for creating models.
  * \see br_train
  */
-BR_EXPORT void Train(const QString &inputs, const File &model);
+BR_EXPORT void Train(const File &input, const File &model);
 
 /*!
  * \brief High-level function for creating galleries.

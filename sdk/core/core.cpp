@@ -38,9 +38,9 @@ struct AlgorithmCore
         return distance.isNull();
     }
 
-    void train(const QString &inputs, const QString &model)
+    void train(const File &input, const QString &model)
     {
-        TemplateList data(TemplateList::fromInput(inputs));
+        TemplateList data(TemplateList::fromInput(input));
 
         if (transform.isNull()) qFatal("AlgorithmCore::train null transform.");
         qDebug("%d training files", data.size());
@@ -306,11 +306,11 @@ bool br::IsClassifier(const QString &algorithm)
     return AlgorithmManager::getAlgorithm(algorithm)->isClassifier();
 }
 
-void br::Train(const QString &inputs, const File &model)
+void br::Train(const File &input, const File &model)
 {
-    qDebug("Training on %s%s", qPrintable(inputs),
+    qDebug("Training on %s%s", qPrintable(input.flat()),
                                model.isNull() ? "" : qPrintable(" to " + model.flat()));
-    AlgorithmManager::getAlgorithm(model.getString("algorithm"))->train(inputs, model);
+    AlgorithmManager::getAlgorithm(model.getString("algorithm"))->train(input, model);
 }
 
 FileList br::Enroll(const File &input, const File &gallery)
