@@ -42,7 +42,7 @@ struct AlgorithmCore
     {
         TemplateList data(TemplateList::fromInput(input));
 
-        if (transform.isNull()) qFatal("AlgorithmCore::train null transform.");
+        if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d training files", data.size());
 
         QTime time; time.start();
@@ -108,19 +108,20 @@ struct AlgorithmCore
     FileList enroll(File input, File gallery = File())
     {
         FileList fileList;
-        try {
         if (gallery.isNull()) gallery = getMemoryGallery(input);
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) return FileList();
-        fileList = g->files();
+
+        if (gallery.contains("read") || gallery.contains("cache"))
+            fileList = g->files();
         if (!fileList.isEmpty() && gallery.contains("cache"))
-            return fileList; // Already enrolled
+            return fileList;
 
         const TemplateList i(TemplateList::fromInput(input));
         if (i.isEmpty()) return fileList; // Nothing to enroll
 
-        if (transform.isNull()) qFatal("AlgorithmCore::enroll null transform.");
+        if (transform.isNull()) qFatal("Null transform.");
         const int blocks = Globals->blocks(i.size());
         Globals->currentStep = 0;
         Globals->totalSteps = i.size();
@@ -167,9 +168,7 @@ struct AlgorithmCore
             fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
                     speed, totalBytes/totalCount, failureCount, totalCount);
         Globals->totalSteps = 0;
-        } catch (...) {
-            qFatal("Exception triggered during enrollment!");
-        }
+
         return fileList;
     }
 
@@ -187,7 +186,6 @@ struct AlgorithmCore
 
     void compare(File targetGallery, File queryGallery, File output)
     {
-	    try {
         if (output.exists() && output.getBool("cache")) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
@@ -198,7 +196,7 @@ struct AlgorithmCore
 
         QScopedPointer<Output> o(Output::make(output, targetFiles, queryFiles));
 
-        if (distance.isNull()) qFatal("AlgorithmCore::compare null distance.");
+        if (distance.isNull()) qFatal("Null distance.");
         Globals->currentStep = 0;
         Globals->totalSteps = double(targetFiles.size()) * double(queryFiles.size());
         Globals->startTime.start();
@@ -226,9 +224,6 @@ struct AlgorithmCore
         const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
         if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);
         Globals->totalSteps = 0;
-        } catch (...) {
-            qFatal("Exception triggered during comparison!");
-        }
     }
 
 private:
@@ -257,7 +252,7 @@ private:
             return init(Globals->abbreviations[description]);
 
         QStringList words = description.split(':');
-        if (words.size() > 2) qFatal("AlgorithmCore::init invalid algorithm format.");
+        if (words.size() > 2) qFatal("Invalid algorithm format.");
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
@@ -282,7 +277,7 @@ public:
 
     static QSharedPointer<AlgorithmCore> getAlgorithm(const QString &algorithm)
     {
-        if (algorithm.isEmpty()) qFatal("AlgorithmManager::getAlgorithm no default algorithm set.");
+        if (algorithm.isEmpty()) qFatal("No default algorithm set.");
 
         if (!algorithms.contains(algorithm)) {
             algorithmsLock.lock();
@@ -341,7 +336,7 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
     qDebug("Concatenating %d galleries to %s", inputGalleries.size(), qPrintable(outputGallery));
     foreach (const QString &inputGallery, inputGalleries)
         if (inputGallery == outputGallery)
-            qFatal("br::Cat outputGallery must not be in inputGalleries.");
+            qFatal("outputGallery must not be in inputGalleries.");
     QScopedPointer<Gallery> og(Gallery::make(outputGallery));
     foreach (const QString &inputGallery, inputGalleries) {
         QScopedPointer<Gallery> ig(Gallery::make(inputGallery));
