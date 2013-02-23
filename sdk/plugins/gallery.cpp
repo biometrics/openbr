@@ -474,17 +474,17 @@ class dbGallery : public Gallery
         static QSqlDatabase db;
         if (!db.isValid()) db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(file);
-        if (!db.open()) qFatal("Input::loadDatabase failed to open SQLite database %s.", qPrintable((QString)file));
+        if (!db.open()) qFatal("Failed to open SQLite database %s.", qPrintable(file.name));
 
         if (!import.isNull()) {
-            qDebug("Parsing %s", qPrintable((QString)import));
+            qDebug("Parsing %s", qPrintable(import.name));
             QStringList lines = QtUtils::readLines(import);
             QList<QStringList> cells; cells.reserve(lines.size());
             const QRegExp re("\\s*,\\s*");
-            foreach (const QString &line, lines)
+            foreach (const QString &line, lines) {
                 cells.append(line.split(re));
-            if (cells.size() < 2) qFatal("Input::loadDatabase expected at least two rows in %s.", qPrintable((QString)import));
-            if (cells[0].size() != cells[1].size()) qFatal("Input::loadDatabase column count mismatch.");
+                if (cells.last().size() != cells.first().size()) qFatal("Column count mismatch.");
+            }
 
             QStringList columns, qMarks;
             QList<QVariantList> variantLists;
@@ -506,21 +506,21 @@ class dbGallery : public Gallery
             qDebug("Creating table %s", qPrintable(table));
             QSqlQuery q(db);
             if (!q.exec("CREATE TABLE " + table + " (" + columns.join(", ") + ");"))
-                qFatal("Input::loadDatabase %s.", qPrintable(q.lastError().text()));
+                qFatal("%s.", qPrintable(q.lastError().text()));
             if (!q.prepare("insert into " + table + " values (" + qMarks.join(", ") + ")"))
-                qFatal("Input::loadDatabase %s.", qPrintable(q.lastError().text()));
+                qFatal("%s.", qPrintable(q.lastError().text()));
             foreach (const QVariantList &vl, variantLists)
                 q.addBindValue(vl);
-            if (!q.execBatch()) qFatal("Input::loadDatabase %s.", qPrintable(q.lastError().text()));
+            if (!q.execBatch()) qFatal("%s.", qPrintable(q.lastError().text()));
         }
 
         QSqlQuery q(db);
         if (query.startsWith('\'') && query.endsWith('\''))
             query = query.mid(1, query.size()-2);
         if (!q.exec(query))
-            qFatal("Input::loadDatabase %s.", qPrintable(q.lastError().text()));
+            qFatal("%s.", qPrintable(q.lastError().text()));
         if ((q.record().count() == 0) || (q.record().count() > 3))
-            qFatal("Input::loadDatabase query record expected one to three fields, got %d.", q.record().count());
+            qFatal("Query record expected one to three fields, got %d.", q.record().count());
         const bool hasMetadata = (q.record().count() >= 2);
         const bool hasFilter = (q.record().count() >= 3);
 
@@ -599,7 +599,7 @@ class dbGallery : public Gallery
     void write(const Template &t)
     {
         (void) t;
-        qFatal("Writing to a dbGallery not supported.");
+        qFatal("Writing not supported.");
     }
 };
 
