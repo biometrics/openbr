@@ -147,13 +147,11 @@ class MatchProbabilityDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
-    Q_PROPERTY(QString binKey READ get_binKey WRITE set_binKey RESET reset_binKey STORED false)
     Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-    BR_PROPERTY(QString, binKey, "")
     BR_PROPERTY(bool, gaussian, true)
 
-    QHash<QString, MP> mps;
+    MP mp;
 
     void train(const TemplateList &src)
     {
@@ -163,37 +161,38 @@ class MatchProbabilityDistance : public Distance
         QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(src.size()), FileList(src.size()))));
         distance->compare(src, src, memoryOutput.data());
 
-        QHash< QString, QList<float> > genuineScores, impostorScores;
-        for (int i=0; i<src.size(); i++)
+        QList<float> genuineScores, impostorScores;
+        genuineScores.reserve(labels.size());
+        impostorScores.reserve(labels.size()*labels.size());
+        for (int i=0; i<src.size(); i++) {
             for (int j=0; j<i; j++) {
                 const float score = memoryOutput.data()->data.at<float>(i, j);
                 if (score == -std::numeric_limits<float>::max()) continue;
-                const QString bin = src[i].file.getString(binKey, "");
-                if (labels[i] == labels[j]) genuineScores[bin].append(score);
-                else                        impostorScores[bin].append(score);
+                if (labels[i] == labels[j]) genuineScores.append(score);
+                else                        impostorScores.append(score);
             }
+        }
 
-        foreach (const QString &key, genuineScores.keys())
-            mps.insert(key, MP(genuineScores[key], impostorScores[key]));
+        mp = MP(genuineScores, impostorScores);
     }
 
     float compare(const Template &target, const Template &query) const
     {
         float rawScore = distance->compare(target, query);
         if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
-        return mps[query.file.getString(binKey, "")](rawScore, gaussian);
+        return mp(rawScore, gaussian);
     }
 
     void store(QDataStream &stream) const
     {
         distance->store(stream);
-        stream << mps;
+        stream << mp;
     }
 
     void load(QDataStream &stream)
     {
         distance->load(stream);
-        stream >> mps;
+        stream >> mp;
     }
 };
 

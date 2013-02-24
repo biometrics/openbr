@@ -222,7 +222,6 @@ class DefaultFormat : public Format
                     fileName = file.fileName();
                     if (!QFileInfo(fileName).exists()) {
                         fileName = file.getString("path") + "/" + file.fileName();
-                        qDebug() << fileName;
                         if (!QFileInfo(fileName).exists()) return t;
                     }
                 }

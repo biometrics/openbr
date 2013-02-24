@@ -62,8 +62,9 @@ int main(int argc, char *argv[])
     float comparisonA = distance->compare(target, queryA);
     float comparisonB = distance->compare(target, queryB);
 
-    printf("Genuine match score: %.3f\n", comparisonA); // Scores above 1 are strong matches
-    printf("Impostor match score: %.3f\n", comparisonB); // Scores below 0.5 are strong non-matches
+    // Scores range from 0 to 1 and represent match probability
+    printf("Genuine match score: %.3f\n", comparisonA);
+    printf("Impostor match score: %.3f\n", comparisonB);
 
     br::Context::finalize();
     return 0;
