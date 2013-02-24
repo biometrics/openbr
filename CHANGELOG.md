@@ -1,5 +1,8 @@
-0.2.0 - 2/23/13
+0.3.0 - ??/??/??
 ================
+
+0.2.0 - 2/23/13
+===============
 * FaceRecognition new distance metric
   - 0 to 1 range indicating match probability
 * Qt 4.8 -> Qt 5.0
