@@ -1,9 +1,8 @@
 0.2.0 - ??/??/??
 ================
-Under development
-
-New Features
-------------
+* Qt 4.8 -> Qt 5.0
+* Cleaner plots generated with 'br -plot'
+* Stasm and FLandmark wrappers
 * Improved demographic filtering speed
   - br::Context::demographicFilters -> br::Context::filters
   - MetadataDistance -> FilterDistance
@@ -14,10 +13,6 @@ New Features
   - br::Context::crossValidate
   - CrossValidationTransform
   - CrossValidationDistance
-
-Fixed Bugs
-----------
-
 
 0.1.0 - 1/27/13
 ===============
