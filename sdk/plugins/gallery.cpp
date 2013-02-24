@@ -63,7 +63,6 @@ class galGallery : public Gallery
         while ((templates.size() < Globals->blockSize) && !stream.atEnd()) {
             Template m;
             stream >> m;
-			//qWarning("?? %s\n", qPrintable(m.file.name));
             templates.append(m);
         }
 
@@ -73,7 +72,6 @@ class galGallery : public Gallery
 
     void write(const Template &t)
     {
-		//qWarning("$$ %s\n", qPrintable(t.file.name));
         stream << t;
     }
 };
@@ -88,10 +86,6 @@ BR_REGISTER(Gallery, galGallery)
 class EmptyGallery : public Gallery
 {
     Q_OBJECT
-    Q_PROPERTY(bool cache READ get_cache WRITE set_cache RESET reset_cache)
-    Q_PROPERTY(QString postfix READ get_postfix WRITE set_postfix RESET reset_postfix)
-    BR_PROPERTY(bool, cache, false)
-    BR_PROPERTY(QString, postfix, "")
 
     void init()
     {
@@ -100,12 +94,11 @@ class EmptyGallery : public Gallery
 
     TemplateList readBlock(bool *done)
     {
+        TemplateList templates;
         *done = true;
 
         // Enrolling a null file is used as an idiom to initialize an algorithm
-        if (file.name.isEmpty()) return TemplateList();
-
-        TemplateList templates;
+        if (file.isNull()) return templates;
 
         // Add immediate subfolders
         QDir dir(file);
@@ -128,11 +121,8 @@ class EmptyGallery : public Gallery
         if (file.name.isEmpty()) return;
 
         QMutexLocker diskLocker(&diskLock);
-        const QString destination = file.name + "/" + t.file.baseName() + postfix + ".png";
-        if (!cache || !QFileInfo(destination).exists()) {
-            if (t.isNull()) QFile::copy((t.file.exists() ? QString() : Globals->path+"/") + t.file.name, destination);
-            else            OpenCVUtils::saveImage(t, destination);
-        }
+        if (t.isNull()) QFile::copy((t.file.exists() ? QString() : Globals->path+"/") + t.file.name, file.name + "/" + t.file.fileName());
+        else            OpenCVUtils::saveImage(t, file.name + "/" + t.file.baseName() + ".png");
     }
 };
 
