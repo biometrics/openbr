@@ -42,8 +42,8 @@ FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
     QDomDocument doc(sigset);
     QFile file(sigset);
     bool success;
-    success = file.open(QIODevice::ReadOnly); if (!success) qFatal("BEE::readSigset unable to open %s for reading.", qPrintable(sigset));
-    success = doc.setContent(&file);          if (!success) qFatal("BEE::readSigset unable to parse %s.", qPrintable(sigset));
+    success = file.open(QIODevice::ReadOnly); if (!success) qFatal("Unable to open %s for reading.", qPrintable(sigset));
+    success = doc.setContent(&file);          if (!success) qFatal("Unable to parse %s.", qPrintable(sigset));
     file.close();
 
     QDomElement docElem = doc.documentElement();
@@ -75,7 +75,7 @@ FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
                 }
             }
 
-            if (file.isNull()) qFatal("BEE::readSigset empty file-name in %s.", qPrintable(sigset));
+            if (file.isNull()) qFatal("Empty file-name in %s.", qPrintable(sigset));
             fileList.append(file);
 
             fileNode = fileNode.nextSibling();
@@ -115,7 +115,7 @@ Mat readMatrix(const br::File &matrix)
     if (matrix == "Matrix") {
         const int size = matrix.getInt("Size");
         const int step = matrix.getInt("Step", 1);
-        if (size % step != 0) qFatal("bee.cpp readMatrix step does not divide size evenly.");
+        if (size % step != 0) qFatal("Step does not divide size evenly.");
 
         if (sizeof(T) == sizeof(BEE::Mask_t)) {
             const bool selfSimilar = matrix.getBool("SelfSimilar");
@@ -140,12 +140,12 @@ Mat readMatrix(const br::File &matrix)
 
     QFile file(matrix);
     bool success = file.open(QFile::ReadOnly);
-    if (!success) qFatal("bee.cpp readMatrix unable to open %s for reading.", qPrintable((QString)matrix));
+    if (!success) qFatal("Unable to open %s for reading.", qPrintable((QString)matrix));
 
     // Check format
     QByteArray format = file.readLine();
     bool isDistance = (format[0] == 'D');
-    if (format[1] != '2') qFatal("bee.cpp readMatrix invalid matrix header.");
+    if (format[1] != '2') qFatal("Invalid matrix header.");
 
     // Skip sigset lines
     file.readLine();
@@ -160,7 +160,7 @@ Mat readMatrix(const br::File &matrix)
     qint64 bytesExpected = (qint64)rows*(qint64)cols*(qint64)sizeof(T);
     Mat m(rows, cols, OpenCVType<T,1>::make());
     if (file.read((char*)m.data, bytesExpected) != bytesExpected)
-        qFatal("bee.cpp readMatrix invalid matrix size.");
+        qFatal("Invalid matrix size.");
     file.close();
 
     Mat result;
@@ -182,17 +182,17 @@ Mat BEE::readMask(const br::File &mask)
 template <typename T>
 void writeMatrix(const Mat &m, const QString &matrix, const QString &targetSigset, const QString &querySigset)
 {
-    if (m.type() != OpenCVType<T,1>::make()) qFatal("bee.cpp writeMatrix invalid matrix type.");
+    if (m.type() != OpenCVType<T,1>::make()) qFatal("Invalid matrix type.");
 
     int elemSize = sizeof(T);
     QString matrixType;
     if      (elemSize == 1) matrixType = "B";
     else if (elemSize == 4) matrixType = "F";
-    else                    qFatal("bee.cpp writeMatrix invalid element size.\n");
+    else                    qFatal("Invalid element size.");
 
     char buff[4];
     QFile file(matrix);
-    bool success = file.open(QFile::WriteOnly); if (!success) qFatal("bee.cpp writeMatrix unable to open %s for writing.", qPrintable(matrix));
+    bool success = file.open(QFile::WriteOnly); if (!success) qFatal("Unable to open %s for writing.", qPrintable(matrix));
     file.write("S2\n");
     file.write(qPrintable(QFileInfo(targetSigset).fileName()));
     file.write("\n");
@@ -265,12 +265,12 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
     bool AND = true;
     if      (method == "And") AND = true;
     else if (method == "Or")  AND = false;
-    else                      qFatal("combineMasks invalid method");
+    else                      qFatal("Invalid method.");
 
     QList<Mat> masks;
     foreach (const QString &inputMask, inputMasks)
         masks.append(readMask(inputMask));
-    if (masks.size() < 2) qFatal("BEE::mergeMasks expects at least two masks.");
+    if (masks.size() < 2) qFatal("Expected at least two masks.");
 
     const int rows = masks.first().rows;
     const int columns = masks.first().cols;
@@ -294,7 +294,7 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
                     break;
                 }
             }
-            if ((genuineCount != 0) && (imposterCount != 0)) qFatal("BEE::combinedMasks comparison is both a genuine and an imposter.");
+            if ((genuineCount != 0) && (imposterCount != 0)) qFatal("Comparison is both a genuine and an imposter.");
 
             Mask_t val;
             if      (genuineCount > 0)  val = Match;

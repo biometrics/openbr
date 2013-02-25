@@ -39,8 +39,8 @@ static TemplateList Simplified(const TemplateList &templates)
         const bool fte = t.file.getBool("FTE");
         QList<QPointF> landmarks = t.file.landmarks();
         QList<QRectF> ROIs = t.file.ROIs();
-        if (landmarks.size() % t.size() != 0) qFatal("TemplateList::simplified uneven landmark count.");
-        if (ROIs.size() % t.size() != 0) qFatal("TemplateList::simplified uneven ROI count.");
+        if (landmarks.size() % t.size() != 0) qFatal("Uneven landmark count.");
+        if (ROIs.size() % t.size() != 0) qFatal("Uneven ROI count.");
         const int landmarkStep = landmarks.size() / t.size();
         const int ROIStep = ROIs.size() / t.size();
 
@@ -281,7 +281,7 @@ class ForkTransform : public MetaTransform
             foreach (const Transform *f, transforms) {
                 TemplateList m;
                 f->project(src, m);
-                if (m.size() != dst.size()) qFatal("Fork::project templateList is of an unexpected size.");
+                if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
                 for (int i=0; i<src.size(); i++) dst[i].append(m[i]);
             }
         } else {
@@ -313,7 +313,8 @@ public:
 
         // Write to cache
         QFile file("Cache");
-        bool success = file.open(QFile::WriteOnly); if (!success) qFatal("Cache::Cache unable to open %s for writing.", qPrintable(file.fileName()));
+        if (!file.open(QFile::WriteOnly))
+            qFatal("Unable to open %s for writing.", qPrintable(file.fileName()));
         QDataStream stream(&file);
         stream << cache;
         file.close();
@@ -327,7 +328,8 @@ private:
         // Read from cache
         QFile file("Cache");
         if (file.exists()) {
-            bool success = file.open(QFile::ReadOnly); if (!success) qFatal("Cache::make unable to open %s for reading.", qPrintable(file.fileName()));
+            if (!file.open(QFile::ReadOnly))
+                qFatal("Unable to open %s for reading.", qPrintable(file.fileName()));
             QDataStream stream(&file);
             stream >> cache;
             file.close();
@@ -458,7 +460,8 @@ class FTETransform : public Transform
 
         QList<float> vals;
         foreach (const Template &t, projectedData) {
-            if (!t.file.contains(transform->objectName())) qFatal("FTE::train matrix metadata missing key %s.", qPrintable(transform->objectName()));
+            if (!t.file.contains(transform->objectName()))
+                qFatal("Matrix metadata missing key %s.", qPrintable(transform->objectName()));
             vals.append(t.file.getFloat(transform->objectName()));
         }
         float q1, q3;

@@ -155,7 +155,7 @@ void File::set(const QString &key, const QVariant &value)
 
 QVariant File::get(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::get missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     return value(key);
 }
 
@@ -182,9 +182,9 @@ void File::setBool(const QString &key, bool value)
 
 int File::getInt(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getInt missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     bool ok; int result = value(key).toInt(&ok);
-    if (!ok) qFatal("File::getInt invalid conversion from: %s", qPrintable(getString(key)));
+    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
     return result;
 }
 
@@ -198,9 +198,9 @@ int File::getInt(const QString &key, int defaultValue) const
 
 float File::getFloat(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getFloat missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) qFatal("File::getFloat invalid conversion from: %s", qPrintable(getString(key)));
+    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
     return result;
 }
 
@@ -214,7 +214,7 @@ float File::getFloat(const QString &key, float defaultValue) const
 
 QString File::getString(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getString missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     return value(key).toString();
 }
 
@@ -657,7 +657,7 @@ void Object::setProperty(const QString &name, const QString &value)
 
     QVariant variant;
     if (type.startsWith("QList<") && type.endsWith(">")) {
-        if (!value.startsWith('[')) qFatal("Object::setProperty expected a list.");
+        if (!value.startsWith('[')) qFatal("Expected a list.");
         const QStringList strings = parse(value.mid(1, value.size()-2));
 
         if (type == "QList<float>") {

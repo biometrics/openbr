@@ -130,7 +130,7 @@ class CSDNTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() != 1) qFatal("ContrastEq::project expected single channel source matrix.");
+        if (src.m().channels() != 1) qFatal("Expected single channel source matrix.");
 
         const int nRows = src.m().rows;
         const int nCols = src.m().cols;
@@ -180,7 +180,7 @@ class ContrastEqTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() != 1) qFatal("ContrastEq::project expected single channel source matrix.");
+        if (src.m().channels() != 1) qFatal("Expected single channel source matrix.");
 
         // Stage 1
         Mat stage1;

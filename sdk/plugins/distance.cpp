@@ -87,7 +87,7 @@ private:
         }
 
         if (result != result)
-            qFatal("Dist::compare NaN result.");
+            qFatal("NaN result.");
 
         return -log(result+1);
     }

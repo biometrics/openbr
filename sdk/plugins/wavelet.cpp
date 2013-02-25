@@ -109,7 +109,7 @@ private:
         else if (component == Imaginary) dst = imaginary;
         else if (component == Magnitude) dst = magnitude;
         else if (component == Phase)     dst = phase;
-        else                             qFatal("Gabor::project invalid component.");
+        else                             qFatal("Invalid component.");
     }
 };
 
@@ -183,7 +183,7 @@ class GaborJetTransform : public UntrainableTransform
         else if (component == GaborTransform::Imaginary) dst = imaginary;
         else if (component == GaborTransform::Magnitude) dst = magnitude;
         else if (component == GaborTransform::Phase)     dst = phase;
-        else                                             qFatal("GaborJet::response invalid component.");
+        else                                             qFatal("Invalid component.");
         return dst;
     }
 

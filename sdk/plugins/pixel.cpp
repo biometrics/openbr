@@ -54,7 +54,6 @@ class PerPixelClassifierTransform : public MetaTransform
 
     void rotate(Template &src, Template &dst) const
     {
-        //if (src.m().cols%9 != 0) qFatal("Rotation invariance can only be used after Neighbors");
         int images =  (src.m().cols)/9;
         dst = src;
         for (int i = 0; i < images; i++){

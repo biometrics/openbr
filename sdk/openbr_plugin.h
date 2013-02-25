@@ -277,7 +277,7 @@ struct Template : public QList<cv::Mat>
     Template(const cv::Mat &mat) { append(mat); } /*!< \brief Append a matrix. */
 
     inline const cv::Mat &m() const { static const cv::Mat NullMatrix;
-                                      return isEmpty() ? qFatal("Template::m() empty template."), NullMatrix : last(); } /*!< \brief Idiom to treat the template as a matrix. */
+                                      return isEmpty() ? qFatal("Empty template."), NullMatrix : last(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline cv::Mat &m() { return isEmpty() ? append(cv::Mat()), last() : last(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline cv::Mat &operator=(const cv::Mat &other) { return m() = other; } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator const cv::Mat&() const { return m(); } /*!< \brief Idiom to treat the template as a matrix. */

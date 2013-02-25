@@ -112,7 +112,7 @@ class binFormat : public Format
     {
         Mat m;
         t.m().convertTo(m, CV_32F);
-        if (m.channels() != 1) qFatal("binFormat::write only supports single channel matrices.");
+        if (m.channels() != 1) qFatal("Only supports single channel matrices.");
 
         QByteArray data;
         QDataStream stream(&data, QFile::WriteOnly);
@@ -168,8 +168,8 @@ class csvFormat : public Format
     void write(const Template &t) const
     {
         const Mat &m = t.m();
-        if (t.size() != 1) qFatal("csvFormat::write only supports single matrix templates.");
-        if (m.channels() != 1) qFatal("csvFormat::write only supports single channel matrices.");
+        if (t.size() != 1) qFatal("Only supports single matrix templates.");
+        if (m.channels() != 1) qFatal("Only supports single channel matrices.");
 
         QStringList lines; lines.reserve(m.rows);
         for (int r=0; r<m.rows; r++) {
@@ -337,7 +337,7 @@ class matFormat : public Format
             int skipBytes = (bytes < 4) ? (4 - bytes) : (8 - bytes%8)%8;
             if (skipBytes != 0) stream.skipRawData(skipBytes);
 
-            if (error) qFatal("matFormat::Element Unexpected end of file.");
+            if (error) qFatal("Unexpected end of file.");
         }
 
         void print() const
@@ -356,7 +356,7 @@ class matFormat : public Format
             QByteArray header(128, 0);
             f.readRawData(header.data(), 128);
             if (!header.startsWith("MATLAB 5.0 MAT-file"))
-                qFatal("matFormat::read Invalid MAT header.");
+                qFatal("Invalid MAT header.");
         }
 
         Template t(file);
@@ -426,7 +426,7 @@ class matFormat : public Format
 
         for (int i=0; i<t.size(); i++) {
             const Mat &m = t[i];
-            if (m.channels() != 1) qFatal("matFormat::write only supports single channel matrices.");
+            if (m.channels() != 1) qFatal("Only supports single channel matrices.");
 
             QByteArray subdata;
             QDataStream substream(&subdata, QFile::WriteOnly);
@@ -443,7 +443,7 @@ class matFormat : public Format
                   case CV_16UC1: arrayClass = 10; break;
                   case CV_16SC1: arrayClass = 11; break;
                   case CV_32SC1: arrayClass = 12; break;
-                  default: qFatal("matFormat::write unsupported matrix class.");
+                  default: qFatal("Unsupported matrix class.");
                 }
                 substream.writeRawData((const char*)&type, 4);
                 substream.writeRawData((const char*)&bytes, 4);
@@ -480,7 +480,7 @@ class matFormat : public Format
                   case CV_32SC1: type = 5; break;
                   case CV_32FC1: type = 7; break;
                   case CV_64FC1: type = 9; break;
-                  default: qFatal("matFormat::write unsupported matrix type.");
+                  default: qFatal("Unsupported matrix type.");
                 }
                 quint32 bytes = m.elemSize() * m.rows * m.cols;
                 QByteArray buffer((8 - bytes%8)%8, 0);
@@ -531,7 +531,7 @@ class webcamFormat : public Format
     void write(const Template &t) const
     {
         (void) t;
-        qFatal("webcamFormat::write not supported.");
+        qFatal("Not supported.");
     }
 };
 
@@ -552,8 +552,8 @@ class xmlFormat : public Format
     {
         QDomDocument doc(file);
         QFile f(file);
-        if (!f.open(QIODevice::ReadOnly)) qFatal("xmlFormat::read unable to open %s for reading.", qPrintable(file.flat()));
-        if (!doc.setContent(&f))          qFatal("xmlFormat::read unable to parse %s.", qPrintable(file.flat()));
+        if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file.flat()));
+        if (!doc.setContent(&f))          qFatal("Unable to parse %s.", qPrintable(file.flat()));
         f.close();
 
         Template t;
@@ -599,7 +599,7 @@ class xmlFormat : public Format
     void write(const Template &t) const
     {
         (void) t;
-        qFatal("xmlFormat::write not supported.");
+        qFatal("Not supported.");
     }
 };
 

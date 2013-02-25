@@ -32,7 +32,7 @@ class SubtractTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.size() != 2) qFatal("Subtract::project expected exactly two source images, got %d.", src.size());
+        if (src.size() != 2) qFatal("Expected exactly two source images, got %d.", src.size());
         dst.file = src.file;
         subtract(src[0], src[1], dst);
     }
@@ -51,7 +51,7 @@ class AbsDiffTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.size() != 2) qFatal("AbsDiff::project expected exactly two source images, got %d.", src.size());
+        if (src.size() != 2) qFatal("Expected exactly two source images, got %d.", src.size());
         dst.file = src.file;
         absdiff(src[0], src[1], dst);
     }

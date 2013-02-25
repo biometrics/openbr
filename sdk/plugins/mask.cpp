@@ -59,7 +59,7 @@ class GradientMaskTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         const Mat &m = src.m();
-        if (m.type() != CV_8UC1) qFatal("GradientMask operates on 8UC1 matrices.");
+        if (m.type() != CV_8UC1) qFatal("Requires 8UC1 matrices.");
         Mat n = Mat(m.rows, m.cols, CV_8UC1);
         n.setTo(255);
         for (int i=0; i<m.rows; i++) {

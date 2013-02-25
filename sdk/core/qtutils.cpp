@@ -44,7 +44,7 @@ QStringList QtUtils::getFiles(QDir dir, bool recursive)
 
     foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         QDir subdir(dir);
-        bool success = subdir.cd(folder); if (!success) qFatal("QtUtils::getFiles cd failure.");
+        bool success = subdir.cd(folder); if (!success) qFatal("cd failure.");
         files.append(getFiles(subdir, true));
     }
     return files;
@@ -74,7 +74,7 @@ QStringList QtUtils::readLines(const QString &file)
 void QtUtils::readFile(const QString &file, QStringList &lines)
 {
     QFile f(file);
-    if (!f.open(QFile::ReadOnly)) qFatal("QtUtils::readFile unable to open %s for reading.", qPrintable(file));
+    if (!f.open(QFile::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file));
     lines = QString(f.readAll()).split('\n', QString::SkipEmptyParts);
     for (int i=0; i<lines.size(); i++)
         lines[i] = lines[i].simplified();
@@ -84,7 +84,7 @@ void QtUtils::readFile(const QString &file, QStringList &lines)
 void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 {
     QFile f(file);
-    if (!f.open(QFile::ReadOnly)) qFatal("QtUtils::readFile unable to open %s for reading.", qPrintable(file));
+    if (!f.open(QFile::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file));
     data = f.readAll();
     if (uncompress) data = qUncompress(data);
     f.close();
@@ -112,7 +112,7 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
         QFile f(file);
         touchDir(f);
         if (!f.open(QFile::WriteOnly))
-            qFatal("QtUtils::writeFile failed to open %s for writing.", qPrintable(file));
+            qFatal("Failed to open %s for writing.", qPrintable(file));
         f.write(contents);
         f.close();
     }
@@ -139,7 +139,7 @@ void QtUtils::emptyDir(QDir &dir)
 {
     foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks)) {
         QDir subdir(dir);
-        bool success = subdir.cd(folder); if (!success) qFatal("QtUtils::emptyDir cd failure.");
+        bool success = subdir.cd(folder); if (!success) qFatal("cd failure.");
         emptyDir(subdir);
     }
 
@@ -163,28 +163,28 @@ QString QtUtils::find(const QString &file, const QString &alt)
 {
     if (QFileInfo(file).exists()) return file;
     if (QFileInfo(alt).exists()) return alt;
-    qFatal("QtUtils::find can't find file %s or alt %s\n", qPrintable(file), qPrintable(alt));
+    qFatal("Can't find file %s or alt %s\n", qPrintable(file), qPrintable(alt));
     return "";
 }
 
 bool QtUtils::toBool(const QString &string)
 {
     bool ok;
-    bool result = (bool)string.toInt(&ok); if (!ok) qFatal("QtUtils::toBool expected integer value, got %s.", qPrintable(string));
+    bool result = (bool)string.toInt(&ok); if (!ok) qFatal("Expected integer value, got %s.", qPrintable(string));
     return result;
 }
 
 int QtUtils::toInt(const QString &string)
 {
     bool ok;
-    int result = string.toInt(&ok); if (!ok) qFatal("QtUtils::toInt expected integer value, got %s.", qPrintable(string));
+    int result = string.toInt(&ok); if (!ok) qFatal("Expected integer value, got %s.", qPrintable(string));
     return result;
 }
 
 float QtUtils::toFloat(const QString &string)
 {
     bool ok;
-    float result = string.toFloat(&ok); if (!ok) qFatal("QtUtils::toFloat expected floating point value, got %s.", qPrintable(string));
+    float result = string.toFloat(&ok); if (!ok) qFatal("Expected floating point value, got %s.", qPrintable(string));
     return result;
 }
 
@@ -194,7 +194,7 @@ QList<float> QtUtils::toFloats(const QStringList &strings)
     bool ok;
     foreach (const QString &string, strings) {
         floats.append(string.toFloat(&ok));
-        if (!ok) qFatal("QtUtils::toFloats failed to convert %s to floating point format.", qPrintable(string));
+        if (!ok) qFatal("Failed to convert %s to floating point format.", qPrintable(string));
     }
     return floats;
 }
@@ -239,13 +239,13 @@ QStringList QtUtils::parse(QString args, char split)
             } else if ((args[i] == '(') || (args[i] == '[') || (args[i] == '<') || (args[i] == '{')) {
                 subexpressions.push(args[i]);
             } else if (args[i] == ')') {
-                if (subexpressions.pop() != '(') qFatal("QtUtils::parse unexpected ')'.");
+                if (subexpressions.pop() != '(') qFatal("Unexpected ')'.");
             } else if (args[i] == ']') {
-                if (subexpressions.pop() != '[') qFatal("QtUtils::parse unexpected ']'.");
+                if (subexpressions.pop() != '[') qFatal("Unexpected ']'.");
             } else if (args[i] == '>') {
-                if (subexpressions.pop() != '<') qFatal("QtUtils::parse unexpected '>'.");
+                if (subexpressions.pop() != '<') qFatal("Unexpected '>'.");
             } else if (args[i] == '}') {
-                if (subexpressions.pop() != '{') qFatal("QtUtils::parse unexpected '}'.");
+                if (subexpressions.pop() != '{') qFatal("Unexpected '}'.");
             } else if (subexpressions.isEmpty() && (args[i] == split)) {
                 words.append(args.mid(start, i-start).trimmed());
                 start = i+1;

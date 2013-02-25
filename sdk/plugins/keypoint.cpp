@@ -42,7 +42,7 @@ class KeyPointDetectorTransform : public UntrainableTransform
     {
         featureDetector = FeatureDetector::create(detector.toStdString());
         if (featureDetector.empty())
-            qFatal("KeyPointDetector::init failed to create KeyPointDetector: %s", qPrintable(detector));
+            qFatal("Failed to create KeyPointDetector: %s", qPrintable(detector));
     }
 
     void project(const Template &src, Template &dst) const
@@ -85,7 +85,7 @@ class KeyPointDescriptorTransform : public UntrainableTransform
     {
         descriptorExtractor = DescriptorExtractor::create(descriptor.toStdString());
         if (descriptorExtractor.empty())
-            qFatal("KeyPointDescriptor::make failed to create DescriptorExtractor: %s", qPrintable(descriptor));
+            qFatal("Failed to create DescriptorExtractor: %s", qPrintable(descriptor));
     }
 
     void project(const Template &src, Template &dst) const
@@ -123,7 +123,7 @@ class KeyPointMatcherTransform : public Distance
     {
         descriptorMatcher = DescriptorMatcher::create(matcher.toStdString());
         if (descriptorMatcher.empty())
-            qFatal("KeyPointMatcher::make failed to create DescriptorMatcher: %s", qPrintable(matcher));
+            qFatal("Failed to create DescriptorMatcher: %s", qPrintable(matcher));
     }
 
     float compare(const Template &a, const Template &b) const

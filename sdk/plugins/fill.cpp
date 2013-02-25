@@ -114,7 +114,7 @@ class BlendTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.size() != 2) qFatal("Blend::project expected two source matrices.");
+        if (src.size() != 2) qFatal("Expected two source matrices.");
         addWeighted(src[0], alpha, src[1], 1-alpha, 0, dst);
     }
 };

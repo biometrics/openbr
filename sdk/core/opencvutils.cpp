@@ -55,7 +55,7 @@ void OpenCVUtils::saveImage(const Mat &src, const QString &file)
 
     Mat draw;
     cvtUChar(src, draw);
-    bool success = imwrite(file.toStdString(), draw); if (!success) qFatal("OpenCVUtils::saveImage failed to save %s", qPrintable(file));
+    bool success = imwrite(file.toStdString(), draw); if (!success) qFatal("Failed to save %s", qPrintable(file));
 }
 
 void OpenCVUtils::showImage(const Mat &src, const QString &window, bool waitKey)
@@ -112,7 +112,7 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
 {
     if (rows == -1) rows = src.size();
     int columns = src.isEmpty() ? 0 : src.size() / rows;
-    if (rows*columns != src.size()) qFatal("OpenCVUtils::toMat invalid matrix size.");
+    if (rows*columns != src.size()) qFatal("Invalid matrix size.");
     Mat dst(rows, columns, CV_32FC1);
     for (int i=0; i<src.size(); i++)
         dst.at<float>(i/columns,i%columns) = src[i];
@@ -131,7 +131,7 @@ Mat OpenCVUtils::toMat(const QList<Mat> &src)
     for (int i=0; i<rows; i++) {
         const Mat &m = src[i];
         if ((m.total() != total) || (m.type() != type) || !m.isContinuous())
-            qFatal("OpenCVUtils::toMat invalid matrix.");
+            qFatal("Invalid matrix.");
         memcpy(dst.ptr(i), m.ptr(), total * src.first().elemSize());
     }
     return dst;
@@ -149,7 +149,7 @@ Mat OpenCVUtils::toMatByRow(const QList<Mat> &src)
     int row = 0;
     foreach (const Mat &m, src) {
         if ((m.cols != cols) || (m.type() != type) || (!m.isContinuous()))
-            qFatal("OpenCVUtils::toMatByRow invalid matrix.");
+            qFatal("Invalid matrix.");
         memcpy(dst.ptr(row), m.ptr(), m.rows*m.cols*m.elemSize());
         row += m.rows;
     }
@@ -167,7 +167,7 @@ QString OpenCVUtils::elemToString(const Mat &m, int r, int c)
       case CV_32S: return QString::number(m.at<qint32>(r,c));
       case CV_32F: return QString::number(m.at<float>(r,c));
       case CV_64F: return QString::number(m.at<double>(r,c));
-      default:     qFatal("OpenCVUtils::elemToString unknown matrix depth");
+      default:     qFatal("Unknown matrix depth");
     }
     return "?";
 }
@@ -183,7 +183,7 @@ float OpenCVUtils::elemToFloat(const Mat &m, int r, int c)
       case CV_32S: return float(m.at<qint32>(r,c));
       case CV_32F: return float(m.at<float>(r,c));
       case CV_64F: return float(m.at<double>(r,c));
-      default:     qFatal("OpenCVUtils::elemToFloat unknown matrix depth");
+      default:     qFatal("Unknown matrix depth");
     }
     return 0;
 }
@@ -300,10 +300,9 @@ QDataStream &operator<<(QDataStream &stream, const Mat &m)
     int len = rows*cols*m.elemSize();
     stream << len;
     if (len > 0) {
-        if (!m.isContinuous()) qFatal("opencvutils.cpp operator<< Mat can't serialize non-continuous matrices.");
+        if (!m.isContinuous()) qFatal("Can't serialize non-continuous matrices.");
         int written = stream.writeRawData((const char*)m.data, len);
-
-        if (written != len) qFatal("opencvutils.cpp operator<< Mat serialization failure.");
+        if (written != len) qFatal("Serialization failure.");
     }
     return stream;
 }

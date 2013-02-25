@@ -291,12 +291,12 @@ class memGallery : public Gallery
         size_t offset = 0;
         for (int i=0; i<templates.size(); i++) {
             Template &t = templates[i];
-            if (t.size() > 1) qFatal("memGallery::align can't handle multi-matrix template %s.", qPrintable(t.file.flat()));
+            if (t.size() > 1) qFatal("Can't handle multi-matrix template %s.", qPrintable(t.file.flat()));
 
             cv::Mat &m = t;
             if (m.data) {
                 const size_t size = m.total() * m.elemSize();
-                if (!m.isContinuous()) qFatal("memGallery::align requires continuous matrix data of size %d for %s.", (int)size, qPrintable(t.file.flat()));
+                if (!m.isContinuous()) qFatal("Requires continuous matrix data of size %d for %s.", (int)size, qPrintable(t.file.flat()));
                 memcpy(&(alignedData.data()[offset]), m.ptr(), size);
                 m = cv::Mat(m.rows, m.cols, m.type(), &(alignedData.data()[offset]));
                 offset += size;
@@ -596,7 +596,7 @@ class dbGallery : public Gallery
     void write(const Template &t)
     {
         (void) t;
-        qFatal("Writing not supported.");
+        qFatal("Not supported.");
     }
 };
 
@@ -649,7 +649,7 @@ class googleGallery : public Gallery
     void write(const Template &t)
     {
         (void) t;
-        qFatal("Writing to a txtGallery not supported.");
+        qFatal("Not supported.");
     }
 };
 
