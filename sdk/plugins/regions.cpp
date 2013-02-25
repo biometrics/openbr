@@ -89,7 +89,7 @@ class CatTransform : public UntrainableMetaTransform
         dst.file = src.file;
 
         if (src.size() % partitions != 0)
-            qFatal("Cat %d partitions does not evenly divide %d matrices.", partitions, src.size());
+            qFatal("%d partitions does not evenly divide %d matrices.", partitions, src.size());
         QVector<int> sizes(partitions, 0);
         for (int i=0; i<src.size(); i++)
             sizes[i%partitions] += src[i].total() * src[i].channels();

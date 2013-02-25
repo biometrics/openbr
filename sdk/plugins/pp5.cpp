@@ -283,7 +283,7 @@ class PP5Compare : public Distance
     {
         (void) target;
         (void) query;
-        qFatal("PP5Compare::compare (single templates) should never be called!");
+        qFatal("Compare single templates should never be called!");
         return 0;
     }
 

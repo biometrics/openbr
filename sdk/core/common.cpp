@@ -33,7 +33,7 @@ QList<int> Common::RandSample(int n, int max, int min, bool unique)
 
     QList<int> samples; samples.reserve(n);
     int range = max-min;
-    if (range <= 0) qFatal("Common::RandSample non-positive range.");
+    if (range <= 0) qFatal("Non-positive range.");
     if (unique && (n >= range)) {
         for (int i=min; i<max; i++)
             samples.append(i);

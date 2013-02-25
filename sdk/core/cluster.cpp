@@ -90,7 +90,7 @@ Neighborhood getNeighborhood(const QStringList &simmats)
     float globalMin = std::numeric_limits<float>::max();
     int numGalleries = (int)sqrt((float)simmats.size());
     if (numGalleries*numGalleries != simmats.size())
-        qFatal("cluser.cpp readGalleries incorrect number of similarity matrices.");
+        qFatal("Incorrect number of similarity matrices.");
 
     // Process each simmat
     for (int i=0; i<numGalleries; i++) {
@@ -104,7 +104,7 @@ Neighborhood getNeighborhood(const QStringList &simmats)
                 currentRows = m.rows;
                 allNeighbors.resize(currentRows);
             }
-            if (currentRows != m.rows) qFatal("cluster.cpp::getNeighborhood row count mismatch.");
+            if (currentRows != m.rows) qFatal("Row count mismatch.");
 
             // Get data row by row
             for (int k=0; k<m.rows; k++) {
@@ -278,7 +278,7 @@ void br::EvalClustering(const QString &csv, const QString &input)
 {
     qDebug("Evaluating %s against %s", qPrintable(csv), qPrintable(input));
 
-    QList<float> labels = TemplateList::fromInput(input).files().labels();
+    QList<float> labels = TemplateList::fromGallery(input).files().labels();
 
     QHash<int, int> labelToIndex;
     int nClusters = 0;
@@ -322,7 +322,7 @@ br::Clusters br::ReadClusters(const QString &csv)
     Clusters clusters;
     QFile file(csv);
     bool success = file.open(QFile::ReadOnly);
-    if (!success) qFatal("br::ReadClusters failed to open %s for reading.", qPrintable(csv));
+    if (!success) qFatal("Failed to open %s for reading.", qPrintable(csv));
     QStringList lines = QString(file.readAll()).split("\n");
     file.close();
 
@@ -332,7 +332,7 @@ br::Clusters br::ReadClusters(const QString &csv)
         foreach (const QString &id, ids) {
             bool ok;
             cluster.append(id.toInt(&ok));
-            if (!ok) qFatal("br::ReadClusters non-interger id.");
+            if (!ok) qFatal("Non-interger id.");
         }
         clusters.append(cluster);
     }
@@ -343,7 +343,7 @@ void br::WriteClusters(const Clusters &clusters, const QString &csv)
 {
     QFile file(csv);
     bool success = file.open(QFile::WriteOnly);
-    if (!success) qFatal("br::WriteClusters failed to open %s for writing.", qPrintable(csv));
+    if (!success) qFatal("Failed to open %s for writing.", qPrintable(csv));
 
     foreach (Cluster cluster, clusters) {
         if (cluster.empty()) continue;

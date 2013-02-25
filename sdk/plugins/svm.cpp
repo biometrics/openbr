@@ -86,7 +86,7 @@ private:
         }
 
         if (data.type() != CV_32FC1)
-            qFatal("SVM::train expected single channel floating point training data.");
+            qFatal("Expected single channel floating point training data.");
 
         CvSVMParams params;
         params.kernel_type = kernel;

@@ -309,7 +309,7 @@ struct RPlot
 
     RPlot(QStringList files, const br::File &destination, bool isEvalFormat = true)
     {
-        if (files.isEmpty()) qFatal("RPlot::RPlot() empty file list.");
+        if (files.isEmpty()) qFatal("Empty file list.");
         qSort(files.begin(), files.end(), sortFiles);
 
         // Parse destination
@@ -320,7 +320,7 @@ struct RPlot
 
         file.setFileName(basename+".R");
         bool success = file.open(QFile::WriteOnly);
-        if (!success) qFatal("RPlot::RPlot() failed to open %s for writing.", qPrintable(file.fileName()));
+        if (!success) qFatal("Failed to open %s for writing.", qPrintable(file.fileName()));
 
         file.write("# Load libraries\n"
                    "library(ggplot2)\n"

@@ -71,7 +71,7 @@ class OrigLinearRegressionTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.size() != 3) qFatal("OrigLinearRegression::project expected exactly three source images, got %d.", src.size());
+        if (src.size() != 3) qFatal("Expected exactly three source images, got %d.", src.size());
         Mat m1; src[0].convertTo(m1, CV_32F); assert(m1.isContinuous() && (m1.channels() == 1));
         Mat m2; src[1].convertTo(m2, CV_32F); assert(m2.isContinuous() && (m2.channels() == 1));
         Mat m3; src[2].convertTo(m3, CV_32F); assert(m3.isContinuous() && (m3.channels() == 1));

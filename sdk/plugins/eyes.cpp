@@ -71,10 +71,10 @@ public:
 
         // Open the eye locator model
         file.setFileName(Globals->sdkPath + "/share/openbr/models/EyeLocatorASEF128x128.fel");
-        bool success = file.open(QFile::ReadOnly); if (!success) qFatal("ASEFEyes::ASEFEyes failed to open %s for reading.", qPrintable(file.fileName()));
+        if (!file.open(QFile::ReadOnly)) qFatal("Failed to open %s for reading.", qPrintable(file.fileName()));
 
         // Check the first line
-        line = file.readLine().simplified(); if (line != "CFEL") qFatal("ASEFEyes::ASEFEyes invalid header.");
+        if (file.readLine().simplified() != "CFEL") qFatal("Invalid header.");
 
         // Read past the comment and copyright.
         file.readLine();

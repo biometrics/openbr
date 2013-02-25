@@ -95,6 +95,11 @@ QList<File> File::split(const QString &separator) const
     return files;
 }
 
+QString File::resolved() const
+{
+    return exists() ? name : Globals->path + "/" + name;
+}
+
 bool File::contains(const QString &key) const
 {
     return m_metadata.contains(key) || Globals->contains(key);
@@ -150,7 +155,7 @@ void File::set(const QString &key, const QVariant &value)
 
 QVariant File::get(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::get missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     return value(key);
 }
 
@@ -177,9 +182,9 @@ void File::setBool(const QString &key, bool value)
 
 int File::getInt(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getInt missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     bool ok; int result = value(key).toInt(&ok);
-    if (!ok) qFatal("File::getInt invalid conversion from: %s", qPrintable(getString(key)));
+    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
     return result;
 }
 
@@ -193,9 +198,9 @@ int File::getInt(const QString &key, int defaultValue) const
 
 float File::getFloat(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getFloat missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) qFatal("File::getFloat invalid conversion from: %s", qPrintable(getString(key)));
+    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
     return result;
 }
 
@@ -209,7 +214,7 @@ float File::getFloat(const QString &key, float defaultValue) const
 
 QString File::getString(const QString &key) const
 {
-    if (!contains(key)) qFatal("File::getString missing key: %s", qPrintable(key));
+    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
     return value(key).toString();
 }
 
@@ -440,14 +445,14 @@ QDataStream &br::operator>>(QDataStream &stream, Template &t)
 }
 
 /* TemplateList - public methods */
-TemplateList TemplateList::fromInput(const br::File &input)
+TemplateList TemplateList::fromGallery(const br::File &gallery)
 {
     TemplateList templates;
 
-    foreach (const br::File &file, input.split()) {
+    foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
-        const int crossValidate = input.getInt("crossValidate");
+        const int crossValidate = gallery.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
 
         // If file is a Format not a Gallery
@@ -456,13 +461,13 @@ TemplateList TemplateList::fromInput(const br::File &input)
 
         // Propogate metadata
         for (int i=0; i<newTemplates.size(); i++) {
-            newTemplates[i].file.append(input.localMetadata());
+            newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
-            newTemplates[i].file.insert("Input_Index", i+templates.size());
+            newTemplates[i].file.insert("Index", i+templates.size());
             if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
         }
 
-        if (!templates.isEmpty() && input.getBool("merge")) {
+        if (!templates.isEmpty() && gallery.getBool("merge")) {
             if (newTemplates.size() != templates.size())
                 qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
@@ -652,7 +657,7 @@ void Object::setProperty(const QString &name, const QString &value)
 
     QVariant variant;
     if (type.startsWith("QList<") && type.endsWith(">")) {
-        if (!value.startsWith('[')) qFatal("Object::setProperty expected a list.");
+        if (!value.startsWith('[')) qFatal("Expected a list.");
         const QStringList strings = parse(value.mid(1, value.size()-2));
 
         if (type == "QList<float>") {
@@ -1012,6 +1017,11 @@ void MatrixOutput::initialize(const FileList &targetFiles, const FileList &query
 {
     Output::initialize(targetFiles, queryFiles);
     data.create(queryFiles.size(), targetFiles.size(), CV_32FC1);
+}
+
+MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &queryFiles)
+{
+    return dynamic_cast<MatrixOutput*>(Output::make(".Matrix", targetFiles, queryFiles));
 }
 
 /* MatrixOutput - protected methods */

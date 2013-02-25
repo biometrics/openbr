@@ -204,7 +204,7 @@ void br_read_line(int *argc, const char ***argv)
 
 void br_reformat(const char *target_input, const char *query_input, const char *simmat, const char *output)
 {
-    Output::reformat(TemplateList::fromInput(target_input).files(), TemplateList::fromInput(query_input).files(), simmat, output);
+    Output::reformat(TemplateList::fromGallery(target_input).files(), TemplateList::fromGallery(query_input).files(), simmat, output);
 }
 
 const char *br_scratch_path()
