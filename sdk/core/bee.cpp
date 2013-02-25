@@ -145,6 +145,7 @@ Mat readMatrix(const br::File &matrix)
     // Check format
     QByteArray format = file.readLine();
     bool isDistance = (format[0] == 'D');
+
     if (format[1] != '2') qFatal("bee.cpp readMatrix invalid matrix header.");
 
     // Skip sigset lines
