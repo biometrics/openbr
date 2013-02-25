@@ -280,9 +280,12 @@ public:
         if (algorithm.isEmpty()) qFatal("No default algorithm set.");
 
         if (!algorithms.contains(algorithm)) {
+            // Some algorithms are recursive, so we need to construct them outside the lock.
+            QSharedPointer<AlgorithmCore> algorithmCore(new AlgorithmCore(algorithm));
+
             algorithmsLock.lock();
             if (!algorithms.contains(algorithm))
-                algorithms.insert(algorithm, QSharedPointer<AlgorithmCore>(new AlgorithmCore(algorithm)));
+                algorithms.insert(algorithm, algorithmCore);
             algorithmsLock.unlock();
         }
 

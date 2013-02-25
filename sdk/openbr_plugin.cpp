@@ -95,6 +95,11 @@ QList<File> File::split(const QString &separator) const
     return files;
 }
 
+QString File::resolved() const
+{
+    return exists() ? name : Globals->path + "/" + name;
+}
+
 bool File::contains(const QString &key) const
 {
     return m_metadata.contains(key) || Globals->contains(key);
@@ -1012,6 +1017,11 @@ void MatrixOutput::initialize(const FileList &targetFiles, const FileList &query
 {
     Output::initialize(targetFiles, queryFiles);
     data.create(queryFiles.size(), targetFiles.size(), CV_32FC1);
+}
+
+MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &queryFiles)
+{
+    return dynamic_cast<MatrixOutput*>(Output::make(".Matrix", targetFiles, queryFiles));
 }
 
 /* MatrixOutput - protected methods */

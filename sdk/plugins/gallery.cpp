@@ -80,7 +80,7 @@ BR_REGISTER(Gallery, galGallery)
 
 /*!
  * \ingroup galleries
- * \brief Reads and writes templates to folders of images.
+ * \brief Reads/writes templates to/from folders.
  * \author Josh Klontz \cite jklontz
  */
 class EmptyGallery : public Gallery
@@ -120,9 +120,14 @@ class EmptyGallery : public Gallery
         // Enrolling a null file is used as an idiom to initialize an algorithm
         if (file.name.isEmpty()) return;
 
-        QMutexLocker diskLocker(&diskLock);
-        if (t.isNull()) QFile::copy((t.file.exists() ? QString() : Globals->path+"/") + t.file.name, file.name + "/" + t.file.fileName());
-        else            OpenCVUtils::saveImage(t, file.name + "/" + t.file.baseName() + ".png");
+        const QString destination = file.name + "/" + t.file.fileName();
+        QMutexLocker diskLocker(&diskLock); // Windows prefers to crash when writing to disk in parallel
+        if (t.isNull()) {
+            QFile::copy(t.file.resolved(), destination);
+        } else {
+            QScopedPointer<Format> format(Factory<Format>::make(destination));
+            format->write(t);
+        }
     }
 };
 

@@ -153,7 +153,7 @@ struct BR_EXPORT File
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); insert("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
-    operator QString() const { return name; } /*!< \brief Returns #name. */
+    inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
     inline void clear() { name.clear(); m_metadata.clear(); } /*!< \brief Clears the file's name and metadata. */
@@ -187,6 +187,7 @@ struct BR_EXPORT File
     inline QString baseName() const { const QString baseName = QFileInfo(name).baseName();
                                       return baseName.isEmpty() ? QDir(name).dirName() : baseName; } /*!< \brief Returns the file's base name. */
     inline QString suffix() const { return QFileInfo(name).suffix(); } /*!< \brief Returns the file's extension. */
+    QString resolved() const; /*!< \brief Returns name prepended with Globals->path if name does not exist. */
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
@@ -330,7 +331,7 @@ struct TemplateList : public QList<Template>
 
     TemplateList() : uniform(false) {}
     TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
-    TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); }
+    TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromInput(const File &input); /*!< \brief Create a template list from a br::Input. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl); /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     /*!
@@ -363,6 +364,11 @@ struct TemplateList : public QList<Template>
         foreach (const Template &t, *this) files.append(t.file);
         return files;
     }
+
+    /*!
+     * \brief Returns #br::Template::file for each template in the list.
+     */
+    FileList operator()() const { return files(); }
 
     /*!
      * \brief Returns br::Template::label() for each template in the list.
@@ -858,6 +864,11 @@ class BR_EXPORT MatrixOutput : public Output
 
 public:
     cv::Mat data; /*!< \brief The similarity matrix. */
+
+    /*!
+     * \brief Make a MatrixOutput from gallery and probe file lists.
+     */
+    static MatrixOutput *make(const FileList &targetFiles, const FileList &queryFiles);
 
 protected:
     QString toString(int row, int column) const; /*!< \brief Converts the value requested similarity score to a string. */

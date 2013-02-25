@@ -1,5 +1,6 @@
 0.3.0 - ??/??/??
 ================
+* YouTubeFacesDBTransform implements Dr. Wolf's experimental protocol
 
 0.2.0 - 2/23/13
 ===============
