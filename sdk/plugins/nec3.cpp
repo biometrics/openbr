@@ -1,4 +1,7 @@
+#ifdef WIN32
 #include <windows.h>
+#endif
+
 #include <NeoFacePro.h>
 
 #include <openbr_plugin.h>
@@ -139,7 +142,7 @@ class NEC3Enroll : public UntrainableTransform
 
         contexts.release(context);
 
-        if (src.file.getBool("ForceEnrollment") && dst.isEmpty()) dst += cv::Mat();
+        if (!src.file.getBool("enrollAll") && dst.isEmpty()) dst += cv::Mat();
     }
 };
 
