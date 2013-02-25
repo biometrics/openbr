@@ -37,14 +37,14 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
 
-    TemplateList predicted(TemplateList::fromInput(predictedInput));
-    TemplateList truth(TemplateList::fromInput(truthInput));
-    if (predicted.size() != truth.size()) qFatal("br::EvalClassification input size mismatch.");
+    TemplateList predicted(TemplateList::fromGallery(predictedInput));
+    TemplateList truth(TemplateList::fromGallery(truthInput));
+    if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     QHash<int, Counter> counters;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
-            qFatal("br::EvalClassification input order mismatch.");
+            qFatal("Input order mismatch.");
 
         const int trueLabel = truth[i].file.label();
         const int predictedLabel = predicted[i].file.label();
@@ -83,15 +83,15 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
 {
     qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
 
-    const TemplateList predicted(TemplateList::fromInput(predictedInput));
-    const TemplateList truth(TemplateList::fromInput(truthInput));
-    if (predicted.size() != truth.size()) qFatal("br::EvalRegression input size mismatch.");
+    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
+    const TemplateList truth(TemplateList::fromGallery(truthInput));
+    if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
-            qFatal("br::EvalRegression input order mismatch.");
+            qFatal("Input order mismatch.");
         rmsError += pow(predicted[i].file.label()-truth[i].file.label(), 2.f);
         truthValues.append(QString::number(truth[i].file.label()));
         predictedValues.append(QString::number(predicted[i].file.label()));

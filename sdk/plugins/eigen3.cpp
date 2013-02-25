@@ -82,7 +82,7 @@ private:
     void train(const TemplateList &trainingSet)
     {
         if (trainingSet.first().m().type() != CV_32FC1)
-            qFatal("PCA::train requires single channel 32-bit floating point matrices.");
+            qFatal("Requires single channel 32-bit floating point matrices.");
 
         originalRows = trainingSet.first().m().rows;
         int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols;
@@ -156,7 +156,7 @@ private:
             }
         } else {
             if (keep + drop > allEVals.rows())
-                qFatal("PCA::train insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
+                qFatal("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
         }
 
         // Keep highest energy vectors

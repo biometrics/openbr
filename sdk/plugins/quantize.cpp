@@ -95,7 +95,7 @@ class PackTransform : public UntrainableTransform
     {
         const Mat &m = src;
         if ((m.cols % 2 != 0) || (m.type() != CV_8UC1))
-            qFatal("Pack::project invalid template format.");
+            qFatal("Invalid template format.");
 
         Mat n(m.rows, m.cols/2, CV_8UC1);
         for (int i=0; i<m.rows; i++)

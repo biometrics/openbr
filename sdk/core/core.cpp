@@ -40,7 +40,7 @@ struct AlgorithmCore
 
     void train(const File &input, const QString &model)
     {
-        TemplateList data(TemplateList::fromInput(input));
+        TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d training files", data.size());
@@ -118,7 +118,7 @@ struct AlgorithmCore
         if (!fileList.isEmpty() && gallery.contains("cache"))
             return fileList;
 
-        const TemplateList i(TemplateList::fromInput(input));
+        const TemplateList i(TemplateList::fromGallery(input));
         if (i.isEmpty()) return fileList; // Nothing to enroll
 
         if (transform.isNull()) qFatal("Null transform.");
@@ -280,9 +280,12 @@ public:
         if (algorithm.isEmpty()) qFatal("No default algorithm set.");
 
         if (!algorithms.contains(algorithm)) {
+            // Some algorithms are recursive, so we need to construct them outside the lock.
+            QSharedPointer<AlgorithmCore> algorithmCore(new AlgorithmCore(algorithm));
+
             algorithmsLock.lock();
             if (!algorithms.contains(algorithm))
-                algorithms.insert(algorithm, QSharedPointer<AlgorithmCore>(new AlgorithmCore(algorithm)));
+                algorithms.insert(algorithm, algorithmCore);
             algorithmsLock.unlock();
         }
 

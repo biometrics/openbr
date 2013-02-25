@@ -100,7 +100,7 @@ private:
         if      (method == Mean)   mean(m.col(i), &A, &B);
         else if (method == Median) median(m.col(i), &A, &B);
         else if (method == Range)  range(m.col(i), &A, &B);
-        else                       qFatal("Center::train invalid method");
+        else                       qFatal("Invalid method.");
         ca->at<double>(0, i) = A;
         cb->at<double>(0, i) = B;
     }

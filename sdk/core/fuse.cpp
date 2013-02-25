@@ -60,7 +60,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
             }
         }
     } else if (method == "ZScore") {
-        if (stddev == 0) qFatal("fuse.cpp normalizeMatrix stddev is 0.");
+        if (stddev == 0) qFatal("Stddev is 0.");
                 for (int i=0; i<matrix.rows; i++) {
             for (int j=0; j<matrix.cols; j++) {
                 if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
@@ -71,7 +71,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
             }
         }
     } else {
-        qFatal("fuse.cpp normalizeMatrix invalid normalization method %s.", qPrintable(method));
+        qFatal("Invalid normalization method %s.", qPrintable(method));
     }
 }
 
@@ -81,8 +81,8 @@ void br::Fuse(const QStringList &inputSimmats, const QString &mask, const QStrin
     QList<Mat> matrices;
     foreach (const QString &simmat, inputSimmats)
         matrices.append(BEE::readSimmat(simmat));
-    if ((matrices.size() < 2) && (fusion != "None")) qFatal("br::Fuse expected at least two similarity matrices.");
-    if ((matrices.size() > 1) && (fusion == "None")) qFatal("mm:Fuse expected exactly one similarity matrix.");
+    if ((matrices.size() < 2) && (fusion != "None")) qFatal("Expected at least two similarity matrices.");
+    if ((matrices.size() > 1) && (fusion == "None")) qFatal("Expected exactly one similarity matrix.");
     Mat matrix_mask = BEE::readMask(mask);
 
     for (int i=0; i<matrices.size(); i++)
@@ -107,27 +107,27 @@ void br::Fuse(const QStringList &inputSimmats, const QString &mask, const QStrin
             bool ok;
             for (int k=0; k<matrices.size(); k++) {
                 float weight = words[k].toFloat(&ok);
-                if (!ok) qFatal("br::Fuse non-numerical weight %s.", qPrintable(words[k]));
+                if (!ok) qFatal("Non-numerical weight %s.", qPrintable(words[k]));
                 weights.append(weight);
             }
         } else {
-            qFatal("br::Fuse number of weights does not match number of similarity matrices.");
+            qFatal("Number of weights does not match number of similarity matrices.");
         }
 
         addWeighted(matrices[0], weights[0], matrices[1], weights[1], 0, fused);
         for (int i=2; i<matrices.size(); i++)
             addWeighted(fused, 1, matrices[i], weights[i], 0, fused);
     } else if (fusion == "Replace") {
-        if (matrices.size() != 2) qFatal("br::Fuse Replace fusion requires exactly two matrices.");
+        if (matrices.size() != 2) qFatal("Replace fusion requires exactly two matrices.");
         fused = matrices.first().clone();
         matrices.last().copyTo(fused, matrix_mask != BEE::DontCare);
     } else if (fusion == "Difference") {
-        if (matrices.size() != 2) qFatal("br::Fuse Difference fusion requires exactly two matrices.");
+        if (matrices.size() != 2) qFatal("Difference fusion requires exactly two matrices.");
         subtract(matrices[0], matrices[1], fused);
     } else if (fusion == "None") {
         fused = matrices[0];
     } else {
-        qFatal("br::Fuse invalid fusion method %s.", qPrintable(fusion));
+        qFatal("Invalid fusion method %s.", qPrintable(fusion));
     }
 
     BEE::writeSimmat(fused, outputSimmat);

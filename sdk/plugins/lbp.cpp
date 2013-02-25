@@ -171,7 +171,7 @@ class ColoredU2Transform : public UntrainableTransform
         }
 
         if (src.m().type() != CV_8UC1)
-            qFatal("ColoredU2::project expected 8UC1 source type.");
+            qFatal("Expected 8UC1 source type.");
 
         Mat hue, saturation, value;
         LUT(src, hueLUT, hue);

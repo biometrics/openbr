@@ -158,15 +158,15 @@ class MatchProbabilityDistance : public Distance
         distance->train(src);
 
         const QList<int> labels = src.labels<int>();
-        QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(src.size()), FileList(src.size()))));
-        distance->compare(src, src, memoryOutput.data());
+        QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(src.size()), FileList(src.size())));
+        distance->compare(src, src, matrixOutput.data());
 
         QList<float> genuineScores, impostorScores;
         genuineScores.reserve(labels.size());
         impostorScores.reserve(labels.size()*labels.size());
         for (int i=0; i<src.size(); i++) {
             for (int j=0; j<i; j++) {
-                const float score = memoryOutput.data()->data.at<float>(i, j);
+                const float score = matrixOutput.data()->data.at<float>(i, j);
                 if (score == -std::numeric_limits<float>::max()) continue;
                 if (labels[i] == labels[j]) genuineScores.append(score);
                 else                        impostorScores.append(score);
@@ -217,8 +217,8 @@ class UnitDistance : public Distance
     {
         const TemplateList samples = templates.mid(0, 2000);
         const QList<float> sampleLabels = samples.labels<float>();
-        QScopedPointer<MatrixOutput> memoryOutput(dynamic_cast<MatrixOutput*>(Output::make(".Matrix", FileList(samples.size()), FileList(samples.size()))));
-        Distance::compare(samples, samples, memoryOutput.data());
+        QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(samples.size()), FileList(samples.size())));
+        Distance::compare(samples, samples, matrixOutput.data());
 
         double genuineAccumulator, impostorAccumulator;
         int genuineCount, impostorCount;
@@ -226,7 +226,7 @@ class UnitDistance : public Distance
 
         for (int i=0; i<samples.size(); i++) {
             for (int j=0; j<i; j++) {
-                const float val = memoryOutput.data()->data.at<float>(i, j);
+                const float val = matrixOutput.data()->data.at<float>(i, j);
                 if (sampleLabels[i] == sampleLabels[j]) {
                     genuineAccumulator += val;
                     genuineCount++;
