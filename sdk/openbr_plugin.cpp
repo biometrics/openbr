@@ -463,7 +463,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         for (int i=0; i<newTemplates.size(); i++) {
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
-            newTemplates[i].file.insert("Input_Index", i+templates.size());
+            newTemplates[i].file.insert("Index", i+templates.size());
             if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
         }
 

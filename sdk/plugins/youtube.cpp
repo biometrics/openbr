@@ -28,7 +28,7 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
         dst = src;
 
         // First input is the header in 'splits.txt'
-        if (src.file.getInt("Input_Index") == 0) return;
+        if (src.file.getInt("Index") == 0) return;
 
         const QStringList words = src.file.name.split(", ");
         dst.file.name = words[0] + "_" + words[1] + "_" + words[4] + ".mtx";
