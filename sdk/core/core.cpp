@@ -40,7 +40,7 @@ struct AlgorithmCore
 
     void train(const File &input, const QString &model)
     {
-        TemplateList data(TemplateList::fromInput(input));
+        TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d training files", data.size());
@@ -118,7 +118,7 @@ struct AlgorithmCore
         if (!fileList.isEmpty() && gallery.contains("cache"))
             return fileList;
 
-        const TemplateList i(TemplateList::fromInput(input));
+        const TemplateList i(TemplateList::fromGallery(input));
         if (i.isEmpty()) return fileList; // Nothing to enroll
 
         if (transform.isNull()) qFatal("Null transform.");

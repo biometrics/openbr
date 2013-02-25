@@ -227,8 +227,8 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
 
-    FileList targetFiles = TemplateList::fromInput(targetInput).files();
-    FileList queryFiles = TemplateList::fromInput(queryInput).files();
+    FileList targetFiles = TemplateList::fromGallery(targetInput).files();
+    FileList queryFiles = TemplateList::fromGallery(queryInput).files();
     QList<float> targetLabels = targetFiles.labels();
     QList<float> queryLabels = queryFiles.labels();
     QList<int> targetPartitions = targetFiles.crossValidationPartitions();

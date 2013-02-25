@@ -445,14 +445,14 @@ QDataStream &br::operator>>(QDataStream &stream, Template &t)
 }
 
 /* TemplateList - public methods */
-TemplateList TemplateList::fromInput(const br::File &input)
+TemplateList TemplateList::fromGallery(const br::File &gallery)
 {
     TemplateList templates;
 
-    foreach (const br::File &file, input.split()) {
+    foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
-        const int crossValidate = input.getInt("crossValidate");
+        const int crossValidate = gallery.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
 
         // If file is a Format not a Gallery
@@ -461,13 +461,13 @@ TemplateList TemplateList::fromInput(const br::File &input)
 
         // Propogate metadata
         for (int i=0; i<newTemplates.size(); i++) {
-            newTemplates[i].file.append(input.localMetadata());
+            newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.insert("Input_Index", i+templates.size());
             if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
         }
 
-        if (!templates.isEmpty() && input.getBool("merge")) {
+        if (!templates.isEmpty() && gallery.getBool("merge")) {
             if (newTemplates.size() != templates.size())
                 qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
