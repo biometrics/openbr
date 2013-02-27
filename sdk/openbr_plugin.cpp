@@ -1239,10 +1239,10 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
-    { // Check for use of '!' as shorthand for Chain(...)
+    { // Check for use of '!' as shorthand for Expand(...)
         QStringList words = parse(str, '!');
         if (words.size() > 1)
-            return make("Chain([" + words.join(",") + "])", parent);
+            return make("Expand([" + words.join(",") + "])", parent);
     }
 
     { // Check for use of '+' as shorthand for Pipe(...)

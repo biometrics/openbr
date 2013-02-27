@@ -92,7 +92,7 @@ static void incrementStep()
  *
  * The source br::Template is given to the first transform and the resulting br::Template is passed to the next transform, etc.
  *
- * \see ChainTransform
+ * \see ExpandTransform
  */
 class PipeTransform : public MetaTransform
 {
@@ -171,7 +171,7 @@ BR_REGISTER(Transform, PipeTransform)
  *
  * \see PipeTransform
  */
-class ChainTransform : public MetaTransform
+class ExpandTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
@@ -234,7 +234,7 @@ class ChainTransform : public MetaTransform
     }
 };
 
-BR_REGISTER(Transform, ChainTransform)
+BR_REGISTER(Transform, ExpandTransform)
 
 /*!
  * \ingroup transforms
