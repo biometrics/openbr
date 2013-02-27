@@ -452,6 +452,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
+        if (gallery.getBool("reduce")) newTemplates = newTemplates.reduced();
         const int crossValidate = gallery.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
 

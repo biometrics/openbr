@@ -393,6 +393,17 @@ struct TemplateList : public QList<Template>
                 labelCounts[file.label()]++;
         return labelCounts;
     }
+
+    /*!
+     * \brief Merge all the templates together.
+     */
+    TemplateList reduced() const
+    {
+        Template reduced;
+        foreach (const Template &t, *this)
+            reduced.merge(t);
+        return TemplateList() << reduced;
+    }
 };
 
 /*!

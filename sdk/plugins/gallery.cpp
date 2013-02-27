@@ -135,7 +135,7 @@ BR_REGISTER(Gallery, EmptyGallery)
 
 /*!
  * \ingroup galleries
- * \brief Treats the gallery as a single image.
+ * \brief Treats the gallery as a br::Format.
  * \author Josh Klontz \cite jklontz
  */
 class DefaultGallery : public Gallery
@@ -150,8 +150,8 @@ class DefaultGallery : public Gallery
 
     void write(const Template &t)
     {
-        QtUtils::touchDir(QFileInfo(file.name));
-        OpenCVUtils::saveImage(t, file.name);
+        QScopedPointer<Format> format(Factory<Format>::make(file));
+        format->write(t);
     }
 };
 BR_REGISTER(Gallery, DefaultGallery)
