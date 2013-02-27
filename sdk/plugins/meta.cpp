@@ -26,13 +26,13 @@ using namespace cv;
 namespace br
 {
 
-static TemplateList Simplified(const TemplateList &templates)
+static TemplateList Expanded(const TemplateList &templates)
 {
-    TemplateList simplified;
+    TemplateList expanded;
     foreach (const Template &t, templates) {
         if (t.isEmpty()) {
             if (!t.file.getBool("enrollAll"))
-                simplified.append(t);
+                expanded.append(t);
             continue;
         }
 
@@ -46,13 +46,13 @@ static TemplateList Simplified(const TemplateList &templates)
 
         for (int i=0; i<t.size(); i++) {
             if (!fte || !t.file.getBool("enrollAll")) {
-                simplified.append(Template(t.file, t[i]));
-                simplified.last().file.setROIs(ROIs.mid(i*ROIStep, ROIStep));
-                simplified.last().file.setLandmarks(landmarks.mid(i*landmarkStep, landmarkStep));
+                expanded.append(Template(t.file, t[i]));
+                expanded.last().file.setROIs(ROIs.mid(i*ROIStep, ROIStep));
+                expanded.last().file.setLandmarks(landmarks.mid(i*landmarkStep, landmarkStep));
             }
         }
     }
-    return simplified;
+    return expanded;
 }
 
 static void _train(Transform *transform, const TemplateList *data)
@@ -93,6 +93,7 @@ static void incrementStep()
  * The source br::Template is given to the first transform and the resulting br::Template is passed to the next transform, etc.
  *
  * \see ExpandTransform
+ * \see ForkTransform
  */
 class PipeTransform : public MetaTransform
 {
@@ -142,10 +143,9 @@ class PipeTransform : public MetaTransform
     void backProject(const Template &dst, Template &src) const
     {
         src = dst;
-        //reverse order in which transforms are processed
+        // Reverse order in which transforms are processed
         int length = transforms.length();
-        //foreach (const Transform *f, transforms) {
-        for (int i=length-1; i>=0; i--){
+        for (int i=length-1; i>=0; i--) {
             Transform *f = transforms.at(i);
             try {
                 src >> *f;
@@ -156,18 +156,17 @@ class PipeTransform : public MetaTransform
             }
         }
     }
-
 };
 
 BR_REGISTER(Transform, PipeTransform)
 
 /*!
  * \ingroup transforms
- * \brief Transforms in series.
+ * \brief Transforms in series with expansion step.
  * \author Josh Klontz \cite jklontz
  *
  * The source br::Template is given to the first transform and the resulting br::Template is passed to the next transform, etc.
- * Each matrix is reorganized into a new template before continuing.
+ * Each matrix is expanded into its own template between steps.
  *
  * \see PipeTransform
  */
@@ -185,7 +184,7 @@ class ExpandTransform : public MetaTransform
         for (int i=0; i<transforms.size(); i++) {
             transforms[i]->train(copy);
             copy >> *transforms[i];
-            copy = Simplified(copy);
+            copy = Expanded(copy);
             incrementStep();
         }
 
@@ -211,17 +210,16 @@ class ExpandTransform : public MetaTransform
         dst = src;
         for (int i=0; i<transforms.size(); i++) {
             dst >> *transforms[i];
-            dst = Simplified(dst);
+            dst = Expanded(dst);
         }
     }
 
     void backProject(const Template &dst, Template &src) const
     {
         src = dst;
-        //reverse order in which transforms are processed
+        // Reverse order in which transforms are processed
         int length = transforms.length();
-        //foreach (const Transform *f, transforms) {
-        for (int i=length-1; i>=0; i--){
+        for (int i=length-1; i>=0; i--) {
             Transform *f = transforms.at(i);
             try {
                 src >> *f;
@@ -242,6 +240,8 @@ BR_REGISTER(Transform, ExpandTransform)
  * \author Josh Klontz \cite jklontz
  *
  * The source br::Template is seperately given to each transform and the results are appended together.
+ *
+ * \see PipeTransform
  */
 class ForkTransform : public MetaTransform
 {
