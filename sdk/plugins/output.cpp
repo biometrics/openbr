@@ -259,6 +259,46 @@ BR_REGISTER(Output, EmptyOutput)
 
 /*!
  * \ingroup outputs
+ * \brief Outputs highest ranked matches with scores.
+ * \author Scott Klum \cite sklum
+ */
+class rankOutput : public MatrixOutput
+{
+    Q_OBJECT
+
+    ~rankOutput()
+    {
+        if (targetFiles.isEmpty() || queryFiles.isEmpty()) return;
+
+        QList<int> ranks;
+        QList<double> scores;
+        QStringList lines;
+
+        for (int i=0; i<queryFiles.size(); i++) {
+            typedef QPair<float,int> Pair;
+            int rank = 1;
+            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true)) {
+                if(targetFiles[pair.second].label() == queryFiles[i].label()) {
+                    ranks.append(rank);
+                    scores.append(pair.first);
+                    break;
+                }
+                rank++;
+            }
+        }
+
+        typedef QPair<int,int> RankPair;
+        foreach (const RankPair &pair, Common::Sort(ranks, false))
+            lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[pair.second].name);
+
+        QtUtils::writeFile(file, lines);
+    }
+};
+
+BR_REGISTER(Output, rankOutput)
+
+/*!
+ * \ingroup outputs
  * \brief The highest scoring matches.
  * \author Josh Klontz \cite jklontz
  */
