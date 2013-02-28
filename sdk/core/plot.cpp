@@ -254,6 +254,13 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(float(realizedReturns)/possibleReturns))));
     }
 
+    // Write good matches and bad matches
+    /*
+    const int Good_Matches = 3;
+    const int Bad_Matches = 3;
+
+    for (int i = 1; i<=)*/
+
     if (!csv.isEmpty()) QtUtils::writeFile(csv, lines);
     qDebug("TAR @ FAR = 0.01: %.3f", result);
     return result;
