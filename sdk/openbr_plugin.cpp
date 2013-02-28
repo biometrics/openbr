@@ -452,6 +452,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
+        if (gallery.getBool("reduce")) newTemplates = newTemplates.reduced();
         const int crossValidate = gallery.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
 
@@ -1239,10 +1240,10 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
-    { // Check for use of '!' as shorthand for Chain(...)
+    { // Check for use of '!' as shorthand for Expand(...)
         QStringList words = parse(str, '!');
         if (words.size() > 1)
-            return make("Chain([" + words.join(",") + "])", parent);
+            return make("Expand([" + words.join(",") + "])", parent);
     }
 
     { // Check for use of '+' as shorthand for Pipe(...)

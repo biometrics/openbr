@@ -509,6 +509,34 @@ BR_REGISTER(Format, matFormat)
 
 /*!
  * \ingroup formats
+ * \brief RAW format
+ *
+ * http://www.nist.gov/srd/nistsd27.cfm
+ * \author Josh Klontz \cite jklontz
+ */
+class rawFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        QByteArray data;
+        QtUtils::readFile(file, data);
+        if (data.size() != 768*800)
+            qFatal("Expected 768*800 bytes.");
+        return Template(file, Mat(768, 800, CV_8UC1, data.data()).clone());
+    }
+
+    void write(const Template &t) const
+    {
+        QtUtils::writeFile(file, QByteArray().setRawData((const char*)t.m().data, t.m().total() * t.m().elemSize()));
+    }
+};
+
+BR_REGISTER(Format, rawFormat)
+
+/*!
+ * \ingroup formats
  * \brief Retrieves an image from a webcam.
  * \author Josh Klontz \cite jklontz
  */

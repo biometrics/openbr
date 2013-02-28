@@ -317,6 +317,26 @@ class RenameFirstTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RenameFirstTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Change the br::Template::file extension
+ * \author Josh Klontz \cite jklontz
+ */
+class AsTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString extension READ get_extension WRITE set_extension RESET reset_extension STORED false)
+    BR_PROPERTY(QString, extension, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        dst.file.name = dst.file.name.left(dst.file.name.lastIndexOf('.')+1) + extension;
+    }
+};
+
+BR_REGISTER(Transform, AsTransform)
+
 }
 
 #include "misc.moc"
