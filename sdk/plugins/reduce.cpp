@@ -119,6 +119,27 @@ private:
 
 BR_REGISTER(Transform, StatTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Downsample the rows and columns of a matrix.
+ */
+class DownsampleTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(int k READ get_k WRITE set_k RESET reset_k STORED false)
+    BR_PROPERTY(int, k, 1)
+
+    void project(const Template &src, Template &dst) const
+    {
+        Mat input = src.m();
+        Mat output;
+        (void) input; // TODO: write me!
+        dst.m() = output;
+    }
+};
+
+BR_REGISTER(Transform, DownsampleTransform)
+
 } // namespace br
 
 #include "reduce.moc"
