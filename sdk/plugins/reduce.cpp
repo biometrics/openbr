@@ -122,6 +122,7 @@ BR_REGISTER(Transform, StatTransform)
 /*!
  * \ingroup transforms
  * \brief Downsample the rows and columns of a matrix.
+ * \author Lacey Best-Rowden \cite lbestrowden
  */
 class DownsampleTransform : public UntrainableTransform
 {
@@ -132,8 +133,12 @@ class DownsampleTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat input = src.m();
-        Mat output;
-        (void) input; // TODO: write me!
+        Mat output(ceil((double)input.rows/k), ceil((double)input.cols/k), CV_32FC1);
+        for (int r=0; r<output.rows; r++) {
+            for (int c=0; c<output.cols; c++) {
+                output.at<float>(r,c) = input.at<float>(r*k,c*k);
+            }
+        }
         dst.m() = output;
     }
 };
