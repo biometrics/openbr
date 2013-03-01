@@ -271,7 +271,8 @@ class rankOutput : public MatrixOutput
         if (targetFiles.isEmpty() || queryFiles.isEmpty()) return;
 
         QList<int> ranks;
-        QList<double> scores;
+        QList<int> positions;
+        QList<float> scores;
         QStringList lines;
 
         for (int i=0; i<queryFiles.size(); i++) {
@@ -280,6 +281,7 @@ class rankOutput : public MatrixOutput
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true)) {
                 if(targetFiles[pair.second].getString("Label") == queryFiles[i].getString("Label")) {
                     ranks.append(rank);
+                    positions.append(pair.second);
                     scores.append(pair.first);
                     break;
                 }
@@ -288,10 +290,9 @@ class rankOutput : public MatrixOutput
         }
 
         typedef QPair<int,int> RankPair;
-        foreach (const RankPair &pair, Common::Sort(ranks, false)) {
-            qDebug() << ranks[pair.second];
-            lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[ranks[pair.second]].name);
-}
+        foreach (const RankPair &pair, Common::Sort(ranks, false))
+            lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[positions[pair.second]].name);
+
         QtUtils::writeFile(file, lines);
     }
 };

@@ -349,6 +349,8 @@ QDataStream &br::operator<<(QDataStream &stream, const File &file)
 QDataStream &br::operator>>(QDataStream &stream, File &file)
 {
     return stream >> file.name >> file.m_metadata;
+    const QVariant label = file.m_metadata.value("Label");
+    if (!label.isNull()) file.set("Label", label); // Trigger population of Globals->classes
 }
 
 /* FileList - public methods */
