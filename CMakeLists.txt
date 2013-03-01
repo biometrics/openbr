@@ -75,6 +75,9 @@ find_package(OpenCV REQUIRED)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching video videostab)
 
+# Find NaturalStringCompare
+find_package(NaturalStringCompare REQUIRED)
+
 # Compiler flags
 if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -fvisibility=hidden -fno-omit-frame-pointer")

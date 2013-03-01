@@ -24,6 +24,7 @@
 #endif // BR_EMBEDDED
 #include <openbr_plugin.h>
 
+#include "NaturalStringCompare.h"
 #include "core/bee.h"
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
@@ -102,7 +103,7 @@ class EmptyGallery : public Gallery
 
         // Add immediate subfolders
         QDir dir(file);
-        foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+        foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)))
             foreach (const QString &file, QtUtils::getFiles(dir.absoluteFilePath(folder), true))
                 templates.append(File(file, folder));
 

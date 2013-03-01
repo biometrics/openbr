@@ -7,7 +7,7 @@ aux_source_directory(. SRC)
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
-add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_PLUGIN} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES})
+add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_PLUGIN} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY
