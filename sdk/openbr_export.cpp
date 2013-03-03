@@ -84,13 +84,12 @@ $ br -help
  *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
  *  -# During installation setup select "add CMake to PATH".
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and unarchive.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
- *  -# Move the "OpenCV-2.4.3" folder to "C:\".
- *  -# In "C:\OpenCV-2.4.3\modules\objdetect\src\haar.cpp" line 55, change "#ifdev CV_AVX" to "#ifdef 0".
+ *  -# Move the "OpenCV-2.4.4" folder to "C:\".
  *  -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
  *  \code
- *  $ cd C:\OpenCV-2.4.3
+ *  $ cd C:\OpenCV-2.4.4
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
  *  $ cmake -G "NMake Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
@@ -129,7 +128,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
@@ -164,12 +163,12 @@ $ br -help
  *  -# Move "x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb\mingw64" to "C:\".
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
  *  -# During installation setup select "add CMake to PATH".
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a> and unarchive.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
- *  -# Move the "OpenCV-2.4.3" folder to "C:\".
+ *  -# Move the "OpenCV-2.4.4" folder to "C:\".
  *  -# From the MinGW-w64 Command Prompt (double-click "C:\mingw64\mingw64env.cmd"):
  *  \code
- *  $ cd C:\OpenCV-2.4.3
+ *  $ cd C:\OpenCV-2.4.4
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
  *  $ cmake -G "MinGW Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
@@ -208,7 +207,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.3/build-mingw64/install;C:/Qt/5.0.1/mingw64" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-mingw64/install;C:/Qt/5.0.1/mingw64" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
  *  $ mingw32-make
  *  $ mingw32-make install
  *  \endcode
@@ -250,18 +249,18 @@ $ br -help
  * $ cd ..
  * $ rm -r cmake-2.8.10.2
  * \endcode
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  * \code
  * $ cd ~/Downloads
- * $ tar -xf OpenCV-2.4.3.tar.bz2
- * $ cd OpenCV-2.4.3
+ * $ tar -xf OpenCV-2.4.4.tar.bz2
+ * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake ..
+ * $ cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
- * $ rm -r OpenCV-2.4.3
+ * $ rm -r OpenCV-2.4.4
  * \endcode
  * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-mac-opensource-5.0.1-clang-offline.dmg">Download Qt 5.0.1</a> and install.
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
@@ -296,7 +295,7 @@ $ br -help
  * $ make package
  * \endcode
  * -# Build OpenBR documentation!
- *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.3.1.src.tar.gz">Download Doxygen 1.8.3.1</a> and install:
+ *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a> and install:
  *  \code
  *  $ cd ~/Downloads
  *  $ tar -xf doxygen-1.8.2.src.tar.gz
@@ -334,18 +333,18 @@ $ br -help
  * $ cd ..
  * $ rm -r cmake-2.8.10.2
  * \endcode
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  * \code
  * $ cd ~/Downloads
- * $ tar -xf OpenCV-2.4.3.tar.bz2
- * $ cd OpenCV-2.4.3
+ * $ tar -xf OpenCV-2.4.4.tar.bz2
+ * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
- * $ rm -r OpenCV-2.4.3
+ * $ rm -r OpenCV-2.4.4
  * \endcode
  * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-linux-opensource-5.0.1-x86_64-offline.run">Download Qt 5.0.1</a>.
  * \code
@@ -401,18 +400,18 @@ $ br -help
  * $ cd ..
  * $ rm -r cmake-2.8.10.2
  * \endcode
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  * \code
  * $ cd ~/Downloads
- * $ tar -xf OpenCV-2.4.3.tar.bz2
- * $ cd OpenCV-2.4.3
+ * $ tar -xf OpenCV-2.4.4.tar.bz2
+ * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
- * $ rm -r OpenCV-2.4.3
+ * $ rm -r OpenCV-2.4.4
  * \endcode
  * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-linux-opensource-5.0.1-x86_64-offline.run">Download Qt 5.0.1</a>.
  * \code
