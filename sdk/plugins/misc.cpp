@@ -40,7 +40,7 @@ class OpenTransform : public UntrainableMetaTransform
         foreach (const File &file, src.file.split()) {
             QScopedPointer<Format> format(Factory<Format>::make(file));
             Template t = format->read();
-            if (t.isEmpty()) qWarning("Can't open %s", qPrintable(file.flat()));
+            if (t.isEmpty()) qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
             dst.append(t);
             dst.file.append(t.file.localMetadata());
         }

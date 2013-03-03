@@ -250,18 +250,18 @@ $ br -help
  * $ cd ..
  * $ rm -r cmake-2.8.10.2
  * \endcode
- * -# <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.3/OpenCV-2.4.3.tar.bz2/download">Download OpenCV 2.4.3</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
  * \code
  * $ cd ~/Downloads
- * $ tar -xf OpenCV-2.4.3.tar.bz2
- * $ cd OpenCV-2.4.3
+ * $ tar -xf OpenCV-2.4.4.tar.bz2
+ * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake ..
+ * $ cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
- * $ rm -r OpenCV-2.4.3
+ * $ rm -r OpenCV-2.4.4
  * \endcode
  * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-mac-opensource-5.0.1-clang-offline.dmg">Download Qt 5.0.1</a> and install.
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
@@ -296,7 +296,7 @@ $ br -help
  * $ make package
  * \endcode
  * -# Build OpenBR documentation!
- *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.3.1.src.tar.gz">Download Doxygen 1.8.3.1</a> and install:
+ *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a> and install:
  *  \code
  *  $ cd ~/Downloads
  *  $ tar -xf doxygen-1.8.2.src.tar.gz

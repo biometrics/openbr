@@ -13,7 +13,6 @@ if(NOT ${BR_EMBEDDED})
                                    SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}
                                    LINK_INTERFACE_LIBRARIES "")
   target_link_libraries(openbr-gui openbr ${OpenCV_LIBS})
-  add_cppcheck(openbr-gui)
 
   install(FILES ${HEADERS} DESTINATION include/openbr-gui)
   install(TARGETS openbr-gui RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)

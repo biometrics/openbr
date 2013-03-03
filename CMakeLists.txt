@@ -39,8 +39,6 @@ endif()
 if(WIN32)
   configure_file(${BR_SHARE_DIR}/resources.rc.in resources.rc)
   set(BR_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
-elseif(APPLE)
-  set(BR_RESOURCES ${NATIVE_ICON})
 endif()
 
 # Build options
