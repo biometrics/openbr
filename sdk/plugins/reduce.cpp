@@ -132,6 +132,8 @@ class DownsampleTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+        if (src.m().channels() != 1)
+            qFatal("Expected 1 channel matrix.");
         Mat input = src.m();
         Mat output(ceil((double)input.rows/k), ceil((double)input.cols/k), CV_32FC1);
         for (int r=0; r<output.rows; r++) {
