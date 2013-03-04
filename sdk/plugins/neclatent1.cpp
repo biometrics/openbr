@@ -55,11 +55,11 @@ private:
         int error;
 
         if (latent) {
-            if      (algorithm == LFML) error = NEC_LFML_ExtractLatent(src.m().data, src.m().rows, src.m().cols, 500, data, &size);
-            else                        error = NEC_ELFT_ExtractLatent(src.m().data, src.m().rows, src.m().cols, 500, 4, data, &size);
+            if (algorithm == LFML) error = NEC_LFML_ExtractLatent(src.m().data, src.m().rows, src.m().cols, 500, data, &size);
+            else                   error = NEC_ELFT_ExtractLatent(src.m().data, src.m().rows, src.m().cols, 500, 4, data, &size);
         } else {
-            if      (algorithm == LFML) error = NEC_LFML_ExtractTenprint(src.m().data, src.m().rows, src.m().cols, 500, data, &size);
-            else                        error = NEC_ELFT_ExtractTenprint(src.m().data, src.m().rows, src.m().cols, 500, 2, data, &size);
+            if (algorithm == LFML) error = NEC_LFML_ExtractTenprint(src.m().data, src.m().rows, src.m().cols, 500, data, &size);
+            else                   error = NEC_ELFT_ExtractTenprint(src.m().data, src.m().rows, src.m().cols, 500, 2, data, &size);
         }
 
         if (!error) {
@@ -93,7 +93,6 @@ public:
 
 private:
     BR_PROPERTY(Algorithm, algorithm, LFML)
-
 
     float compare(const Template &a, const Template &b) const
     {
