@@ -92,10 +92,10 @@ $ br -help
  *  $ cd C:\OpenCV-2.4.4
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "NMake Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
+ *  $ cmake -G "NMake Makefiles" -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
  *  $ nmake
  *  $ nmake install
- *  $ cmake -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  $ nmake clean
@@ -128,7 +128,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
@@ -171,10 +171,10 @@ $ br -help
  *  $ cd C:\OpenCV-2.4.4
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "MinGW Makefiles" -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_FFMPEG=OFF -D CMAKE_BUILD_TYPE=Debug ..
+ *  $ cmake -G "MinGW Makefiles" -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
  *  $ mingw32-make
  *  $ mingw32-make install
- *  $ cmake -D CMAKE_BUILD_TYPE=Release
+ *  $ cmake -DCMAKE_BUILD_TYPE=Release
  *  $ mingw32-make
  *  $ mingw32-make install
  *  $ mingw32-make clean
@@ -207,7 +207,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "CodeBlocks - MinGW Makefiles" -D CMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -D CMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-mingw64/install;C:/Qt/5.0.1/mingw64" -D CMAKE_INSTALL_PREFIX="./install" -D BR_INSTALL_DEPENDENCIES=ON -D CMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - MinGW Makefiles" -DCMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-mingw64/install;C:/Qt/5.0.1/mingw64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ mingw32-make
  *  $ mingw32-make install
  *  \endcode
@@ -256,7 +256,7 @@ $ br -help
  * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
@@ -275,7 +275,7 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ make install
  * \endcode
@@ -309,7 +309,7 @@ $ br -help
  *  -# Modify build settings and recompile:
  *  \code
  *  $ cd openbr/build
- *  $ cmake -D BR_BUILD_DOCUMENTATION=ON ..
+ *  $ cmake -DBR_BUILD_DOCUMENTATION=ON ..
  *  $ make -j4
  *  $ open html/index.html
  *  \endcode
@@ -340,7 +340,7 @@ $ br -help
  * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
@@ -365,7 +365,7 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ make install
  * \endcode
@@ -407,7 +407,7 @@ $ br -help
  * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake cmake -D BUILD_opencv_java=OFF -D BUILD_opencv_world=ON -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
@@ -432,7 +432,7 @@ $ br -help
  * $ cd openbr
  * $ mkdir build-icc
  * $ cd build-icc
- * $ cmake -D CMAKE_C_COMPILER=/opt/intel/bin/icc -D CMAKE_CXX_COMPILER=/opt/intel/bin/icpc -D CMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -D CMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ make install
  * \endcode
