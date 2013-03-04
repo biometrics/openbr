@@ -256,7 +256,7 @@ $ br -help
  * $ cd OpenCV-2.4.4
  * $ mkdir build
  * $ cd build
- * $ cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DCMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=OFF -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
