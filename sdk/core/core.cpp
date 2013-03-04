@@ -242,7 +242,7 @@ private:
         if (!file.isEmpty()) description = file;
 
         if (QFileInfo(description).exists()) {
-            qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
+            if (Globals->verbose) qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
             load(description);
             return;
         }
