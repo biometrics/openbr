@@ -107,11 +107,11 @@ private:
         if ((statistic == Min) || (statistic == Max)) {
             double min, max;
             minMaxLoc(src, &min, &max);
-            m.at<float>(1, 1) = (statistic == Min ? min : max);
+            m.at<float>(0,0) = (statistic == Min ? min : max);
         } else {
             Scalar mean, stddev;
             meanStdDev(src, mean, stddev);
-            m.at<float>(1,1) = (statistic == Mean ? mean[0] : stddev[0]);
+            m.at<float>(0,0) = (statistic == Mean ? mean[0] : stddev[0]);
         }
         dst = m;
     }
