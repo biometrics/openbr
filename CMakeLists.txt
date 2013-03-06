@@ -39,8 +39,6 @@ endif()
 if(WIN32)
   configure_file(${BR_SHARE_DIR}/resources.rc.in resources.rc)
   set(BR_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
-elseif(APPLE)
-  set(BR_RESOURCES ${NATIVE_ICON})
 endif()
 
 # Build options
@@ -72,8 +70,11 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
+set(OPENCV_DEPENDENCIES opencv_core opencv_features2d opencv_flann opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
-set(OPENCV_DEPENDENCIES calib3d contrib core features2d flann gpu highgui imgproc legacy ml nonfree objdetect photo stitching video videostab)
+
+# Find NaturalStringCompare
+find_package(NaturalStringCompare REQUIRED)
 
 # Compiler flags
 if(UNIX)

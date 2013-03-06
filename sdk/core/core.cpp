@@ -175,12 +175,19 @@ struct AlgorithmCore
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
-        gallery.reset(Gallery::make(file));
-        if ((file.suffix() != "gal") && (file.suffix() != "mem")) {
-            enroll(file);
-            gallery.reset(Gallery::make(getMemoryGallery(file)));
+        if ((file.suffix() == "gal") || (file.suffix() == "mem")) {
+            // Retrieve it
+            gallery.reset(Gallery::make(file));
             galleryFiles = gallery->files();
         } else {
+            // Was it already enrolled in memory?
+            gallery.reset(Gallery::make(getMemoryGallery(file)));
+            galleryFiles = gallery->files();
+            if (!galleryFiles.isEmpty()) return;
+
+            // Enroll it
+            enroll(file);
+            gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
         }
     }
@@ -243,7 +250,7 @@ private:
         if (!file.isEmpty()) description = file;
 
         if (QFileInfo(description).exists()) {
-            qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
+            if (Globals->verbose) qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
             load(description);
             return;
         }

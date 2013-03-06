@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <openbr_plugin.h>
 
+#include "NaturalStringCompare.h"
 #include "qtutils.h"
 
 using namespace br;
@@ -37,12 +38,12 @@ QStringList QtUtils::getFiles(QDir dir, bool recursive)
     dir = QDir(dir.canonicalPath());
 
     QStringList files;
-    foreach (const QString &file, dir.entryList(QDir::Files))
+    foreach (const QString &file, NaturalStringSort(dir.entryList(QDir::Files)))
         files.append(QDir::cleanPath(dir.absoluteFilePath(file)));
 
     if (!recursive) return files;
 
-    foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
         QDir subdir(dir);
         bool success = subdir.cd(folder); if (!success) qFatal("cd failure.");
         files.append(getFiles(subdir, true));
