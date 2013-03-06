@@ -103,12 +103,16 @@ class FilterDistance : public Distance
     {
         (void) b; // Query template isn't checked
         foreach (const QString &key, Globals->filters.keys()) {
+            bool keep = false;
             const QString metadata = a.file.getString(key, "");
             if (metadata.isEmpty()) continue;
             foreach (const QString &value, Globals->filters[key]) {
-                if (metadata == value) continue;
-                return -std::numeric_limits<float>::max();
+                if (metadata == value) {
+                    keep = true;
+                    break;
+                }
             }
+            if (!keep) return -std::numeric_limits<float>::max();
         }
         return 0;
     }

@@ -122,7 +122,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     maskFile.insert("rows", scores.rows);
     maskFile.insert("columns", scores.cols);
     const Mat masks = BEE::readMask(maskFile);
-    if (scores.size() != masks.size()) qFatal("Simmat %i /Mask %i size mismatch.", scores.size(), mask.size());
+    if (scores.size() != masks.size()) qFatal("Simmat/Mask size mismatch.");
 
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(scores.rows*scores.cols);
