@@ -113,8 +113,9 @@ struct AlgorithmCore
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) return FileList();
 
-        if (gallery.contains("read") || gallery.contains("cache"))
+        if (gallery.contains("read") || gallery.contains("cache")) {
             fileList = g->files();
+        }
         if (!fileList.isEmpty() && gallery.contains("cache"))
             return fileList;
 

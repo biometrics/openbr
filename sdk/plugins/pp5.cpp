@@ -47,7 +47,7 @@ class PP5Initializer : public Initializer
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
         Globals->abbreviations.insert("PP5","Open!PP5Enroll:PP5Compare");
-        Globals->abbreviations.insert("RegisterFace", "Open+Cvt(Gray)+PP5Enroll(true)+Rename(PP5_Landmark0_Right_Eye_X,Affine_0_X)+Rename(PP5_Landmark0_Right_Eye_Y,Affine_0_Y)+Rename(PP5_Landmark1_Left_Eye_X,Affine_1_X)+Rename(PP5_Landmark1_Left_Eye_Y,Affine_1_Y)+Affine(96,128,0.28,0.45)");
+        Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true)+RenameFirst([eyeLx,PP5_Landmark0_Right_Eye_X],Affine_0_X)+RenameFirst([eyeLy,PP5_Landmark0_Right_Eye_Y],Affine_0_Y)+RenameFirst([eyeRx,PP5_Landmark1_Left_Eye_X],Affine_1_X)+RenameFirst([eyeRy,PP5_Landmark1_Left_Eye_Y],Affine_1_Y)");
     }
 
     void finalize() const

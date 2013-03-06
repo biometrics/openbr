@@ -148,7 +148,11 @@ class RectFromLandmarksTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.file.landmarks().isEmpty()) qFatal("No landmarks");
+        if (src.file.landmarks().isEmpty()) {
+            qWarning("No landmarks");
+            dst = src;
+            return;
+        }
 
         int minX, minY;
         minX = minY = std::numeric_limits<int>::max();
@@ -156,7 +160,7 @@ class RectFromLandmarksTransform : public UntrainableTransform
         maxX = maxY = -std::numeric_limits<int>::max();
 
         foreach(int index, indices) {
-            if (src.file.landmarks().size() < index+1) {
+            if (src.file.landmarks().size() > index+1) {
                 if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
                 if (src.file.landmarks()[index].x() > maxX) maxX = src.file.landmarks()[index].x();
                 if (src.file.landmarks()[index].y() < minY) minY = src.file.landmarks()[index].y();
@@ -165,11 +169,16 @@ class RectFromLandmarksTransform : public UntrainableTransform
             }
         }
 
-        double width = maxX-minX+padding;
-        double height = maxY-minY+padding;
-        //double deltaHeight = ((width/aspectRatio) - height);
+        // Padding is .05
+        double width = maxX-minX;
+        double deltaWidth = width*padding;
+        width += deltaWidth;
 
-        dst.m() = src.m()(Rect(std::max(0.0, minX-padding/2.0), std::max(0.0, minY-padding/2.0), width, height));
+        double height = maxY-minY;
+        double deltaHeight = width/aspectRatio - height;
+        height += deltaHeight;
+
+        dst.m() = src.m()(Rect(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
     }
 };
 

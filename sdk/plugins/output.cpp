@@ -170,6 +170,7 @@ class rrOutput : public MatrixOutput
         const float threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
 
         QStringList lines;
+
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
             if (!byLine) files.append(queryFiles[i]);
@@ -181,7 +182,6 @@ class rrOutput : public MatrixOutput
                 target.set("Score", QString::number(pair.first));
                 files.append(target.flat());
             }
-
             lines.append(files.join(byLine ? "\n" : ","));
         }
 

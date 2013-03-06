@@ -155,7 +155,6 @@ class CSDNTransform : public UntrainableTransform
             }
         }
 
-     m.convertTo(m, CV_8UC1);
      dst = m;
 
     }
@@ -214,6 +213,7 @@ class ContrastEqTransform : public UntrainableTransform
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++)
                 m.at<float>(i, j) = fast_tanh(p[i*nCols+j]);
+
         dst = m;
     }
 };

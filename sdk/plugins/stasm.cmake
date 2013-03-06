@@ -6,9 +6,9 @@ if(${BR_WITH_STASM})
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Stasm_LIBS})
 
   if(WIN32)
-    install(DIRECTORY ${Stasm_DIR}/lib/ DESTINATION bin)
+    install(DIRECTORY ${Stasm_DIR}/build/ DESTINATION bin)
   else()
-    install(DIRECTORY ${Stasm_DIR}/lib/ DESTINATION lib)
+    install(DIRECTORY ${Stasm_DIR}/build/ DESTINATION lib)
   endif()
 
   install(DIRECTORY ${Stasm_DIR}/models/ DESTINATION share/openbr/models/stasm)
