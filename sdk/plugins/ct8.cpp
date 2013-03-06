@@ -418,9 +418,8 @@ struct CT8Enroll : public UntrainableTransform
             if (!enroll_succeeded)
             {
                 dst.file.setBool("FTE");
-                return;
+                dst.m() = Mat();
             }
-
         } catch (std::exception &e) {
             qFatal("CT8Enroll Exception: %s", e.what());
         }
