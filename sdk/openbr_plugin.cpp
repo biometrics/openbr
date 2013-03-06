@@ -24,9 +24,9 @@
 #ifdef BR_DISTRIBUTED
 #include <mpi.h>
 #endif // BR_DISTRIBUTED
-#include <openbr_plugin.h>
-
 #include <algorithm>
+#include <iostream>
+#include <openbr_plugin.h>
 
 #include "version.h"
 #include "core/bee.h"
@@ -450,10 +450,10 @@ QDataStream &br::operator>>(QDataStream &stream, Template &t)
 TemplateList TemplateList::fromGallery(const br::File &gallery)
 {
     TemplateList templates;
-
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
+        newTemplates = newTemplates.mid(gallery.getInt("pos", 0), gallery.getInt("length", -1));
         if (gallery.getBool("reduce")) newTemplates = newTemplates.reduced();
         const int crossValidate = gallery.getInt("crossValidate");
         if (crossValidate > 0) srand(0);
@@ -940,7 +940,7 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         break;
     }
 
-    fprintf(stderr, "%s", qPrintable(txt));
+    std::cerr << txt.toStdString();
     Globals->mostRecentMessage = txt;
 
     if (Globals->logFile.isWritable()) {

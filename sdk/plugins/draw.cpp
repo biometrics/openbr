@@ -33,7 +33,13 @@ class DrawTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
+    Q_PROPERTY(bool named READ get_named WRITE set_named RESET reset_named STORED false)
+    Q_PROPERTY(bool unnamed READ get_unnamed WRITE set_unnamed RESET reset_unnamed STORED false)
+    Q_PROPERTY(bool ROI READ get_ROI WRITE set_ROI RESET reset_ROI STORED false)
     BR_PROPERTY(bool, verbose, false)
+    BR_PROPERTY(bool, named, true)
+    BR_PROPERTY(bool, unnamed, true)
+    BR_PROPERTY(bool, ROI, true)
 
     void project(const Template &src, Template &dst) const
     {
@@ -43,14 +49,20 @@ class DrawTransform : public UntrainableTransform
 
         QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
 
-        foreach (const Point2f &landmark, landmarks)
-            circle(dst, landmark, 3, color, -1);
-        QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedLandmarks());
-        foreach (const Point2f &landmark, namedLandmarks)
-            circle(dst, landmark, 3, color);
-        QList<Rect> ROIs = OpenCVUtils::toRects(src.file.ROIs());
-        foreach (const Rect ROI, ROIs)
-            rectangle(dst, ROI, color);
+        if (unnamed) {
+            foreach (const Point2f &landmark, landmarks)
+                circle(dst, landmark, 3, color, -1);
+        }
+        if (named) {
+            QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedLandmarks());
+            foreach (const Point2f &landmark, namedLandmarks)
+                circle(dst, landmark, 3, color);
+        }
+        if (ROI) {
+            QList<Rect> ROIs = OpenCVUtils::toRects(src.file.ROIs());
+            foreach (const Rect ROI, ROIs)
+                rectangle(dst, ROI, color);
+        }
 
         if (verbose)
             for (int i=0; i<landmarks.size(); i++)

@@ -1,5 +1,7 @@
 0.3.0 - ??/??/??
 ================
+* Added wrapper to NEC Latent SDK
+* Enrolling files/folders are now sorted naturally instead of alpha numerically
 * YouTubeFacesDBTransform implements Dr. Wolf's experimental protocol
 * NEC3 refactored
 
