@@ -118,7 +118,9 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 
     // Read files
     const Mat scores = BEE::readSimmat(simmat);
-    File maskFile(mask); maskFile.insert("Size", scores.rows);
+    File maskFile(mask);
+    maskFile.insert("rows", scores.rows);
+    maskFile.insert("columns", scores.cols);
     const Mat masks = BEE::readMask(maskFile);
     if (scores.size() != masks.size()) qFatal("Simmat/Mask size mismatch.");
 

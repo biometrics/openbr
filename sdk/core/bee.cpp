@@ -112,25 +112,32 @@ template <typename T>
 Mat readMatrix(const br::File &matrix)
 {
     // Special case matrix construction
-    if (matrix == "Matrix") {
-        const int size = matrix.getInt("Size");
-        const int step = matrix.getInt("Step", 1);
-        if (size % step != 0) qFatal("Step does not divide size evenly.");
+    if (matrix == "Identity") {
+        int rows = matrix.getInt("rows", -1);
+        int columns = matrix.getInt("columns", -1);
+        const int size = matrix.getInt("size", -1);
+        if (size != -1) {
+            if (rows == -1) rows = size;
+            if (columns == -1) columns = size;
+        }
+        const int step = matrix.getInt("step", 1);
+        if (rows    % step != 0) qFatal("Step does not divide rows evenly.");
+        if (columns % step != 0) qFatal("Step does not divide columns evenly.");
 
         if (sizeof(T) == sizeof(BEE::Mask_t)) {
-            const bool selfSimilar = matrix.getBool("SelfSimilar");
+            const bool selfSimilar = matrix.getBool("selfSimilar");
 
-            Mat m(size, size, CV_8UC1);
+            Mat m(rows, columns, CV_8UC1);
             m.setTo(BEE::NonMatch);
-            for (int i=0; i<size; i+=step)
+            for (int i=0; i<std::min(rows, columns); i+=step)
                 for (int j=0; j<step; j++)
                     for (int k=0; k<step; k++)
                         m.at<BEE::Mask_t>(i+j,i+k) = ((selfSimilar && (j == k)) ? BEE::DontCare : BEE::Match);
             return m;
         } else if (sizeof(T) == sizeof(BEE::Simmat_t)) {
-            Mat m(size, size, CV_32FC1);
-            m.setTo(BEE::NonMatch);
-            for (int i=0; i<size; i+=step)
+            Mat m(rows, columns, CV_32FC1);
+            m.setTo(0);
+            for (int i=0; i<std::min(rows, columns); i+=step)
                 for (int j=0; j<step; j++)
                     for (int k=0; k<step; k++)
                         m.at<BEE::Simmat_t>(i+j,i+k) = 1;
@@ -140,7 +147,7 @@ Mat readMatrix(const br::File &matrix)
 
     QFile file(matrix);
     bool success = file.open(QFile::ReadOnly);
-    if (!success) qFatal("Unable to open %s for reading.", qPrintable((QString)matrix));
+    if (!success) qFatal("Unable to open %s for reading.", qPrintable(matrix.name));
 
     // Check format
     QByteArray format = file.readLine();
@@ -164,7 +171,7 @@ Mat readMatrix(const br::File &matrix)
     file.close();
 
     Mat result;
-    if (isDistance ^ matrix.getBool("Negate")) m.convertTo(result, -1, -1);
+    if (isDistance ^ matrix.getBool("negate")) m.convertTo(result, -1, -1);
     else                                       result = m.clone();
     return result;
 }
