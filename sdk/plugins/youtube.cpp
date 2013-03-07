@@ -19,6 +19,7 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
 
     void init()
     {
+        if (algorithm.isEmpty()) return;
         transform = Transform::fromAlgorithm(algorithm);
         distance = Distance::fromAlgorithm(algorithm);
     }
