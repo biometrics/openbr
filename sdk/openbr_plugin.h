@@ -126,7 +126,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  * path            | QString        | Resolve complete file paths from file names
  * enrollAll       | bool           | Enroll zero or more templates per file
  * separator       | QString        | Seperate #name into multiple files
- * Index     | int            | Index of a template in a template list
+ * Index           | int            | Index of a template in a template list
  * Label           | float          | Classification/Regression class
  * Confidence      | float          | Classification/Regression quality
  * FTE             | bool           | Failure to enroll
