@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
     // Equivalent to 'Globals->path = "../data/MEDS/img/";' in C++ API
     br_set_property("path", "../data/MEDS/img/");
 
-    // Enroll galleries
-    br_enroll("../data/MEDS/sigset/MEDS_frontal_target.xml", "target.gal");
-    br_enroll("../data/MEDS/sigset/MEDS_frontal_query.xml", "query.gal");
+    // Enroll galleries, don't re-enroll if they already exist (cache)
+    br_enroll("../data/MEDS/sigset/MEDS_frontal_target.xml", "target.gal[cache]");
+    br_enroll("../data/MEDS/sigset/MEDS_frontal_query.xml", "query.gal[cache]");
 
     // Compare galleries and store result in a binary similarity matrix
     br_compare("target.gal", "query.gal", "FaceRecognition_MEDS.mtx");
