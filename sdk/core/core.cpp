@@ -259,7 +259,7 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
-        QStringList words = description.split(':');
+        QStringList words = QtUtils::parse(description, ':');
         if (words.size() > 2) qFatal("Invalid algorithm format.");
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
