@@ -61,12 +61,17 @@
  *
  * \section examples Examples
  * - \ref cpp_face_recognition
+ * - \ref cpp_face_recognition_search
  * - \ref cpp_age_estimation
  * - \ref cpp_gender_estimation
  *
  * \subsection cpp_face_recognition Face Recognition
  * \ref cli_face_recognition "Command Line Interface Equivalent"
  * \snippet app/examples/face_recognition.cpp face_recognition
+ *
+ * \subsection cpp_face_recognition_search Face Recognition Search
+ * \ref cli_face_recognition_search "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition_search.cpp face_recognition_search
  *
  * \subsection cpp_age_estimation Age Estimation
  * \ref cli_age_estimation "Command Line Interface Equivalent"
