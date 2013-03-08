@@ -421,6 +421,9 @@ class BR_EXPORT Object : public QObject
 {
     Q_OBJECT
 
+    // Index of the first property that can be set via command line arguments
+    int first_available_property_idx;
+
 public:
     File file; /*!< \brief The file used to construct the plugin. */
 
@@ -989,6 +992,48 @@ public:
     virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const Template &src, Template &dst)
+    {
+        project(src, dst);
+    }
+
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        project(src,dst);
+    }
+
+    // inplace project/update
+    void projectUpdate(Template & src)
+    {
+        Template dst = src;
+        projectUpdate(src, dst);
+        src = dst;
+    }
+    void projectUpdate(TemplateList & src)
+    {
+        TemplateList dst = src;
+        projectUpdate(src, dst);
+        src = dst;
+    }
+
+    // Time-varying transforms may move away from a single input->single output model, and only emit
+    // templates under some conditions (e.g. a tracking thing may emit a template for each detected
+    // unique object), in this case finalize indicates that no further calls to project will be made
+    // and the transform can emit a final set if templates if it wants. Time-invariant transforms
+    // don't have to do anything.
+    virtual void finalize(TemplateList & output)
+    {
+        output = TemplateList();
+    }
+
+    /*!
+     * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
+     * (if their children are time varying, they are also time varying, otherwise probably not)
+     */
+    virtual bool timeVarying() const {return false;}
+
     /*!
      * \brief Convenience function equivalent to project().
      */
@@ -1051,6 +1096,33 @@ inline QDataStream &operator>>(QDataStream &stream, Transform &f)
     return stream;
 }
 
+
+/*!
+ * \brief A br::Transform for which the results of project may change due to prior calls to project
+ */
+class BR_EXPORT TimeVaryingTransform : public Transform
+{
+    Q_OBJECT
+
+    virtual bool timeVarying() const {return true;}
+    virtual void project(const Template &src, Template &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        // shut up unused param warning? probably a better way to handle this
+        dst = src;
+    }
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        dst = src;
+    }
+
+
+protected:
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
+};
+
+
 /*!
  * \brief A br::Transform expecting multiple matrices per template.
  */
@@ -1061,6 +1133,137 @@ class BR_EXPORT MetaTransform : public Transform
 protected:
     MetaTransform() : Transform(false) {}
 };
+
+/*!
+ * \brief A MetaTransform that aggregates some sub-transforms
+ */
+class BR_EXPORT CompositeTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
+    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
+
+    virtual void train(const TemplateList &data);
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    void backProject(const Template &dst, Template &src) const
+    {
+        // Backprojecting a time-varying transform is probably not going to work.
+        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
+
+        src = dst;
+        // Reverse order in which transforms are processed
+        int length = transforms.length();
+        for (int i=length-1; i>=0; i--) {
+            Transform *f = transforms.at(i);
+            try {
+                src >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
+                src = Template(src.file);
+                src.file.setBool("FTE");
+            }
+        }
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        dst = src;
+        foreach (Transform *f, transforms) {
+            try {
+                f->projectUpdate(dst);
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
+                dst = Template(src.file);
+                dst.file.setBool("FTE");
+            }
+        }
+    }
+
+    // For time varying transforms, parallel execution over individual templates
+    // won't work.
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        dst = src;
+        foreach (Transform *f, transforms)
+        {
+            f->projectUpdate(dst);
+        }
+    }
+
+    bool timeVarying() const
+    {
+        return time_varying;
+    }
+
+    void init()
+    {
+        time_varying = false;
+        foreach(const br::Transform * transform, transforms)
+        {
+            if (transform->timeVarying()) {
+                time_varying = true;
+                break;
+            }
+        }
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        output.clear();
+        // For each transform,
+        for (int i = 0; i < transforms.size(); i++)
+        {
+
+            // Collect any final templates
+            TemplateList last_set;
+            transforms[i]->finalize(last_set);
+            if (last_set.empty())
+                continue;
+            // Push any templates received through the remaining transforms in the sequence
+            for (int j = (i+1); j < transforms.size();j++)
+            {
+                transforms[j]->projectUpdate(last_set);
+            }
+            // append the result to the output set
+            output.append(last_set);
+        }
+    }
+
+protected:
+    bool time_varying;
+    // Single template const project, default implementation for aggregate transforms--pass the template through each
+    // sub-transform, one after the other
+    virtual void _project(const Template & src, Template & dst) const
+    {
+        dst = src;
+        foreach (const Transform *f, transforms) {
+            try {
+                dst >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
+                dst = Template(src.file);
+                dst.file.setBool("FTE");
+            }
+        }
+    }
+    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
+
+    CompositeTransform() : TimeVaryingTransform(false) {}
+};
+
 
 /*!
  * \brief A br::Transform that does not require training data.

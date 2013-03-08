@@ -30,11 +30,9 @@ namespace br
  * \brief Selects a random transform.
  * \author Josh Klontz \cite jklontz
  */
-class RndTransformTransform : public Transform
+class RndTransformTransform : public CompositeTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms STORED false)
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
 
     int selectedIndex;
     Transform *selectedTransform;
@@ -46,9 +44,35 @@ class RndTransformTransform : public Transform
         selectedTransform->train(data);
     }
 
-    void project(const Template &src, Template &dst) const
+    bool timeVarying() const
+    {
+        // calling on selectedTransform assumes train has already been called. -cao
+        return selectedTransform->timeVarying();
+    }
+
+    void _project(const Template &src, Template &dst) const
     {
         selectedTransform->project(src, dst);
+    }
+
+    void _project(const TemplateList &src, TemplateList &dst) const
+    {
+        Transform::project(src, dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        selectedTransform->projectUpdate(src,dst);
+    }
+
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        selectedTransform->projectUpdate(src, dst);
+    }
+
+    void finalize(TemplateList & output)
+    {
+        selectedTransform->finalize(output);
     }
 
     void store(QDataStream &stream) const

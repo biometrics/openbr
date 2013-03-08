@@ -494,7 +494,8 @@ TemplateList TemplateList::relabel(const TemplateList &tl)
 QStringList Object::parameters() const
 {
     QStringList parameters;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
+
+    for (int i = first_available_property_idx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
@@ -713,18 +714,37 @@ void Object::init(const File &file_)
     // Set name
     QString name = metaObject()->className();
     if (name.startsWith("br::")) name = name.right(name.size()-4);
-    const QMetaObject *superClass = metaObject()->superClass();
+
+    first_available_property_idx = metaObject()->propertyCount();
+
+    const QMetaObject * baseClass = metaObject();
+    const QMetaObject * superClass = metaObject()->superClass();
+
     while (superClass != NULL) {
+        const QMetaObject * nextClass = superClass->superClass();
+
+        // baseClass <- something <- br::Object
+        // baseClass is the highest class whose properties we can set via positional arguments
+        if (nextClass && !strcmp(nextClass->className(),"br::Object")) {
+            first_available_property_idx = baseClass->propertyOffset();
+        }
+
         QString superClassName = superClass->className();
+
+        // strip br:: prefix from superclass name
         if (superClassName.startsWith("br::"))
             superClassName = superClassName.right(superClassName.size()-4);
+
+        // Strip superclass name from base class name (e.g. PipeTransform -> Pipe)
         if (name.endsWith(superClassName))
             name = name.left(name.size() - superClassName.size());
+        baseClass = superClass;
         superClass = superClass->superClass();
+
     }
     setObjectName(name);
 
-    // Set properties
+    // Reset all properties
     for (int i=0; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isResettable())
@@ -734,8 +754,17 @@ void Object::init(const File &file_)
 
     foreach (QString key, file.localKeys()) {
         const QString value = file.value(key).toString();
-        if (key.startsWith("_Arg"))
-            key = metaObject()->property(metaObject()->propertyOffset()+key.mid(4).toInt()).name();
+
+        if (key.startsWith(("_Arg"))) {
+            int argument_number =  key.mid(4).toInt();
+            int target_idx = argument_number + first_available_property_idx;
+
+            if (target_idx >= metaObject()->propertyCount()) {
+                qWarning("too many arguments for transform, ignoring %s\n", qPrintable(value));
+                continue;
+            }
+            key = metaObject()->property(target_idx).name();
+        }
         setProperty(key, value);
     }
 
