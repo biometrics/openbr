@@ -164,8 +164,8 @@ struct BR_EXPORT File
     inline void clear() { name.clear(); m_metadata.clear(); } /*!< \brief Clears the file's name and metadata. */
 
     inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
-    inline QHash<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
-    void append(const QHash<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
+    inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+    void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
     QList<File> split() const; /*!< \brief Split the file using \c separator. */
     QList<File> split(const QString &separator) const; /*!< \brief Split the file. */
@@ -181,7 +181,7 @@ struct BR_EXPORT File
     inline bool operator<=(const File &other) const { return name <= other.name; } /*!< \brief Compare name. */
     inline bool operator>(const File &other) const { return name > other.name; } /*!< \brief Compare name. */
     inline bool operator>=(const File &other) const { return name >= other.name; } /*!< \brief Compare name. */
-    inline File &operator+=(const QHash<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
+    inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
     inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
 
     inline bool isNull() const { return name.isEmpty() && m_metadata.isEmpty(); } /*!< \brief Returns \c true if name and metadata are empty, \c false otherwise. */
@@ -238,7 +238,7 @@ struct BR_EXPORT File
     void setROIs(const QList<QRectF> &ROIs); /*!< \brief Assigns the file's landmark list. */
 
 private:
-    QHash<QString,QVariant> m_metadata;
+    QMap<QString,QVariant> m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file); /*!< */
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file); /*!< */
 

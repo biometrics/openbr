@@ -106,7 +106,7 @@ class meltOutput : public MatrixOutput
         const bool genuineOnly = file.contains("Genuine") && !file.contains("Impostor");
         const bool impostorOnly = file.contains("Impostor") && !file.contains("Genuine");
 
-        QHash<QString,QVariant> args = file.localMetadata();
+        QMap<QString,QVariant> args = file.localMetadata();
         args.remove("Genuine");
         args.remove("Impostor");
 
