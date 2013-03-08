@@ -1004,13 +1004,15 @@ public:
         project(src,dst);
     }
 
-    // inplace project/update
+    /*!< \brief inplace projectUpdate. */
     void projectUpdate(Template &srcdst)
     {
         Template dst;
         projectUpdate(srcdst, dst);
         srcdst = dst;
     }
+
+    /*!< \brief inplace projectUpdate. */
     void projectUpdate(TemplateList &srcdst)
     {
         TemplateList dst;
@@ -1018,12 +1020,15 @@ public:
         srcdst = dst;
     }
 
-    // Time-varying transforms may move away from a single input->single output model, and only emit
-    // templates under some conditions (e.g. a tracking thing may emit a template for each detected
-    // unique object), in this case finalize indicates that no further calls to project will be made
-    // and the transform can emit a final set if templates if it wants. Time-invariant transforms
-    // don't have to do anything.
+    /*!
+     * Time-varying transforms may move away from a single input->single output model, and only emit
+     * templates under some conditions (e.g. a tracking thing may emit a template for each detected
+     * unique object), in this case finalize indicates that no further calls to project will be made
+     * and the transform can emit a final set if templates if it wants. Time-invariant transforms
+     * don't have to do anything.
+     */
     virtual void finalize(TemplateList & output) { output = TemplateList(); }
+
     /*!
      * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
      * (if their children are time varying, they are also time varying, otherwise probably not)
@@ -1092,7 +1097,6 @@ inline QDataStream &operator>>(QDataStream &stream, Transform &f)
     return stream;
 }
 
-
 /*!
  * \brief A br::Transform for which the results of project may change due to prior calls to project
  */
@@ -1100,23 +1104,23 @@ class BR_EXPORT TimeVaryingTransform : public Transform
 {
     Q_OBJECT
 
-    virtual bool timeVarying() const {return true;}
+    virtual bool timeVarying() const { return true; }
+
     virtual void project(const Template &src, Template &dst) const
     {
         qFatal("No const project defined for time-varying transform");
         (void) dst; (void) src;
     }
+
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         qFatal("No const project defined for time-varying transform");
         (void) dst; (void) src;
     }
 
-
 protected:
     TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
 };
-
 
 /*!
  * \brief A br::Transform expecting multiple matrices per template.
@@ -1135,6 +1139,7 @@ protected:
 class BR_EXPORT CompositeTransform : public TimeVaryingTransform
 {
     Q_OBJECT
+
 public:
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
     BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
@@ -1151,17 +1156,12 @@ public:
         _project(src, dst);
     }
 
-
-    bool timeVarying() const
-    {
-        return isTimeVarying;
-    }
+    bool timeVarying() const { return isTimeVarying; }
 
     void init()
     {
         isTimeVarying = false;
-        foreach(const br::Transform * transform, transforms)
-        {
+        foreach (const br::Transform *transform, transforms) {
             if (transform->timeVarying()) {
                 isTimeVarying = true;
                 break;
@@ -1177,7 +1177,6 @@ protected:
 
     CompositeTransform() : TimeVaryingTransform(false) {}
 };
-
 
 /*!
  * \brief A br::Transform that does not require training data.
@@ -1195,7 +1194,6 @@ private:
     void store(QDataStream &stream) const { (void) stream; }
     void load(QDataStream &stream) { (void) stream; }
 };
-
 
 /*!
  * \brief A br::MetaTransform that does not require training data.
