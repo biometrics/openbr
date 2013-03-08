@@ -145,6 +145,50 @@ public:
 
 };
 
+/*!
+ * \brief A MetaTransform that aggregates some sub-transforms
+ */
+class BR_EXPORT CompositeTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+public:
+    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
+    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    bool timeVarying() const { return isTimeVarying; }
+
+    void init()
+    {
+        isTimeVarying = false;
+        foreach (const br::Transform *transform, transforms) {
+            if (transform->timeVarying()) {
+                isTimeVarying = true;
+                break;
+            }
+        }
+    }
+
+protected:
+    bool isTimeVarying;
+
+    virtual void _project(const Template & src, Template & dst) const = 0;
+    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
+
+    CompositeTransform() : TimeVaryingTransform(false) {}
+};
 
 /*!
  * \ingroup Transforms
