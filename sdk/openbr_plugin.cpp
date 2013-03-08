@@ -495,7 +495,7 @@ QStringList Object::parameters() const
 {
     QStringList parameters;
 
-    for (int i = first_available_property_idx; i < metaObject()->propertyCount();i++) {
+    for (int i = firstAvailablePropertyIdx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
@@ -715,7 +715,7 @@ void Object::init(const File &file_)
     QString name = metaObject()->className();
     if (name.startsWith("br::")) name = name.right(name.size()-4);
 
-    first_available_property_idx = metaObject()->propertyCount();
+    firstAvailablePropertyIdx = metaObject()->propertyCount();
 
     const QMetaObject * baseClass = metaObject();
     const QMetaObject * superClass = metaObject()->superClass();
@@ -726,7 +726,7 @@ void Object::init(const File &file_)
         // baseClass <- something <- br::Object
         // baseClass is the highest class whose properties we can set via positional arguments
         if (nextClass && !strcmp(nextClass->className(),"br::Object")) {
-            first_available_property_idx = baseClass->propertyOffset();
+            firstAvailablePropertyIdx = baseClass->propertyOffset();
         }
 
         QString superClassName = superClass->className();
@@ -757,7 +757,7 @@ void Object::init(const File &file_)
 
         if (key.startsWith(("_Arg"))) {
             int argument_number =  key.mid(4).toInt();
-            int target_idx = argument_number + first_available_property_idx;
+            int target_idx = argument_number + firstAvailablePropertyIdx;
 
             if (target_idx >= metaObject()->propertyCount()) {
                 qWarning("too many arguments for transform, ignoring %s\n", qPrintable(value));

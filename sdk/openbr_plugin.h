@@ -422,7 +422,7 @@ class BR_EXPORT Object : public QObject
     Q_OBJECT
 
     // Index of the first property that can be set via command line arguments
-    int first_available_property_idx;
+    int firstAvailablePropertyIdx;
 
 public:
     File file; /*!< \brief The file used to construct the plugin. */
@@ -1159,16 +1159,16 @@ public:
 
     bool timeVarying() const
     {
-        return time_varying;
+        return isTimeVarying;
     }
 
     void init()
     {
-        time_varying = false;
+        isTimeVarying = false;
         foreach(const br::Transform * transform, transforms)
         {
             if (transform->timeVarying()) {
-                time_varying = true;
+                isTimeVarying = true;
                 break;
             }
         }
@@ -1176,7 +1176,7 @@ public:
 
 
 protected:
-    bool time_varying;
+    bool isTimeVarying;
 
     virtual void _project(const Template & src, Template & dst) const = 0;
     virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
