@@ -83,7 +83,7 @@ class CascadeTransform : public UntrainableTransform
 
         foreach (const Rect &rect, rects) {
             dst += src;
-            dst.file.appendROI(OpenCVUtils::fromRect(rect));
+            dst.file.appendRect(OpenCVUtils::fromRect(rect));
         }
     }
 };

@@ -39,10 +39,8 @@ void TemplateViewer::setFile(const File &file_)
 
     // Update landmarks
     landmarks.clear();
-    if (file.contains("Affine_0_X") && file.contains("Affine_0_Y"))
-        landmarks.append(QPointF(file.get<float>("Affine_0_X"), file.get<float>("Affine_0_Y")));
-    if (file.contains("Affine_1_X") && file.contains("Affine_1_Y"))
-        landmarks.append(QPointF(file.get<float>("Affine_1_X"), file.get<float>("Affine_1_Y")));
+    if (file.contains("Affine_0")) landmarks.append(file.get<QPointF>("Affine_0"));
+    if (file.contains("Affine_1")) landmarks.append(file.get<QPointF>("Affine_1"));
     while (landmarks.size() < NumLandmarks)
         landmarks.append(QPointF());
     nearestLandmark = -1;

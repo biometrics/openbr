@@ -67,17 +67,14 @@ class AffineTransform : public UntrainableTransform
         else           dstPoints[2] = Point2f(x3*width, y3*height);
 
         Point2f srcPoints[3];
-        if (src.file.contains("Affine_0_X") &&
-            src.file.contains("Affine_0_Y") &&
-            src.file.contains("Affine_1_X") &&
-            src.file.contains("Affine_1_Y") &&
-            (src.file.contains("Affine_2_X") || twoPoints) &&
-            (src.file.contains("Affine_2_Y") || twoPoints)) {
-            srcPoints[0] = Point2f(src.file.get<float>("Affine_0_X"), src.file.get<float>("Affine_0_Y"));
-            srcPoints[1] = Point2f(src.file.get<float>("Affine_1_X"), src.file.get<float>("Affine_1_Y"));
-            if (!twoPoints) srcPoints[2] = Point2f(src.file.get<float>("Affine_2_X"), src.file.get<float>("Affine_2_Y"));
+        if (src.file.contains("Affine_0") &&
+            src.file.contains("Affine_1") &&
+            (src.file.contains("Affine_2") || twoPoints)) {
+            srcPoints[0] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_0"));
+            srcPoints[1] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_1"));
+            if (!twoPoints) srcPoints[2] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_2"));
         } else {
-            const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
+            const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
 
             if ((landmarks.size() < 2) || (!twoPoints && (landmarks.size() < 3))) {
                 resize(src, dst, Size(width, height));
@@ -87,14 +84,9 @@ class AffineTransform : public UntrainableTransform
                 srcPoints[1] = landmarks[1];
                 if (!twoPoints) srcPoints[2] = landmarks[2];
 
-                dst.file.set("Affine_0_X", landmarks[0].x);
-                dst.file.set("Affine_0_Y", landmarks[0].y);
-                dst.file.set("Affine_1_X", landmarks[1].x);
-                dst.file.set("Affine_1_Y", landmarks[1].y);
-                if (!twoPoints) {
-                    dst.file.set("Affine_2_X", landmarks[2].x);
-                    dst.file.set("Affine_2_Y", landmarks[2].y);
-                }
+                dst.file.set("Affine_0", OpenCVUtils::fromPoint(landmarks[0]));
+                dst.file.set("Affine_1", OpenCVUtils::fromPoint(landmarks[1]));
+                if (!twoPoints) dst.file.set("Affine_2", OpenCVUtils::fromPoint(landmarks[2]));
             }
         }
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);

@@ -30,10 +30,9 @@
 
 static void printTemplate(const br::Template &t)
 {
-    printf("%s eyes: (%d, %d) (%d, %d)\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Affine_0_X"), t.file.get<int>("Affine_0_Y"),
-           t.file.get<int>("Affine_1_X"), t.file.get<int>("Affine_1_Y"));
+    const QPoint firstEye = t.file.get<QPoint>("Affine_0");
+    const QPoint secondEye = t.file.get<QPoint>("Affine_1");
+    printf("%s eyes: (%d, %d) (%d, %d)\n", qPrintable(t.file.fileName()), firstEye.x(), firstEye.y(), secondEye.x(), secondEye.y());
 }
 
 int main(int argc, char *argv[])

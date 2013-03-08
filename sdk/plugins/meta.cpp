@@ -37,18 +37,18 @@ static TemplateList Expanded(const TemplateList &templates)
         }
 
         const bool fte = t.file.get<bool>("FTE", false);
-        QList<QPointF> landmarks = t.file.landmarks();
-        QList<QRectF> ROIs = t.file.ROIs();
-        if (landmarks.size() % t.size() != 0) qFatal("Uneven landmark count.");
-        if (ROIs.size() % t.size() != 0) qFatal("Uneven ROI count.");
-        const int landmarkStep = landmarks.size() / t.size();
-        const int ROIStep = ROIs.size() / t.size();
+        QList<QPointF> points = t.file.points();
+        QList<QRectF> rects = t.file.rects();
+        if (points.size() % t.size() != 0) qFatal("Uneven point count.");
+        if (rects.size() % t.size() != 0) qFatal("Uneven rect count.");
+        const int pointStep = points.size() / t.size();
+        const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
             if (!fte || !t.file.get<bool>("enrollAll", false)) {
                 expanded.append(Template(t.file, t[i]));
-                expanded.last().file.setROIs(ROIs.mid(i*ROIStep, ROIStep));
-                expanded.last().file.setLandmarks(landmarks.mid(i*landmarkStep, landmarkStep));
+                expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
+                expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
             }
         }
     }

@@ -147,7 +147,7 @@ public:
 private:
     void project(const Template &src, Template &dst) const
     {
-        Rect roi = OpenCVUtils::toRect(src.file.ROIs().first());
+        Rect roi = OpenCVUtils::toRect(src.file.rects().first());
 
         Mat gray;
         OpenCVUtils::cvtGray(src.m()(roi), gray);
@@ -183,12 +183,10 @@ private:
         float second_eye_y = (right_rect.y + maxLoc.y)*gray.rows/height+roi.y;
 
         dst = src;
-        dst.file.appendLandmark(QPointF(first_eye_x, first_eye_y));
-        dst.file.appendLandmark(QPointF(second_eye_x, second_eye_y));
-        dst.file.set("ASEF_Right_Eye_X", first_eye_x);
-        dst.file.set("ASEF_Right_Eye_Y", first_eye_y);
-        dst.file.set("ASEF_Left_Eye_X", second_eye_x);
-        dst.file.set("ASEF_Left_Eye_Y", second_eye_y);
+        dst.file.appendPoint(QPointF(first_eye_x, first_eye_y));
+        dst.file.appendPoint(QPointF(second_eye_x, second_eye_y));
+        dst.file.set("ASEF_Right_Eye", QPointF(first_eye_x, first_eye_y));
+        dst.file.set("ASEF_Left_Eye", QPointF(second_eye_x, second_eye_y));
     }
 };
 

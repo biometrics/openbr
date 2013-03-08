@@ -57,10 +57,10 @@ class KeyPointDetectorTransform : public UntrainableTransform
             dst.file.set("FTE", true);
         }
 
-        QList<Rect> ROIs;
+        QList<Rect> rects;
         foreach (const KeyPoint &keyPoint, keyPoints)
-            ROIs.append(Rect(keyPoint.pt.x, keyPoint.pt.y, keyPoint.size, keyPoint.size));
-        dst.file.setROIs(OpenCVUtils::fromRects(ROIs));
+            rects.append(Rect(keyPoint.pt.x, keyPoint.pt.y, keyPoint.size, keyPoint.size));
+        dst.file.setRects(OpenCVUtils::fromRects(rects));
     }
 };
 
@@ -92,10 +92,10 @@ class KeyPointDescriptorTransform : public UntrainableTransform
     {
         std::vector<KeyPoint> keyPoints;
         if (size == -1) {
-            foreach (const QRectF &ROI, src.file.ROIs())
+            foreach (const QRectF &ROI, src.file.rects())
                 keyPoints.push_back(KeyPoint(ROI.x(), ROI.y(), (ROI.width() + ROI.height())/2));
         } else {
-            foreach (const QPointF &landmark, src.file.landmarks())
+            foreach (const QPointF &landmark, src.file.points())
                 keyPoints.push_back(KeyPoint(landmark.x(), landmark.y(), size));
         }
         descriptorExtractor->compute(src, keyPoints, dst);
@@ -166,7 +166,7 @@ class SIFTDescriptorTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         std::vector<KeyPoint> keyPoints;
-        foreach (const QPointF &val, src.file.landmarks())
+        foreach (const QPointF &val, src.file.points())
             keyPoints.push_back(KeyPoint(val.x(), val.y(), size));
 
         Mat m;
@@ -200,7 +200,7 @@ class GridTransform : public UntrainableTransform
             for (float j=column_step/2; j<src.m().cols; j+=column_step)
                 landmarks.append(QPointF(i,j));
         dst = src;
-        dst.file.setLandmarks(landmarks);
+        dst.file.setPoints(landmarks);
     }
 };
 

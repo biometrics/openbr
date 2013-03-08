@@ -128,8 +128,6 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * Key             | Value          | Description
  * ---             | ----           | -----------
- * path            | QString        | Resolve complete file paths from file names
- * enrollAll       | bool           | Enroll zero or more templates per file
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
  * Label           | float          | Classification/Regression class
@@ -145,8 +143,8 @@ void reset_##NAME() { NAME = DEFAULT; }
  * Roll            | float          | Pose
  * Pitch           | float          | Pose
  * Yaw             | float          | Pose
- * Landmarks       | QList<QPointF> | Landmark list
- * ROIs            | QList<Rect>    | Region Of Interest (ROI) list
+ * Points          | QList<QPointF> | List of unnamed points
+ * Rects           | QList<Rect>    | List of unnamed rects
  * Age             | QString        | Age used for demographic filtering
  * _*              | *              | Reserved for internal use
  */
@@ -225,18 +223,19 @@ struct BR_EXPORT File
     inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
     inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
-    QList<QPointF> landmarks() const; /*!< \brief Returns the file's landmark list. */
-    QList<QPointF> namedLandmarks() const; /*!< \brief Returns landmarks derived from metadata keys. */
-    void appendLandmark(const QPointF &landmark); /*!< \brief Adds a landmark to the file's landmark list. */
-    void appendLandmarks(const QList<QPointF> &landmarks); /*!< \brief Adds landmarks to the file's landmark list. */
-    inline void clearLandmarks() { m_metadata["Landmarks"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
-    void setLandmarks(const QList<QPointF> &landmarks); /*!< \brief Assigns the file's landmark list. */
+    QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
+    QList<QPointF> points() const; /*!< \brief Returns the file's points list. */
+    void appendPoint(const QPointF &point); /*!< \brief Adds a point to the file's point list. */
+    void appendPoints(const QList<QPointF> &points); /*!< \brief Adds landmarks to the file's landmark list. */
+    inline void clearPoints() { m_metadata["Points"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
+    inline void setPoints(const QList<QPointF> &points) { clearPoints(); appendPoints(points); } /*!< \brief Overwrites the file's landmark list. */
 
-    QList<QRectF> ROIs() const; /*!< \brief Returns the file's ROI list. */
-    void appendROI(const QRectF &ROI); /*!< \brief Adds a ROI to the file's ROI list. */
-    void appendROIs(const QList<QRectF> &ROIs); /*!< \brief Adds ROIs to the file's ROI list. */
-    inline void clearROIs() { m_metadata["ROIs"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
-    void setROIs(const QList<QRectF> &ROIs); /*!< \brief Assigns the file's landmark list. */
+    QList<QRectF> namedRects() const; /*!< \brief Returns rects convertible from metadata values. */
+    QList<QRectF> rects() const; /*!< \brief Returns the file's rects list. */
+    void appendRect(const QRectF &rect); /*!< \brief Adds a rect to the file's rect list. */
+    void appendRects(const QList<QRectF> &rects); /*!< \brief Adds rects to the file's rect list. */
+    inline void clearRects() { m_metadata["Rects"] = QList<QVariant>(); } /*!< \brief Clears the file's rect list. */
+    inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
     QMap<QString,QVariant> m_metadata;

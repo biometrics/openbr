@@ -189,11 +189,11 @@ class GaborJetTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        const QList<QPointF> landmarks = src.file.landmarks();
-        dst = Mat(landmarks.size(), kReals.size(), CV_32FC1);
-        for (int i=0; i<landmarks.size(); i++)
+        const QList<QPointF> points = src.file.points();
+        dst = Mat(points.size(), kReals.size(), CV_32FC1);
+        for (int i=0; i<points.size(); i++)
             for (int j=0; j<kReals.size(); j++)
-                    dst.m().at<float>(i,j) = response(src, landmarks[i], kReals[j], kImaginaries[j], component);
+                    dst.m().at<float>(i,j) = response(src, points[i], kReals[j], kImaginaries[j], component);
     }
 };
 

@@ -174,7 +174,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
         int *buffer = new int[bins];
 
         float bestRatio = -std::numeric_limits<float>::max();
-        QRect bestROI;
+        QRectF bestRect;
 
         const int rows = m.rows;
         const int cols = m.cols/bins;
@@ -202,7 +202,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
 
                     if (ratio > bestRatio) {
                         bestRatio = ratio;
-                        bestROI = QRect(j*radius, i*radius, scale*radius, scale*radius);
+                        bestRect = QRect(j*radius, i*radius, scale*radius, scale*radius);
                     }
                 }
             }
@@ -210,7 +210,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
         }
 
         delete[] buffer;
-        dst.file.appendROI(bestROI);
+        dst.file.appendRect(bestRect);
         dst.file.setLabel(bestRatio);
     }
 };

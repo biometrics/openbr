@@ -148,84 +148,72 @@ float File::label() const
     return ok ? val : -1;
 }
 
-QList<QPointF> File::landmarks() const
+QList<QPointF> File::namedPoints() const
 {
     QList<QPointF> landmarks;
-    foreach (const QVariant &landmark, value("Landmarks").toList())
-        landmarks.append(landmark.toPointF());
-    return landmarks;
-}
-
-QList<QPointF> File::namedLandmarks() const
-{
-    QList<QPointF> landmarks;
-    QStringList keys = localMetadata().keys();
-    foreach (const QString &key, keys) {
-        if (!key.endsWith("_X"))
-            continue;
-        QString keyBaseName = key.left(key.size()-2);
-        if (!keys.contains(keyBaseName+"_Y") ||
-            keys.contains(keyBaseName+"_Width") ||
-            keys.contains(keyBaseName+"_Height") ||
-            keys.contains(keyBaseName+"_Radius"))
-            continue;
-        landmarks.append(QPointF(get<float>(keyBaseName+"_X"), get<float>(keyBaseName+"_Y")));
+    foreach (const QString &key, localMetadata().keys()) {
+        const QVariant &variant = m_metadata[key];
+        if (variant.canConvert<QPointF>())
+            landmarks.append(variant.value<QPointF>());
     }
     return landmarks;
 }
 
-void File::appendLandmark(const QPointF &landmark)
+QList<QPointF> File::points() const
 {
-    QList<QVariant> newLandmarks = m_metadata["Landmarks"].toList();
-    newLandmarks.append(landmark);
-    m_metadata["Landmarks"] = newLandmarks;
+    QList<QPointF> points;
+    foreach (const QVariant &point, m_metadata["Points"].toList())
+        points.append(point.toPointF());
+    return points;
 }
 
-void File::appendLandmarks(const QList<QPointF> &landmarks)
+void File::appendPoint(const QPointF &point)
 {
-    QList<QVariant> newLandmarks = m_metadata["Landmarks"].toList();
-    foreach (const QPointF &landmark, landmarks)
-        newLandmarks.append(landmark);
-    m_metadata["Landmarks"] = newLandmarks;
+    QList<QVariant> newPoints = m_metadata["Points"].toList();
+    newPoints.append(point);
+    m_metadata["Points"] = newPoints;
 }
 
-void File::setLandmarks(const QList<QPointF> &landmarks)
+void File::appendPoints(const QList<QPointF> &points)
 {
-    QList<QVariant> landmarkList; landmarkList.reserve(landmarks.size());
-    foreach (const QPointF &landmark, landmarks)
-        landmarkList.append(landmark);
-    m_metadata["Landmarks"] = landmarkList;
+    QList<QVariant> newPoints = m_metadata["Points"].toList();
+    foreach (const QPointF &point, points)
+        newPoints.append(point);
+    m_metadata["Points"] = newPoints;
 }
 
-QList<QRectF> File::ROIs() const
+QList<QRectF> File::namedRects() const
 {
-    QList<QRectF> ROIs;
-    foreach (const QVariant &ROI, value("ROIs").toList())
-        ROIs.append(ROI.toRect());
-    return ROIs;
+    QList<QRectF> rects;
+    foreach (const QString &key, localMetadata().keys()) {
+        const QVariant &variant = m_metadata[key];
+        if (variant.canConvert<QRectF>())
+            rects.append(variant.value<QRectF>());
+    }
+    return rects;
 }
 
-void File::appendROI(const QRectF &ROI)
+QList<QRectF> File::rects() const
 {
-    QList<QVariant> newROIs = m_metadata["ROIs"].toList();
-    newROIs.append(ROI);
-    m_metadata["ROIs"] = newROIs;
+    QList<QRectF> rects;
+    foreach (const QVariant &rect, m_metadata["Rects"].toList())
+        rects.append(rect.toRect());
+    return rects;
 }
 
-void File::appendROIs(const QList<QRectF> &ROIs)
+void File::appendRect(const QRectF &rect)
 {
-    QList<QVariant> newROIs = m_metadata["ROIs"].toList();
-    foreach (const QRectF &ROI, ROIs)
-        newROIs.append(ROI);
-    m_metadata["ROIs"] = newROIs;
+    QList<QVariant> newRects = m_metadata["Rects"].toList();
+    newRects.append(rect);
+    m_metadata["Rects"] = newRects;
 }
 
-void File::setROIs(const QList<QRectF> &ROIs)
+void File::appendRects(const QList<QRectF> &rects)
 {
-    QList<QVariant> ROIList; ROIList.reserve(ROIs.size());
-    foreach (const QRectF &ROI, ROIs)
-        ROIList.append(ROI);
-    m_metadata["ROIs"] = ROIList;
+    QList<QVariant> newRects = m_metadata["Rects"].toList();
+    foreach (const QRectF &rect, rects)
+        newRects.append(rect);
+    m_metadata["Rects"] = newRects;
 }
 
 /* File - private methods */
