@@ -1144,8 +1144,6 @@ public:
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
     BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
 
-    virtual void train(const TemplateList &data);
-
     virtual void project(const Template &src, Template &dst) const
     {
         if (timeVarying()) qFatal("No const project defined for time-varying transform");
@@ -1158,50 +1156,6 @@ public:
         _project(src, dst);
     }
 
-    void backProject(const Template &dst, Template &src) const
-    {
-        // Backprojecting a time-varying transform is probably not going to work.
-        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
-
-        src = dst;
-        // Reverse order in which transforms are processed
-        int length = transforms.length();
-        for (int i=length-1; i>=0; i--) {
-            Transform *f = transforms.at(i);
-            try {
-                src >> *f;
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
-                src = Template(src.file);
-                src.file.setBool("FTE");
-            }
-        }
-    }
-
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        dst = src;
-        foreach (Transform *f, transforms) {
-            try {
-                f->projectUpdate(dst);
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
-                dst = Template(src.file);
-                dst.file.setBool("FTE");
-            }
-        }
-    }
-
-    // For time varying transforms, parallel execution over individual templates
-    // won't work.
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
-    {
-        dst = src;
-        foreach (Transform *f, transforms)
-        {
-            f->projectUpdate(dst);
-        }
-    }
 
     bool timeVarying() const
     {
@@ -1220,45 +1174,11 @@ public:
         }
     }
 
-    virtual void finalize(TemplateList & output)
-    {
-        output.clear();
-        // For each transform,
-        for (int i = 0; i < transforms.size(); i++)
-        {
-
-            // Collect any final templates
-            TemplateList last_set;
-            transforms[i]->finalize(last_set);
-            if (last_set.empty())
-                continue;
-            // Push any templates received through the remaining transforms in the sequence
-            for (int j = (i+1); j < transforms.size();j++)
-            {
-                transforms[j]->projectUpdate(last_set);
-            }
-            // append the result to the output set
-            output.append(last_set);
-        }
-    }
 
 protected:
     bool time_varying;
-    // Single template const project, default implementation for aggregate transforms--pass the template through each
-    // sub-transform, one after the other
-    virtual void _project(const Template & src, Template & dst) const
-    {
-        dst = src;
-        foreach (const Transform *f, transforms) {
-            try {
-                dst >> *f;
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
-                dst = Template(src.file);
-                dst.file.setBool("FTE");
-            }
-        }
-    }
+
+    virtual void _project(const Template & src, Template & dst) const = 0;
     virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
 
     CompositeTransform() : TimeVaryingTransform(false) {}

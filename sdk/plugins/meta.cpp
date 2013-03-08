@@ -85,20 +85,66 @@ static void incrementStep()
     Globals->currentStep += 1.0 / pow(10.0, double(depth));
 }
 
-// CompositeTransform::train placed here to pick up acquireStep and incrementStep
-void CompositeTransform::train(const TemplateList &data)
+/*!
+ * \brief Use Expanded after basic calls that take a template list, used to implement ExpandTransform
+ */
+class ExpandDecorator : public Transform
 {
-    acquireStep();
+    Q_OBJECT
 
-    TemplateList copy(data);
-    for (int i=0; i<transforms.size(); i++) {
-        transforms[i]->train(copy);
-        copy >> *transforms[i];
-        incrementStep();
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
+    BR_PROPERTY(br::Transform*, transform, NULL)
+
+public:
+    ExpandDecorator(Transform * input)
+    {
+        transform = input;
+        transform->setParent(this);
+        file = transform->file;
+        setObjectName(transform->objectName());
     }
 
-    releaseStep();
-}
+    void train(const TemplateList &data)
+    {
+        transform->train(data);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        transform->project(src, dst);
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        transform->project(src, dst);
+        dst = Expanded(dst);
+    }
+
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        transform->projectUpdate(src, dst);
+    }
+
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        transform->projectUpdate(src, dst);
+        dst = Expanded(dst);
+    }
+
+    bool timeVarying() const
+    {
+        return transform->timeVarying();
+    }
+
+    void finalize(TemplateList & output)
+    {
+        transform->finalize(output);
+        output = Expanded(output);
+    }
+
+};
+
 
 /*!
  * \ingroup Transforms
@@ -114,6 +160,87 @@ class PipeTransform : public CompositeTransform
 {
     Q_OBJECT
 
+    void train(const TemplateList &data)
+    {
+        acquireStep();
+
+        TemplateList copy(data);
+        for (int i=0; i<transforms.size(); i++) {
+            transforms[i]->train(copy);
+            copy >> *transforms[i];
+            incrementStep();
+        }
+
+        releaseStep();
+    }
+
+    void backProject(const Template &dst, Template &src) const
+    {
+        // Backprojecting a time-varying transform is probably not going to work.
+        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
+
+        src = dst;
+        // Reverse order in which transforms are processed
+        int length = transforms.length();
+        for (int i=length-1; i>=0; i--) {
+            Transform *f = transforms.at(i);
+            try {
+                src >> *f;
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
+                src = Template(src.file);
+                src.file.setBool("FTE");
+            }
+        }
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        dst = src;
+        foreach (Transform *f, transforms) {
+            try {
+                f->projectUpdate(dst);
+            } catch (...) {
+                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
+                dst = Template(src.file);
+                dst.file.setBool("FTE");
+            }
+        }
+    }
+
+    // For time varying transforms, parallel execution over individual templates
+    // won't work.
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        dst = src;
+        foreach (Transform *f, transforms)
+        {
+            f->projectUpdate(dst);
+        }
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        output.clear();
+        // For each transform,
+        for (int i = 0; i < transforms.size(); i++)
+        {
+
+            // Collect any final templates
+            TemplateList last_set;
+            transforms[i]->finalize(last_set);
+            if (last_set.empty())
+                continue;
+            // Push any templates received through the remaining transforms in the sequence
+            for (int j = (i+1); j < transforms.size();j++)
+            {
+                transforms[j]->projectUpdate(last_set);
+            }
+            // append the result to the output set
+            output.append(last_set);
+        }
+    }
+
 
 protected:
     // Template list project -- process templates in parallel through Transform::project
@@ -128,6 +255,21 @@ protected:
             Transform::project(src, dst);
         }
     }
+
+   // Single template const project, pass the template through each sub-transform, one after the other
+   virtual void _project(const Template & src, Template & dst) const
+   {
+       dst = src;
+       foreach (const Transform *f, transforms) {
+           try {
+               dst >> *f;
+           } catch (...) {
+               qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
+               dst = Template(src.file);
+               dst.file.setBool("FTE");
+           }
+       }
+   }
 };
 
 BR_REGISTER(Transform, PipeTransform)
@@ -142,71 +284,31 @@ BR_REGISTER(Transform, PipeTransform)
  *
  * \see PipeTransform
  */
-class ExpandTransform : public CompositeTransform
+class ExpandTransform : public PipeTransform
 {
     Q_OBJECT
 
-    void train(const TemplateList &data)
+    void init()
     {
-        acquireStep();
-
-        TemplateList copy(data);
-        for (int i=0; i<transforms.size(); i++) {
-            transforms[i]->train(copy);
-            copy >> *transforms[i];
-            copy = Expanded(copy);
-            incrementStep();
-        }
-
-        releaseStep();
-    }
-
-    // same as _project, but calling projectUpdate on sub-transforms instead of using
-    // operator>>
-    void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        dst = src;
-        for (int i=0; i<transforms.size(); i++) {
-            transforms[i]->projectUpdate(dst);
-            dst = Expanded(dst);
-        }
-    }
-
-    virtual void finalize(TemplateList & output)
-    {
-        output.clear();
-        // For each transform,
         for (int i = 0; i < transforms.size(); i++)
         {
-
-            // Collect any final templates
-            TemplateList last_set;
-            transforms[i]->finalize(last_set);
-            last_set = Expanded(last_set);
-            if (last_set.empty())
-                continue;
-            // Push any templates received through the remaining transforms in the sequence
-            for (int j = (i+1); j < transforms.size();j++)
-            {
-                transforms[j]->projectUpdate(last_set);
-                last_set = Expanded(last_set);
-            }
-            // append the result to the output set
-            output.append(last_set);
+            transforms[i] = new ExpandDecorator(transforms[i]);
         }
+        // Need to call this to set up timevariance correctly, and it won't
+        // be called automatically
+        CompositeTransform::init();
     }
 
 protected:
 
     // Template list project -- project through transforms sequentially,
     // then expand the results, can't use Transform::Project(templateList) since
-    // we need to expand between tranforms
+    // we need to expand between tranforms, so actually do need to overload this method
     void _project(const TemplateList &src, TemplateList &dst) const
     {
         dst = src;
         for (int i=0; i<transforms.size(); i++) {
             dst >> *transforms[i];
-            dst = Expanded(dst);
         }
     }
 };
@@ -236,7 +338,7 @@ class ForkTransform : public CompositeTransform
         }
         if (threaded) Globals->trackFutures(futures);
     }
-    // The implementation of backProject in aggregate transform probably doesn't do anything useful here.
+
     void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
 
     // same as _project, but calls projectUpdate on sub-transforms
@@ -255,6 +357,18 @@ class ForkTransform : public CompositeTransform
         }
     }
 
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        dst = src;
+        dst.reserve(src.size());
+        for (int i=0; i<src.size(); i++) dst.append(Template());
+        foreach (Transform *f, transforms) {
+            TemplateList m;
+            f->projectUpdate(src, m);
+            if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
+            for (int i=0; i<src.size(); i++) dst[i].append(m[i]);
+        }
+    }
 
     // this is probably going to go bad, fork transform probably won't work well in a variable
     // input/output scenario
@@ -313,19 +427,6 @@ protected:
             }
         } else {
             Transform::project(src, dst);
-        }
-    }
-
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
-    {
-        dst = src;
-        dst.reserve(src.size());
-        for (int i=0; i<src.size(); i++) dst.append(Template());
-        foreach (Transform *f, transforms) {
-            TemplateList m;
-            f->projectUpdate(src, m);
-            if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
-            for (int i=0; i<src.size(); i++) dst[i].append(m[i]);
         }
     }
 
