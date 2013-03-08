@@ -228,7 +228,7 @@ class DFFSTransform : public Transform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.insert("DFFS", sqrt(pca.residualReconstructionError((*cvtFloat)(src))));
+        dst.file.set("DFFS", sqrt(pca.residualReconstructionError((*cvtFloat)(src))));
     }
 
     void store(QDataStream &stream) const

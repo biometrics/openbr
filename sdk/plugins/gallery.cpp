@@ -47,7 +47,7 @@ class galGallery : public Gallery
     void init()
     {
         gallery.setFileName(file);
-        if (file.getBool("remove"))
+        if (file.get<bool>("remove", false))
             gallery.remove();
         QtUtils::touchDir(gallery);
         if (!gallery.open(QFile::ReadWrite | QFile::Append))
@@ -352,7 +352,7 @@ class csvGallery : public Gallery
         for (int i=0; i<rows; i++)
             for (int j=0; j<columns; j++)
                 if (keys[j] == "Label") output->setRelative(files[i].label(), i, j);
-                else                    output->setRelative(files[i].getFloat(keys[j], std::numeric_limits<float>::quiet_NaN()), i, j);
+                else                    output->setRelative(files[i].get<float>(keys[j], std::numeric_limits<float>::quiet_NaN()), i, j);
     }
 
     TemplateList readBlock(bool *done)
@@ -465,9 +465,9 @@ class dbGallery : public Gallery
     TemplateList readBlock(bool *done)
     {
         TemplateList templates;
-        br::File import = file.getString("import", "");
-        QString query = file.getString("query");
-        QString subset = file.getString("subset", "");
+        br::File import = file.get<QString>("import", "");
+        QString query = file.get<QString>("query");
+        QString subset = file.get<QString>("subset", "");
 
 #ifndef BR_EMBEDDED
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");

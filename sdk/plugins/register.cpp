@@ -73,9 +73,9 @@ class AffineTransform : public UntrainableTransform
             src.file.contains("Affine_1_Y") &&
             (src.file.contains("Affine_2_X") || twoPoints) &&
             (src.file.contains("Affine_2_Y") || twoPoints)) {
-            srcPoints[0] = Point2f(src.file.getFloat("Affine_0_X"), src.file.getFloat("Affine_0_Y"));
-            srcPoints[1] = Point2f(src.file.getFloat("Affine_1_X"), src.file.getFloat("Affine_1_Y"));
-            if (!twoPoints) srcPoints[2] = Point2f(src.file.getFloat("Affine_2_X"), src.file.getFloat("Affine_2_Y"));
+            srcPoints[0] = Point2f(src.file.get<float>("Affine_0_X"), src.file.get<float>("Affine_0_Y"));
+            srcPoints[1] = Point2f(src.file.get<float>("Affine_1_X"), src.file.get<float>("Affine_1_Y"));
+            if (!twoPoints) srcPoints[2] = Point2f(src.file.get<float>("Affine_2_X"), src.file.get<float>("Affine_2_Y"));
         } else {
             const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
 
@@ -87,13 +87,13 @@ class AffineTransform : public UntrainableTransform
                 srcPoints[1] = landmarks[1];
                 if (!twoPoints) srcPoints[2] = landmarks[2];
 
-                dst.file.insert("Affine_0_X", landmarks[0].x);
-                dst.file.insert("Affine_0_Y", landmarks[0].y);
-                dst.file.insert("Affine_1_X", landmarks[1].x);
-                dst.file.insert("Affine_1_Y", landmarks[1].y);
+                dst.file.set("Affine_0_X", landmarks[0].x);
+                dst.file.set("Affine_0_Y", landmarks[0].y);
+                dst.file.set("Affine_1_X", landmarks[1].x);
+                dst.file.set("Affine_1_Y", landmarks[1].y);
                 if (!twoPoints) {
-                    dst.file.insert("Affine_2_X", landmarks[2].x);
-                    dst.file.insert("Affine_2_Y", landmarks[2].y);
+                    dst.file.set("Affine_2_X", landmarks[2].x);
+                    dst.file.set("Affine_2_Y", landmarks[2].y);
                 }
             }
         }

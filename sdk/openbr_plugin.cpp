@@ -61,7 +61,7 @@ QString File::hash() const
 void File::append(const QHash<QString, QVariant> &metadata)
 {
     foreach (const QString &key, metadata.keys())
-        insert(key, metadata[key]);
+        set(key, metadata[key]);
 }
 
 void File::append(const File &other)
@@ -70,7 +70,7 @@ void File::append(const File &other)
         if (name.isEmpty()) {
             name = other.name;
         } else {
-            if (!contains("separator")) insert("separator", ";");
+            if (!contains("separator")) set("separator", ";");
             name += value("separator").toString() + other.name;
         }
     }
@@ -153,77 +153,6 @@ void File::set(const QString &key, const QVariant &value)
     m_metadata.insert(key, value);
 }
 
-QVariant File::get(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    return value(key);
-}
-
-QVariant File::get(const QString &key, const QVariant &defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    return value(key);
-}
-
-bool File::getBool(const QString &key) const
-{
-    if (!contains(key)) return false;
-    QString v = value(key).toString();
-    if (v.isEmpty() || (v == "true")) return true;
-    if (v == "false") return false;
-    return v.toInt();
-}
-
-void File::setBool(const QString &key, bool value)
-{
-    if (value) m_metadata.insert(key, QVariant());
-    else       m_metadata.remove(key);
-}
-
-int File::getInt(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    bool ok; int result = value(key).toInt(&ok);
-    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
-    return result;
-}
-
-int File::getInt(const QString &key, int defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    bool ok; int result = value(key).toInt(&ok);
-    if (!ok) return defaultValue;
-    return result;
-}
-
-float File::getFloat(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
-    return result;
-}
-
-float File::getFloat(const QString &key, float defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) return defaultValue;
-    return result;
-}
-
-QString File::getString(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    return value(key).toString();
-}
-
-QString File::getString(const QString &key, const QString &defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    return value(key).toString();
-}
-
 QList<QPointF> File::landmarks() const
 {
     QList<QPointF> landmarks;
@@ -245,7 +174,7 @@ QList<QPointF> File::namedLandmarks() const
             keys.contains(keyBaseName+"_Height") ||
             keys.contains(keyBaseName+"_Radius"))
             continue;
-        landmarks.append(QPointF(getFloat(keyBaseName+"_X"), getFloat(keyBaseName+"_Y")));
+        landmarks.append(QPointF(get<float>(keyBaseName+"_X"), get<float>(keyBaseName+"_Y")));
     }
     return landmarks;
 }
@@ -325,10 +254,10 @@ void File::init(const QString &file)
             QStringList words = QtUtils::parse(parameters[i], '=');
             QtUtils::checkArgsSize("File", words, 1, 2);
             if (words.size() < 2) {
-                if (unnamed) insertParameter(i, words[0]);
-                else         insert(words[0], QVariant());
+                if (unnamed) setParameter(i, words[0]);
+                else         set(words[0], QVariant());
             } else {
-                insert(words[0], words[1]);
+                set(words[0], words[1]);
             }
         }
         name = name.left(index);
@@ -391,9 +320,8 @@ void FileList::sort(const QString& key)
     FileList sortedList;
 
     for (int i = 0; i < size(); i++) {
-        if (at(i).contains(key)) {
-            metadata.append(at(i).get(key).toString());
-        }
+        if (at(i).contains(key))
+            metadata.append(at(i).get<QString>(key));
         else sortedList.push_back(at(i));
     }
 
@@ -416,7 +344,7 @@ QList<int> FileList::crossValidationPartitions() const
 {
     QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
     foreach (const File &f, *this)
-        crossValidationPartitions.append(f.getInt("Cross_Validation_Partition", 0));
+        crossValidationPartitions.append(f.get<int>("Cross_Validation_Partition", 0));
     return crossValidationPartitions;
 }
 
@@ -424,7 +352,7 @@ int FileList::failures() const
 {
     int failures = 0;
     foreach (const File &file, *this)
-        if (file.getBool("FTO") || file.getBool("FTE"))
+        if (file.get<bool>("FTO", false) || file.get<bool>("FTE", false))
             failures++;
     return failures;
 }
@@ -447,9 +375,9 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
-        newTemplates = newTemplates.mid(gallery.getInt("pos", 0), gallery.getInt("length", -1));
-        if (gallery.getBool("reduce")) newTemplates = newTemplates.reduced();
-        const int crossValidate = gallery.getInt("crossValidate");
+        newTemplates = newTemplates.mid(gallery.get<int>("pos", 0), gallery.get<int>("length", -1));
+        if (gallery.get<bool>("reduce", false)) newTemplates = newTemplates.reduced();
+        const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
 
         // If file is a Format not a Gallery
@@ -460,11 +388,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         for (int i=0; i<newTemplates.size(); i++) {
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
-            newTemplates[i].file.insert("Index", i+templates.size());
-            if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
+            newTemplates[i].file.set("Index", i+templates.size());
+            if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
         }
 
-        if (!templates.isEmpty() && gallery.getBool("merge")) {
+        if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
             if (newTemplates.size() != templates.size())
                 qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
@@ -1136,7 +1064,7 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
         const int selectedLabel = selectedLabels[i];
         QList<int> indices;
         for (int j=0; j<allLabels.size(); j++)
-            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.getBool("FTE")))
+            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)))
                 indices.append(j);
 
         std::random_shuffle(indices.begin(), indices.end());
@@ -1320,7 +1248,7 @@ static void _project(const Transform *transform, const Template *src, Template *
     } catch (...) {
         qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *dst = Template(src->file);
-        dst->file.setBool("FTE");
+        dst->file.set("FTE", true);
     }
 }
 
@@ -1331,7 +1259,7 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
     } catch (...) {
         qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *src = Template(dst->file);
-        src->file.setBool("FTE");
+        src->file.set("FTE", true);
     }
 }
 

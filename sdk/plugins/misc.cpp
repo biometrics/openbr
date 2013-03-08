@@ -44,7 +44,7 @@ class OpenTransform : public UntrainableMetaTransform
             dst.append(t);
             dst.file.append(t.file.localMetadata());
         }
-        dst.file.insert("FTO", dst.isEmpty());
+        dst.file.set("FTO", dst.isEmpty());
     }
 };
 
@@ -282,7 +282,7 @@ class RenameTransform : public UntrainableMetaTransform
     {
         dst = src;
         if (dst.file.localKeys().contains(find)) {
-            dst.file.insert(replace, dst.file.get(find));
+            dst.file.set(replace, dst.file.value(find));
             dst.file.remove(find);
         }
     }
@@ -308,7 +308,7 @@ class RenameFirstTransform : public UntrainableMetaTransform
         dst = src;
         foreach (const QString &key, find)
             if (dst.file.localKeys().contains(key)) {
-                dst.file.insert(replace, dst.file.get(key));
+                dst.file.set(replace, dst.file.value(key));
                 dst.file.remove(key);
                 break;
             }

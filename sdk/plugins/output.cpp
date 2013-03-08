@@ -165,9 +165,9 @@ class rrOutput : public MatrixOutput
     ~rrOutput()
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
-        const int limit = file.getInt("limit", 20);
-        const bool byLine = file.getBool("byLine");
-        const float threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
+        const int limit = file.get<int>("limit", 20);
+        const bool byLine = file.get<bool>("byLine", false);
+        const float threshold = file.get<float>("threshold", -std::numeric_limits<float>::max());
 
         QStringList lines;
 
@@ -279,7 +279,7 @@ class rankOutput : public MatrixOutput
             typedef QPair<float,int> Pair;
             int rank = 1;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true)) {
-                if(targetFiles[pair.second].getString("Label") == queryFiles[i].getString("Label")) {
+                if(targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
                     ranks.append(rank);
                     positions.append(pair.second);
                     scores.append(pair.first);
@@ -347,10 +347,10 @@ class tailOutput : public Output
     void initialize(const FileList &targetFiles, const FileList &queryFiles)
     {
         Output::initialize(targetFiles, queryFiles);
-        threshold = file.getFloat("threshold", -std::numeric_limits<float>::max());
-        atLeast = file.getInt("atLeast", 1);
-        atMost = file.getInt("atMost", std::numeric_limits<int>::max());
-        args = file.getBool("args");
+        threshold = file.get<float>("threshold", -std::numeric_limits<float>::max());
+        atLeast = file.get<int>("atLeast", 1);
+        atMost = file.get<int>("atMost", std::numeric_limits<int>::max());
+        args = file.get<bool>("args", false);
         lastValue = -std::numeric_limits<float>::max();
     }
 
@@ -462,9 +462,9 @@ class histOutput : public Output
     void initialize(const FileList &targetFiles, const FileList &queryFiles)
     {
         Output::initialize(targetFiles, queryFiles);
-        min = file.getFloat("min", -5);
-        max = file.getFloat("max", 5);
-        step = file.getFloat("step", 0.1);
+        min = file.get<float>("min", -5);
+        max = file.get<float>("max", 5);
+        step = file.get<float>("step", 0.1);
         bins = QVector<int>((max-min)/step, 0);
     }
 

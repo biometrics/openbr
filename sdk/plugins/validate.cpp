@@ -22,7 +22,7 @@ class CrossValidateTransform : public MetaTransform
         int numPartitions = 0;
         QList<int> partitions; partitions.reserve(data.size());
         foreach (const File &file, data.files()) {
-            partitions.append(file.getInt("Cross_Validation_Partition", 0));
+            partitions.append(file.get<int>("Cross_Validation_Partition", 0));
             numPartitions = std::max(numPartitions, partitions.last()+1);
         }
 
@@ -48,7 +48,7 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        transforms[src.file.getInt("Cross_Validation_Partition", 0)]->project(src, dst);
+        transforms[src.file.get<int>("Cross_Validation_Partition", 0)]->project(src, dst);
     }
 
     void store(QDataStream &stream) const
@@ -82,8 +82,8 @@ class CrossValidateDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
-        const int partitionA = a.file.getInt("Cross_Validation_Partition", 0);
-        const int partitionB = b.file.getInt("Cross_Validation_Partition", 0);
+        const int partitionA = a.file.get<int>("Cross_Validation_Partition", 0);
+        const int partitionB = b.file.get<int>("Cross_Validation_Partition", 0);
         return (partitionA != partitionB) ? -std::numeric_limits<float>::max() : 0;
     }
 };
@@ -104,7 +104,7 @@ class FilterDistance : public Distance
         (void) b; // Query template isn't checked
         foreach (const QString &key, Globals->filters.keys()) {
             bool keep = false;
-            const QString metadata = a.file.getString(key, "");
+            const QString metadata = a.file.get<QString>(key, "");
             if (metadata.isEmpty()) continue;
             foreach (const QString &value, Globals->filters[key]) {
                 if (metadata == value) {

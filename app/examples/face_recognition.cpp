@@ -32,8 +32,8 @@ static void printTemplate(const br::Template &t)
 {
     printf("%s eyes: (%d, %d) (%d, %d)\n",
            qPrintable(t.file.fileName()),
-           t.file.getInt("Affine_0_X"), t.file.getInt("Affine_0_Y"),
-           t.file.getInt("Affine_1_X"), t.file.getInt("Affine_1_Y"));
+           t.file.get<int>("Affine_0_X"), t.file.get<int>("Affine_0_Y"),
+           t.file.get<int>("Affine_1_X"), t.file.get<int>("Affine_1_Y"));
 }
 
 int main(int argc, char *argv[])

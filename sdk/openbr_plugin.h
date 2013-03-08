@@ -156,7 +156,7 @@ struct BR_EXPORT File
 
     File() {}
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
-    File(const QString &file, const QVariant &label) { init(file); insert("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
+    File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
@@ -165,15 +165,14 @@ struct BR_EXPORT File
 
     inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
     inline QHash<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
-    inline void insert(const QString &key, const QVariant &value) { set(key, value); } /*!< \brief Equivalent to set(). */
     void append(const QHash<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
     QList<File> split() const; /*!< \brief Split the file using \c separator. */
     QList<File> split(const QString &separator) const; /*!< \brief Split the file. */
 
-    inline void insertParameter(int index, const QVariant &value) { insert("_Arg" + QString::number(index), value); } /*!< \brief Insert a keyless value. */
-    inline bool containsParameter(int index) const { return m_metadata.contains("_Arg" + QString::number(index)); } /*!< \brief Check for the existence of a keyless value. */
-    inline QVariant parameter(int index) const { return m_metadata.value("_Arg" + QString::number(index)); } /*!< \brief Retrieve a keyless value. */
+    inline void setParameter(int index, const QVariant &value) { set("_Arg" + QString::number(index), value); } /*!< \brief Insert a keyless value. */
+    inline bool containsParameter(int index) const { return contains("_Arg" + QString::number(index)); } /*!< \brief Check for the existence of a keyless value. */
+    inline QVariant getParameter(int index) const { return get<QVariant>("_Arg" + QString::number(index)); } /*!< \brief Retrieve a keyless value. */
 
     inline bool operator==(const char* other) const { return name == other; } /*!< \brief Compare name to c-style string. */
     inline bool operator==(const File &other) const { return (name == other.name) && (m_metadata == other.m_metadata); } /*!< \brief Compare name and metadata for equality. */
@@ -198,22 +197,32 @@ struct BR_EXPORT File
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
     static QString subject(int label); /*!< \brief Looks up the subject for the provided label. */
     inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
-    inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
+    inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
     void remove(const QString &key); /*!< \brief Remove the metadata key. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
-    QVariant get(const QString &key) const; /*!< \brief Returns a QVariant for the key, throwing an error if the key does not exist. */
-    QVariant get(const QString &key, const QVariant &value) const; /*!< \brief Returns a QVariant for the key, returning \em defaultValue if the key does not exist. */
     float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
-    inline void setLabel(float label) { insert("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
-    bool getBool(const QString &key) const; /*!< \brief Returns a boolean value for the key. */
-    void setBool(const QString &key, bool value = true); /*!< \brief Sets a boolean value for the key. */
-    int getInt(const QString &key) const; /*!< \brief Returns an int value for the key, throwing an error if the key does not exist. */
-    int getInt(const QString &key, int defaultValue) const; /*!< \brief Returns an int value for the key, returning \em defaultValue if the key does not exist. */
-    float getFloat(const QString &key) const; /*!< \brief Returns a float value for the key, throwing an error if the key does not exist. */
-    float getFloat(const QString &key, float defaultValue) const; /*!< \brief Returns a float value for the key, returning \em defaultValue if the key does not exist. */
-    QString getString(const QString &key) const; /*!< \brief Returns a string value for the key, throwing an error if the key does not exist. */
-    QString getString(const QString &key, const QString &defaultValue) const; /*!< \brief Returns a string value for the key, returning \em defaultValue if the key does not exist. */
+    inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
+
+    /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */
+    template <typename T>
+    T get(const QString &key) const
+    {
+        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        QVariant variant = value(key);
+        if (!variant.canConvert<T>()) qFatal("Can't convert: %s", qPrintable(key));
+        return variant.value<T>();
+    }
+
+    /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
+    template <typename T>
+    T get(const QString &key, const T &defaultValue) const
+    {
+        if (!contains(key)) return defaultValue;
+        QVariant variant = value(key);
+        if (!variant.canConvert<T>()) return defaultValue;
+        return variant.value<T>();
+    }
 
     QList<QPointF> landmarks() const; /*!< \brief Returns the file's landmark list. */
     QList<QPointF> namedLandmarks() const; /*!< \brief Returns landmarks derived from metadata keys. */

@@ -71,7 +71,7 @@ FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
                     newFile.append(file);
                     file = newFile;
                 } else if (!ignoreMetadata) {
-                    file.insert(key, value);
+                    file.set(key, value);
                 }
             }
 
@@ -99,7 +99,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
         QStringList metadata;
         if (!ignoreMetadata)
             foreach (const QString &key, file.localKeys())
-                metadata.append(key+"=\""+file.getString(key, "?")+"\"");
+                metadata.append(key+"=\""+file.get<QString>(key, "?")+"\"");
         lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
@@ -113,19 +113,19 @@ Mat readMatrix(const br::File &matrix)
 {
     // Special case matrix construction
     if (matrix == "Identity") {
-        int rows = matrix.getInt("rows", -1);
-        int columns = matrix.getInt("columns", -1);
-        const int size = matrix.getInt("size", -1);
+        int rows = matrix.get<int>("rows", -1);
+        int columns = matrix.get<int>("columns", -1);
+        const int size = matrix.get<int>("size", -1);
         if (size != -1) {
             if (rows == -1) rows = size;
             if (columns == -1) columns = size;
         }
-        const int step = matrix.getInt("step", 1);
+        const int step = matrix.get<int>("step", 1);
         if (rows    % step != 0) qFatal("Step does not divide rows evenly.");
         if (columns % step != 0) qFatal("Step does not divide columns evenly.");
 
         if (sizeof(T) == sizeof(BEE::Mask_t)) {
-            const bool selfSimilar = matrix.getBool("selfSimilar");
+            const bool selfSimilar = matrix.get<bool>("selfSimilar", false);
 
             Mat m(rows, columns, CV_8UC1);
             m.setTo(BEE::NonMatch);
@@ -171,8 +171,8 @@ Mat readMatrix(const br::File &matrix)
     file.close();
 
     Mat result;
-    if (isDistance ^ matrix.getBool("negate")) m.convertTo(result, -1, -1);
-    else                                       result = m.clone();
+    if (isDistance ^ matrix.get<bool>("negate", false)) m.convertTo(result, -1, -1);
+    else                                                result = m.clone();
     return result;
 }
 
