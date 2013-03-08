@@ -1108,13 +1108,12 @@ class BR_EXPORT TimeVaryingTransform : public Transform
     virtual void project(const Template &src, Template &dst) const
     {
         qFatal("No const project defined for time-varying transform");
-        // shut up unused param warning? probably a better way to handle this
-        dst = src;
+        (void) dst; (void) src;
     }
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         qFatal("No const project defined for time-varying transform");
-        dst = src;
+        (void) dst; (void) src;
     }
 
 
