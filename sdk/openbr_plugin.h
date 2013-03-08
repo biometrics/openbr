@@ -1005,17 +1005,17 @@ public:
     }
 
     // inplace project/update
-    void projectUpdate(Template & src)
+    void projectUpdate(Template &srcdst)
     {
-        Template dst = src;
-        projectUpdate(src, dst);
-        src = dst;
+        Template dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
     }
-    void projectUpdate(TemplateList & src)
+    void projectUpdate(TemplateList &srcdst)
     {
-        TemplateList dst = src;
-        projectUpdate(src, dst);
-        src = dst;
+        TemplateList dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
     }
 
     // Time-varying transforms may move away from a single input->single output model, and only emit
@@ -1023,16 +1023,12 @@ public:
     // unique object), in this case finalize indicates that no further calls to project will be made
     // and the transform can emit a final set if templates if it wants. Time-invariant transforms
     // don't have to do anything.
-    virtual void finalize(TemplateList & output)
-    {
-        output = TemplateList();
-    }
-
+    virtual void finalize(TemplateList & output) { output = TemplateList(); }
     /*!
      * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
      * (if their children are time varying, they are also time varying, otherwise probably not)
      */
-    virtual bool timeVarying() const {return false;}
+    virtual bool timeVarying() const { return false; }
 
     /*!
      * \brief Convenience function equivalent to project().
@@ -1172,7 +1168,6 @@ public:
             }
         }
     }
-
 
 protected:
     bool isTimeVarying;
