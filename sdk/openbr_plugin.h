@@ -161,12 +161,15 @@ struct BR_EXPORT File
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
-    inline void clear() { name.clear(); m_metadata.clear(); } /*!< \brief Clears the file's name and metadata. */
 
     inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
     inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+
     void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
+    inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
+    inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
+
     QList<File> split() const; /*!< \brief Split the file using \c separator. */
     QList<File> split(const QString &separator) const; /*!< \brief Split the file. */
 
@@ -181,8 +184,6 @@ struct BR_EXPORT File
     inline bool operator<=(const File &other) const { return name <= other.name; } /*!< \brief Compare name. */
     inline bool operator>(const File &other) const { return name > other.name; } /*!< \brief Compare name. */
     inline bool operator>=(const File &other) const { return name >= other.name; } /*!< \brief Compare name. */
-    inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
-    inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
 
     inline bool isNull() const { return name.isEmpty() && m_metadata.isEmpty(); } /*!< \brief Returns \c true if name and metadata are empty, \c false otherwise. */
     inline bool isTerminal() const { return name == "terminal"; } /*!< \brief Returns \c true if #name is "terminal", \c false otherwise. */
@@ -195,14 +196,8 @@ struct BR_EXPORT File
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
-    static QString subject(int label); /*!< \brief Looks up the subject for the provided label. */
-    inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
-    inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
-
-    void remove(const QString &key); /*!< \brief Remove the metadata key. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
-    float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
-    inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
+    inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
 
     /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */
     template <typename T>
@@ -224,6 +219,12 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
+    static QString subject(int label); /*!< \brief Looks up the subject for the provided label. */
+    inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
+    float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
+    inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
+    inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
+
     QList<QPointF> landmarks() const; /*!< \brief Returns the file's landmark list. */
     QList<QPointF> namedLandmarks() const; /*!< \brief Returns landmarks derived from metadata keys. */
     void appendLandmark(const QPointF &landmark); /*!< \brief Adds a landmark to the file's landmark list. */
@@ -239,8 +240,8 @@ struct BR_EXPORT File
 
 private:
     QMap<QString,QVariant> m_metadata;
-    BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file); /*!< */
-    BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file); /*!< */
+    BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
+    BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
     void init(const QString &file);
 };

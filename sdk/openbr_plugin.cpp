@@ -110,29 +110,6 @@ QVariant File::value(const QString &key) const
     return m_metadata.contains(key) ? m_metadata.value(key) : Globals->property(qPrintable(key));
 }
 
-QString File::subject(int label)
-{
-    return Globals->classes.key(label, QString::number(label));
-}
-
-float File::label() const
-{
-    const QVariant variant = value("Label");
-    if (variant.isNull()) return -1;
-
-    if (Globals->classes.contains(variant.toString()))
-        return Globals->classes.value(variant.toString());
-
-    bool ok;
-    const float val = variant.toFloat(&ok);
-    return ok ? val : -1;
-}
-
-void File::remove(const QString &key)
-{
-    m_metadata.remove(key);
-}
-
 void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
@@ -151,6 +128,24 @@ void File::set(const QString &key, const QVariant &value)
     }
 
     m_metadata.insert(key, value);
+}
+
+QString File::subject(int label)
+{
+    return Globals->classes.key(label, QString::number(label));
+}
+
+float File::label() const
+{
+    const QVariant variant = value("Label");
+    if (variant.isNull()) return -1;
+
+    if (Globals->classes.contains(variant.toString()))
+        return Globals->classes.value(variant.toString());
+
+    bool ok;
+    const float val = variant.toFloat(&ok);
+    return ok ? val : -1;
 }
 
 QList<QPointF> File::landmarks() const
