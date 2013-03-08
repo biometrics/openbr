@@ -421,6 +421,9 @@ class BR_EXPORT Object : public QObject
 {
     Q_OBJECT
 
+    // Index of the first property that can be set via command line arguments
+    int firstAvailablePropertyIdx;
+
 public:
     File file; /*!< \brief The file used to construct the plugin. */
 
@@ -989,6 +992,49 @@ public:
     virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const Template &src, Template &dst)
+    {
+        project(src, dst);
+    }
+
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        project(src,dst);
+    }
+
+    /*!< \brief inplace projectUpdate. */
+    void projectUpdate(Template &srcdst)
+    {
+        Template dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
+    }
+
+    /*!< \brief inplace projectUpdate. */
+    void projectUpdate(TemplateList &srcdst)
+    {
+        TemplateList dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
+    }
+
+    /*!
+     * Time-varying transforms may move away from a single input->single output model, and only emit
+     * templates under some conditions (e.g. a tracking thing may emit a template for each detected
+     * unique object), in this case finalize indicates that no further calls to project will be made
+     * and the transform can emit a final set if templates if it wants. Time-invariant transforms
+     * don't have to do anything.
+     */
+    virtual void finalize(TemplateList & output) { output = TemplateList(); }
+
+    /*!
+     * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
+     * (if their children are time varying, they are also time varying, otherwise probably not)
+     */
+    virtual bool timeVarying() const { return false; }
+
     /*!
      * \brief Convenience function equivalent to project().
      */
@@ -1052,6 +1098,31 @@ inline QDataStream &operator>>(QDataStream &stream, Transform &f)
 }
 
 /*!
+ * \brief A br::Transform for which the results of project may change due to prior calls to project
+ */
+class BR_EXPORT TimeVaryingTransform : public Transform
+{
+    Q_OBJECT
+
+    virtual bool timeVarying() const { return true; }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        (void) dst; (void) src;
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        (void) dst; (void) src;
+    }
+
+protected:
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
+};
+
+/*!
  * \brief A br::Transform expecting multiple matrices per template.
  */
 class BR_EXPORT MetaTransform : public Transform
@@ -1078,7 +1149,6 @@ private:
     void store(QDataStream &stream) const { (void) stream; }
     void load(QDataStream &stream) { (void) stream; }
 };
-
 
 /*!
  * \brief A br::MetaTransform that does not require training data.
