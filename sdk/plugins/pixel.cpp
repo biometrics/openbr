@@ -120,7 +120,7 @@ class PerPixelClassifierTransform : public MetaTransform
                     uchar *psrc = src[n].ptr();
                     ptemp[n] = psrc[index];
                 }
-                cv::Mat labelMat = src.file.get("labels").value<cv::Mat>();
+                cv::Mat labelMat = src.file.value("labels").value<cv::Mat>();
                 uchar* plabel = labelMat.ptr();
                 temp.file.setLabel(plabel[index]);
 

@@ -75,15 +75,15 @@ class CascadeTransform : public UntrainableTransform
     {
         CascadeClassifier *cascade = cascadeResource.acquire();
         vector<Rect> rects;
-        cascade->detectMultiScale(src, rects, 1.2, 5, src.file.getBool("enrollAll") ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
+        cascade->detectMultiScale(src, rects, 1.2, 5, src.file.get<bool>("enrollAll", false) ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
         cascadeResource.release(cascade);
 
-        if (!src.file.getBool("enrollAll") && rects.empty())
+        if (!src.file.get<bool>("enrollAll", false) && rects.empty())
             rects.push_back(Rect(0, 0, src.m().cols, src.m().rows));
 
         foreach (const Rect &rect, rects) {
             dst += src;
-            dst.file.appendROI(OpenCVUtils::fromRect(rect));
+            dst.file.appendRect(OpenCVUtils::fromRect(rect));
         }
     }
 };

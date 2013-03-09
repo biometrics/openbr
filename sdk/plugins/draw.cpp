@@ -47,19 +47,19 @@ class DrawTransform : public UntrainableTransform
         const Scalar verboseColor(255, 255, 0);
         dst = src.m().clone();
 
-        QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.landmarks());
+        QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
 
         if (unnamed) {
             foreach (const Point2f &landmark, landmarks)
                 circle(dst, landmark, 3, color, -1);
         }
         if (named) {
-            QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedLandmarks());
+            QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedPoints());
             foreach (const Point2f &landmark, namedLandmarks)
                 circle(dst, landmark, 3, color);
         }
         if (ROI) {
-            QList<Rect> ROIs = OpenCVUtils::toRects(src.file.ROIs());
+            QList<Rect> ROIs = OpenCVUtils::toRects(src.file.rects());
             foreach (const Rect ROI, ROIs)
                 rectangle(dst, ROI, color);
         }
@@ -154,11 +154,11 @@ class EditTransform : public UntrainableTransform
     {
         (void) event;
         if (flags) {
-            QList<QRectF> ROIs = currentTemplate.file.ROIs();
-            for (int i=ROIs.size()-1; i>=0; i--)
-                if (ROIs[i].contains(x,y))
-                    ROIs.removeAt(i);
-            currentTemplate.file.setROIs(ROIs);
+            QList<QRectF> rects = currentTemplate.file.rects();
+            for (int i=rects.size()-1; i>=0; i--)
+                if (rects[i].contains(x,y))
+                    rects.removeAt(i);
+            currentTemplate.file.setRects(rects);
         }
 
         Template temp;

@@ -217,11 +217,11 @@ class DefaultFormat : public Format
         } else {
             QString fileName = file.name;
             if (!QFileInfo(fileName).exists()) {
-                fileName = file.getString("path") + "/" + file.name;
+                fileName = file.get<QString>("path") + "/" + file.name;
                 if (!QFileInfo(fileName).exists()) {
                     fileName = file.fileName();
                     if (!QFileInfo(fileName).exists()) {
-                        fileName = file.getString("path") + "/" + file.fileName();
+                        fileName = file.get<QString>("path") + "/" + file.fileName();
                         if (!QFileInfo(fileName).exists()) return t;
                     }
                 }
@@ -604,7 +604,7 @@ class xmlFormat : public Format
                            (e.tagName() == "RPROFILE")) {
                     // Ignore these other image fields for now
                 } else {
-                    t.file.insert(e.tagName(), e.text());
+                    t.file.set(e.tagName(), e.text());
                 }
 
                 fileNode = fileNode.nextSibling();
@@ -614,11 +614,11 @@ class xmlFormat : public Format
 
         // Calculate age
         if (t.file.contains("DOB")) {
-            const QDate dob = QDate::fromString(t.file.getString("DOB").left(10), "yyyy-MM-dd");
+            const QDate dob = QDate::fromString(t.file.get<QString>("DOB").left(10), "yyyy-MM-dd");
             const QDate current = QDate::currentDate();
             int age = current.year() - dob.year();
             if (current.month() < dob.month()) age--;
-            t.file.insert("Age", age);
+            t.file.set("Age", age);
         }
 
         return t;
