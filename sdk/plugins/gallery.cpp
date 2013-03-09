@@ -22,13 +22,13 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #endif // BR_EMBEDDED
+#include <opencv2/highgui/highgui.hpp>
 #include <openbr_plugin.h>
 
 #include "NaturalStringCompare.h"
 #include "core/bee.h"
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
-#include <opencv2/highgui/highgui.hpp>
 
 namespace br
 {
@@ -339,20 +339,33 @@ class csvGallery : public Gallery
     {
         if (files.isEmpty()) return;
 
-        QStringList keys;
+        QMap<QString,QVariant> samples;
         foreach (const File &file, files)
             foreach (const QString &key, file.localKeys())
-                if (!keys.contains(key)) keys += key;
-        qSort(keys);
+                if (!samples.contains(key))
+                    samples.insert(key, file.value(key));
 
-        const int rows = files.size();
-        const int columns = keys.size();
-        QSharedPointer<Output> output(Output::make(file, keys, files));
+        QStringList lines;
+        lines.reserve(files.size()+1);
 
-        for (int i=0; i<rows; i++)
-            for (int j=0; j<columns; j++)
-                if (keys[j] == "Label") output->setRelative(files[i].label(), i, j);
-                else                    output->setRelative(files[i].get<float>(keys[j], std::numeric_limits<float>::quiet_NaN()), i, j);
+        { // Make header
+            QStringList words;
+            words.append("File");
+            foreach (const QString &key, samples.keys())
+                words.append(getCSVElement(key, samples[key], true));
+            lines.append(words.join(","));
+        }
+
+        // Make table
+        foreach (const File &file, files) {
+            QStringList words;
+            words.append(file.name);
+            foreach (const QString &key, samples.keys())
+                words.append(getCSVElement(key, file.value(key), false));
+            lines.append(words.join(","));
+        }
+
+        QtUtils::writeFile(file, lines);
     }
 
     TemplateList readBlock(bool *done)
@@ -376,6 +389,25 @@ class csvGallery : public Gallery
     void write(const Template &t)
     {
         files.append(t.file);
+    }
+
+    static QString getCSVElement(const QString &key, const QVariant &value, bool header)
+    {
+        if (value.canConvert<QString>()) {
+            if (header) return key;
+            else        return value.value<QString>();
+        } else if (value.canConvert<QPointF>()) {
+            const QPointF point = value.value<QPointF>();
+            if (header) return key+"_X,"+key+"_Y";
+            else        return QString::number(point.x())+","+QString::number(point.y());
+        } else if (value.canConvert<QRectF>()) {
+            const QRectF rect = value.value<QRectF>();
+            if (header) return key+"_X,"+key+"_Y,"+key+"_Width,"+key+"_Height";
+            else        return QString::number(rect.x())+","+QString::number(rect.y())+","+QString::number(rect.width())+","+QString::number(rect.height());
+        } else {
+            if (header) return key;
+            else        return QString::number(std::numeric_limits<float>::quiet_NaN());
+        }
     }
 };
 
