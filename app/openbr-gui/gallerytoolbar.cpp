@@ -117,7 +117,7 @@ void br::GalleryToolBar::checkWebcam()
 void br::GalleryToolBar::enrollmentFinished()
 {
     if (files.isEmpty()) {
-        if (input.getBool("enrollAll") && !tbWebcam.isChecked()) {
+        if (input.get<bool>("enrollAll", false) && !tbWebcam.isChecked()) {
             QMessageBox msgBox;
             msgBox.setText("Quality test failed.");
             msgBox.setInformativeText("Enroll anyway?");
@@ -127,7 +127,7 @@ void br::GalleryToolBar::enrollmentFinished()
 
             if (ret == QMessageBox::Ok) {
                 br::File file = input;
-                file.setBool("enrollAll", false);
+                file.set("enrollAll", false);
                 enroll(file);
             }
         }

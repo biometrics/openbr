@@ -26,7 +26,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Crops the regions of interest.
+ * \brief Crops the rectangular regions of interest.
  * \author Josh Klontz \cite jklontz
  */
 class ROITransform : public UntrainableTransform
@@ -35,8 +35,8 @@ class ROITransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        foreach (const QRectF ROI, src.file.ROIs())
-            dst += src.m()(OpenCVUtils::toRect(ROI));
+        foreach (const QRectF &rect, src.file.rects())
+            dst += src.m()(OpenCVUtils::toRect(rect));
     }
 };
 

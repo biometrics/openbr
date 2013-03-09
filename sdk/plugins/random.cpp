@@ -155,7 +155,7 @@ class RndPointTransform : public Transform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.appendLandmark(QPointF(src.m().cols * x, src.m().rows * y));
+        dst.file.appendPoint(QPointF(src.m().cols * x, src.m().rows * y));
     }
 };
 

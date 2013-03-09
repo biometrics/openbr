@@ -28,7 +28,7 @@ void br::TemplateMetadata::setFile(const br::File &file)
 {
     if (file.isNull()) lFile.clear();
     else               lFile.setText("<b>File:</b> " + file.fileName());
-    lQuality.setText(QString("<b>Quality:</b> %1").arg(file.getBool("FTE") ? "Low" : "High"));
+    lQuality.setText(QString("<b>Quality:</b> %1").arg(file.get<bool>("FTE", false) ? "Low" : "High"));
     foreach (const ConditionalClassifier &classifier, conditionalClassifiers)
         if (classifier.action->isVisible()) classifier.classifier->classify(file);
 }

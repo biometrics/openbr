@@ -31,24 +31,24 @@ static TemplateList Expanded(const TemplateList &templates)
     TemplateList expanded;
     foreach (const Template &t, templates) {
         if (t.isEmpty()) {
-            if (!t.file.getBool("enrollAll"))
+            if (!t.file.get<bool>("enrollAll", false))
                 expanded.append(t);
             continue;
         }
 
-        const bool fte = t.file.getBool("FTE");
-        QList<QPointF> landmarks = t.file.landmarks();
-        QList<QRectF> ROIs = t.file.ROIs();
-        if (landmarks.size() % t.size() != 0) qFatal("Uneven landmark count.");
-        if (ROIs.size() % t.size() != 0) qFatal("Uneven ROI count.");
-        const int landmarkStep = landmarks.size() / t.size();
-        const int ROIStep = ROIs.size() / t.size();
+        const bool fte = t.file.get<bool>("FTE", false);
+        QList<QPointF> points = t.file.points();
+        QList<QRectF> rects = t.file.rects();
+        if (points.size() % t.size() != 0) qFatal("Uneven point count.");
+        if (rects.size() % t.size() != 0) qFatal("Uneven rect count.");
+        const int pointStep = points.size() / t.size();
+        const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || !t.file.getBool("enrollAll")) {
+            if (!fte || !t.file.get<bool>("enrollAll", false)) {
                 expanded.append(Template(t.file, t[i]));
-                expanded.last().file.setROIs(ROIs.mid(i*ROIStep, ROIStep));
-                expanded.last().file.setLandmarks(landmarks.mid(i*landmarkStep, landmarkStep));
+                expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
+                expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
             }
         }
     }
@@ -233,7 +233,7 @@ class PipeTransform : public CompositeTransform
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
                 src = Template(src.file);
-                src.file.setBool("FTE");
+                src.file.set("FTE", true);
             }
         }
     }
@@ -247,7 +247,7 @@ class PipeTransform : public CompositeTransform
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.setBool("FTE");
+                dst.file.set("FTE", true);
             }
         }
     }
@@ -310,7 +310,7 @@ protected:
            } catch (...) {
                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                dst = Template(src.file);
-               dst.file.setBool("FTE");
+               dst.file.set("FTE", true);
            }
        }
    }
@@ -396,7 +396,7 @@ class ForkTransform : public CompositeTransform
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.setBool("FTE");
+                dst.file.set("FTE", true);
             }
         }
     }
@@ -453,7 +453,7 @@ protected:
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.setBool("FTE");
+                dst.file.set("FTE", true);
             }
         }
     }
@@ -648,7 +648,7 @@ class FTETransform : public Transform
         foreach (const Template &t, projectedData) {
             if (!t.file.contains(transform->objectName()))
                 qFatal("Matrix metadata missing key %s.", qPrintable(transform->objectName()));
-            vals.append(t.file.getFloat(transform->objectName()));
+            vals.append(t.file.get<float>(transform->objectName()));
         }
         float q1, q3;
         Common::Median(vals, &q1, &q3);
@@ -660,11 +660,11 @@ class FTETransform : public Transform
     {
         Template projectedSrc;
         transform->project(src, projectedSrc);
-        const float val = projectedSrc.file.getFloat(transform->objectName());
+        const float val = projectedSrc.file.get<float>(transform->objectName());
 
         dst = src;
-        dst.file.insert(transform->objectName(), val);
-        dst.file.insert("FTE", (val < min) || (val > max));
+        dst.file.set(transform->objectName(), val);
+        dst.file.set("FTE", (val < min) || (val > max));
     }
 };
 
