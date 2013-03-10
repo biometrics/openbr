@@ -149,7 +149,7 @@ class RectFromLandmarksTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         if (src.file.landmarks().isEmpty()) {
-            qWarning("No landmarks");
+            qWarning("No landmarks for %s", qPrintable(src.file.fileName()));
             dst = src;
             return;
         }
