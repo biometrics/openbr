@@ -1108,7 +1108,7 @@ private:
         QList<TemplateList> templatesList;
         foreach (const Template &t, data) {
             if ((templatesList.size() != t.size()) && !templatesList.isEmpty())
-                qWarning("Independent::train template %s of size %d differs from expected size %d.", qPrintable((QString)t.file), t.size(), templatesList.size());
+                qWarning("Independent::train template %s of size %d differs from expected size %d.", qPrintable(t.file.name), t.size(), templatesList.size());
             while (templatesList.size() < t.size())
                 templatesList.append(TemplateList());
             for (int i=0; i<t.size(); i++)
@@ -1134,11 +1134,13 @@ private:
     void project(const Template &src, Template &dst) const
     {
         dst.file = src.file;
+        QList<Mat> mats;
         for (int i=0; i<src.size(); i++) {
-            Template m;
-            transforms[i%transforms.size()]->project(Template(src.file, src[i]), m);
-            dst.merge(m);
+            transforms[i%transforms.size()]->project(Template(src.file, src[i]), dst);
+            mats.append(dst);
+            dst.clear();
         }
+        dst.append(mats);
     }
 
     void store(QDataStream &stream) const

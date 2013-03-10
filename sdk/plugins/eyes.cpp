@@ -182,11 +182,12 @@ private:
         float second_eye_x = (right_rect.x + maxLoc.x)*gray.cols/width+roi.x;
         float second_eye_y = (right_rect.y + maxLoc.y)*gray.rows/height+roi.y;
 
-        dst = src;
+        dst.m() = src.m();
         dst.file.appendPoint(QPointF(first_eye_x, first_eye_y));
         dst.file.appendPoint(QPointF(second_eye_x, second_eye_y));
-        dst.file.set("ASEF_Right_Eye", QPointF(first_eye_x, first_eye_y));
-        dst.file.set("ASEF_Left_Eye", QPointF(second_eye_x, second_eye_y));
+        dst.file.set("First_Eye", QPointF(first_eye_x, first_eye_y));
+        dst.file.set("Second_Eye", QPointF(second_eye_x, second_eye_y));
+        dst.file.set("Face", QRect(roi.x, roi.y, roi.width, roi.height));
     }
 };
 
