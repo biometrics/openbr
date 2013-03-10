@@ -236,7 +236,6 @@ struct CT8Context
             FRsdk::SampleSet sampleSet;
             sampleSet.push_back(sample);
 
-
             FRsdk::EnrolOpenCVFeedback * feedback_body = new FRsdk::EnrolOpenCVFeedback(m);
             FRsdk::CountedPtr<FRsdk::Enrollment::FeedbackBody> feedback_ptr(feedback_body);
             
@@ -300,14 +299,14 @@ protected:
  * \author Josh Klontz \cite jklontz
  * \author Charles Otto \cite caotto
  */
-struct CT8Detect : public UntrainableTransform
-                 , public CT8Context
+class CT8DetectTransform : public UntrainableTransform
+                         , public CT8Context
 {
-public:
     Q_OBJECT
-
     Q_PROPERTY(float minRelEyeDistance READ get_minRelEyeDistance WRITE set_minRelEyeDistance RESET reset_minRelEyeDistance STORED false)
     Q_PROPERTY(float maxRelEyeDistance READ get_maxRelEyeDistance WRITE set_maxRelEyeDistance RESET reset_maxRelEyeDistance STORED false)
+    BR_PROPERTY(float, minRelEyeDistance, 0.01f)
+    BR_PROPERTY(float, maxRelEyeDistance, 0.4f)
 
     // Perform face, then eye detection using the facevacs SDK
     void project(const Template &src, Template &dst) const
@@ -316,57 +315,39 @@ public:
             // Build an FRsdk image from the input openCV mat
             FRsdk::CountedPtr<FRsdk::ImageBody> i(new FRsdk::OpenCVImageBody(src));
             FRsdk::Image img(i);
-            
             FRsdk::Face::LocationSet faceLocations = faceFinder->find(img, minRelEyeDistance, maxRelEyeDistance);
-            
-            // If the face finder doesn't find anything mark the output as a failure
-            if (faceLocations.empty() ) {
-                dst.file.setBool("FTE");
-                return;
-            }
-
-            QList<QRectF> ROIs;
-            QList<QPointF> landmarks;
-            FRsdk::Face::LocationSet::const_iterator faceLocationSetIterator = faceLocations.begin();
-            bool any_eyes = false;
 
             // Attempt to detect eyes in any face ROIs that were detected
+            QList<QRectF> rects;
+            QList<QPointF> points;
+            FRsdk::Face::LocationSet::const_iterator faceLocationSetIterator = faceLocations.begin();
             while (faceLocationSetIterator != faceLocations.end()) {
                 FRsdk::Face::Location faceLocation = *faceLocationSetIterator; faceLocationSetIterator++;
                 FRsdk::Eyes::LocationSet currentEyesLocations = eyesFinder->find(img, faceLocation);
 
                 if (currentEyesLocations.size() > 0) {
-                    any_eyes = true;
-                    ROIs.append(QRectF(faceLocation.pos.x(), faceLocation.pos.y(), faceLocation.width, faceLocation.width));
-                    landmarks.append(QPointF(currentEyesLocations.front().first.x(), currentEyesLocations.front().first.y()));
-                    landmarks.append(QPointF(currentEyesLocations.front().second.x(), currentEyesLocations.front().second.y()));
-
-                    dst += src;
+                    rects.append(QRectF(faceLocation.pos.x(), faceLocation.pos.y(), faceLocation.width, faceLocation.width));
+                    points.append(QPointF(currentEyesLocations.front().first.x(), currentEyesLocations.front().first.y()));
+                    points.append(QPointF(currentEyesLocations.front().second.x(), currentEyesLocations.front().second.y()));
+                    dst += src.m();
+                    if (!Globals->enrollAll) break;
                 }
-
-                if (any_eyes && !Globals->enrollAll && !dst.isEmpty()) break;
             }
 
             // If eye detection failed, mark the output as a failure
-            if (!any_eyes) {
-                dst.file.setBool("FTE");
-                return;
+            if (dst.isEmpty()) {
+                dst.file.set("FTE", true);
+                if (!Globals->enrollAll) dst += Mat();
             }
-
-            dst.file.setROIs(ROIs);
-            dst.file.setLandmarks(landmarks);
+            dst.file.appendRects(rects);
+            dst.file.appendPoints(points);
         } catch (std::exception &e) {
             qFatal("CT8Enroll Exception: %s", e.what());
         }
-
-        if (!Globals->enrollAll && dst.isEmpty()) dst += Mat();
-    }
-private:
-    BR_PROPERTY(float, minRelEyeDistance, 0.01f)
-    BR_PROPERTY(float, maxRelEyeDistance, 0.4f)
+    }    
 };
 
-BR_REGISTER(Transform, CT8Detect)
+BR_REGISTER(Transform, CT8DetectTransform)
 
 /*!
  * \ingroup transforms
@@ -374,10 +355,11 @@ BR_REGISTER(Transform, CT8Detect)
  * \author Josh Klontz \cite jklontz
  * \author Charles Otto \cite caotto
  */
-struct CT8Enroll : public UntrainableTransform
-                 , public CT8Context
+class CT8EnrollTransform : public UntrainableTransform
+                         , public CT8Context
 {
     Q_OBJECT
+
     // enroll an image using the facevacs sdk. Generates a facevacs "fir" which
     // is their face representation.
     void project(const Template &src, Template &dst) const
@@ -387,37 +369,31 @@ struct CT8Enroll : public UntrainableTransform
             FRsdk::Image img(i);
 
             // If we already have eye locations, use them 
-            QList<QPointF> landmarks = src.file.landmarks();
-            bool enroll_succeeded = false;
-            if (landmarks.size() == 2) {
-                enroll_succeeded = enroll(img, FRsdk::Eyes::Location(toPosition(landmarks[0]), toPosition(landmarks[1])), &(dst.m()));
+            QList<QPointF> points = src.file.points();
+            bool enrollSucceeded = false;
+            if (points.size() == 2) {
+                enrollSucceeded = enroll(img, FRsdk::Eyes::Location(toPosition(points[0]), toPosition(points[1])), &(dst.m()));
 
                 // Transfer previously detectd eye and face locations to the output dst.
-                dst.file.insert("CT8_First_Eye_X", landmarks[0].x());
-                dst.file.insert("CT8_First_Eye_Y", landmarks[0].y());
-                dst.file.insert("CT8_Second_Eye_X", landmarks[1].x());
-                dst.file.insert("CT8_Second_Eye_Y", landmarks[1].y());
+                dst.file.set("First_Eye", points[0]);
+                dst.file.set("Second_Eye", points[1]);
 
-                QList<QRectF> ROIs = src.file.ROIs();
-                if (ROIs.size() == 1) {
-                    dst.file.insert("CT8_Face_X", ROIs.first().x());
-                    dst.file.insert("CT8_Face_Y", ROIs.first().y());
-                    dst.file.insert("CT8_Face_Width", ROIs.first().width());
-                    dst.file.insert("CT8_Face_Height", ROIs.first().height());
-                }
+                QList<QRectF> rects = src.file.rects();
+                if (rects.size() == 1)
+                    dst.file.set("Face", rects.first());
             } else {
                 // If we don't have eye locations already, calling enroll here
                 // will cause facevacs to perform detection using default
                 // parameters (and we will not receive the detected locations
                 // as output).
-                enroll_succeeded = enroll(img, &(dst.m()));
+                enrollSucceeded = enroll(img, &(dst.m()));
             }
+
             // If enrollment failed, mark this image as a failure. This will
             // typically only happen if we aren't using pre-detected eye
             // locations
-            if (!enroll_succeeded)
-            {
-                dst.file.setBool("FTE");
+            if (!enrollSucceeded) {
+                dst.file.set("FTE", true);
                 dst.m() = Mat();
             }
         } catch (std::exception &e) {
@@ -426,7 +402,7 @@ struct CT8Enroll : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, CT8Enroll)
+BR_REGISTER(Transform, CT8EnrollTransform)
 
 /*!
  * \ingroup distances
