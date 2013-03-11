@@ -191,15 +191,13 @@ struct PP5Context
                 ppr_landmark_type &landmark = landmark_list.landmarks[j];
                 if (landmark.category != category) continue;
 
-                metadata.insert(metadataString+"_X", landmark.position.x);
-                metadata.insert(metadataString+"_Y", landmark.position.y);
+                metadata.insert(metadataString, QPointF(landmark.position.x, landmark.position.y));
                 found = true;
                 break;
             }
 
             if (!found) {
-                metadata.insert(metadataString+"_X", std::numeric_limits<float>::quiet_NaN());
-                metadata.insert(metadataString+"_Y", std::numeric_limits<float>::quiet_NaN());
+                metadata.insert(metadataString, QPointF(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN()));
             }
         }
 

@@ -45,7 +45,20 @@ QString File::flat() const
     foreach (const QString &key, keys) {
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
-        else                values.append(key + "=" + value.toString());
+        else {
+            if (value.canConvert(QVariant::String)) {
+                values.append(key + "=" + value.toString());
+            }
+            else {
+                if (value.type() == QVariant::PointF) values.append(key + "=" + QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(value).x()),
+                                                                                                       QString::number(qvariant_cast<QPointF>(value).y())));
+                else if (value.type() == QVariant::RectF) values.append(key + "=" + QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(value).x()),
+                                                                                                                 QString::number(qvariant_cast<QRectF>(value).y()),
+                                                                                                                 QString::number(qvariant_cast<QRectF>(value).width()),
+                                                                                                                 QString::number(qvariant_cast<QRectF>(value).height())));
+                else values.append(key + "=");
+            }
+        }
     }
 
     QString flat = name;
@@ -240,7 +253,18 @@ void File::init(const QString &file)
                 if (unnamed) setParameter(i, words[0]);
                 else         set(words[0], QVariant());
             } else {
-                set(words[0], words[1]);
+                if (words[1][0] == '(') {
+                    QStringList values = words[1].split(',');
+                    if (values.size() == 2) /* QPointF */ {
+                        QPointF point(values[0].remove('(').toFloat(), values[1].remove(')').toFloat());
+                        set(words[0], point);
+                       }
+                    else /* QRectF */ {
+                        QRectF rect(values[0].remove('(').toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].remove(')').toFloat());
+                        set(words[0], rect);
+                    }
+                }
+                else set(words[0], words[1]);
             }
         }
         name = name.left(index);

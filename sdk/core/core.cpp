@@ -189,8 +189,6 @@ struct AlgorithmCore
             enroll(file);
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
-
-            qDebug() << galleryFiles;
         }
     }
 
