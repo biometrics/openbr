@@ -27,47 +27,6 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Selects a random transform.
- * \author Josh Klontz \cite jklontz
- */
-class RndTransformTransform : public Transform
-{
-    Q_OBJECT
-    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms STORED false)
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
-
-    int selectedIndex;
-    Transform *selectedTransform;
-
-    void train(const TemplateList &data)
-    {
-        selectedIndex = theRNG().uniform(0, transforms.size());
-        selectedTransform = transforms[selectedIndex]->clone();
-        selectedTransform->train(data);
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        selectedTransform->project(src, dst);
-    }
-
-    void store(QDataStream &stream) const
-    {
-        stream << selectedIndex << *selectedTransform;
-    }
-
-    void load(QDataStream &stream)
-    {
-        stream >> selectedIndex;
-        selectedTransform = transforms[selectedIndex]->clone();
-        stream >> *selectedTransform;
-    }
-};
-
-BR_REGISTER(Transform, RndTransformTransform)
-
-/*!
- * \ingroup transforms
  * \brief Generates a random subspace.
  * \author Josh Klontz \cite jklontz
  */
@@ -196,7 +155,7 @@ class RndPointTransform : public Transform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.appendLandmark(QPointF(src.m().cols * x, src.m().rows * y));
+        dst.file.appendPoint(QPointF(src.m().cols * x, src.m().rows * y));
     }
 };
 

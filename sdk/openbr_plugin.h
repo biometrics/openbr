@@ -61,12 +61,17 @@
  *
  * \section examples Examples
  * - \ref cpp_face_recognition
+ * - \ref cpp_face_recognition_search
  * - \ref cpp_age_estimation
  * - \ref cpp_gender_estimation
  *
  * \subsection cpp_face_recognition Face Recognition
  * \ref cli_face_recognition "Command Line Interface Equivalent"
  * \snippet app/examples/face_recognition.cpp face_recognition
+ *
+ * \subsection cpp_face_recognition_search Face Recognition Search
+ * \ref cli_face_recognition_search "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition_search.cpp face_recognition_search
  *
  * \subsection cpp_age_estimation Age Estimation
  * \ref cli_age_estimation "Command Line Interface Equivalent"
@@ -123,10 +128,8 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * Key             | Value          | Description
  * ---             | ----           | -----------
- * path            | QString        | Resolve complete file paths from file names
- * enrollAll       | bool           | Enroll zero or more templates per file
  * separator       | QString        | Seperate #name into multiple files
- * Index     | int            | Index of a template in a template list
+ * Index           | int            | Index of a template in a template list
  * Label           | float          | Classification/Regression class
  * Confidence      | float          | Classification/Regression quality
  * FTE             | bool           | Failure to enroll
@@ -140,8 +143,8 @@ void reset_##NAME() { NAME = DEFAULT; }
  * Roll            | float          | Pose
  * Pitch           | float          | Pose
  * Yaw             | float          | Pose
- * Landmarks       | QList<QPointF> | Landmark list
- * ROIs            | QList<Rect>    | Region Of Interest (ROI) list
+ * Points          | QList<QPointF> | List of unnamed points
+ * Rects           | QList<Rect>    | List of unnamed rects
  * Age             | QString        | Age used for demographic filtering
  * _*              | *              | Reserved for internal use
  */
@@ -151,24 +154,26 @@ struct BR_EXPORT File
 
     File() {}
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
-    File(const QString &file, const QVariant &label) { init(file); insert("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
+    File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
-    inline void clear() { name.clear(); m_metadata.clear(); } /*!< \brief Clears the file's name and metadata. */
 
     inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
-    inline QHash<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
-    inline void insert(const QString &key, const QVariant &value) { set(key, value); } /*!< \brief Equivalent to set(). */
-    void append(const QHash<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
+    inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+
+    void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
+    inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
+    inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
+
     QList<File> split() const; /*!< \brief Split the file using \c separator. */
     QList<File> split(const QString &separator) const; /*!< \brief Split the file. */
 
-    inline void insertParameter(int index, const QVariant &value) { insert("_Arg" + QString::number(index), value); } /*!< \brief Insert a keyless value. */
-    inline bool containsParameter(int index) const { return m_metadata.contains("_Arg" + QString::number(index)); } /*!< \brief Check for the existence of a keyless value. */
-    inline QVariant parameter(int index) const { return m_metadata.value("_Arg" + QString::number(index)); } /*!< \brief Retrieve a keyless value. */
+    inline void setParameter(int index, const QVariant &value) { set("_Arg" + QString::number(index), value); } /*!< \brief Insert a keyless value. */
+    inline bool containsParameter(int index) const { return contains("_Arg" + QString::number(index)); } /*!< \brief Check for the existence of a keyless value. */
+    inline QVariant getParameter(int index) const { return get<QVariant>("_Arg" + QString::number(index)); } /*!< \brief Retrieve a keyless value. */
 
     inline bool operator==(const char* other) const { return name == other; } /*!< \brief Compare name to c-style string. */
     inline bool operator==(const File &other) const { return (name == other.name) && (m_metadata == other.m_metadata); } /*!< \brief Compare name and metadata for equality. */
@@ -177,8 +182,6 @@ struct BR_EXPORT File
     inline bool operator<=(const File &other) const { return name <= other.name; } /*!< \brief Compare name. */
     inline bool operator>(const File &other) const { return name > other.name; } /*!< \brief Compare name. */
     inline bool operator>=(const File &other) const { return name >= other.name; } /*!< \brief Compare name. */
-    inline File &operator+=(const QHash<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
-    inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
 
     inline bool isNull() const { return name.isEmpty() && m_metadata.isEmpty(); } /*!< \brief Returns \c true if name and metadata are empty, \c false otherwise. */
     inline bool isTerminal() const { return name == "terminal"; } /*!< \brief Returns \c true if #name is "terminal", \c false otherwise. */
@@ -191,42 +194,53 @@ struct BR_EXPORT File
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
+    void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
+    inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
+
+    /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */
+    template <typename T>
+    T get(const QString &key) const
+    {
+        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        QVariant variant = value(key);
+        if (!variant.canConvert<T>()) qFatal("Can't convert: %s", qPrintable(key));
+        return variant.value<T>();
+    }
+
+    /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
+    template <typename T>
+    T get(const QString &key, const T &defaultValue) const
+    {
+        if (!contains(key)) return defaultValue;
+        QVariant variant = value(key);
+        if (!variant.canConvert<T>()) return defaultValue;
+        return variant.value<T>();
+    }
+
     static QString subject(int label); /*!< \brief Looks up the subject for the provided label. */
     inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
-    inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
-
-    void remove(const QString &key); /*!< \brief Remove the metadata key. */
-    void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
-    QVariant get(const QString &key) const; /*!< \brief Returns a QVariant for the key, throwing an error if the key does not exist. */
-    QVariant get(const QString &key, const QVariant &value) const; /*!< \brief Returns a QVariant for the key, returning \em defaultValue if the key does not exist. */
     float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
-    inline void setLabel(float label) { insert("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
-    bool getBool(const QString &key) const; /*!< \brief Returns a boolean value for the key. */
-    void setBool(const QString &key, bool value = true); /*!< \brief Sets a boolean value for the key. */
-    int getInt(const QString &key) const; /*!< \brief Returns an int value for the key, throwing an error if the key does not exist. */
-    int getInt(const QString &key, int defaultValue) const; /*!< \brief Returns an int value for the key, returning \em defaultValue if the key does not exist. */
-    float getFloat(const QString &key) const; /*!< \brief Returns a float value for the key, throwing an error if the key does not exist. */
-    float getFloat(const QString &key, float defaultValue) const; /*!< \brief Returns a float value for the key, returning \em defaultValue if the key does not exist. */
-    QString getString(const QString &key) const; /*!< \brief Returns a string value for the key, throwing an error if the key does not exist. */
-    QString getString(const QString &key, const QString &defaultValue) const; /*!< \brief Returns a string value for the key, returning \em defaultValue if the key does not exist. */
+    inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
+    inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
-    QList<QPointF> landmarks() const; /*!< \brief Returns the file's landmark list. */
-    QList<QPointF> namedLandmarks() const; /*!< \brief Returns landmarks derived from metadata keys. */
-    void appendLandmark(const QPointF &landmark); /*!< \brief Adds a landmark to the file's landmark list. */
-    void appendLandmarks(const QList<QPointF> &landmarks); /*!< \brief Adds landmarks to the file's landmark list. */
-    inline void clearLandmarks() { m_metadata["Landmarks"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
-    void setLandmarks(const QList<QPointF> &landmarks); /*!< \brief Assigns the file's landmark list. */
+    QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
+    QList<QPointF> points() const; /*!< \brief Returns the file's points list. */
+    void appendPoint(const QPointF &point); /*!< \brief Adds a point to the file's point list. */
+    void appendPoints(const QList<QPointF> &points); /*!< \brief Adds landmarks to the file's landmark list. */
+    inline void clearPoints() { m_metadata["Points"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
+    inline void setPoints(const QList<QPointF> &points) { clearPoints(); appendPoints(points); } /*!< \brief Overwrites the file's landmark list. */
 
-    QList<QRectF> ROIs() const; /*!< \brief Returns the file's ROI list. */
-    void appendROI(const QRectF &ROI); /*!< \brief Adds a ROI to the file's ROI list. */
-    void appendROIs(const QList<QRectF> &ROIs); /*!< \brief Adds ROIs to the file's ROI list. */
-    inline void clearROIs() { m_metadata["ROIs"] = QList<QVariant>(); } /*!< \brief Clears the file's landmark list. */
-    void setROIs(const QList<QRectF> &ROIs); /*!< \brief Assigns the file's landmark list. */
+    QList<QRectF> namedRects() const; /*!< \brief Returns rects convertible from metadata values. */
+    QList<QRectF> rects() const; /*!< \brief Returns the file's rects list. */
+    void appendRect(const QRectF &rect); /*!< \brief Adds a rect to the file's rect list. */
+    void appendRects(const QList<QRectF> &rects); /*!< \brief Adds rects to the file's rect list. */
+    inline void clearRects() { m_metadata["Rects"] = QList<QVariant>(); } /*!< \brief Clears the file's rect list. */
+    inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
-    QHash<QString,QVariant> m_metadata;
-    BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file); /*!< */
-    BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file); /*!< */
+    QMap<QString,QVariant> m_metadata;
+    BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
+    BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
     void init(const QString &file);
 };
@@ -415,6 +429,9 @@ struct TemplateList : public QList<Template>
 class BR_EXPORT Object : public QObject
 {
     Q_OBJECT
+
+    // Index of the first property that can be set via command line arguments
+    int firstAvailablePropertyIdx;
 
 public:
     File file; /*!< \brief The file used to construct the plugin. */
@@ -984,6 +1001,49 @@ public:
     virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const Template &src, Template &dst)
+    {
+        project(src, dst);
+    }
+
+    /*!< \brief Apply the transform, may update the transform's internal state */
+    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        project(src,dst);
+    }
+
+    /*!< \brief inplace projectUpdate. */
+    void projectUpdate(Template &srcdst)
+    {
+        Template dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
+    }
+
+    /*!< \brief inplace projectUpdate. */
+    void projectUpdate(TemplateList &srcdst)
+    {
+        TemplateList dst;
+        projectUpdate(srcdst, dst);
+        srcdst = dst;
+    }
+
+    /*!
+     * Time-varying transforms may move away from a single input->single output model, and only emit
+     * templates under some conditions (e.g. a tracking thing may emit a template for each detected
+     * unique object), in this case finalize indicates that no further calls to project will be made
+     * and the transform can emit a final set if templates if it wants. Time-invariant transforms
+     * don't have to do anything.
+     */
+    virtual void finalize(TemplateList & output) { output = TemplateList(); }
+
+    /*!
+     * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
+     * (if their children are time varying, they are also time varying, otherwise probably not)
+     */
+    virtual bool timeVarying() const { return false; }
+
     /*!
      * \brief Convenience function equivalent to project().
      */
@@ -1047,6 +1107,31 @@ inline QDataStream &operator>>(QDataStream &stream, Transform &f)
 }
 
 /*!
+ * \brief A br::Transform for which the results of project may change due to prior calls to project
+ */
+class BR_EXPORT TimeVaryingTransform : public Transform
+{
+    Q_OBJECT
+
+    virtual bool timeVarying() const { return true; }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        (void) dst; (void) src;
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        qFatal("No const project defined for time-varying transform");
+        (void) dst; (void) src;
+    }
+
+protected:
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
+};
+
+/*!
  * \brief A br::Transform expecting multiple matrices per template.
  */
 class BR_EXPORT MetaTransform : public Transform
@@ -1073,7 +1158,6 @@ private:
     void store(QDataStream &stream) const { (void) stream; }
     void load(QDataStream &stream) { (void) stream; }
 };
-
 
 /*!
  * \brief A br::MetaTransform that does not require training data.

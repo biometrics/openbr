@@ -16,43 +16,45 @@
 
 /*!
  * \ingroup cli
- * \page cli_age_estimation Age Estimation
- * \ref cpp_age_estimation "C++ Equivalent"
+ * \page cli_face_recognition_search Face Recognition Search
+ * \ref cpp_face_recognition_search "C++ Equivalent"
  * \code
- * $ br -algorithm AgeEstimation \
- *      -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
+ * $ br -algorithm FaceRecognition -enrollAll -enroll ../data/MEDS/img 'meds.gal;meds.csv[separator=;]'
+ * $ br -algorithm FaceRecognition -compare meds.gal ../data/MEDS/img/S001-01-t10_01.jpg match_scores.csv
  * \endcode
  */
 
-//! [age_estimation]
+//! [face_recognition_search]
 #include <openbr_plugin.h>
-
-static void printTemplate(const br::Template &t)
-{
-    printf("%s age: %d\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label"));
-}
 
 int main(int argc, char *argv[])
 {
     br::Context::initialize(argc, argv);
 
-    // Retrieve class for enrolling templates using the AgeEstimation algorithm
-    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("AgeEstimation");
+    // Retrieve classes for enrolling and comparing templates using the FaceRecognition algorithm
+    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("FaceRecognition");
+    QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm("FaceRecognition");
 
     // Initialize templates
-    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S001-01-t10_01.jpg");
+    br::TemplateList target = br::TemplateList::fromGallery("../data/MEDS/img");
+    br::Template query("../data/MEDS/img/S001-01-t10_01.jpg");
 
     // Enroll templates
-    queryA >> *transform;
-    queryB >> *transform;
+    br::Globals->enrollAll = true; // Enroll 0 or more faces per image
+    target >> *transform;
+    br::Globals->enrollAll = false; // Enroll exactly one face per image
+    query >> *transform;
 
-    printTemplate(queryA);
-    printTemplate(queryB);
+    // Compare templates
+    QList<float> scores = distance->compare(target, query);
+
+    // Print an example score
+    printf("Images %s and %s have a match score of %.3f\n",
+           qPrintable(target[3].file.name),
+           qPrintable(query.file.name),
+           scores[3]);
 
     br::Context::finalize();
     return 0;
 }
-//! [age_estimation]
+//! [face_recognition_search]

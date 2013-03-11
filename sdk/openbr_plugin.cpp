@@ -58,10 +58,10 @@ QString File::hash() const
     return QtUtils::shortTextHash(flat());
 }
 
-void File::append(const QHash<QString, QVariant> &metadata)
+void File::append(const QMap<QString,QVariant> &metadata)
 {
     foreach (const QString &key, metadata.keys())
-        insert(key, metadata[key]);
+        set(key, metadata[key]);
 }
 
 void File::append(const File &other)
@@ -70,7 +70,7 @@ void File::append(const File &other)
         if (name.isEmpty()) {
             name = other.name;
         } else {
-            if (!contains("separator")) insert("separator", ";");
+            if (!contains("separator")) set("separator", ";");
             name += value("separator").toString() + other.name;
         }
     }
@@ -110,29 +110,6 @@ QVariant File::value(const QString &key) const
     return m_metadata.contains(key) ? m_metadata.value(key) : Globals->property(qPrintable(key));
 }
 
-QString File::subject(int label)
-{
-    return Globals->classes.key(label, QString::number(label));
-}
-
-float File::label() const
-{
-    const QVariant variant = value("Label");
-    if (variant.isNull()) return -1;
-
-    if (Globals->classes.contains(variant.toString()))
-        return Globals->classes.value(variant.toString());
-
-    bool ok;
-    const float val = variant.toFloat(&ok);
-    return ok ? val : -1;
-}
-
-void File::remove(const QString &key)
-{
-    m_metadata.remove(key);
-}
-
 void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
@@ -153,155 +130,90 @@ void File::set(const QString &key, const QVariant &value)
     m_metadata.insert(key, value);
 }
 
-QVariant File::get(const QString &key) const
+QString File::subject(int label)
 {
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    return value(key);
+    return Globals->classes.key(label, QString::number(label));
 }
 
-QVariant File::get(const QString &key, const QVariant &defaultValue) const
+float File::label() const
 {
-    if (!contains(key)) return defaultValue;
-    return value(key);
+    const QVariant variant = value("Label");
+    if (variant.isNull()) return -1;
+
+    if (Globals->classes.contains(variant.toString()))
+        return Globals->classes.value(variant.toString());
+
+    bool ok;
+    const float val = variant.toFloat(&ok);
+    return ok ? val : -1;
 }
 
-bool File::getBool(const QString &key) const
-{
-    if (!contains(key)) return false;
-    QString v = value(key).toString();
-    if (v.isEmpty() || (v == "true")) return true;
-    if (v == "false") return false;
-    return v.toInt();
-}
-
-void File::setBool(const QString &key, bool value)
-{
-    if (value) m_metadata.insert(key, QVariant());
-    else       m_metadata.remove(key);
-}
-
-int File::getInt(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    bool ok; int result = value(key).toInt(&ok);
-    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
-    return result;
-}
-
-int File::getInt(const QString &key, int defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    bool ok; int result = value(key).toInt(&ok);
-    if (!ok) return defaultValue;
-    return result;
-}
-
-float File::getFloat(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) qFatal("Invalid conversion from: %s", qPrintable(getString(key)));
-    return result;
-}
-
-float File::getFloat(const QString &key, float defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    bool ok; float result = value(key).toFloat(&ok);
-    if (!ok) return defaultValue;
-    return result;
-}
-
-QString File::getString(const QString &key) const
-{
-    if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
-    return value(key).toString();
-}
-
-QString File::getString(const QString &key, const QString &defaultValue) const
-{
-    if (!contains(key)) return defaultValue;
-    return value(key).toString();
-}
-
-QList<QPointF> File::landmarks() const
+QList<QPointF> File::namedPoints() const
 {
     QList<QPointF> landmarks;
-    foreach (const QVariant &landmark, value("Landmarks").toList())
-        landmarks.append(landmark.toPointF());
-    return landmarks;
-}
-
-QList<QPointF> File::namedLandmarks() const
-{
-    QList<QPointF> landmarks;
-    QStringList keys = localMetadata().keys();
-    foreach (const QString &key, keys) {
-        if (!key.endsWith("_X"))
-            continue;
-        QString keyBaseName = key.left(key.size()-2);
-        if (!keys.contains(keyBaseName+"_Y") ||
-            keys.contains(keyBaseName+"_Width") ||
-            keys.contains(keyBaseName+"_Height") ||
-            keys.contains(keyBaseName+"_Radius"))
-            continue;
-        landmarks.append(QPointF(getFloat(keyBaseName+"_X"), getFloat(keyBaseName+"_Y")));
+    foreach (const QString &key, localMetadata().keys()) {
+        const QVariant &variant = m_metadata[key];
+        if (variant.canConvert<QPointF>())
+            landmarks.append(variant.value<QPointF>());
     }
     return landmarks;
 }
 
-void File::appendLandmark(const QPointF &landmark)
+QList<QPointF> File::points() const
 {
-    QList<QVariant> newLandmarks = m_metadata["Landmarks"].toList();
-    newLandmarks.append(landmark);
-    m_metadata["Landmarks"] = newLandmarks;
+    QList<QPointF> points;
+    foreach (const QVariant &point, m_metadata["Points"].toList())
+        points.append(point.toPointF());
+    return points;
 }
 
-void File::appendLandmarks(const QList<QPointF> &landmarks)
+void File::appendPoint(const QPointF &point)
 {
-    QList<QVariant> newLandmarks = m_metadata["Landmarks"].toList();
-    foreach (const QPointF &landmark, landmarks)
-        newLandmarks.append(landmark);
-    m_metadata["Landmarks"] = newLandmarks;
+    QList<QVariant> newPoints = m_metadata["Points"].toList();
+    newPoints.append(point);
+    m_metadata["Points"] = newPoints;
 }
 
-void File::setLandmarks(const QList<QPointF> &landmarks)
+void File::appendPoints(const QList<QPointF> &points)
 {
-    QList<QVariant> landmarkList; landmarkList.reserve(landmarks.size());
-    foreach (const QPointF &landmark, landmarks)
-        landmarkList.append(landmark);
-    m_metadata["Landmarks"] = landmarkList;
+    QList<QVariant> newPoints = m_metadata["Points"].toList();
+    foreach (const QPointF &point, points)
+        newPoints.append(point);
+    m_metadata["Points"] = newPoints;
 }
 
-QList<QRectF> File::ROIs() const
+QList<QRectF> File::namedRects() const
 {
-    QList<QRectF> ROIs;
-    foreach (const QVariant &ROI, value("ROIs").toList())
-        ROIs.append(ROI.toRect());
-    return ROIs;
+    QList<QRectF> rects;
+    foreach (const QString &key, localMetadata().keys()) {
+        const QVariant &variant = m_metadata[key];
+        if (variant.canConvert<QRectF>())
+            rects.append(variant.value<QRectF>());
+    }
+    return rects;
 }
 
-void File::appendROI(const QRectF &ROI)
+QList<QRectF> File::rects() const
 {
-    QList<QVariant> newROIs = m_metadata["ROIs"].toList();
-    newROIs.append(ROI);
-    m_metadata["ROIs"] = newROIs;
+    QList<QRectF> rects;
+    foreach (const QVariant &rect, m_metadata["Rects"].toList())
+        rects.append(rect.toRect());
+    return rects;
 }
 
-void File::appendROIs(const QList<QRectF> &ROIs)
+void File::appendRect(const QRectF &rect)
 {
-    QList<QVariant> newROIs = m_metadata["ROIs"].toList();
-    foreach (const QRectF &ROI, ROIs)
-        newROIs.append(ROI);
-    m_metadata["ROIs"] = newROIs;
+    QList<QVariant> newRects = m_metadata["Rects"].toList();
+    newRects.append(rect);
+    m_metadata["Rects"] = newRects;
 }
 
-void File::setROIs(const QList<QRectF> &ROIs)
+void File::appendRects(const QList<QRectF> &rects)
 {
-    QList<QVariant> ROIList; ROIList.reserve(ROIs.size());
-    foreach (const QRectF &ROI, ROIs)
-        ROIList.append(ROI);
-    m_metadata["ROIs"] = ROIList;
+    QList<QVariant> newRects = m_metadata["Rects"].toList();
+    foreach (const QRectF &rect, rects)
+        newRects.append(rect);
+    m_metadata["Rects"] = newRects;
 }
 
 /* File - private methods */
@@ -325,10 +237,10 @@ void File::init(const QString &file)
             QStringList words = QtUtils::parse(parameters[i], '=');
             QtUtils::checkArgsSize("File", words, 1, 2);
             if (words.size() < 2) {
-                if (unnamed) insertParameter(i, words[0]);
-                else         insert(words[0], QVariant());
+                if (unnamed) setParameter(i, words[0]);
+                else         set(words[0], QVariant());
             } else {
-                insert(words[0], words[1]);
+                set(words[0], words[1]);
             }
         }
         name = name.left(index);
@@ -391,9 +303,8 @@ void FileList::sort(const QString& key)
     FileList sortedList;
 
     for (int i = 0; i < size(); i++) {
-        if (at(i).contains(key)) {
-            metadata.append(at(i).get(key).toString());
-        }
+        if (at(i).contains(key))
+            metadata.append(at(i).get<QString>(key));
         else sortedList.push_back(at(i));
     }
 
@@ -416,7 +327,7 @@ QList<int> FileList::crossValidationPartitions() const
 {
     QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
     foreach (const File &f, *this)
-        crossValidationPartitions.append(f.getInt("Cross_Validation_Partition", 0));
+        crossValidationPartitions.append(f.get<int>("Cross_Validation_Partition", 0));
     return crossValidationPartitions;
 }
 
@@ -424,7 +335,7 @@ int FileList::failures() const
 {
     int failures = 0;
     foreach (const File &file, *this)
-        if (file.getBool("FTO") || file.getBool("FTE"))
+        if (file.get<bool>("FTO", false) || file.get<bool>("FTE", false))
             failures++;
     return failures;
 }
@@ -447,9 +358,9 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
-        newTemplates = newTemplates.mid(gallery.getInt("pos", 0), gallery.getInt("length", -1));
-        if (gallery.getBool("reduce")) newTemplates = newTemplates.reduced();
-        const int crossValidate = gallery.getInt("crossValidate");
+        newTemplates = newTemplates.mid(gallery.get<int>("pos", 0), gallery.get<int>("length", -1));
+        if (gallery.get<bool>("reduce", false)) newTemplates = newTemplates.reduced();
+        const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
 
         // If file is a Format not a Gallery
@@ -460,11 +371,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         for (int i=0; i<newTemplates.size(); i++) {
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
-            newTemplates[i].file.insert("Index", i+templates.size());
-            if (crossValidate > 0) newTemplates[i].file.insert("Cross_Validation_Partition", rand()%crossValidate);
+            newTemplates[i].file.set("Index", i+templates.size());
+            if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
         }
 
-        if (!templates.isEmpty() && gallery.getBool("merge")) {
+        if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
             if (newTemplates.size() != templates.size())
                 qFatal("Inputs must be the same size in order to merge.");
             for (int i=0; i<templates.size(); i++)
@@ -494,7 +405,8 @@ TemplateList TemplateList::relabel(const TemplateList &tl)
 QStringList Object::parameters() const
 {
     QStringList parameters;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
+
+    for (int i = firstAvailablePropertyIdx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
@@ -713,18 +625,37 @@ void Object::init(const File &file_)
     // Set name
     QString name = metaObject()->className();
     if (name.startsWith("br::")) name = name.right(name.size()-4);
-    const QMetaObject *superClass = metaObject()->superClass();
+
+    firstAvailablePropertyIdx = metaObject()->propertyCount();
+
+    const QMetaObject * baseClass = metaObject();
+    const QMetaObject * superClass = metaObject()->superClass();
+
     while (superClass != NULL) {
+        const QMetaObject * nextClass = superClass->superClass();
+
+        // baseClass <- something <- br::Object
+        // baseClass is the highest class whose properties we can set via positional arguments
+        if (nextClass && !strcmp(nextClass->className(),"br::Object")) {
+            firstAvailablePropertyIdx = baseClass->propertyOffset();
+        }
+
         QString superClassName = superClass->className();
+
+        // strip br:: prefix from superclass name
         if (superClassName.startsWith("br::"))
             superClassName = superClassName.right(superClassName.size()-4);
+
+        // Strip superclass name from base class name (e.g. PipeTransform -> Pipe)
         if (name.endsWith(superClassName))
             name = name.left(name.size() - superClassName.size());
+        baseClass = superClass;
         superClass = superClass->superClass();
+
     }
     setObjectName(name);
 
-    // Set properties
+    // Reset all properties
     for (int i=0; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isResettable())
@@ -734,8 +665,17 @@ void Object::init(const File &file_)
 
     foreach (QString key, file.localKeys()) {
         const QString value = file.value(key).toString();
-        if (key.startsWith("_Arg"))
-            key = metaObject()->property(metaObject()->propertyOffset()+key.mid(4).toInt()).name();
+
+        if (key.startsWith(("_Arg"))) {
+            int argument_number =  key.mid(4).toInt();
+            int target_idx = argument_number + firstAvailablePropertyIdx;
+
+            if (target_idx >= metaObject()->propertyCount()) {
+                qWarning("too many arguments for transform, ignoring %s\n", qPrintable(value));
+                continue;
+            }
+            key = metaObject()->property(target_idx).name();
+        }
         setProperty(key, value);
     }
 
@@ -1107,7 +1047,7 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
         const int selectedLabel = selectedLabels[i];
         QList<int> indices;
         for (int j=0; j<allLabels.size(); j++)
-            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.getBool("FTE")))
+            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)))
                 indices.append(j);
 
         std::random_shuffle(indices.begin(), indices.end());
@@ -1291,7 +1231,7 @@ static void _project(const Transform *transform, const Template *src, Template *
     } catch (...) {
         qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *dst = Template(src->file);
-        dst->file.setBool("FTE");
+        dst->file.set("FTE", true);
     }
 }
 
@@ -1302,7 +1242,7 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
     } catch (...) {
         qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *src = Template(dst->file);
-        src->file.setBool("FTE");
+        src->file.set("FTE", true);
     }
 }
 

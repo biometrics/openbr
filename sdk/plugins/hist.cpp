@@ -66,6 +66,38 @@ BR_REGISTER(Transform, HistTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Quantizes the values into bins.
+ * \author Josh Klontz \cite jklontz
+ */
+class BinTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(float min READ get_min WRITE set_min RESET reset_min STORED false)
+    Q_PROPERTY(float max READ get_max WRITE set_max RESET reset_max STORED false)
+    Q_PROPERTY(int bins READ get_bins WRITE set_bins RESET reset_bins STORED false)
+    Q_PROPERTY(bool split READ get_split WRITE set_split RESET reset_split STORED false)
+    BR_PROPERTY(float, min, 0)
+    BR_PROPERTY(float, max, 255)
+    BR_PROPERTY(int, bins, 8)
+    BR_PROPERTY(bool, split, false)
+
+    void project(const Template &src, Template &dst) const
+    {
+        src.m().convertTo(dst, bins > 256 ? CV_16U : CV_8U, bins/(max-min));
+        if (!split) return;
+
+        Mat input = dst;
+        QList<Mat> outputs; outputs.reserve(bins);
+        for (int i=0; i<bins; i++)
+            outputs.append(input == i);
+        dst.clear(); dst.append(outputs);
+    }
+};
+
+BR_REGISTER(Transform, BinTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Converts each element to its rank-ordered value.
  * \author Josh Klontz \cite jklontz
  */
@@ -174,7 +206,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
         int *buffer = new int[bins];
 
         float bestRatio = -std::numeric_limits<float>::max();
-        QRect bestROI;
+        QRectF bestRect;
 
         const int rows = m.rows;
         const int cols = m.cols/bins;
@@ -202,7 +234,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
 
                     if (ratio > bestRatio) {
                         bestRatio = ratio;
-                        bestROI = QRect(j*radius, i*radius, scale*radius, scale*radius);
+                        bestRect = QRect(j*radius, i*radius, scale*radius, scale*radius);
                     }
                 }
             }
@@ -210,7 +242,7 @@ class VarianceChangeDetectorTransform : public UntrainableTransform
         }
 
         delete[] buffer;
-        dst.file.appendROI(bestROI);
+        dst.file.appendRect(bestRect);
         dst.file.setLabel(bestRatio);
     }
 };

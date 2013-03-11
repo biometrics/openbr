@@ -148,8 +148,8 @@ class RectFromLandmarksTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.file.landmarks().isEmpty()) {
-            qWarning("No landmarks for %s", qPrintable(src.file.fileName()));
+        if (src.file.points().isEmpty()) {
+            qWarning("No landmarks");
             dst = src;
             return;
         }
@@ -160,12 +160,12 @@ class RectFromLandmarksTransform : public UntrainableTransform
         maxX = maxY = -std::numeric_limits<int>::max();
 
         foreach(int index, indices) {
-            if (src.file.landmarks().size() > index+1) {
-                if (src.file.landmarks()[index].x() < minX) minX = src.file.landmarks()[index].x();
-                if (src.file.landmarks()[index].x() > maxX) maxX = src.file.landmarks()[index].x();
-                if (src.file.landmarks()[index].y() < minY) minY = src.file.landmarks()[index].y();
-                if (src.file.landmarks()[index].y() > maxY) maxY = src.file.landmarks()[index].y();
-                dst.file.appendLandmark(src.file.landmarks()[index]);
+            if (src.file.points().size() > index+1) {
+                if (src.file.points()[index].x() < minX) minX = src.file.points()[index].x();
+                if (src.file.points()[index].x() > maxX) maxX = src.file.points()[index].x();
+                if (src.file.points()[index].y() < minY) minY = src.file.points()[index].y();
+                if (src.file.points()[index].y() > maxY) maxY = src.file.points()[index].y();
+                dst.file.appendPoint(src.file.points()[index]);
             }
         }
 

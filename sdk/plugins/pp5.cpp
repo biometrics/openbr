@@ -148,9 +148,9 @@ struct PP5Context
         return "Unknown";
     }
 
-    static QHash<QString,QVariant> toMetadata(const ppr_face_type &face)
+    static QMap<QString,QVariant> toMetadata(const ppr_face_type &face)
     {
-        QHash<QString,QVariant> metadata;
+        QMap<QString,QVariant> metadata;
 
         ppr_face_attributes_type face_attributes;
         ppr_get_face_attributes(face, &face_attributes);
@@ -250,7 +250,7 @@ class PP5Enroll : public UntrainableTransform
             dst.file.append(PP5Context::toMetadata(face));
             dst += m;
 
-            if (!src.file.getBool("enrollAll")) break;
+            if (!src.file.get<bool>("enrollAll", false)) break;
         }
 
         ppr_free_face_list(face_list);
@@ -259,7 +259,7 @@ class PP5Enroll : public UntrainableTransform
 
         contexts.release(context);
 
-        if (!src.file.getBool("enrollAll") && dst.isEmpty()) {
+        if (!src.file.get<bool>("enrollAll", false) && dst.isEmpty()) {
             if (detectOnly) dst += src;
             else            dst += cv::Mat();
         }

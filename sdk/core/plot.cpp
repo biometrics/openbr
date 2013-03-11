@@ -119,8 +119,8 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     // Read files
     const Mat scores = BEE::readSimmat(simmat);
     File maskFile(mask);
-    maskFile.insert("rows", scores.rows);
-    maskFile.insert("columns", scores.cols);
+    maskFile.set("rows", scores.rows);
+    maskFile.set("columns", scores.cols);
     const Mat masks = BEE::readMask(maskFile);
     if (scores.size() != masks.size()) qFatal("Simmat/Mask size mismatch.");
 
@@ -143,6 +143,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     if (genuineCount == 0) qFatal("No genuine scores!");
     if (impostorCount == 0) qFatal("No impostor scores!");
 
+    // Sort comparisons by simmat_val (score)
     std::sort(comparisons.begin(), comparisons.end());
 
     double genuineSum = 0, impostorSum = 0;
@@ -155,8 +156,10 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     int index = 0;
     float minGenuineScore = std::numeric_limits<float>::max();
     float minImpostorScore = std::numeric_limits<float>::max();
+
     while (index < comparisons.size()) {
         float thresh = comparisons[index].score;
+        // Compute genuine and imposter statistics at a threshold
         while ((index < comparisons.size()) &&
                (comparisons[index].score == thresh)) {
             const Comparison &comparison = comparisons[index];
@@ -205,7 +208,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     lines.append("Metadata,"+QString::number(impostorCount)+",Impostor");
     lines.append("Metadata,"+QString::number(scores.cols*scores.rows-(genuineCount+impostorCount))+",Ignored");
 
-    // Write DET, PRE, REC
+    // Write Detection Error Tradeoff (DET), PRE, REC
     int points = qMin(operatingPoints.size(), Max_Points);
     for (int i=0; i<points; i++) {
         const OperatingPoint &operatingPoint = operatingPoints[double(i) / double(points-1) * double(operatingPoints.size()-1)];
@@ -416,7 +419,7 @@ struct RPlot
             }
         }
 
-        const QString &smooth = destination.getString("smooth", "");
+        const QString &smooth = destination.get<QString>("smooth", "");
         major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
         minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
         if (major.smooth) major.size = 1;

@@ -189,12 +189,14 @@ struct AlgorithmCore
             enroll(file);
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
+
+            qDebug() << galleryFiles;
         }
     }
 
     void compare(File targetGallery, File queryGallery, File output)
     {
-        if (output.exists() && output.getBool("cache")) return;
+        if (output.exists() && output.get<bool>("cache", false)) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
         QScopedPointer<Gallery> t, q;
@@ -250,7 +252,7 @@ private:
         if (!file.isEmpty()) description = file;
 
         if (QFileInfo(description).exists()) {
-            if (Globals->verbose) qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
+            qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
             load(description);
             return;
         }
@@ -259,7 +261,7 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
-        QStringList words = description.split(':');
+        QStringList words = QtUtils::parse(description, ':');
         if (words.size() > 2) qFatal("Invalid algorithm format.");
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
@@ -316,14 +318,14 @@ void br::Train(const File &input, const File &model)
 {
     qDebug("Training on %s%s", qPrintable(input.flat()),
                                model.isNull() ? "" : qPrintable(" to " + model.flat()));
-    AlgorithmManager::getAlgorithm(model.getString("algorithm"))->train(input, model);
+    AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
 FileList br::Enroll(const File &input, const File &gallery)
 {
     qDebug("Enrolling %s%s", qPrintable(input.flat()),
                              gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
-    return AlgorithmManager::getAlgorithm(gallery.getString("algorithm"))->enroll(input, gallery);
+    return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
@@ -331,7 +333,7 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
                                     qPrintable(queryGallery.flat()),
                                     output.isNull() ? "" : qPrintable(" to " + output.flat()));
-    AlgorithmManager::getAlgorithm(output.getString("algorithm"))->compare(targetGallery, queryGallery, output);
+    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
 void br::Convert(const File &src, const File &dst)

@@ -4,6 +4,8 @@
 * Enrolling files/folders are now sorted naturally instead of alpha numerically
 * YouTubeFacesDBTransform implements Dr. Wolf's experimental protocol
 * NEC3 refactored
+* Updated transform API to add support for time-varying transforms per issue (#23)
+* Refactored File class to improve point and rect storage (#22)
 
 0.2.0 - 2/23/13
 ===============

@@ -44,7 +44,7 @@ class OpenTransform : public UntrainableMetaTransform
             dst.append(t);
             dst.file.append(t.file.localMetadata());
         }
-        dst.file.insert("FTO", dst.isEmpty());
+        dst.file.set("FTO", dst.isEmpty());
     }
 };
 
@@ -100,16 +100,19 @@ class PrintTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
     Q_PROPERTY(bool data READ get_data WRITE set_data RESET reset_data)
+    Q_PROPERTY(bool nTemplates READ get_data WRITE set_data RESET reset_data)
     BR_PROPERTY(bool, error, true)
     BR_PROPERTY(bool, data, false)
+    BR_PROPERTY(bool, size, false)
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
         const QString nameString = src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
-        if (error) qDebug("%s\n%s", qPrintable(nameString), qPrintable(dataString));
-        else       printf("%s\n%s", qPrintable(nameString), qPrintable(dataString));
+        const QString nTemplates = size ? QString::number(src.size()) : QString();
+        if (error) qDebug("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
+        else       printf("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
     }
 };
 
@@ -282,7 +285,7 @@ class RenameTransform : public UntrainableMetaTransform
     {
         dst = src;
         if (dst.file.localKeys().contains(find)) {
-            dst.file.insert(replace, dst.file.get(find));
+            dst.file.set(replace, dst.file.value(find));
             dst.file.remove(find);
         }
     }
@@ -308,7 +311,7 @@ class RenameFirstTransform : public UntrainableMetaTransform
         dst = src;
         foreach (const QString &key, find)
             if (dst.file.localKeys().contains(key)) {
-                dst.file.insert(replace, dst.file.get(key));
+                dst.file.set(replace, dst.file.value(key));
                 dst.file.remove(key);
                 break;
             }
