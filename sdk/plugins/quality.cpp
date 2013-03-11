@@ -79,7 +79,7 @@ struct KDE
     double mean, stddev;
     QList<float> bins;
 
-    KDE() : min(0), max(1) {}
+    KDE() : min(0), max(1), mean(0), stddev(1) {}
     KDE(const QList<float> &scores)
     {
         Common::MinMax(scores, &min, &max);

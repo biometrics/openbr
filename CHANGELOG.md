@@ -6,6 +6,7 @@
 * NEC3 refactored
 * Updated transform API to add support for time-varying transforms per issue (#23)
 * Refactored File class to improve point and rect storage (#22)
+* Added algorithm to show face detection results (#25)
 
 0.2.0 - 2/23/13
 ===============

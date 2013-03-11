@@ -32,14 +32,14 @@ namespace br
 class DrawTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
     Q_PROPERTY(bool named READ get_named WRITE set_named RESET reset_named STORED false)
-    Q_PROPERTY(bool unnamed READ get_unnamed WRITE set_unnamed RESET reset_unnamed STORED false)
-    Q_PROPERTY(bool ROI READ get_ROI WRITE set_ROI RESET reset_ROI STORED false)
-    BR_PROPERTY(bool, verbose, false)
+    Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
+    Q_PROPERTY(bool points READ get_points WRITE set_points RESET reset_points STORED false)
+    Q_PROPERTY(bool rects READ get_rects WRITE set_rects RESET reset_rects STORED false)
     BR_PROPERTY(bool, named, true)
-    BR_PROPERTY(bool, unnamed, true)
-    BR_PROPERTY(bool, ROI, true)
+    BR_PROPERTY(bool, verbose, false)
+    BR_PROPERTY(bool, points, true)
+    BR_PROPERTY(bool, rects, true)
 
     void project(const Template &src, Template &dst) const
     {
@@ -47,26 +47,18 @@ class DrawTransform : public UntrainableTransform
         const Scalar verboseColor(255, 255, 0);
         dst = src.m().clone();
 
-        QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
-
-        if (unnamed) {
-            foreach (const Point2f &landmark, landmarks)
-                circle(dst, landmark, 3, color, -1);
+        if (points) {
+            const QList<Point2f> pointsList = OpenCVUtils::toPoints(named ? src.file.namedPoints() : src.file.points());
+            for (int i=0; i<pointsList.size(); i++) {
+                const Point2f &point = pointsList[i];
+                circle(dst, point, 3, color);
+                if (verbose) putText(dst, QString::number(i).toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
+            }
         }
-        if (named) {
-            QList<Point2f> namedLandmarks = OpenCVUtils::toPoints(src.file.namedPoints());
-            foreach (const Point2f &landmark, namedLandmarks)
-                circle(dst, landmark, 3, color);
+        if (rects) {
+            foreach (const Rect &rect, OpenCVUtils::toRects(named ? src.file.namedRects() : src.file.rects()))
+                rectangle(dst, rect, color);
         }
-        if (ROI) {
-            QList<Rect> ROIs = OpenCVUtils::toRects(src.file.rects());
-            foreach (const Rect ROI, ROIs)
-                rectangle(dst, ROI, color);
-        }
-
-        if (verbose)
-            for (int i=0; i<landmarks.size(); i++)
-                putText(dst, QString::number(i).toStdString(), landmarks[i], FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
     }
 };
 

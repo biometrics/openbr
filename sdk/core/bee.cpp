@@ -199,6 +199,7 @@ void writeMatrix(const Mat &m, const QString &matrix, const QString &targetSigse
 
     char buff[4];
     QFile file(matrix);
+    QtUtils::touchDir(file);
     bool success = file.open(QFile::WriteOnly); if (!success) qFatal("Unable to open %s for writing.", qPrintable(matrix));
     file.write("S2\n");
     file.write(qPrintable(QFileInfo(targetSigset).fileName()));

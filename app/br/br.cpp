@@ -31,10 +31,20 @@
  * \endcode
  *
  * \section cli_examples Examples
+ * - \ref cli_show_face_detection
  * - \ref cli_age_estimation
  * - \ref cli_face_recognition
  * - \ref cli_face_recognition_evaluation
  * - \ref cli_gender_estimation
+ * - \ref cli_show_face_detection
+ */
+
+/*!
+ * \ingroup cli
+ * \page cli_show_face_detection Show Face Detection
+ * \code
+ * $ br -algorithm ShowFaceDetection -enrollAll -enroll ../data/family.jpg # Press 'Enter' to cycle through the results
+ * \endcode
  */
 
 static void help()

@@ -38,6 +38,8 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("FaceQuality", "Open!Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+ImageQuality+Cvt(Gray)+DFFS+Discard");
         Globals->abbreviations.insert("MedianFace", "Open!Cascade(FrontalFace)+ASEFEyes+Affine(256,256,0.37,0.45)+Center(Median)");
         Globals->abbreviations.insert("BlurredFaceDetection", "Open+LimitSize(1024)+SkinMask/(Cvt(Gray)+GradientMask)+And+Morph(Erode,16)+LargestConvexArea");
+        Globals->abbreviations.insert("DrawFaceDetection", "Open+Cascade(FrontalFace)!ASEFEyes+Draw");
+        Globals->abbreviations.insert("ShowFaceDetection", "DrawFaceDetection!Show");
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
@@ -48,6 +50,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("SmallSIFT", "Open+LimitSize(512)+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("SmallSURF", "Open+LimitSize(512)+KeyPointDetector(SURF)+KeyPointDescriptor(SURF):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("ColorHist", "Open+LimitSize(512)!EnsureChannels(3)+SplitChannels+Hist(256,0,8)+Cat+Normalize(L1):L2");
+        Globals->abbreviations.insert("IHH", "Open+SplitChannels/(Cvt(Gray)+Gradient+Bin(0,6.283,8,true))+Integral+Merge+IntegralSampler");
 
         // Hash
         Globals->abbreviations.insert("FileName", "Name+Identity:Identical");

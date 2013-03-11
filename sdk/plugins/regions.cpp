@@ -111,6 +111,26 @@ BR_REGISTER(Transform, CatTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Wraps OpenCV merge
+ * \author Josh Klontz \cite jklontz
+ */
+class MergeTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        std::vector<Mat> mv;
+        foreach (const Mat &m, src)
+            mv.push_back(m);
+        merge(mv, dst);
+    }
+};
+
+BR_REGISTER(Transform, MergeTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Duplicates the template data.
  * \author Josh Klontz \cite jklontz
  */

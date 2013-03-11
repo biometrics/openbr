@@ -345,6 +345,10 @@ class csvGallery : public Gallery
                 if (!samples.contains(key))
                     samples.insert(key, file.value(key));
 
+        // Don't create columns in the CSV for these special fields
+        samples.remove("Points");
+        samples.remove("Rects");
+
         QStringList lines;
         lines.reserve(files.size()+1);
 

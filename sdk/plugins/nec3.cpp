@@ -136,13 +136,13 @@ class NEC3Enroll : public UntrainableTransform
                 NeoFacePro::CFaceFeature::FreeSerializeData(data);
             }
 
-            if (src.file.getBool("ForceEnrollment") && !dst.isEmpty()) break;
+            if (src.file.get<bool>("ForceEnrollment", false) && !dst.isEmpty()) break;
         }
-        dst.file.appendLandmarks(landmarks);
+        dst.file.appendPoints(landmarks);
 
         contexts.release(context);
 
-        if (!src.file.getBool("enrollAll") && dst.isEmpty()) dst += cv::Mat();
+        if (!src.file.get<bool>("enrollAll", false) && dst.isEmpty()) dst += cv::Mat();
     }
 };
 
