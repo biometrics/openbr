@@ -590,10 +590,10 @@ class dbGallery : public Gallery
         }
 
         QStringList labels = entries.keys();
+        qSort(labels);
+
         if (hasFilter && ((labels.size() > numSubjects) || (numSubjects == std::numeric_limits<int>::max())))
             std::random_shuffle(labels.begin(), labels.end());
-        else
-            qSort(labels);
 
         foreach (const QString &label, labels) {
             QList<Entry> entryList = entries[label];

@@ -86,66 +86,6 @@ static void incrementStep()
 }
 
 /*!
- * \brief Use Expanded after basic calls that take a template list, used to implement ExpandTransform
- */
-class ExpandDecorator : public Transform
-{
-    Q_OBJECT
-
-    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
-    BR_PROPERTY(br::Transform*, transform, NULL)
-
-public:
-    ExpandDecorator(Transform * input)
-    {
-        transform = input;
-        transform->setParent(this);
-        file = transform->file;
-        setObjectName(transform->objectName());
-    }
-
-    void train(const TemplateList &data)
-    {
-        transform->train(data);
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        transform->project(src, dst);
-    }
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        transform->project(src, dst);
-        dst = Expanded(dst);
-    }
-
-
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        transform->projectUpdate(src, dst);
-    }
-
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
-    {
-        transform->projectUpdate(src, dst);
-        dst = Expanded(dst);
-    }
-
-    bool timeVarying() const
-    {
-        return transform->timeVarying();
-    }
-
-    void finalize(TemplateList & output)
-    {
-        transform->finalize(output);
-        output = Expanded(output);
-    }
-
-};
-
-/*!
  * \brief A MetaTransform that aggregates some sub-transforms
  */
 class BR_EXPORT CompositeTransform : public TimeVaryingTransform
@@ -291,12 +231,9 @@ protected:
     // or if parallelism is disabled, handle them sequentially
    void _project(const TemplateList &src, TemplateList &dst) const
     {
-        if (Globals->parallelism < 0) {
-            dst = src;
-            foreach (const Transform *f, transforms)
-                dst >> *f;
-        } else {
-            Transform::project(src, dst);
+        dst = src;
+        foreach (const Transform *f, transforms) {
+            dst >> *f;
         }
     }
 
@@ -320,40 +257,26 @@ BR_REGISTER(Transform, PipeTransform)
 
 /*!
  * \ingroup transforms
- * \brief Transforms in series with expansion step.
+ * \brief Performs an expansion step on input templatelists
  * \author Josh Klontz \cite jklontz
  *
- * The source br::Template is given to the first transform and the resulting br::Template is passed to the next transform, etc.
- * Each matrix is expanded into its own template between steps.
+ * Each matrix in an input Template is expanded into its own template.
  *
  * \see PipeTransform
  */
-class ExpandTransform : public PipeTransform
+class ExpandTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
-    void init()
+    virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        for (int i = 0; i < transforms.size(); i++)
-        {
-            transforms[i] = new ExpandDecorator(transforms[i]);
-        }
-        // Need to call this to set up timevariance correctly, and it won't
-        // be called automatically
-        CompositeTransform::init();
+        dst = Expanded(src);
     }
 
-protected:
-
-    // Template list project -- project through transforms sequentially,
-    // then expand the results, can't use Transform::Project(templateList) since
-    // we need to expand between tranforms, so actually do need to overload this method
-    void _project(const TemplateList &src, TemplateList &dst) const
+    virtual void project(const Template & src, Template & dst) const
     {
-        dst = src;
-        for (int i=0; i<transforms.size(); i++) {
-            dst >> *transforms[i];
-        }
+        qFatal("this has gone bad");
+        (void) src; (void) dst;
     }
 };
 
@@ -405,12 +328,12 @@ class ForkTransform : public CompositeTransform
     {
         dst = src;
         dst.reserve(src.size());
-        for (int i=0; i<src.size(); i++) dst.append(Template());
+        for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
         foreach (Transform *f, transforms) {
             TemplateList m;
             f->projectUpdate(src, m);
             if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
-            for (int i=0; i<src.size(); i++) dst[i].append(m[i]);
+            for (int i=0; i<src.size(); i++) dst[i].merge(m[i]);
         }
     }
 
@@ -460,17 +383,13 @@ protected:
 
     void _project(const TemplateList &src, TemplateList &dst) const
     {
-        if (Globals->parallelism < 0) {
-            dst.reserve(src.size());
-            for (int i=0; i<src.size(); i++) dst.append(Template());
-            foreach (const Transform *f, transforms) {
-                TemplateList m;
-                f->project(src, m);
-                if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
-                for (int i=0; i<src.size(); i++) dst[i].append(m[i]);
-            }
-        } else {
-            Transform::project(src, dst);
+        dst.reserve(src.size());
+        for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
+        foreach (const Transform *f, transforms) {
+            TemplateList m;
+            f->project(src, m);
+            if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
+            for (int i=0; i<src.size(); i++) dst[i].merge(m[i]);
         }
     }
 
@@ -669,6 +588,73 @@ class FTETransform : public Transform
 };
 
 BR_REGISTER(Transform, FTETransform)
+
+
+static void _projectList(const Transform *transform, const TemplateList *src, TemplateList *dst)
+{
+    transform->project(*src, *dst);
+}
+
+
+class DistributeTemplateTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
+    BR_PROPERTY(br::Transform*, transform, NULL)
+
+public:
+
+    void project(const Template &src, Template &dst) const
+    {
+        TemplateList input;
+        input.append(src);
+        TemplateList output;
+        project(input, output);
+
+        if (output.size() != 1) qFatal("output contains more than 1 template");
+        else dst = output[0];
+    }
+
+
+    // For each input template, form a single element TemplateList, push all those
+    // lists through transform, and form dst by concatenating the results.
+    // Process the single elemnt templates in parallel if parallelism is enabled.
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        // Pre-allocate output for each template
+        QList<TemplateList> output_buffer;
+        output_buffer.reserve(src.size());
+
+        // Can't declare this local to the loop because it would go out of scope
+        QList<TemplateList> input_buffer;
+        input_buffer.reserve(src.size());
+
+        for (int i =0; i < src.size();i++) {
+            input_buffer.append(TemplateList());
+            output_buffer.append(TemplateList());
+        }
+
+        QList< QFuture<void> > futures;
+        futures.reserve(src.size());
+        for (int i=0; i<src.size(); i++) {
+            input_buffer[i].append(src[i]);
+            if (Globals->parallelism)
+                futures.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
+            else
+                _projectList(transform, &input_buffer[i], &output_buffer[i]);
+        }
+
+        if (Globals->parallelism)
+            Globals->trackFutures(futures);
+
+        for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
+    }
+
+
+    private:
+
+};
+BR_REGISTER(Transform, DistributeTemplateTransform)
 
 } // namespace br
 
