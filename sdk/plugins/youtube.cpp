@@ -17,14 +17,13 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
     Q_PROPERTY(QString algorithm READ get_algorithm WRITE set_algorithm RESET reset_algorithm STORED false)
     BR_PROPERTY(QString, algorithm, "")
 
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Transform::project(src.mid(1) /* First template is the header in 'splits.txt' */, dst);
-    }
-
     void project(const Template &src, Template &dst) const
     {
         static QMutex mutex;
+
+        // First input is the header in 'splits.txt'
+        if (src.file.get<int>("Index") == 0) return;
+
         const QStringList words = src.file.name.split(", ");
         const QString matrix = "YTF-"+algorithm+"/"+words[0] + "_" + words[1] + "_" + words[4] + ".mtx";
         const QStringList arguments = QStringList() << "-algorithm" << algorithm
