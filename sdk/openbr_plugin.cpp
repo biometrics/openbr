@@ -50,9 +50,9 @@ QString File::flat() const
                 values.append(key + "=" + value.toString());
             }
             else {
-                if (value.canConvert(QVariant::QPointF)) values.append(key + "=" + QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(value).x()),
+                if (value.canConvert(QVariant::PointF)) values.append(key + "=" + QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(value).x()),
                                                                                                        QString::number(qvariant_cast<QPointF>(value).y())));
-                else if (value.canConvert(QVariant::QRectF)) values.append(key + "=" + QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(value).x()),
+                else if (value.canConvert(QVariant::RectF)) values.append(key + "=" + QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(value).x()),
                                                                                                                  QString::number(qvariant_cast<QRectF>(value).y()),
                                                                                                                  QString::number(qvariant_cast<QRectF>(value).width()),
                                                                                                                  QString::number(qvariant_cast<QRectF>(value).height())));
