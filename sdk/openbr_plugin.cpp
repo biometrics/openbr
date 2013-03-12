@@ -1202,10 +1202,8 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
-    { // Check for use of '!' as shorthand for Expand(...)
-        QStringList words = parse(str, '!');
-        if (words.size() > 1)
-            return make("Expand([" + words.join(",") + "])", parent);
+    { // Check for use of '!' as shorthand for Expand
+        str.replace("!","+Expand+");
     }
 
     { // Check for use of '+' as shorthand for Pipe(...)
@@ -1250,17 +1248,6 @@ Transform *Transform::clone() const
     return clone;
 }
 
-static void _project(const Transform *transform, const Template *src, Template *dst)
-{
-    try {
-        transform->project(*src, *dst);
-    } catch (...) {
-        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
-        *dst = Template(src->file);
-        dst->file.set("FTE", true);
-    }
-}
-
 static void _backProject(const Transform *transform, const Template *dst, Template *src)
 {
     try {
@@ -1273,17 +1260,25 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
 }
 
 
+
+// Default project(TemplateList) -- call project(template) separately for each input
+// template
 void Transform::project(const TemplateList &src, TemplateList &dst) const
 {
-    dst.reserve(src.size());
-    for (int i=0; i<src.size(); i++) dst.append(Template());
+    dst.clear();
 
-    QList< QFuture<void> > futures;
-    if (Globals->parallelism) futures.reserve(src.size());
-    for (int i=0; i<src.size(); i++)
-        if (Globals->parallelism) futures.append(QtConcurrent::run(_project, this, &src[i], &dst[i]));
-        else                                                      _project (this, &src[i], &dst[i]);
-    if (Globals->parallelism) Globals->trackFutures(futures);
+    // Project templates derived from a single image, default implementation: project each
+    // input template to an ouptut template individually.
+    foreach(const Template  & src_template, src) {
+        dst.append(Template(src_template.file));
+        try {
+                project(src_template, dst.back());
+        } catch (...) {
+            qWarning("Exception triggered when processing %s with transform %s", qPrintable(src_template.file.flat()), qPrintable(objectName()));
+            dst.back() = Template(src_template.file);
+            dst.back().file.set("FTE", true);
+        }
+    }
 }
 
 void Transform::backProject(const Template &dst, Template &src) const
