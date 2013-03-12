@@ -596,13 +596,18 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
 }
 
 
-class DistributeTemplateTransform : public UntrainableMetaTransform
+class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
     BR_PROPERTY(br::Transform*, transform, NULL)
 
 public:
+
+    void train(const TemplateList &data)
+    {
+        transform->train(data);
+    }
 
     void project(const Template &src, Template &dst) const
     {
