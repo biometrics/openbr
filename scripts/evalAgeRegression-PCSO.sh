@@ -4,6 +4,8 @@ if [ ! -f evalAgeRegression-PCSO.sh ]; then
   exit
 fi
 
-br -quiet -enroll "../data/PCSO/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 15 AND AGE <= 75', subset=1:200]" terminal.txt > Input.txt
+# Create a file list by querying the database
+br -quiet -algorithm Identity -enroll "../data/PCSO/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 15 AND AGE <= 75', subset=1:200]" terminal.txt > Input.txt
 
-br -algorithm AgeRegression -path ../data/PCSO/Images -enroll Input.txt Output.txt -evalRegression Output.txt Input.txt
+# Enroll the file list and evaluate performance
+br -algorithm AgeRegression -path ../data/PCSO/img -enroll Input.txt Output.txt -evalRegression Output.txt Input.txt
