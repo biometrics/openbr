@@ -256,11 +256,13 @@ void File::init(const QString &file)
                 if (words[1][0] == '(') {
                     QStringList values = words[1].split(',');
                     if (values.size() == 2) /* QPointF */ {
-                        QPointF point(values[0].remove('(').toFloat(), values[1].remove(')').toFloat());
+                        values[1].chop(1);
+                        QPointF point(values[0].mid(1).toFloat(), values[1].remove(')').toFloat());
                         set(words[0], point);
                        }
                     else /* QRectF */ {
-                        QRectF rect(values[0].remove('(').toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].remove(')').toFloat());
+                        values[3].chop(1);
+                        QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].remove(')').toFloat());
                         set(words[0], rect);
                     }
                 }
