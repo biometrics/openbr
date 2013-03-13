@@ -30,9 +30,12 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
                                                     << "-parallelism" << QString::number(Globals->parallelism)
                                                     << "-path" << Globals->path
                                                     << "-compare" << File(words[2]).resolved() << File(words[3]).resolved() << matrix;
-        mutex.lock();
-        int result = QProcess::execute(QCoreApplication::applicationFilePath(), arguments);
+        mutex.lock();    
+        int result = 0;
+        if (!QFileInfo(matrix).exists())
+            QProcess::execute(QCoreApplication::applicationFilePath(), arguments);
         mutex.unlock();
+
         if (result != 0)
             qWarning("Process for computing %s returned %d.", qPrintable(matrix), result);
         dst = Template();
