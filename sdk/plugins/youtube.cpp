@@ -33,7 +33,7 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
         mutex.lock();    
         int result = 0;
         if (!QFileInfo(matrix).exists())
-            QProcess::execute(QCoreApplication::applicationFilePath(), arguments);
+            result = QProcess::execute(QCoreApplication::applicationFilePath(), arguments);
         mutex.unlock();
 
         if (result != 0)
