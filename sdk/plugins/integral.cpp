@@ -123,6 +123,53 @@ private:
 
 BR_REGISTER(Transform, GradientTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Projects each row based on a computed word.
+ * \author Josh Klontz \cite jklontz
+ */
+class WordWiseTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform* getWords READ get_getWords WRITE set_getWords RESET reset_getWords)
+    Q_PROPERTY(br::Transform* byWord READ get_byWord WRITE set_byWord RESET reset_byWord)
+    BR_PROPERTY(br::Transform*, getWords, NULL)
+    BR_PROPERTY(br::Transform*, byWord, NULL)
+
+    void train(const TemplateList &data)
+    {
+        getWords->train(data);
+        TemplateList words;
+        getWords->project(data, words);
+
+        const int columns = data.first().m().cols;
+        int numWords = 0;
+        foreach (const Template &t, words) {
+            double minVal, maxVal;
+            minMaxLoc(t, &minVal, &maxVal);
+            numWords = max(numWords, int(maxVal)+1);
+        }
+
+        QVector<int> wordCounts(numWords, 0);
+        foreach (const Template &t, words) {
+            const Mat &m = t.m();
+            for (int i=0; i<m.rows; i++)
+                wordCounts[m.at<uchar>(i,0)]++;
+        }
+
+        QVector<Mat> trainingWords(numWords);
+        for (int i=0; i<numWords; i++)
+            trainingWords[i] = Mat(wordCounts[i], columns, CV_8UC1);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void) src; (void) dst;
+    }
+};
+
+BR_REGISTER(Transform, WordWiseTransform)
+
 } // namespace br
 
 #include "integral.moc"
