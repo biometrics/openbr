@@ -2,6 +2,8 @@
 #include <Eigen/Core>
 #include <openbr_plugin.h>
 
+#include "core/opencvutils.h"
+
 using namespace cv;
 
 namespace br
@@ -26,25 +28,25 @@ BR_REGISTER(Transform, IntegralTransform)
 
 /*!
  * \ingroup transforms
- * \brief Sliding window object recognition from a multi-channel intergral image.
+ * \brief Sliding window feature extraction from a multi-channel intergral image.
  * \author Josh Klontz \cite jklontz
  */
-class IntegralSampler : public UntrainableTransform
+class IntegralSamplerTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int scales READ get_scales WRITE set_scales RESET reset_scales STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(float stepFactor READ get_stepFactor WRITE set_stepFactor RESET reset_stepFactor STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
-    BR_PROPERTY(int, scales, 1)
-    BR_PROPERTY(float, scaleFactor, 1.25)
+    BR_PROPERTY(int, scales, 3)
+    BR_PROPERTY(float, scaleFactor, 2)
     BR_PROPERTY(float, stepFactor, 0.25)
     BR_PROPERTY(int, minSize, 8)
 
     void project(const Template &src, Template &dst) const
     {
         typedef Eigen::Map< const Eigen::Matrix<qint32,Eigen::Dynamic,1> > InputDescriptor;
-        typedef Eigen::Map< Eigen::Matrix<qint32,Eigen::Dynamic,1> > OutputDescriptor;
+        typedef Eigen::Map< Eigen::Matrix<float,Eigen::Dynamic,1> > OutputDescriptor;
         const Mat &m = src.m();
         if (m.depth() != CV_32S) qFatal("Expected CV_32S matrix depth.");
         const int channels = m.channels();
@@ -53,16 +55,16 @@ class IntegralSampler : public UntrainableTransform
         int descriptors = 0;
         int currentSize = min(m.rows, m.cols)-1;
         for (int scale=0; scale<scales; scale++) {
-            descriptors += ceil((m.rows-currentSize)*stepFactor/currentSize) *
-                    ceil((m.cols-currentSize)*stepFactor/currentSize);
+            descriptors += int(1+(m.rows-currentSize)/(currentSize*stepFactor)) *
+                           int(1+(m.cols-currentSize)/(currentSize*stepFactor));
             currentSize /= scaleFactor;
             if (currentSize < minSize)
                 break;
         }
-        Mat n(descriptors, channels, CV_32SC1);
+        Mat n(descriptors, channels, CV_32FC1);
 
         const qint32 *dataIn = (qint32*)m.data;
-        qint32 *dataOut = (qint32*)n.data;
+        float *dataOut = (float*)n.data;
         currentSize = min(m.rows, m.cols)-1;
         int index = 0;
         for (int scale=0; scale<scales; scale++) {
@@ -71,10 +73,10 @@ class IntegralSampler : public UntrainableTransform
                 for (int j=currentSize; j<m.cols; j+=currentStep) {
                     InputDescriptor a(dataIn+((i-currentSize)*rowStep+(j-currentSize)*channels), channels, 1);
                     InputDescriptor b(dataIn+((i-currentSize)*rowStep+ j             *channels), channels, 1);
-                    InputDescriptor c(dataIn+( i             *rowStep+(j-currentSize)*channels), channels, 1);
-                    InputDescriptor d(dataIn+( i             *rowStep+ j             *channels), channels, 1);
+                    InputDescriptor c(dataIn+(i              *rowStep+(j-currentSize)*channels), channels, 1);
+                    InputDescriptor d(dataIn+(i              *rowStep+ j             *channels), channels, 1);
                     OutputDescriptor y(dataOut+(index*channels), channels, 1);
-                    y = d-b-c+a;
+                    y = (d-b-c+a).cast<float>()/(currentSize*currentSize);
                     index++;
                 }
             }
@@ -82,12 +84,11 @@ class IntegralSampler : public UntrainableTransform
             if (currentSize < minSize)
                 break;
         }
-
         dst.m() = n;
     }
 };
 
-BR_REGISTER(Transform, IntegralSampler)
+BR_REGISTER(Transform, IntegralSamplerTransform)
 
 /*!
  * \ingroup transforms

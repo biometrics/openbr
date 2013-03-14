@@ -83,13 +83,13 @@ class BinTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        src.m().convertTo(dst, bins > 256 ? CV_16U : CV_8U, bins/(max-min));
+        src.m().convertTo(dst, bins > 256 ? CV_16U : CV_8U, bins/(max-min), -0.5 /* floor */);
         if (!split) return;
 
         Mat input = dst;
         QList<Mat> outputs; outputs.reserve(bins);
         for (int i=0; i<bins; i++)
-            outputs.append(input == i);
+            outputs.append(input == i); // Note: Matrix elements are 0 or 255
         dst.clear(); dst.append(outputs);
     }
 };
