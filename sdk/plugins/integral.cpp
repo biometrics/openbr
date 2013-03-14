@@ -38,8 +38,8 @@ class IntegralSamplerTransform : public UntrainableTransform
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(float stepFactor READ get_stepFactor WRITE set_stepFactor RESET reset_stepFactor STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
-    BR_PROPERTY(int, scales, 3)
-    BR_PROPERTY(float, scaleFactor, 2)
+    BR_PROPERTY(int, scales, 4)
+    BR_PROPERTY(float, scaleFactor, 1.5)
     BR_PROPERTY(float, stepFactor, 0.25)
     BR_PROPERTY(int, minSize, 8)
 
