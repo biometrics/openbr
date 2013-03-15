@@ -133,38 +133,53 @@ class WordWiseTransform : public Transform
     Q_OBJECT
     Q_PROPERTY(br::Transform* getWords READ get_getWords WRITE set_getWords RESET reset_getWords)
     Q_PROPERTY(br::Transform* byWord READ get_byWord WRITE set_byWord RESET reset_byWord)
+    Q_PROPERTY(int numWords READ get_numWords WRITE set_numWords RESET reset_numWords)
     BR_PROPERTY(br::Transform*, getWords, NULL)
     BR_PROPERTY(br::Transform*, byWord, NULL)
+    BR_PROPERTY(int, numWords, 0)
 
     void train(const TemplateList &data)
     {
         getWords->train(data);
-        TemplateList words;
-        getWords->project(data, words);
+        TemplateList bins;
+        getWords->project(data, bins);
 
-        const int columns = data.first().m().cols;
-        int numWords = 0;
-        foreach (const Template &t, words) {
+        numWords = 0;
+        foreach (const Template &t, bins) {
             double minVal, maxVal;
             minMaxLoc(t, &minVal, &maxVal);
             numWords = max(numWords, int(maxVal)+1);
         }
 
-        QVector<int> wordCounts(numWords, 0);
-        foreach (const Template &t, words) {
-            const Mat &m = t.m();
-            for (int i=0; i<m.rows; i++)
-                wordCounts[m.at<uchar>(i,0)]++;
-        }
-
-        QVector<Mat> trainingWords(numWords);
-        for (int i=0; i<numWords; i++)
-            trainingWords[i] = Mat(wordCounts[i], columns, CV_8UC1);
+        TemplateList reworded; reworded.reserve(data.size());
+        foreach (const Template &t, data)
+            reworded.append(reword(t));
+        byWord->train(reworded);
     }
 
     void project(const Template &src, Template &dst) const
     {
-        (void) src; (void) dst;
+        Template reworded;
+        getWords->project(src, reworded);
+        byWord->project(reworded, dst);
+    }
+
+    Template reword(const Template &src) const
+    {
+        Template words;
+        getWords->project(src, words);
+        QVector<int> wordCounts(numWords, 0);
+        for (int i=0; i<words.m().rows; i++)
+            wordCounts[words.m().at<uchar>(i,0)]++;
+        Template reworded(src.file); reworded.reserve(numWords);
+        for (int i=0; i<numWords; i++)
+            reworded.append(Mat(wordCounts[i], src.m().cols, src.m().type()));
+        QVector<int> indicies(numWords, 0);
+        for (int i=0; i<src.m().rows; i++) {
+            const int word = words.m().at<uchar>(i,0);
+            reworded[word].row(indicies[word]++) = src.m().row(i);
+        }
+        return reworded;
     }
 };
 
