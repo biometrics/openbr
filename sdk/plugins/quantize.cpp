@@ -64,7 +64,8 @@ class BinarizeTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         const Mat &m = src;
-        assert((m.cols % 8 == 0) && (m.type() == CV_32FC1));
+        if ((m.cols % 8 != 0) || (m.type() != CV_32FC1))
+            qFatal("Expected CV_32FC1 matrix with a multiple of 8 columns.");
         Mat n(m.rows, m.cols/8, CV_8UC1);
         for (int i=0; i<m.rows; i++)
             for (int j=0; j<m.cols-7; j+=8)

@@ -32,6 +32,10 @@ namespace br
 class PCATransform : public Transform
 {
     Q_OBJECT
+    friend class DFFSTransform;
+    friend class LDATransform;
+
+protected:
     Q_PROPERTY(float keep READ get_keep WRITE set_keep RESET reset_keep STORED false)
     Q_PROPERTY(int drop READ get_drop WRITE set_drop RESET reset_drop STORED false)
     Q_PROPERTY(bool whiten READ get_whiten WRITE set_whiten RESET reset_whiten STORED false)
@@ -42,12 +46,10 @@ class PCATransform : public Transform
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
 
-    int originalRows;
     Eigen::VectorXf mean, eVals;
     Eigen::MatrixXf eVecs;
 
-    friend class DFFSTransform;
-    friend class LDATransform;
+    int originalRows;
 
 public:
     PCATransform() : keep(0.95), drop(0), whiten(false) {}
@@ -118,6 +120,7 @@ private:
         stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
     }
 
+protected:
     void train(Eigen::MatrixXd data)
     {
         int dimsIn = data.rows();
@@ -197,6 +200,50 @@ private:
 };
 
 BR_REGISTER(Transform, PCATransform)
+
+/*!
+ * \ingroup transforms
+ * \brief PCA on each row.
+ * \author Josh Klontz \cite jklontz
+ */
+class RowWisePCATransform : public PCATransform
+{
+    Q_OBJECT
+
+    void train(const TemplateList &trainingSet)
+    {
+        if (trainingSet.first().m().type() != CV_32FC1)
+            qFatal("Requires single channel 32-bit floating point matrices.");
+
+        originalRows = trainingSet.first().m().rows;
+        const int dimsIn = trainingSet.first().m().cols;
+        int instances = 0;
+        foreach (const Template &t, trainingSet)
+            instances += t.m().rows;
+
+        // Map into 64-bit Eigen matrix
+        Eigen::MatrixXd data(dimsIn, instances);
+        int index = 0;
+        foreach (const Template &t, trainingSet)
+            for (int i=0; i<t.m().rows; i++)
+                data.col(index++) = Eigen::Map<const Eigen::MatrixXf>(t.m().ptr<float>(i), dimsIn, 1).cast<double>();
+
+        PCATransform::train(data);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = cv::Mat(src.m().rows, keep, CV_32FC1);
+
+        for (int i=0; i<src.m().rows; i++) {
+            Eigen::Map<const Eigen::MatrixXf> inMap(src.m().ptr<float>(i), src.m().cols, 1);
+            Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(i), keep, 1);
+            outMap = eVecs.transpose() * (inMap - mean);
+        }
+    }
+};
+
+BR_REGISTER(Transform, RowWisePCATransform)
 
 /*!
  * \ingroup transforms
