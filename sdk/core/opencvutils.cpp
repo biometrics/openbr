@@ -143,6 +143,7 @@ Mat OpenCVUtils::toMatByRow(const QList<Mat> &src)
 
     int rows = 0; foreach (const Mat &m, src) rows += m.rows;
     int cols = src.first().cols;
+    if (cols == 0) qFatal("Columnless matrix!");
     int type = src.first().type();
     Mat dst(rows, cols, type);
 

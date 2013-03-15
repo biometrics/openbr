@@ -145,15 +145,15 @@ protected:
 
         if (keep < 1) {
             // Keep eigenvectors that retain a certain energy percentage.
-            double totalEnergy = allEVals.sum();
+            const double totalEnergy = allEVals.sum();
             if (totalEnergy == 0) {
                 keep = 0;
             } else {
                 double currentEnergy = 0;
-                int i;
-                for (i=1; i<=allEVals.rows(); i++) {
-                    currentEnergy += allEVals(allEVals.rows()-i);
-                    if (currentEnergy / totalEnergy >= keep) break;
+                int i=0;
+                while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
+                    currentEnergy += allEVals(allEVals.rows()-(i+1));
+                    i++;
                 }
                 keep = i - drop;
             }

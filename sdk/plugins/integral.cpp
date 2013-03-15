@@ -159,9 +159,7 @@ class WordWiseTransform : public Transform
 
     void project(const Template &src, Template &dst) const
     {
-        Template reworded;
-        getWords->project(src, reworded);
-        byWord->project(reworded, dst);
+        byWord->project(reword(src), dst);
     }
 
     Template reword(const Template &src) const
@@ -177,7 +175,7 @@ class WordWiseTransform : public Transform
         QVector<int> indicies(numWords, 0);
         for (int i=0; i<src.m().rows; i++) {
             const int word = words.m().at<uchar>(i,0);
-            reworded[word].row(indicies[word]++) = src.m().row(i);
+            src.m().row(i).copyTo(reworded[word].row(indicies[word]++));
         }
         return reworded;
     }
