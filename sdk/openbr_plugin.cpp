@@ -383,6 +383,15 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
         newTemplates = newTemplates.mid(gallery.get<int>("pos", 0), gallery.get<int>("length", -1));
+
+        const int step = gallery.get<int>("step", 1);
+        if (step > 1) {
+            TemplateList downsampled; downsampled.reserve(newTemplates.size()/step);
+            for (int i=0; i<newTemplates.size(); i+=step)
+                downsampled.append(newTemplates[i]);
+            newTemplates = downsampled;
+        }
+
         if (gallery.get<bool>("reduce", false)) newTemplates = newTemplates.reduced();
         const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
