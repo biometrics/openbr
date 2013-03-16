@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <openbr_plugin.h>
 
 using namespace cv;
