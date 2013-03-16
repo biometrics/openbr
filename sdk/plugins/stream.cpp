@@ -29,7 +29,7 @@ public:
 class SharedBuffer
 {
 public:
-    SharedBuffer(int _maxItems = 200) : maxItems(_maxItems) {}
+    SharedBuffer(int _maxItems = 200000) : maxItems(_maxItems) {}
     virtual ~SharedBuffer() {}
 
     virtual void addItem(FrameData * input)=0;
@@ -49,7 +49,7 @@ protected:
 class SingleBuffer : public SharedBuffer
 {
 public:
-    SingleBuffer(unsigned _maxItems = 20) : SharedBuffer(_maxItems) { no_input = false; }
+    SingleBuffer(unsigned _maxItems = 20000) : SharedBuffer(_maxItems) { no_input = false; }
 
     void stoppedInput()
     {
@@ -119,40 +119,61 @@ private:
 class DataSource
 {
 public:
-    DataSource() {}
-    virtual ~DataSource() {}
+    DataSource(int maxFrames=100)
+    {
+        for (int i=0; i < maxFrames;i++)
+        {
+            allFrames.addItem(new FrameData());
+        }
+        allFrames.startInput();
+    }
 
-    virtual FrameData * getNext() = 0;
+    virtual ~DataSource()
+    {
+        allFrames.stoppedInput();
+        while (true)
+        {
+            FrameData * frame = allFrames.getItem();
+            if (frame == NULL)
+                break;
+            delete frame;
+        }
+    }
+
+    FrameData * getFrame()
+    {
+        FrameData * aFrame = allFrames.getItem();
+        aFrame->data.clear();
+        aFrame->sequenceNumber = -1;
+
+        bool res = getNext(*aFrame);
+        if (!res) {
+            allFrames.addItem(aFrame);
+            return NULL;
+        }
+        return aFrame;
+    }
+
+    void returnFrame(FrameData * inputFrame)
+    {
+        allFrames.addItem(inputFrame);
+    }
+
     virtual void close() = 0;
-    virtual bool open(Template & input) = 0;
+    virtual bool open(Template & output) = 0;
     virtual bool isOpen() = 0;
+
+    virtual bool getNext(FrameData & input) = 0;
+
+protected:
+    SingleBuffer allFrames;
 };
 
 // Read a video frame by frame using cv::VideoCapture
 class VideoDataSource : public DataSource
 {
 public:
-    VideoDataSource() {}
-
-    FrameData * getNext()
-    {
-        if (!isOpen())
-            return NULL;
-
-        FrameData * output = new FrameData();
-        output->data.append(Template(basis.file));
-        output->data.last().append(cv::Mat());
-
-        output->sequenceNumber = next_idx;
-        next_idx++;
-
-        bool res = video.read(output->data.last().last());
-        if (!res) {
-            delete output;
-            return NULL;
-        }
-        return output;
-    }
+    VideoDataSource(int maxFrames) : DataSource(maxFrames) {}
 
     bool open(Template &input)
     {
@@ -167,6 +188,24 @@ public:
     void close() { video.release(); }
 
 private:
+    bool getNext(FrameData & output)
+    {
+        if (!isOpen())
+            return false;
+
+        output.data.append(Template(basis.file));
+        output.data.last().append(cv::Mat());
+
+        output.sequenceNumber = next_idx;
+        next_idx++;
+
+        bool res = video.read(output.data.last().last());
+        if (!res) {
+            return false;
+        }
+        return true;
+    }
+
     cv::VideoCapture video;
     Template basis;
     int next_idx;
@@ -177,21 +216,9 @@ private:
 class TemplateDataSource : public DataSource
 {
 public:
-    TemplateDataSource() { current_idx = INT_MAX; }
-
-    FrameData * getNext()
+    TemplateDataSource(int maxFrames) : DataSource(maxFrames)
     {
-        if (!isOpen())
-            return NULL;
-
-        FrameData * output = new FrameData();
-        output->data.append(basis[current_idx]);
-        current_idx++;
-
-        output->sequenceNumber = next_sequence;
-        next_sequence++;
-
-        return output;
+        current_idx = INT_MAX;
     }
 
     bool open(Template &input)
@@ -211,6 +238,20 @@ public:
     }
 
 private:
+    bool getNext(FrameData & output)
+    {
+        if (!isOpen())
+            return false;
+
+        output.data.append(basis[current_idx]);
+        current_idx++;
+
+        output.sequenceNumber = next_sequence;
+        next_sequence++;
+
+        return true;
+    }
+
     Template basis;
     int current_idx;
     int next_sequence;
@@ -232,12 +273,6 @@ public:
         close();
     }
 
-    FrameData * getNext()
-    {
-        if (!isOpen()) return NULL;
-        return actualSource->getNext();
-    }
-
     void close()
     {
         if (actualSource) {
@@ -253,13 +288,13 @@ public:
         bool open_res = false;
         // Input has no matrices? Its probably a video that hasn't been loaded yet
         if (input.empty()) {
-            actualSource = new VideoDataSource();
+            actualSource = new VideoDataSource(0);
             open_res = actualSource->open(input);
             qDebug("created video resource status %d", open_res);
         }
         else {
             // create frame dealer
-            actualSource = new TemplateDataSource();
+            actualSource = new TemplateDataSource(0);
             open_res = actualSource->open(input);
         }
         if (!isOpen()) {
@@ -274,6 +309,11 @@ public:
 
 protected:
     DataSource * actualSource;
+    bool getNext(FrameData & output)
+    {
+        return actualSource->getNext(output);
+    }
+
 };
 
 class ProcessingStage : public QRunnable
@@ -347,7 +387,8 @@ public:
     {
         forever
         {
-            FrameData * aFrame = dataSource.getNext();
+            //FrameData * aFrame = dataSource.getNext();
+            FrameData * aFrame = dataSource.getFrame();
             if (aFrame == NULL)
                 break;
             outputBuffer->addItem(aFrame);
@@ -367,6 +408,7 @@ public:
 private:
     TemplateList collectedOutput;
 public:
+    DataSource * data;
     void run()
     {
         forever
@@ -377,7 +419,8 @@ public:
                 break;
             // Just put the item on collectedOutput
             collectedOutput.append(frame->data);
-            delete frame;
+            // Return the frame to the input frame buffer
+            data->returnFrame(frame);
         }
         this->markStop();
     }
@@ -505,6 +548,7 @@ public:
         }
 
         collectionStage.inputBuffer = sharedBuffers.last();
+        collectionStage.data = &readStage.dataSource;
         collectionStage.stage_id = next_stage_id;
     }
 
