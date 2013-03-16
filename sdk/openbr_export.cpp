@@ -82,6 +82,7 @@ $ br -help
  *  -# Consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a> if you need a program to mount ISO images.
  *  -# You will have to register with Microsoft after installation, but it's free.
  *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
+ *  -# Download and install <a href="http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx">Windows 8 SDK</a>.
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
  *  -# During installation setup select "add CMake to PATH".
  * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
@@ -100,19 +101,8 @@ $ br -help
  *  $ nmake install
  *  $ nmake clean
  *  \endcode
- * -# <a href="http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and unzip.
- *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
+ * -# <a href="http://releases.qt-project.org/digia/5.0.1/backups/2013-01-18-412/qt-windows-opensource-5.0.1-msvc2012_64-x86_64-offline-2013-01-18-412.exe">Download Qt 5.0.1</a> and install.
  *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install.
- *  -# From the VS2012 x64 Cross Tools Command Prompt:
- *  \code
- *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource -confirm-license -nomake examples -nomake tests
- *  $ nmake
- *  $ nmake install
- *  $ cd ..
- *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
- *  \endcode
- *  -# nmake will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
  *  \code
@@ -128,7 +118,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/Qt5.0.1/5.0.1/msvc2012_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
