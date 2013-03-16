@@ -28,6 +28,10 @@
 #include <iostream>
 #include <openbr_plugin.h>
 
+#ifndef BR_EMBEDDED
+#include <QApplication>
+#endif
+
 #include "version.h"
 #include "core/bee.h"
 #include "core/common.h"
@@ -797,7 +801,12 @@ void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
         Globals->init(File());
     }
 
+#ifndef BR_EMBEDDED
+    Globals->coreApplication = QSharedPointer<QCoreApplication>(new QApplication(argc, argv));
+#else
     Globals->coreApplication = QSharedPointer<QCoreApplication>(new QCoreApplication(argc, argv));
+#endif
+
     initializeQt(sdkPath);
 
 #ifdef BR_DISTRIBUTED
@@ -890,6 +899,10 @@ QString br::Context::scratchPath()
 
 void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    // Something about this method is not thread safe, and will lead to crashes if qDebug
+    // statements are called from multiple threads. Unless we lock the whole thing...
+    static QMutex general_lock;
+    QMutexLocker locker(&general_lock);
     QString txt;
     switch (type) {
       case QtDebugMsg:

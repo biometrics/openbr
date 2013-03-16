@@ -86,51 +86,6 @@ static void incrementStep()
 }
 
 /*!
- * \brief A MetaTransform that aggregates some sub-transforms
- */
-class BR_EXPORT CompositeTransform : public TimeVaryingTransform
-{
-    Q_OBJECT
-
-public:
-    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
-        _project(src, dst);
-    }
-
-    virtual void project(const TemplateList &src, TemplateList &dst) const
-    {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
-        _project(src, dst);
-    }
-
-    bool timeVarying() const { return isTimeVarying; }
-
-    void init()
-    {
-        isTimeVarying = false;
-        foreach (const br::Transform *transform, transforms) {
-            if (transform->timeVarying()) {
-                isTimeVarying = true;
-                break;
-            }
-        }
-    }
-
-protected:
-    bool isTimeVarying;
-
-    virtual void _project(const Template & src, Template & dst) const = 0;
-    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
-
-    CompositeTransform() : TimeVaryingTransform(false) {}
-};
-
-/*!
  * \ingroup Transforms
  * \brief Transforms in series.
  * \author Josh Klontz \cite jklontz
@@ -281,6 +236,38 @@ class ExpandTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, ExpandTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief It's like the opposite of ExpandTransform, but not really
+ * \author Charles Otto \cite caotto
+ *
+ * Given a set of templatelists as input, concatenate them onto a single Template
+ */
+class ContractTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        //dst = Expanded(src);
+        Template out;
+
+        foreach (const Template & t, src) {
+            out.merge(t);
+        }
+        dst.clear();
+        dst.append(out);
+    }
+
+    virtual void project(const Template & src, Template & dst) const
+    {
+        qFatal("this has gone bad");
+        (void) src; (void) dst;
+    }
+};
+
+BR_REGISTER(Transform, ContractTransform)
 
 /*!
  * \ingroup transforms
@@ -626,6 +613,15 @@ public:
     // Process the single elemnt templates in parallel if parallelism is enabled.
     void project(const TemplateList &src, TemplateList &dst) const
     {
+        // Little ugly, but if we own a timeVaryingTransform and this gets called
+        // cast off the const modifier and use projectUpdate. This allows us to
+        // act as a single point of entry.
+        if (transform->timeVarying())
+        {
+            DistributeTemplateTransform * non_const = (DistributeTemplateTransform *) this;
+            non_const->projectUpdate(src,dst);
+            return;
+        }
         // Pre-allocate output for each template
         QList<TemplateList> output_buffer;
         output_buffer.reserve(src.size());
@@ -653,6 +649,15 @@ public:
             Globals->trackFutures(futures);
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
+    }
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (!transform->timeVarying()) {
+            this->project(src, dst);
+            return;
+        }
+        this->transform->projectUpdate(src, dst);
     }
 
 
