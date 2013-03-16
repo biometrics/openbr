@@ -21,7 +21,9 @@ class SentenceTransform : public UntrainableMetaTransform
         for (int i=0; i<src.size(); i++) {
             const Mat &m = src[i];
             if (!m.data) continue;
-            stream << i << m.rows << m.cols;
+            stream.writeRawData((const char*)&i, 4);
+            stream.writeRawData((const char*)&m.rows, 4);
+            stream.writeRawData((const char*)&m.cols, 4);
             stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
         }
         dst.file = src.file;
@@ -42,39 +44,44 @@ class SentenceSimilarityDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
-        const int aSize = a.m().cols;
-        const int bSize = b.m().cols;
-        uchar *aData = a.m().data;
-        uchar *bData = b.m().data;
-        const uchar *aEnd = aData + aSize;
-        const uchar *bEnd = bData + bSize;
+        uchar *aBuffer = a.m().data;
+        uchar *bBuffer = b.m().data;
+        const uchar *aEnd = aBuffer + a.m().cols;
+        const uchar *bEnd = bBuffer + b.m().cols;
 
         int32_t aWord, bWord, aRows, bRows, aColumns, bColumns;
+        float *aData, *bData;
         aWord = aRows = aColumns = -2;
         bWord = bRows = bColumns = -1;
+        aData = bData = NULL;
+
         float distance = 0;
         int comparisons = 0;
-        while ((aData != aEnd) && (bData != bEnd)) {
+        while (true) {
             if (aWord < bWord) {
-                aWord = *reinterpret_cast<int32_t*>(aData);
-                aRows = *reinterpret_cast<int32_t*>(aData+4);
-                aColumns = *reinterpret_cast<int32_t*>(aData+8);
-                aData += 12;
+                if (aBuffer == aEnd) return distance == 0 ? -std::numeric_limits<float>::max() : comparisons / distance;
+                aWord = *reinterpret_cast<int32_t*>(aBuffer);
+                aRows = *reinterpret_cast<int32_t*>(aBuffer+4);
+                aColumns = *reinterpret_cast<int32_t*>(aBuffer+8);
+                aData = reinterpret_cast<float*>(aBuffer+12);
+                aBuffer += 12 + 4*aRows*aColumns;
             } else if (bWord < aWord) {
-                bWord = *reinterpret_cast<int32_t*>(bData);
-                bRows = *reinterpret_cast<int32_t*>(bData+4);
-                bColumns = *reinterpret_cast<int32_t*>(bData+8);
-                bData += 12;
+                if (bBuffer == bEnd) return comparisons == 0 ? -std::numeric_limits<float>::max() : comparisons / distance;
+                bWord = *reinterpret_cast<int32_t*>(bBuffer);
+                bRows = *reinterpret_cast<int32_t*>(bBuffer+4);
+                bColumns = *reinterpret_cast<int32_t*>(bBuffer+8);
+                bData = reinterpret_cast<float*>(bBuffer+12);
+                bBuffer += 12 + 4*bRows*bColumns;
             } else {
                 for (int i=0; i<aRows; i++)
                     for (int j=0; j<bRows; j++)
                         for (int k=0; k<aColumns; k++)
-                            distance += *reinterpret_cast<float*>(aData+4*k) * *reinterpret_cast<float*>(bData+4*k);
-                comparisons += aRows * bRows;
+                            distance += pow(aBuffer[i*aColumns+k] - bBuffer[j*bColumns+k], 2.f);
+                comparisons += aRows * bRows * aColumns;
+                aWord = -2;
+                bWord = -1;
             }
         }
-
-        return comparisons / distance;
     }
 };
 

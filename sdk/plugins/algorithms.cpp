@@ -43,6 +43,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
+        Globals->abbreviations.insert("ImageRetrieval", "Open+(RG+MAdd(0.5))/(Cvt(Gray)+Gradient+Bin(0,360,8,true))+Merge+Integral+IntegralSampler+CvtFloat+WordWise(RowWisePCA(8)+RowWiseMeanCenter+Binarize,RowWisePCA)+Sentence:SentenceSimilarity");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
@@ -50,7 +51,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("SmallSIFT", "Open+LimitSize(512)+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("SmallSURF", "Open+LimitSize(512)+KeyPointDetector(SURF)+KeyPointDescriptor(SURF):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("ColorHist", "Open+LimitSize(512)!EnsureChannels(3)+SplitChannels+Hist(256,0,8)+Cat+Normalize(L1):L2");
-        Globals->abbreviations.insert("IHH", "Open+(RG+MAdd(0.5))/(Cvt(Gray)+Gradient+Bin(0,360,8,true))+Merge+Integral+IntegralSampler+CvtFloat+WordWise(RowWisePCA(8)+RowWiseMeanCenter+Binarize,RowWisePCA)+Sentence:SentenceSimilarity");
 
         // Hash
         Globals->abbreviations.insert("FileName", "Name+Identity:Identical");

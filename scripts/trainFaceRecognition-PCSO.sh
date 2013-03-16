@@ -4,10 +4,10 @@ if [ ! -f trainFaceRecognition-PCSO.sh ]; then
   exit
 fi
 
-#rm -f ../models/features/FaceRecognitionRegistration
-#rm -f ../models/features/FaceRecognitionExtraction
-#rm -f ../models/features/FaceRecognitionEmbedding
-#rm -f ../models/features/FaceRecognitionQuantization
-rm -f ../models/algorithms/FaceRecognition
+#rm -f ../share/openbr/models/features/FaceRecognitionRegistration
+#rm -f ../share/openbr/models/features/FaceRecognitionExtraction
+#rm -f ../share/openbr/models/features/FaceRecognitionEmbedding
+#rm -f ../share/openbr/models/features/FaceRecognitionQuantization
+rm -f ../share/openbr/models/algorithms/FaceRecognition
 
 br -algorithm FaceRecognition -path ../data/PCSO/Images -train "../data/PCSO/PCSO.db[query='SELECT File,'S'||PersonID,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
