@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openbr.h>
+#include <openbr_plugin.h>
+#include <QtConcurrent>
 
 /*!
  * \defgroup cli Command Line Interface
@@ -92,9 +94,9 @@ static void check(bool condition, const char *error_message)
     }
 }
 
-int main(int argc, char *argv[])
+
+int fake_main(int argc, char *argv[])
 {
-    br_initialize(argc, argv);
 
     // Remove program name
     argv = &argv[1];
@@ -212,6 +214,22 @@ int main(int argc, char *argv[])
         }
     }
 
-    br_finalize();
+    QCoreApplication::exit();
     return 0;
 }
+
+
+int main(int argc, char *argv[])
+{
+    br_initialize(argc, argv);
+
+    // Run main the main process in another thread so that this one can
+    // sit in exec
+    QtConcurrent::run(fake_main, argc, argv);
+
+    QCoreApplication::exec();
+
+    br_finalize();
+
+}
+
