@@ -109,6 +109,95 @@ class PackTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, PackTransform)
 
+/*!
+ * \ingroup distances
+ * \brief Product quantization distance.
+ * \author Josh Klontz \cite jklontz
+ */
+class ProductQuantizationDistance : public Distance
+{
+    Q_OBJECT
+    friend class ProductQuantizationTransform;
+    static QList<Mat> luts;
+
+    float compare(const Template &a, const Template &b) const
+    {
+        float distance = 0;
+        for (int i=0; i<a.m().cols; i++)
+            distance += pow(luts[i].at<float>(a.m().at<uchar>(0,i), b.m().at<uchar>(0,i)),2);
+        return sqrt(distance);
+    }
+};
+
+QList<Mat> ProductQuantizationDistance::luts;
+
+BR_REGISTER(Distance, ProductQuantizationDistance)
+
+/*!
+ * \ingroup transforms
+ * \brief Product quantization \cite jegou11
+ * \author Josh Klonyz \cite jklontz
+ */
+class ProductQuantizationTransform : public Transform
+{
+    Q_OBJECT
+    static int counter;
+    int index;
+    Mat centers, lut;
+
+public:
+    ProductQuantizationTransform()
+    {
+        index = counter++;
+        ProductQuantizationDistance::luts.append(Mat());
+    }
+
+private:
+    void train(const TemplateList &src)
+    {
+        Mat data = OpenCVUtils::toMat(src.data());
+        Mat labels;
+        kmeans(data, 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
+
+        lut = Mat(256, 256, CV_32FC1);
+        for (int i=0; i<256; i++)
+            for (int j=0; j<256; j++)
+                lut.at<float>(i,j) = norm(centers.row(i), centers.row(j), NORM_L2);
+        ProductQuantizationDistance::luts[index] = lut;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        uchar bestIndex = -1;
+        double bestDistance = std::numeric_limits<double>::max();
+        for (uchar i=0; i<256; i++) {
+            double distance = norm(src, centers.row(i), NORM_L2);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = i;
+            }
+        }
+        assert(bestIndex != -1);
+        dst = Mat(1, 1, CV_8UC1);
+        dst.m().at<uchar>(0,0) = bestIndex;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << centers << lut;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> centers >> lut;
+        ProductQuantizationDistance::luts[index] = lut;
+    }
+};
+
+int ProductQuantizationTransform::counter = 0;
+
+BR_REGISTER(Transform, ProductQuantizationTransform)
+
 } // namespace br
 
 #include "quantize.moc"
