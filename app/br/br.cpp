@@ -14,12 +14,11 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QtConcurrent>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <openbr.h>
-#include <openbr_plugin.h>
-#include <QtConcurrent>
 
 /*!
  * \defgroup cli Command Line Interface
@@ -94,10 +93,8 @@ static void check(bool condition, const char *error_message)
     }
 }
 
-
 int fake_main(int argc, char *argv[])
 {
-
     // Remove program name
     argv = &argv[1];
     argc--;
@@ -218,18 +215,15 @@ int fake_main(int argc, char *argv[])
     return 0;
 }
 
-
 int main(int argc, char *argv[])
 {
     br_initialize(argc, argv);
 
-    // Run main the main process in another thread so that this one can
-    // sit in exec
+    // Do argument execution in another thread
     QtConcurrent::run(fake_main, argc, argv);
 
+    // So this main thread can run an event loop
     QCoreApplication::exec();
 
     br_finalize();
-
 }
-

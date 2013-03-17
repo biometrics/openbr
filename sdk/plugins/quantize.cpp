@@ -109,94 +109,79 @@ class PackTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, PackTransform)
 
-/*!
- * \ingroup distances
- * \brief Product quantization distance.
- * \author Josh Klontz \cite jklontz
- */
-class ProductQuantizationDistance : public Distance
-{
-    Q_OBJECT
-    friend class ProductQuantizationTransform;
-    static QList<Mat> luts;
-
-    float compare(const Template &a, const Template &b) const
-    {
-        float distance = 0;
-        for (int i=0; i<a.m().cols; i++)
-            distance += pow(luts[i].at<float>(a.m().at<uchar>(0,i), b.m().at<uchar>(0,i)),2);
-        return sqrt(distance);
-    }
-};
-
-QList<Mat> ProductQuantizationDistance::luts;
-
-BR_REGISTER(Distance, ProductQuantizationDistance)
+QVector<Mat> BayesianProductQuantizationLUTs;
 
 /*!
  * \ingroup transforms
- * \brief Product quantization \cite jegou11
- * \author Josh Klonyz \cite jklontz
+ * \brief A bayesian extension to product quantization \cite jegou11
+ * \author Josh Klontz \cite jklontz
  */
-class ProductQuantizationTransform : public Transform
+class BayesianProductQuantizationTransform : public Transform
 {
     Q_OBJECT
-    static int counter;
+    Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
+    BR_PROPERTY(int, n, 3)
+
     int index;
-    Mat centers, lut;
+    QList<Mat> centers;
 
 public:
-    ProductQuantizationTransform()
+    BayesianProductQuantizationTransform()
     {
-        index = counter++;
-        ProductQuantizationDistance::luts.append(Mat());
+        index = BayesianProductQuantizationLUTs.size();
+        BayesianProductQuantizationLUTs.append(Mat());
     }
 
 private:
     void train(const TemplateList &src)
     {
-        Mat data = OpenCVUtils::toMat(src.data());
-        Mat labels;
-        kmeans(data, 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
+        Mat data = OpenCVUtils::toMatByRow(src.data());
+        if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
 
-        lut = Mat(256, 256, CV_32FC1);
-        for (int i=0; i<256; i++)
+        Mat &lut = BayesianProductQuantizationLUTs[index];
+        lut = Mat(data.cols/n, 256*256, CV_32FC1);
+
+        for (int i=0; i<data.cols/n; i++) {
+            Mat labels, center;
+            kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
+
             for (int j=0; j<256; j++)
-                lut.at<float>(i,j) = norm(centers.row(i), centers.row(j), NORM_L2);
-        ProductQuantizationDistance::luts[index] = lut;
+                for (int k=0; k<256; k++)
+                    lut.at<float>(i,j*256+k) = norm(center.row(k), center.row(k), NORM_L2);
+            centers.append(center);
+        }
     }
 
     void project(const Template &src, Template &dst) const
     {
-        uchar bestIndex = -1;
-        double bestDistance = std::numeric_limits<double>::max();
-        for (uchar i=0; i<256; i++) {
-            double distance = norm(src, centers.row(i), NORM_L2);
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                bestIndex = i;
+        dst = Mat(1, src.m().cols/n, CV_8UC1);
+        for (int i=0; i<src.m().cols/n; i++) {
+            uchar bestIndex = -1;
+            double bestDistance = std::numeric_limits<double>::max();
+            Mat m = src.m().colRange(i*n, (i+1)*n);
+            for (uchar i=0; i<256; i++) {
+                double distance = norm(m, centers[index].row(i), NORM_L2);
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestIndex = i;
+                }
             }
+            dst.m().at<uchar>(0,i) = bestIndex;
         }
-        assert(bestIndex != -1);
-        dst = Mat(1, 1, CV_8UC1);
-        dst.m().at<uchar>(0,0) = bestIndex;
     }
 
     void store(QDataStream &stream) const
     {
-        stream << centers << lut;
+        stream << centers << BayesianProductQuantizationLUTs[index];
     }
 
     void load(QDataStream &stream)
     {
-        stream >> centers >> lut;
-        ProductQuantizationDistance::luts[index] = lut;
+        stream >> centers >> BayesianProductQuantizationLUTs[index];
     }
 };
 
-int ProductQuantizationTransform::counter = 0;
-
-BR_REGISTER(Transform, ProductQuantizationTransform)
+BR_REGISTER(Transform, BayesianProductQuantizationTransform)
 
 } // namespace br
 

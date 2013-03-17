@@ -901,8 +901,9 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 {
     // Something about this method is not thread safe, and will lead to crashes if qDebug
     // statements are called from multiple threads. Unless we lock the whole thing...
-    static QMutex general_lock;
-    QMutexLocker locker(&general_lock);
+    static QMutex generalLock;
+    QMutexLocker locker(&generalLock);
+
     QString txt;
     switch (type) {
       case QtDebugMsg:
@@ -924,11 +925,8 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
     Globals->mostRecentMessage = txt;
 
     if (Globals->logFile.isWritable()) {
-        static QMutex logLock;
-        logLock.lock();
         Globals->logFile.write(qPrintable(txt));
         Globals->logFile.flush();
-        logLock.unlock();
     }
 
     if (type == QtFatalMsg) {
@@ -937,8 +935,6 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         Globals->finalize();
         abort();
     }
-
-    QCoreApplication::processEvents(); // Used to retrieve messages before event loop starts
 }
 
 Context *br::Globals = NULL;

@@ -28,7 +28,7 @@ BR_REGISTER(Transform, IntegralTransform)
 
 /*!
  * \ingroup transforms
- * \brief Sliding window feature extraction from a multi-channel intergral image.
+ * \brief Sliding window feature extraction from a multi-channel integral image.
  * \author Josh Klontz \cite jklontz
  */
 class IntegralSamplerTransform : public UntrainableTransform
@@ -55,11 +55,10 @@ class IntegralSamplerTransform : public UntrainableTransform
         int descriptors = 0;
         int currentSize = min(m.rows, m.cols)-1;
         for (int scale=0; scale<scales; scale++) {
-            descriptors += int(1+(m.rows-currentSize)/(currentSize*stepFactor)) *
-                           int(1+(m.cols-currentSize)/(currentSize*stepFactor));
+            descriptors += (1+(m.rows-currentSize)/int(currentSize*stepFactor)) *
+                           (1+(m.cols-currentSize)/int(currentSize*stepFactor));
             currentSize /= scaleFactor;
-            if (currentSize < minSize)
-                break;
+            if (currentSize < minSize) break;
         }
         Mat n(descriptors, channels, CV_32FC1);
 
@@ -81,9 +80,12 @@ class IntegralSamplerTransform : public UntrainableTransform
                 }
             }
             currentSize /= scaleFactor;
-            if (currentSize < minSize)
-                break;
+            if (currentSize < minSize) break;
         }
+
+        if (descriptors != index)
+            qFatal("Allocated %d descriptors but computed %d.", descriptors, index);
+
         dst.m() = n;
     }
 };
