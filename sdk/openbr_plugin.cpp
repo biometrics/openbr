@@ -869,7 +869,10 @@ void br::Context::initializeQt(QString sdkPath)
 
 void br::Context::finalize()
 {
-    // Trigger registerd finalizers
+    // Is anyone still running?
+    QThreadPool::globalInstance()->waitForDone();
+
+    // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
         initializer->finalize();
