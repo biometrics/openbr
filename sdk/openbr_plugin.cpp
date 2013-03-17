@@ -796,14 +796,18 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 
 void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
 {
-    if (Globals == NULL) {
-        // QApplication should be initialzed before anything else
+    // QApplication should be initialized before anything else.
+    // Since we can't ensure that it gets deleted last, we never delete it.
+    static QCoreApplication *application = NULL;
+    if (application == NULL) {
 #ifndef BR_EMBEDDED
-        static QApplication application(argc, argv);
+        application = new QApplication(argc, argv);
 #else
-        static QCoreApplication coreApplication(argc, argv);
+        application = new QCoreApplication(argc, argv);
 #endif
+    }
 
+    if (Globals == NULL) {
         Globals = new Context();
         Globals->init(File());
     }
