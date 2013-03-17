@@ -32,7 +32,6 @@ class AlgorithmsInitializer : public Initializer
     {
         // Face
         Globals->abbreviations.insert("FaceRecognition", "FaceDetection!<FaceRecognitionRegistration>!<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>:MatchProbability(ByteL1)");
-        Globals->abbreviations.insert("FaceRecognitionNoTraining", "Open+Cascade(FrontalFace)+ASEFEyes+Affine(256,256,0.25,0.35)+(RG+MAdd(0.5))/(Cvt(Gray)+Gradient+Bin(0,360,8,true))+Merge+Integral+IntegralSampler+CvtFloat:L2");
         Globals->abbreviations.insert("GenderClassification", "FaceDetection!<FaceClassificationRegistration>!<FaceClassificationExtraction>+<GenderClassifier>+Discard");
         Globals->abbreviations.insert("AgeRegression", "FaceDetection!<FaceClassificationRegistration>!<FaceClassificationExtraction>+<AgeRegressor>+Discard");
         Globals->abbreviations.insert("FaceQuality", "Open!Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+ImageQuality+Cvt(Gray)+DFFS+Discard");
@@ -43,7 +42,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
-        Globals->abbreviations.insert("ImageRetrieval", "Open+(RG+MAdd(0.5))/(Cvt(Gray)+Gradient+Bin(0,360,8,true))+Merge+Integral+IntegralSampler+CvtFloat+WordWise(RowWisePCA(8)+RowWiseMeanCenter+Binarize,RowWisePCA)+Sentence:SentenceSimilarity");
+        Globals->abbreviations.insert("FaceRecognitionHoG", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+Gradient+Bin(0,360,8,true)+Merge+Integral+IntegralSampler+ProductQuantization:ProductQuantization");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
@@ -51,6 +50,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("SmallSIFT", "Open+LimitSize(512)+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("SmallSURF", "Open+LimitSize(512)+KeyPointDetector(SURF)+KeyPointDescriptor(SURF):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("ColorHist", "Open+LimitSize(512)!EnsureChannels(3)+SplitChannels+Hist(256,0,8)+Cat+Normalize(L1):L2");
+        Globals->abbreviations.insert("ImageRetrieval", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(88,88,0.25,0.35)+Gradient+Bin(0,360,8,true)+Merge+Integral+IntegralSampler+WordWise(RowWisePCA(8)+RowWiseMeanCenter+Binarize,RowWisePCA)+Sentence:SentenceSimilarity");
 
         // Hash
         Globals->abbreviations.insert("FileName", "Name+Identity:Identical");

@@ -38,9 +38,9 @@ class IntegralSamplerTransform : public UntrainableTransform
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(float stepFactor READ get_stepFactor WRITE set_stepFactor RESET reset_stepFactor STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
-    BR_PROPERTY(int, scales, 4)
+    BR_PROPERTY(int, scales, 5)
     BR_PROPERTY(float, scaleFactor, 1.5)
-    BR_PROPERTY(float, stepFactor, 0.25)
+    BR_PROPERTY(float, stepFactor, 0.75)
     BR_PROPERTY(int, minSize, 8)
 
     void project(const Template &src, Template &dst) const
@@ -53,21 +53,23 @@ class IntegralSamplerTransform : public UntrainableTransform
         const int rowStep = channels * m.cols;
 
         int descriptors = 0;
-        int currentSize = min(m.rows, m.cols)-1;
+        float idealSize = min(m.rows, m.cols)-1;
         for (int scale=0; scale<scales; scale++) {
-            descriptors += (1+(m.rows-currentSize)/int(currentSize*stepFactor)) *
-                           (1+(m.cols-currentSize)/int(currentSize*stepFactor));
-            currentSize /= scaleFactor;
-            if (currentSize < minSize) break;
+            const int currentSize(idealSize);
+            descriptors += (1+(m.rows-currentSize-1)/int(idealSize*stepFactor)) *
+                           (1+(m.cols-currentSize-1)/int(idealSize*stepFactor));
+            idealSize /= scaleFactor;
+            if (idealSize < minSize) break;
         }
         Mat n(descriptors, channels, CV_32FC1);
 
         const qint32 *dataIn = (qint32*)m.data;
         float *dataOut = (float*)n.data;
-        currentSize = min(m.rows, m.cols)-1;
+        idealSize = min(m.rows, m.cols)-1;
         int index = 0;
         for (int scale=0; scale<scales; scale++) {
-            const int currentStep = currentSize * stepFactor;
+            const int currentSize(idealSize);
+            const int currentStep(idealSize*stepFactor);
             for (int i=currentSize; i<m.rows; i+=currentStep) {
                 for (int j=currentSize; j<m.cols; j+=currentStep) {
                     InputDescriptor a(dataIn+((i-currentSize)*rowStep+(j-currentSize)*channels), channels, 1);
@@ -79,8 +81,8 @@ class IntegralSamplerTransform : public UntrainableTransform
                     index++;
                 }
             }
-            currentSize /= scaleFactor;
-            if (currentSize < minSize) break;
+            idealSize /= scaleFactor;
+            if (idealSize < minSize) break;
         }
 
         if (descriptors != index)
