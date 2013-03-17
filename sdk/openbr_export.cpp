@@ -137,7 +137,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-msvc2012" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
@@ -216,7 +216,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-mingw64" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
@@ -267,7 +267,7 @@ $ br -help
  * $ cd build
  * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -279,12 +279,12 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
  *  -# Select "Run CMake" then "Done".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package
  * \endcode
- * -# Build OpenBR documentation!
+ * -# (Optional) Build OpenBR documentation!
  *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a> and install:
  *  \code
  *  $ cd ~/Downloads
@@ -357,7 +357,7 @@ $ br -help
  * $ cd build
  * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -369,7 +369,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
  *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package
@@ -424,7 +424,7 @@ $ br -help
  * $ cd build-icc
  * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -436,7 +436,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
  *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package
