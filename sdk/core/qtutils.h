@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFuture>
 #include <QMap>
 #include <QString>
 #include <QStringList>
@@ -62,6 +63,14 @@ namespace QtUtils
     bool runRScript(const QString &file);
     bool runDot(const QString &file);
     void showFile(const QString &file);
+
+    /**** Thread Utilities ****/
+    template <typename T>
+    static inline void waitForFinished(const QList< QFuture<T> > &futures)
+    {
+        foreach (QFuture<T> future, futures)
+            future.waitForFinished();
+    }
 }
 
 #endif // __QTUTILS_H

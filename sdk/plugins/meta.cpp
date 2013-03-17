@@ -285,12 +285,11 @@ class ForkTransform : public CompositeTransform
     void train(const TemplateList &data)
     {
         QList< QFuture<void> > futures;
-        const bool threaded = Globals->parallelism && (transforms.size() > 1);
         for (int i=0; i<transforms.size(); i++) {
-            if (threaded) futures.append(QtConcurrent::run(_train, transforms[i], &data));
-            else                                           _train (transforms[i], &data);
+            if (Globals->parallelism) futures.append(QtConcurrent::run(_train, transforms[i], &data));
+            else                                                       _train (transforms[i], &data);
         }
-        if (threaded) Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
     }
 
     void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
@@ -644,9 +643,7 @@ public:
             else
                 _projectList(transform, &input_buffer[i], &output_buffer[i]);
         }
-
-        if (Globals->parallelism)
-            Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
     }

@@ -22,6 +22,7 @@
 
 #include "core/common.h"
 #include "core/opencvutils.h"
+#include "core/qtutils.h"
 
 using namespace cv;
 
@@ -119,9 +120,8 @@ private:
             bv.push_back(Mat(1, dims, CV_64FC1));
         }
 
-        QList< QFuture<void> > futures; futures.reserve(dims);
+        QList< QFuture<void> > futures;
         const bool parallel = (data.size() > 1000) && Globals->parallelism;
-
         for (size_t c = 0; c < mv.size(); c++) {
             for (int i=0; i<dims; i++)
                 if (parallel) futures.append(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
@@ -129,8 +129,7 @@ private:
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
-
-        if (parallel) Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
 
         merge(av, a);
         merge(bv, b);

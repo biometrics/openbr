@@ -1,6 +1,8 @@
 #include <QtConcurrentRun>
 #include <openbr_plugin.h>
 
+#include "core/qtutils.h"
+
 namespace br
 {
 
@@ -41,9 +43,9 @@ class CrossValidateTransform : public MetaTransform
                 if (partitions[j] == i)
                     partitionedData.removeAt(j);
             if (Globals->parallelism) futures.append(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
-            else                      transforms[i]->train(partitionedData);
+            else                                                       transforms[i]->train(partitionedData);
         }
-        Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
     }
 
     void project(const Template &src, Template &dst) const

@@ -41,27 +41,30 @@ int main(int argc, char *argv[])
     br_set_property("algorithm", "FaceRecognition");
 
     // Equivalent to 'Globals->path = "../data/MEDS/img/";' in C++ API
-    br_set_property("path", "../data/MEDS/img/");
+    //br_set_property("path", "../data/MEDS/img/");
 
     // Enroll galleries, don't re-enroll if they already exist (cache)
-    br_enroll("../data/MEDS/sigset/MEDS_frontal_target.xml", "target.gal[cache]");
-    br_enroll("../data/MEDS/sigset/MEDS_frontal_query.xml", "query.gal[cache]");
+    //br_enroll("../data/MEDS/sigset/MEDS_frontal_target.xml", "target.gal[cache]");
+    //br_enroll("../data/MEDS/sigset/MEDS_frontal_query.xml", "query.gal[cache]");
 
     // Compare galleries and store result in a binary similarity matrix
     br_compare("target.gal", "query.gal", "FaceRecognition_MEDS.mtx");
 
     // Make a ground truth "mask" matrix from the sigsets.
-    br_make_mask("../data/MEDS/sigset/MEDS_frontal_target.xml", "../data/MEDS/sigset/MEDS_frontal_query.xml", "MEDS.mask");
+    //br_make_mask("../data/MEDS/sigset/MEDS_frontal_target.xml", "../data/MEDS/sigset/MEDS_frontal_query.xml", "MEDS.mask");
 
     // Evaluate the performance of OpenBR's FaceRecognition and a COTS face recognition system.
-    br_eval("FaceRecognition_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/FaceRecognition_MEDS.csv");
-    br_eval("../data/MEDS/simmat/COTS_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/COTS_MEDS.csv");
+    //br_eval("FaceRecognition_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/FaceRecognition_MEDS.csv");
+    //br_eval("../data/MEDS/simmat/COTS_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/COTS_MEDS.csv");
 
     // The '_' character has special significance and is used to populate plot legends.
     // Requires R installation, see documentation of br_plot for details.
     const char *files[2];
     files[0] = "Algorithm_Dataset/FaceRecognition_MEDS.csv";
     files[1] = "Algorithm_Dataset/COTS_MEDS.csv";
+    br_plot(2, files, "MEDS", true);
+    br_plot(2, files, "MEDS", true);
+    br_plot(2, files, "MEDS", true);
     br_plot(2, files, "MEDS", true);
 
     br_finalize();

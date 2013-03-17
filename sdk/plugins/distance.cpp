@@ -19,6 +19,7 @@
 #include <openbr_plugin.h>
 
 #include "core/distance_sse.h"
+#include "core/qtutils.h"
 
 using namespace cv;
 
@@ -158,7 +159,7 @@ class PipeDistance : public Distance
         foreach (br::Distance *distance, distances)
             if (Globals->parallelism) futures.append(QtConcurrent::run(distance, &Distance::train, data));
             else                      distance->train(data);
-        Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
     }
 
     float compare(const Template &a, const Template &b) const

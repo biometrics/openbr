@@ -781,14 +781,6 @@ int br::Context::timeRemaining() const
     return std::max(0, int((1 - p) / p * startTime.elapsed())) / 1000;
 }
 
-void br::Context::trackFutures(QList< QFuture<void> > &futures)
-{
-    foreach (QFuture<void> future, futures) {
-        QCoreApplication::processEvents();
-        future.waitForFinished();
-    }
-}
-
 bool br::Context::checkSDKPath(const QString &sdkPath)
 {
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
@@ -1171,13 +1163,11 @@ private:
             templatesList[i] = Downsample(templatesList[i], transforms[i]);
 
         QList< QFuture<void> > futures;
-        const bool threaded = Globals->parallelism && (templatesList.size() > 1);
         for (int i=0; i<templatesList.size(); i++) {
-            if (threaded) futures.append(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-            else                                           _train (transforms[i], &templatesList[i]);
+            if (Globals->parallelism) futures.append(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
+            else                                                       _train (transforms[i], &templatesList[i]);
         }
-
-        if (threaded) Globals->trackFutures(futures);
+        QtUtils::waitForFinished(futures);
     }
 
     void project(const Template &src, Template &dst) const
@@ -1317,11 +1307,10 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     for (int i=0; i<dst.size(); i++) src.append(Template());
 
     QList< QFuture<void> > futures;
-    if (Globals->parallelism) futures.reserve(dst.size());
     for (int i=0; i<dst.size(); i++)
         if (Globals->parallelism) futures.append(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-        else                                                      _backProject (this, &dst[i], &src[i]);
-    if (Globals->parallelism) Globals->trackFutures(futures);
+        else                                                       _backProject (this, &dst[i], &src[i]);
+    QtUtils::waitForFinished(futures);
 }
 
 /* Distance - public methods */
@@ -1358,7 +1347,7 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
         if (Globals->parallelism) futures.append(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
         else                                                                        compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
-    if (Globals->parallelism) Globals->trackFutures(futures);
+    QtUtils::waitForFinished(futures);
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

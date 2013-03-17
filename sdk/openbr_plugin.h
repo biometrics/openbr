@@ -622,12 +622,6 @@ public:
     int timeRemaining() const;
 
     /*!
-     * \brief Continues to print the progress of the futures until they are completed.
-     * \param futures The list of futures to track.
-     */
-    void trackFutures(QList< QFuture<void> > &futures);
-
-    /*!
      * \brief Returns \c true if \em sdkPath is valid, \c false otherwise.
      * \param sdkPath The path to <tt>share/openbr/openbr.bib</tt>
      */
