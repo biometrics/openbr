@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -120,16 +121,16 @@ private:
             bv.push_back(Mat(1, dims, CV_64FC1));
         }
 
-        QList< QFuture<void> > futures;
+        QFutureSynchronizer<void> futures;
         const bool parallel = (data.size() > 1000) && Globals->parallelism;
         for (size_t c = 0; c < mv.size(); c++) {
             for (int i=0; i<dims; i++)
-                if (parallel) futures.append(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
-                else                                           _train (method, mv[c], &av[c], &bv[c], i);
+                if (parallel) futures.addFuture(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
+                else                                              _train (method, mv[c], &av[c], &bv[c], i);
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
-        QtUtils::waitForFinished(futures);
+        futures.waitForFinished();
 
         merge(av, a);
         merge(bv, b);

@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QRect>
@@ -1162,12 +1163,12 @@ private:
         for (int i=0; i<templatesList.size(); i++)
             templatesList[i] = Downsample(templatesList[i], transforms[i]);
 
-        QList< QFuture<void> > futures;
+        QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++) {
-            if (Globals->parallelism) futures.append(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-            else                                                       _train (transforms[i], &templatesList[i]);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
+            else                                                          _train (transforms[i], &templatesList[i]);
         }
-        QtUtils::waitForFinished(futures);
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
@@ -1306,11 +1307,11 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     src.reserve(dst.size());
     for (int i=0; i<dst.size(); i++) src.append(Template());
 
-    QList< QFuture<void> > futures;
+    QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        if (Globals->parallelism) futures.append(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-        else                                                       _backProject (this, &dst[i], &src[i]);
-    QtUtils::waitForFinished(futures);
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
+        else                                                          _backProject (this, &dst[i], &src[i]);
+    futures.waitForFinished();
 }
 
 /* Distance - public methods */
@@ -1338,16 +1339,16 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
     const bool stepTarget = target.size() > query.size();
     const int totalSize = std::max(target.size(), query.size());
     int stepSize = ceil(float(totalSize) / float(std::max(1, abs(Globals->parallelism))));
-    QList< QFuture<void> > futures; futures.reserve(ceil(float(totalSize)/float(stepSize)));
+    QFutureSynchronizer<void> futures;
     for (int i=0; i<totalSize; i+=stepSize) {
         const TemplateList &targets(stepTarget ? TemplateList(target.mid(i, stepSize)) : target);
         const TemplateList &queries(stepTarget ? query : TemplateList(query.mid(i, stepSize)));
         const int targetOffset = stepTarget ? i : 0;
         const int queryOffset = stepTarget ? 0 : i;
-        if (Globals->parallelism) futures.append(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
-        else                                                                        compareBlock (targets, queries, output, targetOffset, queryOffset);
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
+        else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
-    QtUtils::waitForFinished(futures);
+    futures.waitForFinished();
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

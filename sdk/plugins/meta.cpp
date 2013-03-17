@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include <openbr_plugin.h>
 
@@ -284,12 +285,12 @@ class ForkTransform : public CompositeTransform
 
     void train(const TemplateList &data)
     {
-        QList< QFuture<void> > futures;
+        QFutureSynchronizer<void> futures;
         for (int i=0; i<transforms.size(); i++) {
-            if (Globals->parallelism) futures.append(QtConcurrent::run(_train, transforms[i], &data));
-            else                                                       _train (transforms[i], &data);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
+            else                                                          _train (transforms[i], &data);
         }
-        QtUtils::waitForFinished(futures);
+        futures.waitForFinished();
     }
 
     void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
@@ -634,16 +635,13 @@ public:
             output_buffer.append(TemplateList());
         }
 
-        QList< QFuture<void> > futures;
-        futures.reserve(src.size());
+        QFutureSynchronizer<void> futures;
         for (int i=0; i<src.size(); i++) {
             input_buffer[i].append(src[i]);
-            if (Globals->parallelism)
-                futures.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
-            else
-                _projectList(transform, &input_buffer[i], &output_buffer[i]);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
+            else                                                          _projectList( transform, &input_buffer[i], &output_buffer[i]);
         }
-        QtUtils::waitForFinished(futures);
+        futures.waitForFinished();
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
     }
