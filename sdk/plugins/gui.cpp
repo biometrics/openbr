@@ -7,7 +7,6 @@ using namespace cv;
 
 namespace br
 {
-
 QImage toQImage(const Mat &mat)
 {
     // Convert to 8U depth
@@ -53,28 +52,26 @@ QImage toQImage(const Mat &mat)
 class GUIProxy : public QObject
 {
     Q_OBJECT
-
+public:
     QLabel * window;
 
-public:
     GUIProxy()
     {
-        window =NULL;
+        window = NULL;
     }
 
 public slots:
-    void showImage(QPixmap pixmap)
+
+    void showImage(const QPixmap & input)
     {
-        window->show();
-        window->setPixmap(pixmap);
-        window->setFixedSize(pixmap.size());
-        window->update();
+        window->setPixmap(input);
+        window->setFixedSize(input.size());
+        window->setVisible(true);
     }
 
     void createWindow()
     {
         delete window;
-        window = NULL;
         window = new QLabel();
     }
 };
@@ -99,7 +96,7 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui, SLOT(showImage(QPixmap)));
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
     }
 
     ~Show2Transform()
@@ -124,9 +121,12 @@ public:
 
         foreach (const Template & t, src) {
             foreach(const cv::Mat & m, t) {
-                QImage qImageBuffer = toQImage(m);
+                qImageBuffer = toQImage(m);
                 displayBuffer.convertFromImage(qImageBuffer);
-                emit updateImage(displayBuffer);
+                // Emit an explicit  copy of our pixmap so that the pixmap used
+                // by the main thread isn't damaged when we update displayBuffer
+                // later.
+                emit updateImage(displayBuffer.copy(displayBuffer.rect()));
             }
         }
     }
@@ -134,7 +134,7 @@ public:
     void finalize(TemplateList & output)
     {
         (void) output;
-        // todo: hide ui?
+        // todo: hide window?
     }
 
     void init()
@@ -144,11 +144,12 @@ public:
 
 protected:
     GUIProxy * gui;
+    QImage qImageBuffer;
     QPixmap displayBuffer;
 
 signals:
     void needWindow();
-    void updateImage(QPixmap input);
+    void updateImage(const QPixmap & input);
 };
 
 BR_REGISTER(Transform, Show2Transform)
