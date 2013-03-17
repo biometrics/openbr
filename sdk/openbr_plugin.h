@@ -656,7 +656,7 @@ public:
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call initializeQt().
      * \see initializeQt finalize
      */
-    static void initialize(int argc, char *argv[], const QString &sdkPath = "");
+    static void initialize(int &argc, char *argv[], const QString &sdkPath = "");
 
     /*!
      * \brief Alternative to initialize() for <a href="http://qt-project.org/">Qt</a> users.

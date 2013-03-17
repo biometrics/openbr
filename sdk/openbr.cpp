@@ -103,7 +103,7 @@ void br_fuse(int num_input_simmats, const char *input_simmats[], const char *mas
     Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), mask, normalization, fusion, output_simmat);
 }
 
-void br_initialize(int argc, char *argv[], const char *sdk_path)
+void br_initialize(int &argc, char *argv[], const char *sdk_path)
 {
     Context::initialize(argc, argv, sdk_path);
 }

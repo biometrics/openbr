@@ -29,7 +29,12 @@ static const int frvt2012_template_size = 768;
 
 static void initialize(const string &configuration_location)
 {
-    if (Globals == NULL) Context::initialize(0, NULL, QString::fromStdString(configuration_location));
+    // Fake the command line arguments
+    int argc = 1;
+    char arg1[1]; arg1[0]='\0';
+    char *argv[] = { arg1 };
+
+    if (Globals == NULL) Context::initialize(argc, argv, QString::fromStdString(configuration_location));
     Globals->quiet = true;
     Globals->parallelism = 0;
 }

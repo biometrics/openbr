@@ -794,8 +794,10 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
 }
 
-void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
+void br::Context::initialize(int &argc, char *argv[], const QString &sdkPath)
 {
+    // We take in argc as a reference due to:
+    //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
     // Since we can't ensure that it gets deleted last, we never delete it.
     static QCoreApplication *application = NULL;
