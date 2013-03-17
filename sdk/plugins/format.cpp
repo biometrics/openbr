@@ -242,12 +242,11 @@ class DefaultFormat : public Format
 
     void write(const Template &t) const
     {
-        if (t.size() != 1) {
+        if (t.size() > 1) {
             videoFormat videoWriter;
             videoWriter.file = file;
             videoWriter.write(t);
-        }
-        else {
+        } else if (t.size() == 1) {
             imwrite(file.name.toStdString(), t);
         }
     }
