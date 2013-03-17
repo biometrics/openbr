@@ -680,6 +680,7 @@ public:
             stage_variance.append(transform->timeVarying());
             thread_count += transform->timeVarying() ? 1 : threads_per_multi_stage;
         }
+        if (transforms.isEmpty()) return;
 
         // Set up the thread pool, 1 stage for each transform, as well as first
         // and last stages, but the first stage is operated by the thread that
