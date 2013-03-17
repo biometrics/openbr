@@ -797,15 +797,16 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
 {
     if (Globals == NULL) {
+        // QApplication should be initialzed before anything else
+#ifndef BR_EMBEDDED
+        static QApplication application(argc, argv);
+#else
+        static QCoreApplication coreApplication(argc, argv);
+#endif
+
         Globals = new Context();
         Globals->init(File());
     }
-
-#ifndef BR_EMBEDDED
-    Globals->coreApplication = QSharedPointer<QCoreApplication>(new QApplication(argc, argv));
-#else
-    Globals->coreApplication = QSharedPointer<QCoreApplication>(new QCoreApplication(argc, argv));
-#endif
 
     initializeQt(sdkPath);
 

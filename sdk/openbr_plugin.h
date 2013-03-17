@@ -17,7 +17,6 @@
 #ifndef __OPENBR_PLUGIN_H
 #define __OPENBR_PLUGIN_H
 
-#include <QCoreApplication>
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
@@ -466,7 +465,6 @@ private:
 class BR_EXPORT Context : public Object
 {
     Q_OBJECT
-    QSharedPointer<QCoreApplication> coreApplication;
     QFile logFile;
 
 public:

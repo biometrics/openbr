@@ -677,7 +677,7 @@ class googleGallery : public Gallery
             QNetworkReply *reply = networkAccessManager.get(request);
 
             while (!reply->isFinished())
-                QCoreApplication::processEvents();
+                QThread::yieldCurrentThread();
 
             QString data(reply->readAll());
             delete reply;
