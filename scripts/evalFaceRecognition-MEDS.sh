@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ALGORITHM=FaceRecognitionHoG
+ALGORITHM=FaceRecognition
 
 if [ ! -f evalFaceRecognition-MEDS.sh ]; then
   echo "Run this script from the scripts folder!"
