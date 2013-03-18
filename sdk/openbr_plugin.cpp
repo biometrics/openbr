@@ -1267,6 +1267,42 @@ Transform *Transform::clone() const
     return clone;
 }
 
+static void _project(const Transform *transform, const Template *src, Template *dst)
+{
+    try {
+        transform->project(*src, *dst);
+    } catch (...) {
+        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
+        *dst = Template(src->file);
+        dst->file.set("FTE", true);
+    }
+}
+
+// Default project(TemplateList) calls project(Template) separately for each element
+void Transform::project(const TemplateList &src, TemplateList &dst) const
+{
+    dst.reserve(src.size());
+
+    // There are certain conditions where we should process the templates in serial,
+    // but generally we'd prefer to process them in parallel.
+    if ((src.size() < 2) ||
+        (QThreadPool::globalInstance()->activeThreadCount() >= QThreadPool::globalInstance()->maxThreadCount()) ||
+        (Globals->parallelism == 0)) {
+
+        foreach (const Template &t, src) {
+            dst.append(Template());
+            _project(this, &t, &dst.last());
+        }
+    } else {
+        for (int i=0; i<src.size(); i++)
+            dst.append(Template());
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<dst.size(); i++)
+            futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        futures.waitForFinished();
+    }
+}
+
 static void _backProject(const Transform *transform, const Template *dst, Template *src)
 {
     try {
@@ -1276,33 +1312,6 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
         *src = Template(dst->file);
         src->file.set("FTE", true);
     }
-}
-
-
-
-// Default project(TemplateList) -- call project(template) separately for each input
-// template
-void Transform::project(const TemplateList &src, TemplateList &dst) const
-{
-    dst.clear();
-
-    // Project templates derived from a single image, default implementation: project each
-    // input template to an ouptut template individually.
-    foreach(const Template  & src_template, src) {
-        dst.append(Template(src_template.file));
-        try {
-                project(src_template, dst.back());
-        } catch (...) {
-            qWarning("Exception triggered when processing %s with transform %s", qPrintable(src_template.file.flat()), qPrintable(objectName()));
-            dst.back() = Template(src_template.file);
-            dst.back().file.set("FTE", true);
-        }
-    }
-}
-
-void Transform::backProject(const Template &dst, Template &src) const
-{
-    src = dst;
 }
 
 void Transform::backProject(const TemplateList &dst, TemplateList &src) const

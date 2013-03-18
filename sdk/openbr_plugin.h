@@ -990,7 +990,7 @@ public:
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
-    virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
+    virtual void backProject(const Template &dst, Template &src) const { src = dst; } /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
     /*!< \brief Apply the transform, may update the transform's internal state */
