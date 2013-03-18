@@ -316,8 +316,8 @@ class matFormat : public Format
         Element(QDataStream &stream)
             : type(0), bytes(0)
         {
-            bool error = false;
-            error |= (stream.readRawData((char*)&type, 4) != 4);
+            if (stream.readRawData((char*)&type, 4) != 4)
+                qFatal("Unexpected end of file.");
 
             if (type >= 1 << 16) {
                 // Small data format
@@ -326,22 +326,17 @@ class matFormat : public Format
                 bytes = bytes >> 16;
             } else {
                 // Regular format
-                error |= (stream.readRawData((char*)&bytes, 4) != 4);
+                if (stream.readRawData((char*)&bytes, 4) != 4)
+                    qFatal("Unexpected end of file.");
             }
 
             data.resize(bytes);
-            error |= (int(bytes) != stream.readRawData(data.data(), bytes));
+            if (int(bytes) != stream.readRawData(data.data(), bytes))
+                qFatal("Unexpected end of file.");
 
             // Alignment
             int skipBytes = (bytes < 4) ? (4 - bytes) : (8 - bytes%8)%8;
             if (skipBytes != 0) stream.skipRawData(skipBytes);
-
-            if (error) qFatal("Unexpected end of file.");
-        }
-
-        void print() const
-        {
-            qDebug() << "matFormat::Element" << type << bytes << data.size();
         }
     };
 
