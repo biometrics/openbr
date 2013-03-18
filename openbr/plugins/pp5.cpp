@@ -13,7 +13,7 @@
 #include <pittpatt_license.h>
 #include <openbr_plugin.h>
 
-#include "core/resource.h"
+#include "openbr/core/resource.h"
 
 #define TRY(CC)                                                                                               \
 {                                                                                                             \

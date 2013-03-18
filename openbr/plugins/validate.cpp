@@ -106,7 +106,7 @@ class FilterDistance : public Distance
         foreach (const QString &key, Globals->filters.keys()) {
             bool keep = false;
             const QString metadata = a.file.get<QString>(key, "");
-            if (metadata.isEmpty()) continue;
+            if (metadata.isEmpty() || Globals->filters[key].isEmpty()) continue;
             foreach (const QString &value, Globals->filters[key]) {
                 if (metadata == value) {
                     keep = true;

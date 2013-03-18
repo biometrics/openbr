@@ -18,11 +18,11 @@ class StasmInitializer : public Initializer
 
     void initialize() const
     {
-        Globals->abbreviations.insert("RectFromStasmEyes","RectFromLandmarks([27, 28, 29, 30, 31, 32, 33, 34, 35, 36],0.125,6.0)+Resize(44,164)"); //
-        Globals->abbreviations.insert("RectFromStasmJaw","RectFromLandmarks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],10)");
-        Globals->abbreviations.insert("RectFromStasmBrow","RectFromLandmarks([15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],0.25,6.5)+Resize(44,230)");
-        Globals->abbreviations.insert("RectFromStasmNose","RectFromLandmarks([38, 39, 40, 41, 42, 43, 44, 67],0.1,1.5)+Resize(44,44)");
-        Globals->abbreviations.insert("RectFromStasmMouth","RectFromLandmarks([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66],0.3,3.0)+Resize(44,110)");
+        Globals->abbreviations.insert("RectFromStasmEyes","RectFromPoints([27, 28, 29, 30, 31, 32, 33, 34, 35, 36],0.125,6.0)+Resize(44,164)"); //
+        Globals->abbreviations.insert("RectFromStasmJaw","RectFromPoints([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],10)");
+        Globals->abbreviations.insert("RectFromStasmBrow","RectFromPoints([15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],0.25,6.5)+Resize(44,230)");
+        Globals->abbreviations.insert("RectFromStasmNose","RectFromPoints([38, 39, 40, 41, 42, 43, 44, 67],0.1,1.5)+Resize(44,44)");
+        Globals->abbreviations.insert("RectFromStasmMouth","RectFromPoints([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66],0.3,3.0)+Resize(44,110)");
     }
 };
 
