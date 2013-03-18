@@ -40,10 +40,38 @@ namespace OpenCVUtils
 
     // From image
     QString elemToString(const cv::Mat &m, int r, int c);
-    float elemToFloat(const cv::Mat &m, int r, int c);
     QString matrixToString(const cv::Mat &m);
     QStringList matrixToStringList(const cv::Mat &m);
-    QList<float> matrixToVector(const cv::Mat &m);
+
+    template <typename T>
+    T getElement(const cv::Mat &m, int r, int c)
+    {
+        assert(m.channels() == 1);
+        switch (m.depth()) {
+          case CV_8U:  return T(m.at<quint8>(r,c));
+          case CV_8S:  return T(m.at<qint8>(r,c));
+          case CV_16U: return T(m.at<quint16>(r,c));
+          case CV_16S: return T(m.at<qint16>(r,c));
+          case CV_32S: return T(m.at<qint32>(r,c));
+          case CV_32F: return T(m.at<float>(r,c));
+          case CV_64F: return T(m.at<double>(r,c));
+          default:     qFatal("Unknown matrix depth!");
+        }
+        return 0;
+    }
+
+    template <typename T>
+    QList<T> matrixToVector(const cv::Mat &m)
+    {
+        QList<T> results;
+        std::vector<cv::Mat> mv;
+        cv::split(m, mv);
+        foreach (const cv::Mat &mc, mv)
+            for (int i=0; i<mc.rows; i++)
+                for (int j=0; j<mc.cols; j++)
+                    results.append(getElement<float>(mc, i, j));
+        return results;
+    }
 
     // Conversions
     cv::Point2f toPoint(const QPointF &qPoint);

@@ -173,22 +173,6 @@ QString OpenCVUtils::elemToString(const Mat &m, int r, int c)
     return "?";
 }
 
-float OpenCVUtils::elemToFloat(const Mat &m, int r, int c)
-{
-    assert(m.channels() == 1);
-    switch (m.depth()) {
-      case CV_8U:  return float(m.at<quint8>(r,c));
-      case CV_8S:  return float(m.at<qint8>(r,c));
-      case CV_16U: return float(m.at<quint16>(r,c));
-      case CV_16S: return float(m.at<qint16>(r,c));
-      case CV_32S: return float(m.at<qint32>(r,c));
-      case CV_32F: return float(m.at<float>(r,c));
-      case CV_64F: return float(m.at<double>(r,c));
-      default:     qFatal("Unknown matrix depth");
-    }
-    return 0;
-}
-
 QString OpenCVUtils::matrixToString(const Mat &m)
 {
     QString result;
@@ -222,18 +206,6 @@ QStringList OpenCVUtils::matrixToStringList(const Mat &m)
         for (int i=0; i<mc.rows; i++)
             for (int j=0; j<mc.cols; j++)
                 results.append(elemToString(mc, i, j));
-    return results;
-}
-
-QList<float> OpenCVUtils::matrixToVector(const Mat &m)
-{
-    QList<float> results;
-    vector<Mat> mv;
-    split(m, mv);
-    foreach (const Mat &mc, mv)
-        for (int i=0; i<mc.rows; i++)
-            for (int j=0; j<mc.cols; j++)
-                results.append(elemToFloat(mc, i, j));
     return results;
 }
 
