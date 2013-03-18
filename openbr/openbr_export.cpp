@@ -101,8 +101,19 @@ $ br -help
  *  $ nmake install
  *  $ nmake clean
  *  \endcode
- * -# <a href="http://releases.qt-project.org/digia/5.0.1/backups/2013-01-18-412/qt-windows-opensource-5.0.1-msvc2012_64-x86_64-offline-2013-01-18-412.exe">Download Qt 5.0.1</a> and install.
+* -# <a href="http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and unzip.
+ *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
  *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install.
+ *  -# From the VS2012 x64 Cross Tools Command Prompt:
+ *  \code
+ *  $ cd qt-everywhere-opensource-src-5.0.1
+ *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource -confirm-license -nomake examples -nomake tests
+ *  $ nmake
+ *  $ nmake install
+ *  $ cd ..
+ *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
+ *  \endcode
+ *  -# nmake will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
  *  \code
@@ -118,7 +129,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/Qt5.0.1/5.0.1/msvc2012_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
