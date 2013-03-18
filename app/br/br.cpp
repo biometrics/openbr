@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openbr.h>
+#include <openbr/openbr.h>
 
 /*!
  * \defgroup cli Command Line Interface

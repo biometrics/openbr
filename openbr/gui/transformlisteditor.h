@@ -14,45 +14,33 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
- * \ingroup cli
- * \page cli_age_estimation Age Estimation
- * \ref cpp_age_estimation "C++ Equivalent"
- * \code
- * $ br -algorithm AgeEstimation \
- *      -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
- * \endcode
- */
+#ifndef __TRANSFORMLISTEDITOR_H
+#define __TRANSFORMLISTEDITOR_H
 
-//! [age_estimation]
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMenuBar>
+#include <QWidget>
 #include <openbr/openbr_plugin.h>
 
-static void printTemplate(const br::Template &t)
+namespace br
 {
-    printf("%s age: %d\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label"));
-}
 
-int main(int argc, char *argv[])
+class BR_EXPORT TransformListEditor : public QWidget
 {
-    br::Context::initialize(argc, argv);
+    Q_OBJECT
+    QHBoxLayout layout;
+    QList<QWidget*> parameters;
+    QString separator;
+    QMenuBar addTransform;
 
-    // Retrieve class for enrolling templates using the AgeEstimation algorithm
-    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("AgeEstimation");
+public:
+    explicit TransformListEditor(const QList<br::Transform*> &transforms, const QString &separator = "", QWidget *parent = 0);
 
-    // Initialize templates
-    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S001-01-t10_01.jpg");
+private slots:
+    void addTransformClicked();
+};
 
-    // Enroll templates
-    queryA >> *transform;
-    queryB >> *transform;
+} // namespace br
 
-    printTemplate(queryA);
-    printTemplate(queryB);
-
-    br::Context::finalize();
-    return 0;
-}
-//! [age_estimation]
+#endif // __TRANSFORMLISTEDITOR_H

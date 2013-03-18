@@ -25,7 +25,7 @@
  */
 
 //! [gender_estimation]
-#include <openbr_plugin.h>
+#include <openbr/openbr_plugin.h>
 
 static void printTemplate(const br::Template &t)
 {

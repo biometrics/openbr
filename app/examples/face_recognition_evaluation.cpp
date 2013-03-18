@@ -31,7 +31,7 @@
  */
 
 //! [face_recognition_evaluation]
-#include <openbr.h>
+#include <openbr/openbr.h>
 
 int main(int argc, char *argv[])
 {

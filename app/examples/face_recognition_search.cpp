@@ -25,7 +25,7 @@
  */
 
 //! [face_recognition_search]
-#include <openbr_plugin.h>
+#include <openbr/openbr_plugin.h>
 
 int main(int argc, char *argv[])
 {

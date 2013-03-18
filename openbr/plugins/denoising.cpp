@@ -14,45 +14,37 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
- * \ingroup cli
- * \page cli_age_estimation Age Estimation
- * \ref cpp_age_estimation "C++ Equivalent"
- * \code
- * $ br -algorithm AgeEstimation \
- *      -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
- * \endcode
- */
-
-//! [age_estimation]
+#include <opencv2/photo/photo.hpp>
 #include <openbr/openbr_plugin.h>
 
-static void printTemplate(const br::Template &t)
+using namespace cv;
+
+namespace br
 {
-    printf("%s age: %d\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label"));
-}
 
-int main(int argc, char *argv[])
+/*!
+ * \ingroup transforms
+ * \brief Wraps OpenCV Non-Local Means Denoising
+ * \author Josh Klontz \cite jklontz
+ */
+class NLMeansDenoisingTransform : public UntrainableTransform
 {
-    br::Context::initialize(argc, argv);
+    Q_OBJECT
+    Q_PROPERTY(float h READ get_h WRITE set_h RESET reset_h STORED false)
+    Q_PROPERTY(int templateWindowSize READ get_templateWindowSize WRITE set_templateWindowSize RESET reset_templateWindowSize STORED false)
+    Q_PROPERTY(int searchWindowSize READ get_searchWindowSize WRITE set_searchWindowSize RESET reset_searchWindowSize STORED false)
+    BR_PROPERTY(float, h, 3)
+    BR_PROPERTY(int, templateWindowSize, 7)
+    BR_PROPERTY(int, searchWindowSize, 21)
 
-    // Retrieve class for enrolling templates using the AgeEstimation algorithm
-    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("AgeEstimation");
+    void project(const Template &src, Template &dst) const
+    {
+        fastNlMeansDenoising(src, dst, h, templateWindowSize, searchWindowSize);
+    }
+};
 
-    // Initialize templates
-    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S001-01-t10_01.jpg");
+BR_REGISTER(Transform, NLMeansDenoisingTransform)
 
-    // Enroll templates
-    queryA >> *transform;
-    queryB >> *transform;
+} // namespace br
 
-    printTemplate(queryA);
-    printTemplate(queryB);
-
-    br::Context::finalize();
-    return 0;
-}
-//! [age_estimation]
+#include "denoising.moc"

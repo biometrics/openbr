@@ -14,45 +14,25 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
- * \ingroup cli
- * \page cli_age_estimation Age Estimation
- * \ref cpp_age_estimation "C++ Equivalent"
- * \code
- * $ br -algorithm AgeEstimation \
- *      -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
- * \endcode
- */
+#ifndef __OPENBR_EXPORT_H
+#define __OPENBR_EXPORT_H
 
-//! [age_estimation]
-#include <openbr/openbr_plugin.h>
+#if defined SWIG
+#  define BR_EXPORT extern
+#else
+#  if defined BR_LIBRARY
+#    if defined _WIN32 || defined __CYGWIN__
+#      define BR_EXPORT __declspec(dllexport)
+#    else
+#      define BR_EXPORT __attribute__((visibility("default")))
+#    endif
+#  else
+#    if defined _WIN32 || defined __CYGWIN__
+#      define BR_EXPORT __declspec(dllimport)
+#    else
+#      define BR_EXPORT
+#    endif
+#  endif
+#endif
 
-static void printTemplate(const br::Template &t)
-{
-    printf("%s age: %d\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label"));
-}
-
-int main(int argc, char *argv[])
-{
-    br::Context::initialize(argc, argv);
-
-    // Retrieve class for enrolling templates using the AgeEstimation algorithm
-    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("AgeEstimation");
-
-    // Initialize templates
-    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S001-01-t10_01.jpg");
-
-    // Enroll templates
-    queryA >> *transform;
-    queryB >> *transform;
-
-    printTemplate(queryA);
-    printTemplate(queryB);
-
-    br::Context::finalize();
-    return 0;
-}
-//! [age_estimation]
+#endif // __OPENBR_EXPORT_H
