@@ -39,7 +39,7 @@ QStringList QtUtils::getFiles(QDir dir, bool recursive)
 
     QStringList files;
     foreach (const QString &file, NaturalStringSort(dir.entryList(QDir::Files)))
-        files.append(QDir::cleanPath(dir.absoluteFilePath(file)));
+        files.append(dir.absoluteFilePath(file));
 
     if (!recursive) return files;
 

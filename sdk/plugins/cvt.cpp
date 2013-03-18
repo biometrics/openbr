@@ -181,12 +181,17 @@ class RGTransform : public UntrainableTransform
         for (int i=0; i<m.rows; i++)
             for (int j=0; j<m.cols; j++) {
                 Vec3b v = m.at<Vec3b>(i,j);
-                uchar& b = v[0];
-                uchar& g = v[1];
-                uchar& r = v[2];
-
-                R.at<uchar>(i, j) = saturate_cast<uchar>(255.0*r/(r+g+b));
-                G.at<uchar>(i, j) = saturate_cast<uchar>(255.0*g/(r+g+b));
+                const int b = v[0];
+                const int g = v[1];
+                const int r = v[2];
+                const int sum = b + g + r;
+                if (sum > 0) {
+                    R.at<uchar>(i, j) = saturate_cast<uchar>(255.0*r/(r+g+b));
+                    G.at<uchar>(i, j) = saturate_cast<uchar>(255.0*g/(r+g+b));
+                } else {
+                    R.at<uchar>(i, j) = 0;
+                    G.at<uchar>(i, j) = 0;
+                }
             }
 
         dst.append(R);

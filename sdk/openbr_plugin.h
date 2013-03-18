@@ -17,7 +17,6 @@
 #ifndef __OPENBR_PLUGIN_H
 #define __OPENBR_PLUGIN_H
 
-#include <QCoreApplication>
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
@@ -466,7 +465,6 @@ private:
 class BR_EXPORT Context : public Object
 {
     Q_OBJECT
-    QSharedPointer<QCoreApplication> coreApplication;
     QFile logFile;
 
 public:
@@ -624,12 +622,6 @@ public:
     int timeRemaining() const;
 
     /*!
-     * \brief Continues to print the progress of the futures until they are completed.
-     * \param futures The list of futures to track.
-     */
-    void trackFutures(QList< QFuture<void> > &futures);
-
-    /*!
      * \brief Returns \c true if \em sdkPath is valid, \c false otherwise.
      * \param sdkPath The path to <tt>share/openbr/openbr.bib</tt>
      */
@@ -658,7 +650,7 @@ public:
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call initializeQt().
      * \see initializeQt finalize
      */
-    static void initialize(int argc, char *argv[], const QString &sdkPath = "");
+    static void initialize(int &argc, char *argv[], const QString &sdkPath = "");
 
     /*!
      * \brief Alternative to initialize() for <a href="http://qt-project.org/">Qt</a> users.
@@ -998,7 +990,7 @@ public:
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
-    virtual void backProject(const Template &dst, Template &src) const; /*!< \brief Invert the transform. */
+    virtual void backProject(const Template &dst, Template &src) const { src = dst; } /*!< \brief Invert the transform. */
     virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
     /*!< \brief Apply the transform, may update the transform's internal state */
@@ -1113,6 +1105,7 @@ class BR_EXPORT TimeVaryingTransform : public Transform
 {
     Q_OBJECT
 
+public:
     virtual bool timeVarying() const { return true; }
 
     virtual void project(const Template &src, Template &dst) const
@@ -1125,6 +1118,23 @@ class BR_EXPORT TimeVaryingTransform : public Transform
     {
         qFatal("No const project defined for time-varying transform");
         (void) dst; (void) src;
+    }
+
+    // Get a compile failure if this isn't here to go along with the other
+    // projectUpdate, no idea why
+    virtual void projectUpdate(const Template & src, Template & dst)
+    {
+        (void) src; (void) dst;
+        qFatal("do something useful");
+    }
+
+    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        foreach (const Template & src_part, src) {
+            Template out;
+            projectUpdate(src_part, out);
+            dst.append(out);
+        }
     }
 
 protected:
@@ -1168,6 +1178,51 @@ class BR_EXPORT UntrainableMetaTransform : public UntrainableTransform
 
 protected:
     UntrainableMetaTransform() : UntrainableTransform(false) {}
+};
+
+/*!
+ * \brief A MetaTransform that aggregates some sub-transforms
+ */
+class BR_EXPORT CompositeTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+public:
+    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
+    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        _project(src, dst);
+    }
+
+    bool timeVarying() const { return isTimeVarying; }
+
+    void init()
+    {
+        isTimeVarying = false;
+        foreach (const br::Transform *transform, transforms) {
+            if (transform->timeVarying()) {
+                isTimeVarying = true;
+                break;
+            }
+        }
+    }
+
+protected:
+    bool isTimeVarying;
+
+    virtual void _project(const Template & src, Template & dst) const = 0;
+    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
+
+    CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
 /*! @}*/

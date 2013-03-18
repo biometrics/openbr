@@ -176,7 +176,7 @@ class rrOutput : public MatrixOutput
             if (!byLine) files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
-            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true, limit)) {
+            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
                 if (pair.first < threshold) break;
                 File target = targetFiles[pair.second];
                 target.set("Score", QString::number(pair.first));
@@ -278,7 +278,7 @@ class rankOutput : public MatrixOutput
         for (int i=0; i<queryFiles.size(); i++) {
             typedef QPair<float,int> Pair;
             int rank = 1;
-            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector(data.row(i)), true)) {
+            foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true)) {
                 if(targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
                     ranks.append(rank);
                     positions.append(pair.second);

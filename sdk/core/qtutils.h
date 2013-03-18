@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFuture>
 #include <QMap>
 #include <QString>
 #include <QStringList>

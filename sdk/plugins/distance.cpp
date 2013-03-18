@@ -14,11 +14,13 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr_plugin.h>
 
 #include "core/distance_sse.h"
+#include "core/qtutils.h"
 
 using namespace cv;
 
@@ -154,11 +156,11 @@ class PipeDistance : public Distance
 
     void train(const TemplateList &data)
     {
-        QList< QFuture<void> > futures;
+        QFutureSynchronizer<void> futures;
         foreach (br::Distance *distance, distances)
-            if (Globals->parallelism) futures.append(QtConcurrent::run(distance, &Distance::train, data));
-            else                      distance->train(data);
-        Globals->trackFutures(futures);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
+            else                                                          distance->train(data);
+        futures.waitForFinished();
     }
 
     float compare(const Template &a, const Template &b) const

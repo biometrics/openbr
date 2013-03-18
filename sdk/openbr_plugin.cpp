@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QRect>
@@ -27,6 +28,10 @@
 #include <algorithm>
 #include <iostream>
 #include <openbr_plugin.h>
+
+#ifndef BR_EMBEDDED
+#include <QApplication>
+#endif
 
 #include "version.h"
 #include "core/bee.h"
@@ -385,6 +390,15 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
         newTemplates = newTemplates.mid(gallery.get<int>("pos", 0), gallery.get<int>("length", -1));
+
+        const int step = gallery.get<int>("step", 1);
+        if (step > 1) {
+            TemplateList downsampled; downsampled.reserve(newTemplates.size()/step);
+            for (int i=0; i<newTemplates.size(); i+=step)
+                downsampled.append(newTemplates[i]);
+            newTemplates = downsampled;
+        }
+
         if (gallery.get<bool>("reduce", false)) newTemplates = newTemplates.reduced();
         const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
@@ -770,27 +784,31 @@ int br::Context::timeRemaining() const
     return std::max(0, int((1 - p) / p * startTime.elapsed())) / 1000;
 }
 
-void br::Context::trackFutures(QList< QFuture<void> > &futures)
-{
-    foreach (QFuture<void> future, futures) {
-        QCoreApplication::processEvents();
-        future.waitForFinished();
-    }
-}
-
 bool br::Context::checkSDKPath(const QString &sdkPath)
 {
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
 }
 
-void br::Context::initialize(int argc, char *argv[], const QString &sdkPath)
+void br::Context::initialize(int &argc, char *argv[], const QString &sdkPath)
 {
+    // We take in argc as a reference due to:
+    //   https://bugreports.qt-project.org/browse/QTBUG-5637
+    // QApplication should be initialized before anything else.
+    // Since we can't ensure that it gets deleted last, we never delete it.
+    static QCoreApplication *application = NULL;
+    if (application == NULL) {
+#ifndef BR_EMBEDDED
+        application = new QApplication(argc, argv);
+#else
+        application = new QCoreApplication(argc, argv);
+#endif
+    }
+
     if (Globals == NULL) {
         Globals = new Context();
         Globals->init(File());
     }
 
-    Globals->coreApplication = QSharedPointer<QCoreApplication>(new QCoreApplication(argc, argv));
     initializeQt(sdkPath);
 
 #ifdef BR_DISTRIBUTED
@@ -853,7 +871,10 @@ void br::Context::initializeQt(QString sdkPath)
 
 void br::Context::finalize()
 {
-    // Trigger registerd finalizers
+    // Is anyone still running?
+    QThreadPool::globalInstance()->waitForDone();
+
+    // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
         initializer->finalize();
@@ -883,6 +904,11 @@ QString br::Context::scratchPath()
 
 void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    // Something about this method is not thread safe, and will lead to crashes if qDebug
+    // statements are called from multiple threads. Unless we lock the whole thing...
+    static QMutex generalLock;
+    QMutexLocker locker(&generalLock);
+
     QString txt;
     switch (type) {
       case QtDebugMsg:
@@ -904,11 +930,8 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
     Globals->mostRecentMessage = txt;
 
     if (Globals->logFile.isWritable()) {
-        static QMutex logLock;
-        logLock.lock();
         Globals->logFile.write(qPrintable(txt));
         Globals->logFile.flush();
-        logLock.unlock();
     }
 
     if (type == QtFatalMsg) {
@@ -917,8 +940,6 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         Globals->finalize();
         abort();
     }
-
-    QCoreApplication::processEvents(); // Used to retrieve messages before event loop starts
 }
 
 Context *br::Globals = NULL;
@@ -1147,14 +1168,12 @@ private:
         for (int i=0; i<templatesList.size(); i++)
             templatesList[i] = Downsample(templatesList[i], transforms[i]);
 
-        QList< QFuture<void> > futures;
-        const bool threaded = Globals->parallelism && (templatesList.size() > 1);
+        QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++) {
-            if (threaded) futures.append(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-            else                                           _train (transforms[i], &templatesList[i]);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
+            else                                                          _train (transforms[i], &templatesList[i]);
         }
-
-        if (threaded) Globals->trackFutures(futures);
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
@@ -1250,6 +1269,42 @@ Transform *Transform::clone() const
     return clone;
 }
 
+static void _project(const Transform *transform, const Template *src, Template *dst)
+{
+    try {
+        transform->project(*src, *dst);
+    } catch (...) {
+        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
+        *dst = Template(src->file);
+        dst->file.set("FTE", true);
+    }
+}
+
+// Default project(TemplateList) calls project(Template) separately for each element
+void Transform::project(const TemplateList &src, TemplateList &dst) const
+{
+    dst.reserve(src.size());
+
+    // There are certain conditions where we should process the templates in serial,
+    // but generally we'd prefer to process them in parallel.
+    if ((src.size() < 2) ||
+        (QThreadPool::globalInstance()->activeThreadCount() >= QThreadPool::globalInstance()->maxThreadCount()) ||
+        (Globals->parallelism == 0)) {
+
+        foreach (const Template &t, src) {
+            dst.append(Template());
+            _project(this, &t, &dst.last());
+        }
+    } else {
+        for (int i=0; i<src.size(); i++)
+            dst.append(Template());
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<dst.size(); i++)
+            futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        futures.waitForFinished();
+    }
+}
+
 static void _backProject(const Transform *transform, const Template *dst, Template *src)
 {
     try {
@@ -1261,44 +1316,16 @@ static void _backProject(const Transform *transform, const Template *dst, Templa
     }
 }
 
-
-
-// Default project(TemplateList) -- call project(template) separately for each input
-// template
-void Transform::project(const TemplateList &src, TemplateList &dst) const
-{
-    dst.clear();
-
-    // Project templates derived from a single image, default implementation: project each
-    // input template to an ouptut template individually.
-    foreach(const Template  & src_template, src) {
-        dst.append(Template(src_template.file));
-        try {
-                project(src_template, dst.back());
-        } catch (...) {
-            qWarning("Exception triggered when processing %s with transform %s", qPrintable(src_template.file.flat()), qPrintable(objectName()));
-            dst.back() = Template(src_template.file);
-            dst.back().file.set("FTE", true);
-        }
-    }
-}
-
-void Transform::backProject(const Template &dst, Template &src) const
-{
-    src = dst;
-}
-
 void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 {
     src.reserve(dst.size());
     for (int i=0; i<dst.size(); i++) src.append(Template());
 
-    QList< QFuture<void> > futures;
-    if (Globals->parallelism) futures.reserve(dst.size());
+    QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        if (Globals->parallelism) futures.append(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-        else                                                      _backProject (this, &dst[i], &src[i]);
-    if (Globals->parallelism) Globals->trackFutures(futures);
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
+        else                                                          _backProject (this, &dst[i], &src[i]);
+    futures.waitForFinished();
 }
 
 /* Distance - public methods */
@@ -1326,16 +1353,16 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
     const bool stepTarget = target.size() > query.size();
     const int totalSize = std::max(target.size(), query.size());
     int stepSize = ceil(float(totalSize) / float(std::max(1, abs(Globals->parallelism))));
-    QList< QFuture<void> > futures; futures.reserve(ceil(float(totalSize)/float(stepSize)));
+    QFutureSynchronizer<void> futures;
     for (int i=0; i<totalSize; i+=stepSize) {
         const TemplateList &targets(stepTarget ? TemplateList(target.mid(i, stepSize)) : target);
         const TemplateList &queries(stepTarget ? query : TemplateList(query.mid(i, stepSize)));
         const int targetOffset = stepTarget ? i : 0;
         const int queryOffset = stepTarget ? 0 : i;
-        if (Globals->parallelism) futures.append(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
-        else                                                                        compareBlock (targets, queries, output, targetOffset, queryOffset);
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
+        else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
-    if (Globals->parallelism) Globals->trackFutures(futures);
+    futures.waitForFinished();
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

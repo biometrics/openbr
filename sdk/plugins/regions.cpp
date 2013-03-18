@@ -120,6 +120,7 @@ class MergeTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
+        dst.file = src.file;
         std::vector<Mat> mv;
         foreach (const Mat &m, src)
             mv.push_back(m);

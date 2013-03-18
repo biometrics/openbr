@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QtConcurrentRun>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -103,9 +104,14 @@ class EmptyGallery : public Gallery
 
         // Add immediate subfolders
         QDir dir(file);
-        foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)))
-            foreach (const QString &file, QtUtils::getFiles(dir.absoluteFilePath(folder), true))
-                templates.append(File(file, folder));
+        QList< QFuture<TemplateList> > futures;
+        foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
+            const QDir subdir = dir.absoluteFilePath(folder);
+            if (Globals->parallelism) futures.append(QtConcurrent::run(&EmptyGallery::getTemplates, subdir));
+            else                      templates.append(getTemplates(subdir));
+        }
+        foreach (const QFuture<TemplateList> &future, futures)
+            templates.append(future.result());
 
         // Add root folder
         foreach (const QString &fileName, QtUtils::getFiles(file.name, false))
@@ -129,6 +135,15 @@ class EmptyGallery : public Gallery
             QScopedPointer<Format> format(Factory<Format>::make(destination));
             format->write(t);
         }
+    }
+
+    static TemplateList getTemplates(const QDir &dir)
+    {
+        const QStringList files = QtUtils::getFiles(dir, true);
+        TemplateList templates; templates.reserve(files.size());
+        foreach (const QString &file, files)
+            templates.append(File(file, dir.dirName()));
+        return templates;
     }
 };
 
@@ -662,7 +677,7 @@ class googleGallery : public Gallery
             QNetworkReply *reply = networkAccessManager.get(request);
 
             while (!reply->isFinished())
-                QCoreApplication::processEvents();
+                QThread::yieldCurrentThread();
 
             QString data(reply->readAll());
             delete reply;

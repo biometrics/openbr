@@ -82,6 +82,7 @@ $ br -help
  *  -# Consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a> if you need a program to mount ISO images.
  *  -# You will have to register with Microsoft after installation, but it's free.
  *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
+ *  -# Download and install <a href="http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx">Windows 8 SDK</a>.
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
  *  -# During installation setup select "add CMake to PATH".
  * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
@@ -100,19 +101,8 @@ $ br -help
  *  $ nmake install
  *  $ nmake clean
  *  \endcode
- * -# <a href="http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and unzip.
- *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
+ * -# <a href="http://releases.qt-project.org/digia/5.0.1/backups/2013-01-18-412/qt-windows-opensource-5.0.1-msvc2012_64-x86_64-offline-2013-01-18-412.exe">Download Qt 5.0.1</a> and install.
  *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install.
- *  -# From the VS2012 x64 Cross Tools Command Prompt:
- *  \code
- *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource -confirm-license -nomake examples -nomake tests
- *  $ nmake
- *  $ nmake install
- *  $ cd ..
- *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
- *  \endcode
- *  -# nmake will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
  *  \code
@@ -128,7 +118,7 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/Qt5.0.1/5.0.1/msvc2012_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
@@ -147,7 +137,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-msvc2012" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
@@ -226,7 +216,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "C:\openbr\build-mingw64" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
@@ -277,7 +267,7 @@ $ br -help
  * $ cd build
  * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -289,12 +279,12 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
  *  -# Select "Run CMake" then "Done".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package
  * \endcode
- * -# Build OpenBR documentation!
+ * -# (Optional) Build OpenBR documentation!
  *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a> and install:
  *  \code
  *  $ cd ~/Downloads
@@ -367,7 +357,7 @@ $ br -help
  * $ cd build
  * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -379,7 +369,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
  *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package
@@ -434,7 +424,7 @@ $ br -help
  * $ cd build-icc
  * $ cmake -DCMAKE_C_COMPILER=/opt/intel/bin/icc -DCMAKE_CXX_COMPILER=/opt/intel/bin/icpc -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/gcc_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
- * $ make install
+ * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
@@ -446,7 +436,7 @@ $ br -help
  *  -# Browse to your prexisting build directory "~/openbr/build" then select "Next".
  *  -# Select "Run CMake" then "Finish".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
- * -# Package OpenBR!
+ * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
  * $ make package

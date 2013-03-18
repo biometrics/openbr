@@ -242,12 +242,11 @@ class DefaultFormat : public Format
 
     void write(const Template &t) const
     {
-        if (t.size() != 1) {
+        if (t.size() > 1) {
             videoFormat videoWriter;
             videoWriter.file = file;
             videoWriter.write(t);
-        }
-        else {
+        } else if (t.size() == 1) {
             imwrite(file.name.toStdString(), t);
         }
     }
@@ -565,7 +564,6 @@ class webcamFormat : public Format
 
 BR_REGISTER(Format, webcamFormat)
 
-#ifndef BR_EMBEDDED
 /*!
  * \ingroup formats
  * \brief Decodes images from Base64 xml
@@ -578,13 +576,15 @@ class xmlFormat : public Format
 
     Template read() const
     {
+        Template t;
+
+#ifndef BR_EMBEDDED
         QDomDocument doc(file);
         QFile f(file);
         if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file.flat()));
         if (!doc.setContent(&f))          qFatal("Unable to parse %s.", qPrintable(file.flat()));
         f.close();
 
-        Template t;
         QDomElement docElem = doc.documentElement();
         QDomNode subject = docElem.firstChild();
         while (!subject.isNull()) {
@@ -620,6 +620,7 @@ class xmlFormat : public Format
             if (current.month() < dob.month()) age--;
             t.file.set("Age", age);
         }
+#endif // BR_EMBEDDED
 
         return t;
     }
@@ -632,7 +633,6 @@ class xmlFormat : public Format
 };
 
 BR_REGISTER(Format, xmlFormat)
-#endif // BR_EMBEDDED
 
 } // namespace br
 

@@ -111,7 +111,7 @@ class RankTransform : public UntrainableTransform
         assert(m.channels() == 1);
         dst = Mat(m.rows, m.cols, CV_32FC1);
         typedef QPair<float,int> Tuple;
-        QList<Tuple> tuples = Common::Sort(OpenCVUtils::matrixToVector(m));
+        QList<Tuple> tuples = Common::Sort(OpenCVUtils::matrixToVector<float>(m));
 
         float prevValue = 0;
         int prevRank = 0;

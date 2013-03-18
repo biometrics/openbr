@@ -14,6 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
+#include <QtConcurrentRun>
 #include <openbr_plugin.h>
 
 #include "core/opencvutils.h"
@@ -108,6 +110,145 @@ class PackTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, PackTransform)
+
+QVector<Mat> ProductQuantizationLUTs;
+
+/*!
+ * \ingroup distances
+ * \brief Distance in a product quantized space \cite jegou11
+ * \author Josh Klontz
+ */
+class ProductQuantizationDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
+    BR_PROPERTY(bool, bayesian, false)
+
+    float compare(const Template &a, const Template &b) const
+    {
+        float distance = 0;
+        for (int i=0; i<a.size(); i++) {
+            const int elements = a[i].total();
+            const uchar *aData = a[i].data;
+            const uchar *bData = b[i].data;
+            const float *lut = (const float*)ProductQuantizationLUTs[i].data;
+            for (int j=0; j<elements; j++)
+                 distance += lut[i*256*256 + aData[j]*256+bData[j]];
+        }
+        if (!bayesian) distance = -log(distance+1);
+        return distance;
+    }
+};
+
+BR_REGISTER(Distance, ProductQuantizationDistance)
+
+/*!
+ * \ingroup transforms
+ * \brief Product quantization \cite jegou11
+ * \author Josh Klontz \cite jklontz
+ */
+class ProductQuantizationTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
+    Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
+    BR_PROPERTY(int, n, 2)
+    BR_PROPERTY(bool, bayesian, false)
+
+    int index;
+    QList<Mat> centers;
+
+public:
+    ProductQuantizationTransform()
+    {
+        index = ProductQuantizationLUTs.size();
+        ProductQuantizationLUTs.append(Mat());
+    }
+
+private:
+    static double likelihoodRatio(const QPair<int,int> &totals, const QList<int> &targets, const QList<int> &queries)
+    {
+        int positives = 0, negatives = 0;
+        foreach (int t, targets)
+            foreach (int q, queries)
+                if (t == q) positives++;
+                else        negatives++;
+        return log(float(positives)/float(totals.first)) / (float(negatives)/float(totals.second));
+    }
+
+    void _train(const Mat &data, const QPair<int,int> &totals, Mat &lut, int i, const QList<int> &templateLabels)
+    {
+        Mat labels, center;
+        kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
+        QList<int> clusterLabels = OpenCVUtils::matrixToVector<int>(labels);
+        QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel> >
+        for (int i=0; i<clusterLabels.size(); i++)
+            clusters[clusterLabels[i]].append(templateLabels[i]);
+
+        for (int j=0; j<256; j++)
+            for (int k=0; k<256; k++)
+                lut.at<float>(i,j*256+k) = bayesian ? likelihoodRatio(totals, clusters[j], clusters[k]) :
+                                                      norm(center.row(j), center.row(k), NORM_L2);
+        centers[i] = center;
+    }
+
+    void train(const TemplateList &src)
+    {
+        Mat data = OpenCVUtils::toMat(src.data());
+        if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
+        const QList<int> templateLabels = src.labels<int>();
+        int totalPositives = 0, totalNegatives = 0;
+        for (int i=0; i<templateLabels.size(); i++)
+            for (int j=0; j<templateLabels.size(); j++)
+                if (templateLabels[i] == templateLabels[j]) totalPositives++;
+                else                                        totalNegatives++;
+        QPair<int,int> totals(totalPositives, totalNegatives);
+
+        Mat &lut = ProductQuantizationLUTs[index];
+        lut = Mat(data.cols/n, 256*256, CV_32FC1);
+
+        for (int i=0; i<lut.rows; i++)
+            centers.append(Mat());
+
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<lut.rows; i++) {
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, data, totals, lut, i, templateLabels));
+            else                                                                                               _train (data, totals, lut, i, templateLabels);
+        }
+        futures.waitForFinished();
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        Mat m = src.m().reshape(1, 1);
+        dst = Mat(1, m.cols/n, CV_8UC1);
+        for (int i=0; i<dst.m().cols; i++) {
+            int bestIndex = 0;
+            double bestDistance = std::numeric_limits<double>::max();
+            Mat m_i = m.colRange(i*n, (i+1)*n);
+            for (int j=0; j<256; j++) {
+                double distance = norm(m_i, centers[index].row(j), NORM_L2);
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestIndex = j;
+                }
+            }
+            dst.m().at<uchar>(0,i) = bestIndex;
+        }
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << centers << ProductQuantizationLUTs[index];
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> centers >> ProductQuantizationLUTs[index];
+    }
+};
+
+BR_REGISTER(Transform, ProductQuantizationTransform)
 
 } // namespace br
 

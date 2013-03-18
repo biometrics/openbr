@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #include <QProcess>
 #include <openbr_plugin.h>
 

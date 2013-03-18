@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -22,6 +23,7 @@
 
 #include "core/common.h"
 #include "core/opencvutils.h"
+#include "core/qtutils.h"
 
 using namespace cv;
 
@@ -119,18 +121,16 @@ private:
             bv.push_back(Mat(1, dims, CV_64FC1));
         }
 
-        QList< QFuture<void> > futures; futures.reserve(dims);
+        QFutureSynchronizer<void> futures;
         const bool parallel = (data.size() > 1000) && Globals->parallelism;
-
         for (size_t c = 0; c < mv.size(); c++) {
             for (int i=0; i<dims; i++)
-                if (parallel) futures.append(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
-                else                                           _train (method, mv[c], &av[c], &bv[c], i);
+                if (parallel) futures.addFuture(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
+                else                                              _train (method, mv[c], &av[c], &bv[c], i);
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
-
-        if (parallel) Globals->trackFutures(futures);
+        futures.waitForFinished();
 
         merge(av, a);
         merge(bv, b);
@@ -223,6 +223,30 @@ class RowWiseMeanCenterTransform : public Transform
 };
 
 BR_REGISTER(Transform, RowWiseMeanCenterTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief dst=sqrt(norm_L1(src)) proposed as RootSIFT in \cite Arandjelovic12
+ * \author Josh Klontz \cite jklontz
+ */
+class RootNormTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        const Mat &m = src;
+        dst.m() = Mat(m.rows, m.cols, m.type());
+        for (int i=0; i<m.rows; i++) {
+            Mat temp;
+            cv::normalize(m.row(i), temp, 1, 0, NORM_L1);
+            cv::sqrt(temp, temp);
+            temp.copyTo(dst.m().row(i));
+        }
+    }
+};
+
+BR_REGISTER(Transform, RootNormTransform)
 
 } // namespace br
 
