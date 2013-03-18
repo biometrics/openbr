@@ -127,10 +127,10 @@ class EmptyGallery : public Gallery
         // Enrolling a null file is used as an idiom to initialize an algorithm
         if (file.name.isEmpty()) return;
 
-        const QString destination = file.name + "/" + t.file.fileName();
+        const QString destination = file.name + "/" + (file.getBool("preservePath") ? t.file.name : t.file.fileName());
         QMutexLocker diskLocker(&diskLock); // Windows prefers to crash when writing to disk in parallel
         if (t.isNull()) {
-            QFile::copy(t.file.resolved(), destination);
+            QtUtils::copyFile(t.file.resolved(), destination);
         } else {
             QScopedPointer<Format> format(Factory<Format>::make(destination));
             format->write(t);

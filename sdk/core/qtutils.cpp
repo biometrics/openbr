@@ -121,6 +121,15 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     }
 }
 
+void QtUtils::copyFile(const QString &src, const QString &dst)
+{
+    touchDir(QFileInfo(dst));
+    if (!QFile::copy(src, dst)) {
+        if (QFileInfo(src).exists()) qFatal("Unable to copy %s to %s. Check file permissions.", qPrintable(src), qPrintable(dst));
+        else                         qFatal("Unable to copy %s to %s. File does not exist.", qPrintable(src), qPrintable(dst));
+    }
+}
+
 void QtUtils::touchDir(const QDir &dir)
 {
     if (dir.exists(".")) return;

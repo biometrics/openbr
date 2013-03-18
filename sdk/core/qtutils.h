@@ -39,6 +39,7 @@ namespace QtUtils
     void writeFile(const QString &file, const QStringList &lines);
     void writeFile(const QString &file, const QString &data);
     void writeFile(const QString &file, const QByteArray &data, int compression = 0);
+    void copyFile(const QString &src, const QString &dst);
 
     /**** Directory Utilities ****/
     void touchDir(const QDir &dir);

@@ -148,6 +148,14 @@ void File::set(const QString &key, const QVariant &value)
     m_metadata.insert(key, value);
 }
 
+bool File::getBool(const QString &key) const
+{
+    if (!contains(key)) return false;
+    QVariant variant = value(key);
+    if (variant.isNull() || !variant.canConvert<bool>()) return true;
+    return variant.value<bool>();
+}
+
 QString File::subject(int label)
 {
     return Globals->classes.key(label, QString::number(label));
