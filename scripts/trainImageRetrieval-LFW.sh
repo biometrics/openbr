@@ -18,4 +18,4 @@ br -algorithm ImageRetrieval -train ~/lfw2[step=10] ../share/openbr/models/algor
 br -algorithm ImageRetrieval -compare ~/lfw2[step=10] . ImageRetrieval_LFW.mtx -eval ImageRetrieval_LFW.mtx LFW.mask Algorithm_Dataset/ImageRetrieval_LFW.csv
 br -plot Algorithm_Dataset/*_LFW.csv LFW
 
-rm -f ../share/openbr/models/algorithms/ImageRetrieval
+#rm -f ../share/openbr/models/algorithms/ImageRetrieval

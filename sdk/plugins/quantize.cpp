@@ -167,7 +167,6 @@ private:
     void train(const TemplateList &src)
     {
         Mat data = OpenCVUtils::toMat(src.data());
-        qDebug() << data.rows << data.cols;
         if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
 
         Mat &lut = ProductQuantizationLUTs[index];
@@ -186,16 +185,16 @@ private:
     void project(const Template &src, Template &dst) const
     {
         Mat m = src.m().reshape(1, 1);
-        dst = Mat(1, src.m().cols/n, CV_8UC1);
-        for (int i=0; i<m.cols/n; i++) {
-            uchar bestIndex = -1;
+        dst = Mat(1, m.cols/n, CV_8UC1);
+        for (int i=0; i<dst.m().cols; i++) {
+            int bestIndex = 0;
             double bestDistance = std::numeric_limits<double>::max();
             Mat m_i = m.colRange(i*n, (i+1)*n);
-            for (uchar i=0; i<256; i++) {
-                double distance = norm(m_i, centers[index].row(i), NORM_L2);
+            for (int j=0; j<256; j++) {
+                double distance = norm(m_i, centers[index].row(j), NORM_L2);
                 if (distance < bestDistance) {
                     bestDistance = distance;
-                    bestIndex = i;
+                    bestIndex = j;
                 }
             }
             dst.m().at<uchar>(0,i) = bestIndex;
