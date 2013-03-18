@@ -42,7 +42,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
-        Globals->abbreviations.insert("FaceRecognitionHoG", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+Gradient+Bin(0,360,8,true)+Merge+Integral+IntegralSampler+ProductQuantization:ProductQuantization");
+        Globals->abbreviations.insert("FaceRecognitionHoG", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+Gradient+Bin(0,360,8,true)+Merge+Integral+IntegralSampler+RootNorm+ProductQuantization:ProductQuantization");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
