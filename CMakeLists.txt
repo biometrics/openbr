@@ -130,6 +130,7 @@ include(InstallDependencies)
 install_compiler_libraries()
 install_qt_libraries(QT_DEPENDENCIES)
 install_qt_imageformats()
+install_qt_misc()
 install_opencv_libraries(OPENCV_DEPENDENCIES)
 
 # Package

@@ -183,8 +183,8 @@ private:
         QList<int> clusterLabels = OpenCVUtils::matrixToVector<int>(labels);
 
         QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel>>
-        for (int i=0; i<clusterLabels.size(); i++)
-            clusters[clusterLabels[i]].append(templateLabels[i]);
+        for (int j=0; j<clusterLabels.size(); j++)
+            clusters[clusterLabels[j]].append(templateLabels[j]);
 
         for (int j=0; j<256; j++)
             for (int k=0; k<256; k++)

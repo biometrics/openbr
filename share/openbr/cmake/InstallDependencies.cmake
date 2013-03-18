@@ -64,6 +64,17 @@ function(install_qt_imageformats)
   endif()
 endfunction()
 
+# Qt Other
+function(install_qt_misc)
+  if(MSVC)
+    if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+      set(BR_INSTALL_DEPENDENCIES_SUFFIX "d")
+    endif()
+    install(FILES ${_qt5Core_install_prefix}/bin/libGLESv2${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin)
+    # install(FILES ${_qt5Core_install_prefix}/bin/icuin49${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin)
+  endif()
+endfunction()
+
 # Compiler libraries
 function(install_compiler_libraries)
   include(InstallRequiredSystemLibraries)
