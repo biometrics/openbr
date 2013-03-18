@@ -74,18 +74,20 @@ QStringList QtUtils::readLines(const QString &file)
 
 void QtUtils::readFile(const QString &file, QStringList &lines)
 {
-    QFile f(file);
-    if (!f.open(QFile::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file));
-    lines = QString(f.readAll()).split('\n', QString::SkipEmptyParts);
+    QByteArray data;
+    readFile(file, data);
+    lines = QString(data).split('\n', QString::SkipEmptyParts);
     for (int i=0; i<lines.size(); i++)
         lines[i] = lines[i].simplified();
-    f.close();
 }
 
 void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
 {
     QFile f(file);
-    if (!f.open(QFile::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file));
+    if (!f.open(QFile::ReadOnly)) {
+        if (f.exists()) qFatal("Unable to open %s for reading. Check file permissions.", qPrintable(file));
+        else            qFatal("Unable to open %s for reading. File does not exist.", qPrintable(file));
+    }
     data = f.readAll();
     if (uncompress) data = qUncompress(data);
     f.close();
