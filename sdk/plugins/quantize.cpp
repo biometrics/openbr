@@ -14,6 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QFutureSynchronizer>
+#include <QtConcurrentRun>
 #include <openbr_plugin.h>
 
 #include "core/opencvutils.h"
@@ -131,7 +133,7 @@ class ProductQuantizationDistance : public Distance
             const uchar *bData = b[i].data;
             const float *lut = (const float*)ProductQuantizationLUTs[i].data;
             for (int j=0; j<elements; j++)
-                distance += lut[i*256*256 + aData[j]*256+bData[j]];
+                 distance += lut[i*256*256 + aData[j]*256+bData[j]];
         }
         if (!bayesian) distance = -log(distance+1);
         return distance;
@@ -164,22 +166,56 @@ public:
     }
 
 private:
+    static double likelihoodRatio(const QPair<int,int> &totals, const QList<int> &targets, const QList<int> &queries)
+    {
+        int positives = 0, negatives = 0;
+        foreach (int t, targets)
+            foreach (int q, queries)
+                if (t == q) positives++;
+                else        negatives++;
+        return log(float(positives)/float(totals.first)) / (float(negatives)/float(totals.second));
+    }
+
+    void _train(const Mat &data, const QPair<int,int> &totals, Mat &lut, int i, const QList<int> &templateLabels)
+    {
+        Mat labels, center;
+        kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
+        QList<int> clusterLabels = OpenCVUtils::matrixToVector<int>(labels);
+        QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel> >
+        for (int i=0; i<clusterLabels.size(); i++)
+            clusters[clusterLabels[i]].append(templateLabels[i]);
+
+        for (int j=0; j<256; j++)
+            for (int k=0; k<256; k++)
+                lut.at<float>(i,j*256+k) = bayesian ? likelihoodRatio(totals, clusters[j], clusters[k]) :
+                                                      norm(center.row(j), center.row(k), NORM_L2);
+        centers[i] = center;
+    }
+
     void train(const TemplateList &src)
     {
         Mat data = OpenCVUtils::toMat(src.data());
         if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
+        const QList<int> templateLabels = src.labels<int>();
+        int totalPositives = 0, totalNegatives = 0;
+        for (int i=0; i<templateLabels.size(); i++)
+            for (int j=0; j<templateLabels.size(); j++)
+                if (templateLabels[i] == templateLabels[j]) totalPositives++;
+                else                                        totalNegatives++;
+        QPair<int,int> totals(totalPositives, totalNegatives);
 
         Mat &lut = ProductQuantizationLUTs[index];
         lut = Mat(data.cols/n, 256*256, CV_32FC1);
 
+        for (int i=0; i<lut.rows; i++)
+            centers.append(Mat());
+
+        QFutureSynchronizer<void> futures;
         for (int i=0; i<lut.rows; i++) {
-            Mat labels, center;
-            kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
-            for (int j=0; j<256; j++)
-                for (int k=0; k<256; k++)
-                    lut.at<float>(i,j*256+k) = norm(center.row(j), center.row(k), NORM_L2);
-            centers.append(center);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, data, totals, lut, i, templateLabels));
+            else                                                                                               _train (data, totals, lut, i, templateLabels);
         }
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
