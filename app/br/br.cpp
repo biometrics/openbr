@@ -231,14 +231,12 @@ int main(int argc, char *argv[])
     br_initialize(argc, argv);
 
     // Do argument execution in another thread so this main thread can run an event loop.
-    // When adding fakeMain to the global thread pool we give it low priority
+    // When adding fakeMain to the global thread pool we give it a higher (slower) priority
     //   so that it is preempted when parallel work is available,
     //   otherwise we would only achieve (n-1)/n CPU utilization.
     FakeMain *fakeMain = new FakeMain(argc, argv);
-    QThreadPool::globalInstance()->start(fakeMain, -1);
+    QThreadPool::globalInstance()->start(fakeMain, 1);
     QCoreApplication::exec();
 
     br_finalize();
 }
-
-#include "br.moc"

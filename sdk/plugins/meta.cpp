@@ -61,31 +61,6 @@ static void _train(Transform *transform, const TemplateList *data)
     transform->train(*data);
 }
 
-// For handling progress feedback
-static int depth = 0;
-
-static void acquireStep()
-{
-    if (depth == 0) {
-        Globals->currentStep = 0;
-        Globals->totalSteps = 1;
-    }
-    depth++;
-}
-
-static void releaseStep()
-{
-    depth--;
-    Globals->currentStep = floor(Globals->currentStep * pow(10.0, double(depth))) / pow(10.0, double(depth));
-    if (depth == 0)
-        Globals->totalSteps = 0;
-}
-
-static void incrementStep()
-{
-    Globals->currentStep += 1.0 / pow(10.0, double(depth));
-}
-
 /*!
  * \ingroup Transforms
  * \brief Transforms in series.
@@ -102,16 +77,13 @@ class PipeTransform : public CompositeTransform
 
     void train(const TemplateList &data)
     {
-        acquireStep();
-
         TemplateList copy(data);
         for (int i=0; i<transforms.size(); i++) {
+            fprintf(stderr, "%s training... ", qPrintable(transforms[i]->objectName()));
             transforms[i]->train(copy);
+            fprintf(stderr, "projecting...\n");
             copy >> *transforms[i];
-            incrementStep();
         }
-
-        releaseStep();
     }
 
     void backProject(const Template &dst, Template &src) const
