@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 2.8.9)
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "OpenBR")
 set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition")
@@ -104,8 +103,8 @@ if(BUILD_TESTING)
 endif()
 
 # Build the SDK
-include_directories(sdk)
-add_subdirectory(sdk)
+include_directories(.)
+add_subdirectory(openbr)
 
 # Build applications
 add_subdirectory(app)
@@ -131,6 +130,7 @@ include(InstallDependencies)
 install_compiler_libraries()
 install_qt_libraries(QT_DEPENDENCIES)
 install_qt_imageformats()
+install_qt_misc()
 install_opencv_libraries(OPENCV_DEPENDENCIES)
 
 # Package

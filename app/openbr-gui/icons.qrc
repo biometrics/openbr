@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>icons/mitre_logo.png</file>
-        <file>icons/mm.png</file>
-    </qresource>
-</RCC>

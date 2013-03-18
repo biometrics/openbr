@@ -1,6 +1,0 @@
-\form#0:$\cdot value2 - value1 <= abs(intervalSize * 10e^{-6})$
-\form#1:$y = f([x1,x2])$
-\form#2:$[y1,y2] = f(x)$
-\form#3:$stepSize = (intervalSize - intervalSize * 10e^{-6}) / numSteps$
-\form#4:$\left\{ 1,2,5\right\} \cdot 10^{n}$
-\form#5:$\left\{ 1,2,3,5\right\} \cdot 10^{n}$

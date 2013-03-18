@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openbr.h>
+#include <openbr/openbr.h>
 
 /*!
  * \defgroup cli Command Line Interface
@@ -231,11 +231,12 @@ int main(int argc, char *argv[])
     br_initialize(argc, argv);
 
     // Do argument execution in another thread so this main thread can run an event loop.
-    // When adding fakeMain to the global thread pool we give it a higher (slower) priority
-    //   so that it is preempted when parallel work is available,
-    //   otherwise we would only achieve (n-1)/n CPU utilization.
+    // When adding fakeMain to the global thread pool we also increment maxThreadCount so
+    //   that while this thread waits on parallel work to complete,
+    //   the parallel work can make use of all available CPU threads.
     FakeMain *fakeMain = new FakeMain(argc, argv);
-    QThreadPool::globalInstance()->start(fakeMain, 1);
+    QThreadPool::globalInstance()->start(fakeMain);
+    QThreadPool::globalInstance()->setMaxThreadCount(QThreadPool::globalInstance()->maxThreadCount()+1);
     QCoreApplication::exec();
 
     br_finalize();
