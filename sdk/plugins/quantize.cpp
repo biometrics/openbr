@@ -168,12 +168,12 @@ public:
 private:
     static double likelihoodRatio(const QPair<int,int> &totals, const QList<int> &targets, const QList<int> &queries)
     {
-        int positives = 0, negatives = 0;
+        int positives = 1, negatives = 1; // Equal priors
         foreach (int t, targets)
             foreach (int q, queries)
                 if (t == q) positives++;
                 else        negatives++;
-        return log(float(positives)/float(totals.first)) / (float(negatives)/float(totals.second));
+        return log((float(positives)/float(totals.first)) / (float(negatives)/float(totals.second)));
     }
 
     void _train(const Mat &data, const QPair<int,int> &totals, Mat &lut, int i, const QList<int> &templateLabels)
@@ -181,7 +181,8 @@ private:
         Mat labels, center;
         kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
         QList<int> clusterLabels = OpenCVUtils::matrixToVector<int>(labels);
-        QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel> >
+
+        QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel>>
         for (int i=0; i<clusterLabels.size(); i++)
             clusters[clusterLabels[i]].append(templateLabels[i]);
 

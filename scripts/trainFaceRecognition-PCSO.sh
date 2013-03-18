@@ -10,4 +10,4 @@ fi
 #rm -f ../share/openbr/models/features/FaceRecognitionQuantization
 rm -f ../share/openbr/models/algorithms/FaceRecognition
 
-br -algorithm FaceRecognition -path ../data/PCSO/Images -train "../data/PCSO/PCSO.db[query='SELECT File,'S'||PersonID,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
+br -algorithm FaceRecognition -path ../data/PCSO/img -train "../data/PCSO/PCSO.db[query='SELECT File,'S'||PersonID,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
