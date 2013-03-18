@@ -177,6 +177,37 @@ class PipeDistance : public Distance
 
 BR_REGISTER(Distance, PipeDistance)
 
+class AverageDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+
+    void train(const TemplateList &src)
+    {
+        distance->train(src);
+    }
+
+    float compare(const Template &a, const Template &b) const
+    {
+        if (a.size() != b.size())
+            qDebug() << a.size() << " " << b.size();
+
+        float score = 0;
+
+        for (int i = 0; i < a.size(); i++) {
+            //Template
+            score += distance->compare(a[i],b[i]);
+        }
+
+        qDebug() << score;
+
+        return score;
+    }
+};
+
+BR_REGISTER(Distance, AverageDistance)
+
 /*!
  * \ingroup distances
  * \brief Fast 8-bit L1 distance

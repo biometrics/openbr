@@ -302,6 +302,8 @@ class memGallery : public Gallery
 
     static void align(TemplateList &templates)
     {
+        //if (templates[0].size() > 1) return;
+
         bool uniform = true;
         QVector<uchar> alignedData(templates.bytes<size_t>());
         size_t offset = 0;

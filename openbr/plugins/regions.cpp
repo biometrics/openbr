@@ -157,7 +157,7 @@ BR_REGISTER(Transform, DupTransform)
  * \todo Padding should be a percent of total image size
  */
 
-class RectFromLandmarksTransform : public UntrainableTransform
+class RectFromPointsTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
@@ -181,7 +181,7 @@ class RectFromLandmarksTransform : public UntrainableTransform
         maxX = maxY = -std::numeric_limits<int>::max();
 
         foreach(int index, indices) {
-            if (src.file.points().size() > index+1) {
+            if (src.file.points().size() > index) {
                 if (src.file.points()[index].x() < minX) minX = src.file.points()[index].x();
                 if (src.file.points()[index].x() > maxX) maxX = src.file.points()[index].x();
                 if (src.file.points()[index].y() < minY) minY = src.file.points()[index].y();
@@ -203,7 +203,7 @@ class RectFromLandmarksTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, RectFromLandmarksTransform)
+BR_REGISTER(Transform, RectFromPointsTransform)
 
 } // namespace br
 

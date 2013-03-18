@@ -245,6 +245,8 @@ private:
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
     void init(const QString &file);
+    QString toString(const QVariant &variant) const;
+    void fromString(const QString &key, const QString &value);
 };
 
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */
