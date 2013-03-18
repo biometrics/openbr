@@ -77,7 +77,7 @@ class SentenceSimilarityDistance : public Distance
                 for (int i=0; i<aRows; i++)
                     for (int j=0; j<bRows; j++)
                         for (int k=0; k<aColumns; k++)
-                            distance += pow(aBuffer[i*aColumns+k] - bBuffer[j*bColumns+k], 2.f);
+                            distance += pow(aData[i*aColumns+k] - bData[j*bColumns+k], 2.f);
                 comparisons += aRows * bRows * aColumns;
                 aWord = -2;
                 bWord = -1;
