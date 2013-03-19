@@ -1162,6 +1162,7 @@ public:
         transform->setParent(this);
         transforms.append(transform);
         file = transform->file;
+        trainable = transform->trainable;
         setObjectName(transforms.first()->objectName());
     }
 
@@ -1178,9 +1179,8 @@ private:
 
     void train(const TemplateList &data)
     {
-        // Don't bother constructing datasets if the transform is untrainable
-        if (dynamic_cast<UntrainableTransform*>(transforms.first()))
-            return;
+        // Don't bother if the transform is untrainable
+        if (!trainable) return;
 
         QList<TemplateList> templatesList;
         foreach (const Template &t, data) {

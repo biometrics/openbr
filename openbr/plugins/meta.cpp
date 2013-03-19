@@ -75,14 +75,42 @@ class PipeTransform : public CompositeTransform
 {
     Q_OBJECT
 
+    void _projectPartial(Template *srcdst, int startIndex, int stopIndex)
+    {
+        for (int i=startIndex; i<stopIndex; i++)
+            *srcdst >> *transforms[i];
+    }
+
     void train(const TemplateList &data)
     {
         TemplateList copy(data);
-        for (int i=0; i<transforms.size(); i++) {
-            fprintf(stderr, "%s training... ", qPrintable(transforms[i]->objectName()));
-            transforms[i]->train(copy);
-            fprintf(stderr, "projecting...\n");
-            copy >> *transforms[i];
+        int i = 0;
+        while (i < transforms.size()) {
+            fprintf(stderr, "%s", qPrintable(transforms[i]->objectName()));
+
+            // Conditional statement covers likely case that first transform is untrainable
+            if (transforms[i]->trainable) {
+                fprintf(stderr, " training...");
+                transforms[i]->train(copy);
+            }
+
+            // We project through any subsequent untrainable transforms at once
+            //   as a memory optimization in case any of these intermediate
+            //   transforms allocate a lot of memory (like OpenTransform)
+            //   then we don't want all the training templates to be processed
+            //   by that transform at once if we can avoid it.
+            int nextTrainableTransform = i+1;
+            while ((nextTrainableTransform < transforms.size()) &&
+                   !transforms[nextTrainableTransform]->trainable)
+                nextTrainableTransform++;
+
+            fprintf(stderr, " projecting...\n");
+            QFutureSynchronizer<void> futures;
+            for (int j=0; j<copy.size(); j++)
+                if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));
+                else                                                                                _projectPartial( &copy[j], i, nextTrainableTransform);
+            futures.waitForFinished();
+            i = nextTrainableTransform;
         }
     }
 
