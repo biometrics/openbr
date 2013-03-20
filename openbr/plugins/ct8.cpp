@@ -11,7 +11,7 @@
 #include <exception>
 #include <string>
 #include <vector>
-#include <openbr_plugin.h>
+#include <openbr/openbr_plugin.h>
 
 #include "core/resource.h"
 
