@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QLabel>
+#include <QElapsedTimer>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/openbr_plugin.h>
 
@@ -66,13 +67,13 @@ public slots:
     {
         window->setPixmap(input);
         window->setFixedSize(input.size());
-        window->setVisible(true);
     }
 
     void createWindow()
     {
         delete window;
         window = new QLabel();
+        window->setVisible(true);
     }
 };
 
@@ -87,6 +88,9 @@ class Show2Transform : public TimeVaryingTransform
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
+
     Show2Transform() : TimeVaryingTransform(false, false)
     {
         // Create our GUI proxy
@@ -120,9 +124,22 @@ public:
             return;
 
         foreach (const Template & t, src) {
+            // build label
+            QString newTitle;
+            foreach (const QString & s, keys) {
+
+                if (t.file.contains(s)) {
+                    QString out = t.file.get<QString>(s);
+                    newTitle = newTitle + s + ": " + out + " ";
+                }
+
+            }
+            emit this->changeTitle(newTitle);
+
             foreach(const cv::Mat & m, t) {
                 qImageBuffer = toQImage(m);
                 displayBuffer.convertFromImage(qImageBuffer);
+
                 // Emit an explicit  copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
@@ -140,6 +157,7 @@ public:
     void init()
     {
         emit needWindow();
+        connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
     }
 
 protected:
@@ -150,9 +168,113 @@ protected:
 signals:
     void needWindow();
     void updateImage(const QPixmap & input);
+    void changeTitle(const QString & input);
 };
 
 BR_REGISTER(Transform, Show2Transform)
+
+class FPSSynch : public TimeVaryingTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(int targetFPS READ get_targetFPS WRITE set_targetFPS RESET reset_targetFPS STORED false)
+    BR_PROPERTY(int, targetFPS, 30)
+
+public:
+    FPSSynch() : TimeVaryingTransform(false, false) {}
+
+    ~FPSSynch() {}
+
+    void train(const TemplateList &data) { (void) data; }
+
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        dst = src;
+        qint64 time_delta = timer.elapsed();
+
+        qint64 wait_time = target_wait - time_delta;
+        timer.start();
+
+        if (wait_time < 0) {
+            return;
+        }
+
+        QThread::msleep(wait_time);
+    }
+
+    void finalize(TemplateList & output)
+    {
+        (void) output;
+    }
+
+    void init()
+    {
+        target_wait = 1000 / targetFPS;
+        timer.start();
+    }
+
+protected:
+    QElapsedTimer timer;
+    qint64 target_wait;
+};
+BR_REGISTER(Transform, FPSSynch)
+
+class FPSCalc : public TimeVaryingTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(int targetFPS READ get_targetFPS WRITE set_targetFPS RESET reset_targetFPS)
+    BR_PROPERTY(int, targetFPS, 30)
+
+
+public:
+    FPSCalc() : TimeVaryingTransform(false, false) { initialized = false; }
+
+    ~FPSCalc() {}
+
+    void train(const TemplateList &data) { (void) data; }
+
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        dst = src;
+
+        if (!initialized) {
+            initialized = true;
+            timer.start();
+        }
+        framesSeen++;
+
+        if (dst.empty())
+            return;
+
+        qint64 elapsed = timer.elapsed();
+        if (elapsed > 1000) {
+            double fps = 1000 * framesSeen / elapsed;
+            //output.data.last().file.set("FrameNumber", output.sequenceNumber);
+            dst.first().file.set("AvgFPS", fps);
+        }
+    }
+
+    void finalize(TemplateList & output)
+    {
+        (void) output;
+    }
+
+    void init()
+    {
+        initialized = false;
+        framesSeen = 0;
+    }
+
+protected:
+    bool initialized;
+    QElapsedTimer timer;
+    qint64 framesSeen;
+};
+BR_REGISTER(Transform, FPSCalc)
+
+
+
 
 } // namespace br
 
