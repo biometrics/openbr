@@ -40,8 +40,12 @@ protected:
     Q_PROPERTY(int drop READ get_drop WRITE set_drop RESET reset_drop STORED false)
     Q_PROPERTY(bool whiten READ get_whiten WRITE set_whiten RESET reset_whiten STORED false)
 
-    // If keep < 1 then it is assumed to be the energy to retain
-    // else it is the number of leading eigenvectors to keep.
+    /*!
+     *     keep <  0: All eigenvalues are retained.
+     *     keep =  0: No PCA performed, eigenvectors form an identity matrix.
+     * 0 < keep <  1: Fraction of the variance to retain.
+     *     keep >= 1: Number of leading eigenvectors to retain.
+     */
     BR_PROPERTY(float, keep, 0.95)
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
@@ -127,23 +131,33 @@ protected:
         int instances = data.cols();
         const bool dominantEigenEstimation = (dimsIn > instances);
 
-        // Compute and remove mean
-        mean = Eigen::VectorXf(dimsIn);
-        for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
-        for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
+        Eigen::MatrixXd allEVals, allEVecs;
+        if (keep != 0) {
+            // Compute and remove mean
+            mean = Eigen::VectorXf(dimsIn);
+            for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
+            for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
 
-        // Calculate covariance matrix
-        Eigen::MatrixXd cov;
-        if (dominantEigenEstimation) cov = data.transpose() * data / (instances-1.0);
-        else                         cov = data * data.transpose() / (instances-1.0);
+            // Calculate covariance matrix
+            Eigen::MatrixXd cov;
+            if (dominantEigenEstimation) cov = data.transpose() * data / (instances-1.0);
+            else                         cov = data * data.transpose() / (instances-1.0);
 
-        // Compute eigendecomposition. Returns eigenvectors/eigenvalues in increasing order by eigenvalue.
-        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eSolver(cov);
-        Eigen::MatrixXd allEVals = eSolver.eigenvalues();
-        Eigen::MatrixXd allEVecs = eSolver.eigenvectors();
-        if (dominantEigenEstimation) allEVecs = data * allEVecs;
+            // Compute eigendecomposition. Returns eigenvectors/eigenvalues in increasing order by eigenvalue.
+            Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eSolver(cov);
+            allEVals = eSolver.eigenvalues();
+            allEVecs = eSolver.eigenvectors();
+            if (dominantEigenEstimation) allEVecs = data * allEVecs;
+        } else {
+            // Null case
+            mean = Eigen::VectorXf::Zero(dimsIn);
+            allEVecs = Eigen::MatrixXd::Identity(dimsIn, dimsIn);
+            allEVals = Eigen::VectorXd::Ones(dimsIn);
+        }
 
-        if (keep < 1) {
+        if (keep <= 0) {
+            keep = dimsIn - drop;
+        } else if (keep < 1) {
             // Keep eigenvectors that retain a certain energy percentage.
             const double totalEnergy = allEVals.sum();
             if (totalEnergy == 0) {
@@ -301,9 +315,11 @@ class LDATransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float pcaKeep READ get_pcaKeep WRITE set_pcaKeep RESET reset_pcaKeep STORED false)
+    Q_PROPERTY(bool pcaWhiten READ get_pcaWhiten WRITE set_pcaWhiten RESET reset_pcaWhiten STORED false)
     Q_PROPERTY(int directLDA READ get_directLDA WRITE set_directLDA RESET reset_directLDA STORED false)
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
+    BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
     BR_PROPERTY(float, directDrop, 0.1)
 
@@ -319,6 +335,7 @@ class LDATransform : public Transform
         // Perform PCA dimensionality reduction
         PCATransform pca;
         pca.keep = pcaKeep;
+        pca.whiten = pcaWhiten;
         pca.train(trainingSet);
         mean = pca.mean;
 
