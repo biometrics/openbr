@@ -37,6 +37,7 @@ class DistDistance : public Distance
     Q_OBJECT
     Q_ENUMS(Metric)
     Q_PROPERTY(Metric metric READ get_metric WRITE set_metric RESET reset_metric STORED false)
+    Q_PROPERTY(bool negLogPlusOne READ get_negLogPlusOne WRITE set_negLogPlusOne RESET reset_negLogPlusOne STORED false)
 
 public:
     /*!< */
@@ -51,6 +52,7 @@ public:
 
 private:
     BR_PROPERTY(Metric, metric, L2)
+    BR_PROPERTY(bool, negLogPlusOne, true)
 
     float compare(const Template &a, const Template &b) const
     {
@@ -61,8 +63,7 @@ private:
         float result = std::numeric_limits<float>::max();
         switch (metric) {
           case Correlation:
-            result = -compareHist(a, b, CV_COMP_CORREL);
-            break;
+            return compareHist(a, b, CV_COMP_CORREL);
           case ChiSquared:
             result = compareHist(a, b, CV_COMP_CHISQR);
             break;
@@ -82,8 +83,7 @@ private:
             result = norm(a, b, NORM_L2);
             break;
           case Cosine:
-            result = cosine(a, b);
-            break;
+            return cosine(a, b);
           default:
             qFatal("Invalid metric");
         }
@@ -91,7 +91,7 @@ private:
         if (result != result)
             qFatal("NaN result.");
 
-        return -log(result+1);
+        return negLogPlusOne ? -log(result+1) : result;
     }
 
     static float cosine(const Mat &a, const Mat &b)

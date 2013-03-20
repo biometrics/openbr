@@ -118,22 +118,22 @@ T Max(const QList<T> &vals)
 /*!
  * \brief Returns the mean and standard deviation of a vector of values.
  */
-template <typename T>
-void Mean(const QList<T> &vals, double *mean)
+template <template<class> class V, typename T>
+void Mean(const V<T> &vals, double *mean)
 {
     const int size = vals.size();
 
     // Compute Mean
     double sum = 0;
-    for (int i=0; i<size; i++) sum += vals[i];
+    foreach (int val, vals) sum += val;
     *mean = (size == 0) ? 0 : sum / size;
 }
 
 /*!
  * \brief Returns the mean and standard deviation of a vector of values.
  */
-template <typename T>
-void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
+template <template<class> class V, typename T>
+void MeanStdDev(const V<T> &vals, double *mean, double *stddev)
 {
     const int size = vals.size();
 
@@ -141,8 +141,8 @@ void MeanStdDev(const QList<T> &vals, double *mean, double *stddev)
 
     // Compute Standard Deviation
     double variance = 0;
-    for (int i=0; i<size; i++) {
-        double delta = vals[i] - *mean;
+    foreach (T val, vals) {
+        const double delta = val - *mean;
         variance += delta * delta;
     }
     *stddev = (size == 0) ? 0 : sqrt(variance/size);
@@ -193,8 +193,8 @@ QList<T> CumSum(const QList<T> &vals)
 /*!
  * \brief Calculate DKE bandwidth parameter 'h'
  */
-template <typename T>
-double KernelDensityBandwidth(const QList<T> &vals)
+template <template<class> class V, typename T>
+double KernelDensityBandwidth(const V<T> &vals)
 {
     double mean, stddev;
     MeanStdDev(vals, &mean, &stddev);
@@ -204,8 +204,8 @@ double KernelDensityBandwidth(const QList<T> &vals)
 /*!
  * \brief Compute kernel density at value x with bandwidth h.
  */
-template <typename T>
-double KernelDensityEstimation(const QList<T> &vals, double x, double h)
+template <template<class> class V, typename T>
+double KernelDensityEstimation(const V<T> &vals, double x, double h)
 {
     double y = 0;
     foreach (T val, vals)
@@ -320,16 +320,15 @@ QList<T> RemoveOutliers(QList<T> vals)
 /*!
  * \brief Sorts and evenly downsamples a vector to size k.
  */
-template <typename T>
-QList<T> Downsample(QList<T> vals, long k)
+template <template<class> class V, typename T>
+V<T> Downsample(V<T> vals, int k)
 {
-    // Use 'long' instead of 'int' so multiplication doesn't overflow
-    qSort(vals);
-    long size = (long)vals.size();
+    std::sort(vals.begin(), vals.end());
+    int size = vals.size();
     if (size <= k) return vals;
 
-    QList<T> newVals; newVals.reserve(k);
-    for (long i=0; i<k; i++) newVals.push_back(vals[i * (size-1) / (k-1)]);
+    V<T> newVals; newVals.reserve(k);
+    for (int i=0; i<k; i++) newVals.push_back(vals[long(i) * long(size-1) / long(k-1)]);
     return newVals;
 }
 

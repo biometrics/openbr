@@ -18,6 +18,7 @@
 #include <QtConcurrentRun>
 #include <openbr/openbr_plugin.h>
 
+#include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;
@@ -133,7 +134,7 @@ class ProductQuantizationDistance : public Distance
             const uchar *bData = b[i].data;
             const float *lut = (const float*)ProductQuantizationLUTs[i].data;
             for (int j=0; j<elements; j++)
-                 distance += lut[i*256*256 + aData[j]*256+bData[j]];
+                 distance += lut[j*256*256 + aData[j]*256+bData[j]];
         }
         if (!bayesian) distance = -log(distance+1);
         return distance;
@@ -151,8 +152,10 @@ class ProductQuantizationTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
     BR_PROPERTY(int, n, 2)
+    BR_PROPERTY(br::Distance*, distance, Distance::make("L2", this))
     BR_PROPERTY(bool, bayesian, false)
 
     int index;
@@ -166,76 +169,82 @@ public:
     }
 
 private:
-    static double likelihoodRatio(const QPair<int,int> &totals, const QList<int> &targets, const QList<int> &queries)
+    void _train(const Mat &data, const QList<int> &labels, Mat *lut, Mat *center)
     {
-        int positives = 1, negatives = 1; // Equal priors
-        foreach (int t, targets)
-            foreach (int q, queries)
-                if (t == q) positives++;
-                else        negatives++;
-        return log((float(positives)/float(totals.first)) / (float(negatives)/float(totals.second)));
-    }
-
-    void _train(const Mat &data, const QPair<int,int> &totals, Mat &lut, int i, const QList<int> &templateLabels)
-    {
-        Mat labels, center;
-        kmeans(data.colRange(i*n,(i+1)*n), 256, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, center);
-        QList<int> clusterLabels = OpenCVUtils::matrixToVector<int>(labels);
-
-        QHash< int, QList<int> > clusters; // QHash<clusterLabel, QList<templateLabel>>
-        for (int j=0; j<clusterLabels.size(); j++)
-            clusters[clusterLabels[j]].append(templateLabels[j]);
+        Mat clusterLabels;
+        kmeans(data, 256, clusterLabels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, *center);
 
         for (int j=0; j<256; j++)
             for (int k=0; k<256; k++)
-                lut.at<float>(i,j*256+k) = bayesian ? likelihoodRatio(totals, clusters[j], clusters[k]) :
-                                                      norm(center.row(j), center.row(k), NORM_L2);
-        centers[i] = center;
+                lut->at<float>(0,j*256+k) = distance->compare(center->row(j), center->row(k));
+
+        if (!bayesian) return;
+
+        QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
+        QVector<float> genuineScores; genuineScores.reserve(data.rows);
+        QVector<float> impostorScores; impostorScores.reserve(data.rows*data.rows/2);
+        for (int i=0; i<indicies.size(); i++)
+            for (int j=i+1; j<indicies.size(); j++) {
+                const float score = lut->at<float>(0, indicies[i]*256+indicies[j]);
+                if (labels[i] == labels[j]) genuineScores.append(score);
+                else                        impostorScores.append(score);
+            }
+        genuineScores = Common::Downsample(genuineScores, 256);
+        impostorScores = Common::Downsample(impostorScores, 256);
+
+        double hGenuine = Common::KernelDensityBandwidth(genuineScores);
+        double hImpostor = Common::KernelDensityBandwidth(impostorScores);
+
+        for (int j=0; j<256; j++)
+            for (int k=0; k<256; k++)
+                lut->at<float>(0,j*256+k) = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
+                                                Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor));
     }
 
     void train(const TemplateList &src)
     {
         Mat data = OpenCVUtils::toMat(src.data());
         if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
-        const QList<int> templateLabels = src.labels<int>();
-        int totalPositives = 0, totalNegatives = 0;
-        for (int i=0; i<templateLabels.size(); i++)
-            for (int j=0; j<templateLabels.size(); j++)
-                if (templateLabels[i] == templateLabels[j]) totalPositives++;
-                else                                        totalNegatives++;
-        QPair<int,int> totals(totalPositives, totalNegatives);
+        const QList<int> labels = src.labels<int>();
 
         Mat &lut = ProductQuantizationLUTs[index];
         lut = Mat(data.cols/n, 256*256, CV_32FC1);
 
-        for (int i=0; i<lut.rows; i++)
+        QList<Mat> subdata, subluts;
+        for (int i=0; i<lut.rows; i++) {
             centers.append(Mat());
+            subdata.append(data.colRange(i*n,(i+1)*n));
+            subluts.append(lut.row(i));
+        }
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<lut.rows; i++) {
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, data, totals, lut, i, templateLabels));
-            else                                                                                               _train (data, totals, lut, i, templateLabels);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, subdata[i], labels, &subluts[i], &centers[i]));
+            else                                                                                               _train (subdata[i], labels, &subluts[i], &centers[i]);
         }
         futures.waitForFinished();
+    }
+
+    int getIndex(const Mat &m, const Mat &center) const
+    {
+        int bestIndex = 0;
+        double bestDistance = std::numeric_limits<double>::max();
+        for (int j=0; j<256; j++) {
+            double distance = norm(m, center.row(j), NORM_L2);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = j;
+            }
+        }
+        return bestIndex;
     }
 
     void project(const Template &src, Template &dst) const
     {
         Mat m = src.m().reshape(1, 1);
         dst = Mat(1, m.cols/n, CV_8UC1);
-        for (int i=0; i<dst.m().cols; i++) {
-            int bestIndex = 0;
-            double bestDistance = std::numeric_limits<double>::max();
-            Mat m_i = m.colRange(i*n, (i+1)*n);
-            for (int j=0; j<256; j++) {
-                double distance = norm(m_i, centers[index].row(j), NORM_L2);
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    bestIndex = j;
-                }
-            }
-            dst.m().at<uchar>(0,i) = bestIndex;
-        }
+        for (int i=0; i<dst.m().cols; i++)
+            dst.m().at<uchar>(0,i) = getIndex(m.colRange(i*n, (i+1)*n), centers[i]);
     }
 
     void store(QDataStream &stream) const
