@@ -1213,11 +1213,10 @@ public:
     void init()
     {
         isTimeVarying = false;
+        trainable = false;
         foreach (const br::Transform *transform, transforms) {
-            if (transform->timeVarying()) {
-                isTimeVarying = true;
-                break;
-            }
+            isTimeVarying = isTimeVarying || transform->timeVarying();
+            trainable = trainable || transform->trainable;
         }
     }
 
