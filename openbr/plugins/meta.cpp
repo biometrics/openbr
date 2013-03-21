@@ -73,7 +73,7 @@ static void _train(Transform *transform, const TemplateList *data)
  */
 class PipeTransform : public CompositeTransform
 {
-    Q_OBJECT
+    Q_OBJECT    
 
     void _projectPartial(Template *srcdst, int startIndex, int stopIndex)
     {
@@ -83,6 +83,8 @@ class PipeTransform : public CompositeTransform
 
     void train(const TemplateList &data)
     {
+        if (!trainable) return;
+
         TemplateList copy(data);
         int i = 0;
         while (i < transforms.size()) {
@@ -285,7 +287,7 @@ class ForkTransform : public CompositeTransform
 
     void train(const TemplateList &data)
     {
-
+        if (!trainable) return;
         QFutureSynchronizer<void> futures;
         for (int i=0; i<transforms.size(); i++) {
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
@@ -416,6 +418,7 @@ public:
 private:
     void init()
     {
+        trainable = transform->trainable;
         if (!cache.isEmpty()) return;
 
         // Read from cache
@@ -477,6 +480,7 @@ private:
         if (transform != NULL) return;
         baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
         if (!tryLoad()) transform = make(description);
+        else            trainable = false;
     }
 
     void train(const TemplateList &data)
