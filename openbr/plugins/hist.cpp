@@ -83,7 +83,8 @@ class BinTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        src.m().convertTo(dst, bins > 256 ? CV_16U : CV_8U, bins/(max-min), -0.5 /* floor */);
+        const double floor = ((src.m().depth() == CV_32F) || (src.m().depth() == CV_64F)) ? -0.5 : 0;
+        src.m().convertTo(dst, bins > 256 ? CV_16U : CV_8U, bins/(max-min), floor);
         if (!split) return;
 
         Mat input = dst;
