@@ -250,6 +250,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 25;
+    float maxRankRate;
     for (int i=1; i<=Max_Retrieval; i++) {
         int realizedReturns = 0, possibleReturns = 0;
         foreach (int firstGenuineReturn, firstGenuineReturns) {
@@ -257,10 +258,11 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
             if (firstGenuineReturn <= i) realizedReturns++;
         }
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(float(realizedReturns)/possibleReturns))));
+        if (i==(Max_Retrieval)) maxRankRate = float(realizedReturns)/possibleReturns;
     }
 
     if (!csv.isEmpty()) QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f", result);
+    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate at Rank 25: %.3f", result, maxRankRate);
     return result;
 }
 
