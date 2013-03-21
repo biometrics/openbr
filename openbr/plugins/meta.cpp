@@ -88,7 +88,7 @@ class PipeTransform : public CompositeTransform
         TemplateList copy(data);
         int i = 0;
         while (i < transforms.size()) {
-            fprintf(stderr, "%s", qPrintable(transforms[i]->objectName()));
+            fprintf(stderr, "\n%s", qPrintable(transforms[i]->objectName()));
 
             // Conditional statement covers likely case that first transform is untrainable
             if (transforms[i]->trainable) {
@@ -106,7 +106,7 @@ class PipeTransform : public CompositeTransform
                    !transforms[nextTrainableTransform]->trainable)
                 nextTrainableTransform++;
 
-            fprintf(stderr, " projecting...\n");
+            fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
             for (int j=0; j<copy.size(); j++)
                 if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));

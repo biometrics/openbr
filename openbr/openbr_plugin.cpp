@@ -968,6 +968,7 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         // Write debug output then close
         qDebug("  File: %s\n  Function: %s\n  Line: %d", qPrintable(context.file), qPrintable(context.function), context.line);
         Globals->finalize();
+        //QCoreApplication::exit(-1);
         abort();
     }
 }

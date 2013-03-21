@@ -177,6 +177,11 @@ class PipeDistance : public Distance
 
 BR_REGISTER(Distance, PipeDistance)
 
+/*!
+ * \ingroup distances
+ * \brief Average distance of multiple matrices
+ * \author Scott Klum \cite sklum
+ */
 class AverageDistance : public Distance
 {
     Q_OBJECT
@@ -190,19 +195,12 @@ class AverageDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
-        if (a.size() != b.size())
-            qDebug() << a.size() << " " << b.size();
+        if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         float score = 0;
+        for (int i = 0; i < a.size(); i++) score += distance->compare(a[i],b[i]);
 
-        for (int i = 0; i < a.size(); i++) {
-            //Template
-            score += distance->compare(a[i],b[i]);
-        }
-
-        qDebug() << score;
-
-        return score;
+        return score/(float)a.size();
     }
 };
 

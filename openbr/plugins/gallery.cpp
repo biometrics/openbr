@@ -302,7 +302,7 @@ class memGallery : public Gallery
 
     static void align(TemplateList &templates)
     {
-        //if (templates[0].size() > 1) return;
+        if (!templates.empty() && templates[0].size() > 1) return;
 
         bool uniform = true;
         QVector<uchar> alignedData(templates.bytes<size_t>());
