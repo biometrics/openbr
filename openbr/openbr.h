@@ -209,15 +209,9 @@ BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[], const
 
 /*!
  * \brief Wraps br::Context::initialize()
- * \see br_initialize_qt br_finalize
+ * \see br_finalize
  */
-BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "");
-
-/*!
- * \brief Wraps br::Context::initializeQt()
- * \see br_initialize br_finalize
- */
-BR_EXPORT void br_initialize_qt(const char *sdk_path = "");
+BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "", bool gui = false);
 
 /*!
  * \brief Wraps br::IsClassifier()

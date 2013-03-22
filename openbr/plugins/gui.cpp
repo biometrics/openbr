@@ -63,9 +63,9 @@ public:
 
 public slots:
 
-    void showImage(const QPixmap & input)
+    void showImage(const QImage & input)
     {
-        window->setPixmap(input);
+        window->setPixmap(QPixmap::fromImage(input));
         window->setFixedSize(input.size());
     }
 
@@ -100,7 +100,7 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+        connect(this, SIGNAL(updateImage(QImage)), gui,SLOT(showImage(QImage)));
     }
 
     ~Show2Transform()
@@ -137,13 +137,11 @@ public:
             emit this->changeTitle(newTitle);
 
             foreach(const cv::Mat & m, t) {
-                qImageBuffer = toQImage(m);
-                displayBuffer.convertFromImage(qImageBuffer);
-
                 // Emit an explicit  copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
-                emit updateImage(displayBuffer.copy(displayBuffer.rect()));
+                qImageBuffer = toQImage(m).copy();
+                emit updateImage(qImageBuffer);
             }
         }
     }
@@ -156,18 +154,17 @@ public:
 
     void init()
     {
-        emit needWindow();
+        if (Globals->gui) emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
     }
 
 protected:
     GUIProxy * gui;
     QImage qImageBuffer;
-    QPixmap displayBuffer;
 
 signals:
     void needWindow();
-    void updateImage(const QPixmap & input);
+    void updateImage(const QImage & input);
     void changeTitle(const QString & input);
 };
 
