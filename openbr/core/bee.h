@@ -46,6 +46,7 @@ namespace BEE
 
     // Write BEE files
     void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
+    cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries);
     void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 

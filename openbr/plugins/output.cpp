@@ -40,6 +40,7 @@
 #include "openbr/core/bee.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/plot.h"
 #include "openbr/core/qtutils.h"
 
 namespace br
@@ -256,6 +257,23 @@ class EmptyOutput : public MatrixOutput
 };
 
 BR_REGISTER(Output, EmptyOutput)
+
+/*!
+ * \ingroup outputs
+ * \brief Evaluate the output matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class evalOutput : public MatrixOutput
+{
+    Q_OBJECT
+
+    ~evalOutput()
+    {
+        Evaluate(data, BEE::makeMask(targetFiles, queryFiles), "");
+    }
+};
+
+BR_REGISTER(Output, evalOutput)
 
 /*!
  * \ingroup outputs

@@ -234,22 +234,26 @@ void BEE::writeMask(const Mat &m, const QString &mask, const QString &targetSigs
 void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
+    FileList targes = TemplateList::fromGallery(targetInput).files();
+    FileList queries = (queryInput == ".") ? targes : TemplateList::fromGallery(queryInput).files();
+    writeMask(makeMask(targes, queries), mask, targetInput, queryInput);
+}
 
-    FileList targetFiles = TemplateList::fromGallery(targetInput).files();
-    FileList queryFiles = (queryInput == ".") ? targetFiles : TemplateList::fromGallery(queryInput).files();
-    QList<float> targetLabels = targetFiles.labels();
-    QList<float> queryLabels = queryFiles.labels();
-    QList<int> targetPartitions = targetFiles.crossValidationPartitions();
-    QList<int> queryPartitions = queryFiles.crossValidationPartitions();
+cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries)
+{
+    QList<float> targetLabels = targets.labels();
+    QList<float> queryLabels = queries.labels();
+    QList<int> targetPartitions = targets.crossValidationPartitions();
+    QList<int> queryPartitions = queries.crossValidationPartitions();
 
-    Mat vals(queryFiles.size(), targetFiles.size(), CV_8UC1);
-    for (int i=0; i<queryFiles.size(); i++) {
-        const QString &fileA = queryFiles[i];
+    Mat mask(queries.size(), targets.size(), CV_8UC1);
+    for (int i=0; i<queries.size(); i++) {
+        const QString &fileA = queries[i];
         const int labelA = queryLabels[i];
         const int partitionA = queryPartitions[i];
 
-        for (int j=0; j<targetFiles.size(); j++) {
-            const QString &fileB = targetFiles[j];
+        for (int j=0; j<targets.size(); j++) {
+            const QString &fileB = targets[j];
             const int labelB = targetLabels[j];
             const int partitionB = targetPartitions[j];
 
@@ -260,10 +264,11 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
             else if (partitionA != partitionB) val = DontCare;
             else if (labelA == labelB)         val = Match;
             else                               val = NonMatch;
-            vals.at<Mask_t>(i,j) = val;
+            mask.at<Mask_t>(i,j) = val;
         }
     }
-    writeMask(vals, mask, targetInput, queryInput);
+
+    return mask;
 }
 
 void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method)
