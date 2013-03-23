@@ -74,22 +74,27 @@ class BayesianQuantizationDistance : public Distance
         QList<int> labels = src.labels<int>();
 
         QVector<qint64> genuines(256*256,0), impostors(256*256,0);
-        qint64 totalGenuines(0), totalImpostors(0);
         for (int i=0; i<labels.size(); i++) {
             const uchar *a = data.ptr(i);
             for (int j=0; j<labels.size(); j++) {
                 const uchar *b = data.ptr(j);
                 const bool genuine = (labels[i] == labels[j]);
-                for (int k=0; k<data.cols; k++) {
-                    if (genuine) { genuines[256*a[k]+b[k]]++; genuines[256*b[k]+a[k]]++; totalGenuines++; }
-                    else         { impostors[256*a[k]+b[k]]++; impostors[256*b[k]+a[k]]++; totalImpostors++; }
-                }
+                for (int k=0; k<data.cols; k++)
+                    genuine ? genuines[256*a[k]+b[k]]++ : impostors[256*a[k]+b[k]]++;
             }
         }
 
+        qint64 totalGenuines(0), totalImpostors(0);
+        for (int i=0; i<256*256; i++) {
+            totalGenuines += genuines[i];
+            totalImpostors += impostors[i];
+        }
+
         loglikelihood = QVector<float>(256*256);
-        for (int i=0; i<256*256; i++)
-            loglikelihood[i] = log((double(genuines[i]+1)/totalGenuines)/(double(impostors[i]+1)/totalImpostors));
+        for (int i=0; i<256; i++)
+            for (int j=0; j<256; j++)
+                loglikelihood[i*256+j] = log((double(genuines[i*256+j]+genuines[j*256+i]+1)/totalGenuines)/
+                                             (double(impostors[i*256+j]+impostors[j*256+i]+1)/totalImpostors));
     }
 
     float compare(const Template &a, const Template &b) const
