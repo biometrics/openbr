@@ -56,6 +56,67 @@ class QuantizeTransform : public Transform
 BR_REGISTER(Transform, QuantizeTransform)
 
 /*!
+ * \ingroup distances
+ * \brief Bayesian quantization distance
+ * \author Josh Klontz \cite jklontz
+ */
+class BayesianQuantizationDistance : public Distance
+{
+    Q_OBJECT
+    QVector<float> loglikelihood;
+
+    void train(const TemplateList &src)
+    {
+        if (src.first().size() > 1)
+            qFatal("Expected sigle matrix templates.");
+
+        Mat data = OpenCVUtils::toMat(src.data());
+        QList<int> labels = src.labels<int>();
+
+        QVector<qint64> genuines(256*256,0), impostors(256*256,0);
+        qint64 totalGenuines(0), totalImpostors(0);
+        for (int i=0; i<labels.size(); i++) {
+            const uchar *a = data.ptr(i);
+            for (int j=0; j<labels.size(); j++) {
+                const uchar *b = data.ptr(j);
+                const bool genuine = (labels[i] == labels[j]);
+                for (int k=0; k<data.cols; k++) {
+                    if (genuine) { genuines[256*a[k]+b[k]]++; genuines[256*b[k]+a[k]]++; totalGenuines++; }
+                    else         { impostors[256*a[k]+b[k]]++; impostors[256*b[k]+a[k]]++; totalImpostors++; }
+                }
+            }
+        }
+
+        loglikelihood = QVector<float>(256*256);
+        for (int i=0; i<256*256; i++)
+            loglikelihood[i] = log((double(genuines[i]+1)/totalGenuines)/(double(impostors[i]+1)/totalImpostors));
+    }
+
+    float compare(const Template &a, const Template &b) const
+    {
+        const uchar *aData = a.m().data;
+        const uchar *bData = b.m().data;
+        const int size = a.m().rows * a.m().cols;
+        float likelihood = 0;
+        for (int i=0; i<size; i++)
+            likelihood += loglikelihood[256*aData[i]+bData[i]];
+        return likelihood;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> loglikelihood;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << loglikelihood;
+    }
+};
+
+BR_REGISTER(Distance, BayesianQuantizationDistance)
+
+/*!
  * \ingroup transforms
  * \brief Approximate floats as signed bit.
  * \author Josh Klontz \cite jklontz
