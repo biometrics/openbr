@@ -32,8 +32,7 @@ class ImpostorUniquenessMeasureTransform : public Transform
         QList<float> scores = distance->compare(subset, probe);
         float min, max;
         Common::MinMax(scores, &min, &max);
-        double mean;
-        Common::Mean(scores, &mean);
+        double mean = Common::Mean(scores);
         return (max-mean)/(max-min);
     }
 

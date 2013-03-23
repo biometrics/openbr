@@ -119,14 +119,14 @@ T Max(const QList<T> &vals)
  * \brief Returns the mean and standard deviation of a vector of values.
  */
 template <template<class> class V, typename T>
-void Mean(const V<T> &vals, double *mean)
+double Mean(const V<T> &vals)
 {
     const int size = vals.size();
 
     // Compute Mean
     double sum = 0;
     foreach (int val, vals) sum += val;
-    *mean = (size == 0) ? 0 : sum / size;
+    return (size == 0) ? 0 : sum / size;
 }
 
 /*!
@@ -137,7 +137,7 @@ void MeanStdDev(const V<T> &vals, double *mean, double *stddev)
 {
     const int size = vals.size();
 
-    Mean(vals, mean);
+    *mean = Mean(vals);
 
     // Compute Standard Deviation
     double variance = 0;

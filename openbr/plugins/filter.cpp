@@ -235,7 +235,7 @@ class PowTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        pow(src, power, dst);
+        pow(preserveSign ? abs(src) : src.m(), power, dst);
         if (preserveSign) subtract(Scalar::all(0), dst, dst, src.m() < 0);
     }
 };

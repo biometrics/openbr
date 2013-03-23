@@ -169,6 +169,19 @@ public:
     }
 
 private:
+    static void getScores(const QList<int> &indicies, const QList<int> &labels, const Mat &lut, QVector<float> &genuineScores, QVector<float> &impostorScores)
+    {
+        genuineScores.clear(); impostorScores.clear();
+        genuineScores.reserve(indicies.size());
+        impostorScores.reserve(indicies.size()*indicies.size()/2);
+        for (int i=0; i<indicies.size(); i++)
+            for (int j=i+1; j<indicies.size(); j++) {
+                const float score = lut.at<float>(0, indicies[i]*256+indicies[j]);
+                if (labels[i] == labels[j]) genuineScores.append(score);
+                else                        impostorScores.append(score);
+            }
+    }
+
     void _train(const Mat &data, const QList<int> &labels, Mat *lut, Mat *center)
     {
         Mat clusterLabels;
@@ -181,14 +194,17 @@ private:
         if (!bayesian) return;
 
         QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
-        QVector<float> genuineScores; genuineScores.reserve(data.rows);
-        QVector<float> impostorScores; impostorScores.reserve(data.rows*data.rows/2);
-        for (int i=0; i<indicies.size(); i++)
-            for (int j=i+1; j<indicies.size(); j++) {
-                const float score = lut->at<float>(0, indicies[i]*256+indicies[j]);
-                if (labels[i] == labels[j]) genuineScores.append(score);
-                else                        impostorScores.append(score);
-            }
+        QVector<float> genuineScores, impostorScores;
+
+        // RBF Kernel
+//        getScores(indicies, labels, *lut, genuineScores, impostorScores);
+//        float sigma = 1.0 / Common::Mean(impostorScores);
+//        for (int j=0; j<256; j++)
+//            for (int k=0; k<256; k++)
+//                lut->at<float>(0,j*256+k) = exp(-lut->at<float>(0,j*256+k)/(2*pow(sigma, 2.f)));
+
+        // Bayesian PDF
+        getScores(indicies, labels, *lut, genuineScores, impostorScores);
         genuineScores = Common::Downsample(genuineScores, 256);
         impostorScores = Common::Downsample(impostorScores, 256);
 
@@ -199,6 +215,8 @@ private:
             for (int k=0; k<256; k++)
                 lut->at<float>(0,j*256+k) = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
                                                 Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor));
+//                lut->at<float>(0,j*256+k) = std::max(0.0, log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
+//                                                              Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor)));
     }
 
     void train(const TemplateList &src)
