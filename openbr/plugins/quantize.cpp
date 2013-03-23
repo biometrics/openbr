@@ -219,19 +219,41 @@ private:
 //                                                              Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor)));
     }
 
+    int getStep(int cols) const
+    {
+        if (n > 0) return n;
+        if (n == 0) return cols;
+        return ceil(float(cols)/abs(n));
+    }
+
+    int getOffset(int cols) const
+    {
+        if (n >= 0) return 0;
+        const int step = getStep(cols);
+        return (step - cols%step) % step;
+    }
+
+    int getDims(int cols) const
+    {
+        const int step = getStep(cols);
+        if (n >= 0) return cols/step;
+        return ceil(float(cols)/step);
+    }
+
     void train(const TemplateList &src)
     {
         Mat data = OpenCVUtils::toMat(src.data());
-        if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
+        const int step = getStep(data.cols);
         const QList<int> labels = src.labels<int>();
 
         Mat &lut = ProductQuantizationLUTs[index];
-        lut = Mat(data.cols/n, 256*256, CV_32FC1);
+        lut = Mat(getDims(data.cols), 256*256, CV_32FC1);
 
         QList<Mat> subdata, subluts;
+        const int offset = getOffset(data.cols);
         for (int i=0; i<lut.rows; i++) {
             centers.append(Mat());
-            subdata.append(data.colRange(i*n,(i+1)*n));
+            subdata.append(data.colRange(max(0, i*step-offset), (i+1)*step-offset));
             subluts.append(lut.row(i));
         }
 
@@ -260,9 +282,11 @@ private:
     void project(const Template &src, Template &dst) const
     {
         Mat m = src.m().reshape(1, 1);
-        dst = Mat(1, m.cols/n, CV_8UC1);
+        const int step = getStep(m.cols);
+        const int offset = getOffset(m.cols);
+        dst = Mat(1, getDims(m.cols), CV_8UC1);
         for (int i=0; i<dst.m().cols; i++)
-            dst.m().at<uchar>(0,i) = getIndex(m.colRange(i*n, (i+1)*n), centers[i]);
+            dst.m().at<uchar>(0,i) = getIndex(m.colRange(max(0, i*step-offset), (i+1)*step-offset), centers[i]);
     }
 
     void store(QDataStream &stream) const
