@@ -93,7 +93,7 @@ BR_REGISTER(Transform, LimitSizeTransform)
  * \brief Enforce a multiple of \em n columns.
  * \author Josh Klontz \cite jklontz
  */
-class ModTransform : public UntrainableTransform
+class DivTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
@@ -105,7 +105,7 @@ class ModTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, ModTransform)
+BR_REGISTER(Transform, DivTransform)
 
 /*!
  * \ingroup transforms
