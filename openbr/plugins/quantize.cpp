@@ -20,6 +20,7 @@
 
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/qtutils.h"
 
 using namespace cv;
 
@@ -328,7 +329,7 @@ private:
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, subdata[i], labels, &subluts[i], &centers[i]));
             else                                                                                               _train (subdata[i], labels, &subluts[i], &centers[i]);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
     }
 
     int getIndex(const Mat &m, const Mat &center) const
