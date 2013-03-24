@@ -111,7 +111,7 @@ class PipeTransform : public CompositeTransform
             for (int j=0; j<copy.size(); j++)
                 if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));
                 else                                                                                _projectPartial( &copy[j], i, nextTrainableTransform);
-            futures.waitForFinished();
+            QtUtils::releaseAndWait(futures);
             i = nextTrainableTransform;
         }
     }
@@ -293,7 +293,7 @@ class ForkTransform : public CompositeTransform
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
             else                                                          _train (transforms[i], &data);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
     }
 
     void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
@@ -648,7 +648,7 @@ public:
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
             else                                                          _projectList( transform, &input_buffer[i], &output_buffer[i]);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
     }

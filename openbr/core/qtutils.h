@@ -22,9 +22,11 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFuture>
+#include <QFutureSynchronizer>
 #include <QMap>
 #include <QString>
 #include <QStringList>
+#include <QThreadPool>
 #include <string>
 #include <vector>
 
@@ -64,6 +66,13 @@ namespace QtUtils
     bool runRScript(const QString &file);
     bool runDot(const QString &file);
     void showFile(const QString &file);
+
+    inline void releaseAndWait(QFutureSynchronizer<void> & futures)
+    {
+        QThreadPool::globalInstance()->releaseThread();
+        futures.waitForFinished();
+        QThreadPool::globalInstance()->reserveThread();
+    }
 }
 
 #endif // __QTUTILS_H
