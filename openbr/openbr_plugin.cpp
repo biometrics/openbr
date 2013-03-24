@@ -901,9 +901,6 @@ void br::Context::initializeQt(QString sdkPath)
 
 void br::Context::finalize()
 {
-    // Is anyone still running?
-    QThreadPool::globalInstance()->waitForDone();
-
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -936,7 +933,7 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 {
     // Something about this method is not thread safe, and will lead to crashes if qDebug
     // statements are called from multiple threads. Unless we lock the whole thing...
-    static QMutex generalLock;
+    static QMutex generalLock(QMutex::Recursive);
     QMutexLocker locker(&generalLock);
 
     QString txt;
@@ -968,8 +965,6 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         // Write debug output then close
         qDebug("  File: %s\n  Function: %s\n  Line: %d", qPrintable(context.file), qPrintable(context.function), context.line);
         Globals->finalize();
-        //QCoreApplication::exit(-1);
-        abort();
     }
 }
 
