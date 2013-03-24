@@ -130,7 +130,7 @@ private:
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
 
         merge(av, a);
         merge(bv, b);
