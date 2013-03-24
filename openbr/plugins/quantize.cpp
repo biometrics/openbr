@@ -64,38 +64,52 @@ BR_REGISTER(Transform, QuantizeTransform)
 class BayesianQuantizationDistance : public Distance
 {
     Q_OBJECT
-    QVector<float> loglikelihood;
+    Q_PROPERTY(int K READ get_K WRITE set_K RESET reset_K STORED false)
+    BR_PROPERTY(int, K, 1)
 
-    void train(const TemplateList &src)
+    Mat labels, centers;
+
+    static void computeLogLikelihood(const Mat &data, const QList<int> &labels, float *loglikelihood)
     {
-        if (src.first().size() > 1)
-            qFatal("Expected sigle matrix templates.");
+        const QList<uchar> values = OpenCVUtils::matrixToVector<uchar>(data);
+        if (values.size() != labels.size())
+            qFatal("Logic error.");
 
-        Mat data = OpenCVUtils::toMat(src.data());
-        QList<int> labels = src.labels<int>();
+        QVector<int> genuines(256*256,0), impostors(256*256,0);
+        for (int i=0; i<labels.size(); i++)
+            for (int j=0; j<labels.size(); j++)
+                if (labels[i] == labels[j]) genuines[256*values[i]+values[j]]++;
+                else                        impostors[256*values[i]+values[j]]++;
 
-        QVector<qint64> genuines(256*256,0), impostors(256*256,0);
-        for (int i=0; i<labels.size(); i++) {
-            const uchar *a = data.ptr(i);
-            for (int j=0; j<labels.size(); j++) {
-                const uchar *b = data.ptr(j);
-                const bool genuine = (labels[i] == labels[j]);
-                for (int k=0; k<data.cols; k++)
-                    genuine ? genuines[256*a[k]+b[k]]++ : impostors[256*a[k]+b[k]]++;
-            }
-        }
 
-        qint64 totalGenuines(0), totalImpostors(0);
+        int totalGenuines(0), totalImpostors(0);
         for (int i=0; i<256*256; i++) {
             totalGenuines += genuines[i];
             totalImpostors += impostors[i];
         }
 
-        loglikelihood = QVector<float>(256*256);
         for (int i=0; i<256; i++)
             for (int j=0; j<256; j++)
                 loglikelihood[i*256+j] = log((double(genuines[i*256+j]+genuines[j*256+i]+1)/totalGenuines)/
                                              (double(impostors[i*256+j]+impostors[j*256+i]+1)/totalImpostors));
+    }
+
+    void train(const TemplateList &src)
+    {
+        if ((src.first().size() > 1) || (src.first().m().type() != CV_8UC1))
+            qFatal("Expected sigle matrix templates of type CV_8UC1.");
+
+        const Mat data = OpenCVUtils::toMat(src.data());
+        const QList<int> templateLabels = src.labels<int>();
+        Mat loglikelihoods(data.cols, 256*256, CV_32FC1);
+
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<data.cols; i++)
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, loglikelihoods.ptr<float>(i)));
+            else                                                                                         computeLogLikelihood( data.col(i), templateLabels, loglikelihoods.ptr<float>(i));
+        futures.waitForFinished();
+
+        kmeans(loglikelihoods, K, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
     }
 
     float compare(const Template &a, const Template &b) const
@@ -105,18 +119,18 @@ class BayesianQuantizationDistance : public Distance
         const int size = a.m().rows * a.m().cols;
         float likelihood = 0;
         for (int i=0; i<size; i++)
-            likelihood += loglikelihood[256*aData[i]+bData[i]];
+            likelihood += centers.ptr<float>(labels.at<int>(i))[256*aData[i]+bData[i]];
         return likelihood;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> loglikelihood;
+        stream >> labels >> centers;
     }
 
     void store(QDataStream &stream) const
     {
-        stream << loglikelihood;
+        stream << labels << centers;
     }
 };
 
