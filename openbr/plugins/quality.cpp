@@ -1,6 +1,9 @@
+#include <QFutureSynchronizer>
+#include <QtConcurrent>
 #include <openbr/openbr_plugin.h>
 
 #include "openbr/core/common.h"
+#include "openbr/core/opencvutils.h"
 
 namespace br
 {
@@ -196,6 +199,89 @@ class MatchProbabilityDistance : public Distance
 };
 
 BR_REGISTER(Distance, MatchProbabilityDistance)
+
+/*!
+ * \ingroup transforms
+ * \brief Normalize by Bhattacharyya coefficient.
+ * \author Josh Klontz \cite jklontz
+ */
+class BhattacharyyaTransform : public Transform
+{
+    Q_OBJECT
+    cv::Mat scale;
+
+    static float bhattacharyyaCoefficient(const cv::Mat &data, const QList<int> &labels)
+    {
+        const QList<float> vals = OpenCVUtils::matrixToVector<float>(data);
+        if (vals.size() != labels.size())
+            qFatal("Logic error.");
+
+        QList<float> genuineScores; genuineScores.reserve(vals.size());
+        QList<float> impostorScores; impostorScores.reserve(vals.size()*vals.size()/2);
+        for (int i=0; i<vals.size(); i++)
+            for (int j=i+1; j<vals.size(); j++)
+                if (labels[i] == labels[j]) genuineScores.append(fabs(vals[i]-vals[j]));
+                else                        impostorScores.append(fabs(vals[i]-vals[j]));
+
+        genuineScores = Common::Downsample(genuineScores, 256);
+        impostorScores = Common::Downsample(impostorScores, 256);
+        double hGenuine = Common::KernelDensityBandwidth(genuineScores);
+        double hImpostor = Common::KernelDensityBandwidth(impostorScores);
+
+        float genuineMin, genuineMax, impostorMin, impostorMax, min, max;
+        Common::MinMax(genuineScores, &genuineMin, &genuineMax);
+        Common::MinMax(impostorScores, &impostorMin, &impostorMax);
+        min = std::min(genuineMin, impostorMin);
+        max = std::max(genuineMax, impostorMax);
+
+        const int steps = 512;
+        double bc = 0;
+        for (int i=0; i<steps; i++) {
+            float score = min + i*(max-min)/(steps-1);
+            bc += sqrt(Common::KernelDensityEstimation(genuineScores, score, hGenuine) *
+                       Common::KernelDensityEstimation(impostorScores, score, hImpostor))/steps;
+        }
+        if ((bc <= 0) || (bc > 1)) qFatal("Logic error.");
+        return -log(bc);
+    }
+
+    void train(const TemplateList &src)
+    {
+        const cv::Mat data = OpenCVUtils::toMat(src.data());
+        const QList<int> labels = src.labels<int>();
+
+        QFutureSynchronizer<float> futures;
+        QList<float> coefficients; coefficients.reserve(data.cols);
+        for (int i=0; i<data.cols; i++)
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BhattacharyyaTransform::bhattacharyyaCoefficient, data.col(i), labels));
+            else                      coefficients.append(                                         bhattacharyyaCoefficient( data.col(i), labels));
+        futures.waitForFinished();
+        foreach (const QFuture<float> &future, futures.futures())
+            coefficients.append(future.result());
+
+        scale = cv::Mat(1, coefficients.size(), CV_32FC1);
+        for (int i=0; i<coefficients.size(); i++)
+            scale.at<float>(0,i) = coefficients[i];
+
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        cv::multiply(src.m().reshape(1,1), scale, dst);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << scale;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> scale;
+    }
+};
+
+BR_REGISTER(Transform, BhattacharyyaTransform)
 
 /*!
  * \ingroup distances
