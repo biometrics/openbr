@@ -2,6 +2,7 @@
 build*
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
+scripts/results
 
 ### Generic ###
 *.log

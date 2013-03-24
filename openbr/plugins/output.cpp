@@ -269,7 +269,8 @@ class evalOutput : public MatrixOutput
 
     ~evalOutput()
     {
-        Evaluate(data, BEE::makeMask(targetFiles, queryFiles), "");
+        if (data.data)
+            Evaluate(data, BEE::makeMask(targetFiles, queryFiles), "");
     }
 };
 
