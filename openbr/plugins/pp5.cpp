@@ -154,10 +154,10 @@ struct PP5Context
 
         ppr_face_attributes_type face_attributes;
         ppr_get_face_attributes(face, &face_attributes);
-        metadata.insert("Face", QRect(face_attributes.position.x - face_attributes.dimensions.width/2,
-                                      face_attributes.position.y - face_attributes.dimensions.height/2,
-                                      face_attributes.dimensions.width,
-                                      face_attributes.dimensions.height));
+        metadata.insert("Face", QRectF(face_attributes.position.x - face_attributes.dimensions.width/2,
+                                       face_attributes.position.y - face_attributes.dimensions.height/2,
+                                       face_attributes.dimensions.width,
+                                       face_attributes.dimensions.height));
         metadata.insert("PP5_Face_Confidence", face_attributes.confidence);
         metadata.insert("PP5_Face_Roll", face_attributes.rotation.roll);
         metadata.insert("PP5_Face_Pitch", face_attributes.rotation.pitch);
