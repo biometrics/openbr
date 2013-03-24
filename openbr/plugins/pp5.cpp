@@ -154,10 +154,10 @@ struct PP5Context
 
         ppr_face_attributes_type face_attributes;
         ppr_get_face_attributes(face, &face_attributes);
-        metadata.insert("PP5_Face_X", face_attributes.position.x - face_attributes.dimensions.width/2);
-        metadata.insert("PP5_Face_Y", face_attributes.position.y - face_attributes.dimensions.height/2);
-        metadata.insert("PP5_Face_Width", face_attributes.dimensions.width);
-        metadata.insert("PP5_Face_Height", face_attributes.dimensions.height);
+        metadata.insert("Face", QRect(face_attributes.position.x - face_attributes.dimensions.width/2,
+                                      face_attributes.position.y - face_attributes.dimensions.height/2,
+                                      face_attributes.dimensions.width,
+                                      face_attributes.dimensions.height));
         metadata.insert("PP5_Face_Confidence", face_attributes.confidence);
         metadata.insert("PP5_Face_Roll", face_attributes.rotation.roll);
         metadata.insert("PP5_Face_Pitch", face_attributes.rotation.pitch);
@@ -213,7 +213,7 @@ struct PP5Context
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-class PP5Enroll : public UntrainableTransform
+class PP5EnrollTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
@@ -248,7 +248,7 @@ class PP5Enroll : public UntrainableTransform
             dst.file.append(PP5Context::toMetadata(face));
             dst += m;
 
-            if (!src.file.get<bool>("enrollAll", false)) break;
+            if (!src.file.getBool("enrollAll")) break;
         }
 
         ppr_free_face_list(face_list);
@@ -257,14 +257,14 @@ class PP5Enroll : public UntrainableTransform
 
         contexts.release(context);
 
-        if (!src.file.get<bool>("enrollAll", false) && dst.isEmpty()) {
+        if (!src.file.getBool("enrollAll") && dst.isEmpty()) {
             if (detectOnly) dst += src;
             else            dst += cv::Mat();
         }
     }
 };
 
-BR_REGISTER(Transform, PP5Enroll)
+BR_REGISTER(Transform, PP5EnrollTransform)
 
 /*!
  * \ingroup distances
@@ -272,8 +272,8 @@ BR_REGISTER(Transform, PP5Enroll)
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-class PP5Compare : public Distance
-                 , public PP5Context
+class PP5CompareDistance : public Distance
+                         , public PP5Context
 {
     Q_OBJECT
 
@@ -332,6 +332,6 @@ class PP5Compare : public Distance
     }
 };
 
-BR_REGISTER(Distance, PP5Compare)
+BR_REGISTER(Distance, PP5CompareDistance)
 
 #include "plugins/pp5.moc"
