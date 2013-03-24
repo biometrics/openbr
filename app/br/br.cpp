@@ -228,7 +228,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-    br_initialize(argc, argv);
+    br_initialize(argc, argv, "", (argc >= 2) && !strcmp(argv[1], "-gui"));
 
     // Do argument execution in another thread so this main thread can run an event loop.
     // When adding fakeMain to the global thread pool we also increment maxThreadCount so

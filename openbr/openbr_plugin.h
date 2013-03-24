@@ -529,6 +529,13 @@ public:
     BR_PROPERTY(bool, verbose, false)
 
     /*!
+     * \brief If \c true the windowing system will be enabled and GUI components of the SDK will be usable, \c false by default.
+     * \see initialize
+     */
+    Q_PROPERTY(bool gui READ get_gui WRITE set_gui RESET reset_gui)
+    BR_PROPERTY(bool, gui, false)
+
+    /*!
      * \brief The most resent message sent to the terminal.
      */
     Q_PROPERTY(QString mostRecentMessage READ get_mostRecentMessage WRITE set_mostRecentMessage RESET reset_mostRecentMessage)
@@ -637,10 +644,12 @@ public:
      * \code
      * int main(int argc, char *argv[])
      * {
+     *     QApplication a(argc, argv); // Qt users only
      *     br::Context::initialize(argc, argv);
      *
      *     // ...
      *
+     *     int result = a.exec(); // Qt users only
      *     br::Context::finalize();
      *     return 0;
      * }
@@ -651,34 +660,12 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
+     * \param gui If true
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
-     * \note <a href="http://qt-project.org/">Qt</a> users should instead call initializeQt().
-     * \see initializeQt finalize
+     * \note <a href="http://qt-project.org/">Qt</a> users should instead call this after creating their QApplication/QCoreApplication.
+     * \see finalize
      */
-    static void initialize(int &argc, char *argv[], const QString &sdkPath = "");
-
-    /*!
-     * \brief Alternative to initialize() for <a href="http://qt-project.org/">Qt</a> users.
-     *
-     * This alternative to initialize() should be used when a
-     * <a href="http://doc.qt.digia.com/stable/qcoreapplication.html">QCoreApplication</a>
-     * has already been defined.
-     * \code
-     * int main(int argc, char *argv[])
-     * {
-     *     QApplication a(argc, argv);
-     *     br::Context::initializeQt();
-     *
-     *     // ...
-     *
-     *     int result = a.exec();
-     *     br::Context::finalize();
-     *     return result;
-     * }
-     * \endcode
-     * \see initialize
-     */
-    static void initializeQt(QString sdkPath);
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool gui = false);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.
@@ -1306,12 +1293,16 @@ BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGalle
 
 } // namespace br
 
-Q_DECLARE_METATYPE(QList<float>)
-Q_DECLARE_METATYPE(QList<int>)
-Q_DECLARE_METATYPE(br::Transform*)
-Q_DECLARE_METATYPE(QList<br::Transform*>)
-Q_DECLARE_METATYPE(br::Distance*)
-Q_DECLARE_METATYPE(QList<br::Distance*>)
 Q_DECLARE_METATYPE(cv::Mat)
+Q_DECLARE_METATYPE(br::File)
+Q_DECLARE_METATYPE(br::FileList)
+Q_DECLARE_METATYPE(br::Template)
+Q_DECLARE_METATYPE(br::TemplateList)
+Q_DECLARE_METATYPE(br::Transform*)
+Q_DECLARE_METATYPE(br::Distance*)
+Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<float>)
+Q_DECLARE_METATYPE(QList<br::Transform*>)
+Q_DECLARE_METATYPE(QList<br::Distance*>)
 
 #endif // __OPENBR_PLUGIN_H
