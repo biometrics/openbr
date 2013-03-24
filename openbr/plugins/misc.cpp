@@ -370,6 +370,40 @@ BR_REGISTER(Transform, AnonymizeTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Name a point
+ * \author Scott Klum \cite sklum
+ */
+class ElicitMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QStringList metadata READ get_metadata WRITE set_metadata RESET reset_metadata STORED false)
+    BR_PROPERTY(QStringList, metadata, QStringList())
+
+    void init()
+    {
+        Globals->setProperty("parallelism", "0"); // Can only work in single threaded mode
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        QTextStream stream(stdin);
+
+        foreach (const QString &key, metadata) {
+            qDebug() << "Specify a value for key: " << key;
+            QStringList values = stream.readLine().split(",");
+            if (values.size() > 1) dst.file.set(key, values); // Used for lists (e.g. age range)
+            else dst.file.set(key,values[0]);
+        }
+    }
+};
+
+BR_REGISTER(Transform, ElicitMetadataTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
