@@ -192,9 +192,10 @@ public:
         aFrame->sequenceNumber = -1;
 
         bool res = getNext(*aFrame);
+
+        // The datasource broke.
         if (!res) {
             allFrames.addItem(aFrame);
-            // Datasource broke?
             QMutexLocker lock(&last_frame_update);
 
             final_frame = last_issued;
@@ -278,6 +279,7 @@ private:
 
         bool res = video.read(output.data.last().last());
         if (!res) {
+            video.release();
             return false;
         }
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
@@ -626,6 +628,9 @@ public:
     {
         dataSource.returnFrame(input);
         input = NULL;
+
+        if (!dataSource.isOpen())
+            return false;
 
         QReadLocker lock(&statusLock);
         // Thread is already running, we should just return
