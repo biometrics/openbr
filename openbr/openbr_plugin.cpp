@@ -1204,7 +1204,7 @@ private:
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
             else                                                          _train (transforms[i], &templatesList[i]);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
     }
 
     void project(const Template &src, Template &dst) const
@@ -1332,7 +1332,7 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
         QFutureSynchronizer<void> futures;
         for (int i=0; i<dst.size(); i++)
             futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
     }
 }
 
@@ -1356,7 +1356,7 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     for (int i=0; i<dst.size(); i++)
         if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
         else                                                          _backProject (this, &dst[i], &src[i]);
-    futures.waitForFinished();
+    QtUtils::releaseAndWait(futures);
 }
 
 /* Distance - public methods */
@@ -1393,7 +1393,7 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
         if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
         else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
-    futures.waitForFinished();
+    QtUtils::releaseAndWait(futures);
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

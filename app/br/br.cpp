@@ -236,7 +236,6 @@ int main(int argc, char *argv[])
     //   the parallel work can make use of all available CPU threads.
     FakeMain *fakeMain = new FakeMain(argc, argv);
     QThreadPool::globalInstance()->start(fakeMain);
-    QThreadPool::globalInstance()->setMaxThreadCount(QThreadPool::globalInstance()->maxThreadCount()+1);
     QCoreApplication::exec();
 
     br_finalize();

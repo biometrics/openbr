@@ -1,6 +1,7 @@
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include <openbr/openbr_plugin.h>
+#include <openbr/core/qtutils.h>
 
 namespace br
 {
@@ -44,7 +45,7 @@ class CrossValidateTransform : public MetaTransform
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
             else                                                          transforms[i]->train(partitionedData);
         }
-        futures.waitForFinished();
+        QtUtils::releaseAndWait(futures);
     }
 
     void project(const Template &src, Template &dst) const
