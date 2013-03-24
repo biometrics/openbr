@@ -113,9 +113,6 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 {
     qDebug("Evaluating %s with %s", qPrintable(simmat), qPrintable(mask));
 
-    const int Max_Points = 500;
-    float result = -1;
-
     // Read files
     const Mat scores = BEE::readSimmat(simmat);
     File maskFile(mask);
@@ -124,13 +121,21 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     const Mat masks = BEE::readMask(maskFile);
     if (scores.size() != masks.size()) qFatal("Simmat (%i,%i) / Mask (%i,%i) size mismatch.", scores.rows, scores.cols, masks.rows, masks.cols);
 
+    return Evaluate(scores, masks, csv);
+}
+
+float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
+{
+    const int Max_Points = 500;
+    float result = -1;
+
     // Make comparisons
-    QList<Comparison> comparisons; comparisons.reserve(scores.rows*scores.cols);
+    QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
-    for (int i=0; i<scores.rows; i++) {
-        for (int j=0; j<scores.cols; j++) {
-            const BEE::Mask_t mask_val = masks.at<BEE::Mask_t>(i,j);
-            const BEE::Simmat_t simmat_val = scores.at<BEE::Simmat_t>(i,j);
+    for (int i=0; i<simmat.rows; i++) {
+        for (int j=0; j<simmat.cols; j++) {
+            const BEE::Mask_t mask_val = mask.at<BEE::Mask_t>(i,j);
+            const BEE::Simmat_t simmat_val = simmat.at<BEE::Simmat_t>(i,j);
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
@@ -149,7 +154,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     double genuineSum = 0, impostorSum = 0;
     QList<OperatingPoint> operatingPoints;
     QList<float> genuines, impostors;
-    QVector<int> firstGenuineReturns(scores.rows, 0);
+    QVector<int> firstGenuineReturns(simmat.rows, 0);
 
     int falsePositives = 0, previousFalsePositives = 0;
     int truePositives = 0, previousTruePositives = 0;
@@ -202,11 +207,11 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     // Write Metadata table
     QStringList lines;
     lines.append("Plot,X,Y");
-    lines.append("Metadata,"+QString::number(scores.cols)+",Gallery");
-    lines.append("Metadata,"+QString::number(scores.rows)+",Probe");
+    lines.append("Metadata,"+QString::number(simmat.cols)+",Gallery");
+    lines.append("Metadata,"+QString::number(simmat.rows)+",Probe");
     lines.append("Metadata,"+QString::number(genuineCount)+",Genuine");
     lines.append("Metadata,"+QString::number(impostorCount)+",Impostor");
-    lines.append("Metadata,"+QString::number(scores.cols*scores.rows-(genuineCount+impostorCount))+",Ignored");
+    lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
     // Write Detection Error Tradeoff (DET), PRE, REC
     int points = qMin(operatingPoints.size(), Max_Points);
@@ -382,7 +387,11 @@ struct RPlot
                        "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
-                       "CMC$Y <- as.numeric(as.character(CMC$Y))\n");
+                       "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
+                       "\n"
+                       "# Code to format FAR values\n"
+                       "far_names <- list('0.001'=\"FAR = 0.1%\", '0.01'=\"FAR = 1%\")\n"
+                       "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n");
 
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -461,7 +470,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10() + scale_y_continuous(labels=percent)") +
+                            QString(" + scale_x_log10(labels=percent) + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\")") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("ROC"))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
@@ -470,7 +479,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10() + scale_y_log10()") +
+                            QString(" + scale_x_log10(labels=percent) + scale_y_log10(labels=percent) + annotation_logticks()") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("DET"))));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
@@ -495,7 +504,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(", xlab=\"%1False Accept Rate\"").arg(p.major.size > 1 ? p.major.header + " / " : QString()) +
                             QString(", ylab=\"True Accept Rate%1\") + theme_minimal()").arg(p.minor.size > 1 ? " / " + p.minor.header : QString()) +
                             (p.major.size > 1 ? getScale("fill", p.major.header, p.major.size) : QString()) +
-                            (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ X)").arg(p.minor.header) : QString(" + facet_wrap(~ X)")) +
+                            (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ X)").arg(p.minor.header) : QString(" + facet_grid(. ~ X, labeller=far_labeller)")) +
                             QString(" + scale_y_continuous(labels=percent) + theme(legend.position=\"none\", axis.text.x=element_text(angle=-90, hjust=0))%1").arg((p.major.smooth || p.minor.smooth) ? "" : " + geom_text(data=BC, aes(label=Y, y=0.05))") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("BC"))));
 
@@ -503,7 +512,7 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.major.header : p.minor.header) : QString()) +
                             QString(", xlab=\"Score%1\", ylab=\"Error Rate\") + theme_minimal()").arg((p.flip ? p.minor.size : p.major.size) > 1 ? " / " + (p.flip ? p.minor.header : p.major.header) : QString()) +
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? getScale("colour", p.flip ? p.major.header : p.minor.header, p.flip ? p.major.size : p.minor.size) : QString()) +
-                            QString(" + scale_y_log10()") +
+                            QString(" + scale_y_log10(labels=percent) + annotation_logticks(sides=\"l\")") +
                             ((p.flip ? p.minor.size : p.major.size) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minor.header : p.major.header) : QString()) +
                             QString(" + theme(aspect.ratio=1)") +
                             QString("\nggsave(\"%1\")\n").arg(p.subfile("ERR"))));

@@ -418,6 +418,8 @@ public:
 private:
     void init()
     {
+        if (!transform) return;
+
         trainable = transform->trainable;
         if (!cache.isEmpty()) return;
 

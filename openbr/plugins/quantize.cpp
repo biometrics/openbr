@@ -56,6 +56,72 @@ class QuantizeTransform : public Transform
 BR_REGISTER(Transform, QuantizeTransform)
 
 /*!
+ * \ingroup distances
+ * \brief Bayesian quantization distance
+ * \author Josh Klontz \cite jklontz
+ */
+class BayesianQuantizationDistance : public Distance
+{
+    Q_OBJECT
+    QVector<float> loglikelihood;
+
+    void train(const TemplateList &src)
+    {
+        if (src.first().size() > 1)
+            qFatal("Expected sigle matrix templates.");
+
+        Mat data = OpenCVUtils::toMat(src.data());
+        QList<int> labels = src.labels<int>();
+
+        QVector<qint64> genuines(256*256,0), impostors(256*256,0);
+        for (int i=0; i<labels.size(); i++) {
+            const uchar *a = data.ptr(i);
+            for (int j=0; j<labels.size(); j++) {
+                const uchar *b = data.ptr(j);
+                const bool genuine = (labels[i] == labels[j]);
+                for (int k=0; k<data.cols; k++)
+                    genuine ? genuines[256*a[k]+b[k]]++ : impostors[256*a[k]+b[k]]++;
+            }
+        }
+
+        qint64 totalGenuines(0), totalImpostors(0);
+        for (int i=0; i<256*256; i++) {
+            totalGenuines += genuines[i];
+            totalImpostors += impostors[i];
+        }
+
+        loglikelihood = QVector<float>(256*256);
+        for (int i=0; i<256; i++)
+            for (int j=0; j<256; j++)
+                loglikelihood[i*256+j] = log((double(genuines[i*256+j]+genuines[j*256+i]+1)/totalGenuines)/
+                                             (double(impostors[i*256+j]+impostors[j*256+i]+1)/totalImpostors));
+    }
+
+    float compare(const Template &a, const Template &b) const
+    {
+        const uchar *aData = a.m().data;
+        const uchar *bData = b.m().data;
+        const int size = a.m().rows * a.m().cols;
+        float likelihood = 0;
+        for (int i=0; i<size; i++)
+            likelihood += loglikelihood[256*aData[i]+bData[i]];
+        return likelihood;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> loglikelihood;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << loglikelihood;
+    }
+};
+
+BR_REGISTER(Distance, BayesianQuantizationDistance)
+
+/*!
  * \ingroup transforms
  * \brief Approximate floats as signed bit.
  * \author Josh Klontz \cite jklontz
@@ -169,6 +235,19 @@ public:
     }
 
 private:
+    static void getScores(const QList<int> &indicies, const QList<int> &labels, const Mat &lut, QVector<float> &genuineScores, QVector<float> &impostorScores)
+    {
+        genuineScores.clear(); impostorScores.clear();
+        genuineScores.reserve(indicies.size());
+        impostorScores.reserve(indicies.size()*indicies.size()/2);
+        for (int i=0; i<indicies.size(); i++)
+            for (int j=i+1; j<indicies.size(); j++) {
+                const float score = lut.at<float>(0, indicies[i]*256+indicies[j]);
+                if (labels[i] == labels[j]) genuineScores.append(score);
+                else                        impostorScores.append(score);
+            }
+    }
+
     void _train(const Mat &data, const QList<int> &labels, Mat *lut, Mat *center)
     {
         Mat clusterLabels;
@@ -181,14 +260,17 @@ private:
         if (!bayesian) return;
 
         QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
-        QVector<float> genuineScores; genuineScores.reserve(data.rows);
-        QVector<float> impostorScores; impostorScores.reserve(data.rows*data.rows/2);
-        for (int i=0; i<indicies.size(); i++)
-            for (int j=i+1; j<indicies.size(); j++) {
-                const float score = lut->at<float>(0, indicies[i]*256+indicies[j]);
-                if (labels[i] == labels[j]) genuineScores.append(score);
-                else                        impostorScores.append(score);
-            }
+        QVector<float> genuineScores, impostorScores;
+
+        // RBF Kernel
+//        getScores(indicies, labels, *lut, genuineScores, impostorScores);
+//        float sigma = 1.0 / Common::Mean(impostorScores);
+//        for (int j=0; j<256; j++)
+//            for (int k=0; k<256; k++)
+//                lut->at<float>(0,j*256+k) = exp(-lut->at<float>(0,j*256+k)/(2*pow(sigma, 2.f)));
+
+        // Bayesian PDF
+        getScores(indicies, labels, *lut, genuineScores, impostorScores);
         genuineScores = Common::Downsample(genuineScores, 256);
         impostorScores = Common::Downsample(impostorScores, 256);
 
@@ -199,21 +281,45 @@ private:
             for (int k=0; k<256; k++)
                 lut->at<float>(0,j*256+k) = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
                                                 Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor));
+//                lut->at<float>(0,j*256+k) = std::max(0.0, log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
+//                                                              Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor)));
+    }
+
+    int getStep(int cols) const
+    {
+        if (n > 0) return n;
+        if (n == 0) return cols;
+        return ceil(float(cols)/abs(n));
+    }
+
+    int getOffset(int cols) const
+    {
+        if (n >= 0) return 0;
+        const int step = getStep(cols);
+        return (step - cols%step) % step;
+    }
+
+    int getDims(int cols) const
+    {
+        const int step = getStep(cols);
+        if (n >= 0) return cols/step;
+        return ceil(float(cols)/step);
     }
 
     void train(const TemplateList &src)
     {
         Mat data = OpenCVUtils::toMat(src.data());
-        if (data.cols % n != 0) qFatal("Expected dimensionality to be divisible by n.");
+        const int step = getStep(data.cols);
         const QList<int> labels = src.labels<int>();
 
         Mat &lut = ProductQuantizationLUTs[index];
-        lut = Mat(data.cols/n, 256*256, CV_32FC1);
+        lut = Mat(getDims(data.cols), 256*256, CV_32FC1);
 
         QList<Mat> subdata, subluts;
+        const int offset = getOffset(data.cols);
         for (int i=0; i<lut.rows; i++) {
             centers.append(Mat());
-            subdata.append(data.colRange(i*n,(i+1)*n));
+            subdata.append(data.colRange(max(0, i*step-offset), (i+1)*step-offset));
             subluts.append(lut.row(i));
         }
 
@@ -242,9 +348,11 @@ private:
     void project(const Template &src, Template &dst) const
     {
         Mat m = src.m().reshape(1, 1);
-        dst = Mat(1, m.cols/n, CV_8UC1);
+        const int step = getStep(m.cols);
+        const int offset = getOffset(m.cols);
+        dst = Mat(1, getDims(m.cols), CV_8UC1);
         for (int i=0; i<dst.m().cols; i++)
-            dst.m().at<uchar>(0,i) = getIndex(m.colRange(i*n, (i+1)*n), centers[i]);
+            dst.m().at<uchar>(0,i) = getIndex(m.colRange(max(0, i*step-offset), (i+1)*step-offset), centers[i]);
     }
 
     void store(QDataStream &stream) const
