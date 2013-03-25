@@ -56,6 +56,7 @@ namespace QtUtils
     int toInt(const QString &string);
     float toFloat(const QString &string);
     QList<float> toFloats(const QStringList &strings);
+    QStringList toStringList(const QList<float> &values);
     QStringList toStringList(const std::vector<std::string> &string_list);
     QStringList toStringList(int num_strings, const char* strings[]);
     QString shortTextHash(QString string);

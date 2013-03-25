@@ -211,6 +211,14 @@ QList<float> QtUtils::toFloats(const QStringList &strings)
     return floats;
 }
 
+QStringList QtUtils::toStringList(const QList<float> &values)
+{
+    QStringList result; result.reserve(values.size());
+    foreach (float value, values)
+        result.append(QString::number(value));
+    return result;
+}
+
 QStringList QtUtils::toStringList(const std::vector<std::string> &string_list)
 {
     QStringList result;

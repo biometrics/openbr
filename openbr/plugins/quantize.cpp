@@ -299,54 +299,78 @@ public:
     }
 
 private:
-    static void getScores(const QList<int> &indicies, const QList<int> &labels, const Mat &lut, QVector<float> &genuineScores, QVector<float> &impostorScores)
-    {
-        genuineScores.clear(); impostorScores.clear();
-        genuineScores.reserve(indicies.size());
-        impostorScores.reserve(indicies.size()*indicies.size()/2);
-        for (int i=0; i<indicies.size(); i++)
-            for (int j=i+1; j<indicies.size(); j++) {
-                const float score = lut.at<float>(0, indicies[i]*256+indicies[j]);
-                if (labels[i] == labels[j]) genuineScores.append(score);
-                else                        impostorScores.append(score);
-            }
-    }
+//    static double denseKernelDensityBandwidth(const Mat &lut, const Mat &occurences)
+//    {
+//        double total = 0;
+//        int n = 0;
+//        const qint32 *occurencesData = (qint32*)occurences.data;
+//        const float *lutData = (float*)lut.data;
+//        for (int i=0; i<256; i++)
+//            for (int j=i; j<256; j++) {
+//                total += occurencesData[i*256+j] * lutData[i*256+j];
+//                n += occurencesData[i*256+j];
+//            }
+//        const double mean = total/n;
+
+//        double variance = 0;
+//        for (int i=0; i<lut.rows; i++)
+//            for (int j=i; j<lut.cols; j++)
+//                variance += occurencesData[i*256+j] * pow(lutData[i*256+j]-mean, 2.0);
+
+//        return pow(4 * pow(sqrt(variance/n), 5.0) / (3*n), 0.2);
+//    }
+
+//    static double denseKernelDensityEstimation(const Mat &lut, const Mat &occurences, const float x, const float h)
+//    {
+//        double y = 0;
+//        int n = 0;
+//        const qint32 *occurencesData = (qint32*)occurences.data;
+//        const float *lutData = (float*)lut.data;
+//        for (int i=0; i<256; i++)
+//            for (int j=i; j<256; j++) {
+//                const int n_ij = occurencesData[i*256+j];
+//                if (n_ij > 0) {
+//                    y += n_ij * exp(-pow((lutData[i*256+j]-x)/h,2)/2)/2.50662826737 /*sqrt(2*3.1415926353898)*/;
+//                    n += n_ij;
+//                }
+//            }
+//        return y / (n*h);
+//    }
 
     void _train(const Mat &data, const QList<int> &labels, Mat *lut, Mat *center)
     {
         Mat clusterLabels;
         kmeans(data, 256, clusterLabels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, *center);
 
-        for (int j=0; j<256; j++)
-            for (int k=0; k<256; k++)
-                lut->at<float>(0,j*256+k) = distance->compare(center->row(j), center->row(k));
+        for (int i=0; i<256; i++)
+            for (int j=0; j<256; j++)
+                lut->at<float>(0,i*256+j) = distance->compare(center->row(i), center->row(j));
 
         if (!bayesian) return;
 
         QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
         QVector<float> genuineScores, impostorScores;
+        genuineScores.reserve(indicies.size());
+        impostorScores.reserve(indicies.size()*indicies.size()/2);
+        for (int i=0; i<indicies.size(); i++)
+            for (int j=i+1; j<indicies.size(); j++) {
+                const float score = lut->at<float>(0, indicies[i]*256+indicies[j]);
+                if (labels[i] == labels[j]) genuineScores.append(score);
+                else                        impostorScores.append(score);
+            }
 
-        // RBF Kernel
-//        getScores(indicies, labels, *lut, genuineScores, impostorScores);
-//        float sigma = 1.0 / Common::Mean(impostorScores);
-//        for (int j=0; j<256; j++)
-//            for (int k=0; k<256; k++)
-//                lut->at<float>(0,j*256+k) = exp(-lut->at<float>(0,j*256+k)/(2*pow(sigma, 2.f)));
-
-        // Bayesian PDF
-        getScores(indicies, labels, *lut, genuineScores, impostorScores);
         genuineScores = Common::Downsample(genuineScores, 256);
         impostorScores = Common::Downsample(impostorScores, 256);
+        const double hGenuine = Common::KernelDensityBandwidth(genuineScores);
+        const double hImpostor = Common::KernelDensityBandwidth(impostorScores);
 
-        double hGenuine = Common::KernelDensityBandwidth(genuineScores);
-        double hImpostor = Common::KernelDensityBandwidth(impostorScores);
-
-        for (int j=0; j<256; j++)
-            for (int k=0; k<256; k++)
-                lut->at<float>(0,j*256+k) = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
-                                                Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor));
-//                lut->at<float>(0,j*256+k) = std::max(0.0, log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,j*256+k), hGenuine) /
-//                                                              Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,j*256+k), hImpostor)));
+        for (int i=0; i<256; i++)
+            for (int j=i; j<256; j++) {
+                const float loglikelihood = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,i*256+j), hGenuine) /
+                                                Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,i*256+j), hImpostor));
+                lut->at<float>(0,i*256+j) = loglikelihood;
+                lut->at<float>(0,j*256+i) = loglikelihood;
+            }
     }
 
     int getStep(int cols) const
