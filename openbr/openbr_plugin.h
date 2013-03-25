@@ -194,6 +194,7 @@ struct BR_EXPORT File
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
+    void set(const QString &key, const QString &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
 
     /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */
@@ -245,8 +246,6 @@ private:
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
     void init(const QString &file);
-    QString toString(const QVariant &variant) const;
-    void fromString(const QString &key, const QString &value);
 };
 
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */

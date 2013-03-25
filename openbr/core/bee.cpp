@@ -98,8 +98,9 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
     foreach (const File &file, files) {
         QStringList metadata;
         if (!ignoreMetadata)
-            foreach (const QString &key, file.localKeys())
-                metadata.append(key+"=\""+file.get<QString>(key, "?")+"\"");
+            foreach (const QString &key, file.localKeys()) {
+                metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
+            }
         lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");

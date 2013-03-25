@@ -57,11 +57,11 @@ QString File::flat() const
             if (QString(value.typeName()) == "QVariantList") {
                 QStringList landmarks;
                 foreach(const QVariant &landmark, qvariant_cast<QVariantList>(value)) {
-                    landmarks.append(toString(landmark));
+                    landmarks.append(QtUtils::toString(landmark));
                 }
                 if (!landmarks.isEmpty()) values.append(key + "=[" + landmarks.join(", ") + "]");
             }
-            else values.append(key + "=" + toString(value));
+            else values.append(key + "=" + QtUtils::toString(value));
         }
     }
 
@@ -87,7 +87,7 @@ void File::append(const File &other)
         if (name.isEmpty()) {
             name = other.name;
         } else {
-            if (!contains("separator")) set("separator", ";");
+            if (!contains("separator")) set("separator", QString(";"));
             name += value("separator").toString() + other.name;
         }
     }
@@ -145,6 +145,30 @@ void File::set(const QString &key, const QVariant &value)
     }
 
     m_metadata.insert(key, value);
+}
+
+void File::set(const QString &key, const QString &value)
+{
+    if (value[0] == '[') /* QVariantList */ {
+        QStringList values = value.mid(1, value.size()-2).split(", ");
+        foreach(const QString &word, values) set(key, word);
+    }
+    else if (value[0] == '(') {
+        QStringList values = value.split(',');
+        if (values.size() == 2) /* QPointF */ {
+            values[1].chop(1);
+            QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
+            if (key != "Points") m_metadata.insert(key, point);
+            else appendPoint(point);
+        }
+        else /* QRectF */ {
+            values[3].chop(1);
+            QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
+            if (key != "Rects") m_metadata.insert(key, rect);
+            else appendRect(rect);
+        }
+    }
+    else m_metadata.insert(key, value);
 }
 
 bool File::getBool(const QString &key) const
@@ -265,47 +289,11 @@ void File::init(const QString &file)
                 if (unnamed) setParameter(i, words[0]);
                 else         set(words[0], QVariant());
             } else {
-                fromString(words[0],words[1]);
+                set(words[0],words[1]);
             }
         }
         name = name.left(index);
     }
-}
-
-QString File::toString(const QVariant &variant) const
-{
-    if (variant.canConvert(QVariant::String)) return variant.toString();
-    else if(variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
-                                                                                               QString::number(qvariant_cast<QPointF>(variant).y()));
-    else if (variant.canConvert(QVariant::RectF)) return QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(variant).x()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).y()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).width()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).height()));
-    return QString();
-}
-
-void File::fromString(const QString &key, const QString &value)
-{
-    if (value[0] == '[') /* QVariantList */ {
-        QStringList values = value.mid(1, value.size()-2).split(", ");
-        foreach(const QString &word, values) fromString(key, word);
-    }
-    else if (value[0] == '(') {
-        QStringList values = value.split(',');
-        if (values.size() == 2) /* QPointF */ {
-            values[1].chop(1);
-            QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
-            if (key != "Points") set(key, point);
-            else appendPoint(point);
-        }
-        else /* QRectF */ {
-            values[3].chop(1);
-            QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
-            if (key != "Rects") set(key, rect);
-            else appendRect(rect);
-        }
-    }
-    else set(key, value);
 }
 
 /* File - global methods */

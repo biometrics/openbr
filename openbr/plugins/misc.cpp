@@ -393,9 +393,23 @@ class ElicitMetadataTransform : public UntrainableMetaTransform
 
         foreach (const QString &key, metadata) {
             qDebug() << "Specify a value for key: " << key;
-            QStringList values = stream.readLine().split(",");
-            if (values.size() > 1) dst.file.set(key, values); // Used for lists (e.g. age range)
-            else dst.file.set(key,values[0]);
+            QString value = stream.readLine();
+            if (value[0] == '(') {
+                QStringList values = value.split(',');
+                if (values.size() == 2) /* QPointF */ {
+                    values[1].chop(1);
+                    QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
+                    if (key != "Points") dst.file.set(key, point);
+                    else dst.file.appendPoint(point);
+                }
+                else /* QRectF */ {
+                    values[3].chop(1);
+                    QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
+                    if (key != "Rects") dst.file.set(key, rect);
+                    else dst.file.appendRect(rect);
+                }
+            }
+            else dst.file.set(key, value);
         }
     }
 };

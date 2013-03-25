@@ -307,3 +307,15 @@ void QtUtils::showFile(const QString &file)
     (void) file;
 #endif // BR_EMBEDDED
 }
+
+QString QtUtils::toString(const QVariant &variant)
+{
+    if (variant.canConvert(QVariant::String)) return variant.toString();
+    else if(variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
+                                                                                               QString::number(qvariant_cast<QPointF>(variant).y()));
+    else if (variant.canConvert(QVariant::RectF)) return QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(variant).x()),
+                                                                                                         QString::number(qvariant_cast<QRectF>(variant).y()),
+                                                                                                         QString::number(qvariant_cast<QRectF>(variant).width()),
+                                                                                                         QString::number(qvariant_cast<QRectF>(variant).height()));
+    return QString();
+}

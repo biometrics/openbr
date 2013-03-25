@@ -67,6 +67,9 @@ namespace QtUtils
     bool runDot(const QString &file);
     void showFile(const QString &file);
 
+    /**** Variant Utilities ****/
+    QString toString(const QVariant &variant);
+
     inline void releaseAndWait(QFutureSynchronizer<void> & futures)
     {
         QThreadPool::globalInstance()->releaseThread();

@@ -127,7 +127,7 @@ void br::GalleryToolBar::enrollmentFinished()
 
             if (ret == QMessageBox::Ok) {
                 br::File file = input;
-                file.set("enrollAll", false);
+                file.set("enrollAll", QVariant(false));
                 enroll(file);
             }
         }

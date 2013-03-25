@@ -122,6 +122,54 @@ class FilterDistance : public Distance
 
 BR_REGISTER(Distance, FilterDistance)
 
+/*!
+ * \ingroup distances
+ * \brief Checks target metadata against query metadata.
+ * \author Scott Klum \cite sklum
+ */
+class MetadataDistance : public Distance
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QStringList filters READ get_filters WRITE set_filters RESET reset_filters STORED false)
+    BR_PROPERTY(QStringList, filters, QStringList())
+
+    float compare(const Template &a, const Template &b) const
+    {
+        foreach (const QString &key, filters) {
+
+            const QString aValue = a.file.get<QString>(key, "");
+            const QString bValue = b.file.get<QString>(key, "");
+
+            if (aValue.isEmpty() || bValue.isEmpty()) continue;
+
+            bool keep = false;
+
+            if (aValue[0] == '(') /* Range */ {
+                QStringList values = aValue.split(',');
+
+                int age = values[0].mid(1).toInt();
+                values[1].chop(1);
+                int upperBound = values[1].toInt();
+
+                while (age <= upperBound) {
+                    if (aValue == bValue) {
+                        keep = true;
+                        break;
+                    }
+                }
+            }
+            else if (aValue == bValue) keep = true;
+
+            if (!keep) return -std::numeric_limits<float>::max();
+        }
+        return 0;
+    }
+};
+
+
+BR_REGISTER(Distance, MetadataDistance)
+
 } // namespace br
 
 #include "validate.moc"
