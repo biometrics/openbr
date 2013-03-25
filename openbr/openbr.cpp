@@ -108,11 +108,6 @@ void br_initialize(int &argc, char *argv[], const char *sdk_path)
     Context::initialize(argc, argv, sdk_path);
 }
 
-void br_initialize_qt(const char *sdk_path)
-{
-    Context::initializeQt(sdk_path);
-}
-
 bool br_is_classifier(const char *algorithm)
 {
     return IsClassifier(algorithm);
