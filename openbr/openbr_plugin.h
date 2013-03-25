@@ -652,33 +652,10 @@ public:
      *                   -# The working directory
      *                   -# The executable's location
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
-     * \note <a href="http://qt-project.org/">Qt</a> users should instead call initializeQt().
-     * \see initializeQt finalize
+     * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
+     * \see finalize
      */
-    static void initialize(int &argc, char *argv[], const QString &sdkPath = "");
-
-    /*!
-     * \brief Alternative to initialize() for <a href="http://qt-project.org/">Qt</a> users.
-     *
-     * This alternative to initialize() should be used when a
-     * <a href="http://doc.qt.digia.com/stable/qcoreapplication.html">QCoreApplication</a>
-     * has already been defined.
-     * \code
-     * int main(int argc, char *argv[])
-     * {
-     *     QApplication a(argc, argv);
-     *     br::Context::initializeQt();
-     *
-     *     // ...
-     *
-     *     int result = a.exec();
-     *     br::Context::finalize();
-     *     return result;
-     * }
-     * \endcode
-     * \see initialize
-     */
-    static void initializeQt(QString sdkPath);
+    static void initialize(int &argc, char *argv[], QString sdkPath = "");
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.
@@ -1306,12 +1283,16 @@ BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGalle
 
 } // namespace br
 
-Q_DECLARE_METATYPE(QList<float>)
-Q_DECLARE_METATYPE(QList<int>)
-Q_DECLARE_METATYPE(br::Transform*)
-Q_DECLARE_METATYPE(QList<br::Transform*>)
-Q_DECLARE_METATYPE(br::Distance*)
-Q_DECLARE_METATYPE(QList<br::Distance*>)
 Q_DECLARE_METATYPE(cv::Mat)
+Q_DECLARE_METATYPE(br::File)
+Q_DECLARE_METATYPE(br::FileList)
+Q_DECLARE_METATYPE(br::Template)
+Q_DECLARE_METATYPE(br::TemplateList)
+Q_DECLARE_METATYPE(br::Transform*)
+Q_DECLARE_METATYPE(br::Distance*)
+Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<float>)
+Q_DECLARE_METATYPE(QList<br::Transform*>)
+Q_DECLARE_METATYPE(QList<br::Distance*>)
 
 #endif // __OPENBR_PLUGIN_H

@@ -819,14 +819,16 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
 }
 
-void br::Context::initialize(int &argc, char *argv[], const QString &sdkPath)
+// We create our own when the user hasn't
+static QCoreApplication *application = NULL;
+
+void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 {
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
     // Since we can't ensure that it gets deleted last, we never delete it.
-    static QCoreApplication *application = NULL;
-    if (application == NULL) {
+    if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
         application = new QApplication(argc, argv);
 #else
@@ -834,40 +836,24 @@ void br::Context::initialize(int &argc, char *argv[], const QString &sdkPath)
 #endif
     }
 
-    if (Globals == NULL) {
-        Globals = new Context();
-        Globals->init(File());
-    }
-
-    initializeQt(sdkPath);
-
-#ifdef BR_DISTRIBUTED
-    int rank, size;
-    MPI_Init(&argc, &argv);
-    MPI_Cobr_rank(MPI_CObr_WORLD, &rank);
-    MPI_Cobr_size(MPI_CObr_WORLD, &size);
-    if (!quiet) qDebug() << "OpenBR distributed process" << rank << "of" << size;
-#endif // BR_DISTRIBUTED
-}
-
-void br::Context::initializeQt(QString sdkPath)
-{
-    if (Globals == NULL) {
-        Globals = new Context();
-        Globals->init(File());
-    }
-
     QCoreApplication::setOrganizationName(COMPANY_NAME);
     QCoreApplication::setApplicationName(PRODUCT_NAME);
     QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
 
-    qRegisterMetaType< QList<float> >();
-    qRegisterMetaType< QList<int> >();
+    qRegisterMetaType<cv::Mat>();
+    qRegisterMetaType<br::File>();
+    qRegisterMetaType<br::FileList>();
+    qRegisterMetaType<br::Template>();
+    qRegisterMetaType<br::TemplateList>();
     qRegisterMetaType< br::Transform* >();
-    qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< br::Distance* >();
+    qRegisterMetaType< QList<int> >();
+    qRegisterMetaType< QList<float> >();
+    qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
-    qRegisterMetaType< cv::Mat >();
+
+    Globals = new Context();
+    Globals->init(File());
 
     qInstallMessageHandler(messageHandler);
 
@@ -890,7 +876,6 @@ void br::Context::initializeQt(QString sdkPath)
     } else {
         if (!checkSDKPath(sdkPath)) qFatal("Unable to locate SDK from %s.", qPrintable(sdkPath));
     }
-
     Globals->sdkPath = sdkPath;
 
     // Trigger registered initializers
@@ -906,12 +891,11 @@ void br::Context::finalize()
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
         initializer->finalize();
 
-#ifdef BR_DISTRIBUTED
-    MPI_Finalize();
-#endif // BR_DISTRIBUTED
-
     delete Globals;
     Globals = NULL;
+
+    delete application;
+    application = NULL;
 }
 
 QString br::Context::about()
