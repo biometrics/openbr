@@ -57,6 +57,63 @@ class QuantizeTransform : public Transform
 BR_REGISTER(Transform, QuantizeTransform)
 
 /*!
+ * \ingroup transforms
+ * \brief Approximate floats as uchar with different scalings for each dimension.
+ * \author Josh Klontz \cite jklontz
+ */
+class HistEqQuantizationTransform : public Transform
+{
+    Q_OBJECT
+    QVector<float> thresholds;
+
+    static void computeThresholds(const Mat &data, float *thresholds)
+    {
+        QList<float> vals = OpenCVUtils::matrixToVector<float>(data);
+        std::sort(vals.begin(), vals.end());
+        for (int i=0; i<255; i++)
+            thresholds[i] = vals[(i+1)*vals.size()/256];
+        thresholds[255] = std::numeric_limits<float>::max();
+    }
+
+    void train(const TemplateList &src)
+    {
+        const Mat data = OpenCVUtils::toMat(src.data());
+        thresholds = QVector<float>(256*data.cols);
+
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<data.cols; i++)
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&HistEqQuantizationTransform::computeThresholds, data.col(i), &thresholds.data()[i*256]));
+            else                                                                                        computeThresholds( data.col(i), &thresholds.data()[i*256]);
+        futures.waitForFinished();
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        const QList<float> vals = OpenCVUtils::matrixToVector<float>(src);
+        dst = Mat(1, vals.size(), CV_8UC1);
+        for (int i=0; i<vals.size(); i++) {
+            const float *t = &thresholds.data()[i*256];
+            const float val = vals[i];
+            uchar j = 0;
+            while (val > t[j]) j++;
+            dst.m().at<uchar>(0,i) = j;
+        }
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << thresholds;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> thresholds;
+    }
+};
+
+BR_REGISTER(Transform, HistEqQuantizationTransform)
+
+/*!
  * \ingroup distances
  * \brief Bayesian quantization distance
  * \author Josh Klontz \cite jklontz
@@ -64,52 +121,44 @@ BR_REGISTER(Transform, QuantizeTransform)
 class BayesianQuantizationDistance : public Distance
 {
     Q_OBJECT
-    Q_PROPERTY(int K READ get_K WRITE set_K RESET reset_K STORED false)
-    BR_PROPERTY(int, K, 1)
-
-    Mat labels, centers;
+    QVector<float> loglikelihoods;
 
     static void computeLogLikelihood(const Mat &data, const QList<int> &labels, float *loglikelihood)
     {
-        const QList<uchar> values = OpenCVUtils::matrixToVector<uchar>(data);
-        if (values.size() != labels.size())
+        const QList<uchar> vals = OpenCVUtils::matrixToVector<uchar>(data);
+        if (vals.size() != labels.size())
             qFatal("Logic error.");
 
-        QVector<int> genuines(256*256,0), impostors(256*256,0);
-        for (int i=0; i<labels.size(); i++)
-            for (int j=0; j<labels.size(); j++)
-                if (labels[i] == labels[j]) genuines[256*values[i]+values[j]]++;
-                else                        impostors[256*values[i]+values[j]]++;
+        QVector<quint64> genuines(256, 0), impostors(256,0);
+        for (int i=0; i<vals.size(); i++)
+            for (int j=i+1; j<vals.size(); j++)
+                if (labels[i] == labels[j]) genuines[abs(vals[i]-vals[j])]++;
+                else                        impostors[abs(vals[i]-vals[j])]++;
 
-
-        int totalGenuines(0), totalImpostors(0);
-        for (int i=0; i<256*256; i++) {
+        quint64 totalGenuines(0), totalImpostors(0);
+        for (int i=0; i<256; i++) {
             totalGenuines += genuines[i];
             totalImpostors += impostors[i];
         }
 
         for (int i=0; i<256; i++)
-            for (int j=0; j<256; j++)
-                loglikelihood[i*256+j] = log((double(genuines[i*256+j]+genuines[j*256+i]+1)/totalGenuines)/
-                                             (double(impostors[i*256+j]+impostors[j*256+i]+1)/totalImpostors));
+            loglikelihood[i] = log((float(genuines[i]+1)/totalGenuines)/(float(impostors[i]+1)/totalImpostors));
     }
 
     void train(const TemplateList &src)
     {
         if ((src.first().size() > 1) || (src.first().m().type() != CV_8UC1))
-            qFatal("Expected sigle matrix templates of type CV_8UC1.");
+            qFatal("Expected sigle matrix templates of type CV_8UC1!");
 
         const Mat data = OpenCVUtils::toMat(src.data());
         const QList<int> templateLabels = src.labels<int>();
-        Mat loglikelihoods(data.cols, 256*256, CV_32FC1);
+        loglikelihoods = QVector<float>(data.cols*256, 0);
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<data.cols; i++)
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, loglikelihoods.ptr<float>(i)));
-            else                                                                                         computeLogLikelihood( data.col(i), templateLabels, loglikelihoods.ptr<float>(i));
-        futures.waitForFinished();
-
-        kmeans(loglikelihoods, K, labels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, &loglikelihoods.data()[i*256]));
+            else                                                                                         computeLogLikelihood( data.col(i), templateLabels, &loglikelihoods.data()[i*256]);
+        QtUtils::releaseAndWait(futures);
     }
 
     float compare(const Template &a, const Template &b) const
@@ -119,18 +168,18 @@ class BayesianQuantizationDistance : public Distance
         const int size = a.m().rows * a.m().cols;
         float likelihood = 0;
         for (int i=0; i<size; i++)
-            likelihood += centers.ptr<float>(labels.at<int>(i))[256*aData[i]+bData[i]];
+            likelihood += loglikelihoods[i*256+abs(aData[i]-bData[i])];
         return likelihood;
-    }
-
-    void load(QDataStream &stream)
-    {
-        stream >> labels >> centers;
     }
 
     void store(QDataStream &stream) const
     {
-        stream << labels << centers;
+        stream << loglikelihoods;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> loglikelihoods;
     }
 };
 
