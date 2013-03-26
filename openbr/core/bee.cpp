@@ -235,12 +235,17 @@ void BEE::writeMask(const Mat &m, const QString &mask, const QString &targetSigs
 void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
-    FileList targes = TemplateList::fromGallery(targetInput).files();
-    FileList queries = (queryInput == ".") ? targes : TemplateList::fromGallery(queryInput).files();
-    writeMask(makeMask(targes, queries), mask, targetInput, queryInput);
+    FileList targets = TemplateList::fromGallery(targetInput).files();
+    FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
+    int partitions = targets.first().get<int>("crossValidate");
+    if (partitions == 0) writeMask(makeMask(targets, queries), mask, targetInput, queryInput);
+    else for (int i=0; i<partitions; i++) {
+        QString maskPartition = mask;
+        writeMask(makeMask(targets, queries, i), maskPartition.insert(maskPartition.indexOf('.'),"Partition_" + QString::number(i)), targetInput, queryInput);
+    }
 }
 
-cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries)
+cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)
 {
     QList<float> targetLabels = targets.labels();
     QList<float> queryLabels = queries.labels();
@@ -263,6 +268,8 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries)
             else if (labelA == -1)             val = DontCare;
             else if (labelB == -1)             val = DontCare;
             else if (partitionA != partitionB) val = DontCare;
+            else if (partitionA != partition)  val = DontCare;
+            else if (partitionB != partition)  val = DontCare;
             else if (labelA == labelB)         val = Match;
             else                               val = NonMatch;
             mask.at<Mask_t>(i,j) = val;

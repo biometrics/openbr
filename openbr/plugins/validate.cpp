@@ -40,8 +40,10 @@ class CrossValidateTransform : public MetaTransform
         for (int i=0; i<numPartitions; i++) {
             TemplateList partitionedData = data;
             for (int j=partitionedData.size()-1; j>=0; j--)
+                // Remove all templates from partition i
                 if (partitions[j] == i)
                     partitionedData.removeAt(j);
+            // Train on the remaining templates
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
             else                                                          transforms[i]->train(partitionedData);
         }

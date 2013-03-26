@@ -34,6 +34,7 @@
 #include "version.h"
 #include "openbr/core/bee.h"
 #include "openbr/core/common.h"
+#include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
 
 #undef FAR // Windows preprecessor definition
@@ -260,8 +261,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     for (int i=1; i<=Max_Retrieval; i++) {
         int realizedReturns = 0, possibleReturns = 0;
         foreach (int firstGenuineReturn, firstGenuineReturns) {
-            if (firstGenuineReturn > 0) possibleReturns++;
-            if (firstGenuineReturn <= i) realizedReturns++;
+            if (firstGenuineReturn > 0) {
+                possibleReturns++;
+                if (firstGenuineReturn <= i) realizedReturns++;
+            }
         }
         const float retrievalRate = float(realizedReturns)/possibleReturns;
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
