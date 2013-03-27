@@ -202,6 +202,9 @@ struct AlgorithmCore
         retrieveOrEnroll(targetGallery, t, targetFiles);
         retrieveOrEnroll(queryGallery, q, queryFiles);
 
+        // Make multiple outputs if output[split]
+
+        // Split each
         QScopedPointer<Output> o(Output::make(output, targetFiles, queryFiles));
 
         if (distance.isNull()) qFatal("Null distance.");
@@ -215,10 +218,16 @@ struct AlgorithmCore
             queryBlock++;
             TemplateList queries = q->readBlock(&queryDone);
 
+            // Split queries by matrix into list of template lists if output[split]
+            // foreach TemplateList in perMatrixQueries
+
             int targetBlock = -1;
             bool targetDone = false;
             while (!targetDone) {
                 targetBlock++;
+                // Check if templates contain the same number of matrices
+                // Split targets by matrix into templateList if output[split] for matrices i
+
                 TemplateList targets = t->readBlock(&targetDone);
 
                 o->setBlock(queryBlock, targetBlock);

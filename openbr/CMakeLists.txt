@@ -11,7 +11,7 @@ include(plugins/plugins.cmake)
 if(NOT ${BR_EMBEDDED})
   aux_source_directory(gui BR_GUI)
   qt5_add_resources(ICONS icons/icons.qrc)
-  file(GLOB HEADERS *.h)
+  file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/gui/*.h)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
