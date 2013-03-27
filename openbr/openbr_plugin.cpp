@@ -426,11 +426,21 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates.append(file);
 
         // Propogate metadata
-        for (int i=0; i<newTemplates.size(); i++) {
+        for (int i=newTemplates.size()-1; i>=0; i--) {
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
-            if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
+            if (newTemplates[i].file.getBool("allPartitions") && crossValidate > 0) {
+                // Set template to the first parition
+                newTemplates[i].file.set("Cross_Validation_Partition", QVariant(0));
+                for (int j=crossValidate-1; j>=1; j--) {
+                    Template allPartitionTemplate = newTemplates[i];
+                    allPartitionTemplate.file.set("Cross_Validation_Partition", j);
+                    // Insert templates for all the other partitions
+                    newTemplates.insert(i+1, allPartitionTemplate);
+                }
+            }
+            else if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
         }
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {

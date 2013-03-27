@@ -10,6 +10,8 @@ namespace br
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
+ * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
+ *       against for all testing partitions.
  */
 class CrossValidateTransform : public MetaTransform
 {

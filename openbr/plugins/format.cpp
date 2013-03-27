@@ -574,8 +574,11 @@ class xmlFormat : public Format
         Template t;
 
 #ifndef BR_EMBEDDED
-        QDomDocument doc(file);
-        QFile f(file);
+        QString fileName = file.get<QString>("path") + "/" + file.name;
+
+        QDomDocument doc(fileName);
+        QFile f(fileName);
+
         if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file.flat()));
         if (!doc.setContent(&f))          qFatal("Unable to parse %s.", qPrintable(file.flat()));
         f.close();
