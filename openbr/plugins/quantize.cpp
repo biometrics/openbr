@@ -259,10 +259,14 @@ class ProductQuantizationDistance : public Distance
     {
         float distance = 0;
         for (int i=0; i<a.size(); i++) {
-            const int elements = a[i].total();
-            const uchar *aData = a[i].data;
-            const uchar *bData = b[i].data;
-            const float *lut = (const float*)ProductQuantizationLUTs[i].data;
+            const int elements = a[i].total()-sizeof(quint16);
+            uchar *aData = a[i].data;
+            uchar *bData = b[i].data;
+            quint16 index = *reinterpret_cast<quint16*>(aData);
+            aData += sizeof(quint16);
+            bData += sizeof(quint16);
+
+            const float *lut = (const float*)ProductQuantizationLUTs[index].data;
             for (int j=0; j<elements; j++)
                  distance += lut[j*256*256 + aData[j]*256+bData[j]];
         }
@@ -288,12 +292,17 @@ class ProductQuantizationTransform : public Transform
     BR_PROPERTY(br::Distance*, distance, Distance::make("L2", this))
     BR_PROPERTY(bool, bayesian, false)
 
-    int index;
+    quint16 index;
     QList<Mat> centers;
 
 public:
     ProductQuantizationTransform()
     {
+        if (ProductQuantizationLUTs.size() > std::numeric_limits<quint16>::max())
+            qFatal("Out of LUT space!"); // Unlikely
+
+        static QMutex mutex;
+        QMutexLocker locker(&mutex);
         index = ProductQuantizationLUTs.size();
         ProductQuantizationLUTs.append(Mat());
     }
@@ -438,19 +447,21 @@ private:
         Mat m = src.m().reshape(1, 1);
         const int step = getStep(m.cols);
         const int offset = getOffset(m.cols);
-        dst = Mat(1, getDims(m.cols), CV_8UC1);
-        for (int i=0; i<dst.m().cols; i++)
-            dst.m().at<uchar>(0,i) = getIndex(m.colRange(max(0, i*step-offset), (i+1)*step-offset), centers[i]);
+        const int dims = getDims(m.cols);
+        dst = Mat(1, sizeof(quint16)+dims, CV_8UC1);
+        memcpy(dst.m().data, &index, sizeof(quint16));
+        for (int i=0; i<dims; i++)
+            dst.m().at<uchar>(0,sizeof(quint16)+i) = getIndex(m.colRange(max(0, i*step-offset), (i+1)*step-offset), centers[i]);
     }
 
     void store(QDataStream &stream) const
     {
-        stream << centers << ProductQuantizationLUTs[index];
+        stream << index << centers << ProductQuantizationLUTs[index];
     }
 
     void load(QDataStream &stream)
     {
-        stream >> centers >> ProductQuantizationLUTs[index];
+        stream >> index >> centers >> ProductQuantizationLUTs[index];
     }
 };
 
