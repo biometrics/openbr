@@ -207,7 +207,7 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
-    /*!< \brief TODO. */
+    /*!< \brief Returns a list of type T for the key, throwing an error if the key does not exist or if the value cannot be converted to the specified type. */
     template <typename T>
     QList<T> getList(const QString &key) const
     {
