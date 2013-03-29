@@ -207,6 +207,19 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
+    /*!< \brief TODO. */
+    template <typename T>
+    QList<T> getList(const QString &key) const
+    {
+        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        QList<T> list;
+        foreach (const QVariant &item, m_metadata[key].toList()) {
+            if (item.canConvert<T>()) list.append(item.value<T>());
+            else qFatal("Failed to convert value for key %s.", qPrintable(key));
+        }
+        return list;
+    }
+
     /*!< \brief Specialization for boolean type. */
     bool getBool(const QString &key) const;
 
@@ -371,6 +384,39 @@ struct TemplateList : public QList<Template>
         QList<cv::Mat> data; data.reserve(size());
         foreach (const Template &t, *this) data.append(t[index]);
         return data;
+    }
+
+    /*!
+     * \brief Returns a #br::TemplateList containing templates with one matrix at the specified index \em index.
+     */
+    QList<TemplateList> partition(const QList<int> partitionSizes) const
+    {
+        int sum = 0;
+        QList<TemplateList> partitions; partitions.reserve(partitionSizes.size());
+
+        for(int i=0; i<partitionSizes.size(); i++) {
+            partitions.append(TemplateList());
+            sum+=partitionSizes[i];
+        }
+
+        if (sum != first().size()) qFatal("Partition sizes do not span template matrices properly");
+
+        foreach (const Template &t, *this) {
+            int index = 0;
+            while (index < t.size()) {
+                for (int i=0; i<partitionSizes.size(); i++) {
+                    Template newTemplate;
+                    for (int j=0; j<partitionSizes[i]; j++) {
+                        newTemplate.append(t[index]);
+                        index++;
+                    }
+                    // Append to the ith element of partitions
+                    partitions[i].append(newTemplate);
+                }
+            }
+        }
+
+        return partitions;
     }
 
     /*!
