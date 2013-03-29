@@ -876,6 +876,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
     }
     Globals->sdkPath = sdkPath;
 
+    // Empirical evidence suggests an extra thread helps achieve full CPU utilization
+    QThreadPool::globalInstance()->releaseThread();
+
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -884,6 +887,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
 void br::Context::finalize()
 {
+    // Undo the 'releaseThread()' in 'initialize()'
+    QThreadPool::globalInstance()->reserveThread();
+
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -1295,10 +1301,7 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
 
     // There are certain conditions where we should process the templates in serial,
     // but generally we'd prefer to process them in parallel.
-    if ((src.size() < 2) ||
-        (QThreadPool::globalInstance()->activeThreadCount() >= QThreadPool::globalInstance()->maxThreadCount()) ||
-        (Globals->parallelism == 0)) {
-
+    if ((src.size() < 2) || (Globals->parallelism == 0)) {
         foreach (const Template &t, src) {
             dst.append(Template());
             _project(this, &t, &dst.last());

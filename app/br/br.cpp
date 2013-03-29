@@ -231,7 +231,6 @@ int main(int argc, char *argv[])
     br_initialize(argc, argv);
 
     FakeMain *fakeMain = new FakeMain(argc, argv);
-    QThreadPool::globalInstance()->releaseThread();
     QThreadPool::globalInstance()->start(fakeMain);
     QCoreApplication::exec();
 
