@@ -160,7 +160,7 @@ class PipeDistance : public Distance
         foreach (br::Distance *distance, distances)
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
             else                                                          distance->train(data);
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 
     float compare(const Template &a, const Template &b) const

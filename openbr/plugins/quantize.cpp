@@ -158,7 +158,7 @@ class BayesianQuantizationDistance : public Distance
         for (int i=0; i<data.cols; i++)
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, &loglikelihoods.data()[i*256]));
             else                                                                                         computeLogLikelihood( data.col(i), templateLabels, &loglikelihoods.data()[i*256]);
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 
     float compare(const Template &a, const Template &b) const
@@ -425,7 +425,7 @@ private:
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, subdata[i], labels, &subluts[i], &centers[i]));
             else                                                                                               _train (subdata[i], labels, &subluts[i], &centers[i]);
         }
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 
     int getIndex(const Mat &m, const Mat &center) const
