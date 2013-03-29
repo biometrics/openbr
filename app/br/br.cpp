@@ -230,10 +230,6 @@ int main(int argc, char *argv[])
 {
     br_initialize(argc, argv);
 
-    // Do argument execution in another thread so this main thread can run an event loop.
-    // When adding fakeMain to the global thread pool we also increment maxThreadCount so
-    //   that while this thread waits on parallel work to complete,
-    //   the parallel work can make use of all available CPU threads.
     FakeMain *fakeMain = new FakeMain(argc, argv);
     QThreadPool::globalInstance()->start(fakeMain);
     QCoreApplication::exec();

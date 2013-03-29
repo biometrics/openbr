@@ -876,6 +876,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
     }
     Globals->sdkPath = sdkPath;
 
+    // Empirical evidence suggests an extra thread helps achieve full CPU utilization
+    QThreadPool::globalInstance()->releaseThread();
+
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -884,6 +887,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
 void br::Context::finalize()
 {
+    // Undo the 'releaseThread()' in 'initialize()'
+    QThreadPool::globalInstance()->reserveThread();
+
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -1181,7 +1187,7 @@ private:
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
             else                                                          _train (transforms[i], &templatesList[i]);
         }
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
@@ -1295,10 +1301,7 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
 
     // There are certain conditions where we should process the templates in serial,
     // but generally we'd prefer to process them in parallel.
-    if ((src.size() < 2) ||
-        (QThreadPool::globalInstance()->activeThreadCount() >= QThreadPool::globalInstance()->maxThreadCount()) ||
-        (Globals->parallelism == 0)) {
-
+    if ((src.size() < 2) || (Globals->parallelism == 0)) {
         foreach (const Template &t, src) {
             dst.append(Template());
             _project(this, &t, &dst.last());
@@ -1309,7 +1312,7 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
         QFutureSynchronizer<void> futures;
         for (int i=0; i<dst.size(); i++)
             futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 }
 
@@ -1333,7 +1336,7 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     for (int i=0; i<dst.size(); i++)
         if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
         else                                                          _backProject (this, &dst[i], &src[i]);
-    QtUtils::releaseAndWait(futures);
+    futures.waitForFinished();
 }
 
 /* Distance - public methods */
@@ -1370,7 +1373,7 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
         if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
         else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
-    QtUtils::releaseAndWait(futures);
+    futures.waitForFinished();
 }
 
 QList<float> Distance::compare(const TemplateList &targets, const Template &query) const

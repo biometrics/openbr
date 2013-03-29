@@ -304,6 +304,7 @@ struct Template : public QList<cv::Mat>
     Template() {}
     Template(const File &_file) : file(_file) {} /*!< \brief Initialize #file. */
     Template(const File &_file, const cv::Mat &mat) : file(_file) { append(mat); } /*!< \brief Initialize #file and append a matrix. */
+    Template(const File &_file, const QList<cv::Mat> &mats) : file(_file) { append(mats); } /*!< \brief Initialize #file and append matricies. */
     Template(const cv::Mat &mat) { append(mat); } /*!< \brief Append a matrix. */
 
     inline const cv::Mat &m() const { static const cv::Mat NullMatrix;

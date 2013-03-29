@@ -49,7 +49,7 @@ class CrossValidateTransform : public MetaTransform
             if (Globals->parallelism) futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
             else                                                          transforms[i]->train(partitionedData);
         }
-        QtUtils::releaseAndWait(futures);
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const

@@ -72,13 +72,6 @@ namespace QtUtils
 
     /**** Variant Utilities ****/
     QString toString(const QVariant &variant);
-
-    inline void releaseAndWait(QFutureSynchronizer<void> & futures)
-    {
-        QThreadPool::globalInstance()->releaseThread();
-        futures.waitForFinished();
-        QThreadPool::globalInstance()->reserveThread();
-    }
 }
 
 #endif // __QTUTILS_H

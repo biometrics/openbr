@@ -21,47 +21,54 @@ class BayesianQuantizationTransform : public Transform
     Q_OBJECT
     QVector<float> thresholds;
 
+    static void computeThresholdsRecursive(const QVector<int> &cumulativeGenuines, const QVector<int> &cumulativeImpostors,
+                                           float *thresholds,  const int thresholdIndex)
+    {
+//        const int totalGenuines = cumulativeGenuines.last()-cumulativeGenuines.first();
+//        const int totalImpostors = cumulativeImpostors.last()-cumulativeImpostors.first();
+
+        int low = 0;
+        int high = cumulativeGenuines.size()-1;
+        int index = cumulativeGenuines.size()/2;
+
+        while ((index != low) && (index != high)) {
+            index = (high - low)/2;
+//            const float logLikelihoodLow = (float(cumulativeGenuines[index]-cumulativeGenuines.first())/totalGenuines)/
+//                                           (float(cumulativeImpostors[index]-cumulativeImpostors.first())/totalImpostors);
+//            const float logLikelihoodHigh = (float(cumulativeGenuines.last()-cumulativeGenuines[index])/totalGenuines)/
+//                                            (float(cumulativeImpostors.last()-cumulativeImpostors[index])/totalImpostors);
+
+        }
+
+        computeThresholdsRecursive(cumulativeGenuines.mid(0,index), cumulativeImpostors.mid(0,index), thresholds, thresholdIndex);
+        computeThresholdsRecursive(cumulativeGenuines.mid(index), cumulativeImpostors.mid(index), thresholds, thresholdIndex);
+    }
+
     static void computeThresholds(const Mat &data, const QList<int> &labels, float *thresholds)
     {
         const QList<float> vals = OpenCVUtils::matrixToVector<float>(data);
         if (vals.size() != labels.size())
             qFatal("Logic error.");
 
-        QList<float> genuineScores; genuineScores.reserve(vals.size());
-        QList<float> impostorScores; impostorScores.reserve(vals.size()*vals.size()/2);
+        typedef QPair<float,bool> LabeledScore;
+        QList<LabeledScore> labeledScores; labeledScores.reserve(vals.size());
         for (int i=0; i<vals.size(); i++)
             for (int j=i+1; j<vals.size(); j++)
-                if (labels[i] == labels[j]) genuineScores.append(fabs(vals[i]-vals[j]));
-                else                        impostorScores.append(fabs(vals[i]-vals[j]));
+                labeledScores.append(LabeledScore(fabs(vals[i]-vals[j]), labels[i] == labels[j]));
+        std::sort(labeledScores.begin(), labeledScores.end());
 
-       // genuineScores = Common::Downsample(genuineScores, 256);
-        impostorScores = Common::Downsample(impostorScores, genuineScores.size());
-        double hGenuine = Common::KernelDensityBandwidth(genuineScores);
-        double hImpostor = Common::KernelDensityBandwidth(impostorScores);
-
-        float genuineMin, genuineMax, impostorMin, impostorMax, min, max;
-        Common::MinMax(genuineScores, &genuineMin, &genuineMax);
-        Common::MinMax(impostorScores, &impostorMin, &impostorMax);
-        min = std::min(genuineMin, impostorMin);
-        max = std::max(genuineMax, impostorMax);
-        qDebug() << genuineMin << genuineMax << impostorMin << impostorMax;
-
-        QFile g("g.csv"), i("i.csv"), kde("kde.csv");
-        g.open(QFile::Append); i.open(QFile::Append); kde.open(QFile::Append);
-
-        QStringList words;
-        const int steps = 256;
-        for (int i=0; i<steps; i++) {
-            const float score = min + i*(max-min)/(steps-1);
-            words.append(QString::number(log(Common::KernelDensityEstimation(genuineScores, score, hGenuine)/
-                                             Common::KernelDensityEstimation(impostorScores, score, hImpostor))));
+        QVector<int> cumulativeGenuines(labeledScores.size());
+        QVector<int> cumulativeImpostors(labeledScores.size());
+        cumulativeGenuines[0] = (labeledScores.first().second ? 1 : 0);
+        cumulativeImpostors[0] = (labeledScores.first().second ? 0 : 1);
+        for (int i=1; i<labeledScores.size(); i++) {
+            cumulativeGenuines[i] = cumulativeGenuines[i-1];
+            cumulativeImpostors[i] = cumulativeImpostors[i-1];
+            if (labeledScores.first().second) cumulativeGenuines[i]++;
+            else                              cumulativeImpostors[i]++;
         }
 
-        g.write(qPrintable(QtUtils::toStringList(genuineScores).join(",")+"\n"));
-        i.write(qPrintable(QtUtils::toStringList(impostorScores).join(",")+"\n"));
-        kde.write(qPrintable(words.join(",")+"\n"));
-        g.close(); i.close(); kde.close();
-        abort();
+        computeThresholdsRecursive(cumulativeGenuines, cumulativeImpostors, thresholds, 127);
     }
 
     void train(const TemplateList &src)
@@ -73,7 +80,7 @@ class BayesianQuantizationTransform : public Transform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<data.cols; i++)
-            if (false) futures.addFuture(QtConcurrent::run(&BayesianQuantizationTransform::computeThresholds, data.col(i), labels, &thresholds.data()[i*256]));
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationTransform::computeThresholds, data.col(i), labels, &thresholds.data()[i*256]));
             else                                                                                          computeThresholds( data.col(i), labels, &thresholds.data()[i*256]);
         futures.waitForFinished();
     }
