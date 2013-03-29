@@ -390,7 +390,7 @@ struct TemplateList : public QList<Template>
     /*!
      * \brief Returns a #br::TemplateList containing templates with one matrix at the specified index \em index.
      */
-    QList<TemplateList> partition(const QList<int> partitionSizes) const
+    QList<TemplateList> partition(const QList<int> &partitionSizes) const
     {
         int sum = 0;
         QList<TemplateList> partitions; partitions.reserve(partitionSizes.size());
