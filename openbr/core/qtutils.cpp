@@ -285,6 +285,28 @@ void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int mi
     if (args.size() > max) qFatal("%s expects no more than %d arguments, got %d", qPrintable(name), max, args.size());
 }
 
+QPointF QtUtils::toPoint(const QString &string)
+{
+    QStringList values = string.split(',');
+    if (values.size() == 2) {
+        values[1].chop(1);
+        QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
+        return point;
+    }
+    else qFatal("Failed to convert %s to QPoint format.", qPrintable(string));
+}
+
+QRectF QtUtils::toRect(const QString &string)
+{
+    QStringList values = string.split(',');
+    if (values.size() == 4) {
+        values[3].chop(1);
+        QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
+        return rect;
+    }
+    else qFatal("Failed to convert %s to QRect format.", qPrintable(string));
+}
+
 bool QtUtils::runRScript(const QString &file)
 {
     QProcess RScript;

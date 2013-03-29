@@ -55,11 +55,11 @@ QString File::flat() const
         if (value.isNull()) values.append(key);
         else {
             if (QString(value.typeName()) == "QVariantList") {
-                QStringList landmarks;
-                foreach(const QVariant &landmark, qvariant_cast<QVariantList>(value)) {
-                    landmarks.append(QtUtils::toString(landmark));
+                QStringList variants;
+                foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
+                    variants.append(QtUtils::toString(variant));
                 }
-                if (!landmarks.isEmpty()) values.append(key + "=[" + landmarks.join(", ") + "]");
+                if (!variants.isEmpty()) values.append(key + "=[" + variants.join(", ") + "]");
             }
             else values.append(key + "=" + QtUtils::toString(value));
         }
@@ -147,26 +147,26 @@ void File::set(const QString &key, const QVariant &value)
     m_metadata.insert(key, value);
 }
 
+// Note that we assume all values within a parameter list are the same type
 void File::set(const QString &key, const QString &value)
 {
     if (value[0] == '[') /* QVariantList */ {
         QStringList values = value.mid(1, value.size()-2).split(", ");
-        foreach(const QString &word, values) set(key, word);
+        QList<QVariant> variants;
+        if (values[0][0] == '(') /* List of Points or Rects */ {
+            if (values[0].split(',').size() == 2) /* List of Points */ foreach(const QString &word, values) variants.append(QtUtils::toPoint(word));
+            else if (values[0].split(',').size() == 4) /* List of Rects */ foreach(const QString &word, values) variants.append(QtUtils::toRect(word));
+            else qFatal("Incorrect landmark format.");
+        }
+        else {
+            foreach(const QString &word, values) variants.append(word.toFloat());
+        }
+        m_metadata.insert(key, variants);
     }
-    else if (value[0] == '(') {
-        QStringList values = value.split(',');
-        if (values.size() == 2) /* QPointF */ {
-            values[1].chop(1);
-            QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
-            if (key != "Points") m_metadata.insert(key, point);
-            else appendPoint(point);
-        }
-        else /* QRectF */ {
-            values[3].chop(1);
-            QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
-            if (key != "Rects") m_metadata.insert(key, rect);
-            else appendRect(rect);
-        }
+    else if (value[0] == '(') /* Point or Rect */ {
+        if (value.split(',').size() == 2) /* QPointF */ m_metadata.insert(key, QtUtils::toPoint(value));
+        else if (value.split(',').size() == 4) /* QRectF */ m_metadata.insert(key, QtUtils::toRect(value));
+        else qFatal("Incorrect landmark format.");
     }
     else m_metadata.insert(key, value);
 }
