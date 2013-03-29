@@ -62,6 +62,8 @@ namespace QtUtils
     QString shortTextHash(QString string);
     QStringList parse(QString args, char split = ',');
     void checkArgsSize(const QString &name, const QStringList &args, int min, int max);
+    QPointF toPoint(const QString &string);
+    QRectF toRect(const QString &string);
 
     /**** Process Utilities ****/
     bool runRScript(const QString &file);
