@@ -14,17 +14,14 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QCoreApplication>
 #include <QFutureSynchronizer>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QRect>
 #include <QRegExp>
-#include <QSettings>
 #include <QThreadPool>
 #include <QtConcurrentRun>
-#ifdef BR_DISTRIBUTED
-#include <mpi.h>
-#endif // BR_DISTRIBUTED
 #include <algorithm>
 #include <iostream>
 #include <openbr/openbr_plugin.h>
