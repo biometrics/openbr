@@ -40,8 +40,8 @@ class BayesianQuantizationTransform : public Transform
 
         }
 
-        computeThresholdsRecursive(cumulativeGenuines.mid(0,index), cumulativeImpostors.mid(0,index), thresholds, thresholdIndex);
-        computeThresholdsRecursive(cumulativeGenuines.mid(index), cumulativeImpostors.mid(index), thresholds, thresholdIndex);
+//        computeThresholdsRecursive(cumulativeGenuines.mid(0,index), cumulativeImpostors.mid(0,index), thresholds, thresholdIndex);
+//        computeThresholdsRecursive(cumulativeGenuines.mid(index), cumulativeImpostors.mid(index), thresholds, thresholdIndex);
     }
 
     static void computeThresholds(const Mat &data, const QList<int> &labels, float *thresholds)
