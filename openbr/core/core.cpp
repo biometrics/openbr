@@ -202,10 +202,20 @@ struct AlgorithmCore
         retrieveOrEnroll(targetGallery, t, targetFiles);
         retrieveOrEnroll(queryGallery, q, queryFiles);
 
-        // Make multiple outputs if output[split]
+        QList<int> partitionSizes;
+        QList<File> outputFiles;
+        if (output.contains("split")) {
+            if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%1)");
+            partitionSizes = output.getList<int>("split");
+            for (int i=0; i<partitionSizes.size(); i++) {
+                File splitOutputFile = output.fileName().arg(i);
+                outputFiles.append(splitOutputFile);
+            }
+        }
+        else outputFiles.append(output);
 
-        // Split each
-        QScopedPointer<Output> o(Output::make(output, targetFiles, queryFiles));
+        QList<Output*> outputs;
+        foreach (const File &outputFile, outputFiles) outputs.append(Output::make(outputFile, targetFiles, queryFiles));
 
         if (distance.isNull()) qFatal("Null distance.");
         Globals->currentStep = 0;
@@ -218,25 +228,34 @@ struct AlgorithmCore
             queryBlock++;
             TemplateList queries = q->readBlock(&queryDone);
 
-            // Split queries by matrix into list of template lists if output[split]
-            // foreach TemplateList in perMatrixQueries
+            QList<TemplateList> queryPartitions;
+            if (!partitionSizes.empty()) queryPartitions = queries.partition(partitionSizes);
+            else queryPartitions.append(queries);
 
-            int targetBlock = -1;
-            bool targetDone = false;
-            while (!targetDone) {
-                targetBlock++;
-                // Check if templates contain the same number of matrices
-                // Split targets by matrix into templateList if output[split] for matrices i
+            for (int i=0; i<queryPartitions.size(); i++) {
+                int targetBlock = -1;
+                bool targetDone = false;
+                while (!targetDone) {
+                    targetBlock++;
 
-                TemplateList targets = t->readBlock(&targetDone);
+                    TemplateList targets = t->readBlock(&targetDone);
 
-                o->setBlock(queryBlock, targetBlock);
-                distance->compare(targets, queries, o.data());
+                    QList<TemplateList> targetPartitions;
+                    if (!partitionSizes.empty()) targetPartitions = targets.partition(partitionSizes);
+                    else targetPartitions.append(targets);
 
-                Globals->currentStep += double(targets.size()) * double(queries.size());
-                Globals->printStatus();
+                    if (queryPartitions[i].first().size() != targetPartitions[i].first().size()) qFatal("Query and target templates have different number of matrices.");
+
+                    outputs[i]->setBlock(queryBlock, targetBlock);
+                    distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
+
+                    Globals->currentStep += double(targets.size()) * double(queries.size());
+                    Globals->printStatus();
+                }
             }
         }
+
+        qDeleteAll(outputs);
 
         const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
         if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);

@@ -239,9 +239,11 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
     FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     int partitions = targets.first().get<int>("crossValidate");
     if (partitions == 0) writeMask(makeMask(targets, queries), mask, targetInput, queryInput);
-    else for (int i=0; i<partitions; i++) {
-        QString maskPartition = mask;
-        writeMask(makeMask(targets, queries, i), maskPartition.insert(maskPartition.indexOf('.'),"Partition_" + QString::number(i)), targetInput, queryInput);
+    else {
+        if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%1)");
+        for (int i=0; i<partitions; i++) {
+            writeMask(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+        }
     }
 }
 
