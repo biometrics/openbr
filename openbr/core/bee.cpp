@@ -240,7 +240,7 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
     int partitions = targets.first().get<int>("crossValidate");
     if (partitions == 0) writeMask(makeMask(targets, queries), mask, targetInput, queryInput);
     else {
-        if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%1)");
+        if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
             writeMask(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }

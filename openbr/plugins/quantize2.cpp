@@ -30,6 +30,9 @@ class BayesianQuantizationTransform : public Transform
         int low = 0;
         int high = cumulativeGenuines.size()-1;
         int index = cumulativeGenuines.size()/2;
+        (void) cumulativeImpostors;
+        (void) thresholds;
+        (void) thresholdIndex;
 
         while ((index != low) && (index != high)) {
             index = (high - low)/2;

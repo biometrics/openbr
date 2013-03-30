@@ -205,7 +205,7 @@ struct AlgorithmCore
         QList<int> partitionSizes;
         QList<File> outputFiles;
         if (output.contains("split")) {
-            if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%1)");
+            if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%%1)");
             partitionSizes = output.getList<int>("split");
             for (int i=0; i<partitionSizes.size(); i++) {
                 File splitOutputFile = output.fileName().arg(i);
