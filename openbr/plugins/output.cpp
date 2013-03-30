@@ -270,7 +270,7 @@ class evalOutput : public MatrixOutput
     ~evalOutput()
     {
         if (data.data)
-            Evaluate(data, BEE::makeMask(targetFiles, queryFiles), "");
+            Evaluate(data, BEE::makeMask(targetFiles, queryFiles), QString(file.name).replace(".eval", ".csv"));
     }
 };
 
