@@ -364,6 +364,11 @@ BR_EXPORT void br_train_n(int num_inputs, const char *inputs[], const char *mode
  */
 BR_EXPORT const char *br_version();
 
+/*!
+ * \brief Launches br web services
+ */
+BR_EXPORT void br_web();
+
 /*! @}*/
 
 #ifdef __cplusplus

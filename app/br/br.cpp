@@ -162,6 +162,9 @@ public:
             } else if (!strcmp(fun, "version")) {
                 check(parc == 0, "No parameters expected for 'version'.");
                 printf("%s\n", br_version());
+            } else if (!strcmp(fun, "web")) {
+                check(parc == 0, "No parameters expected for 'shell'.");
+                br_web();
             } else if (!strcmp(fun, "shell")) {
                 check(parc == 0, "No parameters expected for 'shell'.");
                 shell = true;
