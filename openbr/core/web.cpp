@@ -29,11 +29,20 @@ private slots:
         while (hasPendingConnections()) {
             QTcpSocket *socket = QTcpServer::nextPendingConnection();
             connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
-            socket->write("HTTP/1.1 200 OK\r\n"
-                          "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-                          "Hello World!\r\n");
-            socket->disconnectFromHost();
+            connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
+//            socket->write("HTTP/1.1 200 OK\r\n"
+//                          "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+//                          "Hello World!\r\n");
+//            socket->disconnectFromHost();
         }
+    }
+
+    void read()
+    {
+        QTcpSocket *socket = dynamic_cast<QTcpSocket*>(QObject::sender());
+        if (socket == NULL) return;
+        QByteArray data = socket->readAll();
+        qDebug() << data;
     }
 };
 
