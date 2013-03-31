@@ -16,8 +16,6 @@
 
 #include <QDate>
 #ifndef BR_EMBEDDED
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QtXml>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
@@ -198,22 +196,13 @@ class DefaultFormat : public Format
     {
         Template t;
 
-        if (file.name.startsWith("http://") || file.name.startsWith("www.")) {
-#ifndef BR_EMBEDDED
-            QNetworkAccessManager networkAccessManager;
-            QNetworkRequest request(file.name);
-            request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-            QNetworkReply *reply = networkAccessManager.get(request);
-
-            while (!reply->isFinished()) QCoreApplication::processEvents();
-            if (reply->error()) qWarning("Url::read %s (%s).\n", qPrintable(reply->errorString()), qPrintable(QString::number(reply->error())));
-
-            QByteArray data = reply->readAll();
-            delete reply;
-
-            Mat m = imdecode(Mat(1, data.size(), CV_8UC1, data.data()), 1);
-            if (m.data) t.append(m);
-#endif // BR_EMBEDDED
+        if (file.name.startsWith("http://") || file.name.startsWith("https://") || file.name.startsWith("www.")) {
+            if (Factory<Format>::names().contains("url")) {
+                File urlFile = file;
+                urlFile.name.append(".url");
+                QScopedPointer<Format> url(Factory<Format>::make(urlFile));
+                t = url->read();
+            }
         } else {
             QString fileName = file.name;
             if (!QFileInfo(fileName).exists()) {

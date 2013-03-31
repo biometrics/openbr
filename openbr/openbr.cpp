@@ -22,7 +22,6 @@
 #include "core/fuse.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
-#include "core/web.h"
 
 using namespace br;
 
@@ -241,9 +240,4 @@ const char *br_version()
 {
     static QByteArray version = Context::version().toLocal8Bit();
     return version.data();
-}
-
-void br_web()
-{
-    br::web();
 }
