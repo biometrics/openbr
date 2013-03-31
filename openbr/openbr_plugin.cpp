@@ -131,7 +131,7 @@ void File::set(const QString &key, const QVariant &value)
         const QString valueString = value.toString();
 
         /* We assume that if the value starts with '0'
-           then it was probably intended to to be a string UID
+           then it was probably intended to be a string UID
            and that it's numerical value is not relevant. */
         if (value.canConvert(QVariant::Double) &&
             (!valueString.startsWith('0') || (valueString == "0")))

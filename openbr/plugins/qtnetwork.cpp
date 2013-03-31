@@ -50,55 +50,119 @@ class urlFormat : public Format
 
 BR_REGISTER(Format, urlFormat)
 
-class WebServices : public QTcpServer
+/*!
+ * \ingroup galleries
+ * \brief Handle POST requests
+ * \author Josh Klontz \cite jklontz
+ */
+class postGallery : public Gallery
 {
     Q_OBJECT
 
+    class TcpServer : public QTcpServer
+    {
+        QList<qintptr> socketDescriptors;
+        QMutex socketDescriptorsLock;
+
+    public:
+        QList<qintptr> availableSocketDescriptors()
+        {
+            QMutexLocker locker(&socketDescriptorsLock);
+            QList<qintptr> result(socketDescriptors);
+            socketDescriptors.clear();
+            return result;
+        }
+
+        void addPendingConnection(QTcpSocket *socket)
+        {
+            QTcpServer::addPendingConnection(socket);
+        }
+
+    private:
+        void incomingConnection(qintptr socketDescriptor)
+        {
+            QMutexLocker locker(&socketDescriptorsLock);
+            socketDescriptors.append(socketDescriptor);
+        }
+    };
+
 public:
-    WebServices()
-    {
-        connect(this, SIGNAL(newConnection()), this, SLOT(handleNewConnection()));
-    }
+    static QScopedPointer<TcpServer> server;
 
-    void listen()
+    postGallery()
     {
-        QTcpServer::listen(QHostAddress::Any, 8080);
-    }
-
-private slots:
-    void handleNewConnection()
-    {
-        while (hasPendingConnections()) {
-            QTcpSocket *socket = QTcpServer::nextPendingConnection();
-            connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
-            connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
-//            socket->write("HTTP/1.1 200 OK\r\n"
-//                          "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-//                          "Hello World!\r\n");
-//            socket->disconnectFromHost();
+        if (server.isNull()) {
+            server.reset(new TcpServer());
+            server->listen(QHostAddress::Any, 8080);
+            server->moveToThread(QCoreApplication::instance()->thread());
+            qDebug("Listening on %s:%d", qPrintable(server->serverAddress().toString()), server->serverPort());
         }
     }
 
-    void read()
+private:
+    TemplateList readBlock(bool *done)
     {
-        QTcpSocket *socket = dynamic_cast<QTcpSocket*>(QObject::sender());
-        if (socket == NULL) return;
-        QByteArray data = socket->readAll();
-        qDebug() << data;
+        *done = true;
+        TemplateList templates;
+        foreach (qintptr socketDescriptor, server->availableSocketDescriptors()) {
+            File f(".post");
+            f.set("socketDescriptor", socketDescriptor);
+            templates.append(f);
+        }
+        if (templates.isEmpty())
+            templates.append(File(".null"));
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        qFatal("Not supported!");
     }
 };
 
-//static void web()
-//{
-//    static WebServices webServices;
-//    if (webServices.isListening())
-//        return;
+QScopedPointer<postGallery::TcpServer> postGallery::server;
 
-//    webServices.listen();
-//    qDebug("Listening on %s:%d", qPrintable(webServices.serverAddress().toString()), webServices.serverPort());
-//    while (true)
-//        QCoreApplication::processEvents();
-//}
+BR_REGISTER(Gallery, postGallery)
+
+/*!
+ * \ingroup formats
+ * \brief Handle POST requests
+ * \author Josh Klontz \cite jklontz
+ */
+class postFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        Template t(file);
+        qDebug() << t.file.flat();
+        QTcpSocket *socket = new QTcpSocket();
+        socket->setSocketDescriptor(file.get<qintptr>("socketDescriptor"));
+
+        socket->write("HTTP/1.1 200 OK\r\n"
+                      "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+                      "Hello World!\r\n");
+        socket->waitForBytesWritten();
+
+        socket->waitForReadyRead();
+        QByteArray data = socket->readAll();
+        t.append(imdecode(Mat(1, data.size(), CV_8UC1, data.data()), 1));
+
+        socket->close();
+        delete socket;
+        return t;
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("Not supported!");
+    }
+};
+
+BR_REGISTER(Format, postFormat)
 
 } // namespace br
 
