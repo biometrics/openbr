@@ -248,7 +248,7 @@ class RecursiveIntegralSamplerTransform : public Transform
     void store(QDataStream &stream) const
     {
         transform->store(stream);
-        stream << (subTransform == NULL);
+        stream << (subTransform != NULL);
         if (subTransform != NULL)
             subTransform->store(stream);
     }

@@ -247,7 +247,7 @@ QVector<Mat> ProductQuantizationLUTs;
 /*!
  * \ingroup distances
  * \brief Distance in a product quantized space \cite jegou11
- * \author Josh Klontz
+ * \author Josh Klontz \cite jklontz
  */
 class ProductQuantizationDistance : public Distance
 {
@@ -276,6 +276,36 @@ class ProductQuantizationDistance : public Distance
 };
 
 BR_REGISTER(Distance, ProductQuantizationDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Recurively computed distance in a product quantized space
+ * \author Josh Klontz \cite jklontz
+ */
+class RecursiveProductQuantizationDistance : public Distance
+{
+    Q_OBJECT
+
+    float compare(const Template &a, const Template &b) const
+    {
+        float distance = 0;
+        for (int i=0; i<a.size(); i++) {
+            const int elements = a[i].total()-sizeof(quint16);
+            uchar *aData = a[i].data;
+            uchar *bData = b[i].data;
+            quint16 index = *reinterpret_cast<quint16*>(aData);
+            aData += sizeof(quint16);
+            bData += sizeof(quint16);
+
+            const float *lut = (const float*)ProductQuantizationLUTs[index].data;
+            for (int j=0; j<elements; j++)
+                 distance += lut[j*256*256 + aData[j]*256+bData[j]];
+        }
+        return distance;
+    }
+};
+
+BR_REGISTER(Distance, RecursiveProductQuantizationDistance)
 
 /*!
  * \ingroup transforms
@@ -461,7 +491,10 @@ private:
 
     void load(QDataStream &stream)
     {
-        stream >> index >> centers >> ProductQuantizationLUTs[index];
+        stream >> index >> centers;
+        while (ProductQuantizationLUTs.size() <= index)
+            ProductQuantizationLUTs.append(Mat());
+        stream >> ProductQuantizationLUTs[index];
     }
 };
 
