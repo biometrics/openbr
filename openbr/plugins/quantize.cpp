@@ -285,23 +285,40 @@ BR_REGISTER(Distance, ProductQuantizationDistance)
 class RecursiveProductQuantizationDistance : public Distance
 {
     Q_OBJECT
+    Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)
+    BR_PROPERTY(float, t, -1)
 
     float compare(const Template &a, const Template &b) const
     {
-        float distance = 0;
-        for (int i=0; i<a.size(); i++) {
-            const int elements = a[i].total()-sizeof(quint16);
-            uchar *aData = a[i].data;
-            uchar *bData = b[i].data;
-            quint16 index = *reinterpret_cast<quint16*>(aData);
-            aData += sizeof(quint16);
-            bData += sizeof(quint16);
+        return compareRecursive(a, b, 0, a.size(), 0);
+    }
 
-            const float *lut = (const float*)ProductQuantizationLUTs[index].data;
-            for (int j=0; j<elements; j++)
-                 distance += lut[j*256*256 + aData[j]*256+bData[j]];
-        }
-        return distance;
+    float compareRecursive(const QList<cv::Mat> &a, const QList<cv::Mat> &b, int i, int size, float evidence) const
+    {
+        float similarity = 0;
+
+        const int elements = a[i].total()-sizeof(quint16);
+        uchar *aData = a[i].data;
+        uchar *bData = b[i].data;
+        quint16 index = *reinterpret_cast<quint16*>(aData);
+        aData += sizeof(quint16);
+        bData += sizeof(quint16);
+
+        const float *lut = (const float*)ProductQuantizationLUTs[index].data;
+        for (int j=0; j<elements; j++)
+            similarity += lut[j*256*256 + aData[j]*256+bData[j]];
+
+        evidence += similarity;
+        if (evidence < t) return 0;
+
+        // similarity = max(similarity, 0.f);
+        const int subSize = (size-1)/4;
+        if (subSize == 0) return similarity;
+        return max(similarity
+               + compareRecursive(a, b, i+1+0*subSize, subSize, evidence)
+               + compareRecursive(a, b, i+1+1*subSize, subSize, evidence)
+               + compareRecursive(a, b, i+1+2*subSize, subSize, evidence)
+               + compareRecursive(a, b, i+1+3*subSize, subSize, evidence),0.f);
     }
 };
 
