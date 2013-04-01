@@ -309,16 +309,13 @@ class RecursiveProductQuantizationDistance : public Distance
             similarity += lut[j*256*256 + aData[j]*256+bData[j]];
 
         evidence += similarity;
-        if (evidence < t) return 0;
-
-        // similarity = max(similarity, 0.f);
         const int subSize = (size-1)/4;
-        if (subSize == 0) return similarity;
-        return max(similarity
+        if ((evidence < t) || (subSize == 0)) return similarity;
+        return similarity
                + compareRecursive(a, b, i+1+0*subSize, subSize, evidence)
                + compareRecursive(a, b, i+1+1*subSize, subSize, evidence)
                + compareRecursive(a, b, i+1+2*subSize, subSize, evidence)
-               + compareRecursive(a, b, i+1+3*subSize, subSize, evidence),0.f);
+               + compareRecursive(a, b, i+1+3*subSize, subSize, evidence);
     }
 };
 
