@@ -182,11 +182,11 @@ class RecursiveIntegralSamplerTransform : public Transform
         const SecondOrderInputDescriptor d(tmp.ptr<float>(3), channels, 1);
         const SecondOrderInputDescriptor e(tmp.ptr<float>(4), channels, 1);
 
-        dst = Mat(3, channels, CV_32FC1);
+        dst = Mat(4, channels, CV_32FC1);
         OutputDescriptor(dst.ptr<float>(0), channels, 1) = (a+b+c+d)/4.f;
         OutputDescriptor(dst.ptr<float>(1), channels, 1) = ((a+b+c+d)/4.f-e);
         OutputDescriptor(dst.ptr<float>(2), channels, 1) = ((a+b)-(c+d))/2.f;
-        OutputDescriptor(dst.ptr<float>(0), channels, 1) = ((a+c)-(b+d))/2.f;
+        OutputDescriptor(dst.ptr<float>(3), channels, 1) = ((a+c)-(b+d))/2.f;
     }
 
     Template subdivide(const Template &src) const
