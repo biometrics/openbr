@@ -278,8 +278,6 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
         }
     }
 
-    qDebug() << targetLabels;
-
     return mask;
 }
 
