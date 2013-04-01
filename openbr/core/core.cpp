@@ -111,64 +111,68 @@ struct AlgorithmCore
         if (gallery.isNull()) gallery = getMemoryGallery(input);
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
-        if (g.isNull()) return FileList();
+        if (g.isNull()) qFatal("Null gallery!");
 
-        if (gallery.contains("read") || gallery.contains("cache")) {
-            fileList = g->files();
-        }
-        if (!fileList.isEmpty() && gallery.contains("cache"))
-            return fileList;
+        do {
+            fileList.clear();
 
-        const TemplateList i(TemplateList::fromGallery(input));
-        if (i.isEmpty()) return fileList; // Nothing to enroll
+            if (gallery.contains("read") || gallery.contains("cache"))
+                fileList = g->files();
 
-        if (transform.isNull()) qFatal("Null transform.");
-        const int blocks = Globals->blocks(i.size());
-        Globals->currentStep = 0;
-        Globals->totalSteps = i.size();
-        Globals->startTime.start();
+            if (!fileList.isEmpty() && gallery.contains("cache"))
+                return fileList;
 
-        const bool noDuplicates = gallery.contains("noDuplicates");
-        QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
-        const int subBlockSize = 4*std::max(1, Globals->parallelism);
-        const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
-        int totalCount = 0, failureCount = 0;
-        double totalBytes = 0;
-        for (int block=0; block<blocks; block++) {
-            for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
-                TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
-                if (data.isEmpty()) break;
-                if (noDuplicates)
-                    for (int i=data.size()-1; i>=0; i--)
-                        if (fileNames.contains(data[i].file.name))
-                            data.removeAt(i);
-                const int numFiles = data.size();
+            const TemplateList i(TemplateList::fromGallery(input));
+            if (i.isEmpty()) return fileList; // Nothing to enroll
 
-                if (Globals->backProject) {
-                    TemplateList backProjectedData;
-                    transform->backProject(data, backProjectedData);
-                    data = backProjectedData;
-                } else {
-                    data >> *transform;
+            if (transform.isNull()) qFatal("Null transform.");
+            const int blocks = Globals->blocks(i.size());
+            Globals->currentStep = 0;
+            Globals->totalSteps = i.size();
+            Globals->startTime.start();
+
+            const bool noDuplicates = gallery.contains("noDuplicates");
+            QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
+            const int subBlockSize = 4*std::max(1, Globals->parallelism);
+            const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
+            int totalCount = 0, failureCount = 0;
+            double totalBytes = 0;
+            for (int block=0; block<blocks; block++) {
+                for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
+                    TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
+                    if (data.isEmpty()) break;
+                    if (noDuplicates)
+                        for (int i=data.size()-1; i>=0; i--)
+                            if (fileNames.contains(data[i].file.name))
+                                data.removeAt(i);
+                    const int numFiles = data.size();
+
+                    if (Globals->backProject) {
+                        TemplateList backProjectedData;
+                        transform->backProject(data, backProjectedData);
+                        data = backProjectedData;
+                    } else {
+                        data >> *transform;
+                    }
+
+                    g->writeBlock(data);
+                    const FileList newFiles = data.files();
+                    fileList.append(newFiles);
+
+                    totalCount += newFiles.size();
+                    failureCount += newFiles.failures();
+                    totalBytes += data.bytes<double>();
+                    Globals->currentStep += numFiles;
+                    Globals->printStatus();
                 }
-
-                g->writeBlock(data);
-                const FileList newFiles = data.files();
-                fileList.append(newFiles);
-
-                totalCount += newFiles.size();
-                failureCount += newFiles.failures();
-                totalBytes += data.bytes<double>();
-                Globals->currentStep += numFiles;
-                Globals->printStatus();
             }
-        }
 
-        const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
-        if (!Globals->quiet && (Globals->totalSteps > 1))
-            fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
-                    speed, totalBytes/totalCount, failureCount, totalCount);
-        Globals->totalSteps = 0;
+            const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
+            if (!Globals->quiet && (Globals->totalSteps > 1))
+                fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
+                        speed, totalBytes/totalCount, failureCount, totalCount);
+            Globals->totalSteps = 0;
+        } while (input.getBool("infinite"));
 
         return fileList;
     }

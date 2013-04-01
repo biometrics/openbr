@@ -492,6 +492,28 @@ BR_REGISTER(Format, matFormat)
 
 /*!
  * \ingroup formats
+ * \brief Returns an empty matrix.
+ * \author Josh Klontz \cite jklontz
+ */
+class nullFormat : public Format
+{
+    Q_OBJECT
+
+    Template read() const
+    {
+        return Template(file, Mat());
+    }
+
+    void write(const Template &t) const
+    {
+        (void)t;
+    }
+};
+
+BR_REGISTER(Format, nullFormat)
+
+/*!
+ * \ingroup formats
  * \brief RAW format
  *
  * http://www.nist.gov/srd/nistsd27.cfm

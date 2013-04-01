@@ -182,10 +182,10 @@ float br_progress()
     return Globals->progress();
 }
 
-void br_read_line(int *argc, const char ***argv)
+void br_read_stdin(int *argc, char ***argv)
 {
     static QList<QByteArray> byteArrayList;
-    static QVector<const char*> rawCharArrayList;
+    static QVector<char*> rawCharArrayList;
 
     byteArrayList.clear(); rawCharArrayList.clear();
     foreach (const QString &string, QtUtils::parse(QTextStream(stdin).readLine(), ' ')) {

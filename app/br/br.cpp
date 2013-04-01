@@ -67,25 +67,22 @@ public:
 
         if (argc == 0) printf("%s\nTry running 'br -help'\n", br_about());
 
-        bool shell = false;
-        while (shell || (argc > 0)) {
+        bool daemon = false;
+        while (daemon || (argc > 0)) {
             const char *fun;
             int parc;
             const char **parv;
-            if (shell) {
-                printf("> ");
-                br_read_line(&parc, &parv);
-                if (parc == 0) continue;
-                fun = parv[0];
-                parc--;
-                parv = &parv[1];
-            } else /* argc > 0 */ {
-                fun = &argv[0][1];
-                parc = 0; while ((1+parc < argc) && (argv[1+parc][0] != '-')) parc++;
-                parv = (const char **)&argv[1];
-                argc = argc - (1+parc);
-                argv = &argv[parc+1];
+            if (argc == 0) { // daemon
+                br_read_stdin(&argc, &argv);
+                if (argc == 0) break;
             }
+
+            fun = argv[0];
+            if (fun[0] == '-') fun++;
+            parc = 0; while ((parc+1 < argc) && (argv[parc+1][0] != '-')) parc++;
+            parv = (const char **)&argv[1];
+            argc = argc - (parc+1);
+            argv = &argv[parc+1];
 
             // Core Tasks
             if (!strcmp(fun, "train")) {
@@ -94,7 +91,7 @@ public:
             } else if (!strcmp(fun, "enroll")) {
                 check(parc >= 1, "Insufficient parameter count for 'enroll'.");
                 if (parc == 1) br_enroll(parv[0]);
-                else             br_enroll_n(parc-1, parv, parv[parc-1]);
+                else           br_enroll_n(parc-1, parv, parv[parc-1]);
             } else if (!strcmp(fun, "compare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'compare'.");
                 br_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
@@ -162,12 +159,12 @@ public:
             } else if (!strcmp(fun, "version")) {
                 check(parc == 0, "No parameters expected for 'version'.");
                 printf("%s\n", br_version());
-            } else if (!strcmp(fun, "shell")) {
-                check(parc == 0, "No parameters expected for 'shell'.");
-                shell = true;
+            } else if (!strcmp(fun, "daemon")) {
+                check(parc == 0, "No parameters expected for 'daemon'.");
+                daemon = true;
             } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
-                shell = false;
+                daemon = false;
             } else if (!strcmp(fun, "br")) {
                 printf("That's me!\n");
             } else if (parc <= 1) {
