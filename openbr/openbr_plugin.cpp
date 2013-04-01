@@ -134,7 +134,7 @@ void File::set(const QString &key, const QVariant &value)
            then it was probably intended to be a string UID
            and that it's numerical value is not relevant. */
         if (value.canConvert(QVariant::Double) &&
-            (!valueString.startsWith('0') || (valueString == "0")))
+                (!valueString.startsWith('0') || (valueString == "0")))
             value.toFloat(&ok);
 
         if (!ok && !Globals->classes.contains(valueString))
@@ -427,16 +427,19 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
-            if (newTemplates[i].file.getBool("allPartitions") && crossValidate > 0) {
-                // Set template to the first parition
-                newTemplates[i].file.set("Cross_Validation_Partition", QVariant(0));
-                for (int j=crossValidate-1; j>=1; j--) {
-                    Template allPartitionTemplate = newTemplates[i];
-                    allPartitionTemplate.file.set("Cross_Validation_Partition", j);
-                    allPartitionTemplate.file.set("Label", i+templates.size());
-                    // Insert templates for all the other partitions
-                    newTemplates.insert(i+1, allPartitionTemplate);
+            if (newTemplates[i].file.getBool("allPartitions")) {
+                if (crossValidate > 0) {
+                    // Set template to the first parition
+                    newTemplates[i].file.set("Cross_Validation_Partition", QVariant(0));
+                    for (int j=crossValidate-1; j>=1; j--) {
+                        Template allPartitionTemplate = newTemplates[i];
+                        allPartitionTemplate.file.set("Cross_Validation_Partition", j);
+                        allPartitionTemplate.file.set("Label", i+templates.size());
+                        // Insert templates for all the other partitions
+                        newTemplates.insert(i+1, allPartitionTemplate);
+                    }
                 }
+                else newTemplates[i].file.set("Label", i+templates.size());
             }
             else if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
         }
@@ -675,7 +678,7 @@ void Object::setProperty(const QString &name, const QString &value)
 
     if (!QObject::setProperty(qPrintable(name), variant) && !type.isEmpty())
         qFatal("Failed to set %s::%s to: %s %s",
-                metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
+               metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
 }
 
 QStringList br::Object::parse(const QString &string, char split)
@@ -924,17 +927,17 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 
     QString txt;
     switch (type) {
-      case QtDebugMsg:
+    case QtDebugMsg:
         if (Globals->quiet) return;
         txt = QString("%1\n").arg(msg);
         break;
-      case QtWarningMsg:
+    case QtWarningMsg:
         txt = QString("Warning: %1\n").arg(msg);
         break;
-      case QtCriticalMsg:
+    case QtCriticalMsg:
         txt = QString("Critical: %1\n").arg(msg);
         break;
-      case QtFatalMsg:
+    case QtFatalMsg:
         txt = QString("Fatal: %1\n").arg(msg);
         break;
     }
@@ -1074,8 +1077,8 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
 {
     // Return early when no downsampling is required
     if ((transform->classes == std::numeric_limits<int>::max()) &&
-        (transform->instances == std::numeric_limits<int>::max()) &&
-        (transform->fraction >= 1))
+            (transform->instances == std::numeric_limits<int>::max()) &&
+            (transform->fraction >= 1))
         return templates;
 
     const bool atLeast = transform->instances < 0;
@@ -1134,12 +1137,12 @@ class Independent : public MetaTransform
     Q_PROPERTY(QList<Transform*> transforms READ get_transforms WRITE set_transforms STORED false)
     BR_PROPERTY(QList<Transform*>, transforms, QList<Transform*>())
 
-public:
-    /*!
-     * \brief Independent
-     * \param transform
-     */
-    Independent(Transform *transform)
+    public:
+        /*!
+         * \brief Independent
+         * \param transform
+         */
+        Independent(Transform *transform)
     {
         transform->setParent(this);
         transforms.append(transform);
