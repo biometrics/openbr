@@ -167,22 +167,26 @@ class RecursiveIntegralSamplerTransform : public Transform
     void computeDescriptor(const Mat &src, Mat &dst) const
     {
         const int channels = src.channels();
-        dst = Mat(7, channels, CV_32FC1);
         const int rows = src.rows-1; // Integral images have an extra row and column
         const int columns = src.cols-1;
-        integralHistogram(src, 0, 0, rows, columns, dst, 0);
 
-        Mat tmp(4, channels, CV_32FC1);
+        Mat tmp(5, channels, CV_32FC1);
         integralHistogram(src, 0,      0,         rows/2, columns/2, tmp, 0);
         integralHistogram(src, 0,      columns/2, rows/2, columns/2, tmp, 1);
         integralHistogram(src, rows/2, 0,         rows/2, columns/2, tmp, 2);
         integralHistogram(src, rows/2, columns/2, rows/2, columns/2, tmp, 3);
-        OutputDescriptor(dst.ptr<float>(1), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(0), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(1), channels, 1))/4.f;
-        OutputDescriptor(dst.ptr<float>(2), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(1), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(3), channels, 1))/4.f;
-        OutputDescriptor(dst.ptr<float>(3), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(3), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(2), channels, 1))/4.f;
-        OutputDescriptor(dst.ptr<float>(4), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(2), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(0), channels, 1))/4.f;
-        OutputDescriptor(dst.ptr<float>(5), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(0), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(3), channels, 1))/4.f;
-        OutputDescriptor(dst.ptr<float>(6), channels, 1) = (SecondOrderInputDescriptor(tmp.ptr<float>(1), channels, 1) - SecondOrderInputDescriptor(tmp.ptr<float>(2), channels, 1))/4.f;
+        integralHistogram(src, rows/4, columns/4, rows/2, columns/2, tmp, 4);
+        const SecondOrderInputDescriptor a(tmp.ptr<float>(0), channels, 1);
+        const SecondOrderInputDescriptor b(tmp.ptr<float>(1), channels, 1);
+        const SecondOrderInputDescriptor c(tmp.ptr<float>(2), channels, 1);
+        const SecondOrderInputDescriptor d(tmp.ptr<float>(3), channels, 1);
+        const SecondOrderInputDescriptor e(tmp.ptr<float>(4), channels, 1);
+
+        dst = Mat(3, channels, CV_32FC1);
+        OutputDescriptor(dst.ptr<float>(0), channels, 1) = (a+b+c+d)/4.f;
+        OutputDescriptor(dst.ptr<float>(1), channels, 1) = ((a+b+c+d)/4.f-e);
+        OutputDescriptor(dst.ptr<float>(2), channels, 1) = ((a+b)-(c+d))/2.f;
+        OutputDescriptor(dst.ptr<float>(0), channels, 1) = ((a+c)-(b+d))/2.f;
     }
 
     Template subdivide(const Template &src) const
