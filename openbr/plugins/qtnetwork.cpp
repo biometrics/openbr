@@ -94,7 +94,7 @@ public:
     {
         if (server.isNull()) {
             server.reset(new TcpServer());
-            server->listen(QHostAddress::Any, 8080);
+//            server->listen(QHostAddress::Any, 8080);
             server->moveToThread(QCoreApplication::instance()->thread());
             qDebug("Listening on %s:%d", qPrintable(server->serverAddress().toString()), server->serverPort());
         }
@@ -151,6 +151,8 @@ class postFormat : public Format
         socket->close();
         delete socket;
 
+        qDebug() << data;
+
         // Parse data
         http_parser_settings settings;
         settings.on_body = bodyCallback;
@@ -181,7 +183,6 @@ class postFormat : public Format
         }
 
         t.append(imdecode(Mat(1, body.size(), CV_8UC1, body.data()), 1));
-        qDebug() << data.size();
         return t;
     }
 
