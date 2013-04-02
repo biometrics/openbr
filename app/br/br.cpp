@@ -72,10 +72,8 @@ public:
             const char *fun;
             int parc;
             const char **parv;
-            if (argc == 0) { // daemon
+            if (argc == 0)
                 br_read_stdin(&argc, &argv);
-                if (argc == 0) break;
-            }
 
             fun = argv[0];
             if (fun[0] == '-') fun++;

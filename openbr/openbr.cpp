@@ -187,8 +187,14 @@ void br_read_stdin(int *argc, char ***argv)
     static QList<QByteArray> byteArrayList;
     static QVector<char*> rawCharArrayList;
 
+    QStringList args;
+    while (args.isEmpty()) {
+        args = QtUtils::parse(QTextStream(stdin).readLine(), ' ');
+        QThread::yieldCurrentThread();
+    }
+
     byteArrayList.clear(); rawCharArrayList.clear();
-    foreach (const QString &string, QtUtils::parse(QTextStream(stdin).readLine(), ' ')) {
+    foreach (const QString &string, args) {
         byteArrayList.append(string.toLocal8Bit());
         rawCharArrayList.append(byteArrayList.last().data());
     }
