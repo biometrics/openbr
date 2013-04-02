@@ -268,7 +268,14 @@ class ProductQuantizationDistance : public Distance
 
             const float *lut = (const float*)ProductQuantizationLUTs[index].data;
             for (int j=0; j<elements; j++)
-                 distance += lut[j*256*256 + aData[j]*256+bData[j]];
+            {
+                const int aj = aData[j];
+                const int bj = bData[j];
+                // http://stackoverflow.com/questions/4803180/mapping-elements-in-2d-upper-triangle-and-lower-triangle-to-linear-structure
+                const int y = max(aj, bj);
+                const int x = min(aj, bj);
+                distance += lut[j*256*(256+1)/2 + x + (y+1)*y/2];
+            }
         }
         if (!bayesian) distance = -log(distance+1);
         return distance;
@@ -305,8 +312,14 @@ class RecursiveProductQuantizationDistance : public Distance
         bData += sizeof(quint16);
 
         const float *lut = (const float*)ProductQuantizationLUTs[index].data;
-        for (int j=0; j<elements; j++)
-            similarity += lut[j*256*256 + aData[j]*256+bData[j]];
+        for (int j=0; j<elements; j++) {
+            const int aj = aData[j];
+            const int bj = bData[j];
+            // http://stackoverflow.com/questions/4803180/mapping-elements-in-2d-upper-triangle-and-lower-triangle-to-linear-structure
+            const int y = max(aj, bj);
+            const int x = min(aj, bj);
+            similarity += lut[j*256*(256+1)/2 + x + (y+1)*y/2];
+        }
 
         evidence += similarity;
         const int subSize = (size-1)/4;
@@ -395,35 +408,46 @@ private:
         Mat clusterLabels;
         kmeans(data, 256, clusterLabels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, *center);
 
+        Mat fullLUT(1, 256*256, CV_32FC1);
         for (int i=0; i<256; i++)
             for (int j=0; j<256; j++)
-                lut->at<float>(0,i*256+j) = distance->compare(center->row(i), center->row(j));
+                fullLUT.at<float>(0,i*256+j) = distance->compare(center->row(i), center->row(j));
 
-        if (!bayesian) return;
+        if (bayesian) {
+            QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
+            QVector<float> genuineScores, impostorScores;
+            genuineScores.reserve(indicies.size());
+            impostorScores.reserve(indicies.size()*indicies.size()/2);
+            for (int i=0; i<indicies.size(); i++)
+                for (int j=i+1; j<indicies.size(); j++) {
+                    const float score = fullLUT.at<float>(0, indicies[i]*256+indicies[j]);
+                    if (labels[i] == labels[j]) genuineScores.append(score);
+                    else                        impostorScores.append(score);
+                }
 
-        QList<int> indicies = OpenCVUtils::matrixToVector<int>(clusterLabels);
-        QVector<float> genuineScores, impostorScores;
-        genuineScores.reserve(indicies.size());
-        impostorScores.reserve(indicies.size()*indicies.size()/2);
-        for (int i=0; i<indicies.size(); i++)
-            for (int j=i+1; j<indicies.size(); j++) {
-                const float score = lut->at<float>(0, indicies[i]*256+indicies[j]);
-                if (labels[i] == labels[j]) genuineScores.append(score);
-                else                        impostorScores.append(score);
-            }
+            genuineScores = Common::Downsample(genuineScores, 256);
+            impostorScores = Common::Downsample(impostorScores, 256);
+            const double hGenuine = Common::KernelDensityBandwidth(genuineScores);
+            const double hImpostor = Common::KernelDensityBandwidth(impostorScores);
 
-        genuineScores = Common::Downsample(genuineScores, 256);
-        impostorScores = Common::Downsample(impostorScores, 256);
-        const double hGenuine = Common::KernelDensityBandwidth(genuineScores);
-        const double hImpostor = Common::KernelDensityBandwidth(impostorScores);
+            for (int i=0; i<256; i++)
+                for (int j=i; j<256; j++) {
+                    const float loglikelihood = log(Common::KernelDensityEstimation(genuineScores, fullLUT.at<float>(0,i*256+j), hGenuine) /
+                                                    Common::KernelDensityEstimation(impostorScores, fullLUT.at<float>(0,i*256+j), hImpostor));
+                    fullLUT.at<float>(0,i*256+j) = loglikelihood;
+                    fullLUT.at<float>(0,j*256+i) = loglikelihood;
+                }
+        }
 
+        // Compress LUT into one dimensional array
+        int index = 0;
         for (int i=0; i<256; i++)
-            for (int j=i; j<256; j++) {
-                const float loglikelihood = log(Common::KernelDensityEstimation(genuineScores, lut->at<float>(0,i*256+j), hGenuine) /
-                                                Common::KernelDensityEstimation(impostorScores, lut->at<float>(0,i*256+j), hImpostor));
-                lut->at<float>(0,i*256+j) = loglikelihood;
-                lut->at<float>(0,j*256+i) = loglikelihood;
+            for (int j=0; j<=i; j++) {
+                lut->at<float>(0,index) = fullLUT.at<float>(0,i*256+j);
+                index++;
             }
+        if (index != lut->cols)
+            qFatal("Logic error.");
     }
 
     int getStep(int cols) const
@@ -454,7 +478,7 @@ private:
         const QList<int> labels = src.labels<int>();
 
         Mat &lut = ProductQuantizationLUTs[index];
-        lut = Mat(getDims(data.cols), 256*256, CV_32FC1);
+        lut = Mat(getDims(data.cols), 256*(256+1)/2, CV_32FC1);
 
         QList<Mat> subdata, subluts;
         const int offset = getOffset(data.cols);
