@@ -90,28 +90,31 @@ public:
     /*!< */
     enum Method { Mean,
                   Median,
-                  Range };
+                  Range,
+                  Hellinger };
 
 private:
     BR_PROPERTY(Method, method, Mean)
 
     Mat a, b; // dst = (src - b) / a
 
-    static void _train(Method method, const cv::Mat &m, Mat *ca, Mat *cb, int i)
+    static void _train(Method method, const cv::Mat &m, const QList<int> &labels, double *ca, double *cb)
     {
         double A = 1, B = 0;
-        if      (method == Mean)   mean(m.col(i), &A, &B);
-        else if (method == Median) median(m.col(i), &A, &B);
-        else if (method == Range)  range(m.col(i), &A, &B);
-        else                       qFatal("Invalid method.");
-        ca->at<double>(0, i) = A;
-        cb->at<double>(0, i) = B;
+        if      (method == Mean)      mean(m, &A, &B);
+        else if (method == Median)    median(m, &A, &B);
+        else if (method == Range)     range(m, &A, &B);
+        else if (method == Hellinger) hellinger(m, labels, &A, &B);
+        else                          qFatal("Invalid method.");
+        *ca = A;
+        *cb = B;
     }
 
     void train(const TemplateList &data)
     {
         Mat m;
         OpenCVUtils::toMat(data.data()).convertTo(m, CV_64F);
+        const QList<int> labels = data.labels<int>();
         const int dims = m.cols;
 
         vector<Mat> mv, av, bv;
@@ -125,8 +128,8 @@ private:
         const bool parallel = (data.size() > 1000) && Globals->parallelism;
         for (size_t c = 0; c < mv.size(); c++) {
             for (int i=0; i<dims; i++)
-                if (parallel) futures.addFuture(QtConcurrent::run(_train, method, mv[c], &av[c], &bv[c], i));
-                else                                              _train (method, mv[c], &av[c], &bv[c], i);
+                if (parallel) futures.addFuture(QtConcurrent::run(_train, method, mv[c].col(i), labels, &av[c].at<double>(0, i), &bv[c].at<double>(0, i)));
+                else                                              _train (method, mv[c].col(i), labels, &av[c].at<double>(0, i), &bv[c].at<double>(0, i));
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
@@ -179,6 +182,30 @@ private:
         double min, max;
         minMaxLoc(src, &min, &max);
         *a = max - min;
+        *b = min;
+    }
+
+    static void hellinger(const Mat &src, const QList<int> &labels, double *a, double *b)
+    {
+        const QList<float> vals = OpenCVUtils::matrixToVector<float>(src);
+        if (vals.size() != labels.size())
+            qFatal("Logic error.");
+
+        QVector<float> genuineScores; genuineScores.reserve(vals.size());
+        QVector<float> impostorScores; impostorScores.reserve(vals.size()*vals.size()/2);
+        for (int i=0; i<vals.size(); i++)
+            for (int j=i+1; j<vals.size(); j++)
+                if (labels[i] == labels[j]) genuineScores.append(vals[i]-vals[j]);
+                else                        impostorScores.append(vals[i]-vals[j]);
+
+        float min, max;
+        Common::MinMax(vals, &min, &max);
+
+        double gm, gs, im, is;
+        Common::MeanStdDev(genuineScores, &gm, &gs);
+        Common::MeanStdDev(impostorScores, &im, &is);
+
+        *a = (max-min)/sqrt(1-sqrt(2*gs*is/(gs*gs+is*is))*exp(-0.25*pow(gm-im,2.0)/(gs*gs+is*is)));
         *b = min;
     }
 };
