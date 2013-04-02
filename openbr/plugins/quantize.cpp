@@ -286,7 +286,7 @@ class RecursiveProductQuantizationDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)
-    BR_PROPERTY(float, t, -1)
+    BR_PROPERTY(float, t, -std::numeric_limits<float>::max())
 
     float compare(const Template &a, const Template &b) const
     {
