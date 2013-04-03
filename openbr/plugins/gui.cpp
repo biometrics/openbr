@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QLabel>
 #include <QElapsedTimer>
+#include <QWaitCondition>
+#include <QMutex>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/openbr_plugin.h>
 
@@ -47,18 +49,37 @@ QImage toQImage(const Mat &mat)
     return QImage(mat8uc3.data, mat8uc3.cols, mat8uc3.rows, 3*mat8uc3.cols, QImage::Format_RGB888).copy();
 }
 
+
 // Provides slots for manipulating a QLabel, but does not inherit from QWidget.
 // Therefore, it can be moved to the main thread if not created there initially
 // since god forbid you create a QWidget subclass in not the main thread.
 class GUIProxy : public QObject
 {
     Q_OBJECT
-public:
-    QLabel * window;
+    QMutex lock;
+    QWaitCondition wait;
 
+public:
+
+    bool eventFilter(QObject * obj, QEvent * event)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            wait.wakeAll();
+        }
+        return QObject::eventFilter(obj, event);
+    }
+
+    QLabel * window;
     GUIProxy()
     {
         window = NULL;
+    }
+
+    void waitForKey()
+    {
+        QMutexLocker locker(&lock);
+        wait.wait(&lock);
     }
 
 public slots:
@@ -74,6 +95,13 @@ public slots:
         delete window;
         window = new QLabel();
         window->setVisible(true);
+
+        QApplication::instance()->installEventFilter(this);
+        Qt::WindowFlags flags = window->windowFlags();
+
+        flags = flags & ~Qt::WindowCloseButtonHint;
+        window->setWindowFlags(flags);
+        window->show();
     }
 };
 
@@ -88,8 +116,12 @@ class Show2Transform : public TimeVaryingTransform
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(bool waitInput READ get_waitInput WRITE set_waitInput RESET reset_waitInput STORED false)
+    BR_PROPERTY(bool, waitInput, false)
+
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
+
 
     Show2Transform() : TimeVaryingTransform(false, false)
     {
@@ -144,6 +176,11 @@ public:
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
                 emit updateImage(displayBuffer.copy(displayBuffer.rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput)
+                    gui->waitForKey();
+
             }
         }
     }
