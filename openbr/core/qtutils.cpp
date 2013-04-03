@@ -290,10 +290,10 @@ QPointF QtUtils::toPoint(const QString &string)
     QStringList values = string.split(',');
     if (values.size() == 2) {
         values[1].chop(1);
-        QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
-        return point;
+        return QPointF(values[0].mid(1).toFloat(), values[1].toFloat());
     }
-    else qFatal("Failed to convert %s to QPoint format.", qPrintable(string));
+    else qFatal("Failed to convert %s to QPointF format.", qPrintable(string));
+    return QPointF();
 }
 
 QRectF QtUtils::toRect(const QString &string)
@@ -301,10 +301,10 @@ QRectF QtUtils::toRect(const QString &string)
     QStringList values = string.split(',');
     if (values.size() == 4) {
         values[3].chop(1);
-        QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
-        return rect;
+        return QRectF(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
     }
-    else qFatal("Failed to convert %s to QRect format.", qPrintable(string));
+    else qFatal("Failed to convert %s to QRectF format.", qPrintable(string));
+    return QRectF();
 }
 
 bool QtUtils::runRScript(const QString &file)
