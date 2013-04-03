@@ -109,7 +109,7 @@ BR_REGISTER(Transform, KeyPointDescriptorTransform)
  * \brief Wraps OpenCV Key Point Matcher
  * \author Josh Klontz \cite jklontz
  */
-class KeyPointMatcherTransform : public Distance
+class KeyPointMatcherDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(QString matcher READ get_matcher WRITE set_matcher RESET reset_matcher STORED false)
@@ -148,7 +148,7 @@ class KeyPointMatcherTransform : public Distance
     }
 };
 
-BR_REGISTER(Distance, KeyPointMatcherTransform)
+BR_REGISTER(Distance, KeyPointMatcherDistance)
 
 /*!
  * \ingroup transforms
