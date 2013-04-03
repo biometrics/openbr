@@ -1085,6 +1085,8 @@ public:
         return dst;
     }
 
+    virtual Transform * pseudoCopy() { return this;}
+
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
@@ -1165,6 +1167,12 @@ public:
         }
     }
 
+    virtual Transform * pseudoCopy()
+    {
+        return this->clone();
+    }
+
+
 protected:
     TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
 };
@@ -1241,6 +1249,38 @@ public:
             isTimeVarying = isTimeVarying || transform->timeVarying();
             trainable = trainable || transform->trainable;
         }
+    }
+
+    Transform * pseudoCopy()
+    {
+        if (!timeVarying())
+            return this;
+
+        QString name = metaObject()->className();
+        name.replace("Transform","");
+        name += "([])";
+        name.replace("br::","");
+        CompositeTransform * output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
+
+        if (output == NULL)
+            qFatal("Dynamic cast failed!");
+
+        foreach(Transform* t, transforms )
+        {
+            Transform * maybe_copy = t->pseudoCopy();
+            if (maybe_copy->parent() == NULL)
+                maybe_copy->setParent(output);
+            output->transforms.append(t->pseudoCopy());
+        }
+
+        output->file = this->file;
+        output->classes = classes;
+        output->instances = instances;
+        output->fraction = fraction;
+
+        output->init();
+
+        return output;
     }
 
 protected:
