@@ -24,7 +24,7 @@
 #include <QSqlRecord>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "NaturalStringCompare.h"
 #include "openbr/core/bee.h"

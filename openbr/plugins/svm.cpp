@@ -17,7 +17,7 @@
 #include <QTemporaryFile>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/opencvutils.h"
 

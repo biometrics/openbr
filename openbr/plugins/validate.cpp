@@ -1,6 +1,6 @@
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 #include <openbr/core/qtutils.h>
 
 namespace br

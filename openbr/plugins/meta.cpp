@@ -16,11 +16,11 @@
 
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
-#include <openbr/openbr_plugin.h>
-
+#include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
+#include "openbr/core/resource.h"
 
 using namespace cv;
 
@@ -182,7 +182,6 @@ class PipeTransform : public CompositeTransform
             output.append(last_set);
         }
     }
-
 
 protected:
     // Template list project -- process templates in parallel through Transform::project
@@ -590,6 +589,56 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
 }
 
 
+class TransformCopier : public ResourceMaker<Transform>
+{
+public:
+    Transform * basis;
+    TransformCopier(Transform * _basis)
+    {
+        basis = _basis;
+    }
+
+    virtual Transform *make() const
+    {
+        return basis->smartCopy();
+    }
+
+};
+
+class TimeInvariantWrapperTransform : public MetaTransform
+{
+public:
+    Resource<Transform> transformSource;
+
+    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
+    {
+        baseTransform = basis;
+    }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+    void train(const TemplateList &data)
+    {
+        baseTransform->train(data);
+    }
+
+private:
+    Transform * baseTransform;
+};
+
 class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT
@@ -597,6 +646,16 @@ class DistributeTemplateTransform : public MetaTransform
     BR_PROPERTY(br::Transform*, transform, NULL)
 
 public:
+
+    Transform * smartCopy()
+    {
+        if (!transform->timeVarying())
+            return this;
+
+        DistributeTemplateTransform * output = new DistributeTemplateTransform;
+        output->transform = transform->smartCopy();
+        return output;
+    }
 
     void train(const TemplateList &data)
     {
@@ -620,15 +679,6 @@ public:
     // Process the single elemnt templates in parallel if parallelism is enabled.
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        // Little ugly, but if we own a timeVaryingTransform and this gets called
-        // cast off the const modifier and use projectUpdate. This allows us to
-        // act as a single point of entry.
-        if (transform->timeVarying())
-        {
-            DistributeTemplateTransform * non_const = (DistributeTemplateTransform *) this;
-            non_const->projectUpdate(src,dst);
-            return;
-        }
         // Pre-allocate output for each template
         QList<TemplateList> output_buffer;
         output_buffer.reserve(src.size());
@@ -655,15 +705,16 @@ public:
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
-        if (!transform->timeVarying()) {
-            this->project(src, dst);
-            return;
-        }
-        this->transform->projectUpdate(src, dst);
+        this->project(src, dst);
+        return;
     }
 
+    void init()
+    {
 
-    private:
+        if (transform && transform->timeVarying())
+            transform = new br::TimeInvariantWrapperTransform(transform);
+    }
 
 };
 BR_REGISTER(Transform, DistributeTemplateTransform)

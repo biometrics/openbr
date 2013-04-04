@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <iostream>
 #include <openbr/openbr_plugin.h>
+#include <openbr/plugins/openbr_internal.h>
 
 #ifndef BR_EMBEDDED
 #include <QApplication>

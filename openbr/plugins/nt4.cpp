@@ -10,7 +10,7 @@
 #include <NMatcherParams.h>
 #include <NTemplate.h>
 #include <NLicensing.h>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 //IRIS
 #include <NEExtractor.h>
