@@ -15,7 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"

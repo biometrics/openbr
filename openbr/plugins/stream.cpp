@@ -5,13 +5,11 @@
 #include <QMap>
 #include <opencv/highgui.h>
 #include <QtConcurrent>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
-
-#include <iostream>
 
 using namespace cv;
 
@@ -258,12 +256,16 @@ public:
         next_idx = 0;
         basis = input;
         video.open(input.file.name.toStdString());
-        return video.isOpened();
+        video_ok = video.isOpened();
+        return video_ok;
     }
+    bool video_ok;
 
-    bool isOpen() { return video.isOpened(); }
+    bool isOpen() { return video_ok; }
 
-    void close() { video.release(); }
+    void close() {
+        video.release();
+    }
 
 private:
     bool getNext(FrameData & output)
@@ -279,8 +281,8 @@ private:
 
         bool res = video.read(output.data.last().last());
         if (!res) {
-            video.release();
-            return false;
+            video_ok = false;
+            return video_ok;
         }
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
         return true;
@@ -299,7 +301,9 @@ public:
     TemplateDataSource(int maxFrames) : DataSource(maxFrames)
     {
         current_idx = INT_MAX;
+        data_ok = false;
     }
+    bool data_ok;
 
     bool open(Template &input)
     {
@@ -309,10 +313,13 @@ public:
         final_frame = -1;
         last_issued = -2;
 
-        return isOpen();
+        data_ok = current_idx < basis.size();
+        return data_ok;
     }
 
-    bool isOpen() { return current_idx < basis.size() ; }
+    bool isOpen() {
+        return data_ok;
+    }
 
     void close()
     {
@@ -323,7 +330,8 @@ public:
 private:
     bool getNext(FrameData & output)
     {
-        if (!isOpen())
+        data_ok = current_idx < basis.size();
+        if (!data_ok)
             return false;
 
         output.data.append(basis[current_idx]);
@@ -332,6 +340,7 @@ private:
         output.sequenceNumber = next_sequence;
         next_sequence++;
 
+        output.data.last().file.set("FrameNumber", output.sequenceNumber);
         return true;
     }
 
@@ -595,10 +604,6 @@ public:
 
     FrameData * run(FrameData * input, bool & should_continue)
     {
-        if (input != NULL) {
-            dataSource.returnFrame(input);
-        }
-
         // Is there anything on our input buffer? If so we should start a thread with that.
         QWriteLocker lock(&statusLock);
         input = dataSource.tryGetFrame();

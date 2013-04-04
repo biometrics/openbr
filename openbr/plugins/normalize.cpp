@@ -19,7 +19,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <Eigen/Core>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -58,6 +58,9 @@ class NormalizeTransform : public UntrainableTransform
     Q_ENUMS(NormType)
     Q_PROPERTY(NormType normType READ get_normType WRITE set_normType RESET reset_normType STORED false)
 
+    Q_PROPERTY(bool ByRow READ get_ByRow WRITE set_ByRow RESET reset_ByRow STORED false)
+    BR_PROPERTY(bool, ByRow, false)
+
 public:
     /*!< */
     enum NormType { Inf = NORM_INF,
@@ -69,7 +72,16 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        normalize(src, dst, 1, 0, normType, CV_32F);
+        if (!ByRow) normalize(src, dst, 1, 0, normType, CV_32F);
+        else {
+            dst = src;
+            for (int i=0; i<dst.m().rows; i++) {
+                Mat temp;
+                cv::normalize(dst.m().row(i), temp, 1, 0, normType);
+                temp.copyTo(dst.m().row(i));
+            }
+        }
+
     }
 };
 

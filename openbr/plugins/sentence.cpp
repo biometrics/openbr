@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 using namespace cv;
 

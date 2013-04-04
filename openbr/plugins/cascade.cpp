@@ -15,8 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/objdetect/objdetect.hpp>
-#include <openbr/openbr_plugin.h>
-
+#include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/resource.h"
 

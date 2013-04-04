@@ -1,7 +1,7 @@
 # Add source to BR_THIRDPARTY_SRC
 # Add libs to BR_THIRDPARTY_LIBS
 
-file(GLOB PLUGINS plugins/*.cpp)
+file(GLOB PLUGINS plugins/*.cpp plugins/*.h)
 foreach(PLUGIN ${PLUGINS} ${BR_THIRDPARTY_PLUGINS})
   get_filename_component(PLUGIN_BASENAME ${PLUGIN} NAME_WE)
   get_filename_component(PLUGIN_PATH ${PLUGIN} PATH)
