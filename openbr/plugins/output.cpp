@@ -35,7 +35,7 @@
 #include <iostream>
 #include <limits>
 #include <assert.h>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/bee.h"
 #include "openbr/core/common.h"

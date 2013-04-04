@@ -14,7 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 #include <opencv2/flann/flann.hpp>
 
 #include "openbr/core/opencvutils.h"

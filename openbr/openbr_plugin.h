@@ -1085,6 +1085,14 @@ public:
         return dst;
     }
 
+    /*!
+     * \brief Perform the minimum amount of work necessary to make a
+     * transform that can be used safely from a different thread than this
+     * transform. For transforms that aren't time-varying, nothing needs to be
+     * done, returning this is sufficient.
+     */
+    virtual Transform * smartCopy() { return this;}
+
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
@@ -1125,133 +1133,6 @@ inline QDataStream &operator>>(QDataStream &stream, Transform &f)
     f.load(stream);
     return stream;
 }
-
-/*!
- * \brief A br::Transform for which the results of project may change due to prior calls to project
- */
-class BR_EXPORT TimeVaryingTransform : public Transform
-{
-    Q_OBJECT
-
-public:
-    virtual bool timeVarying() const { return true; }
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
-    }
-
-    virtual void project(const TemplateList &src, TemplateList &dst) const
-    {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
-    }
-
-    // Get a compile failure if this isn't here to go along with the other
-    // projectUpdate, no idea why
-    virtual void projectUpdate(const Template & src, Template & dst)
-    {
-        (void) src; (void) dst;
-        qFatal("do something useful");
-    }
-
-    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        foreach (const Template & src_part, src) {
-            Template out;
-            projectUpdate(src_part, out);
-            dst.append(out);
-        }
-    }
-
-protected:
-    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
-};
-
-/*!
- * \brief A br::Transform expecting multiple matrices per template.
- */
-class BR_EXPORT MetaTransform : public Transform
-{
-    Q_OBJECT
-
-protected:
-    MetaTransform() : Transform(false) {}
-};
-
-/*!
- * \brief A br::Transform that does not require training data.
- */
-class BR_EXPORT UntrainableTransform : public Transform
-{
-    Q_OBJECT
-
-protected:
-    UntrainableTransform(bool independent = true) : Transform(independent, false) {} /*!< \brief Construct an untrainable transform. */
-
-private:
-    Transform *clone() const { return const_cast<UntrainableTransform*>(this); }
-    void train(const TemplateList &data) { (void) data; }
-    void store(QDataStream &stream) const { (void) stream; }
-    void load(QDataStream &stream) { (void) stream; }
-};
-
-/*!
- * \brief A br::MetaTransform that does not require training data.
- */
-class BR_EXPORT UntrainableMetaTransform : public UntrainableTransform
-{
-    Q_OBJECT
-
-protected:
-    UntrainableMetaTransform() : UntrainableTransform(false) {}
-};
-
-/*!
- * \brief A MetaTransform that aggregates some sub-transforms
- */
-class BR_EXPORT CompositeTransform : public TimeVaryingTransform
-{
-    Q_OBJECT
-
-public:
-    Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
-    BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
-        _project(src, dst);
-    }
-
-    virtual void project(const TemplateList &src, TemplateList &dst) const
-    {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
-        _project(src, dst);
-    }
-
-    bool timeVarying() const { return isTimeVarying; }
-
-    void init()
-    {
-        isTimeVarying = false;
-        trainable = false;
-        foreach (const br::Transform *transform, transforms) {
-            isTimeVarying = isTimeVarying || transform->timeVarying();
-            trainable = trainable || transform->trainable;
-        }
-    }
-
-protected:
-    bool isTimeVarying;
-
-    virtual void _project(const Template & src, Template & dst) const = 0;
-    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
-
-    CompositeTransform() : TimeVaryingTransform(false) {}
-};
-
 /*! @}*/
 
 /*!
