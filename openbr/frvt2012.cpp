@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <openbr/openbr_plugin.h>
+#include <openbr/plugins/openbr_internal.h>
 
 #include "frvt2012.h"
 #include "core/distance_sse.h"

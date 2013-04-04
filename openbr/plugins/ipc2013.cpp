@@ -1,4 +1,4 @@
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 #include <pxcaccelerator.h>
 #include <pxcface.h>
 #include <pxcimage.h>

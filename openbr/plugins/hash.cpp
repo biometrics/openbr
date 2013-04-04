@@ -15,8 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <QCryptographicHash>
-#include <openbr/openbr_plugin.h>
-
+#include "openbr_internal.h"
 #include "openbr/core/qtutils.h"
 
 namespace br

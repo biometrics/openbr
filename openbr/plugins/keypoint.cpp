@@ -16,8 +16,7 @@
 
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/nonfree/nonfree.hpp>
-#include <openbr/openbr_plugin.h>
-
+#include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;

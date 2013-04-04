@@ -1,6 +1,6 @@
 #include <QCoreApplication>
 #include <QProcess>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/common.h"
 
