@@ -67,6 +67,7 @@ public slots:
     {
         window->setPixmap(input);
         window->setFixedSize(input.size());
+        // wait for enter key
     }
 
     void createWindow()
@@ -101,6 +102,7 @@ public:
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+        // connect gui newPoint to this setPoint
     }
 
     ~Show2Transform()
@@ -272,9 +274,6 @@ protected:
     qint64 framesSeen;
 };
 BR_REGISTER(Transform, FPSCalc)
-
-
-
 
 } // namespace br
 
