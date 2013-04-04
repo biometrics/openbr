@@ -72,7 +72,11 @@ public:
         }
     }
 
-    virtual Transform * pseudoCopy()
+    /*!
+     *\brief For transforms that don't do any training, this default implementation
+     * which creates a new copy of the Transform from its description string is sufficient.
+     */
+    virtual Transform * smartCopy()
     {
         return this->clone();
     }
@@ -128,7 +132,13 @@ public:
         }
     }
 
-    Transform * pseudoCopy()
+    /*!
+     * \brief Composite transforms need to create a copy of themselves if they
+     * have any time-varying children. If this object is flagged as time-varying,
+     * it creates a new copy of its own class, and gives that copy the child transforms
+     * returned by calling smartCopy on this transforms children
+     */
+    Transform * smartCopy()
     {
         if (!timeVarying())
             return this;
@@ -144,10 +154,10 @@ public:
 
         foreach(Transform* t, transforms )
         {
-            Transform * maybe_copy = t->pseudoCopy();
+            Transform * maybe_copy = t->smartCopy();
             if (maybe_copy->parent() == NULL)
                 maybe_copy->setParent(output);
-            output->transforms.append(t->pseudoCopy());
+            output->transforms.append(t->smartCopy());
         }
 
         output->file = this->file;

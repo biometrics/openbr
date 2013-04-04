@@ -600,7 +600,7 @@ public:
 
     virtual Transform *make() const
     {
-        return basis->pseudoCopy();
+        return basis->smartCopy();
     }
 
 };
@@ -647,13 +647,13 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * pseudoCopy()
+    Transform * smartCopy()
     {
         if (!transform->timeVarying())
             return this;
 
         DistributeTemplateTransform * output = new DistributeTemplateTransform;
-        output->transform = transform->pseudoCopy();
+        output->transform = transform->smartCopy();
         return output;
     }
 

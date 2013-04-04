@@ -1085,7 +1085,13 @@ public:
         return dst;
     }
 
-    virtual Transform * pseudoCopy() { return this;}
+    /*!
+     * \brief Perform the minimum amount of work necessary to make a
+     * transform that can be used safely from a different thread than this
+     * transform. For transforms that aren't time-varying, nothing needs to be
+     * done, returning this is sufficient.
+     */
+    virtual Transform * smartCopy() { return this;}
 
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
