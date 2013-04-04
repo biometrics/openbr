@@ -86,6 +86,7 @@ public slots:
 
     void showImage(const QPixmap & input)
     {
+        window->show();
         window->setPixmap(input);
         window->setFixedSize(input.size());
     }
@@ -101,7 +102,6 @@ public slots:
 
         flags = flags & ~Qt::WindowCloseButtonHint;
         window->setWindowFlags(flags);
-        window->show();
     }
 };
 
@@ -287,7 +287,6 @@ public:
         qint64 elapsed = timer.elapsed();
         if (elapsed > 1000) {
             double fps = 1000 * framesSeen / elapsed;
-            //output.data.last().file.set("FrameNumber", output.sequenceNumber);
             dst.first().file.set("AvgFPS", fps);
         }
     }
