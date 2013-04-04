@@ -43,7 +43,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
         Globals->abbreviations.insert("FaceRecognition2", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+(Gradient+Bin(0,360,9,true))/(Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+Bin(0,10,10,true))+Merge+Integral+RecursiveIntegralSampler(4,2,8,Center(Hellinger)+LDA(.95)+Normalize(L1)+Div(3)+ProductQuantization(3,L1,true)[fraction=0.2]):RecursiveProductQuantization");
-        Globals->abbreviations.insert("FaceRecognitionHoG", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+Bin(0,10,10,true)+Merge+Integral+RecursiveIntegralSampler(4,2,8,LDA(.95)+Normalize(L1)+Div(3)+ProductQuantization(3,L1,true)[fraction=0.2]):RecursiveProductQuantization");
+        Globals->abbreviations.insert("FaceRecognitionHoG", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+Gradient+Bin(0,360,9)+KernelHash(9,81)+Bin(0,81,81,true)+Merge+Integral+RecursiveIntegralSampler(4,2,8,LDA(.95)+Normalize(L1)+Div(3)+ProductQuantization(3,L1,true)[fraction=0.2]):RecursiveProductQuantization");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
