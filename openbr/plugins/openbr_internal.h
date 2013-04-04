@@ -2,6 +2,7 @@
 #define __OPENBR_INTERNAL_H
 
 #include "openbr/openbr_plugin.h"
+#include "openbr/core/resource.h"
 
 namespace br
 {
@@ -97,6 +98,58 @@ protected:
     MetaTransform() : Transform(false) {}
 };
 
+
+class TransformCopier : public ResourceMaker<Transform>
+{
+public:
+    Transform * basis;
+    TransformCopier(Transform * _basis)
+    {
+        basis = _basis;
+    }
+
+    virtual Transform *make() const
+    {
+        return basis->smartCopy();
+    }
+
+};
+
+class TimeInvariantWrapperTransform : public MetaTransform
+{
+public:
+    Resource<Transform> transformSource;
+
+    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
+    {
+        baseTransform = basis;
+    }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+    void train(const TemplateList &data)
+    {
+        baseTransform->train(data);
+    }
+
+private:
+    Transform * baseTransform;
+};
+
+
 /*!
  * \brief A MetaTransform that aggregates some sub-transforms
  */
@@ -116,9 +169,20 @@ public:
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        if (timeVarying()) {
+            if (!this->timeInvariantAlias) {
+                QMutexLocker lock(&aliasLock);
+                CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
+                non_const->timeInvariantAlias = non_const->smartCopy();
+                non_const->timeInvariantAlias->setParent(non_const);
+                lock.unlock();
+            }
+            timeInvariantAlias->projectUpdate(src,dst);
+            return;
+        }
         _project(src, dst);
     }
+
 
     bool timeVarying() const { return isTimeVarying; }
 
@@ -173,10 +237,13 @@ public:
 protected:
     bool isTimeVarying;
 
+    mutable QMutex aliasLock;
+    Transform * timeInvariantAlias;
+
     virtual void _project(const Template & src, Template & dst) const = 0;
     virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
 
-    CompositeTransform() : TimeVaryingTransform(false) {}
+    CompositeTransform() : TimeVaryingTransform(false) { timeInvariantAlias = NULL; }
 };
 
 }
