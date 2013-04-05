@@ -281,6 +281,9 @@ private:
         const QString file = getFileName(description);
         if (!file.isEmpty()) description = file;
 
+        File asdf(description);
+        QString distribute_status = asdf.get<QString>("distribute","true");
+
         if (QFileInfo(description).exists()) {
             qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
             load(description);
@@ -294,8 +297,10 @@ private:
         QStringList words = QtUtils::parse(description, ':');
         if (words.size() > 2) qFatal("Invalid algorithm format.");
 
-        words[0].prepend("DistributeTemplate(");
-        words[0].append(")");
+        if (distribute_status == "true") {
+            words[0].prepend("DistributeTemplate(");
+            words[0].append(")");
+        }
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));

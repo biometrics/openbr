@@ -588,57 +588,6 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
     transform->project(*src, *dst);
 }
 
-
-class TransformCopier : public ResourceMaker<Transform>
-{
-public:
-    Transform * basis;
-    TransformCopier(Transform * _basis)
-    {
-        basis = _basis;
-    }
-
-    virtual Transform *make() const
-    {
-        return basis->smartCopy();
-    }
-
-};
-
-class TimeInvariantWrapperTransform : public MetaTransform
-{
-public:
-    Resource<Transform> transformSource;
-
-    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
-    {
-        baseTransform = basis;
-    }
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
-        transformSource.release(aTransform);
-    }
-
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
-        transformSource.release(aTransform);
-    }
-
-    void train(const TemplateList &data)
-    {
-        baseTransform->train(data);
-    }
-
-private:
-    Transform * baseTransform;
-};
-
 class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT

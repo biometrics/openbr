@@ -86,6 +86,7 @@ public slots:
 
     void showImage(const QPixmap & input)
     {
+        window->show();
         window->setPixmap(input);
         window->setFixedSize(input.size());
         // wait for enter key
@@ -102,7 +103,6 @@ public slots:
 
         flags = flags & ~Qt::WindowCloseButtonHint;
         window->setWindowFlags(flags);
-        window->show();
     }
 };
 
@@ -133,8 +133,12 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
+<<<<<<< HEAD
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
         // connect gui newPoint to this setPoint
+=======
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)), Qt::BlockingQueuedConnection);
+>>>>>>> 45e51f44421b925d4edab9671ceea12c88665793
     }
 
     ~Show2Transform()
@@ -161,7 +165,6 @@ public:
             // build label
             QString newTitle;
             foreach (const QString & s, keys) {
-
                 if (t.file.contains(s)) {
                     QString out = t.file.get<QString>(s);
                     newTitle = newTitle + s + ": " + out + " ";
@@ -190,7 +193,8 @@ public:
     void finalize(TemplateList & output)
     {
         (void) output;
-        // todo: hide window?
+        if (gui && gui->window)
+            gui->window->hide();
     }
 
     void init()
@@ -289,7 +293,6 @@ public:
         qint64 elapsed = timer.elapsed();
         if (elapsed > 1000) {
             double fps = 1000 * framesSeen / elapsed;
-            //output.data.last().file.set("FrameNumber", output.sequenceNumber);
             dst.first().file.set("AvgFPS", fps);
         }
     }
