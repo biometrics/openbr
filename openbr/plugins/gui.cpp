@@ -133,16 +133,7 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-<<<<<<< HEAD
-<<<<<<< HEAD
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
-        // connect gui newPoint to this setPoint
-=======
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)), Qt::BlockingQueuedConnection);
->>>>>>> 45e51f44421b925d4edab9671ceea12c88665793
-=======
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
->>>>>>> ae079eb71b689932c5119c6176b2d272b5f3546b
     }
 
     ~Show2Transform()
