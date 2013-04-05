@@ -132,7 +132,7 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
     }
 
     ~Show2Transform()
@@ -187,14 +187,14 @@ public:
     void finalize(TemplateList & output)
     {
         (void) output;
-        if (gui && gui->window)
-            gui->window->hide();
+        emit hideWindow();
     }
 
     void init()
     {
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
+        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
     }
 
 protected:
@@ -206,6 +206,7 @@ signals:
     void needWindow();
     void updateImage(const QPixmap & input);
     void changeTitle(const QString & input);
+    void hideWindow();
 };
 
 BR_REGISTER(Transform, Show2Transform)
