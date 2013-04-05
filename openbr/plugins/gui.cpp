@@ -94,6 +94,8 @@ public slots:
     void createWindow()
     {
         delete window;
+        QApplication::instance()->removeEventFilter(this);
+
         window = new QLabel();
         window->setVisible(true);
 
