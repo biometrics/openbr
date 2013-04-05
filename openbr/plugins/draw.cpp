@@ -50,7 +50,7 @@ class DrawTransform : public UntrainableTransform
             const QList<Point2f> pointsList = OpenCVUtils::toPoints(named ? src.file.namedPoints() : src.file.points());
             for (int i=0; i<pointsList.size(); i++) {
                 const Point2f &point = pointsList[i];
-                circle(dst, point, 3, color);
+                circle(dst, point, 3, color, -1);
                 if (verbose) putText(dst, QString::number(i).toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
             }
         }

@@ -158,11 +158,9 @@ void File::set(const QString &key, const QString &value)
         }
         else {
             bool ok;
-            foreach(const QString &word, values) variants.append(word.toFloat(&ok));
-            if (!ok) {
-                m_metadata.insert(key, values);
-                return;
-            }
+            values[0].toFloat(&ok); // Check the first value in the list to see if can be converted to a float
+            if (ok) foreach(const QString &word, values) variants.append(word.toFloat(&ok));
+            else foreach(const QString &word, values) variants.append(word);
         }
         m_metadata.insert(key, variants);
     }

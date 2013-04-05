@@ -122,7 +122,6 @@ public:
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
 
-
     Show2Transform() : TimeVaryingTransform(false, false)
     {
         // Create our GUI proxy
