@@ -132,7 +132,7 @@ public:
         gui->moveToThread(QApplication::instance()->thread());
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)), Qt::BlockingQueuedConnection);
     }
 
     ~Show2Transform()
@@ -159,7 +159,6 @@ public:
             // build label
             QString newTitle;
             foreach (const QString & s, keys) {
-
                 if (t.file.contains(s)) {
                     QString out = t.file.get<QString>(s);
                     newTitle = newTitle + s + ": " + out + " ";
@@ -188,7 +187,8 @@ public:
     void finalize(TemplateList & output)
     {
         (void) output;
-        // todo: hide window?
+        if (gui && gui->window)
+            gui->window->hide();
     }
 
     void init()

@@ -295,6 +295,8 @@ private:
         next_idx++;
 
         bool res = video.read(output.data.last().last());
+        output.data.last().last() = output.data.last().last().clone();
+
         if (!res) {
             video_ok = false;
             return video_ok;
