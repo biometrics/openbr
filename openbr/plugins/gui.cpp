@@ -4,7 +4,7 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 using namespace cv;
 
@@ -86,6 +86,7 @@ public slots:
 
     void showImage(const QPixmap & input)
     {
+        window->show();
         window->setPixmap(input);
         window->setFixedSize(input.size());
     }
@@ -93,6 +94,8 @@ public slots:
     void createWindow()
     {
         delete window;
+        QApplication::instance()->removeEventFilter(this);
+
         window = new QLabel();
         window->setVisible(true);
 
@@ -101,7 +104,6 @@ public slots:
 
         flags = flags & ~Qt::WindowCloseButtonHint;
         window->setWindowFlags(flags);
-        window->show();
     }
 };
 
@@ -121,7 +123,6 @@ public:
 
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
-
 
     Show2Transform() : TimeVaryingTransform(false, false)
     {
@@ -159,7 +160,6 @@ public:
             // build label
             QString newTitle;
             foreach (const QString & s, keys) {
-
                 if (t.file.contains(s)) {
                     QString out = t.file.get<QString>(s);
                     newTitle = newTitle + s + ": " + out + " ";
@@ -188,13 +188,14 @@ public:
     void finalize(TemplateList & output)
     {
         (void) output;
-        // todo: hide window?
+        emit hideWindow();
     }
 
     void init()
     {
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
+        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
     }
 
 protected:
@@ -206,6 +207,7 @@ signals:
     void needWindow();
     void updateImage(const QPixmap & input);
     void changeTitle(const QString & input);
+    void hideWindow();
 };
 
 BR_REGISTER(Transform, Show2Transform)
@@ -287,7 +289,6 @@ public:
         qint64 elapsed = timer.elapsed();
         if (elapsed > 1000) {
             double fps = 1000 * framesSeen / elapsed;
-            //output.data.last().file.set("FrameNumber", output.sequenceNumber);
             dst.first().file.set("AvgFPS", fps);
         }
     }
@@ -309,9 +310,6 @@ protected:
     qint64 framesSeen;
 };
 BR_REGISTER(Transform, FPSCalc)
-
-
-
 
 } // namespace br
 

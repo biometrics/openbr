@@ -1,4 +1,4 @@
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 #include <LatentEFS.h>
 
 // Necessary to allocate a large memory though the actual template size may be much smaller

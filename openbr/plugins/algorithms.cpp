@@ -14,7 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 namespace br
 {
@@ -42,7 +42,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
-        Globals->abbreviations.insert("FaceRecognitionHoG", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+Gradient+Bin(0,360,9,true)+Merge+Integral+RecursiveIntegralSampler(4,2,8,Center(Hellinger)+LDA(.95)+Normalize(L1)+Div(3)+ProductQuantization(3,L1,true)[fraction=0.2]):RecursiveProductQuantization");
+        Globals->abbreviations.insert("FaceRecognition2", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+(Gradient+Bin(0,360,9,true))/(Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+Bin(0,10,10,true))+Merge+Integral+RecursiveIntegralSampler(4,2,8,Center(Hellinger)+LDA(.98)+Normalize(L1)+Cat+PCA(768)+Normalize(L1)+Quantize:UCharL1");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
@@ -50,7 +50,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("SmallSIFT", "Open+LimitSize(512)+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("SmallSURF", "Open+LimitSize(512)+KeyPointDetector(SURF)+KeyPointDescriptor(SURF):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("ColorHist", "Open+LimitSize(512)!EnsureChannels(3)+SplitChannels+Hist(256,0,8)+Cat+Normalize(L1):L2");
-        Globals->abbreviations.insert("ImageRetrieval", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(88,88,0.25,0.35)+Gradient+Bin(0,360,8,true)+Merge+Integral+IntegralSampler+WordWise(RowWisePCA(8)+RowWiseMeanCenter+Binarize,RowWisePCA)+Sentence:SentenceSimilarity");
 
         // Hash
         Globals->abbreviations.insert("FileName", "Name+Identity:Identical");

@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <iostream>
 #include <openbr/openbr_plugin.h>
+#include <openbr/plugins/openbr_internal.h>
 
 #ifndef BR_EMBEDDED
 #include <QApplication>
@@ -51,7 +52,7 @@ QString File::flat() const
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
         else {
-            if (QString(value.typeName()) == "QVariantList") {
+            if (QString(value.typeName()) == "QVariantList" || QString(value.typeName()) == "QStringList") {
                 QStringList variants;
                 foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
                     variants.append(QtUtils::toString(variant));
@@ -156,7 +157,14 @@ void File::set(const QString &key, const QString &value)
             else qFatal("Incorrect landmark format.");
         }
         else {
-            foreach(const QString &word, values) variants.append(word.toFloat());
+            bool ok;
+            foreach(const QString &word, values) {
+                variants.append(word.toFloat(&ok));
+                if (!ok) {
+                    m_metadata.insert(key, value.split(", "));
+                    return;
+                }
+            }
         }
         m_metadata.insert(key, variants);
     }
@@ -168,9 +176,9 @@ void File::set(const QString &key, const QString &value)
     else m_metadata.insert(key, value);
 }
 
-bool File::getBool(const QString &key) const
+bool File::getBool(const QString &key, bool defaultValue) const
 {
-    if (!contains(key)) return false;
+    if (!contains(key)) return defaultValue;
     QVariant variant = value(key);
     if (variant.isNull() || !variant.canConvert<bool>()) return true;
     return variant.value<bool>();

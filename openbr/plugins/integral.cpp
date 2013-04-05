@@ -1,6 +1,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <Eigen/Core>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 #include "openbr/core/opencvutils.h"
 
@@ -285,7 +285,6 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().type() != CV_8UC1) qFatal("Requires CV_8UC1 input.");
         Mat dx, dy, magnitude, angle;
         Sobel(src, dx, CV_32F, 1, 0);
         Sobel(src, dy, CV_32F, 0, 1);

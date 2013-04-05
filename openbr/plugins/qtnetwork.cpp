@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <opencv2/highgui/highgui.hpp>
 #include <http_parser.h>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 using namespace cv;
 

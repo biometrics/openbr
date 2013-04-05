@@ -1,6 +1,6 @@
 #include <stasm_dll.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <openbr/openbr_plugin.h>
+#include "openbr_internal.h"
 
 using namespace cv;
 

@@ -15,8 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/highgui/highgui.hpp>
-#include <openbr/openbr_plugin.h>
-
+#include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;
@@ -111,6 +110,7 @@ class PrintTransform : public UntrainableMetaTransform
         const QString nameString = src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
         const QString nTemplates = size ? QString::number(src.size()) : QString();
+        qDebug() << "Dimensionality: " << src.first().cols;
         if (error) qDebug("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
         else       printf("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
     }
