@@ -51,46 +51,6 @@ BR_REGISTER(Transform, OpenTransform)
 
 /*!
  * \ingroup transforms
- * \brief Displays templates in a GUI pop-up window.
- * \author Josh Klontz \cite jklontz
- */
-class ShowTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(bool waitKey READ get_waitKey WRITE set_waitKey RESET reset_waitKey STORED false)
-    BR_PROPERTY(bool, waitKey, true)
-
-    static int counter;
-    int uid;
-
-    void init()
-    {
-        uid = counter++;
-        Globals->setProperty("parallelism", "0"); // Can only work in single threaded mode
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        if (Globals->parallelism) {
-            qWarning("Show::project() only works in single threaded mode.");
-            return;
-        }
-
-        for (int i=0; i<src.size(); i++)
-            OpenCVUtils::showImage(src[i], "Show" + (counter*src.size() > 1 ? "-" + QString::number(uid*src.size()+i) : QString()), false);
-
-        if (waitKey && !src.isEmpty()) cv::waitKey(-1);
-    }
-};
-
-int ShowTransform::counter = 0;
-
-BR_REGISTER(Transform, ShowTransform)
-
-/*!
- * \ingroup transforms
  * \brief Prints the template's file to stdout or stderr.
  * \author Josh Klontz \cite jklontz
  */
