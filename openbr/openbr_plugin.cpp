@@ -52,7 +52,7 @@ QString File::flat() const
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
         else {
-            if (QString(value.typeName()) == "QVariantList") {
+            if (QString(value.typeName()) == "QVariantList" || QString(value.typeName()) == "QStringList") {
                 QStringList variants;
                 foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
                     variants.append(QtUtils::toString(variant));
@@ -158,9 +158,13 @@ void File::set(const QString &key, const QString &value)
         }
         else {
             bool ok;
-            values[0].toFloat(&ok); // Check the first value in the list to see if can be converted to a float
-            if (ok) foreach(const QString &word, values) variants.append(word.toFloat(&ok));
-            else foreach(const QString &word, values) variants.append(word);
+            foreach(const QString &word, values) {
+                variants.append(word.toFloat(&ok));
+                if (!ok) {
+                    m_metadata.insert(key, value.split(", "));
+                    return;
+                }
+            }
         }
         m_metadata.insert(key, variants);
     }
