@@ -771,11 +771,6 @@ public:
         (void) src; (void) dst;
         qFatal("nope");
     }
-    void project(const TemplateList & src, TemplateList & dst) const
-    {
-        (void) src; (void) dst;
-        qFatal("nope");
-    }
 
     void projectUpdate(const Template &src, Template &dst)
     {
