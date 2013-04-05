@@ -18,9 +18,12 @@ class NECLatent1Initialier : public Initializer
 
     void initialize() const
     {
-        Globals->abbreviations.insert("NECTenprint1", "Open+Cvt(Gray)+NECLatent1Enroll:NECLatent1Compare");
-        Globals->abbreviations.insert("NECLatent1", "Open+Cvt(Gray)+NECLatent1Enroll(true):NECLatent1Compare");
-        Globals->abbreviations.insert("NECLatentLFFS1", "Open+NECLatent1Enroll(true,ELFT_M):NECLatent1Compare(ELFT_M)");
+        Globals->abbreviations.insert("NECTenprintLFML", "Open+Cvt(Gray)+NECLatent1Enroll(false,LFML):NECLatent1Compare(LFML)");
+        Globals->abbreviations.insert("NECTenprintELFT", "Open+Cvt(Gray)+NECLatent1Enroll(false,ELFT):NECLatent1Compare(ELFT)");
+        Globals->abbreviations.insert("NECTenprintELFTM", "Open+Cvt(Gray)+NECLatent1Enroll(false,ELFT_M):NECLatent1Compare(ELFT_M)");
+        Globals->abbreviations.insert("NECLatentLFML", "Open+Cvt(Gray)+NECLatent1Enroll(true,LFML):NECLatent1Compare(LFML)");
+        Globals->abbreviations.insert("NECLatentELFT", "Open+Cvt(Gray)+NECLatent1Enroll(true,ELFT):NECLatent1Compare(ELFT)");
+        Globals->abbreviations.insert("NECLatentELFTM", "Open+NECLatent1Enroll(true,ELFT_M):NECLatent1Compare(ELFT_M)");
     }
 };
 
@@ -50,23 +53,24 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
+        static QMutex mutex;
+
         if (src.m().type() != CV_8UC1) qFatal("Requires 8UC1 data!");
         uchar *data = src.m().data;
         const int rows = src.m().rows;
         const int columns = src.m().cols;
         uchar buff[MAX_TEMPLATE_SIZE];
         uchar* pBuff = NULL;
-        int size = 0;
-        int error;
 
+        int size, error;
         if (latent) {
             if      (algorithm == LFML) error = NEC_LFML_ExtractLatent(data, rows, columns, 500, buff, &size);
-            else if (algorithm == ELFT) error = NEC_ELFT_ExtractLatent(data, rows, columns, 500, 4, buff, &size);
-            else                        error = NEC_ELFT_M_ExtractLatent(data, columns, 1, &pBuff, &size);
+            else if (algorithm == ELFT) error = NEC_ELFT_ExtractLatent(data, rows, columns, 500, 32, buff, &size);
+            else { QMutexLocker locker(&mutex); error = NEC_ELFT_M_ExtractLatent(data, columns, 32, &pBuff, &size); }
         } else {
             if      (algorithm == LFML) error = NEC_LFML_ExtractTenprint(data, rows, columns, 500, buff, &size);
-            else if (algorithm == ELFT) error = NEC_ELFT_ExtractTenprint(data, rows, columns, 500, 2, buff, &size);
-            else                        qFatal("ELFT_M Tenprint not implemented.");
+            else if (algorithm == ELFT) error = NEC_ELFT_ExtractTenprint(data, rows, columns, 500, 8, buff, &size);
+            else { QMutexLocker locker(&mutex); error = NEC_ELFT_M_ExtractTenprint(data, rows, columns, 500, 5, &pBuff, &size); }
         }
 
         if (!error) {
@@ -109,10 +113,12 @@ private:
         uchar *aData = a.m().data;
         uchar *bData = b.m().data;
         if (!a.m().data || !b.m().data) return -std::numeric_limits<float>::max();
-        int score;
-        if      (algorithm == LFML) NEC_LFML_Verify(bData, b.m().total(), aData, a.m().total(), &score);
-        else if (algorithm == ELFT) NEC_ELFT_Verify(bData, aData, &score, 1);
-        else                        NEC_ELFT_M_Verify(bData, aData, &score, 1);
+        int score, error;
+        if      (algorithm == LFML) error = NEC_LFML_Verify(bData, b.m().total(), aData, a.m().total(), &score);
+        else if (algorithm == ELFT) error = NEC_ELFT_Verify(bData, aData, &score, 1);
+        else                        error = NEC_ELFT_M_Verify(bData, aData, &score, 1);
+        if (error)
+            qWarning("NECLatent1CompareDistance error %d", error);
         return score;
     }
 };
