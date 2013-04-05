@@ -221,7 +221,7 @@ struct BR_EXPORT File
     }
 
     /*!< \brief Specialization for boolean type. */
-    bool getBool(const QString &key) const;
+    bool getBool(const QString &key, bool defaultValue = false) const;
 
     /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
     template <typename T>
@@ -237,7 +237,7 @@ struct BR_EXPORT File
     inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
     float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
     inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
-    inline bool failed() const { return get<bool>("FTE", false) || get<bool>("FTO", false); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
+    inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
     QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
     QList<QPointF> points() const; /*!< \brief Returns the file's points list. */

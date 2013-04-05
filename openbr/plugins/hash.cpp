@@ -78,10 +78,10 @@ class KernelHashTransform : public UntrainableTransform
         const uchar *srcData = src.m().data;
         uchar *dstData = dst.m().data;
         const int step = src.m().cols;
-        for (int i=0; i<src.m().rows; i++)
+        for (int i=0; i<src.m().rows-1; i++)
             for (int j=0; j<src.m().cols-1; j++) {
                 dstData[i*step+j] = (uint(pow(float(dimsIn),1.f))*srcData[i    *step+j]
-                                   /*+ uint(pow(float(dimsIn),2.f))*srcData[(i+1)*step+j]*/
+                                   + uint(pow(float(dimsIn),2.f))*srcData[(i+1)*step+j]
                                    + uint(pow(float(dimsIn),0.f))*srcData[i    *step+(j+1)]
                                    /*+ uint(pow(float(dimsIn),0.f))*srcData[(i+1)*step+(j+1)]*/) % dimsOut;
             }
