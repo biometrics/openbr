@@ -176,9 +176,9 @@ void File::set(const QString &key, const QString &value)
     else m_metadata.insert(key, value);
 }
 
-bool File::getBool(const QString &key) const
+bool File::getBool(const QString &key, bool defaultValue) const
 {
-    if (!contains(key)) return false;
+    if (!contains(key)) return defaultValue;
     QVariant variant = value(key);
     if (variant.isNull() || !variant.canConvert<bool>()) return true;
     return variant.value<bool>();
