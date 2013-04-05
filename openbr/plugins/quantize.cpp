@@ -82,8 +82,7 @@ class HistEqQuantizationTransform : public Transform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<data.cols; i++)
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&HistEqQuantizationTransform::computeThresholds, data.col(i), &thresholds.data()[i*256]));
-            else                                                                                        computeThresholds( data.col(i), &thresholds.data()[i*256]);
+            futures.addFuture(QtConcurrent::run(&HistEqQuantizationTransform::computeThresholds, data.col(i), &thresholds.data()[i*256]));
         futures.waitForFinished();
     }
 
@@ -156,8 +155,7 @@ class BayesianQuantizationDistance : public Distance
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<data.cols; i++)
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, &loglikelihoods.data()[i*256]));
-            else                                                                                         computeLogLikelihood( data.col(i), templateLabels, &loglikelihoods.data()[i*256]);
+            futures.addFuture(QtConcurrent::run(&BayesianQuantizationDistance::computeLogLikelihood, data.col(i), templateLabels, &loglikelihoods.data()[i*256]));
         futures.waitForFinished();
     }
 

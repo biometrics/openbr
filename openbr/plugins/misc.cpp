@@ -328,6 +328,7 @@ class AnonymizeTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, AnonymizeTransform)
 
+#if 0
 /*!
  * \ingroup transforms
  * \brief Name a point
@@ -375,6 +376,7 @@ class ElicitMetadataTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, ElicitMetadataTransform)
+#endif
 
 /*!
  * \ingroup transforms

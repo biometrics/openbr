@@ -107,8 +107,7 @@ class EmptyGallery : public Gallery
         QList< QFuture<TemplateList> > futures;
         foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
             const QDir subdir = dir.absoluteFilePath(folder);
-            if (Globals->parallelism) futures.append(QtConcurrent::run(&EmptyGallery::getTemplates, subdir));
-            else                      templates.append(getTemplates(subdir));
+            futures.append(QtConcurrent::run(&EmptyGallery::getTemplates, subdir));
         }
         foreach (const QFuture<TemplateList> &future, futures)
             templates.append(future.result());

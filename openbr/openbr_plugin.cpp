@@ -802,6 +802,8 @@ void br::Context::setProperty(const QString &key, const QString &value)
 
     if (key == "parallelism") {
         const int maxThreads = std::max(1, QThread::idealThreadCount());
+        if (parallelism == 0) parallelism = 1;
+
         QThreadPool::globalInstance()->setMaxThreadCount(parallelism ? std::min(maxThreads, abs(parallelism)) : maxThreads);
     } else if (key == "log") {
         logFile.close();
@@ -1193,8 +1195,7 @@ private:
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++) {
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-            else                                                          _train (transforms[i], &templatesList[i]);
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
         }
         futures.waitForFinished();
     }
@@ -1308,21 +1309,12 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
 {
     dst.reserve(src.size());
 
-    // There are certain conditions where we should process the templates in serial,
-    // but generally we'd prefer to process them in parallel.
-    if ((src.size() < 2) || (Globals->parallelism == 0)) {
-        foreach (const Template &t, src) {
-            dst.append(Template());
-            _project(this, &t, &dst.last());
-        }
-    } else {
-        for (int i=0; i<src.size(); i++)
-            dst.append(Template());
-        QFutureSynchronizer<void> futures;
-        for (int i=0; i<dst.size(); i++)
-            futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
-        futures.waitForFinished();
-    }
+    for (int i=0; i<src.size(); i++)
+        dst.append(Template());
+    QFutureSynchronizer<void> futures;
+    for (int i=0; i<dst.size(); i++)
+        futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+    futures.waitForFinished();
 }
 
 static void _backProject(const Transform *transform, const Template *dst, Template *src)
@@ -1343,8 +1335,7 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 
     QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-        else                                                          _backProject (this, &dst[i], &src[i]);
+        futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
     futures.waitForFinished();
 }
 

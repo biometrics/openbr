@@ -98,6 +98,7 @@ class DrawGridTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, DrawGridTransform)
 
+#if 0
 /*!
  * \ingroup transforms
  * \brief Remove landmarks.
@@ -162,6 +163,7 @@ Template EditTransform::currentTemplate;
 QMutex EditTransform::currentTemplateLock;
 
 BR_REGISTER(Transform, EditTransform)
+#endif
 
 } // namespace br
 

@@ -46,8 +46,7 @@ class CrossValidateTransform : public MetaTransform
                 if (partitions[j] == i)
                     partitionedData.removeAt(j);
             // Train on the remaining templates
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
-            else                                                          transforms[i]->train(partitionedData);
+            futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
         }
         futures.waitForFinished();
     }

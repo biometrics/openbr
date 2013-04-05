@@ -109,8 +109,7 @@ class PipeTransform : public CompositeTransform
             fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
             for (int j=0; j<copy.size(); j++)
-                if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));
-                else                                                                                _projectPartial( &copy[j], i, nextTrainableTransform);
+                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));
             futures.waitForFinished();
             i = nextTrainableTransform;
         }
@@ -289,8 +288,7 @@ class ForkTransform : public CompositeTransform
         if (!trainable) return;
         QFutureSynchronizer<void> futures;
         for (int i=0; i<transforms.size(); i++) {
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
-            else                                                          _train (transforms[i], &data);
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
         }
         futures.waitForFinished();
     }
