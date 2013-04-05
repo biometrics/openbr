@@ -281,8 +281,7 @@ private:
         const QString file = getFileName(description);
         if (!file.isEmpty()) description = file;
 
-        File asdf(description);
-        QString distribute_status = asdf.get<QString>("distribute","true");
+        bool add_distribute = File(description).getBool("distribute",true);
 
         if (QFileInfo(description).exists()) {
             qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
@@ -297,7 +296,7 @@ private:
         QStringList words = QtUtils::parse(description, ':');
         if (words.size() > 2) qFatal("Invalid algorithm format.");
 
-        if (distribute_status == "true") {
+        if (add_distribute) {
             words[0].prepend("DistributeTemplate(");
             words[0].append(")");
         }
