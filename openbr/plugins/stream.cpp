@@ -271,12 +271,10 @@ public:
         next_idx = 0;
         basis = input;
         video.open(input.file.name.toStdString());
-        video_ok = video.isOpened();
-        return video_ok;
+        return video.isOpened();
     }
-    bool video_ok;
 
-    bool isOpen() { return video_ok; }
+    bool isOpen() { return video.isOpened(); }
 
     void close() {
         video.release();
@@ -298,8 +296,8 @@ private:
         output.data.last().last() = output.data.last().last().clone();
 
         if (!res) {
-            video_ok = false;
-            return video_ok;
+            close();
+            return false;
         }
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
         return true;
