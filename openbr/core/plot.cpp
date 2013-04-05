@@ -255,7 +255,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         lines.append(QString("KDEImpostor,%1,%2").arg(QString::number(f), QString::number(Common::KernelDensityEstimation(sampledImpostorScores, f, hImpostor))));
 
     // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 200;
+    const int Max_Retrieval = 100;
     const int Report_Retrieval = 5;
     float reportRetrievalRate = -1;
     for (int i=1; i<=Max_Retrieval; i++) {

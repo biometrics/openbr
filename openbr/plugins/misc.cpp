@@ -107,7 +107,7 @@ class PrintTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        const QString nameString = src.file.name;
+        const QString nameString = src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
         const QString nTemplates = size ? QString::number(src.size()) : QString();
         qDebug() << "Dimensionality: " << src.first().cols;

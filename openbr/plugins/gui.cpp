@@ -89,7 +89,6 @@ public slots:
         window->show();
         window->setPixmap(input);
         window->setFixedSize(input.size());
-        // wait for enter key
     }
 
     void createWindow()
