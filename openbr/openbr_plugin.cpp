@@ -157,7 +157,12 @@ void File::set(const QString &key, const QString &value)
             else qFatal("Incorrect landmark format.");
         }
         else {
-            foreach(const QString &word, values) variants.append(word.toFloat());
+            bool ok;
+            foreach(const QString &word, values) variants.append(word.toFloat(&ok));
+            if (!ok) {
+                m_metadata.insert(key, values);
+                return;
+            }
         }
         m_metadata.insert(key, variants);
     }
