@@ -137,11 +137,9 @@ private:
         }
 
         QFutureSynchronizer<void> futures;
-        const bool parallel = (data.size() > 1000) && Globals->parallelism;
         for (size_t c = 0; c < mv.size(); c++) {
             for (int i=0; i<dims; i++)
-                if (parallel) futures.addFuture(QtConcurrent::run(_train, method, mv[c].col(i), labels, &av[c].at<double>(0, i), &bv[c].at<double>(0, i)));
-                else                                              _train (method, mv[c].col(i), labels, &av[c].at<double>(0, i), &bv[c].at<double>(0, i));
+                futures.addFuture(QtConcurrent::run(_train, method, mv[c].col(i), labels, &av[c].at<double>(0, i), &bv[c].at<double>(0, i)));
             av[c] = av[c].reshape(1, data.first().m().rows);
             bv[c] = bv[c].reshape(1, data.first().m().rows);
         }
