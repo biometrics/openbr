@@ -801,10 +801,8 @@ void br::Context::setProperty(const QString &key, const QString &value)
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
-        const int maxThreads = std::max(1, QThread::idealThreadCount());
-        if (parallelism == 0) parallelism = 1;
-
-        QThreadPool::globalInstance()->setMaxThreadCount(parallelism ? std::min(maxThreads, abs(parallelism)) : maxThreads);
+        if (parallelism <= 0) parallelism = 1;
+        QThreadPool::globalInstance()->setMaxThreadCount(parallelism);
     } else if (key == "log") {
         logFile.close();
         if (log.isEmpty()) return;
@@ -887,8 +885,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
     }
     Globals->sdkPath = sdkPath;
 
-    // Empirical evidence suggests an extra thread helps achieve full CPU utilization
-    QThreadPool::globalInstance()->releaseThread();
+    QThreadPool::globalInstance()->setMaxThreadCount(Globals->parallelism);
 
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
@@ -898,9 +895,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
 void br::Context::finalize()
 {
-    // Undo the 'releaseThread()' in 'initialize()'
-    QThreadPool::globalInstance()->reserveThread();
-
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -1194,9 +1188,8 @@ private:
             templatesList[i] = Downsample(templatesList[i], transforms[i]);
 
         QFutureSynchronizer<void> futures;
-        for (int i=0; i<templatesList.size(); i++) {
+        for (int i=0; i<templatesList.size(); i++)
             futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-        }
         futures.waitForFinished();
     }
 

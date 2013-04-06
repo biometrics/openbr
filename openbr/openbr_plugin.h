@@ -547,7 +547,7 @@ public:
      * \brief The number of threads to use.
      */
     Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
-    BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()))
+    BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()+1))
 
     /*!
      * \brief The maximum number of templates to process in parallel.
