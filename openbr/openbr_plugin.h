@@ -707,7 +707,7 @@ public:
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "");
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool use_gui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.

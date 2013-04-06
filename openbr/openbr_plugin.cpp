@@ -829,9 +829,8 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 // We create our own when the user hasn't
 static QCoreApplication *application = NULL;
 
-void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
+void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_gui)
 {
-    bool use_gui = true;
     for (int i=0; i < argc; i ++)
     {
         if (strcmp("-useGui", argv[i]) == 0) {
@@ -847,19 +846,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
     // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
-        if (use_gui)
-        {
-            try
-            {
-                application = new QApplication(argc, argv);
-            }
-            catch (...)
-            {
-                application = new QCoreApplication(argc, argv);
-                use_gui = false;
-            }
-        }
-        else application = new QCoreApplication(argc, argv);
+        application = new QApplication(argc, argv);
 #else
         application = new QCoreApplication(argc, argv);
 #endif
