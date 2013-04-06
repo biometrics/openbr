@@ -189,6 +189,7 @@ struct BR_EXPORT File
     inline QString baseName() const { const QString baseName = QFileInfo(name).baseName();
                                       return baseName.isEmpty() ? QDir(name).dirName() : baseName; } /*!< \brief Returns the file's base name. */
     inline QString suffix() const { return QFileInfo(name).suffix(); } /*!< \brief Returns the file's extension. */
+    inline QString path() const { return QFileInfo(name).path(); } /*! \brief Returns the file's path excluding its name. */
     QString resolved() const; /*!< \brief Returns name prepended with Globals->path if name does not exist. */
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
