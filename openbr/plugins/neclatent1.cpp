@@ -54,6 +54,7 @@ private:
     void project(const Template &src, Template &dst) const
     {
         static QMutex mutex;
+        QMutexLocker locker(&mutex); // It seems that most of the API is not reentrant
 
         if (src.m().type() != CV_8UC1) qFatal("Requires 8UC1 data!");
         uchar *data = src.m().data;
@@ -66,11 +67,11 @@ private:
         if (latent) {
             if      (algorithm == LFML) error = NEC_LFML_ExtractLatent(data, rows, columns, 500, buff, &size);
             else if (algorithm == ELFT) error = NEC_ELFT_ExtractLatent(data, rows, columns, 500, 32, buff, &size);
-            else { QMutexLocker locker(&mutex); error = NEC_ELFT_M_ExtractLatent(data, columns, 32, &pBuff, &size); }
+            else                        error = NEC_ELFT_M_ExtractLatent(data, columns, 5, &pBuff, &size);
         } else {
             if      (algorithm == LFML) error = NEC_LFML_ExtractTenprint(data, rows, columns, 500, buff, &size);
             else if (algorithm == ELFT) error = NEC_ELFT_ExtractTenprint(data, rows, columns, 500, 8, buff, &size);
-            else { QMutexLocker locker(&mutex); error = NEC_ELFT_M_ExtractTenprint(data, rows, columns, 500, 5, &pBuff, &size); }
+            else                        error = NEC_ELFT_M_ExtractTenprint(data, rows, columns, 500, 5, &pBuff, &size);
         }
 
         if (!error) {
