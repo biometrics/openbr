@@ -829,8 +829,17 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 // We create our own when the user hasn't
 static QCoreApplication *application = NULL;
 
-void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
+void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_gui)
 {
+    for (int i=0; i < argc; i ++)
+    {
+        if (strcmp("-useGui", argv[i]) == 0) {
+            const char * val = i+1 < argc ? argv[i+1] : "";
+            if (strcmp(val, "false") ==0 || strcmp(val, "0") == 0)
+                use_gui = false;
+            break;
+        }
+    }
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
@@ -861,6 +870,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
     Globals = new Context();
     Globals->init(File());
+    Globals->useGui = use_gui;
 
     qInstallMessageHandler(messageHandler);
 
