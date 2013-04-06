@@ -328,6 +328,7 @@ class AnonymizeTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, AnonymizeTransform)
 
+// TODO: Use a global Mutex to prevent concurrent reads from stdin
 #if 0
 /*!
  * \ingroup transforms

@@ -287,9 +287,8 @@ class ForkTransform : public CompositeTransform
     {
         if (!trainable) return;
         QFutureSynchronizer<void> futures;
-        for (int i=0; i<transforms.size(); i++) {
+        for (int i=0; i<transforms.size(); i++)
             futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
-        }
         futures.waitForFinished();
     }
 

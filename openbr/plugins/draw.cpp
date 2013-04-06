@@ -98,6 +98,7 @@ class DrawGridTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, DrawGridTransform)
 
+// TODO: re-implement EditTransform using Qt
 #if 0
 /*!
  * \ingroup transforms
