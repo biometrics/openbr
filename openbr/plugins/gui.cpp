@@ -125,6 +125,11 @@ public:
 
     ShowTransform() : TimeVaryingTransform(false, false)
     {
+        gui = NULL;
+        displayBuffer = NULL;
+        if (!Globals->useGui)
+            return;
+        displayBuffer = new QPixmap();
         // Create our GUI proxy
         gui = new GUIProxy();
         // Move it to the main thread, this means signals we send to it will
@@ -138,6 +143,7 @@ public:
     ~ShowTransform()
     {
         delete gui;
+        delete displayBuffer;
     }
 
     void train(const TemplateList &data) { (void) data; }
@@ -152,7 +158,7 @@ public:
     {
         dst = src;
 
-        if (src.empty())
+        if (src.empty() || !Globals->useGui)
             return;
 
         foreach (const Template & t, src) {
@@ -169,12 +175,12 @@ public:
 
             foreach(const cv::Mat & m, t) {
                 qImageBuffer = toQImage(m);
-                displayBuffer.convertFromImage(qImageBuffer);
+                displayBuffer->convertFromImage(qImageBuffer);
 
                 // Emit an explicit  copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
-                emit updateImage(displayBuffer.copy(displayBuffer.rect()));
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
                 // Blocking wait for a key-press
                 if (this->waitInput)
@@ -192,6 +198,9 @@ public:
 
     void init()
     {
+        if (!Globals->useGui)
+            return;
+
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
         connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
@@ -200,7 +209,7 @@ public:
 protected:
     GUIProxy * gui;
     QImage qImageBuffer;
-    QPixmap displayBuffer;
+    QPixmap * displayBuffer;
 
 signals:
     void needWindow();

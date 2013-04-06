@@ -550,6 +550,12 @@ public:
     BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()+1))
 
     /*!
+     * \brief Whether or not to use GUI functions
+     */
+    Q_PROPERTY(bool useGui READ get_useGui WRITE set_useGui RESET reset_useGui)
+    BR_PROPERTY(bool, useGui, true)
+
+    /*!
      * \brief The maximum number of templates to process in parallel.
      */
     Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize)
@@ -701,7 +707,7 @@ public:
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "");
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool use_gui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.
