@@ -831,13 +831,35 @@ static QCoreApplication *application = NULL;
 
 void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 {
+    bool use_gui = true;
+    for (int i=0; i < argc; i ++)
+    {
+        if (strcmp("-useGui", argv[i]) == 0) {
+            const char * val = i+1 < argc ? argv[i+1] : "";
+            if (strcmp(val, "false") ==0 || strcmp(val, "0") == 0)
+                use_gui = false;
+            break;
+        }
+    }
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
     // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
-        application = new QApplication(argc, argv);
+        if (use_gui)
+        {
+            try
+            {
+                application = new QApplication(argc, argv);
+            }
+            catch (...)
+            {
+                application = new QCoreApplication(argc, argv);
+                use_gui = false;
+            }
+        }
+        else application = new QCoreApplication(argc, argv);
 #else
         application = new QCoreApplication(argc, argv);
 #endif
@@ -861,6 +883,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
     Globals = new Context();
     Globals->init(File());
+    Globals->useGui = use_gui;
 
     qInstallMessageHandler(messageHandler);
 
