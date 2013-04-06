@@ -801,8 +801,8 @@ void br::Context::setProperty(const QString &key, const QString &value)
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
-        const int maxThreads = std::max(1, QThread::idealThreadCount());
-        QThreadPool::globalInstance()->setMaxThreadCount(parallelism ? std::min(maxThreads, abs(parallelism)) : maxThreads);
+        if (parallelism <= 0) parallelism = 1;
+        QThreadPool::globalInstance()->setMaxThreadCount(parallelism);
     } else if (key == "log") {
         logFile.close();
         if (log.isEmpty()) return;
@@ -885,8 +885,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
     }
     Globals->sdkPath = sdkPath;
 
-    // Empirical evidence suggests an extra thread helps achieve full CPU utilization
-    QThreadPool::globalInstance()->releaseThread();
+    QThreadPool::globalInstance()->setMaxThreadCount(Globals->parallelism);
 
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
@@ -896,9 +895,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 
 void br::Context::finalize()
 {
-    // Undo the 'releaseThread()' in 'initialize()'
-    QThreadPool::globalInstance()->reserveThread();
-
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
@@ -1192,10 +1188,8 @@ private:
             templatesList[i] = Downsample(templatesList[i], transforms[i]);
 
         QFutureSynchronizer<void> futures;
-        for (int i=0; i<templatesList.size(); i++) {
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-            else                                                          _train (transforms[i], &templatesList[i]);
-        }
+        for (int i=0; i<templatesList.size(); i++)
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
         futures.waitForFinished();
     }
 
@@ -1308,21 +1302,12 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
 {
     dst.reserve(src.size());
 
-    // There are certain conditions where we should process the templates in serial,
-    // but generally we'd prefer to process them in parallel.
-    if ((src.size() < 2) || (Globals->parallelism == 0)) {
-        foreach (const Template &t, src) {
-            dst.append(Template());
-            _project(this, &t, &dst.last());
-        }
-    } else {
-        for (int i=0; i<src.size(); i++)
-            dst.append(Template());
-        QFutureSynchronizer<void> futures;
-        for (int i=0; i<dst.size(); i++)
-            futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
-        futures.waitForFinished();
-    }
+    for (int i=0; i<src.size(); i++)
+        dst.append(Template());
+    QFutureSynchronizer<void> futures;
+    for (int i=0; i<dst.size(); i++)
+        futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+    futures.waitForFinished();
 }
 
 static void _backProject(const Transform *transform, const Template *dst, Template *src)
@@ -1343,8 +1328,7 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
 
     QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-        else                                                          _backProject (this, &dst[i], &src[i]);
+        futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
     futures.waitForFinished();
 }
 

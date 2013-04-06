@@ -33,7 +33,8 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \brief Wraps STASM key point detector
  * \author Scott Klum \cite sklum
  */
-
+// TODO: Use a global mutex to prevent concurrent calls to AsmSearchDll
+#if 0
 class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -67,6 +68,7 @@ class StasmTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, StasmTransform)
+#endif
 
 } // namespace br
 
