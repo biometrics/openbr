@@ -14,9 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "openbr_internal.h"
 #include <opencv2/flann/flann.hpp>
 
+#include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;
@@ -26,39 +26,40 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Wraps OpenCV kmeans
+ * \brief Wraps OpenCV kmeans and flann.
  * \author Josh Klontz \cite jklontz
  */
 class KMeansTransform : public Transform
 {
     Q_OBJECT
-    Q_PROPERTY(int k READ get_k WRITE set_k RESET reset_k)
-    BR_PROPERTY(int, k, 1)
+    Q_PROPERTY(int kTrain READ get_kTrain WRITE set_kTrain RESET reset_kTrain STORED false)
+    Q_PROPERTY(int kSearch READ get_kSearch WRITE set_kSearch RESET reset_kSearch STORED false)
+    BR_PROPERTY(int, kTrain, 256)
+    BR_PROPERTY(int, kSearch, 1)
 
     Mat centers;
-    QSharedPointer<flann::Index> index;
-    QSharedPointer<QMutex> indexLock;
+    mutable QScopedPointer<flann::Index> index;
+    mutable QMutex mutex;
 
     void reindex()
     {
-        index = QSharedPointer<flann::Index>(new flann::Index(centers, flann::LinearIndexParams()));
-        indexLock = QSharedPointer<QMutex>(new QMutex());
+        index.reset(new flann::Index(centers, flann::LinearIndexParams()));
     }
 
     void train(const TemplateList &data)
     {
         Mat bestLabels;
-        const double compactness = kmeans(OpenCVUtils::toMatByRow(data.data()), k, bestLabels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
-        reindex();
+        const double compactness = kmeans(OpenCVUtils::toMatByRow(data.data()), kTrain, bestLabels, TermCriteria(TermCriteria::MAX_ITER, 10, 0), 3, KMEANS_PP_CENTERS, centers);
         qDebug("KMeans compactness = %f", compactness);
+        reindex();
     }
 
     void project(const Template &src, Template &dst) const
     {
-        Mat dists;
-        indexLock->lock();
-        index->knnSearch(src, dst, dists, 1);
-        indexLock->unlock();
+        QMutexLocker locker(&mutex);
+        Mat dists, indicies;
+        index->knnSearch(src, indicies, dists, kSearch);
+        dst = indicies.reshape(1, 1);
     }
 
     void load(QDataStream &stream)
