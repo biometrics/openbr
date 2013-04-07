@@ -275,17 +275,14 @@ private:
         return QFileInfo(file).exists() ? file : QString();
     }
 
-    void init(QString description)
+    void init(const File &description)
     {
         // Check if a trained binary already exists for this algorithm
         const QString file = getFileName(description);
-        if (!file.isEmpty()) description = file;
+        if (!file.isEmpty()) return init(file);
 
-        File asdf(description);
-        QString distribute_status = asdf.get<QString>("distribute","true");
-
-        if (QFileInfo(description).exists()) {
-            qDebug("Loading %s", qPrintable(QFileInfo(description).fileName()));
+        if (description.exists()) {
+            qDebug("Loading %s", qPrintable(description.fileName()));
             load(description);
             return;
         }
@@ -294,13 +291,11 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
-        QStringList words = QtUtils::parse(description, ':');
-        if (words.size() > 2) qFatal("Invalid algorithm format.");
+        QStringList words = QtUtils::parse(description.flat(), ':');
+        if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
 
-        if (distribute_status == "true") {
-            words[0].prepend("DistributeTemplate(");
-            words[0].append(")");
-        }
+        if (description.getBool("distribute", true))
+            words[0] = "DistributeTemplate(" + words[0] + ")";
 
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));

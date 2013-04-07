@@ -38,11 +38,11 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("MedianFace", "Open!Cascade(FrontalFace)+ASEFEyes+Affine(256,256,0.37,0.45)+Center(Median)");
         Globals->abbreviations.insert("BlurredFaceDetection", "Open+LimitSize(1024)+SkinMask/(Cvt(Gray)+GradientMask)+And+Morph(Erode,16)+LargestConvexArea");
         Globals->abbreviations.insert("DrawFaceDetection", "Open+Cascade(FrontalFace)!ASEFEyes+Draw");
-        Globals->abbreviations.insert("ShowFaceDetection", "DrawFaceDetection!Show");
+        Globals->abbreviations.insert("ShowFaceDetection", "DrawFaceDetection!Show[distribute=false]");
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
-        Globals->abbreviations.insert("FaceRecognition2", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+(Gradient+Bin(0,360,9,true))/(Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+Bin(0,10,10,true))+Merge+Integral+RecursiveIntegralSampler(4,2,8,Center(Hellinger)+LDA(.98)+Normalize(L1)+Cat+PCA(768)+Normalize(L1)+Quantize:UCharL1");
+        Globals->abbreviations.insert("FaceRecognition2", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+(Gradient+Bin(0,360,9,true))/(Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+Bin(0,10,10,true))+Merge+Integral+RecursiveIntegralSampler(4,2,8,LDA(.98)+Normalize(L1))+Cat+PCA(768)+Normalize(L1)+Quantize:UCharL1");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");

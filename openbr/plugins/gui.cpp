@@ -94,6 +94,8 @@ public slots:
     void createWindow()
     {
         delete window;
+        QApplication::instance()->removeEventFilter(this);
+
         window = new QLabel();
         window->setVisible(true);
 
@@ -109,21 +111,25 @@ public slots:
  * \ingroup transforms
  * \brief Displays templates in a GUI pop-up window using QT.
  * \author Charles Otto \cite caotto
- * Unlike ShowTransform, this can be used with parallelism enabled, although it
- * is considered TimeVarying.
+ * Can be used with parallelism enabled, although it is considered TimeVarying.
  */
-class Show2Transform : public TimeVaryingTransform
+class ShowTransform : public TimeVaryingTransform
 {
     Q_OBJECT
 public:
     Q_PROPERTY(bool waitInput READ get_waitInput WRITE set_waitInput RESET reset_waitInput STORED false)
-    BR_PROPERTY(bool, waitInput, false)
+    BR_PROPERTY(bool, waitInput, true)
 
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
 
-    Show2Transform() : TimeVaryingTransform(false, false)
+    ShowTransform() : TimeVaryingTransform(false, false)
     {
+        gui = NULL;
+        displayBuffer = NULL;
+        if (!Globals->useGui)
+            return;
+        displayBuffer = new QPixmap();
         // Create our GUI proxy
         gui = new GUIProxy();
         // Move it to the main thread, this means signals we send to it will
@@ -134,16 +140,17 @@ public:
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
     }
 
-    ~Show2Transform()
+    ~ShowTransform()
     {
         delete gui;
+        delete displayBuffer;
     }
 
     void train(const TemplateList &data) { (void) data; }
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Transform * non_const = (Show2Transform *) this;
+        Transform * non_const = (ShowTransform *) this;
         non_const->projectUpdate(src,dst);
     }
 
@@ -151,7 +158,7 @@ public:
     {
         dst = src;
 
-        if (src.empty())
+        if (src.empty() || !Globals->useGui)
             return;
 
         foreach (const Template & t, src) {
@@ -168,12 +175,12 @@ public:
 
             foreach(const cv::Mat & m, t) {
                 qImageBuffer = toQImage(m);
-                displayBuffer.convertFromImage(qImageBuffer);
+                displayBuffer->convertFromImage(qImageBuffer);
 
                 // Emit an explicit  copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
-                emit updateImage(displayBuffer.copy(displayBuffer.rect()));
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
                 // Blocking wait for a key-press
                 if (this->waitInput)
@@ -191,6 +198,9 @@ public:
 
     void init()
     {
+        if (!Globals->useGui)
+            return;
+
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
         connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
@@ -199,7 +209,7 @@ public:
 protected:
     GUIProxy * gui;
     QImage qImageBuffer;
-    QPixmap displayBuffer;
+    QPixmap * displayBuffer;
 
 signals:
     void needWindow();
@@ -208,7 +218,7 @@ signals:
     void hideWindow();
 };
 
-BR_REGISTER(Transform, Show2Transform)
+BR_REGISTER(Transform, ShowTransform)
 
 class FPSSynch : public TimeVaryingTransform
 {

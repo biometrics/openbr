@@ -297,16 +297,15 @@ BR_EXPORT bool br_plot_metadata(int num_files, const char *files[], const char *
 BR_EXPORT float br_progress();
 
 /*!
- * \brief Read and parse stdin.
+ * \brief Read and parse arguments from a named pipe.
  *
- * Used by the \ref cli to implement \c -daemon.
+ * Used by the \ref cli to implement \c -daemon, generally not useful otherwise.
  * Guaranteed to return at least one argument.
- * Generally not useful otherwise.
  * \param[out] argc argument count
  * \param[out] argv argument list
  * \note \ref managed_return_value
  */
-BR_EXPORT void br_read_stdin(int *argc, char ***argv);
+BR_EXPORT void br_read_pipe(const char *pipe, int *argc, char ***argv);
 
 /*!
  * \brief Converts a simmat to a new output format.

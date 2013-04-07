@@ -189,6 +189,7 @@ struct BR_EXPORT File
     inline QString baseName() const { const QString baseName = QFileInfo(name).baseName();
                                       return baseName.isEmpty() ? QDir(name).dirName() : baseName; } /*!< \brief Returns the file's base name. */
     inline QString suffix() const { return QFileInfo(name).suffix(); } /*!< \brief Returns the file's extension. */
+    inline QString path() const { return QFileInfo(name).path(); } /*! \brief Returns the file's path excluding its name. */
     QString resolved() const; /*!< \brief Returns name prepended with Globals->path if name does not exist. */
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
@@ -547,7 +548,13 @@ public:
      * \brief The number of threads to use.
      */
     Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
-    BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()))
+    BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()+1))
+
+    /*!
+     * \brief Whether or not to use GUI functions
+     */
+    Q_PROPERTY(bool useGui READ get_useGui WRITE set_useGui RESET reset_useGui)
+    BR_PROPERTY(bool, useGui, true)
 
     /*!
      * \brief The maximum number of templates to process in parallel.
@@ -701,7 +708,7 @@ public:
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "");
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool use_gui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.

@@ -221,7 +221,7 @@ public:
             Transform * maybe_copy = t->smartCopy();
             if (maybe_copy->parent() == NULL)
                 maybe_copy->setParent(output);
-            output->transforms.append(t->smartCopy());
+            output->transforms.append(maybe_copy);
         }
 
         output->file = this->file;

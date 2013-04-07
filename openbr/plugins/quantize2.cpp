@@ -83,8 +83,7 @@ class BayesianQuantizationTransform : public Transform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<data.cols; i++)
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&BayesianQuantizationTransform::computeThresholds, data.col(i), labels, &thresholds.data()[i*256]));
-            else                                                                                          computeThresholds( data.col(i), labels, &thresholds.data()[i*256]);
+            futures.addFuture(QtConcurrent::run(&BayesianQuantizationTransform::computeThresholds, data.col(i), labels, &thresholds.data()[i*256]));
         futures.waitForFinished();
     }
 
