@@ -190,7 +190,7 @@ void br_read_stdin(int *argc, char ***argv)
     QStringList args;
     while (args.isEmpty()) {
         args = QtUtils::parse(QTextStream(stdin).readLine(), ' ');
-        QThread::yieldCurrentThread();
+        if (args.isEmpty()) QThread::sleep(100);
     }
 
     byteArrayList.clear(); rawCharArrayList.clear();
