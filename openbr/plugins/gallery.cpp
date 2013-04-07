@@ -395,12 +395,19 @@ class csvGallery : public Gallery
         if (!file.exists()) return templates;
 
         QStringList lines = QtUtils::readLines(file);
-        if (!lines.isEmpty()) lines.removeFirst(); // Remove header
+        QRegExp regexp("\\s*,\\s*");
+        QStringList headers;
+        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
 
         foreach (const QString &line, lines) {
-            QStringList words = line.split(',');
-            if (words.isEmpty()) continue;
-            templates.append(File(words[fileIndex], words.size() > 1 ? words.takeLast() : ""));
+            QStringList words = line.split(regexp);
+            if (words.size() != headers.size()) continue;
+            File f;
+            for (int i=0; i<words.size(); i++) {
+                if (i == 0) f.name = words[i];
+                else        f.set(headers[i], words[i]);
+            }
+            templates.append(f);
         }
 
         return templates;
