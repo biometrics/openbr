@@ -182,16 +182,22 @@ float br_progress()
     return Globals->progress();
 }
 
-void br_read_stdin(int *argc, char ***argv)
+void br_read_pipe(const char *pipe, int *argc, char ***argv)
 {
     static QList<QByteArray> byteArrayList;
     static QVector<char*> rawCharArrayList;
 
+    QFile file(pipe);
+    file.open(QFile::ReadOnly);
+    QTextStream stream(&file);
+
     QStringList args;
     while (args.isEmpty()) {
-        args = QtUtils::parse(QTextStream(stdin).readLine(), ' ');
+        args = QtUtils::parse(stream.readAll(), ' ');
         if (args.isEmpty()) QThread::sleep(100);
     }
+
+    file.close();
 
     byteArrayList.clear(); rawCharArrayList.clear();
     foreach (const QString &string, args) {

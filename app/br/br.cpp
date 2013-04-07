@@ -68,12 +68,13 @@ public:
         if (argc == 0) printf("%s\nTry running 'br -help'\n", br_about());
 
         bool daemon = false;
+        const char *daemon_pipe = NULL;
         while (daemon || (argc > 0)) {
             const char *fun;
             int parc;
             const char **parv;
             if (argc == 0)
-                br_read_stdin(&argc, &argv);
+                br_read_pipe(daemon_pipe, &argc, &argv);
 
             fun = argv[0];
             if (fun[0] == '-') fun++;
@@ -158,8 +159,9 @@ public:
                 check(parc == 0, "No parameters expected for 'version'.");
                 printf("%s\n", br_version());
             } else if (!strcmp(fun, "daemon")) {
-                check(parc == 0, "No parameters expected for 'daemon'.");
+                check(parc == 1, "Incorrect parameter count for 'daemon'.");
                 daemon = true;
+                daemon_pipe = parv[0];
             } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;
