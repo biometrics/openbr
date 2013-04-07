@@ -52,7 +52,7 @@ QString File::flat() const
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
         else {
-            if (QString(value.typeName()) == "QVariantList" || QString(value.typeName()) == "QStringList") {
+            if (QString(value.typeName()) == "QVariantList") {
                 QStringList variants;
                 foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
                     variants.append(QtUtils::toString(variant));
