@@ -291,7 +291,7 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
-        QStringList words = QtUtils::parse(description, ':');
+        QStringList words = QtUtils::parse(description.flat(), ':');
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
 
         if (description.getBool("distribute", true))
