@@ -413,7 +413,11 @@ class csvGallery : public Gallery
 
     static QString getCSVElement(const QString &key, const QVariant &value, bool header)
     {
-        if (value.canConvert<QString>()) {
+        if ((key == "Label") && !header) {
+            QString stringLabel = Globals->classes.key(value.value<int>());
+            if (stringLabel.isEmpty()) return value.value<QString>();
+            else                       return stringLabel;
+        } else if (value.canConvert<QString>()) {
             if (header) return key;
             else        return value.value<QString>();
         } else if (value.canConvert<QPointF>()) {
