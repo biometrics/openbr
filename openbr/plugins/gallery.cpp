@@ -26,7 +26,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 
-#include "NaturalStringCompare.h"
 #include "openbr/core/bee.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
@@ -149,7 +148,7 @@ class EmptyGallery : public Gallery
         // Add immediate subfolders
         QDir dir(file);
         QList< QFuture<TemplateList> > futures;
-        foreach (const QString &folder, NaturalStringSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
+        foreach (const QString &folder, QtUtils::naturalSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
             const QDir subdir = dir.absoluteFilePath(folder);
             futures.append(QtConcurrent::run(&EmptyGallery::getTemplates, subdir));
         }

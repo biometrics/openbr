@@ -72,8 +72,8 @@ find_package(OpenCV REQUIRED)
 set(OPENCV_DEPENDENCIES opencv_core opencv_features2d opencv_flann opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
-# Find NaturalStringCompare
-find_package(NaturalStringCompare REQUIRED)
+# Find Alphanum
+find_package(Alphanum REQUIRED)
 
 # Compiler flags
 if(UNIX)
