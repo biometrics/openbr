@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QRegularExpression>
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
@@ -398,6 +399,29 @@ class AsTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, AsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Change the template label using a regular expresion matched to the file's base name.
+ */
+class RelabelTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        QRegularExpression re(regexp);
+        QRegularExpressionMatch match = re.match(dst.file.baseName());
+        if (!match.hasMatch())
+            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.baseName()));
+        dst.file.set("Label", match.captured(match.lastCapturedIndex()));
+    }
+};
+
+BR_REGISTER(Transform, RelabelTransform)
 
 }
 
