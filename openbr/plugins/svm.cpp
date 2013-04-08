@@ -75,14 +75,15 @@ private:
         cv::Mat data = OpenCVUtils::toMat(_data.data());
         cv::Mat lab = OpenCVUtils::toMat(_data.labels<float>());
 
-        // Scale labels to [-1,1]
-        double min, max;
-        cv::minMaxLoc(lab, &min, &max);
-        if (max > min) {
-            a = 2.0/(max-min);
-            b = -(min*a+1);
-            lab = (lab * a) + b;
+        if ((type == EPS_SVR) || (type == NU_SVR)) {
+            // Scale labels to [-1,1]
+            double min, max;
             cv::minMaxLoc(lab, &min, &max);
+            if (max > min) {
+                a = 2.0/(max-min);
+                b = -(min*a+1);
+                lab = (lab * a) + b;
+            }
         }
 
         if (data.type() != CV_32FC1)

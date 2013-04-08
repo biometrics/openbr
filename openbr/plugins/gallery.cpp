@@ -36,6 +36,50 @@ namespace br
 
 /*!
  * \ingroup galleries
+ * \brief Weka ARFF file format.
+ * \author Josh Klontz \cite jklontz
+ */
+class arffGallery : public Gallery
+{
+    Q_OBJECT
+    QFile arffFile;
+
+    TemplateList readBlock(bool *done)
+    {
+        (void) done;
+        qFatal("Not implemented.");
+        return TemplateList();
+    }
+
+    void write(const Template &t)
+    {
+        if (!arffFile.isOpen()) {
+            arffFile.setFileName(file.name);
+            arffFile.open(QFile::WriteOnly);
+            arffFile.write("% OpenBR templates\n"
+                           "@RELATION OpenBR\n"
+                           "\n");
+
+            arffFile.write("@ATTRIBUTE filename STRING\n");
+            arffFile.write(qPrintable("@ATTRIBUTE class {" + QStringList(Globals->classes.keys()).join(',') + "}\n"));
+
+            const int dimensions = t.m().rows * t.m().cols;
+            for (int i=0; i<dimensions; i++)
+                arffFile.write(qPrintable("@ATTRIBUTE v" + QString::number(i) + " NUMERIC\n"));
+
+            arffFile.write("\n@DATA\n");
+        }
+
+        arffFile.write(qPrintable("'" + t.file.name + "',"));
+        arffFile.write(qPrintable("'" + t.file.subject() + "',"));
+        arffFile.write(qPrintable(OpenCVUtils::matrixToStringList(t).join(',')+"\n"));
+    }
+};
+
+BR_REGISTER(Gallery, arffGallery)
+
+/*!
+ * \ingroup galleries
  * \brief A binary gallery.
  * \author Josh Klontz \cite jklontz
  */
@@ -395,12 +439,19 @@ class csvGallery : public Gallery
         if (!file.exists()) return templates;
 
         QStringList lines = QtUtils::readLines(file);
-        if (!lines.isEmpty()) lines.removeFirst(); // Remove header
+        QRegExp regexp("\\s*,\\s*");
+        QStringList headers;
+        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
 
         foreach (const QString &line, lines) {
-            QStringList words = line.split(',');
-            if (words.isEmpty()) continue;
-            templates.append(File(words[fileIndex], words.size() > 1 ? words.takeLast() : ""));
+            QStringList words = line.split(regexp);
+            if (words.size() != headers.size()) continue;
+            File f;
+            for (int i=0; i<words.size(); i++) {
+                if (i == 0) f.name = words[i];
+                else        f.set(headers[i], words[i]);
+            }
+            templates.append(f);
         }
 
         return templates;
@@ -413,7 +464,11 @@ class csvGallery : public Gallery
 
     static QString getCSVElement(const QString &key, const QVariant &value, bool header)
     {
-        if (value.canConvert<QString>()) {
+        if ((key == "Label") && !header) {
+            QString stringLabel = Globals->classes.key(value.value<int>());
+            if (stringLabel.isEmpty()) return value.value<QString>();
+            else                       return stringLabel;
+        } else if (value.canConvert<QString>()) {
             if (header) return key;
             else        return value.value<QString>();
         } else if (value.canConvert<QPointF>()) {

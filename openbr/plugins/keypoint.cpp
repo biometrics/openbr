@@ -58,7 +58,7 @@ class KeyPointDetectorTransform : public UntrainableTransform
 
         QList<Rect> rects;
         foreach (const KeyPoint &keyPoint, keyPoints)
-            rects.append(Rect(keyPoint.pt.x, keyPoint.pt.y, keyPoint.size, keyPoint.size));
+            rects.append(Rect(keyPoint.pt.x-keyPoint.size/2, keyPoint.pt.y-keyPoint.size/2, keyPoint.size, keyPoint.size));
         dst.file.setRects(OpenCVUtils::fromRects(rects));
     }
 };
@@ -90,13 +90,12 @@ class KeyPointDescriptorTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         std::vector<KeyPoint> keyPoints;
-        if (size == -1) {
+        if (size == -1)
             foreach (const QRectF &ROI, src.file.rects())
-                keyPoints.push_back(KeyPoint(ROI.x(), ROI.y(), (ROI.width() + ROI.height())/2));
-        } else {
+                keyPoints.push_back(KeyPoint(ROI.x()+ROI.width()/2, ROI.y()+ROI.height()/2, (ROI.width() + ROI.height())/2));
+        else
             foreach (const QPointF &landmark, src.file.points())
                 keyPoints.push_back(KeyPoint(landmark.x(), landmark.y(), size));
-        }
         descriptorExtractor->compute(src, keyPoints, dst);
     }
 };

@@ -31,11 +31,9 @@ namespace br
 class DrawTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(bool named READ get_named WRITE set_named RESET reset_named STORED false)
     Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
     Q_PROPERTY(bool points READ get_points WRITE set_points RESET reset_points STORED false)
     Q_PROPERTY(bool rects READ get_rects WRITE set_rects RESET reset_rects STORED false)
-    BR_PROPERTY(bool, named, true)
     BR_PROPERTY(bool, verbose, false)
     BR_PROPERTY(bool, points, true)
     BR_PROPERTY(bool, rects, true)
@@ -47,7 +45,7 @@ class DrawTransform : public UntrainableTransform
         dst = src.m().clone();
 
         if (points) {
-            const QList<Point2f> pointsList = OpenCVUtils::toPoints(named ? src.file.namedPoints() : src.file.points());
+            const QList<Point2f> pointsList = OpenCVUtils::toPoints(src.file.namedPoints() + src.file.points());
             for (int i=0; i<pointsList.size(); i++) {
                 const Point2f &point = pointsList[i];
                 circle(dst, point, 3, color, -1);
@@ -55,7 +53,7 @@ class DrawTransform : public UntrainableTransform
             }
         }
         if (rects) {
-            foreach (const Rect &rect, OpenCVUtils::toRects(named ? src.file.namedRects() : src.file.rects()))
+            foreach (const Rect &rect, OpenCVUtils::toRects(src.file.namedRects() + src.file.rects()))
                 rectangle(dst, rect, color);
         }
     }
