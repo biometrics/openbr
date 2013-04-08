@@ -285,25 +285,45 @@ void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int mi
     if (args.size() > max) qFatal("%s expects no more than %d arguments, got %d", qPrintable(name), max, args.size());
 }
 
-QPointF QtUtils::toPoint(const QString &string)
+QPointF QtUtils::toPoint(const QString &string, bool *ok)
 {
-    QStringList values = string.split(',');
-    if (values.size() == 2) {
-        values[1].chop(1);
-        return QPointF(values[0].mid(1).toFloat(), values[1].toFloat());
+    if (string.startsWith('(') && string.endsWith(')')) {
+        const QStringList words = parse(string.mid(1, string.size()-2));
+        if (words.size() == 2) {
+            float x, y;
+            bool okX, okY;
+            x = words[0].toFloat(&okX);
+            y = words[1].toFloat(&okY);
+            if (okX && okY) {
+                if (ok) *ok = true;
+                return QPointF(x, y);
+            }
+        }
     }
-    else qFatal("Failed to convert %s to QPointF format.", qPrintable(string));
+
+    if (ok) *ok = false;
     return QPointF();
 }
 
-QRectF QtUtils::toRect(const QString &string)
+QRectF QtUtils::toRect(const QString &string, bool *ok)
 {
-    QStringList values = string.split(',');
-    if (values.size() == 4) {
-        values[3].chop(1);
-        return QRectF(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
+    if (string.startsWith('(') && string.endsWith(')')) {
+        const QStringList words = parse(string.mid(1, string.size()-2));
+        if (words.size() == 4) {
+            float x, y, width, height;
+            bool okX, okY, okWidth, okHeight;
+            x = words[0].toFloat(&okX);
+            y = words[1].toFloat(&okY);
+            width = words[0].toFloat(&okWidth);
+            height = words[1].toFloat(&okHeight);
+            if (okX && okY && okWidth && okHeight) {
+                if (ok) *ok = true;
+                return QRectF(x, y, width, height);
+            }
+        }
     }
-    else qFatal("Failed to convert %s to QRectF format.", qPrintable(string));
+
+    if (ok) *ok = false;
     return QRectF();
 }
 
