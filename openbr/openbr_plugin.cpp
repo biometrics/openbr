@@ -441,6 +441,8 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                     newTemplates[i].file.set("Cross_Validation_Partition", QVariant(0));
                     for (int j=crossValidate-1; j>=1; j--) {
                         Template allPartitionTemplate = newTemplates[i];
+                        allPartitionTemplate.file.append(gallery.localMetadata());
+                        allPartitionTemplate.file.append(file.localMetadata());
                         allPartitionTemplate.file.set("Cross_Validation_Partition", j);
                         allPartitionTemplate.file.set("Label", i+templates.size());
                         // Insert templates for all the other partitions
