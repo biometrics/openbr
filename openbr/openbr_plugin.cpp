@@ -894,9 +894,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
         initializer->initialize();
-
-    QString str = "Relabel[_Arg0=(\\d{4,4})-\\d]";
-    qDebug() << str << File(str);
 }
 
 void br::Context::finalize()
