@@ -125,6 +125,18 @@ QVariant File::value(const QString &key) const
     return m_metadata.contains(key) ? m_metadata.value(key) : Globals->property(qPrintable(key));
 }
 
+QVariant File::parse(const QString &value)
+{
+    bool ok;
+    const QPointF point = QtUtils::toPoint(value, &ok);
+    if (ok) return point;
+    const QRectF rect = QtUtils::toRect(value, &ok);
+    if (ok) return rect;
+    const float f = value.toFloat(&ok);
+    if (ok) return f;
+    return value;
+}
+
 void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
@@ -145,35 +157,16 @@ void File::set(const QString &key, const QVariant &value)
     m_metadata.insert(key, value);
 }
 
-// Note that we assume all values within a parameter list are the same type
 void File::set(const QString &key, const QString &value)
 {
-    if (value[0] == '[') /* QVariantList */ {
-        QStringList values = value.mid(1, value.size()-2).split(", ");
+    if (value.startsWith('[') && value.endsWith(']')) {
         QList<QVariant> variants;
-        if (values[0][0] == '(') /* List of Points or Rects */ {
-            if (values[0].split(',').size() == 2) /* List of Points */ foreach(const QString &word, values) variants.append(QtUtils::toPoint(word));
-            else if (values[0].split(',').size() == 4) /* List of Rects */ foreach(const QString &word, values) variants.append(QtUtils::toRect(word));
-            else qFatal("Incorrect landmark format.");
-        }
-        else {
-            bool ok;
-            foreach(const QString &word, values) {
-                variants.append(word.toFloat(&ok));
-                if (!ok) {
-                    m_metadata.insert(key, value.split(", "));
-                    return;
-                }
-            }
-        }
-        m_metadata.insert(key, variants);
+        foreach (const QString &value, QtUtils::parse(value.mid(1, value.size()-2)))
+            variants.append(parse(value));
+        set(key, QVariant(variants));
+    } else {
+        set(key, QVariant(parse(value)));
     }
-    else if (value[0] == '(') /* Point or Rect */ {
-        if (value.split(',').size() == 2) /* QPointF */ m_metadata.insert(key, QtUtils::toPoint(value));
-        else if (value.split(',').size() == 4) /* QRectF */ m_metadata.insert(key, QtUtils::toRect(value));
-        else qFatal("Incorrect landmark format.");
-    }
-    else m_metadata.insert(key, value);
 }
 
 bool File::getBool(const QString &key, bool defaultValue) const
@@ -294,7 +287,7 @@ void File::init(const QString &file)
                 if (unnamed) setParameter(i, words[0]);
                 else         set(words[0], QVariant());
             } else {
-                set(words[0],words[1]);
+                set(words[0], words[1]);
             }
         }
         name = name.left(index);
@@ -901,6 +894,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
         initializer->initialize();
+
+    QString str = "Relabel[_Arg0=(\\d{4,4})-\\d]";
+    qDebug() << str << File(str);
 }
 
 void br::Context::finalize()
