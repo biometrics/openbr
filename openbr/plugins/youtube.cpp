@@ -41,26 +41,6 @@ class YouTubeFacesDBTransform : public UntrainableMetaTransform
             qWarning("Process for computing %s returned %d.", qPrintable(matrix), result);
         dst = Template();
     }
-
-    static void sort(TemplateList &templates)
-    {
-        // The file names in the YouTube Faces Database make it very difficult
-        // for them to be ordered by frame number automatically,
-        // hence we do it manually here.
-        QList<int> frames;
-        foreach (const Template &t, templates) {
-            QStringList words = t.file.name.split('.');
-            frames.append(words[words.size()-2].toInt());
-        }
-
-        typedef QPair<int,int> SortedFrame; // <frame number, original index>
-        QList<SortedFrame> sortedFrames = Common::Sort(frames);
-        TemplateList sortedTemplates; sortedTemplates.reserve(templates.size());
-        foreach (const SortedFrame &sortedFrame, sortedFrames)
-            sortedTemplates.append(templates[sortedFrame.second]);
-
-        templates = sortedTemplates;
-    }
 };
 
 BR_REGISTER(Transform, YouTubeFacesDBTransform)
