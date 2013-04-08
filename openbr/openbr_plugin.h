@@ -194,6 +194,7 @@ struct BR_EXPORT File
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
+    static QVariant parse(const QString &value); /*!< \brief Try to convert the QString to a QPointF or QRectF if possible. */
     void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     void set(const QString &key, const QString &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
