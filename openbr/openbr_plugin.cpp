@@ -132,25 +132,23 @@ QVariant File::parse(const QString &value)
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
     if (ok) return rect;
-    const float f = value.toFloat(&ok);
-    if (ok) return f;
+
+    /* We assume that if the value starts with '0'
+       then it was probably intended to be a string UID
+       and that it's numerical value is not relevant. */
+    if (!value.startsWith('0') || (value == "0")) {
+        const float f = value.toFloat(&ok);
+        if (ok) return f;
+    }
+
     return value;
 }
 
 void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
-        bool ok = false;
         const QString valueString = value.toString();
-
-        /* We assume that if the value starts with '0'
-           then it was probably intended to be a string UID
-           and that it's numerical value is not relevant. */
-        if (value.canConvert(QVariant::Double) &&
-                (!valueString.startsWith('0') || (valueString == "0")))
-            value.toFloat(&ok);
-
-        if (!ok && !Globals->classes.contains(valueString))
+        if (!Globals->classes.contains(valueString))
             Globals->classes.insert(valueString, Globals->classes.size());
     }
 

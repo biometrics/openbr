@@ -99,6 +99,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
         QStringList metadata;
         if (!ignoreMetadata)
             foreach (const QString &key, file.localKeys()) {
+                if ((key == "Index") || (key == "Label")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
         lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
