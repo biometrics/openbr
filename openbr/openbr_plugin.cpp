@@ -841,7 +841,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
-        application = new QApplication(argc, argv);
+        if (use_gui) application = new QApplication(argc, argv);
+        else application = new QCoreApplication(argc, argv);
 #else
         application = new QCoreApplication(argc, argv);
 #endif
