@@ -148,8 +148,12 @@ void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
         const QString valueString = value.toString();
-        if (!Globals->classes.contains(valueString))
-            Globals->classes.insert(valueString, Globals->classes.size());
+        if (!Globals->classes.contains(valueString)) {
+            static QMutex mutex;
+            QMutexLocker mutexLocker(&mutex);
+            if (!Globals->classes.contains(valueString))
+                Globals->classes.insert(valueString, Globals->classes.size());
+        }
     }
 
     m_metadata.insert(key, value);
