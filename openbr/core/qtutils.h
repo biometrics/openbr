@@ -64,6 +64,7 @@ namespace QtUtils
     void checkArgsSize(const QString &name, const QStringList &args, int min, int max);
     QPointF toPoint(const QString &string, bool *ok = NULL);
     QRectF toRect(const QString &string, bool *ok = NULL);
+    QStringList naturalSort(const QStringList &strings);
 
     /**** Process Utilities ****/
     bool runRScript(const QString &file);

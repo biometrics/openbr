@@ -148,8 +148,12 @@ void File::set(const QString &key, const QVariant &value)
 {
     if (key == "Label") {
         const QString valueString = value.toString();
-        if (!Globals->classes.contains(valueString))
-            Globals->classes.insert(valueString, Globals->classes.size());
+        if (!Globals->classes.contains(valueString)) {
+            static QMutex mutex;
+            QMutexLocker mutexLocker(&mutex);
+            if (!Globals->classes.contains(valueString))
+                Globals->classes.insert(valueString, Globals->classes.size());
+        }
     }
 
     m_metadata.insert(key, value);
@@ -839,7 +843,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
-        application = new QApplication(argc, argv);
+        if (use_gui) application = new QApplication(argc, argv);
+        else application = new QCoreApplication(argc, argv);
 #else
         application = new QCoreApplication(argc, argv);
 #endif
