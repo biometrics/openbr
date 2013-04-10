@@ -29,9 +29,7 @@
 
 static void printTemplate(const br::Template &t)
 {
-    printf("%s gender: %s\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label") == 1 ? "Female" : "Male");
+    printf("%s gender: %s\n", qPrintable(t.file.fileName()), t.file.label() == 1 ? "Female" : "Male");
 }
 
 int main(int argc, char *argv[])

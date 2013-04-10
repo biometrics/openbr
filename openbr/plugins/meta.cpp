@@ -441,7 +441,7 @@ private:
         const QString &file = src.file;
         if (cache.contains(file)) {
             dst = cache[file];
-            dst.file.setLabel(src.file.label());
+            dst.file.set("Label", src.file.label());
         } else {
             transform->project(src, dst);
             cacheLock.lock();

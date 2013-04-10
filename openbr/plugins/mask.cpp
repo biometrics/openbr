@@ -171,7 +171,7 @@ class LargestConvexAreaTransform : public UntrainableTransform
             if (area / hullArea > 0.98)
                 maxArea = std::max(maxArea, area);
         }
-        dst.file.setLabel(maxArea);
+        dst.file.set("Label", maxArea);
     }
 };
 

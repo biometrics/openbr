@@ -44,13 +44,13 @@ void Classifier::_classify(File file)
 
         if (algorithm == "GenderClassification") {
             key = "Gender";
-            value = (f.get<int>("Label", 0) == 0 ? "Male" : "Female");
+            value = (f.label() == 0 ? "Male" : "Female");
         } else if (algorithm == "AgeRegression") {
             key = "Age";
-            value = QString::number(int(f.get<float>("Label", 0)+0.5)) + " Years";
+            value = QString::number(int(f.label()+0.5)) + " Years";
         } else {
             key = algorithm;
-            value = f.get<QString>("Label");
+            value = QString::number(f.label());
         }
         break;
     }

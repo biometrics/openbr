@@ -298,7 +298,7 @@ class rankOutput : public MatrixOutput
             typedef QPair<float,int> Pair;
             int rank = 1;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true)) {
-                if(targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
+                if (targetFiles[pair.second].get<QString>("Subject") == queryFiles[i].get<QString>("Subject")) {
                     ranks.append(rank);
                     positions.append(pair.second);
                     scores.append(pair.first);

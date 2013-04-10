@@ -445,6 +445,29 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RemoveTemplatesTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Remove template metadata with the specified key(s).
+ * \author Josh Klontz \cite jklontz
+ */
+class RemoveMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        const QRegularExpression re(regexp);
+        foreach (const QString &key, dst.file.localKeys())
+            if (re.match(key).hasMatch())
+                dst.file.remove(key);
+    }
+};
+
+BR_REGISTER(Transform, RemoveMetadataTransform)
+
 }
 
 #include "misc.moc"

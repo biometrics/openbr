@@ -132,31 +132,9 @@ QVariant File::parse(const QString &value)
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
     if (ok) return rect;
-
-    /* We assume that if the value starts with '0'
-       then it was probably intended to be a string UID
-       and that it's numerical value is not relevant. */
-    if (!value.startsWith('0') || (value == "0")) {
-        const float f = value.toFloat(&ok);
-        if (ok) return f;
-    }
-
+    const float f = value.toFloat(&ok);
+    if (ok) return f;
     return value;
-}
-
-void File::set(const QString &key, const QVariant &value)
-{
-    if (key == "Label") {
-        const QString valueString = value.toString();
-        if (!Globals->classes.contains(valueString)) {
-            static QMutex mutex;
-            QMutexLocker mutexLocker(&mutex);
-            if (!Globals->classes.contains(valueString))
-                Globals->classes.insert(valueString, Globals->classes.size());
-        }
-    }
-
-    m_metadata.insert(key, value);
 }
 
 void File::set(const QString &key, const QString &value)
@@ -179,22 +157,27 @@ bool File::getBool(const QString &key, bool defaultValue) const
     return variant.value<bool>();
 }
 
-QString File::subject(int label)
+QString File::subject() const
 {
-    return Globals->classes.key(label, QString::number(label));
+    const QVariant l = m_metadata.value("Label");
+    if (!l.isNull()) return Globals->subjects.key(l.toFloat(), l.toString());
+    return m_metadata.value("Subject").toString();
 }
 
 float File::label() const
 {
-    const QVariant variant = value("Label");
-    if (variant.isNull()) return -1;
+    const QVariant l = m_metadata.value("Label");
+    if (!l.isNull()) return l.toFloat();
 
-    if (Globals->classes.contains(variant.toString()))
-        return Globals->classes.value(variant.toString());
+    const QVariant s = m_metadata.value("Subject");
+    if (s.isNull()) return -1;
 
-    bool ok;
-    const float val = variant.toFloat(&ok);
-    return ok ? val : -1;
+    const QString subject = s.toString();
+    static QMutex mutex;
+    QMutexLocker mutexLocker(&mutex);
+    if (!Globals->subjects.contains(subject))
+        Globals->subjects.insert(subject, Globals->subjects.size());
+    return Globals->subjects.value(subject);
 }
 
 QList<QPointF> File::namedPoints() const
@@ -310,8 +293,6 @@ QDataStream &br::operator<<(QDataStream &stream, const File &file)
 QDataStream &br::operator>>(QDataStream &stream, File &file)
 {
     return stream >> file.name >> file.m_metadata;
-    const QVariant label = file.m_metadata.value("Label");
-    if (!label.isNull()) file.set("Label", label); // Trigger population of Globals->classes
 }
 
 /* FileList - public methods */
@@ -462,14 +443,15 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
 TemplateList TemplateList::relabel(const TemplateList &tl)
 {
-    QHash<int,int> labels;
-    foreach (int label, tl.labels<int>())
-        if (!labels.contains(label))
-            labels.insert(label, labels.size());
+    const QList<int> originalLabels = tl.labels<int>();
+    QHash<int,int> labelTable;
+    foreach (int label, originalLabels)
+        if (!labelTable.contains(label))
+            labelTable.insert(label, labelTable.size());
 
     TemplateList result = tl;
     for (int i=0; i<result.size(); i++)
-        result[i].file.setLabel(labels[result[i].file.label()]);
+        result[i].file.set("Label", labelTable[originalLabels[i]]);
     return result;
 }
 
@@ -1043,8 +1025,10 @@ MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &qu
 /* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
-    if (targetFiles[column] == "Label")
-        return File::subject(data.at<float>(row,column));
+    if (targetFiles[column] == "Label") {
+        const int label = data.at<float>(row,column);
+        return Globals->subjects.key(label, QString::number(label));
+    }
     return QString::number(data.at<float>(row,column));
 }
 

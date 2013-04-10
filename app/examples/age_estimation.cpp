@@ -29,9 +29,7 @@
 
 static void printTemplate(const br::Template &t)
 {
-    printf("%s age: %d\n",
-           qPrintable(t.file.fileName()),
-           t.file.get<int>("Label"));
+    printf("%s age: %d\n", qPrintable(t.file.fileName()), int(t.file.label()));
 }
 
 int main(int argc, char *argv[])

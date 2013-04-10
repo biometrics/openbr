@@ -56,7 +56,7 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         }
     }
 
-    QSharedPointer<Output> output(Output::make("", FileList() << "Label" << "Count" << "Precision" << "Recall" << "F-score", FileList(counters.size())));
+    QSharedPointer<Output> output(Output::make("", FileList() << "Subject" << "Count" << "Precision" << "Recall" << "F-score", FileList(counters.size())));
 
     int tpc = 0;
     int fnc = 0;

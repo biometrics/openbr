@@ -63,7 +63,7 @@ class arffGallery : public Gallery
             const int dimensions = t.m().rows * t.m().cols;
             for (int i=0; i<dimensions; i++)
                 arffFile.write(qPrintable("@ATTRIBUTE v" + QString::number(i) + " REAL\n"));
-            arffFile.write(qPrintable("@ATTRIBUTE class {" + QStringList(Globals->classes.keys()).join(',') + "}\n"));
+            arffFile.write(qPrintable("@ATTRIBUTE class {" + QStringList(Globals->subjects.keys()).join(',') + "}\n"));
 
             arffFile.write("\n@DATA\n");
         }
@@ -464,7 +464,7 @@ class csvGallery : public Gallery
     static QString getCSVElement(const QString &key, const QVariant &value, bool header)
     {
         if ((key == "Label") && !header) {
-            QString stringLabel = Globals->classes.key(value.value<int>());
+            QString stringLabel = Globals->subjects.key(value.value<int>());
             if (stringLabel.isEmpty()) return value.value<QString>();
             else                       return stringLabel;
         } else if (value.canConvert<QString>()) {

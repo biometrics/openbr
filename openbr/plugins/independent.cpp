@@ -162,26 +162,6 @@ class IndependentTransform : public MetaTransform
 
 BR_REGISTER(Transform, IndependentTransform)
 
-//        File independent(".Independent");
-//        independent.set("transform", qVariantFromValue<void*>(transform));
-//        transform = Factory<Transform>::make(independent);
-
-//     void setProperty(const QString &name, const QVariant &value, bool errorOnFailure = false); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
-
-//if (key.startsWith(("_Arg"))) {
-//    const int argumentNumber = key.mid(4).toInt();
-//    const int targetIdx = argumentNumber + firstAvailablePropertyIdx;
-//    if (targetIdx >= metaObject()->propertyCount()) {
-//        qWarning("Too many arguments for transform %s, ignoring %s", qPrintable(objectName()), qPrintable(key));
-//        continue;
-//    }
-//    key = metaObject()->property(targetIdx).name();
-//}
-
-//const QVariant value = file.value(key);
-//if (value.canConvert<QString>()) setProperty(key, value.toString()); // Parse the value first
-//else                             setProperty(key, value);            // Set the property directly
-
 } // namespace br
 
 #include "independent.moc"
