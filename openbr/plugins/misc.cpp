@@ -423,6 +423,28 @@ class RelabelTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RelabelTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Remove templates with the specified file extension.
+ * \author Josh Klontz \cite jklontz
+ */
+class RemoveTemplatesTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        const QRegularExpression re(regexp);
+        const QRegularExpressionMatch match = re.match(src.file.suffix());
+        if (match.hasMatch()) dst = Template();
+        else                  dst = src;
+    }
+};
+
+BR_REGISTER(Transform, RemoveTemplatesTransform)
+
 }
 
 #include "misc.moc"

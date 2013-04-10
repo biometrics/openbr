@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <QFutureSynchronizer>
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 #include "openbr_internal.h"
 #include "openbr/core/common.h"

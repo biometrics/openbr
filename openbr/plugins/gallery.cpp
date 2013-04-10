@@ -117,6 +117,8 @@ class galGallery : public Gallery
 
     void write(const Template &t)
     {
+        if (t.isEmpty() && t.file.isNull())
+            return;
         stream << t;
     }
 };
