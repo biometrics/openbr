@@ -181,7 +181,7 @@ BR_REGISTER(Transform, SIFTDescriptorTransform)
  * \brief Add landmarks to the template in a grid layout
  * \author Josh Klontz \cite jklontz
  */
-class GridTransform : public UntrainableMetaTransform
+class GridTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
