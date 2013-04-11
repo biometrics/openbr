@@ -17,6 +17,7 @@
 #include <opencv2/flann/flann.hpp>
 
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;
@@ -76,6 +77,51 @@ class KMeansTransform : public Transform
 
 BR_REGISTER(Transform, KMeansTransform)
 
-}
+/*!
+ * \ingroup transforms
+ * \brief K nearest subjects.
+ * \author Josh Klontz \cite jklontz
+ */
+class KNSTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(int k READ get_k WRITE set_k RESET reset_k STORED false)
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    BR_PROPERTY(int, k, 1)
+    BR_PROPERTY(br::Distance*, distance, NULL)
+
+    TemplateList gallery;
+
+    void train(const TemplateList &data)
+    {
+        gallery = data;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        const QList< QPair<float, int> > sortedScores = Common::Sort(distance->compare(gallery, src), true);
+        QSet<QString> subjects;
+        int i = 0;
+        while ((subjects.size() < k) && (i < sortedScores.size())) {
+            subjects.insert(gallery[sortedScores[i].second].file.subject());
+            i++;
+        }
+        dst.file.set("KNS", QStringList(subjects.toList()).join(", "));
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << gallery;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> gallery;
+    }
+};
+
+BR_REGISTER(Transform, KNSTransform)
+
+} // namespace br
 
 #include "cluster.moc"
