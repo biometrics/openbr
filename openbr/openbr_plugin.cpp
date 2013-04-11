@@ -1025,7 +1025,7 @@ MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &qu
 /* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
-    if (targetFiles[column] == "Label") {
+    if (targetFiles[column] == "Subject") {
         const int label = data.at<float>(row,column);
         return Globals->subjects.key(label, QString::number(label));
     }

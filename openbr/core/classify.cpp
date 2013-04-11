@@ -14,8 +14,6 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <QDebug>
-#include <QHash>
 #include <openbr/openbr_plugin.h>
 
 #include "classify.h"
@@ -24,7 +22,7 @@
 // Helper struct for statistics accumulation
 struct Counter
 {
-    int truePositive, falsePositive, falseNegative;
+    float truePositive, falsePositive, falseNegative;
     Counter()
     {
         truePositive = 0;
@@ -41,35 +39,44 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
     TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
-    QHash<int, Counter> counters;
+    QHash<QString, Counter> counters;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        const int trueLabel = truth[i].file.label();
-        const int predictedLabel = predicted[i].file.label();
-        if (trueLabel == predictedLabel) {
-            counters[trueLabel].truePositive++;
-        } else {
-            counters[trueLabel].falseNegative++;
-            counters[predictedLabel].falsePositive++;
+        // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
+        QStringList predictedSubjects = predicted[i].file.get<QStringList>("Subject");
+        QStringList trueSubjects = truth[i].file.get<QStringList>("Subject");
+        foreach (const QString &subject, trueSubjects.toVector() /* Hack to copy the list. */) {
+            if (predictedSubjects.contains(subject)) {
+                counters[subject].truePositive++;
+                trueSubjects.removeOne(subject);
+                predictedSubjects.removeOne(subject);
+            } else {
+                counters[subject].falseNegative++;
+            }
         }
+
+        for (int i=0; i<trueSubjects.size(); i++)
+            foreach (const QString &subject, predictedSubjects)
+                counters[subject].falsePositive += 1.f / predictedSubjects.size();
     }
 
     QSharedPointer<Output> output(Output::make("", FileList() << "Subject" << "Count" << "Precision" << "Recall" << "F-score", FileList(counters.size())));
 
     int tpc = 0;
     int fnc = 0;
+    const QStringList keys = counters.keys();
     for (int i=0; i<counters.size(); i++) {
-        int trueLabel = counters.keys()[i];
-        const Counter &counter = counters[trueLabel];
+        const QString &subject = keys[i];
+        const Counter &counter = counters[subject];
         tpc += counter.truePositive;
         fnc += counter.falseNegative;
         const int count = counter.truePositive + counter.falseNegative;
         const float precision = counter.truePositive / (float)(counter.truePositive + counter.falsePositive);
         const float recall = counter.truePositive / (float)(counter.truePositive + counter.falseNegative);
         const float fscore = 2 * precision * recall / (precision + recall);
-        output->setRelative(trueLabel, i, 0);
+        output->setRelative(File("", subject).label(), i, 0);
         output->setRelative(count, i, 1);
         output->setRelative(precision, i, 2);
         output->setRelative(recall, i, 3);

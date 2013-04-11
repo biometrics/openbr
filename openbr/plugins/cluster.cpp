@@ -106,7 +106,8 @@ class KNSTransform : public Transform
             subjects.insert(gallery[sortedScores[i].second].file.subject());
             i++;
         }
-        dst.file.set("KNS", QStringList(subjects.toList()).join(", "));
+        const QStringList subjectList = subjects.toList();
+        dst.file.set("KNS", subjects.size() > 1 ? "[" + subjectList.join(",") + "]" : subjectList.first());
     }
 
     void store(QDataStream &stream) const
