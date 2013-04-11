@@ -541,6 +541,8 @@ BR_REGISTER(Gallery, csvGallery)
 class txtGallery : public Gallery
 {
     Q_OBJECT
+    Q_PROPERTY(QString metadataKey READ get_metadataKey WRITE set_metadataKey RESET reset_metadataKey STORED false)
+    BR_PROPERTY(QString, metadataKey, "")
 
     QStringList lines;
 
@@ -563,7 +565,7 @@ class txtGallery : public Gallery
 
     void write(const Template &t)
     {
-        lines.append(t.file.flat());
+        lines.append(metadataKey.isEmpty() ? t.file.flat() : t.file.get<QString>(metadataKey));
     }
 };
 
