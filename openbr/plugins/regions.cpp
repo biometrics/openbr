@@ -92,15 +92,15 @@ class CatTransform : public UntrainableMetaTransform
             qFatal("%d partitions does not evenly divide %d matrices.", partitions, src.size());
         QVector<int> sizes(partitions, 0);
         for (int i=0; i<src.size(); i++)
-            sizes[i%partitions] += src[i].total() * src[i].channels();
+            sizes[i%partitions] += src[i].total();
 
         foreach (int size, sizes)
-            dst.append(Mat(1, size, CV_32FC1));
+            dst.append(Mat(1, size, src.m().type()));
 
         QVector<int> offsets(partitions, 0);
         for (int i=0; i<src.size(); i++) {
             size_t size = src[i].total() * src[i].elemSize();
-            int j = i%partitions;
+            int j = i % partitions;
             memcpy(&dst[j].data[offsets[j]], src[i].ptr(), size);
             offsets[j] += size;
         }

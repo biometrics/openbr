@@ -188,6 +188,7 @@ class RecursiveIntegralSamplerTransform : public Transform
         OutputDescriptor(dst.ptr<float>(2), channels, 1) = ((a+b)-(c+d))/2.f;
         OutputDescriptor(dst.ptr<float>(3), channels, 1) = ((a+c)-(b+d))/2.f;
         OutputDescriptor(dst.ptr<float>(4), channels, 1) = ((a+d)-(b+c))/2.f;
+        dst = dst.reshape(1, 1);
     }
 
     Template subdivide(const Template &src) const
