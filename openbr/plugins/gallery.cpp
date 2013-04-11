@@ -806,6 +806,41 @@ class googleGallery : public Gallery
 
 BR_REGISTER(Gallery, googleGallery)
 
+/*!
+ * \ingroup galleries
+ * \brief Count the number of templates.
+ * \author Josh Klontz \cite jklontz
+ */
+class TemplateCountGallery : public Gallery
+{
+    Q_OBJECT
+    int count;
+
+    ~TemplateCountGallery()
+    {
+        printf("%d\n", count);
+    }
+
+    void init()
+    {
+        count = 0;
+    }
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        return TemplateList() << file;
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        count++;
+    }
+};
+
+BR_REGISTER(Gallery, TemplateCountGallery)
+
 } // namespace br
 
 #include "gallery.moc"
