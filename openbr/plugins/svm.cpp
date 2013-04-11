@@ -114,7 +114,7 @@ private:
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.setLabel((svm.predict(src.m().reshape(0, 1)) - b)/a);
+        dst.file.set("Label", ((svm.predict(src.m().reshape(0, 1)) - b)/a));
     }
 
     void store(QDataStream &stream) const

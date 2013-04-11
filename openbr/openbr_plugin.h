@@ -107,17 +107,24 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * The br::File is one of the workhorse classes in OpenBR.
  * It is typically used to store the path to a file on disk with associated metadata.
- * The ability to associate a hashtable of metadata with the file helps keep the API simple and stable while providing customizable behavior when appropriate.
+ * The ability to associate a metadata map with the file helps keep the API simple and stable while providing customizable behavior when appropriate.
  *
- * When querying the value of a metadata key, the value will first try to be resolved using the file's private metadata table.
- * If the key does not exist in the local hashtable then it will be resolved using the properities in the global br::Context.
- * This has the desirable effect that file metadata may optionally set globally using br::Context::set to operate on all files.
+ * When querying the value of a metadata key, the value will first try to be resolved using the file's private metadata.
+ * If the key does not exist in the local map then it will be resolved using the properities in the global br::Context.
+ * This has the desirable effect that file metadata may optionally be set globally using br::Context::set to operate on all files.
  *
  * Files have a simple grammar that allow them to be converted to and from strings.
  * If a string ends with a \c ] or \c ) then the text within the final \c [] or \c () are parsed as comma sperated metadata fields.
  * Fields within \c [] are expected to have the format <tt>[key1=value1, key2=value2, ..., keyN=valueN]</tt>.
  * Fields within \c () are expected to have the format <tt>(value1, value2, ..., valueN)</tt> with the keys determined from the order of \c Q_PROPERTY.
  * The rest of the string is assigned to #name.
+ *
+ * The metadata keys \c Subject and \c Label have special significance in the system.
+ * \c Subject is a string specifying a unique identifier used to determine ground truth match/non-match.
+ * \c Label is a floating point value used for supervised learning.
+ * When the system needs labels for training, but only subjects are provided in the file metadata, the rule for generating labels is as follows.
+ * If the subject value can be converted to a float then do so and consider that the label.
+ * Otherwise, generate a unique integer ID for the string starting from zero and incrementing by one everytime another ID is needed.
  *
  * Metadata keys fall into one of two categories:
  * - \c camelCaseKeys are inputs that specify how to process the file.
@@ -129,7 +136,8 @@ void reset_##NAME() { NAME = DEFAULT; }
  * ---             | ----           | -----------
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
- * Label           | float          | Classification/Regression class
+ * Subject         | QString        | Class name
+ * Label           | float          | Class value
  * Confidence      | float          | Classification/Regression quality
  * FTE             | bool           | Failure to enroll
  * FTO             | bool           | Failure to open
@@ -153,7 +161,7 @@ struct BR_EXPORT File
 
     File() {}
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
-    File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
+    File(const QString &file, const QVariant &subject) { init(file); set("Subject", subject); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
@@ -195,7 +203,7 @@ struct BR_EXPORT File
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
     static QVariant parse(const QString &value); /*!< \brief Try to convert the QString to a QPointF or QRectF if possible. */
-    void set(const QString &key, const QVariant &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
+    inline void set(const QString &key, const QVariant &value) { m_metadata.insert(key, value); } /*!< \brief Insert or overwrite the metadata key with the specified value. */
     void set(const QString &key, const QString &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
     inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
 
@@ -235,10 +243,8 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
-    static QString subject(int label); /*!< \brief Looks up the subject for the provided label. */
-    inline QString subject() const { return subject(label()); } /*!< \brief Looks up the subject from the file's label. */
+    QString subject() const; /*!< \brief Looks up the subject from the file's label. */
     float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
-    inline void setLabel(float label) { set("Label", label); } /*!< \brief Convenience function for setting the file's \c Label. */
     inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
     QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
@@ -497,6 +503,7 @@ public:
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
     void setProperty(const QString &name, const QString &value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    void setProperty(const QString &name, const QVariant &value, bool failOnError = false); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:
@@ -633,7 +640,7 @@ public:
     BR_PROPERTY(int, crossValidate, 0)
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
-    QHash<QString,int> classes; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
+    QHash<QString,int> subjects; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
 
     /*!

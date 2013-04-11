@@ -132,31 +132,9 @@ QVariant File::parse(const QString &value)
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
     if (ok) return rect;
-
-    /* We assume that if the value starts with '0'
-       then it was probably intended to be a string UID
-       and that it's numerical value is not relevant. */
-    if (!value.startsWith('0') || (value == "0")) {
-        const float f = value.toFloat(&ok);
-        if (ok) return f;
-    }
-
+    const float f = value.toFloat(&ok);
+    if (ok) return f;
     return value;
-}
-
-void File::set(const QString &key, const QVariant &value)
-{
-    if (key == "Label") {
-        const QString valueString = value.toString();
-        if (!Globals->classes.contains(valueString)) {
-            static QMutex mutex;
-            QMutexLocker mutexLocker(&mutex);
-            if (!Globals->classes.contains(valueString))
-                Globals->classes.insert(valueString, Globals->classes.size());
-        }
-    }
-
-    m_metadata.insert(key, value);
 }
 
 void File::set(const QString &key, const QString &value)
@@ -179,22 +157,27 @@ bool File::getBool(const QString &key, bool defaultValue) const
     return variant.value<bool>();
 }
 
-QString File::subject(int label)
+QString File::subject() const
 {
-    return Globals->classes.key(label, QString::number(label));
+    const QVariant l = m_metadata.value("Label");
+    if (!l.isNull()) return Globals->subjects.key(l.toFloat(), l.toString());
+    return m_metadata.value("Subject").toString();
 }
 
 float File::label() const
 {
-    const QVariant variant = value("Label");
-    if (variant.isNull()) return -1;
+    const QVariant l = m_metadata.value("Label");
+    if (!l.isNull()) return l.toFloat();
 
-    if (Globals->classes.contains(variant.toString()))
-        return Globals->classes.value(variant.toString());
+    const QVariant s = m_metadata.value("Subject");
+    if (s.isNull()) return -1;
 
-    bool ok;
-    const float val = variant.toFloat(&ok);
-    return ok ? val : -1;
+    const QString subject = s.toString();
+    static QMutex mutex;
+    QMutexLocker mutexLocker(&mutex);
+    if (!Globals->subjects.contains(subject))
+        Globals->subjects.insert(subject, Globals->subjects.size());
+    return Globals->subjects.value(subject);
 }
 
 QList<QPointF> File::namedPoints() const
@@ -310,8 +293,6 @@ QDataStream &br::operator<<(QDataStream &stream, const File &file)
 QDataStream &br::operator>>(QDataStream &stream, File &file)
 {
     return stream >> file.name >> file.m_metadata;
-    const QVariant label = file.m_metadata.value("Label");
-    if (!label.isNull()) file.set("Label", label); // Trigger population of Globals->classes
 }
 
 /* FileList - public methods */
@@ -464,14 +445,15 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
 TemplateList TemplateList::relabel(const TemplateList &tl)
 {
-    QHash<int,int> labels;
-    foreach (int label, tl.labels<int>())
-        if (!labels.contains(label))
-            labels.insert(label, labels.size());
+    const QList<int> originalLabels = tl.labels<int>();
+    QHash<int,int> labelTable;
+    foreach (int label, originalLabels)
+        if (!labelTable.contains(label))
+            labelTable.insert(label, labelTable.size());
 
     TemplateList result = tl;
     for (int i=0; i<result.size(); i++)
-        result[i].file.setLabel(labels[result[i].file.label()]);
+        result[i].file.set("Label", labelTable[originalLabels[i]]);
     return result;
 }
 
@@ -681,12 +663,17 @@ void Object::setProperty(const QString &name, const QString &value)
         variant = value;
     }
 
-    if (!QObject::setProperty(qPrintable(name), variant) && !type.isEmpty())
-        qFatal("Failed to set %s::%s to: %s %s",
-               metaObject()->className(), qPrintable(name), qPrintable(value), qPrintable(type));
+    setProperty(name, variant, !type.isEmpty());
 }
 
-QStringList br::Object::parse(const QString &string, char split)
+void Object::setProperty(const QString &name, const QVariant &value, bool failOnError)
+{
+    if (!QObject::setProperty(qPrintable(name), value) && failOnError)
+        qFatal("Failed to set %s::%s to: %s",
+               metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
+}
+
+QStringList Object::parse(const QString &string, char split)
 {
     return QtUtils::parse(string, split);
 }
@@ -738,19 +725,21 @@ void Object::init(const File &file_)
     }
 
     foreach (QString key, file.localKeys()) {
-        const QString value = file.value(key).toString();
+        const QVariant value = file.value(key);
+        const QString valueString = value.toString();
 
         if (key.startsWith(("_Arg"))) {
-            int argument_number =  key.mid(4).toInt();
-            int target_idx = argument_number + firstAvailablePropertyIdx;
-
-            if (target_idx >= metaObject()->propertyCount()) {
-                qWarning("too many arguments for transform, ignoring %s\n", qPrintable(value));
+            int argumentNumber =  key.mid(4).toInt();
+            int targetIdx = argumentNumber + firstAvailablePropertyIdx;
+            if (targetIdx >= metaObject()->propertyCount()) {
+                qWarning("too many arguments for transform %s, ignoring %s", qPrintable(objectName()), qPrintable(valueString));
                 continue;
             }
-            key = metaObject()->property(target_idx).name();
+            key = metaObject()->property(targetIdx).name();
         }
-        setProperty(key, value);
+
+        if (valueString.isEmpty()) setProperty(key, value);       // Set the property directly
+        else                       setProperty(key, valueString); // Parse the value first
     }
 
     init();
@@ -1038,8 +1027,10 @@ MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &qu
 /* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
-    if (targetFiles[column] == "Label")
-        return File::subject(data.at<float>(row,column));
+    if (targetFiles[column] == "Label") {
+        const int label = data.at<float>(row,column);
+        return Globals->subjects.key(label, QString::number(label));
+    }
     return QString::number(data.at<float>(row,column));
 }
 
@@ -1084,153 +1075,6 @@ Gallery *Gallery::make(const File &file)
     }
     return gallery;
 }
-
-static TemplateList Downsample(const TemplateList &templates, const Transform *transform)
-{
-    // Return early when no downsampling is required
-    if ((transform->classes == std::numeric_limits<int>::max()) &&
-            (transform->instances == std::numeric_limits<int>::max()) &&
-            (transform->fraction >= 1))
-        return templates;
-
-    const bool atLeast = transform->instances < 0;
-    const int instances = abs(transform->instances);
-
-    QList<int> allLabels = templates.labels<int>();
-    QList<int> uniqueLabels = allLabels.toSet().toList();
-    qSort(uniqueLabels);
-
-    QMap<int,int> counts = templates.labelCounts(instances != std::numeric_limits<int>::max());
-    if ((instances != std::numeric_limits<int>::max()) && (transform->classes != std::numeric_limits<int>::max()))
-        foreach (int label, counts.keys())
-            if (counts[label] < instances)
-                counts.remove(label);
-    uniqueLabels = counts.keys();
-    if ((transform->classes != std::numeric_limits<int>::max()) && (uniqueLabels.size() < transform->classes))
-        qWarning("Downsample requested %d classes but only %d are available.", transform->classes, uniqueLabels.size());
-
-    Common::seedRNG();
-    QList<int> selectedLabels = uniqueLabels;
-    if (transform->classes < uniqueLabels.size()) {
-        std::random_shuffle(selectedLabels.begin(), selectedLabels.end());
-        selectedLabels = selectedLabels.mid(0, transform->classes);
-    }
-
-    TemplateList downsample;
-    for (int i=0; i<selectedLabels.size(); i++) {
-        const int selectedLabel = selectedLabels[i];
-        QList<int> indices;
-        for (int j=0; j<allLabels.size(); j++)
-            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)))
-                indices.append(j);
-
-        std::random_shuffle(indices.begin(), indices.end());
-        const int max = atLeast ? indices.size() : std::min(indices.size(), instances);
-        for (int j=0; j<max; j++)
-            downsample.append(templates.value(indices[j]));
-    }
-
-    if (transform->fraction < 1) {
-        std::random_shuffle(downsample.begin(), downsample.end());
-        downsample = downsample.mid(0, downsample.size()*transform->fraction);
-    }
-
-    return downsample;
-}
-
-/*!
- * \ingroup transforms
- * \brief Clones the transform so that it can be applied independently.
- *
- * \em Independent transforms expect single-matrix templates.
- */
-class Independent : public MetaTransform
-{
-    Q_PROPERTY(QList<Transform*> transforms READ get_transforms WRITE set_transforms STORED false)
-    BR_PROPERTY(QList<Transform*>, transforms, QList<Transform*>())
-
-    public:
-        /*!
-         * \brief Independent
-         * \param transform
-         */
-        Independent(Transform *transform)
-    {
-        transform->setParent(this);
-        transforms.append(transform);
-        file = transform->file;
-        trainable = transform->trainable;
-        setObjectName(transforms.first()->objectName());
-    }
-
-private:
-    Transform *clone() const
-    {
-        return new Independent(transforms.first()->clone());
-    }
-
-    static void _train(Transform *transform, const TemplateList *data)
-    {
-        transform->train(*data);
-    }
-
-    void train(const TemplateList &data)
-    {
-        // Don't bother if the transform is untrainable
-        if (!trainable) return;
-
-        QList<TemplateList> templatesList;
-        foreach (const Template &t, data) {
-            if ((templatesList.size() != t.size()) && !templatesList.isEmpty())
-                qWarning("Independent::train template %s of size %d differs from expected size %d.", qPrintable(t.file.name), t.size(), templatesList.size());
-            while (templatesList.size() < t.size())
-                templatesList.append(TemplateList());
-            for (int i=0; i<t.size(); i++)
-                templatesList[i].append(Template(t.file, t[i]));
-        }
-
-        while (transforms.size() < templatesList.size())
-            transforms.append(transforms.first()->clone());
-
-        for (int i=0; i<templatesList.size(); i++)
-            templatesList[i] = Downsample(templatesList[i], transforms[i]);
-
-        QFutureSynchronizer<void> futures;
-        for (int i=0; i<templatesList.size(); i++)
-            futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-        futures.waitForFinished();
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst.file = src.file;
-        QList<Mat> mats;
-        for (int i=0; i<src.size(); i++) {
-            transforms[i%transforms.size()]->project(Template(src.file, src[i]), dst);
-            mats.append(dst);
-            dst.clear();
-        }
-        dst.append(mats);
-    }
-
-    void store(QDataStream &stream) const
-    {
-        const int size = transforms.size();
-        stream << size;
-        for (int i=0; i<size; i++)
-            transforms[i]->store(stream);
-    }
-
-    void load(QDataStream &stream)
-    {
-        int size;
-        stream >> size;
-        while (transforms.size() < size)
-            transforms.append(transforms.first()->clone());
-        for (int i=0; i<size; i++)
-            transforms[i]->load(stream);
-    }
-};
 
 /* Transform - public methods */
 Transform::Transform(bool _independent, bool _trainable)
@@ -1279,8 +1123,17 @@ Transform *Transform::make(QString str, QObject *parent)
     File f = "." + str;
     Transform *transform = Factory<Transform>::make(f);
 
-    if (transform->independent)
-        transform = new Independent(transform);
+    if (transform->independent) {
+//        Transform *independentTransform = Factory<Transform>::make(".Independent");
+//        static_cast<QObject*>(independentTransform)->setProperty("transform", qVariantFromValue<void*>(transform));
+//        independentTransform->init();
+//        transform = independentTransform;
+
+                File independent(".Independent");
+                independent.set("transform", qVariantFromValue<void*>(transform));
+                transform = Factory<Transform>::make(independent);
+    }
+
     transform->setParent(parent);
     return transform;
 }

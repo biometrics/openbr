@@ -58,24 +58,18 @@ FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
         QString name = d.attribute("name");
         while (!fileNode.isNull()) {
             // Looping through files
-            File file;
+            File file("", name);
 
             QDomElement e = fileNode.toElement();
             QDomNamedNodeMap attributes = e.attributes();
             for (int i=0; i<attributes.length(); i++) {
-                QString key = attributes.item(i).nodeName();
-                QString value = attributes.item(i).nodeValue();
-
-                if (key == "file-name") {
-                    File newFile(value, name);
-                    newFile.append(file);
-                    file = newFile;
-                } else if (!ignoreMetadata) {
-                    file.set(key, value);
-                }
+                const QString key = attributes.item(i).nodeName();
+                const QString value = attributes.item(i).nodeValue();
+                if      (key == "file-name") file.name = value;
+                else if (!ignoreMetadata)    file.set(key, value);
             }
 
-            if (file.isNull()) qFatal("Empty file-name in %s.", qPrintable(sigset));
+            if (file.name.isEmpty()) qFatal("Missing file-name in %s.", qPrintable(sigset));
             fileList.append(file);
 
             fileNode = fileNode.nextSibling();
@@ -99,7 +93,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
         QStringList metadata;
         if (!ignoreMetadata)
             foreach (const QString &key, file.localKeys()) {
-                if ((key == "Index") || (key == "Label")) continue;
+                if ((key == "Index") || (key == "Subject")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
         lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");

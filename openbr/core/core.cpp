@@ -77,7 +77,7 @@ struct AlgorithmCore
         const bool hasComparer = !distance.isNull();
         out << hasComparer;
         if (hasComparer) distance->store(out);
-        out << Globals->classes;
+        out << Globals->subjects;
 
         // Compress and save to file
         QtUtils::writeFile(model, data, -1);
@@ -97,7 +97,7 @@ struct AlgorithmCore
         transform->load(in);
         bool hasDistance; in >> hasDistance;
         if (hasDistance) distance->load(in);
-        in >> Globals->classes;
+        in >> Globals->subjects;
     }
 
     File getMemoryGallery(const File &file) const

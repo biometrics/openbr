@@ -122,7 +122,7 @@ class PerPixelClassifierTransform : public MetaTransform
                 }
                 cv::Mat labelMat = src.file.value("labels").value<cv::Mat>();
                 uchar* plabel = labelMat.ptr();
-                temp.file.setLabel(plabel[index]);
+                temp.file.set("Label", plabel[index]);
 
                 if (orient){
                     Template rotated;

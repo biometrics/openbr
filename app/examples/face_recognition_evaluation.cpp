@@ -55,14 +55,12 @@ int main(int argc, char *argv[])
 
     // Evaluate the performance of OpenBR's FaceRecognition and a COTS face recognition system.
     br_eval("FaceRecognition_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/FaceRecognition_MEDS.csv");
-    br_eval("../data/MEDS/simmat/COTS_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/COTS_MEDS.csv");
 
     // The '_' character has special significance and is used to populate plot legends.
     // Requires R installation, see documentation of br_plot for details.
-    const char *files[2];
+    const char *files[1];
     files[0] = "Algorithm_Dataset/FaceRecognition_MEDS.csv";
-    files[1] = "Algorithm_Dataset/COTS_MEDS.csv";
-    br_plot(2, files, "MEDS", true);
+    br_plot(1, files, "MEDS", true);
 
     br_finalize();
     return 0;

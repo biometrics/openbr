@@ -423,6 +423,51 @@ class RelabelTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RelabelTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Remove templates with the specified file extension.
+ * \author Josh Klontz \cite jklontz
+ */
+class RemoveTemplatesTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        const QRegularExpression re(regexp);
+        const QRegularExpressionMatch match = re.match(src.file.suffix());
+        if (match.hasMatch()) dst = Template();
+        else                  dst = src;
+    }
+};
+
+BR_REGISTER(Transform, RemoveTemplatesTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Remove template metadata with the specified key(s).
+ * \author Josh Klontz \cite jklontz
+ */
+class RemoveMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        const QRegularExpression re(regexp);
+        foreach (const QString &key, dst.file.localKeys())
+            if (re.match(key).hasMatch())
+                dst.file.remove(key);
+    }
+};
+
+BR_REGISTER(Transform, RemoveMetadataTransform)
+
 }
 
 #include "misc.moc"
