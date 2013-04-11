@@ -157,6 +157,26 @@ Mat OpenCVUtils::toMatByRow(const QList<Mat> &src)
     return dst;
 }
 
+QString OpenCVUtils::depthToString(const Mat &m)
+{
+    switch (m.depth()) {
+      case CV_8U:  return "8U";
+      case CV_8S:  return "8S";
+      case CV_16U: return "16U";
+      case CV_16S: return "16S";
+      case CV_32S: return "32S";
+      case CV_32F: return "32F";
+      case CV_64F: return "64F";
+      default:     qFatal("Unknown matrix depth!");
+    }
+    return "?";
+}
+
+QString OpenCVUtils::typeToString(const cv::Mat &m)
+{
+    return depthToString(m) + "C" + QString::number(m.channels());
+}
+
 QString OpenCVUtils::elemToString(const Mat &m, int r, int c)
 {
     assert(m.channels() == 1);

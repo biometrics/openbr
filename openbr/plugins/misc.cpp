@@ -68,8 +68,10 @@ class PrintTransform : public UntrainableMetaTransform
         dst = src;
         const QString nameString = src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
-        if (error) qDebug("%s\n%s", qPrintable(nameString), qPrintable(dataString));
-        else       printf("%s\n%s", qPrintable(nameString), qPrintable(dataString));
+        QStringList matricies;
+        foreach (const Mat &m, src)
+            matricies.append(QString::number(m.rows) + "x" + QString::number(m.cols) + "_" + OpenCVUtils::typeToString(m));
+        fprintf(error ? stderr : stdout, "%s\n  %s\n%s", qPrintable(nameString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 };
 
