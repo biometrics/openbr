@@ -109,7 +109,8 @@ class KNNTransform : public Transform
         QStringList subjects;
         for (int i=0; i<numSubjects; i++) {
             QHash<QString, float> votes;
-            for (int j=0; j<k; j++)
+            const int max = (k < 1) ? sortedScores.size() : std::min(k, sortedScores.size());
+            for (int j=0; j<max; j++)
                 votes[gallery[sortedScores[j].second].file.subject()] += (weighted ? sortedScores[j].first : 1);
             subjects.append(votes.keys()[votes.values().indexOf(Common::Max(votes.values()))]);
 
