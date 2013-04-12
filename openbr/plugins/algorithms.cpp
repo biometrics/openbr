@@ -50,7 +50,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("SmallSIFT", "Open+LimitSize(512)+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("SmallSURF", "Open+LimitSize(512)+KeyPointDetector(SURF)+KeyPointDescriptor(SURF):KeyPointMatcher(BruteForce)");
         Globals->abbreviations.insert("ColorHist", "Open+LimitSize(512)!EnsureChannels(3)+SplitChannels+Hist(256,0,8)+Cat+Normalize(L1):L2");
-        Globals->abbreviations.insert("ImageClassification", "Open+CropSquare+LimitSize(256)+Cvt(Gray)+Gradient+Bin(0,360,9,true)+Merge+Integral+RecursiveIntegralSampler(4,2,8,Singleton(KMeans(1024)))+Cat+CvtFloat+Hist(1024)+KNS(5,SVM(Linear,ONE_CLASS))[fraction=0.1]+Rename(KNS,Subject)");
+        Globals->abbreviations.insert("ImageClassification", "Open+CropSquare+LimitSize(256)+Cvt(Gray)+Gradient+Bin(0,360,9,true)+Merge+Integral+RecursiveIntegralSampler(4,2,8,Singleton(KMeans(1024)))+Cat+CvtFloat+Hist(1024)+KNN(5,Dist(L1),false,5)+Rename(KNN,Subject)");
 
         // Hash
         Globals->abbreviations.insert("FileName", "Name+Identity:Identical");
