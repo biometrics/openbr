@@ -921,24 +921,20 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 {
     // Something about this method is not thread safe, and will lead to crashes if qDebug
     // statements are called from multiple threads. Unless we lock the whole thing...
-    static QMutex generalLock(QMutex::Recursive);
+    static QMutex generalLock;
     QMutexLocker locker(&generalLock);
 
     QString txt;
-    switch (type) {
-    case QtDebugMsg:
+    if (type == QtDebugMsg) {
         if (Globals->quiet) return;
         txt = QString("%1\n").arg(msg);
-        break;
-    case QtWarningMsg:
-        txt = QString("Warning: %1\n").arg(msg);
-        break;
-    case QtCriticalMsg:
-        txt = QString("Critical: %1\n").arg(msg);
-        break;
-    case QtFatalMsg:
-        txt = QString("Fatal: %1\n").arg(msg);
-        break;
+    } else {
+        switch (type) {
+          case QtWarningMsg:  txt = QString("Warning: %1\n" ).arg(msg); break;
+          case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
+          default:            txt = QString("Fatal: %1\n"   ).arg(msg);
+        }
+        txt += "  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
     }
 
     std::cerr << txt.toStdString();
@@ -949,11 +945,8 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         Globals->logFile.flush();
     }
 
-    if (type == QtFatalMsg) {
-        // Write debug output then close
-        qDebug("  File: %s\n  Function: %s\n  Line: %d", qPrintable(context.file), qPrintable(context.function), context.line);
-        Globals->finalize();
-    }
+    if (type == QtFatalMsg)
+        abort(); // We abort so we can get a stack trace back to the code that triggered the message.
 }
 
 Context *br::Globals = NULL;
