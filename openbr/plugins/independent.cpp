@@ -173,8 +173,8 @@ class SingletonTransform : public MetaTransform
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     BR_PROPERTY(QString, description, "Identity")
 
+    static QMutex mutex;
     static QHash<QString,Transform*> transforms;
-    static QMutex trainingMutex;
     static QHash<QString,int> trainingReferenceCounts;
     static QHash<QString,TemplateList> trainingData;
 
@@ -182,6 +182,7 @@ class SingletonTransform : public MetaTransform
 
     void init()
     {
+        QMutexLocker locker(&mutex);
         if (!transforms.contains(description)) {
             transforms.insert(description, make(description));
             trainingReferenceCounts.insert(description, 0);
@@ -193,7 +194,7 @@ class SingletonTransform : public MetaTransform
 
     void train(const TemplateList &data)
     {
-        QMutexLocker locker(&trainingMutex);
+        QMutexLocker locker(&mutex);
         trainingData[description].append(data);
         trainingReferenceCounts[description]--;
         if (trainingReferenceCounts[description] > 0) return;
@@ -219,8 +220,8 @@ class SingletonTransform : public MetaTransform
     }
 };
 
+QMutex SingletonTransform::mutex;
 QHash<QString,Transform*> SingletonTransform::transforms;
-QMutex SingletonTransform::trainingMutex;
 QHash<QString,int> SingletonTransform::trainingReferenceCounts;
 QHash<QString,TemplateList> SingletonTransform::trainingData;
 
