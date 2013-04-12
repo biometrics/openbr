@@ -400,13 +400,14 @@ BR_REGISTER(Transform, AsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Change the template label using a regular expresion matched to the file's base name.
+ * \brief Change the template subject using a regular expresion matched to the file's base name.
+ * \author Josh Klontz \cite jklontz
  */
-class RelabelTransform : public UntrainableMetaTransform
+class SubjectTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    BR_PROPERTY(QString, regexp, "")
+    BR_PROPERTY(QString, regexp, "(.*)")
 
     void project(const Template &src, Template &dst) const
     {
@@ -415,11 +416,11 @@ class RelabelTransform : public UntrainableMetaTransform
         QRegularExpressionMatch match = re.match(dst.file.baseName());
         if (!match.hasMatch())
             qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.baseName()));
-        dst.file.set("Label", match.captured(match.lastCapturedIndex()));
+        dst.file.set("Subject", match.captured(match.lastCapturedIndex()));
     }
 };
 
-BR_REGISTER(Transform, RelabelTransform)
+BR_REGISTER(Transform, SubjectTransform)
 
 /*!
  * \ingroup transforms
