@@ -94,6 +94,7 @@ class KNSTransform : public Transform
 
     void train(const TemplateList &data)
     {
+        distance->train(data);
         gallery = data;
     }
 
