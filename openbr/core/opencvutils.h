@@ -39,6 +39,8 @@ namespace OpenCVUtils
     cv::Mat toMatByRow(const QList<cv::Mat> &src); // Data organized one row per row
 
     // From image
+    QString depthToString(const cv::Mat &m);
+    QString typeToString(const cv::Mat &m);
     QString elemToString(const cv::Mat &m, int r, int c);
     QString matrixToString(const cv::Mat &m);
     QStringList matrixToStringList(const cv::Mat &m);

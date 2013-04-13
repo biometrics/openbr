@@ -154,14 +154,14 @@ class RecursiveIntegralSamplerTransform : public Transform
         }
     }
 
-    static void integralHistogram(const Mat &src, const int x, const int y, const int rows, const int columns, Mat &dst, int index)
+    static void integralHistogram(const Mat &src, const int x, const int y, const int width, const int height, Mat &dst, int index)
     {
         const int channels = src.channels();
         OutputDescriptor(dst.ptr<float>(index), channels, 1) =
-            (  InputDescriptor(src.ptr<qint32>(y+rows, x+columns), channels, 1)
-             - InputDescriptor(src.ptr<qint32>(y,      x+columns), channels, 1)
-             - InputDescriptor(src.ptr<qint32>(y+rows, x),         channels, 1)
-             + InputDescriptor(src.ptr<qint32>(y,      x),         channels, 1)).cast<float>()/(rows*columns);
+            (  InputDescriptor(src.ptr<qint32>(y+height, x+width), channels, 1)
+             - InputDescriptor(src.ptr<qint32>(y,        x+width), channels, 1)
+             - InputDescriptor(src.ptr<qint32>(y+height, x),       channels, 1)
+             + InputDescriptor(src.ptr<qint32>(y,        x),       channels, 1)).cast<float>()/(height*width);
     }
 
     void computeDescriptor(const Mat &src, Mat &dst) const
@@ -171,11 +171,11 @@ class RecursiveIntegralSamplerTransform : public Transform
         const int columns = src.cols-1;
 
         Mat tmp(5, channels, CV_32FC1);
-        integralHistogram(src, 0,      0,         rows/2, columns/2, tmp, 0);
-        integralHistogram(src, 0,      columns/2, rows/2, columns/2, tmp, 1);
-        integralHistogram(src, rows/2, 0,         rows/2, columns/2, tmp, 2);
-        integralHistogram(src, rows/2, columns/2, rows/2, columns/2, tmp, 3);
-        integralHistogram(src, rows/4, columns/4, rows/2, columns/2, tmp, 4);
+        integralHistogram(src,         0,      0, columns/2, rows/2, tmp, 0);
+        integralHistogram(src, columns/2,      0, columns/2, rows/2, tmp, 1);
+        integralHistogram(src,         0, rows/2, columns/2, rows/2, tmp, 2);
+        integralHistogram(src, columns/2, rows/2, columns/2, rows/2, tmp, 3);
+        integralHistogram(src, columns/4, rows/4, columns/2, rows/2, tmp, 4);
         const SecondOrderInputDescriptor a(tmp.ptr<float>(0), channels, 1);
         const SecondOrderInputDescriptor b(tmp.ptr<float>(1), channels, 1);
         const SecondOrderInputDescriptor c(tmp.ptr<float>(2), channels, 1);
@@ -188,6 +188,7 @@ class RecursiveIntegralSamplerTransform : public Transform
         OutputDescriptor(dst.ptr<float>(2), channels, 1) = ((a+b)-(c+d))/2.f;
         OutputDescriptor(dst.ptr<float>(3), channels, 1) = ((a+c)-(b+d))/2.f;
         OutputDescriptor(dst.ptr<float>(4), channels, 1) = ((a+d)-(b+c))/2.f;
+        dst = dst.reshape(1, 1);
     }
 
     Template subdivide(const Template &src) const

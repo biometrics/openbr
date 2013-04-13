@@ -102,7 +102,7 @@ void MinMax(const QList<T> &vals, T *min, T *max)
 template <typename T>
 T Min(const QList<T> &vals)
 {
-    int min, max;
+    T min, max;
     MinMax(vals, &min, &max);
     return min;
 }
@@ -110,7 +110,7 @@ T Min(const QList<T> &vals)
 template <typename T>
 T Max(const QList<T> &vals)
 {
-    int min, max;
+    T min, max;
     MinMax(vals, &min, &max);
     return max;
 }

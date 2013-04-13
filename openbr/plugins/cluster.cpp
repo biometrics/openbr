@@ -17,6 +17,7 @@
 #include <opencv2/flann/flann.hpp>
 
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 
 using namespace cv;
@@ -76,6 +77,68 @@ class KMeansTransform : public Transform
 
 BR_REGISTER(Transform, KMeansTransform)
 
-}
+/*!
+ * \ingroup transforms
+ * \brief K nearest neighbors classifier.
+ * \author Josh Klontz \cite jklontz
+ */
+class KNNTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(int k READ get_k WRITE set_k RESET reset_k STORED false)
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    Q_PROPERTY(bool weighted READ get_weighted WRITE set_weighted RESET reset_weighted STORED false)
+    Q_PROPERTY(int numSubjects READ get_numSubjects WRITE set_numSubjects RESET reset_numSubjects STORED false)
+    BR_PROPERTY(int, k, 1)
+    BR_PROPERTY(br::Distance*, distance, NULL)
+    BR_PROPERTY(bool, weighted, false)
+    BR_PROPERTY(int, numSubjects, 1)
+
+    TemplateList gallery;
+
+    void train(const TemplateList &data)
+    {
+        distance->train(data);
+        gallery = data;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        QList< QPair<float, int> > sortedScores = Common::Sort(distance->compare(gallery, src), true);
+
+        QStringList subjects;
+        for (int i=0; i<numSubjects; i++) {
+            QHash<QString, float> votes;
+            const int max = (k < 1) ? sortedScores.size() : std::min(k, sortedScores.size());
+            for (int j=0; j<max; j++)
+                votes[gallery[sortedScores[j].second].file.subject()] += (weighted ? sortedScores[j].first : 1);
+            subjects.append(votes.keys()[votes.values().indexOf(Common::Max(votes.values()))]);
+
+            // Remove subject from consideration
+            if (subjects.size() < numSubjects)
+                for (int j=sortedScores.size()-1; j>=0; j--)
+                    if (gallery[sortedScores[j].second].file.subject() == subjects.last())
+                        sortedScores.removeAt(j);
+        }
+
+        dst.file.set("KNN", subjects.size() > 1 ? "[" + subjects.join(",") + "]" : subjects.first());
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << gallery;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> gallery;
+    }
+};
+
+BR_REGISTER(Transform, KNNTransform)
+
+
+
+} // namespace br
 
 #include "cluster.moc"

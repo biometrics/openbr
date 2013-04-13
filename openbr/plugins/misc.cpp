@@ -60,20 +60,18 @@ class PrintTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
     Q_PROPERTY(bool data READ get_data WRITE set_data RESET reset_data)
-    Q_PROPERTY(bool nTemplates READ get_data WRITE set_data RESET reset_data)
     BR_PROPERTY(bool, error, true)
     BR_PROPERTY(bool, data, false)
-    BR_PROPERTY(bool, size, false)
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
         const QString nameString = src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
-        const QString nTemplates = size ? QString::number(src.size()) : QString();
-        qDebug() << "Dimensionality: " << src.first().cols;
-        if (error) qDebug("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
-        else       printf("%s\n%s\n%s", qPrintable(nameString), qPrintable(dataString), qPrintable(nTemplates));
+        QStringList matricies;
+        foreach (const Mat &m, src)
+            matricies.append(QString::number(m.rows) + "x" + QString::number(m.cols) + "_" + OpenCVUtils::typeToString(m));
+        fprintf(error ? stderr : stdout, "%s\n  %s\n%s", qPrintable(nameString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 };
 
@@ -402,13 +400,14 @@ BR_REGISTER(Transform, AsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Change the template label using a regular expresion matched to the file's base name.
+ * \brief Change the template subject using a regular expresion matched to the file's base name.
+ * \author Josh Klontz \cite jklontz
  */
-class RelabelTransform : public UntrainableMetaTransform
+class SubjectTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    BR_PROPERTY(QString, regexp, "")
+    BR_PROPERTY(QString, regexp, "(.*)")
 
     void project(const Template &src, Template &dst) const
     {
@@ -417,11 +416,11 @@ class RelabelTransform : public UntrainableMetaTransform
         QRegularExpressionMatch match = re.match(dst.file.baseName());
         if (!match.hasMatch())
             qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.baseName()));
-        dst.file.set("Label", match.captured(match.lastCapturedIndex()));
+        dst.file.set("Subject", match.captured(match.lastCapturedIndex()));
     }
 };
 
-BR_REGISTER(Transform, RelabelTransform)
+BR_REGISTER(Transform, SubjectTransform)
 
 /*!
  * \ingroup transforms
