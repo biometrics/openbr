@@ -21,15 +21,12 @@
 #include <QHash>
 #include <QFile>
 #include <QFileInfo>
+#include <QFutureSynchronizer>
 #include <QList>
-#ifndef BR_EMBEDDED
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#endif // BR_EMBEDDED
 #include <QMutex>
 #include <QPair>
 #include <QVector>
+#include <QtConcurrent>
 #include <QtGlobal>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
@@ -269,11 +266,30 @@ BR_REGISTER(Output, EmptyOutput)
 class evalOutput : public MatrixOutput
 {
     Q_OBJECT
+    Q_PROPERTY(bool crossValidate READ get_crossValidate WRITE set_crossValidate RESET reset_crossValidate STORED false)
+    BR_PROPERTY(bool, crossValidate, true)
 
     ~evalOutput()
     {
-        if (data.data)
-            Evaluate(data, BEE::makeMask(targetFiles, queryFiles), QString(file.name).replace(".eval", ".csv"));
+        if (data.data) {
+            const QString csv = QString(file.name).replace(".eval", ".csv");
+            if ((Globals->crossValidate == 0) || (!crossValidate)) {
+                Evaluate(data, BEE::makeMask(targetFiles, queryFiles), csv);
+            } else {
+                QFutureSynchronizer<float> futures;
+                for (int i=0; i<Globals->crossValidate; i++)
+                    futures.addFuture(QtConcurrent::run(Evaluate, data, targetFiles, queryFiles, csv.arg(QString::number(i)), i));
+                futures.waitForFinished();
+
+                QList<float> TARs;
+                foreach (const QFuture<float> &future, futures.futures())
+                    TARs.append(future.result());
+
+                double mean, stddev;
+                Common::MeanStdDev(TARs, &mean, &stddev);
+                qDebug("TAR @ FAR = 0.01: %.3f +/- %.3f", mean, stddev);
+            }
+        }
     }
 };
 

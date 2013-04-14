@@ -110,6 +110,11 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
+float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
+{
+    return Evaluate(scores, BEE::makeMask(target, query, partition), csv);
+}
+
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 {
     qDebug("Evaluating %s%s%s",
