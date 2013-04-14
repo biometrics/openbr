@@ -270,6 +270,8 @@ $ br -help
  * $ cd openbr
  * $ git submodule init
  * $ git submodule update
+ * $ cd data
+ * $ ./downloadDatasets.sh
  * \endcode
  * -# Build OpenBR!
  * \code
@@ -360,6 +362,8 @@ $ br -help
  * $ cd openbr
  * $ git submodule init
  * $ git submodule update
+ * $ cd data
+ * $ ./downloadDatasets.sh
  * \endcode
  * -# Build OpenBR!
  * \code
@@ -427,6 +431,8 @@ $ br -help
  * $ cd openbr
  * $ git submodule init
  * $ git submodule update
+ * $ cd data
+ * $ ./downloadDatasets.sh
  * \endcode
  * -# Build OpenBR!
  * \code

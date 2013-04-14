@@ -1,7 +1,9 @@
 ### Repository Specific ###
-build*
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
+data/*/img
+data/PCSO/*
+build*
 scripts/results
 
 ### Generic ###

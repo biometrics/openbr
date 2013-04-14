@@ -41,3 +41,5 @@ br -algorithm Eigenfaces -path MEDS/img -compare MEDS/sigset/MEDS_frontal_target
 
 # Evaluate Eigenfaces accuracy
 br -eval scores.mtx results.csv -plot results.csv results.pdf
+
+echo "Not very accurate right? That's why nobody uses Eigenfaces anymore!"

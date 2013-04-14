@@ -1,0 +1,1308 @@
+img_dname,img_fname,human_review_bin_label,pose_result_type,pp_default_roll,pp_default_yaw,pp_default_pitch,manual_edited_roll,manual_edited_yaw,manual_edited_pitch
+./data/aa,S001-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/aa,S001-02-t10_01.jpg,Frontal,Manual,-6,-3,0,-6,-3,-10
+./data/aa,S001-03-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S001-04-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/aa,S001-05-t10_01.jpg,Left Angle,Automatic,-1,-18,0,,,
+./data/aa,S001-06-t10_01.jpg,Right Angle,Automatic,0,5,0,,,
+./data/aa,S001-07-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/aa,S001-08-t10_01.jpg,Left Angle,Automatic,-2,-13,0,,,
+./data/aa,S001-08-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/aa,S001-08-t10_03.jpg,Right Profile,Automatic,0,61,0,,,
+./data/aa,S001-09-t10_01.jpg,Frontal,Automatic,-6,-4,0,,,
+./data/aa,S002-01-t10_01.jpg,Frontal,Automatic,-3,-8,0,,,
+./data/aa,S003-01-t10_01.jpg,Frontal,Automatic,-4,-3,0,,,
+./data/aa,S004-01-t10_01.jpg,Frontal,Automatic,2,-3,0,,,
+./data/aa,S005-01-t10_01.jpg,Frontal,Automatic,-3,-4,0,,,
+./data/aa,S006-01-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/aa,S006-02-t10_01.jpg,Frontal,Automatic,-11,1,0,,,
+./data/aa,S006-03-t10_01.jpg,Frontal,Automatic,-5,7,0,,,
+./data/aa,S007-01-t10_01.jpg,Frontal,Automatic,8,0,0,,,
+./data/aa,S008-05-t10_01.jpg,Left Angle,Automatic,0,-14,0,,,
+./data/aa,S008-01-t10_01.jpg,Frontal,Automatic,-1,11,0,,,
+./data/aa,S008-02-t10_01.jpg,Frontal,Automatic,12,-7,0,,,
+./data/aa,S008-03-t10_01.jpg,Frontal,Automatic,-4,-6,0,,,
+./data/aa,S008-04-t10_01.jpg,Frontal,Automatic,5,-8,0,,,
+./data/aa,S008-06-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S008-07-t10_01.jpg,Left Angle,Automatic,11,-19,0,,,
+./data/aa,S009-01-t10_01.jpg,Frontal,Automatic,-2,5,0,,,
+./data/aa,S010-01-t10_01.jpg,Frontal,Automatic,-7,2,0,,,
+./data/aa,S011-01-t10_01.jpg,Frontal,Automatic,8,0,0,,,
+./data/aa,S012-01-t10_01.jpg,Left Angle,Automatic,-1,-21,0,,,
+./data/aa,S013-01-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/aa,S013-02-t10_01.jpg,Right Angle,Automatic,-1,5,0,,,
+./data/aa,S014-01-t10_01.jpg,Left Angle,Manual,0,-22,0,0,-22,6
+./data/aa,S015-01-t10_01.jpg,Left Angle,Automatic,-3,-10,0,,,
+./data/aa,S015-02-t10_01.jpg,Left Angle,Automatic,-1,-21,0,,,
+./data/aa,S015-03-t10_01.jpg,Frontal,Automatic,-18,-4,0,,,
+./data/aa,S016-01-t10_01.jpg,Frontal,Automatic,-3,-1,0,,,
+./data/aa,S017-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/aa,S018-01-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/aa,S019-01-t10_01.jpg,Frontal,Automatic,-2,-5,0,,,
+./data/aa,S020-01-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/aa,S021-01-t10_01.jpg,Frontal,Automatic,-9,0,0,,,
+./data/aa,S022-01-t10_01.jpg,Right Angle,Automatic,1,7,0,,,
+./data/aa,S022-02-t10_01.jpg,Frontal,Automatic,-11,12,0,,,
+./data/aa,S023-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/aa,S023-02-t10_01.jpg,Frontal,Automatic,1,6,0,,,
+./data/aa,S023-03-t10_01.jpg,Left Angle,Automatic,-16,-10,0,,,
+./data/aa,S023-04-t10_01.jpg,Frontal,Automatic,-1,-7,0,,,
+./data/aa,S024-01-t10_01.jpg,Frontal,Manual,1,-5,0,1,-5,-11
+./data/aa,S025-01-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/aa,S026-01-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/aa,S027-01-t10_01.jpg,Right Angle,Automatic,4,10,0,,,
+./data/aa,S027-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/aa,S027-01-t10_03.jpg,Right Profile,Automatic,0,75,0,,,
+./data/aa,S028-01-t10_01.jpg,Right Angle,Automatic,3,14,0,,,
+./data/aa,S029-01-t10_01.jpg,Frontal,Automatic,2,-10,0,,,
+./data/aa,S029-02-t10_01.jpg,Frontal,Manual,1,12,0,1,0,0
+./data/aa,S029-03-t10_01.jpg,Left Angle,Manual,3,-11,0,3,-7,0
+./data/aa,S030-01-t10_01.jpg,Frontal,Automatic,-5,-2,0,,,
+./data/aa,S030-02-t10_01.jpg,Frontal,Manual,-2,9,0,-2,4,0
+./data/aa,S030-03-t10_01.jpg,Left Angle,Automatic,-5,-6,0,,,
+./data/aa,S030-04-t10_01.jpg,Right Angle,Automatic,-5,5,0,,,
+./data/aa,S030-05-t10_01.jpg,Left Angle,Automatic,-7,-9,0,,,
+./data/aa,S031-01-t10_01.jpg,Left Angle,Automatic,-6,0,0,,,
+./data/aa,S031-02-t10_01.jpg,Left Angle,Manual,2,-16,0,2,-16,6
+./data/aa,S031-03-t10_01.jpg,Left Angle,Manual,-5,-12,0,-5,-12,9
+./data/aa,S031-04-t10_01.jpg,Left Angle,Automatic,0,-10,0,,,
+./data/aa,S031-05-t10_01.jpg,Left Angle,Automatic,0,-14,0,,,
+./data/aa,S031-06-t10_01.jpg,Left Angle,Manual,-1,-3,0,-1,-13,0
+./data/aa,S032-01-t10_01.jpg,Left Angle,Automatic,5,-16,0,,,
+./data/aa,S032-02-t10_01.jpg,Frontal,Automatic,2,-5,0,,,
+./data/aa,S032-03-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/aa,S033-01-t10_01.jpg,Right Angle,Manual,0,17,0,0,17,11
+./data/aa,S033-02-t10_01.jpg,Frontal,Manual,4,-12,0,6,-6,0
+./data/aa,S033-03-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/aa,S033-04-t10_01.jpg,Frontal,Automatic,-4,3,0,,,
+./data/aa,S033-05-t10_01.jpg,Left Angle,Manual,9,-13,0,9,-10,0
+./data/aa,S033-06-t10_01.jpg,Frontal,Automatic,7,-6,0,,,
+./data/aa,S033-07-t10_01.jpg,Left Angle,Automatic,6,-6,0,,,
+./data/aa,S034-01-t10_01.jpg,Frontal,Automatic,2,-7,0,,,
+./data/aa,S035-01-t10_01.jpg,Frontal,Automatic,-9,-1,0,,,
+./data/aa,S036-01-t10_01.jpg,Frontal,Manual,-3,-12,0,-3,6,0
+./data/aa,S036-02-t10_01.jpg,Left Angle,Automatic,1,-10,0,,,
+./data/aa,S036-03-t10_01.jpg,Frontal,Automatic,-4,2,0,,,
+./data/aa,S037-01-t10_01.jpg,Frontal,Automatic,-6,-6,0,,,
+./data/aa,S038-01-t10_01.jpg,Left Angle,Manual,-7,-4,0,-7,-10,0
+./data/aa,S039-01-t10_01.jpg,Frontal,Manual,3,-17,0,3,-8,0
+./data/aa,S040-01-t10_01.jpg,Frontal,Automatic,-1,5,0,,,
+./data/aa,S041-01-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/aa,S042-01-t10_01.jpg,Frontal,Automatic,0,-10,0,,,
+./data/aa,S043-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S044-01-t10_01.jpg,Frontal,Manual,-3,0,0,-3,0,10
+./data/aa,S044-02-t10_01.jpg,Left Angle,Manual,4,-2,0,6,-10,0
+./data/aa,S044-03-t10_01.jpg,Frontal,Manual,-2,-4,0,-2,-4,6
+./data/aa,S044-04-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S044-05-t10_01.jpg,Left Angle,Manual,2,-2,0,4,-10,0
+./data/aa,S044-06-t10_01.jpg,Frontal,Manual,-3,0,0,6,-5,-5
+./data/aa,S044-07-t10_01.jpg,Left Angle,Automatic,4,0,0,,,
+./data/aa,S044-08-t10_01.jpg,Frontal,Automatic,4,-6,0,,,
+./data/aa,S044-09-t10_01.jpg,Left Angle,Manual,-1,0,0,-1,-4,-11
+./data/aa,S045-01-t10_01.jpg,Right Angle,Automatic,0,17,0,,,
+./data/aa,S045-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/aa,S046-01-t10_01.jpg,Left Angle,Automatic,0,-8,0,,,
+./data/aa,S046-02-t10_01.jpg,Left Angle,Manual,-6,-16,0,-6,-9,-9
+./data/aa,S047-01-t10_01.jpg,Frontal,Automatic,-1,-1,0,,,
+./data/aa,S048-01-t10_01.jpg,Left Angle,Automatic,4,-13,0,,,
+./data/aa,S048-02-t10_01.jpg,Frontal,Automatic,4,1,0,,,
+./data/aa,S048-03-t10_01.jpg,Frontal,Automatic,-1,-4,0,,,
+./data/aa,S048-04-t10_01.jpg,Left Angle,Automatic,0,-12,0,,,
+./data/aa,S048-05-t10_01.jpg,Left Angle,Automatic,1,-9,0,,,
+./data/aa,S048-06-t10_01.jpg,Left Angle,Automatic,6,-16,0,,,
+./data/aa,S048-07-t10_01.jpg,Left Angle,Automatic,1,-14,0,,,
+./data/aa,S049-01-t10_01.jpg,Frontal,Manual,4,-15,0,6,-2,0
+./data/aa,S050-01-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/aa,S051-01-t10_01.jpg,Frontal,Automatic,-4,7,0,,,
+./data/aa,S051-02-t10_01.jpg,Frontal,Automatic,-6,-6,0,,,
+./data/aa,S052-01-t10_01.jpg,Frontal,Automatic,-6,7,0,,,
+./data/aa,S052-02-t10_01.jpg,Left Angle,Manual,-5,-12,0,-5,-7,0
+./data/aa,S052-03-t10_01.jpg,Left Angle,Manual,-2,-11,0,-2,-9,0
+./data/aa,S053-01-t10_01.jpg,Frontal,Manual,0,7,0,0,0,0
+./data/aa,S054-01-t10_01.jpg,Frontal,Manual,4,0,0,4,0,-12
+./data/aa,S054-02-t10_01.jpg,Frontal,Automatic,-4,-1,0,,,
+./data/aa,S054-03-t10_01.jpg,Left Angle,Automatic,6,-8,0,,,
+./data/aa,S055-01-t10_01.jpg,Frontal,Automatic,2,6,0,,,
+./data/aa,S056-01-t10_01.jpg,Left Angle,Automatic,-1,-13,0,,,
+./data/aa,S057-01-t10_01.jpg,Frontal,Manual,0,10,0,0,6,0
+./data/aa,S058-01-t10_01.jpg,Left Angle,Manual,-5,0,0,-5,-6,0
+./data/aa,S058-02-t10_01.jpg,Frontal,Automatic,2,1,0,,,
+./data/aa,S058-03-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/aa,S059-01-t10_01.jpg,Frontal,Manual,0,14,0,0,6,0
+./data/aa,S059-01-t10_02.jpg,Right Profile,Automatic,-5,75,0,,,
+./data/aa,S060-01-t10_01.jpg,Right Angle,Automatic,-7,6,0,,,
+./data/aa,S061-01-t10_01.jpg,Right Angle,Automatic,7,10,0,,,
+./data/aa,S062-01-t10_01.jpg,Frontal,Automatic,-2,-4,0,,,
+./data/aa,S063-01-t10_01.jpg,Left Angle,Automatic,-3,-11,0,,,
+./data/aa,S064-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S064-02-t10_01.jpg,Frontal,Automatic,-8,0,0,,,
+./data/aa,S065-01-t10_01.jpg,Right Angle,Automatic,-5,14,0,,,
+./data/aa,S065-02-t10_01.jpg,Right Angle,Automatic,-4,18,0,,,
+./data/aa,S066-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/aa,S067-01-t10_01.jpg,Frontal,Automatic,0,-9,0,,,
+./data/aa,S068-01-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/aa,S068-02-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S068-03-t10_01.jpg,Right Angle,Automatic,0,12,0,,,
+./data/aa,S068-04-t10_01.jpg,Left Angle,Automatic,3,-22,0,,,
+./data/aa,S068-05-t10_01.jpg,Frontal,Automatic,-5,-3,0,,,
+./data/aa,S068-06-t10_01.jpg,Frontal,Automatic,-1,1,0,,,
+./data/aa,S068-07-t10_01.jpg,Frontal,Manual,-2,5,0,-2,0,0
+./data/aa,S069-01-t10_01.jpg,Frontal,Automatic,-1,7,0,,,
+./data/aa,S069-02-t10_01.jpg,Frontal,Manual,0,-10,0,0,-6,0
+./data/aa,S070-01-t10_01.jpg,Left Angle,Manual,-2,-14,0,-2,-6,0
+./data/aa,S071-01-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/aa,S072-01-t10_01.jpg,Left Angle,Automatic,-4,-6,0,,,
+./data/aa,S073-01-t10_01.jpg,Right Angle,Automatic,5,0,0,,,
+./data/aa,S073-01-t10_02.jpg,Left Profile,Automatic,-12,-28,0,,,
+./data/aa,S074-01-t10_01.jpg,Right Angle,Manual,2,8,0,2,4,0
+./data/aa,S075-01-t10_01.jpg,Left Angle,Automatic,1,-29,0,,,
+./data/aa,S076-01-t10_01.jpg,Frontal,Automatic,-10,6,0,,,
+./data/aa,S076-02-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/aa,S077-01-t10_01.jpg,Frontal,Automatic,7,-1,0,,,
+./data/aa,S078-01-t10_01.jpg,Frontal,Manual,3,15,0,3,4,0
+./data/aa,S078-02-t10_01.jpg,Right Angle,Automatic,12,8,0,,,
+./data/aa,S078-02-t10_02.jpg,Right Profile,Automatic,-5,75,0,,,
+./data/aa,S078-03-t10_01.jpg,Left Angle,Manual,3,-12,0,3,-8,0
+./data/aa,S078-04-t10_01.jpg,Frontal,Automatic,5,-7,0,,,
+./data/aa,S079-01-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/aa,S080-01-t10_01.jpg,Left Angle,Automatic,-4,-12,0,,,
+./data/aa,S081-01-t10_01.jpg,Right Angle,Automatic,-3,5,0,,,
+./data/aa,S082-01-t10_01.jpg,Frontal,Automatic,3,-7,0,,,
+./data/aa,S083-01-t10_01.jpg,Right Angle,Automatic,-5,-1,0,,,
+./data/aa,S084-01-t10_01.jpg,Frontal,Automatic,-2,-2,0,,,
+./data/aa,S085-01-t10_01.jpg,Right Angle,Automatic,0,2,0,,,
+./data/aa,S085-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/aa,S085-01-t10_03.jpg,Frontal,Automatic,-4,5,0,,,
+./data/aa,S086-01-t10_01.jpg,Frontal,Automatic,5,-3,0,,,
+./data/aa,S087-01-t10_01.jpg,Left Angle,Automatic,-3,-6,0,,,
+./data/aa,S088-01-t10_01.jpg,Left Angle,Automatic,0,-16,0,,,
+./data/aa,S088-02-t10_01.jpg,Frontal,Automatic,4,2,0,,,
+./data/aa,S089-01-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/aa,S090-01-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/aa,S091-01-t10_01.jpg,Left Angle,Automatic,-12,-22,0,,,
+./data/aa,S092-01-t10_01.jpg,Left Angle,Automatic,-2,-10,0,,,
+./data/aa,S093-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/aa,S093-02-t10_01.jpg,Frontal,Automatic,-4,2,0,,,
+./data/aa,S094-01-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/aa,S095-01-t10_01.jpg,Frontal,Automatic,-1,-17,0,,,
+./data/aa,S095-02-t10_01.jpg,Left Angle,Automatic,-4,0,0,,,
+./data/aa,S096-01-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/aa,S096-02-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/aa,S097-01-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/aa,S098-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/aa,S098-02-t10_01.jpg,Right Angle,Automatic,-8,14,0,,,
+./data/aa,S099-01-t10_01.jpg,Frontal,Automatic,2,-5,0,,,
+./data/aa,S099-02-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/aa,S099-03-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/aa,S100-01-t10_01.jpg,Frontal,Automatic,-8,-2,0,,,
+./data/aa,S101-01-t10_01.jpg,Frontal,Automatic,-4,-1,0,,,
+./data/aa,S101-02-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/aa,S102-01-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/aa,S102-02-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/ab,S103-01-t10_01.jpg,Frontal,Automatic,-14,9,0,,,
+./data/ab,S104-01-t10_01.jpg,Left Angle,Automatic,1,-10,0,,,
+./data/ab,S105-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ab,S106-01-t10_01.jpg,Right Angle,Automatic,0,7,0,,,
+./data/ab,S107-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ab,S108-01-t10_01.jpg,Right Angle,Automatic,0,7,0,,,
+./data/ab,S108-02-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ab,S108-03-t10_01.jpg,Frontal,Manual,0,-10,0,0,-5,0
+./data/ab,S108-04-t10_01.jpg,Frontal,Automatic,0,-8,0,,,
+./data/ab,S109-01-t10_01.jpg,Frontal,Automatic,14,0,0,,,
+./data/ab,S110-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ab,S111-01-t10_01.jpg,Left Angle,Manual,1,-16,0,1,-10,0
+./data/ab,S111-02-t10_01.jpg,Left Angle,Manual,-4,-14,0,0,-7,0
+./data/ab,S111-03-t10_01.jpg,Frontal,Manual,0,7,0,0,3,0
+./data/ab,S111-04-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ab,S111-05-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ab,S112-01-t10_01.jpg,Left Angle,Automatic,2,-17,0,,,
+./data/ab,S112-02-t10_01.jpg,Frontal,Automatic,-1,-1,0,,,
+./data/ab,S113-01-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ab,S114-01-t10_01.jpg,Frontal,Automatic,0,6,0,,,
+./data/ab,S115-01-t10_01.jpg,Frontal,Manual,2,4,0,2,4,-8
+./data/ab,S116-01-t10_01.jpg,Frontal,Automatic,9,0,0,,,
+./data/ab,S117-01-t10_01.jpg,Frontal,Automatic,-11,2,0,,,
+./data/ab,S117-02-t10_01.jpg,Left Angle,Automatic,-8,-13,0,,,
+./data/ab,S118-01-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/ab,S118-02-t10_01.jpg,Frontal,Automatic,-16,-1,0,,,
+./data/ab,S118-03-t10_01.jpg,Frontal,Automatic,0,-7,0,,,
+./data/ab,S119-01-t10_01.jpg,Frontal,Manual,1,0,0,1,5,0
+./data/ab,S120-01-t10_01.jpg,Frontal,Manual,-3,6,0,-3,0,0
+./data/ab,S120-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ab,S121-01-t10_01.jpg,Frontal,Automatic,1,1,0,,,
+./data/ab,S122-01-t10_01.jpg,Frontal,Automatic,1,-6,0,,,
+./data/ab,S123-01-t10_01.jpg,Frontal,Automatic,5,1,0,,,
+./data/ab,S124-01-t10_01.jpg,Right Angle,Automatic,-6,11,0,,,
+./data/ab,S124-02-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/ab,S125-01-t10_01.jpg,Frontal,Automatic,2,-12,0,,,
+./data/ab,S126-01-t10_01.jpg,Frontal,Manual,-3,0,0,-3,-3,-7
+./data/ab,S127-01-t10_01.jpg,Frontal,Manual,1,-12,0,1,1,-6
+./data/ab,S128-01-t10_01.jpg,Right Angle,Automatic,8,13,0,,,
+./data/ab,S129-01-t10_01.jpg,Right Angle,Automatic,5,0,0,,,
+./data/ab,S130-01-t10_01.jpg,Left Angle,Manual,11,-17,0,11,-5,0
+./data/ab,S130-02-t10_01.jpg,Frontal,Automatic,-5,-5,0,,,
+./data/ab,S131-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ab,S132-01-t10_01.jpg,Frontal,Automatic,7,3,0,,,
+./data/ab,S132-02-t10_01.jpg,Frontal,Automatic,7,0,0,,,
+./data/ab,S133-01-t10_01.jpg,Frontal,Manual,1,0,0,1,-3,-7
+./data/ab,S133-02-t10_01.jpg,Frontal,Automatic,0,-7,0,,,
+./data/ab,S133-03-t10_01.jpg,Frontal,Automatic,-6,-5,0,,,
+./data/ab,S134-01-t10_01.jpg,Frontal,Automatic,-1,-3,0,,,
+./data/ab,S134-02-t10_01.jpg,Frontal,Automatic,0,3,0,,,
+./data/ab,S134-03-t10_01.jpg,Frontal,Automatic,-1,-3,0,,,
+./data/ab,S134-04-t10_01.jpg,Frontal,Automatic,-1,1,0,,,
+./data/ab,S134-05-t10_01.jpg,Frontal,Automatic,-2,-3,0,,,
+./data/ab,S134-06-t10_01.jpg,Frontal,Manual,0,-11,0,0,-1,0
+./data/ab,S134-07-t10_01.jpg,Frontal,Automatic,-4,-1,0,,,
+./data/ab,S134-08-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ab,S135-01-t10_01.jpg,Right Angle,Automatic,-6,9,0,,,
+./data/ab,S136-01-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ab,S137-01-t10_01.jpg,Left Angle,Manual,0,-15,0,0,-10,0
+./data/ab,S138-01-t10_01.jpg,Frontal,Manual,0,8,0,0,4,0
+./data/ab,S138-02-t10_01.jpg,Frontal,Automatic,2,-6,0,,,
+./data/ab,S139-01-t10_01.jpg,Frontal,Manual,0,6,0,0,0,0
+./data/ab,S140-01-t10_01.jpg,Frontal,Manual,-3,-11,0,-3,-3,-19
+./data/ab,S141-01-t10_01.jpg,Left Angle,Automatic,0,-16,0,,,
+./data/ab,S142-01-t10_01.jpg,Right Angle,Automatic,4,11,0,,,
+./data/ab,S142-02-t10_01.jpg,Frontal,Automatic,-8,-6,0,,,
+./data/ab,S142-03-t10_01.jpg,Frontal,Automatic,-6,-8,0,,,
+./data/ab,S142-04-t10_01.jpg,Frontal,Automatic,4,-5,0,,,
+./data/ab,S142-05-t10_01.jpg,Frontal,Automatic,3,4,0,,,
+./data/ab,S142-06-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ab,S142-07-t10_01.jpg,Frontal,Automatic,3,-5,0,,,
+./data/ab,S143-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ab,S144-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ab,S145-01-t10_01.jpg,Left Angle,Automatic,1,-10,0,,,
+./data/ab,S145-01-t10_02.jpg,Right Profile,Automatic,23,69,0,,,
+./data/ab,S146-01-t10_01.jpg,Frontal,Automatic,6,-7,0,,,
+./data/ab,S146-02-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ab,S147-01-t10_01.jpg,Frontal,Automatic,-7,-1,0,,,
+./data/ab,S148-01-t10_01.jpg,Frontal,Automatic,-8,7,0,,,
+./data/ab,S148-02-t10_01.jpg,Frontal,Manual,-1,-9,0,-1,-1,0
+./data/ab,S148-03-t10_01.jpg,Frontal,Manual,7,-10,0,7,-4,0
+./data/ab,S148-04-t10_01.jpg,Frontal,Automatic,5,-4,0,,,
+./data/ab,S149-01-t10_01.jpg,Frontal,Automatic,-2,-4,0,,,
+./data/ab,S150-01-t10_01.jpg,Left Angle,Manual,17,-7,0,17,-10,4
+./data/ab,S150-02-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ab,S151-01-t10_01.jpg,Frontal,Automatic,-2,1,0,,,
+./data/ab,S152-01-t10_01.jpg,Frontal,Automatic,1,4,0,,,
+./data/ab,S153-01-t10_01.jpg,Frontal,Manual,4,9,0,5,-3,-3
+./data/ab,S153-02-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/ab,S154-01-t10_01.jpg,Frontal,Automatic,-6,6,0,,,
+./data/ab,S155-01-t10_01.jpg,Left Angle,Manual,4,-13,0,7,-6,-10
+./data/ab,S156-01-t10_01.jpg,Frontal,Automatic,10,-4,0,,,
+./data/ab,S157-01-t10_01.jpg,Frontal,Automatic,-2,-5,0,,,
+./data/ab,S158-01-t10_01.jpg,Frontal,Automatic,-4,-8,0,,,
+./data/ab,S159-01-t10_01.jpg,Right Angle,Manual,0,10,0,0,4,0
+./data/ab,S160-01-t10_01.jpg,Right Angle,Automatic,1,-2,0,,,
+./data/ab,S161-01-t10_01.jpg,Frontal,Automatic,3,1,0,,,
+./data/ab,S162-01-t10_01.jpg,Frontal,Automatic,-7,0,0,,,
+./data/ab,S163-01-t10_01.jpg,Right Angle,Manual,-5,9,0,-5,9,-13
+./data/ab,S163-02-t10_01.jpg,Frontal,Automatic,1,-3,0,,,
+./data/ab,S164-01-t10_01.jpg,Frontal,Automatic,-4,-2,0,,,
+./data/ab,S164-02-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/ab,S164-02-t10_02.jpg,Right Profile,Manual,23,69,0,0,71,-5
+./data/ab,S165-01-t10_01.jpg,Frontal,Manual,1,-8,0,1,-1,0
+./data/ab,S166-01-t10_01.jpg,Right Angle,Automatic,-9,5,0,,,
+./data/ab,S166-02-t10_01.jpg,Frontal,Manual,-3,-11,0,-3,-7,0
+./data/ab,S166-02-t10_02.jpg,Right Profile,Automatic,0,43,0,,,
+./data/ab,S167-01-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ab,S168-01-t10_01.jpg,Left Angle,Automatic,2,-17,0,,,
+./data/ab,S169-01-t10_01.jpg,Frontal,Automatic,-4,-3,0,,,
+./data/ab,S170-01-t10_01.jpg,Frontal,Automatic,0,-7,0,,,
+./data/ab,S171-01-t10_01.jpg,Frontal,Automatic,-7,-2,0,,,
+./data/ab,S171-02-t10_01.jpg,Frontal,Automatic,1,-2,0,,,
+./data/ab,S171-03-t10_01.jpg,Left Angle,Automatic,-2,-8,0,,,
+./data/ab,S171-04-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ab,S171-05-t10_01.jpg,Frontal,Automatic,-2,-1,0,,,
+./data/ab,S171-06-t10_01.jpg,Frontal,Automatic,0,3,0,,,
+./data/ab,S171-07-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/ab,S171-08-t10_01.jpg,Frontal,Automatic,3,1,0,,,
+./data/ab,S172-01-t10_01.jpg,Left Angle,Manual,5,15,0,5,-13,13
+./data/ab,S173-01-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ab,S173-02-t10_01.jpg,Frontal,Automatic,1,7,0,,,
+./data/ab,S174-01-t10_01.jpg,Frontal,Automatic,0,-6,0,,,
+./data/ab,S174-02-t10_01.jpg,Right Angle,Manual,1,17,0,1,9,-9
+./data/ab,S174-03-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ab,S174-04-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/ab,S174-05-t10_01.jpg,Frontal,Automatic,1,-4,0,,,
+./data/ab,S175-01-t10_01.jpg,Left Angle,Automatic,-3,-14,0,,,
+./data/ab,S176-01-t10_01.jpg,Left Angle,Automatic,-1,-16,0,,,
+./data/ab,S177-01-t10_01.jpg,Frontal,Manual,6,11,0,6,7,0
+./data/ab,S178-01-t10_01.jpg,Frontal,Automatic,4,-2,0,,,
+./data/ab,S179-01-t10_01.jpg,Frontal,Automatic,-2,6,0,,,
+./data/ab,S180-01-t10_01.jpg,Frontal,Automatic,5,-2,0,,,
+./data/ab,S180-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ab,S181-01-t10_01.jpg,Frontal,Manual,4,-11,0,4,-6,0
+./data/ab,S182-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ab,S182-02-t10_01.jpg,Frontal,Automatic,-1,3,0,,,
+./data/ab,S182-02-t10_02.jpg,Right Profile,Automatic,-1,75,0,,,
+./data/ab,S183-01-t10_01.jpg,Left Angle,Automatic,0,-14,0,,,
+./data/ab,S184-01-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ab,S185-01-t10_01.jpg,Left Angle,Automatic,0,0,0,,,
+./data/ab,S185-02-t10_01.jpg,Frontal,Automatic,6,6,0,,,
+./data/ab,S185-03-t10_01.jpg,Frontal,Automatic,6,0,0,,,
+./data/ab,S185-04-t10_01.jpg,Frontal,Automatic,-6,5,0,,,
+./data/ab,S186-01-t10_01.jpg,Frontal,Automatic,10,-7,0,,,
+./data/ab,S187-01-t10_01.jpg,Frontal,Automatic,-2,-4,0,,,
+./data/ab,S188-01-t10_01.jpg,Frontal,Manual,4,2,0,4,7,0
+./data/ab,S189-01-t10_01.jpg,Frontal,Manual,-4,-12,0,0,0,0
+./data/ab,S190-01-t10_01.jpg,Frontal,Automatic,-4,-9,0,,,
+./data/ab,S190-02-t10_01.jpg,Left Angle,Automatic,0,-15,0,,,
+./data/ab,S190-03-t10_01.jpg,Left Angle,Automatic,-2,-16,0,,,
+./data/ab,S191-01-t10_01.jpg,Left Angle,Automatic,-3,-9,0,,,
+./data/ab,S191-02-t10_01.jpg,Frontal,Automatic,1,-6,0,,,
+./data/ab,S192-01-t10_01.jpg,Left Angle,Automatic,1,-8,0,,,
+./data/ab,S193-01-t10_01.jpg,Frontal,Manual,9,-12,0,4,-7,0
+./data/ab,S193-02-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ab,S194-01-t10_01.jpg,Left Angle,Automatic,0,-8,0,,,
+./data/ab,S194-02-t10_01.jpg,Frontal,Automatic,3,-2,0,,,
+./data/ab,S195-01-t10_01.jpg,Frontal,Automatic,-6,-4,0,,,
+./data/ab,S195-02-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ab,S195-03-t10_01.jpg,Frontal,Automatic,-2,-1,0,,,
+./data/ab,S195-04-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/ab,S196-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ab,S197-01-t10_01.jpg,Left Angle,Automatic,0,-9,0,,,
+./data/ab,S198-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ab,S198-02-t10_01.jpg,Frontal,Automatic,-3,-5,0,,,
+./data/ab,S198-03-t10_01.jpg,Frontal,Automatic,-5,4,0,,,
+./data/ab,S198-04-t10_01.jpg,Frontal,Automatic,-2,-2,0,,,
+./data/ab,S198-05-t10_01.jpg,Frontal,Manual,0,7,0,0,2,0
+./data/ab,S199-01-t10_01.jpg,Frontal,Automatic,-1,-4,0,,,
+./data/ab,S199-02-t10_01.jpg,Frontal,Automatic,-2,-2,0,,,
+./data/ab,S200-01-t10_01.jpg,Frontal,Manual,0,0,0,0,14,-9
+./data/ab,S201-01-t10_01.jpg,Left Angle,Automatic,3,-12,0,,,
+./data/ab,S201-02-t10_01.jpg,Frontal,Automatic,0,6,0,,,
+./data/ab,S201-03-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/ab,S202-01-t10_01.jpg,Left Angle,Automatic,5,-3,0,,,
+./data/ab,S202-02-t10_01.jpg,Frontal,Manual,2,-9,0,3,-5,-12
+./data/ab,S202-03-t10_01.jpg,Frontal,Automatic,-2,-8,0,,,
+./data/ab,S202-04-t10_01.jpg,Left Angle,Automatic,-6,0,0,,,
+./data/ab,S203-01-t10_01.jpg,Frontal,Manual,0,8,0,0,0,0
+./data/ab,S203-01-t10_02.jpg,Right Profile,Automatic,7,73,0,,,
+./data/ab,S203-02-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ab,S203-03-t10_01.jpg,Frontal,Automatic,-4,-7,0,,,
+./data/ab,S204-01-t10_01.jpg,Frontal,Automatic,7,1,0,,,
+./data/ab,S205-01-t10_01.jpg,Frontal,Automatic,-1,2,0,,,
+./data/ab,S206-01-t10_01.jpg,Left Angle,Manual,3,-7,0,3,-11,0
+./data/ab,S206-02-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ab,S207-01-t10_01.jpg,Frontal,Manual,0,6,0,0,5,-15
+./data/ab,S208-01-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ab,S209-01-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ab,S210-01-t10_01.jpg,Right Angle,Automatic,-8,1,0,,,
+./data/ab,S211-01-t10_01.jpg,Frontal,Automatic,-7,-6,0,,,
+./data/ab,S212-01-t10_01.jpg,Frontal,Automatic,2,2,0,,,
+./data/ab,S212-02-t10_01.jpg,Frontal,Automatic,-3,-4,0,,,
+./data/ab,S212-03-t10_01.jpg,Right Angle,Automatic,-2,5,0,,,
+./data/ab,S213-01-t10_01.jpg,Right Angle,Automatic,1,10,0,,,
+./data/ab,S214-01-t10_01.jpg,Left Angle,Automatic,-2,-8,0,,,
+./data/ab,S214-02-t10_01.jpg,Left Angle,Automatic,-5,-16,0,,,
+./data/ab,S214-03-t10_01.jpg,Frontal,Automatic,-12,9,0,,,
+./data/ac,S214-04-t10_01.jpg,Left Angle,Automatic,-3,-11,0,,,
+./data/ac,S215-01-t10_01.jpg,Frontal,Automatic,8,-5,0,,,
+./data/ac,S215-02-t10_01.jpg,Frontal,Manual,-3,0,0,-3,6,0
+./data/ac,S215-03-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ac,S215-04-t10_01.jpg,Frontal,Automatic,-1,2,0,,,
+./data/ac,S216-01-t10_01.jpg,Left Angle,Automatic,0,-4,0,,,
+./data/ac,S217-01-t10_01.jpg,Frontal,Automatic,-3,-1,0,,,
+./data/ac,S218-01-t10_01.jpg,Right Angle,Automatic,-14,12,0,,,
+./data/ac,S219-01-t10_01.jpg,Left Angle,Automatic,-13,-9,0,,,
+./data/ac,S219-02-t10_01.jpg,Right Angle,Manual,-6,9,0,-9,4,-6
+./data/ac,S219-03-t10_01.jpg,Frontal,Automatic,-10,-9,0,,,
+./data/ac,S220-01-t10_01.jpg,Right Angle,Manual,-2,12,0,-6,-2,-7
+./data/ac,S220-02-t10_01.jpg,Left Angle,Automatic,9,-7,0,,,
+./data/ac,S221-01-t10_01.jpg,Frontal,Automatic,4,-3,0,,,
+./data/ac,S222-01-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ac,S222-02-t10_01.jpg,Frontal,Automatic,4,-4,0,,,
+./data/ac,S223-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ac,S223-02-t10_01.jpg,Frontal,Automatic,-7,7,0,,,
+./data/ac,S223-03-t10_01.jpg,Frontal,Automatic,1,-5,0,,,
+./data/ac,S224-01-t10_01.jpg,Frontal,Automatic,-4,-4,0,,,
+./data/ac,S225-01-t10_01.jpg,Left Angle,Automatic,-4,-15,0,,,
+./data/ac,S225-02-t10_01.jpg,Right Angle,Automatic,0,3,0,,,
+./data/ac,S226-01-t10_01.jpg,Left Angle,Manual,4,-21,0,4,-9,0
+./data/ac,S226-02-t10_01.jpg,Left Angle,Manual,-2,-13,0,-2,-6,0
+./data/ac,S227-01-t10_01.jpg,Frontal,Manual,4,-10,0,4,0,0
+./data/ac,S227-02-t10_01.jpg,Frontal,Manual,6,-1,0,6,-1,-12
+./data/ac,S228-01-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ac,S228-02-t10_01.jpg,Left Angle,Automatic,12,-7,0,,,
+./data/ac,S228-03-t10_01.jpg,Left Angle,Automatic,3,-25,0,,,
+./data/ac,S229-01-t10_01.jpg,Left Angle,Automatic,-4,5,0,,,
+./data/ac,S230-01-t10_01.jpg,Left Angle,Automatic,5,-18,0,,,
+./data/ac,S231-01-t10_01.jpg,Frontal,Automatic,6,0,0,,,
+./data/ac,S232-01-t10_01.jpg,Frontal,Automatic,-12,7,0,,,
+./data/ac,S232-02-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/ac,S233-01-t10_01.jpg,Frontal,Automatic,1,-3,0,,,
+./data/ac,S234-01-t10_01.jpg,Left Angle,Automatic,1,-10,0,,,
+./data/ac,S235-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ac,S236-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S236-02-t10_01.jpg,Frontal,Manual,2,0,0,2,-7,9
+./data/ac,S237-01-t10_01.jpg,Frontal,Automatic,-4,-16,0,,,
+./data/ac,S238-01-t10_01.jpg,Frontal,Manual,-4,-11,0,-4,-8,10
+./data/ac,S239-01-t10_01.jpg,Frontal,Automatic,-4,13,0,,,
+./data/ac,S239-02-t10_01.jpg,Frontal,Automatic,2,1,0,,,
+./data/ac,S240-01-t10_01.jpg,Frontal,Automatic,-9,0,0,,,
+./data/ac,S240-02-t10_01.jpg,Frontal,Automatic,0,-9,0,,,
+./data/ac,S241-01-t10_01.jpg,Frontal,Manual,-1,6,0,-1,1,0
+./data/ac,S242-01-t10_01.jpg,Frontal,Automatic,7,-1,0,,,
+./data/ac,S243-01-t10_01.jpg,Left Angle,Manual,-2,-12,0,-2,-6,0
+./data/ac,S243-02-t10_01.jpg,Frontal,Automatic,-1,6,0,,,
+./data/ac,S243-03-t10_01.jpg,Left Angle,Automatic,-8,-2,0,,,
+./data/ac,S243-04-t10_01.jpg,Frontal,Automatic,0,6,0,,,
+./data/ac,S243-05-t10_01.jpg,Frontal,Automatic,4,6,0,,,
+./data/ac,S243-06-t10_01.jpg,Frontal,Manual,-1,6,0,-1,4,-7
+./data/ac,S243-07-t10_01.jpg,Left Angle,Manual,-1,-15,0,-1,-11,0
+./data/ac,S243-08-t10_01.jpg,Left Angle,Automatic,-14,-10,0,,,
+./data/ac,S243-09-t10_01.jpg,Frontal,Automatic,-5,-4,0,,,
+./data/ac,S244-01-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/ac,S245-01-t10_01.jpg,Frontal,Manual,0,0,0,0,-4,14
+./data/ac,S246-01-t10_01.jpg,Frontal,Manual,0,10,0,0,6,-6
+./data/ac,S247-01-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ac,S248-01-t10_01.jpg,Left Angle,Automatic,-7,-10,0,,,
+./data/ac,S249-01-t10_01.jpg,Left Angle,Automatic,-2,-5,0,,,
+./data/ac,S249-02-t10_01.jpg,Frontal,Automatic,7,0,0,,,
+./data/ac,S250-01-t10_01.jpg,Left Angle,Automatic,0,-8,0,,,
+./data/ac,S250-02-t10_01.jpg,Frontal,Manual,4,11,0,4,4,0
+./data/ac,S251-01-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ac,S252-01-t10_01.jpg,Frontal,Automatic,5,7,0,,,
+./data/ac,S253-01-t10_01.jpg,Frontal,Automatic,2,4,0,,,
+./data/ac,S253-02-t10_01.jpg,Frontal,Manual,4,10,0,4,-1,0
+./data/ac,S253-03-t10_01.jpg,Frontal,Automatic,6,-1,0,,,
+./data/ac,S253-04-t10_01.jpg,Frontal,Manual,4,6,0,4,2,0
+./data/ac,S254-01-t10_01.jpg,Frontal,Manual,0,-9,0,0,-1,-7
+./data/ac,S254-02-t10_01.jpg,Frontal,Manual,-2,5,0,-2,-1,0
+./data/ac,S254-03-t10_01.jpg,Frontal,Automatic,5,-2,0,,,
+./data/ac,S255-01-t10_01.jpg,Left Angle,Automatic,29,-25,0,,,
+./data/ac,S256-01-t10_01.jpg,Frontal,Automatic,-3,2,0,,,
+./data/ac,S256-02-t10_01.jpg,Frontal,Automatic,-9,3,0,,,
+./data/ac,S257-01-t10_01.jpg,Frontal,Automatic,-1,4,0,,,
+./data/ac,S258-01-t10_01.jpg,Left Angle,Automatic,-1,-14,0,,,
+./data/ac,S258-02-t10_01.jpg,Frontal,Automatic,1,-12,0,,,
+./data/ac,S259-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S259-02-t10_01.jpg,Frontal,Automatic,0,3,0,,,
+./data/ac,S260-01-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/ac,S261-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S261-02-t10_01.jpg,Frontal,Automatic,4,1,0,,,
+./data/ac,S262-01-t10_01.jpg,Frontal,Automatic,11,0,0,,,
+./data/ac,S263-01-t10_01.jpg,Frontal,Manual,4,10,0,4,2,0
+./data/ac,S263-01-t10_02.jpg,Right Profile,Manual,0,0,0,0,90,0
+./data/ac,S264-01-t10_01.jpg,Frontal,Automatic,1,-5,0,,,
+./data/ac,S265-01-t10_01.jpg,Frontal,Manual,-4,4,0,-6,8,0
+./data/ac,S266-01-t10_01.jpg,Frontal,Automatic,-15,1,0,,,
+./data/ac,S267-01-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/ac,S268-01-t10_01.jpg,Frontal,Automatic,-3,2,0,,,
+./data/ac,S269-01-t10_01.jpg,Left Angle,Automatic,-3,-21,0,,,
+./data/ac,S270-01-t10_01.jpg,Frontal,Manual,0,-8,0,0,0,0
+./data/ac,S270-01-t10_02.jpg,Right Profile,Manual,-13,75,0,-5,75,0
+./data/ac,S271-01-t10_01.jpg,Frontal,Manual,2,-2,0,2,-9,8
+./data/ac,S272-01-t10_01.jpg,Frontal,Automatic,5,-14,0,,,
+./data/ac,S272-02-t10_01.jpg,Frontal,Automatic,0,11,0,,,
+./data/ac,S272-02-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ac,S273-01-t10_01.jpg,Right Angle,Automatic,-1,9,0,,,
+./data/ac,S273-02-t10_01.jpg,Right Angle,Manual,-6,5,0,-6,12,0
+./data/ac,S273-03-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/ac,S273-04-t10_01.jpg,Frontal,Automatic,-19,4,0,,,
+./data/ac,S273-05-t10_01.jpg,Frontal,Automatic,-6,0,0,,,
+./data/ac,S274-01-t10_01.jpg,Frontal,Automatic,0,11,0,,,
+./data/ac,S275-01-t10_01.jpg,Frontal,Automatic,0,6,0,,,
+./data/ac,S276-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S277-01-t10_01.jpg,Frontal,Automatic,-5,8,0,,,
+./data/ac,S278-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ac,S279-01-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ac,S280-01-t10_01.jpg,Frontal,Automatic,-2,-4,0,,,
+./data/ac,S280-02-t10_01.jpg,Frontal,Automatic,-2,-11,0,,,
+./data/ac,S280-03-t10_01.jpg,Left Angle,Automatic,-2,-14,0,,,
+./data/ac,S280-04-t10_01.jpg,Left Angle,Automatic,-10,-12,0,,,
+./data/ac,S280-05-t10_01.jpg,Frontal,Automatic,-5,-1,0,,,
+./data/ac,S280-06-t10_01.jpg,Frontal,Automatic,0,6,0,,,
+./data/ac,S280-07-t10_01.jpg,Frontal,Automatic,-2,-10,0,,,
+./data/ac,S280-08-t10_01.jpg,Left Angle,Automatic,8,-16,0,,,
+./data/ac,S280-09-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ac,S280-10-t10_01.jpg,Frontal,Automatic,-10,3,0,,,
+./data/ac,S281-01-t10_01.jpg,Left Angle,Manual,-2,-10,0,-2,-6,0
+./data/ac,S282-01-t10_01.jpg,Frontal,Manual,4,-2,0,4,-2,-12
+./data/ac,S282-02-t10_01.jpg,Frontal,Automatic,-5,-2,0,,,
+./data/ac,S282-03-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S283-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ac,S283-02-t10_01.jpg,Frontal,Automatic,8,-5,0,,,
+./data/ac,S284-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ac,S284-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ac,S284-02-t10_01.jpg,Frontal,Automatic,4,-9,0,,,
+./data/ac,S284-02-t10_02.jpg,Left Profile,Automatic,0,-65,0,,,
+./data/ac,S285-01-t10_01.jpg,Frontal,Manual,-2,-11,0,-2,-3,0
+./data/ac,S285-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ac,S286-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ac,S287-01-t10_01.jpg,Frontal,Automatic,0,11,0,,,
+./data/ac,S288-01-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ac,S288-02-t10_01.jpg,Frontal,Automatic,-8,2,0,,,
+./data/ac,S288-03-t10_01.jpg,Right Angle,Automatic,-7,17,0,,,
+./data/ac,S288-04-t10_01.jpg,Left Angle,Automatic,0,-11,0,,,
+./data/ac,S288-05-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ac,S289-01-t10_01.jpg,Frontal,Automatic,10,0,0,,,
+./data/ac,S290-01-t10_01.jpg,Frontal,Automatic,15,5,0,,,
+./data/ac,S291-01-t10_01.jpg,Frontal,Automatic,1,-6,0,,,
+./data/ac,S291-02-t10_01.jpg,Frontal,Automatic,0,-7,0,,,
+./data/ac,S292-01-t10_01.jpg,Left Angle,Automatic,-6,-15,0,,,
+./data/ac,S293-01-t10_01.jpg,Right Angle,Automatic,7,-3,0,,,
+./data/ac,S294-01-t10_01.jpg,Frontal,Automatic,-18,6,0,,,
+./data/ac,S295-01-t10_01.jpg,Frontal,Automatic,-2,-2,0,,,
+./data/ac,S295-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ac,S296-01-t10_01.jpg,Frontal,Automatic,-2,2,0,,,
+./data/ac,S296-02-t10_01.jpg,Frontal,Automatic,-2,-2,0,,,
+./data/ac,S296-03-t10_01.jpg,Left Angle,Automatic,-5,-10,0,,,
+./data/ac,S296-04-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ac,S296-05-t10_01.jpg,Frontal,Automatic,-2,4,0,,,
+./data/ac,S296-06-t10_01.jpg,Frontal,Automatic,-6,-5,0,,,
+./data/ac,S296-07-t10_01.jpg,Frontal,Automatic,-1,-5,0,,,
+./data/ac,S296-08-t10_01.jpg,Left Angle,Automatic,-2,-12,0,,,
+./data/ac,S296-09-t10_01.jpg,Frontal,Automatic,-6,0,0,,,
+./data/ac,S296-10-t10_01.jpg,Left Angle,Automatic,-4,-11,0,,,
+./data/ac,S297-01-t10_01.jpg,Frontal,Automatic,-1,4,0,,,
+./data/ac,S297-02-t10_01.jpg,Right Angle,Manual,-2,11,0,-2,3,-21
+./data/ac,S298-01-t10_01.jpg,Frontal,Manual,-5,-1,0,-5,-1,13
+./data/ac,S299-01-t10_01.jpg,Left Angle,Manual,-1,-10,0,3,-6,0
+./data/ac,S300-01-t10_01.jpg,Frontal,Automatic,-6,1,0,,,
+./data/ac,S300-02-t10_01.jpg,Frontal,Automatic,-6,0,0,,,
+./data/ac,S301-01-t10_01.jpg,Frontal,Automatic,-10,-6,0,,,
+./data/ac,S302-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ac,S303-01-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ac,S304-01-t10_01.jpg,Frontal,Automatic,-8,-6,0,,,
+./data/ac,S304-02-t10_01.jpg,Frontal,Automatic,4,6,0,,,
+./data/ac,S304-03-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ac,S305-01-t10_01.jpg,Left Angle,Automatic,7,-20,0,,,
+./data/ac,S306-01-t10_01.jpg,Right Angle,Automatic,0,15,0,,,
+./data/ac,S307-01-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ac,S307-01-t10_02.jpg,Right Profile,Automatic,11,72,0,,,
+./data/ac,S308-01-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ac,S309-01-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/ac,S309-02-t10_01.jpg,Frontal,Automatic,1,4,0,,,
+./data/ac,S309-03-t10_01.jpg,Right Angle,Automatic,2,7,0,,,
+./data/ac,S309-04-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ac,S309-05-t10_01.jpg,Frontal,Automatic,4,-4,0,,,
+./data/ac,S310-01-t10_01.jpg,Left Angle,Automatic,10,-24,0,,,
+./data/ac,S310-02-t10_01.jpg,Frontal,Automatic,6,-7,0,,,
+./data/ac,S310-03-t10_01.jpg,Frontal,Automatic,-9,10,0,,,
+./data/ac,S310-04-t10_01.jpg,Left Angle,Automatic,9,-14,0,,,
+./data/ac,S311-01-t10_01.jpg,Frontal,Automatic,-2,-7,0,,,
+./data/ac,S312-01-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ac,S313-01-t10_01.jpg,Left Angle,Automatic,3,-15,0,,,
+./data/ac,S313-02-t10_01.jpg,Left Angle,Automatic,0,-17,0,,,
+./data/ac,S314-01-t10_01.jpg,Frontal,Automatic,-2,-5,0,,,
+./data/ac,S315-01-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ac,S315-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ac,S315-02-t10_01.jpg,Left Angle,Automatic,4,3,0,,,
+./data/ac,S315-02-t10_02.jpg,Right Profile,Automatic,0,74,0,,,
+./data/ac,S316-01-t10_01.jpg,Right Angle,Automatic,2,7,0,,,
+./data/ac,S316-02-t10_01.jpg,Left Angle,Automatic,4,-20,0,,,
+./data/ac,S316-03-t10_01.jpg,Frontal,Automatic,-9,10,0,,,
+./data/ac,S316-04-t10_01.jpg,Frontal,Automatic,-2,-7,0,,,
+./data/ac,S316-05-t10_01.jpg,Frontal,Automatic,1,2,0,,,
+./data/ac,S316-06-t10_01.jpg,Left Angle,Automatic,-1,-2,0,,,
+./data/ad,S316-07-t10_01.jpg,Frontal,Manual,1,9,0,1,3,0
+./data/ad,S316-08-t10_01.jpg,Frontal,Automatic,0,-6,0,,,
+./data/ad,S317-01-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/ad,S318-01-t10_01.jpg,Frontal,Automatic,3,1,0,,,
+./data/ad,S319-01-t10_01.jpg,Frontal,Automatic,6,-3,0,,,
+./data/ad,S320-01-t10_01.jpg,Frontal,Automatic,-4,-6,0,,,
+./data/ad,S321-01-t10_01.jpg,Left Angle,Automatic,9,-11,0,,,
+./data/ad,S321-02-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ad,S321-03-t10_01.jpg,Frontal,Automatic,2,8,0,,,
+./data/ad,S321-03-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ad,S322-01-t10_01.jpg,Frontal,Manual,-1,4,0,-1,0,7
+./data/ad,S323-01-t10_01.jpg,Left Angle,Manual,0,-16,0,0,-8,0
+./data/ad,S324-01-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/ad,S324-02-t10_01.jpg,Frontal,Automatic,3,7,0,,,
+./data/ad,S325-01-t10_01.jpg,Frontal,Manual,2,-10,0,2,-2,0
+./data/ad,S325-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ad,S326-01-t10_01.jpg,Frontal,Automatic,4,-1,0,,,
+./data/ad,S327-01-t10_01.jpg,Frontal,Automatic,-2,2,0,,,
+./data/ad,S328-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ad,S329-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ad,S330-01-t10_01.jpg,Left Angle,Automatic,7,-2,0,,,
+./data/ad,S331-01-t10_01.jpg,Left Angle,Manual,0,-18,0,0,-8,0
+./data/ad,S331-02-t10_01.jpg,Frontal,Manual,0,7,0,0,4,-10
+./data/ad,S332-01-t10_01.jpg,Frontal,Automatic,-11,-2,0,,,
+./data/ad,S333-01-t10_01.jpg,Frontal,Automatic,1,-8,0,,,
+./data/ad,S333-02-t10_01.jpg,Right Angle,Automatic,-2,3,0,,,
+./data/ad,S334-01-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/ad,S335-01-t10_01.jpg,Frontal,Automatic,4,-1,0,,,
+./data/ad,S335-02-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ad,S336-01-t10_01.jpg,Frontal,Automatic,-1,-9,0,,,
+./data/ad,S336-02-t10_01.jpg,Left Angle,Automatic,2,-24,0,,,
+./data/ad,S337-01-t10_01.jpg,Frontal,Automatic,3,7,0,,,
+./data/ad,S338-01-t10_01.jpg,Left Angle,Manual,-1,-13,0,-1,-9,-6
+./data/ad,S339-01-t10_01.jpg,Frontal,Automatic,4,1,0,,,
+./data/ad,S340-01-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/ad,S341-01-t10_01.jpg,Frontal,Automatic,4,-4,0,,,
+./data/ad,S341-02-t10_01.jpg,Frontal,Automatic,2,6,0,,,
+./data/ad,S342-01-t10_01.jpg,Frontal,Automatic,1,-10,0,,,
+./data/ad,S343-01-t10_01.jpg,Left Angle,Automatic,-8,-8,0,,,
+./data/ad,S344-01-t10_01.jpg,Frontal,Automatic,-1,-10,0,,,
+./data/ad,S345-01-t10_01.jpg,Frontal,Automatic,2,1,0,,,
+./data/ad,S346-01-t10_01.jpg,Left Angle,Automatic,7,-11,0,,,
+./data/ad,S346-02-t10_01.jpg,Frontal,Automatic,5,-5,0,,,
+./data/ad,S346-03-t10_01.jpg,Frontal,Automatic,-3,-1,0,,,
+./data/ad,S347-01-t10_01.jpg,Left Angle,Automatic,-3,-16,0,,,
+./data/ad,S348-01-t10_01.jpg,Frontal,Automatic,0,-6,0,,,
+./data/ad,S349-01-t10_01.jpg,Left Angle,Manual,-4,-18,0,-4,-9,-5
+./data/ad,S350-01-t10_01.jpg,Left Angle,Automatic,6,-6,0,,,
+./data/ad,S350-02-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S351-01-t10_01.jpg,Frontal,Automatic,-1,1,0,,,
+./data/ad,S351-02-t10_01.jpg,Left Angle,Automatic,0,-15,0,,,
+./data/ad,S352-01-t10_01.jpg,Right Angle,Manual,2,13,0,2,6,0
+./data/ad,S352-02-t10_01.jpg,Frontal,Automatic,-3,-1,0,,,
+./data/ad,S352-03-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ad,S352-04-t10_01.jpg,Left Angle,Automatic,0,-7,0,,,
+./data/ad,S353-01-t10_01.jpg,Frontal,Automatic,3,-2,0,,,
+./data/ad,S353-02-t10_01.jpg,Frontal,Automatic,3,-9,0,,,
+./data/ad,S353-03-t10_01.jpg,Frontal,Automatic,5,4,0,,,
+./data/ad,S353-04-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/ad,S353-05-t10_01.jpg,Frontal,Manual,3,-10,0,3,-3,0
+./data/ad,S353-06-t10_01.jpg,Frontal,Automatic,-5,-2,0,,,
+./data/ad,S353-07-t10_01.jpg,Frontal,Automatic,7,3,0,,,
+./data/ad,S353-08-t10_01.jpg,Frontal,Automatic,1,8,0,,,
+./data/ad,S354-01-t10_01.jpg,Frontal,Manual,0,10,0,0,7,0
+./data/ad,S354-02-t10_01.jpg,Frontal,Automatic,-1,4,0,,,
+./data/ad,S354-03-t10_01.jpg,Frontal,Manual,1,12,0,1,5,0
+./data/ad,S354-04-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ad,S355-01-t10_01.jpg,Frontal,Automatic,5,-1,0,,,
+./data/ad,S355-02-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ad,S356-01-t10_01.jpg,Frontal,Manual,11,-13,0,11,-7,0
+./data/ad,S357-01-t10_01.jpg,Frontal,Manual,-5,13,0,-5,0,0
+./data/ad,S357-02-t10_01.jpg,Left Angle,Manual,2,0,0,7,-8,0
+./data/ad,S358-01-t10_01.jpg,Frontal,Manual,6,0,0,6,-1,-13
+./data/ad,S359-01-t10_01.jpg,Frontal,Automatic,-1,5,0,,,
+./data/ad,S360-01-t10_01.jpg,Frontal,Automatic,0,-6,0,,,
+./data/ad,S361-01-t10_01.jpg,Frontal,Automatic,-10,-3,0,,,
+./data/ad,S362-01-t10_01.jpg,Frontal,Automatic,18,12,0,,,
+./data/ad,S363-01-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/ad,S364-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S364-02-t10_01.jpg,Frontal,Automatic,-2,-1,0,,,
+./data/ad,S365-01-t10_01.jpg,Frontal,Manual,5,-9,0,7,-5,-6
+./data/ad,S366-01-t10_01.jpg,Frontal,Manual,-6,4,0,-6,-4,-6
+./data/ad,S367-01-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ad,S367-02-t10_01.jpg,Frontal,Manual,0,-12,0,0,-6,0
+./data/ad,S368-01-t10_01.jpg,Frontal,Automatic,11,-6,0,,,
+./data/ad,S369-01-t10_01.jpg,Frontal,Automatic,6,7,0,,,
+./data/ad,S370-01-t10_01.jpg,Frontal,Automatic,-5,4,0,,,
+./data/ad,S371-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ad,S372-01-t10_01.jpg,Right Angle,Automatic,3,8,0,,,
+./data/ad,S373-01-t10_01.jpg,Frontal,Manual,-7,-12,0,-7,-6,-6
+./data/ad,S373-02-t10_01.jpg,Left Angle,Automatic,5,-10,0,,,
+./data/ad,S373-03-t10_01.jpg,Left Angle,Automatic,3,-18,0,,,
+./data/ad,S373-04-t10_01.jpg,Frontal,Manual,1,-13,0,1,-8,0
+./data/ad,S373-05-t10_01.jpg,Frontal,Automatic,4,-6,0,,,
+./data/ad,S373-06-t10_01.jpg,Left Angle,Manual,0,0,0,0,-8,6
+./data/ad,S374-01-t10_01.jpg,Frontal,Automatic,-5,-4,0,,,
+./data/ad,S375-01-t10_01.jpg,Frontal,Manual,2,-14,0,2,-6,0
+./data/ad,S375-02-t10_01.jpg,Frontal,Automatic,1,5,0,,,
+./data/ad,S376-01-t10_01.jpg,Left Angle,Manual,0,-13,0,0,-8,0
+./data/ad,S376-02-t10_01.jpg,Left Angle,Manual,-1,-19,0,-1,-8,-6
+./data/ad,S376-03-t10_01.jpg,Frontal,Manual,-1,-8,0,-1,-6,-8
+./data/ad,S377-01-t10_01.jpg,Right Angle,Manual,-2,10,0,-4,5,6
+./data/ad,S378-01-t10_01.jpg,Frontal,Automatic,-5,7,0,,,
+./data/ad,S379-01-t10_01.jpg,Left Angle,Automatic,0,-17,0,,,
+./data/ad,S380-01-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/ad,S380-02-t10_01.jpg,Frontal,Automatic,-1,7,0,,,
+./data/ad,S380-03-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S380-04-t10_01.jpg,Frontal,Automatic,-4,-8,0,,,
+./data/ad,S380-05-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ad,S380-06-t10_01.jpg,Left Angle,Automatic,-8,-12,0,,,
+./data/ad,S380-07-t10_01.jpg,Left Angle,Automatic,-6,-10,0,,,
+./data/ad,S381-01-t10_01.jpg,Left Angle,Automatic,0,0,0,,,
+./data/ad,S381-02-t10_01.jpg,Left Angle,Manual,-1,-13,0,-1,-7,-6
+./data/ad,S382-01-t10_01.jpg,Frontal,Manual,1,-12,0,1,-6,0
+./data/ad,S382-02-t10_01.jpg,Frontal,Automatic,-2,-5,0,,,
+./data/ad,S382-03-t10_01.jpg,Frontal,Automatic,2,-3,0,,,
+./data/ad,S382-04-t10_01.jpg,Frontal,Manual,-2,-9,0,-2,-1,0
+./data/ad,S382-05-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ad,S382-06-t10_01.jpg,Frontal,Manual,-2,-13,0,-2,-6,-6
+./data/ad,S382-07-t10_01.jpg,Left Angle,Automatic,-4,0,0,,,
+./data/ad,S382-08-t10_01.jpg,Frontal,Automatic,-3,-5,0,,,
+./data/ad,S382-09-t10_01.jpg,Frontal,Automatic,-3,1,0,,,
+./data/ad,S382-10-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ad,S383-01-t10_01.jpg,Frontal,Automatic,5,-1,0,,,
+./data/ad,S383-02-t10_01.jpg,Left Angle,Automatic,10,-9,0,,,
+./data/ad,S384-01-t10_01.jpg,Frontal,Automatic,-8,9,0,,,
+./data/ad,S384-02-t10_01.jpg,Frontal,Automatic,-4,10,0,,,
+./data/ad,S385-01-t10_01.jpg,Right Angle,Automatic,-10,14,0,,,
+./data/ad,S385-02-t10_01.jpg,Frontal,Automatic,5,3,0,,,
+./data/ad,S386-01-t10_01.jpg,Frontal,Automatic,5,-5,0,,,
+./data/ad,S386-02-t10_01.jpg,Frontal,Automatic,1,-4,0,,,
+./data/ad,S386-03-t10_01.jpg,Frontal,Manual,1,6,0,1,6,3
+./data/ad,S386-04-t10_01.jpg,Frontal,Automatic,5,-8,0,,,
+./data/ad,S386-05-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ad,S386-06-t10_01.jpg,Left Angle,Automatic,5,-7,0,,,
+./data/ad,S386-07-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S386-08-t10_01.jpg,Frontal,Automatic,2,1,0,,,
+./data/ad,S387-01-t10_01.jpg,Left Angle,Manual,2,-17,0,4,-9,-2
+./data/ad,S387-02-t10_01.jpg,Left Angle,Automatic,-2,4,0,,,
+./data/ad,S387-03-t10_01.jpg,Frontal,Automatic,-3,5,0,,,
+./data/ad,S388-01-t10_01.jpg,Right Angle,Manual,-3,13,0,-3,6,0
+./data/ad,S388-02-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ad,S388-03-t10_01.jpg,Left Angle,Manual,1,0,0,5,-8,-6
+./data/ad,S388-04-t10_01.jpg,Frontal,Automatic,5,-10,0,,,
+./data/ad,S388-05-t10_01.jpg,Right Angle,Manual,3,11,0,3,2,0
+./data/ad,S388-06-t10_01.jpg,Frontal,Automatic,2,-6,0,,,
+./data/ad,S388-07-t10_01.jpg,Frontal,Automatic,2,-4,0,,,
+./data/ad,S388-08-t10_01.jpg,Left Angle,Automatic,14,-11,0,,,
+./data/ad,S388-09-t10_01.jpg,Frontal,Manual,0,8,0,0,4,-11
+./data/ad,S388-10-t10_01.jpg,Frontal,Manual,0,6,0,0,1,0
+./data/ad,S388-11-t10_01.jpg,Right Angle,Manual,5,-2,0,5,-2,-23
+./data/ad,S388-12-t10_01.jpg,Right Angle,Automatic,2,13,0,,,
+./data/ad,S388-13-t10_01.jpg,Frontal,Automatic,-2,5,0,,,
+./data/ad,S388-14-t10_01.jpg,Frontal,Automatic,1,4,0,,,
+./data/ad,S388-15-t10_01.jpg,Frontal,Automatic,-1,5,0,,,
+./data/ad,S388-16-t10_01.jpg,Right Angle,Manual,-1,11,0,-10,8,-6
+./data/ad,S388-17-t10_01.jpg,Right Angle,Automatic,0,7,0,,,
+./data/ad,S388-18-t10_01.jpg,Right Angle,Automatic,-11,12,0,,,
+./data/ad,S389-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S389-02-t10_01.jpg,Frontal,Automatic,-5,-5,0,,,
+./data/ad,S390-01-t10_01.jpg,Frontal,Automatic,-2,-14,0,,,
+./data/ad,S390-02-t10_01.jpg,Frontal,Automatic,-3,-4,0,,,
+./data/ad,S391-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ad,S391-02-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ad,S391-03-t10_01.jpg,Right Angle,Automatic,0,6,0,,,
+./data/ad,S392-01-t10_01.jpg,Right Angle,Automatic,1,4,0,,,
+./data/ad,S392-02-t10_01.jpg,Frontal,Automatic,8,-2,0,,,
+./data/ad,S392-03-t10_01.jpg,Left Angle,Automatic,0,-10,0,,,
+./data/ad,S392-04-t10_01.jpg,Right Angle,Automatic,3,0,0,,,
+./data/ad,S392-05-t10_01.jpg,Right Angle,Automatic,3,15,0,,,
+./data/ad,S392-06-t10_01.jpg,Right Angle,Automatic,4,16,0,,,
+./data/ad,S392-07-t10_01.jpg,Frontal,Automatic,7,-3,0,,,
+./data/ad,S392-08-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ad,S393-01-t10_01.jpg,Right Angle,Automatic,-5,6,0,,,
+./data/ad,S393-02-t10_01.jpg,Left Angle,Manual,-1,-3,0,-2,-3,-16
+./data/ad,S393-03-t10_01.jpg,Left Angle,Manual,-7,-2,0,-7,-2,-13
+./data/ad,S393-04-t10_01.jpg,Left Angle,Manual,-6,-19,0,-6,-10,0
+./data/ad,S394-01-t10_01.jpg,Frontal,Automatic,-4,4,0,,,
+./data/ad,S394-02-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ad,S394-03-t10_01.jpg,Frontal,Manual,-3,-9,0,-3,-3,0
+./data/ad,S394-04-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/ad,S394-05-t10_01.jpg,Frontal,Manual,-1,10,0,-1,6,0
+./data/ad,S395-01-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/ad,S395-02-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ad,S396-01-t10_01.jpg,Frontal,Automatic,1,1,0,,,
+./data/ad,S396-02-t10_01.jpg,Right Angle,Automatic,1,7,0,,,
+./data/ad,S396-03-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/ad,S396-04-t10_01.jpg,Frontal,Automatic,-6,-6,0,,,
+./data/ad,S396-05-t10_01.jpg,Frontal,Automatic,1,2,0,,,
+./data/ad,S396-06-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ad,S396-07-t10_01.jpg,Frontal,Automatic,6,3,0,,,
+./data/ad,S396-08-t10_01.jpg,Right Angle,Automatic,-1,4,0,,,
+./data/ad,S396-09-t10_01.jpg,Frontal,Automatic,8,0,0,,,
+./data/ad,S396-10-t10_01.jpg,Frontal,Automatic,5,3,0,,,
+./data/ad,S396-11-t10_01.jpg,Right Angle,Automatic,2,13,0,,,
+./data/ad,S397-01-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ae,S397-02-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ae,S397-02-t10_02.jpg,Right Profile,Manual,23,69,0,0,69,-14
+./data/ae,S397-03-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ae,S397-03-t10_02.jpg,Right Profile,Automatic,15,70,0,,,
+./data/ae,S398-01-t10_01.jpg,Right Angle,Automatic,3,8,0,,,
+./data/ae,S398-02-t10_01.jpg,Frontal,Automatic,-5,4,0,,,
+./data/ae,S398-03-t10_01.jpg,Right Angle,Automatic,5,9,0,,,
+./data/ae,S399-01-t10_01.jpg,Frontal,Manual,-6,13,0,-6,-6,-15
+./data/ae,S399-02-t10_01.jpg,Left Angle,Manual,5,-13,0,5,-9,0
+./data/ae,S399-03-t10_01.jpg,Frontal,Manual,6,-11,0,10,-6,0
+./data/ae,S399-04-t10_01.jpg,Right Angle,Automatic,-4,11,0,,,
+./data/ae,S399-05-t10_01.jpg,Frontal,Automatic,-13,4,0,,,
+./data/ae,S399-06-t10_01.jpg,Frontal,Automatic,-13,5,0,,,
+./data/af,S400-01-t10_01.jpg,Frontal,Automatic,3,-3,0,,,
+./data/af,S400-02-t10_01.jpg,Right Angle,Automatic,1,5,0,,,
+./data/af,S400-03-t10_01.jpg,Frontal,Manual,1,0,0,1,0,10
+./data/af,S401-01-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/af,S401-02-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/af,S401-03-t10_01.jpg,Left Angle,Automatic,7,-11,0,,,
+./data/af,S401-04-t10_01.jpg,Frontal,Automatic,-2,-3,0,,,
+./data/af,S401-05-t10_01.jpg,Frontal,Automatic,2,4,0,,,
+./data/af,S401-06-t10_01.jpg,Frontal,Automatic,1,5,0,,,
+./data/af,S401-07-t10_01.jpg,Frontal,Automatic,-1,-8,0,,,
+./data/af,S401-08-t10_01.jpg,Frontal,Automatic,2,-4,0,,,
+./data/af,S401-09-t10_01.jpg,Frontal,Automatic,1,-4,0,,,
+./data/ae,S402-01-t10_01.jpg,Frontal,Manual,1,-7,0,1,-1,0
+./data/ae,S402-02-t10_01.jpg,Frontal,Automatic,-4,9,0,,,
+./data/ae,S403-01-t10_01.jpg,Frontal,Manual,0,13,0,0,6,-16
+./data/af,S403-02-t10_01.jpg,Frontal,Automatic,-9,3,0,,,
+./data/ae,S403-03-t10_01.jpg,Frontal,Automatic,8,7,0,,,
+./data/ae,S403-04-t10_01.jpg,Frontal,Automatic,3,4,0,,,
+./data/ae,S404-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ae,S404-02-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ae,S404-03-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/ae,S404-04-t10_01.jpg,Left Angle,Automatic,0,-6,0,,,
+./data/ae,S404-05-t10_01.jpg,Frontal,Automatic,-5,-7,0,,,
+./data/ae,S404-06-t10_01.jpg,Frontal,Automatic,-1,-3,0,,,
+./data/ae,S404-07-t10_01.jpg,Frontal,Automatic,-1,-1,0,,,
+./data/ae,S404-08-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ae,S404-09-t10_01.jpg,Frontal,Automatic,1,6,0,,,
+./data/ae,S404-10-t10_01.jpg,Right Angle,Automatic,-4,0,0,,,
+./data/ae,S404-11-t10_01.jpg,Frontal,Automatic,-4,-1,0,,,
+./data/ae,S404-12-t10_01.jpg,Frontal,Automatic,-2,-7,0,,,
+./data/ae,S404-13-t10_01.jpg,Frontal,Manual,-2,-9,0,-2,-5,0
+./data/af,S405-01-t10_01.jpg,Left Angle,Manual,-3,-14,0,-3,-10,0
+./data/af,S405-02-t10_01.jpg,Frontal,Automatic,-1,2,0,,,
+./data/af,S405-03-t10_01.jpg,Frontal,Manual,-2,-5,0,-2,-5,6
+./data/af,S405-04-t10_01.jpg,Frontal,Manual,-1,0,0,-1,0,5
+./data/af,S405-05-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S405-06-t10_01.jpg,Frontal,Automatic,3,-6,0,,,
+./data/af,S405-07-t10_01.jpg,Frontal,Automatic,-1,3,0,,,
+./data/af,S406-01-t10_01.jpg,Frontal,Automatic,4,3,0,,,
+./data/af,S406-02-t10_01.jpg,Frontal,Automatic,-1,-4,0,,,
+./data/ae,S407-01-t10_01.jpg,Frontal,Automatic,0,-1,0,,,
+./data/ae,S407-02-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ae,S407-03-t10_01.jpg,Frontal,Automatic,3,-6,0,,,
+./data/ae,S407-03-t10_02.jpg,Right Profile,Automatic,-2,67,0,,,
+./data/ae,S407-03-t10_03.jpg,Left Profile,Automatic,0,-66,0,,,
+./data/af,S408-01-t10_01.jpg,Frontal,Manual,-9,-19,0,-9,-5,0
+./data/af,S408-02-t10_01.jpg,Frontal,Automatic,-6,-3,0,,,
+./data/ae,S409-01-t10_01.jpg,Frontal,Automatic,3,-4,0,,,
+./data/ae,S409-02-t10_01.jpg,Left Angle,Automatic,-4,-10,0,,,
+./data/ae,S409-03-t10_01.jpg,Frontal,Automatic,4,-7,0,,,
+./data/ae,S409-04-t10_01.jpg,Right Angle,Automatic,-9,5,0,,,
+./data/ae,S409-05-t10_01.jpg,Right Angle,Manual,7,15,0,7,9,0
+./data/ae,S409-06-t10_01.jpg,Frontal,Automatic,-10,0,0,,,
+./data/ae,S409-07-t10_01.jpg,Right Angle,Manual,2,11,0,2,6,0
+./data/ae,S409-08-t10_01.jpg,Right Angle,Automatic,7,9,0,,,
+./data/ae,S409-09-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ae,S409-10-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/ae,S409-11-t10_01.jpg,Left Angle,Manual,3,-12,0,6,-4,-9
+./data/ae,S410-01-t10_01.jpg,Frontal,Automatic,0,-7,0,,,
+./data/af,S411-01-t10_01.jpg,Frontal,Automatic,-1,-3,0,,,
+./data/af,S411-02-t10_01.jpg,Frontal,Automatic,-14,6,0,,,
+./data/af,S411-03-t10_01.jpg,Left Angle,Automatic,-2,-10,0,,,
+./data/af,S411-04-t10_01.jpg,Frontal,Automatic,-9,-7,0,,,
+./data/af,S411-05-t10_01.jpg,Frontal,Automatic,4,-4,0,,,
+./data/af,S411-06-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/af,S411-06-t10_02.jpg,Right Profile,Automatic,6,73,0,,,
+./data/af,S411-06-t10_03.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ae,S412-01-t10_01.jpg,Left Angle,Automatic,8,-12,0,,,
+./data/ae,S412-02-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/ae,S412-03-t10_01.jpg,Right Angle,Automatic,-9,14,0,,,
+./data/ae,S413-01-t10_01.jpg,Right Angle,Manual,-9,13,0,-9,4,-6
+./data/ad,S413-02-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/ae,S413-03-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ae,S413-04-t10_01.jpg,Frontal,Automatic,1,7,0,,,
+./data/ae,S413-05-t10_01.jpg,Right Angle,Manual,1,13,0,1,6,0
+./data/ae,S413-06-t10_01.jpg,Frontal,Automatic,-12,2,0,,,
+./data/ae,S413-07-t10_01.jpg,Right Angle,Automatic,-6,0,0,,,
+./data/ae,S413-08-t10_01.jpg,Right Angle,Automatic,-4,12,0,,,
+./data/ae,S413-09-t10_01.jpg,Frontal,Automatic,5,-6,0,,,
+./data/ae,S413-10-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ae,S414-01-t10_01.jpg,Right Angle,Automatic,1,3,0,,,
+./data/ae,S414-02-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/ae,S414-03-t10_01.jpg,Frontal,Automatic,-2,6,0,,,
+./data/ae,S414-04-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ae,S414-05-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ae,S414-06-t10_01.jpg,Frontal,Automatic,2,6,0,,,
+./data/ae,S414-07-t10_01.jpg,Frontal,Automatic,4,-3,0,,,
+./data/ae,S414-08-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ae,S414-09-t10_01.jpg,Frontal,Automatic,1,1,0,,,
+./data/ae,S414-10-t10_01.jpg,Frontal,Automatic,3,-5,0,,,
+./data/ae,S414-11-t10_01.jpg,Frontal,Automatic,7,-4,0,,,
+./data/af,S415-01-t10_01.jpg,Right Angle,Automatic,6,2,0,,,
+./data/af,S415-02-t10_01.jpg,Right Angle,Automatic,0,-1,0,,,
+./data/af,S415-03-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/af,S415-04-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/af,S415-05-t10_01.jpg,Right Angle,Automatic,6,8,0,,,
+./data/af,S415-06-t10_01.jpg,Frontal,Automatic,-1,-4,0,,,
+./data/af,S415-07-t10_01.jpg,Right Angle,Automatic,4,0,0,,,
+./data/ae,S416-01-t10_01.jpg,Left Angle,Automatic,-5,-8,0,,,
+./data/ae,S416-02-t10_01.jpg,Frontal,Automatic,3,5,0,,,
+./data/af,S417-01-t10_01.jpg,Left Angle,Automatic,5,-8,0,,,
+./data/af,S417-02-t10_01.jpg,Right Angle,Automatic,4,8,0,,,
+./data/af,S417-03-t10_01.jpg,Right Angle,Automatic,1,9,0,,,
+./data/af,S417-04-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/ae,S417-05-t10_01.jpg,Left Angle,Manual,1,-13,0,1,-9,6
+./data/af,S417-06-t10_01.jpg,Frontal,Automatic,5,-2,0,,,
+./data/af,S417-07-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/af,S417-08-t10_01.jpg,Frontal,Automatic,2,8,0,,,
+./data/af,S418-01-t10_01.jpg,Left Angle,Manual,5,-14,0,8,-5,0
+./data/ae,S418-02-t10_01.jpg,Frontal,Automatic,1,2,0,,,
+./data/af,S418-03-t10_01.jpg,Frontal,Manual,0,2,0,0,5,0
+./data/af,S419-01-t10_01.jpg,Frontal,Automatic,-1,-4,0,,,
+./data/af,S419-02-t10_01.jpg,Left Angle,Automatic,0,-16,0,,,
+./data/ae,S419-03-t10_01.jpg,Left Angle,Automatic,0,-5,0,,,
+./data/af,S419-04-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S419-05-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S419-06-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/af,S419-07-t10_01.jpg,Right Angle,Manual,2,16,0,2,9,0
+./data/af,S419-08-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/af,S419-09-t10_01.jpg,Right Angle,Manual,5,10,0,5,6,0
+./data/af,S419-10-t10_01.jpg,Frontal,Automatic,-1,1,0,,,
+./data/af,S420-01-t10_01.jpg,Left Angle,Automatic,-9,-8,0,,,
+./data/af,S420-02-t10_01.jpg,Right Angle,Automatic,-5,0,0,,,
+./data/af,S420-03-t10_01.jpg,Left Angle,Automatic,1,-13,0,,,
+./data/af,S420-04-t10_01.jpg,Frontal,Automatic,4,-1,0,,,
+./data/af,S420-05-t10_01.jpg,Frontal,Manual,4,5,0,4,5,-10
+./data/af,S420-06-t10_01.jpg,Right Angle,Manual,8,1,0,8,5,-11
+./data/ae,S421-01-t10_01.jpg,Frontal,Automatic,0,7,0,,,
+./data/ae,S421-02-t10_01.jpg,Frontal,Manual,10,-11,0,16,-2,-13
+./data/ae,S422-01-t10_01.jpg,Frontal,Automatic,-9,-1,0,,,
+./data/ae,S422-02-t10_01.jpg,Left Angle,Manual,6,-1,0,6,-16,5
+./data/ae,S422-03-t10_01.jpg,Right Angle,Manual,-1,16,0,-1,16,-13
+./data/ae,S422-04-t10_01.jpg,Left Angle,Manual,7,-13,0,7,-13,5
+./data/af,S423-01-t10_01.jpg,Left Angle,Automatic,2,-12,0,,,
+./data/af,S423-02-t10_01.jpg,Left Angle,Automatic,5,-13,0,,,
+./data/af,S423-03-t10_01.jpg,Left Angle,Automatic,15,-12,0,,,
+./data/af,S423-04-t10_01.jpg,Frontal,Automatic,-1,-7,0,,,
+./data/af,S424-01-t10_01.jpg,Frontal,Manual,-1,7,0,-1,2,0
+./data/af,S425-01-t10_01.jpg,Left Angle,Manual,4,-11,0,8,-7,-14
+./data/af,S425-02-t10_01.jpg,Left Angle,Manual,-2,-12,0,-2,-7,0
+./data/af,S425-03-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/af,S425-04-t10_01.jpg,Frontal,Automatic,4,-3,0,,,
+./data/af,S425-05-t10_01.jpg,Frontal,Automatic,0,5,0,,,
+./data/af,S425-06-t10_01.jpg,Frontal,Automatic,3,-4,0,,,
+./data/af,S425-07-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/af,S425-08-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ae,S426-01-t10_01.jpg,Frontal,Manual,1,-12,0,1,-5,0
+./data/ae,S426-01-t10_02.jpg,Right Profile,Automatic,0,74,0,,,
+./data/ae,S426-02-t10_01.jpg,Right Angle,Automatic,1,4,0,,,
+./data/ae,S426-02-t10_02.jpg,Right Profile,Manual,31,66,0,0,66,-13
+./data/af,S427-01-t10_01.jpg,Frontal,Automatic,-2,-8,0,,,
+./data/af,S427-02-t10_01.jpg,Frontal,Manual,4,0,0,4,0,-13
+./data/af,S427-03-t10_01.jpg,Frontal,Automatic,-3,-1,0,,,
+./data/af,S427-04-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/af,S428-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/af,S428-02-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/af,S428-03-t10_01.jpg,Left Angle,Automatic,7,-12,0,,,
+./data/af,S428-04-t10_01.jpg,Frontal,Automatic,10,6,0,,,
+./data/af,S428-05-t10_01.jpg,Frontal,Automatic,-4,1,0,,,
+./data/af,S428-06-t10_01.jpg,Frontal,Automatic,3,3,0,,,
+./data/af,S428-07-t10_01.jpg,Frontal,Manual,4,6,0,4,3,0
+./data/ae,S429-01-t10_01.jpg,Frontal,Automatic,8,0,0,,,
+./data/ae,S429-02-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/ae,S429-03-t10_01.jpg,Frontal,Manual,0,13,0,0,0,-7
+./data/ae,S429-04-t10_01.jpg,Frontal,Automatic,3,3,0,,,
+./data/ae,S429-05-t10_01.jpg,Right Angle,Automatic,7,8,0,,,
+./data/ae,S429-06-t10_01.jpg,Frontal,Manual,3,7,0,3,4,-10
+./data/ae,S429-07-t10_01.jpg,Frontal,Automatic,5,3,0,,,
+./data/ae,S429-08-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ae,S429-09-t10_01.jpg,Frontal,Automatic,-1,6,0,,,
+./data/ae,S429-10-t10_01.jpg,Frontal,Automatic,3,5,0,,,
+./data/ae,S430-01-t10_01.jpg,Frontal,Automatic,1,2,0,,,
+./data/ae,S430-02-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ae,S430-03-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ae,S430-04-t10_01.jpg,Frontal,Automatic,-5,-11,0,,,
+./data/ae,S430-05-t10_01.jpg,Frontal,Automatic,3,-4,0,,,
+./data/ae,S430-06-t10_01.jpg,Frontal,Automatic,1,3,0,,,
+./data/af,S431-01-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/af,S431-02-t10_01.jpg,Frontal,Automatic,-3,6,0,,,
+./data/af,S431-03-t10_01.jpg,Right Angle,Automatic,4,1,0,,,
+./data/af,S432-02-t10_01.jpg,Right Angle,Automatic,0,15,0,,,
+./data/af,S432-01-t10_01.jpg,Frontal,Automatic,4,5,0,,,
+./data/af,S432-02-t10_02.jpg,Right Profile,Automatic,14,71,0,,,
+./data/ae,S433-01-t10_01.jpg,Left Angle,Automatic,2,-1,0,,,
+./data/ae,S433-02-t10_01.jpg,Frontal,Automatic,2,-5,0,,,
+./data/ae,S433-03-t10_01.jpg,Left Angle,Automatic,1,-5,0,,,
+./data/ae,S433-04-t10_01.jpg,Frontal,Automatic,4,1,0,,,
+./data/ae,S433-05-t10_01.jpg,Left Angle,Automatic,7,6,0,,,
+./data/ae,S434-01-t10_01.jpg,Frontal,Automatic,11,7,0,,,
+./data/ae,S434-02-t10_01.jpg,Right Angle,Automatic,5,15,0,,,
+./data/ae,S435-01-t10_01.jpg,Frontal,Automatic,3,1,0,,,
+./data/ae,S435-02-t10_01.jpg,Frontal,Automatic,10,-2,0,,,
+./data/ae,S435-03-t10_01.jpg,Frontal,Automatic,5,-4,0,,,
+./data/ae,S436-01-t10_01.jpg,Frontal,Automatic,-1,-2,0,,,
+./data/ae,S436-02-t10_01.jpg,Left Angle,Automatic,3,-14,0,,,
+./data/ae,S436-02-t10_02.jpg,Right Profile,Manual,17,70,0,6,70,3
+./data/af,S437-01-t10_01.jpg,Left Angle,Automatic,-9,-10,0,,,
+./data/ae,S438-01-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/af,S439-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S439-02-t10_01.jpg,Right Angle,Automatic,-9,1,0,,,
+./data/af,S439-03-t10_01.jpg,Frontal,Automatic,-2,-5,0,,,
+./data/af,S439-04-t10_01.jpg,Right Angle,Automatic,-5,6,0,,,
+./data/af,S439-05-t10_01.jpg,Right Angle,Automatic,-6,5,0,,,
+./data/ae,S439-06-t10_01.jpg,Right Angle,Manual,-12,12,0,-12,12,-7
+./data/ae,S439-07-t10_01.jpg,Right Angle,Automatic,-2,16,0,,,
+./data/af,S439-08-t10_01.jpg,Frontal,Automatic,-1,5,0,,,
+./data/af,S439-08-t10_02.jpg,Right Profile,Automatic,15,71,0,,,
+./data/af,S439-08-t10_03.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/af,S440-01-t10_01.jpg,Frontal,Automatic,8,-12,0,,,
+./data/af,S440-02-t10_01.jpg,Frontal,Automatic,2,-5,0,,,
+./data/af,S440-03-t10_01.jpg,Frontal,Automatic,-1,5,0,,,
+./data/af,S440-04-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/af,S440-05-t10_01.jpg,Right Angle,Automatic,-4,5,0,,,
+./data/af,S441-01-t10_01.jpg,Left Angle,Automatic,0,-12,0,,,
+./data/af,S442-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S442-02-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S443-01-t10_01.jpg,Frontal,Automatic,-8,-5,0,,,
+./data/af,S443-02-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/af,S443-03-t10_01.jpg,Frontal,Manual,0,-8,0,0,0,0
+./data/af,S443-04-t10_01.jpg,Frontal,Automatic,-11,-9,0,,,
+./data/af,S443-05-t10_01.jpg,Frontal,Manual,0,-10,0,0,-1,0
+./data/af,S443-06-t10_01.jpg,Frontal,Manual,-1,-10,0,-1,1,8
+./data/ae,S444-01-t10_01.jpg,Left Angle,Automatic,1,-9,0,,,
+./data/ae,S445-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ae,S445-02-t10_01.jpg,Frontal,Automatic,-15,11,0,,,
+./data/af,S446-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S446-02-t10_01.jpg,Right Angle,Manual,0,0,0,12,13,0
+./data/ae,S447-01-t10_01.jpg,Right Angle,Manual,5,10,0,5,5,0
+./data/ae,S447-02-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ae,S447-03-t10_01.jpg,Right Angle,Automatic,3,8,0,,,
+./data/ae,S447-04-t10_01.jpg,Frontal,Manual,-1,-14,0,-1,-7,0
+./data/ae,S447-05-t10_01.jpg,Frontal,Manual,2,15,0,2,4,0
+./data/ae,S448-01-t10_01.jpg,Frontal,Automatic,7,5,0,,,
+./data/ae,S448-02-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/af,S449-01-t10_01.jpg,Frontal,Manual,0,0,0,0,0,-12
+./data/af,S449-02-t10_01.jpg,Right Angle,Automatic,-2,7,0,,,
+./data/af,S449-03-t10_01.jpg,Right Angle,Automatic,-10,1,0,,,
+./data/ae,S449-03-t10_02.jpg,Right Profile,Manual,0,75,0,0,75,-11
+./data/af,S449-03-t10_03.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ae,S449-04-t10_01.jpg,Right Angle,Automatic,1,0,0,,,
+./data/af,S449-05-t10_01.jpg,Left Angle,Automatic,-2,0,0,,,
+./data/ae,S449-05-t10_02.jpg,Left Profile,Automatic,14,-81,0,,,
+./data/af,S449-06-t10_01.jpg,Frontal,Automatic,-6,6,0,,,
+./data/af,S450-01-t10_01.jpg,Frontal,Automatic,3,-1,0,,,
+./data/af,S450-02-t10_01.jpg,Frontal,Manual,-3,8,0,-3,3,0
+./data/af,S450-03-t10_01.jpg,Left Angle,Manual,3,-13,0,5,-7,-7
+./data/af,S450-04-t10_01.jpg,Frontal,Manual,0,-8,0,0,0,0
+./data/af,S450-05-t10_01.jpg,Right Angle,Automatic,4,-1,0,,,
+./data/af,S450-06-t10_01.jpg,Frontal,Automatic,2,6,0,,,
+./data/af,S450-07-t10_01.jpg,Left Angle,Automatic,0,-13,0,,,
+./data/af,S450-08-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/af,S450-09-t10_01.jpg,Right Angle,Automatic,0,4,0,,,
+./data/af,S450-10-t10_01.jpg,Frontal,Automatic,-3,4,0,,,
+./data/af,S450-11-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/af,S451-01-t10_01.jpg,Right Angle,Manual,-3,12,0,-3,6,0
+./data/af,S451-02-t10_01.jpg,Left Angle,Automatic,3,-7,0,,,
+./data/af,S452-01-t10_01.jpg,Frontal,Automatic,2,-4,0,,,
+./data/af,S452-02-t10_01.jpg,Right Angle,Automatic,1,8,0,,,
+./data/af,S452-02-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/af,S452-02-t10_03.jpg,Right Profile,Automatic,0,74,0,,,
+./data/af,S452-03-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/af,S452-03-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/af,S452-03-t10_03.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ae,S453-01-t10_01.jpg,Frontal,Automatic,-4,5,0,,,
+./data/ae,S453-02-t10_01.jpg,Right Angle,Automatic,-1,11,0,,,
+./data/ae,S453-03-t10_01.jpg,Frontal,Automatic,3,-7,0,,,
+./data/ae,S453-04-t10_01.jpg,Right Angle,Automatic,3,2,0,,,
+./data/ae,S453-05-t10_01.jpg,Frontal,Automatic,-7,4,0,,,
+./data/ae,S453-06-t10_01.jpg,Right Angle,Automatic,-1,4,0,,,
+./data/ae,S453-07-t10_01.jpg,Right Angle,Automatic,0,9,0,,,
+./data/ad,S453-08-t10_01.jpg,Frontal,Automatic,0,-8,0,,,
+./data/ae,S453-09-t10_01.jpg,Frontal,Automatic,0,8,0,,,
+./data/ae,S453-10-t10_01.jpg,Frontal,Automatic,-6,6,0,,,
+./data/ae,S453-11-t10_01.jpg,Frontal,Automatic,-3,4,0,,,
+./data/ae,S453-11-t10_02.jpg,Right Profile,Manual,0,0,0,0,90,-13
+./data/ae,S453-11-t10_03.jpg,Left Profile,Manual,0,0,0,0,-90,-11
+./data/ae,S453-12-t10_01.jpg,Frontal,Automatic,10,1,0,,,
+./data/ae,S453-13-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ae,S453-14-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/ae,S453-15-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ae,S453-16-t10_01.jpg,Frontal,Automatic,1,6,0,,,
+./data/ae,S454-01-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/ae,S454-02-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ae,S455-01-t10_01.jpg,Left Angle,Automatic,2,-8,0,,,
+./data/ae,S455-01-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ae,S456-01-t10_01.jpg,Right Angle,Automatic,5,13,0,,,
+./data/ae,S456-02-t10_01.jpg,Frontal,Automatic,-1,6,0,,,
+./data/ae,S457-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ae,S457-02-t10_01.jpg,Frontal,Automatic,-2,0,0,,,
+./data/ae,S457-03-t10_01.jpg,Right Angle,Automatic,-1,2,0,,,
+./data/ae,S457-04-t10_01.jpg,Frontal,Manual,1,11,0,1,8,0
+./data/ae,S457-05-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ae,S458-01-t10_01.jpg,Frontal,Manual,0,-16,0,0,-2,0
+./data/ae,S459-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ae,S460-01-t10_01.jpg,Frontal,Automatic,6,4,0,,,
+./data/ae,S460-02-t10_01.jpg,Frontal,Automatic,5,7,0,,,
+./data/ae,S461-01-t10_01.jpg,Left Angle,Automatic,-9,3,0,,,
+./data/ae,S461-02-t10_01.jpg,Right Angle,Automatic,4,2,0,,,
+./data/ae,S461-03-t10_01.jpg,Frontal,Automatic,-8,0,0,,,
+./data/ae,S461-04-t10_01.jpg,Frontal,Automatic,-6,3,0,,,
+./data/ae,S461-05-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ae,S461-06-t10_01.jpg,Left Angle,Automatic,-7,5,0,,,
+./data/ae,S461-07-t10_01.jpg,Frontal,Automatic,-6,-7,0,,,
+./data/ae,S461-08-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/ae,S461-09-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ae,S461-10-t10_01.jpg,Frontal,Automatic,-5,1,0,,,
+./data/ae,S461-11-t10_01.jpg,Frontal,Automatic,0,-5,0,,,
+./data/af,S462-01-t10_01.jpg,Right Angle,Automatic,0,0,0,,,
+./data/ae,S463-01-t10_01.jpg,Frontal,Automatic,9,0,0,,,
+./data/af,S463-01-t10_02.jpg,Right Profile,Automatic,11,72,0,,,
+./data/af,S463-02-t10_01.jpg,Right Angle,Automatic,-3,11,0,,,
+./data/ae,S463-02-t10_02.jpg,Right Profile,Automatic,-7,65,0,,,
+./data/ae,S464-01-t10_01.jpg,Frontal,Automatic,-8,-1,0,,,
+./data/ae,S464-01-t10_02.jpg,Right Profile,Automatic,14,48,0,,,
+./data/ae,S464-02-t10_01.jpg,Frontal,Automatic,3,-4,0,,,
+./data/af,S465-01-t10_01.jpg,Frontal,Manual,1,2,0,1,2,-11
+./data/af,S465-02-t10_01.jpg,Frontal,Automatic,-10,0,0,,,
+./data/af,S465-02-t10_02.jpg,Right Profile,Automatic,3,67,0,,,
+./data/af,S466-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/af,S466-02-t10_01.jpg,Frontal,Manual,-3,5,0,-3,2,0
+./data/af,S466-03-t10_01.jpg,Left Angle,Manual,7,-10,0,7,-5,0
+./data/af,S466-04-t10_01.jpg,Right Angle,Manual,2,13,0,2,7,0
+./data/af,S466-05-t10_01.jpg,Frontal,Automatic,14,-1,0,,,
+./data/af,S466-06-t10_01.jpg,Frontal,Automatic,1,-5,0,,,
+./data/af,S467-01-t10_01.jpg,Left Angle,Automatic,-8,-9,0,,,
+./data/af,S467-02-t10_01.jpg,Left Angle,Manual,1,-21,0,1,-21,11
+./data/af,S467-03-t10_01.jpg,Frontal,Automatic,-6,-3,0,,,
+./data/ae,S468-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ae,S468-01-t10_02.jpg,Right Profile,Automatic,0,74,0,,,
+./data/ae,S468-02-t10_01.jpg,Frontal,Automatic,1,-3,0,,,
+./data/ae,S468-02-t10_02.jpg,Right Profile,Automatic,0,74,0,,,
+./data/af,S469-01-t10_01.jpg,Frontal,Automatic,-2,-10,0,,,
+./data/af,S469-02-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/ae,S469-03-t10_01.jpg,Left Angle,Automatic,0,-16,0,,,
+./data/af,S469-04-t10_01.jpg,Frontal,Automatic,-4,-5,0,,,
+./data/ae,S469-05-t10_01.jpg,Frontal,Automatic,4,-3,0,,,
+./data/ae,S470-01-t10_01.jpg,Left Angle,Automatic,7,-12,0,,,
+./data/ae,S470-02-t10_01.jpg,Left Angle,Automatic,-5,-8,0,,,
+./data/ae,S470-02-t10_02.jpg,Right Profile,Automatic,-8,36,0,,,
+./data/af,S471-01-t10_01.jpg,Right Angle,Automatic,0,12,0,,,
+./data/af,S471-02-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/af,S471-03-t10_01.jpg,Frontal,Automatic,-5,0,0,,,
+./data/af,S471-04-t10_01.jpg,Frontal,Automatic,9,-14,0,,,
+./data/af,S471-05-t10_01.jpg,Right Angle,Automatic,2,3,0,,,
+./data/af,S471-06-t10_01.jpg,Frontal,Automatic,-7,-1,0,,,
+./data/ad,S472-01-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ae,S472-02-t10_01.jpg,Frontal,Automatic,8,0,0,,,
+./data/ae,S472-03-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/af,S473-01-t10_01.jpg,Frontal,Automatic,-3,0,0,,,
+./data/af,S473-02-t10_01.jpg,Frontal,Automatic,0,4,0,,,
+./data/af,S473-03-t10_01.jpg,Frontal,Automatic,-1,4,0,,,
+./data/af,S473-04-t10_01.jpg,Frontal,Automatic,-3,-2,0,,,
+./data/af,S473-05-t10_01.jpg,Frontal,Automatic,-2,5,0,,,
+./data/ae,S474-01-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ae,S474-02-t10_01.jpg,Frontal,Automatic,-8,-2,0,,,
+./data/af,S475-01-t10_01.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/af,S475-01-t10_02.jpg,Frontal,Automatic,-1,2,0,,,
+./data/af,S475-01-t10_03.jpg,Right Profile,Automatic,8,72,0,,,
+./data/af,S475-02-t10_01.jpg,Frontal,Automatic,1,3,0,,,
+./data/af,S475-02-t10_02.jpg,Left Profile,Automatic,-10,-70,0,,,
+./data/af,S476-01-t10_01.jpg,Frontal,Automatic,-1,3,0,,,
+./data/af,S476-02-t10_01.jpg,Frontal,Automatic,-5,8,0,,,
+./data/af,S476-03-t10_01.jpg,Frontal,Manual,-3,8,0,-3,8,7
+./data/ae,S477-01-t10_01.jpg,Frontal,Automatic,-10,2,0,,,
+./data/ae,S477-02-t10_01.jpg,Frontal,Automatic,-1,-1,0,,,
+./data/af,S478-01-t10_01.jpg,Right Angle,Manual,-2,16,0,-2,8,0
+./data/af,S478-02-t10_01.jpg,Frontal,Manual,-2,15,0,-2,2,0
+./data/af,S478-03-t10_01.jpg,Frontal,Automatic,3,6,0,,,
+./data/ae,S479-01-t10_01.jpg,Frontal,Automatic,2,3,0,,,
+./data/ae,S479-02-t10_01.jpg,Frontal,Automatic,7,-4,0,,,
+./data/ae,S480-01-t10_01.jpg,Left Angle,Automatic,-4,-2,0,,,
+./data/ad,S480-02-t10_01.jpg,Left Angle,Automatic,3,0,0,,,
+./data/ae,S480-03-t10_01.jpg,Left Angle,Automatic,2,-3,0,,,
+./data/af,S481-01-t10_01.jpg,Frontal,Automatic,1,1,0,,,
+./data/af,S481-02-t10_01.jpg,Frontal,Automatic,8,-5,0,,,
+./data/af,S481-02-t10_02.jpg,Right Profile,Manual,21,67,0,10,67,-5
+./data/af,S481-02-t10_03.jpg,Left Profile,Automatic,4,-79,0,,,
+./data/af,S482-01-t10_01.jpg,Frontal,Automatic,1,5,0,,,
+./data/af,S482-02-t10_01.jpg,Frontal,Automatic,8,-2,0,,,
+./data/ae,S483-01-t10_01.jpg,Frontal,Automatic,1,0,0,,,
+./data/ae,S483-02-t10_01.jpg,Frontal,Manual,0,7,0,0,2,0
+./data/ag,S483-02-t10_02.jpg,Left Profile,Manual,-2,-63,0,-3,-90,-11
+./data/ag,S483-02-t10_03.jpg,Right Profile,Automatic,0,65,0,,,
+./data/ag,S483-03-t10_01.jpg,Left Angle,Manual,-6,-14,0,-6,-7,0
+./data/ag,S483-04-t10_01.jpg,Left Angle,Manual,0,-14,0,0,-7,0
+./data/ag,S483-04-t10_02.jpg,Right Profile,Manual,0,49,0,0,77,0
+./data/ag,S483-04-t10_03.jpg,Left Profile,Manual,-4,-75,0,-4,-75,-12
+./data/ag,S483-05-t10_01.jpg,Frontal,Automatic,-3,6,0,,,
+./data/ag,S484-01-t10_01.jpg,Frontal,Automatic,1,-3,0,,,
+./data/ag,S484-02-t10_01.jpg,Frontal,Automatic,7,1,0,,,
+./data/ag,S485-01-t10_01.jpg,Frontal,Automatic,-2,-3,0,,,
+./data/ag,S485-02-t10_01.jpg,Frontal,Manual,0,9,0,0,3,0
+./data/ag,S485-03-t10_01.jpg,Frontal,Automatic,10,0,0,,,
+./data/ag,S486-01-t10_01.jpg,Left Angle,Automatic,-3,-8,0,,,
+./data/ag,S486-02-t10_01.jpg,Left Angle,Manual,-1,-7,0,-1,-11,0
+./data/ag,S486-03-t10_01.jpg,Frontal,Automatic,1,-8,0,,,
+./data/ag,S486-04-t10_01.jpg,Left Angle,Automatic,-5,-3,0,,,
+./data/ag,S487-01-t10_01.jpg,Frontal,Automatic,1,-2,0,,,
+./data/ag,S487-01-t10_02.jpg,Right Profile,Automatic,0,75,0,,,
+./data/ag,S487-02-t10_01.jpg,Frontal,Automatic,2,-2,0,,,
+./data/ag,S487-02-t10_02.jpg,Right Profile,Automatic,10,72,0,,,
+./data/ag,S488-01-t10_01.jpg,Frontal,Automatic,1,2,0,,,
+./data/ag,S489-01-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ag,S489-02-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ag,S489-03-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ag,S490-01-t10_01.jpg,Left Angle,Automatic,1,-8,0,,,
+./data/ag,S490-01-t10_02.jpg,Right Profile,Automatic,0,66,0,,,
+./data/ag,S491-01-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ag,S491-02-t10_01.jpg,Frontal,Automatic,1,-1,0,,,
+./data/ag,S491-03-t10_01.jpg,Frontal,Automatic,5,-2,0,,,
+./data/ag,S492-01-t10_01.jpg,Left Angle,Automatic,4,-8,0,,,
+./data/ag,S492-02-t10_01.jpg,Left Angle,Automatic,0,-10,0,,,
+./data/ag,S493-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ag,S493-02-t10_01.jpg,Frontal,Automatic,10,7,0,,,
+./data/ag,S493-03-t10_01.jpg,Frontal,Manual,0,-2,0,0,-2,-19
+./data/ag,S494-01-t10_01.jpg,Left Angle,Automatic,-2,-11,0,,,
+./data/ag,S494-01-t10_02.jpg,Left Profile,Manual,0,-77,0,0,-77,11
+./data/ag,S494-01-t10_03.jpg,Right Profile,Manual,0,74,0,0,74,2
+./data/ag,S494-02-t10_01.jpg,Right Angle,Manual,-1,17,0,-7,17,-11
+./data/ag,S494-02-t10_02.jpg,Right Profile,Automatic,6,73,0,,,
+./data/ag,S494-02-t10_03.jpg,Left Profile,Manual,0,-77,0,-14,-58,10
+./data/ag,S495-01-t10_01.jpg,Left Angle,Manual,10,-13,0,10,-7,0
+./data/ag,S495-02-t10_01.jpg,Frontal,Manual,0,-7,0,0,-3,0
+./data/ag,S495-02-t10_02.jpg,Right Profile,Manual,16,70,0,4,70,-11
+./data/ag,S495-02-t10_03.jpg,Left Profile,Automatic,2,-78,0,,,
+./data/ag,S496-01-t10_01.jpg,Left Angle,Manual,5,-14,0,8,-4,0
+./data/ag,S496-02-t10_01.jpg,Frontal,Automatic,4,-2,0,,,
+./data/ag,S497-01-t10_01.jpg,Frontal,Manual,0,-7,0,4,-7,-21
+./data/ag,S497-02-t10_01.jpg,Frontal,Manual,11,3,0,0,3,-22
+./data/ag,S497-03-t10_01.jpg,Frontal,Manual,-1,-7,0,-1,0,0
+./data/ag,S497-04-t10_01.jpg,Right Angle,Manual,7,21,0,-12,14,-21
+./data/ag,S498-01-t10_01.jpg,Right Angle,Automatic,0,3,0,,,
+./data/ag,S498-02-t10_01.jpg,Frontal,Automatic,2,0,0,,,
+./data/ag,S499-01-t10_01.jpg,Frontal,Automatic,3,-6,0,,,
+./data/ag,S499-02-t10_01.jpg,Frontal,Automatic,-1,-6,0,,,
+./data/ag,S499-03-t10_01.jpg,Frontal,Manual,2,0,0,2,4,9
+./data/ag,S499-04-t10_01.jpg,Left Angle,Automatic,-2,-1,0,,,
+./data/ag,S499-05-t10_01.jpg,Frontal,Manual,8,6,0,8,6,6
+./data/ag,S499-06-t10_01.jpg,Frontal,Automatic,5,0,0,,,
+./data/af,S500-01-t10_01.jpg,Frontal,Automatic,0,-2,0,,,
+./data/ag,S500-01-t10_02.jpg,Left Profile,Automatic,-24,-67,0,,,
+./data/af,S500-01-t10_03.jpg,Right Profile,Automatic,14,71,0,,,
+./data/ag,S500-02-t10_01.jpg,Frontal,Automatic,5,10,0,,,
+./data/af,S500-02-t10_02.jpg,Left Profile,Manual,-16,-71,0,1,-71,-15
+./data/ag,S500-02-t10_03.jpg,Right Profile,Automatic,24,68,0,,,
+./data/ag,S501-01-t10_01.jpg,Frontal,Automatic,5,3,0,,,
+./data/ag,S501-02-t10_01.jpg,Right Angle,Automatic,4,0,0,,,
+./data/ag,S501-03-t10_01.jpg,Right Angle,Automatic,0,10,0,,,
+./data/ag,S501-04-t10_01.jpg,Frontal,Automatic,5,5,0,,,
+./data/ag,S501-05-t10_01.jpg,Right Angle,Manual,0,0,0,0,12,13
+./data/ag,S501-06-t10_01.jpg,Right Angle,Manual,3,19,0,3,13,0
+./data/af,S502-01-t10_01.jpg,Right Angle,Automatic,5,0,0,,,
+./data/af,S502-01-t10_02.jpg,Left Profile,Manual,0,0,0,0,-90,-9
+./data/ag,S502-02-t10_01.jpg,Left Angle,Automatic,4,-7,0,,,
+./data/ag,S502-02-t10_02.jpg,Left Profile,Automatic,0,-77,0,,,
+./data/ag,S503-01-t10_01.jpg,Frontal,Automatic,-1,0,0,,,
+./data/ag,S503-02-t10_01.jpg,Frontal,Automatic,-4,0,0,,,
+./data/ag,S503-03-t10_01.jpg,Left Angle,Automatic,-5,0,0,,,
+./data/ag,S504-01-t10_01.jpg,Frontal,Automatic,0,1,0,,,
+./data/ag,S504-02-t10_01.jpg,Frontal,Automatic,-3,1,0,,,
+./data/af,S504-03-t10_01.jpg,Frontal,Automatic,0,0,0,,,
+./data/ag,S504-03-t10_02.jpg,Left Profile,Manual,0,0,0,0,-90,-14
+./data/ag,S505-01-t10_01.jpg,Frontal,Automatic,2,3,0,,,
+./data/ag,S505-02-t10_01.jpg,Right Angle,Automatic,2,4,0,,,
+./data/ag,S506-01-t10_01.jpg,Frontal,Automatic,3,3,0,,,
+./data/ag,S506-01-t10_02.jpg,Left Profile,Manual,0,-77,0,0,-77,-15
+./data/ag,S506-02-t10_01.jpg,Frontal,Manual,2,8,0,2,4,0
+./data/ag,S506-02-t10_02.jpg,Left Profile,Manual,0,-77,0,-9,-77,-2
+./data/ag,S506-03-t10_01.jpg,Frontal,Automatic,4,0,0,,,
+./data/ag,S506-03-t10_02.jpg,Left Profile,Manual,0,-77,0,0,-77,-11
+./data/ag,S507-01-t10_01.jpg,Frontal,Automatic,-3,5,0,,,
+./data/ag,S507-02-t10_01.jpg,Frontal,Automatic,-3,3,0,,,
+./data/ag,S507-03-t10_01.jpg,Frontal,Automatic,0,-4,0,,,
+./data/ag,S507-04-t10_01.jpg,Frontal,Automatic,-2,6,0,,,
+./data/ag,S508-01-t10_01.jpg,Frontal,Automatic,-1,-5,0,,,
+./data/ag,S508-02-t10_01.jpg,Frontal,Automatic,-2,-14,0,,,
+./data/ag,S509-01-t10_01.jpg,Left Angle,Automatic,2,-4,0,,,
+./data/ag,S509-01-t10_02.jpg,Right Profile,Manual,16,70,0,9,54,0
+./data/ag,S510-01-t10_01.jpg,Right Angle,Automatic,6,7,0,,,
+./data/ag,S510-02-t10_01.jpg,Left Angle,Manual,0,-12,0,0,-7,0
+./data/ag,S510-03-t10_01.jpg,Frontal,Manual,5,10,0,5,6,0
+./data/ag,S510-04-t10_01.jpg,Frontal,Automatic,3,0,0,,,
+./data/ag,S511-01-t10_01.jpg,Frontal,Automatic,-9,-4,0,,,
+./data/ag,S511-01-t10_02.jpg,Right Profile,Automatic,9,60,0,,,
+./data/ag,S512-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ag,S512-02-t10_01.jpg,Frontal,Manual,1,-7,0,1,-2,0
+./data/ag,S513-01-t10_01.jpg,Frontal,Manual,3,10,0,3,0,-9
+./data/ag,S513-02-t10_01.jpg,Right Angle,Automatic,-4,11,0,,,
+./data/ag,S514-01-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/ag,S514-01-t10_02.jpg,Left Profile,Manual,0,-77,0,0,-78,-10
+./data/ag,S515-01-t10_01.jpg,Frontal,Automatic,0,2,0,,,
+./data/ag,S516-01-t10_01.jpg,Right Angle,Automatic,-1,19,0,,,
+./data/ag,S516-02-t10_01.jpg,Frontal,Automatic,4,-2,0,,,
+./data/af,S517-01-t10_01.jpg,Frontal,Automatic,2,-1,0,,,
+./data/ag,S517-02-t10_01.jpg,Right Angle,Manual,-6,16,0,-6,10,0
+./data/af,S518-01-t10_01.jpg,Frontal,Automatic,0,-3,0,,,
+./data/af,S518-02-t10_01.jpg,Left Angle,Automatic,0,0,0,,,
+./data/af,S518-01-t10_02.jpg,Left Profile,Manual,0,0,0,0,-90,0
+./data/ag,S518-02-t10_02.jpg,Left Profile,Manual,0,0,0,0,-90,0
