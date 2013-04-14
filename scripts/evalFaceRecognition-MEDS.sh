@@ -7,6 +7,9 @@ if [ ! -f evalFaceRecognition-MEDS.sh ]; then
   exit
 fi
 
+# Get the data
+./downloadDatasets.sh
+
 if [ ! -e Algorithm_Dataset ]; then
   mkdir Algorithm_Dataset
 fi

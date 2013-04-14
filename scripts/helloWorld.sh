@@ -10,25 +10,8 @@ if ! hash br 2>/dev/null; then
   exit
 fi
 
-cd ../data
-
-# Download, unzip, and reorganize the BioID database
-if [ ! -d BioID/img ]; then
-  curl -OL ftp://ftp.uni-erlangen.de/pub/facedb/BioID-FaceDatabase-V1.2.zip
-  unzip BioID-FaceDatabase-V1.2.zip
-  mkdir BioID/img
-  mv *.pgm BioID/img
-  rm *.eye description.txt BioID-FaceDatabase-V1.2.zip
-fi
-
-# Download, unzip, and reorganize the MEDS-II database
-if [ ! -d MEDS/img ]; then
-  curl -OL http://nigos.nist.gov:8080/nist/sd/32/NIST_SD32_MEDS-II_face.zip
-  unzip NIST_SD32_MEDS-II_face.zip
-  mkdir MEDS/img
-  mv data/*/*.jpg MEDS/img
-  rm -r data NIST_SD32_MEDS-II_face.zip
-fi
+# Get the data
+./downloadDatasets.sh
 
 # Train the Eigenfaces algorithm
 br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)' -train BioID/img Eigenfaces
