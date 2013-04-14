@@ -109,9 +109,6 @@ add_subdirectory(openbr)
 # Build applications
 add_subdirectory(app)
 
-# Build SWIG wrappers
-add_subdirectory(swig)
-
 # Build the documentation?
 option(BR_BUILD_DOCUMENTATION "Build Documentation (Requires doxygen and latex)")
 if(${BR_BUILD_DOCUMENTATION})
@@ -124,7 +121,7 @@ endif()
 
 # Install
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
-install(DIRECTORY share data DESTINATION .)
+install(DIRECTORY data share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 include(InstallDependencies)
 install_compiler_libraries()
