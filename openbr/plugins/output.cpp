@@ -148,7 +148,10 @@ class mtxOutput : public MatrixOutput
     ~mtxOutput()
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
-        BEE::writeSimmat(data, file.name);
+        BEE::writeSimmat(data,
+                         file.name,
+                         targetFiles.first().get<QString>("Gallery", "Unknown_Target"),
+                         queryFiles.first().get<QString>("Gallery", "Unknown_Query"));
     }
 };
 

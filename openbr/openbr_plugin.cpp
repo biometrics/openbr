@@ -411,6 +411,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
+            newTemplates[i].file.set("Gallery", gallery.name);
             if (newTemplates[i].file.getBool("allPartitions")) {
                 if (crossValidate > 0) {
                     // Set template to the first parition

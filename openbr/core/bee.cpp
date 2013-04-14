@@ -105,7 +105,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
 }
 
 template <typename T>
-Mat readMatrix(const br::File &matrix)
+Mat readMatrix(const br::File &matrix, QString *targetSigset = NULL, QString *querySigset = NULL)
 {
     // Special case matrix construction
     if (matrix == "Identity") {
@@ -150,9 +150,11 @@ Mat readMatrix(const br::File &matrix)
     bool isDistance = (format[0] == 'D');
     if (format[1] != '2') qFatal("Invalid matrix header.");
 
-    // Skip sigset lines
-    file.readLine();
-    file.readLine();
+    // Read sigsets
+    if (targetSigset != NULL) *targetSigset = file.readLine().simplified();
+    else                      file.readLine();
+    if (querySigset != NULL) *querySigset = file.readLine().simplified();
+    else                     file.readLine();
 
     // Get matrix size
     QStringList words = QString(file.readLine()).split(" ");
@@ -172,9 +174,9 @@ Mat readMatrix(const br::File &matrix)
     return result;
 }
 
-Mat BEE::readSimmat(const br::File &simmat)
+Mat BEE::readSimmat(const br::File &simmat, QString *targetSigset, QString *querySigset)
 {
-    return readMatrix<Simmat_t>(simmat);
+    return readMatrix<Simmat_t>(simmat, targetSigset, querySigset);
 }
 
 Mat BEE::readMask(const br::File &mask)
@@ -198,9 +200,9 @@ void writeMatrix(const Mat &m, const QString &matrix, const QString &targetSigse
     QtUtils::touchDir(file);
     bool success = file.open(QFile::WriteOnly); if (!success) qFatal("Unable to open %s for writing.", qPrintable(matrix));
     file.write("S2\n");
-    file.write(qPrintable(QFileInfo(targetSigset).fileName()));
+    file.write(qPrintable(targetSigset));
     file.write("\n");
-    file.write(qPrintable(QFileInfo(querySigset).fileName()));
+    file.write(qPrintable(querySigset));
     file.write("\n");
     file.write("M");
     file.write(qPrintable(matrixType));

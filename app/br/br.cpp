@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openbr/openbr.h>
+#include <openbr/openbr_plugin.h>
 
 /*!
  * \defgroup cli Command Line Interface
@@ -95,8 +95,15 @@ public:
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'compare'.");
                 br_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "eval")) {
-                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'eval'.");
-                br_eval(parv[0], parv[1], parc == 3 ? parv[2] : "");
+                check((parc >= 1) && (parc <= 3), "Incorrect parameter count for 'eval'.");
+                if (parc == 1) {
+                    br_eval(parv[0], "", "");
+                } else if (parc == 2) {
+                    if (br::File(parv[1]).suffix() == "csv") br_eval(parv[0], "", parv[1]);
+                    else                                     br_eval(parv[0], parv[1], "");
+                } else {
+                    br_eval(parv[0], parv[1], parv[2]);
+                }
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
                 br_plot(parc-1, parv, parv[parc-1], true);
@@ -194,7 +201,7 @@ private:
                "-train <gallery> ... <gallery> [{model}]\n"
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
-               "-eval <simmat> <mask> [{csv}]\n"
+               "-eval <simmat> [<mask>] [{csv}]\n"
                "-plot <file> ... <file> {destination}\n"
                "\n"
                "==== Other Commands ====\n"

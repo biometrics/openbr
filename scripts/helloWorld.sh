@@ -40,3 +40,4 @@ br -algorithm Eigenfaces -path MEDS/img -compare MEDS/sigset/MEDS_frontal_target
 # br -algorithm Eigenfaces -path MEDS/img -enroll MEDS/sigset/MEDS_frontal_target.xml target.gal -enroll MEDS/sigset/MEDS_frontal_query.xml query.gal -compare target.gal query.gal scores.mtx
 
 # Evaluate Eigenfaces accuracy
+br -eval scores.mtx results.csv -plot results.csv results.pdf

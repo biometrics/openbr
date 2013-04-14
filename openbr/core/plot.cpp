@@ -112,21 +112,37 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
 
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 {
-    qDebug("Evaluating %s with %s", qPrintable(simmat), qPrintable(mask));
+    qDebug("Evaluating %s%s%s",
+           qPrintable(simmat),
+           mask.isEmpty() ? "" : qPrintable(" with " + mask),
+           csv.isEmpty() ? "" : qPrintable(" to " + csv));
 
-    // Read files
-    const Mat scores = BEE::readSimmat(simmat);
-    File maskFile(mask);
-    maskFile.set("rows", scores.rows);
-    maskFile.set("columns", scores.cols);
-    const Mat masks = BEE::readMask(maskFile);
-    if (scores.size() != masks.size()) qFatal("Simmat (%i,%i) / Mask (%i,%i) size mismatch.", scores.rows, scores.cols, masks.rows, masks.cols);
+    // Read similarity matrix
+    QString target, query;
+    const Mat scores = BEE::readSimmat(simmat, &target, &query);
 
-    return Evaluate(scores, masks, csv);
+    // Read mask matrix
+    Mat truth;
+    if (mask.isEmpty()) {
+        // Use the galleries specified in the similarity matrix
+        truth = BEE::makeMask(TemplateList::fromGallery(target).files(),
+                              TemplateList::fromGallery(query).files());
+    } else {
+        File maskFile(mask);
+        maskFile.set("rows", scores.rows);
+        maskFile.set("columns", scores.cols);
+        truth = BEE::readMask(maskFile);
+    }
+
+    return Evaluate(scores, truth, csv);
 }
 
 float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 {
+    if (simmat.size() != mask.size())
+        qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
+               simmat.rows, simmat.cols, mask.rows, mask.cols);
+
     const int Max_Points = 500;
     float result = -1;
 
