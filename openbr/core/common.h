@@ -121,12 +121,10 @@ T Max(const QList<T> &vals)
 template <template<class> class V, typename T>
 double Mean(const V<T> &vals)
 {
-    const int size = vals.size();
-
-    // Compute Mean
+    if (vals.isEmpty()) return 0;
     double sum = 0;
-    foreach (int val, vals) sum += val;
-    return (size == 0) ? 0 : sum / size;
+    foreach (T val, vals) sum += val;
+    return sum / vals.size();
 }
 
 /*!
@@ -135,17 +133,18 @@ double Mean(const V<T> &vals)
 template <template<class> class V, typename T>
 void MeanStdDev(const V<T> &vals, double *mean, double *stddev)
 {
-    const int size = vals.size();
-
     *mean = Mean(vals);
+    if (vals.isEmpty()) {
+        *stddev = 0;
+        return;
+    }
 
-    // Compute Standard Deviation
     double variance = 0;
     foreach (T val, vals) {
         const double delta = val - *mean;
         variance += delta * delta;
     }
-    *stddev = (size == 0) ? 0 : sqrt(variance/size);
+    *stddev = sqrt(variance/vals.size());
 }
 
 /*!

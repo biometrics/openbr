@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biometric-signature-set>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0001-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0001-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0001-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0001-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0002-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0002-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0002-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0001">
+		<presentation file-name="VIS/0002-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0003">
+		<presentation file-name="VIS/0003-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0003">
+		<presentation file-name="VIS/0003-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0003">
+		<presentation file-name="VIS/0003-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0003">
+		<presentation file-name="VIS/0003-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0004">
+		<presentation file-name="VIS/0004-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0004">
+		<presentation file-name="VIS/0004-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0004">
+		<presentation file-name="VIS/0004-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0004">
+		<presentation file-name="VIS/0004-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0005">
+		<presentation file-name="VIS/0005-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0005">
+		<presentation file-name="VIS/0005-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0005">
+		<presentation file-name="VIS/0005-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0005">
+		<presentation file-name="VIS/0005-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0006">
+		<presentation file-name="VIS/0006-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0006">
+		<presentation file-name="VIS/0006-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0006">
+		<presentation file-name="VIS/0006-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0006">
+		<presentation file-name="VIS/0006-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0007">
+		<presentation file-name="VIS/0007-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0007">
+		<presentation file-name="VIS/0007-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0007">
+		<presentation file-name="VIS/0007-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0007">
+		<presentation file-name="VIS/0007-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0008">
+		<presentation file-name="VIS/0008-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0008">
+		<presentation file-name="VIS/0008-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0008">
+		<presentation file-name="VIS/0008-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0008">
+		<presentation file-name="VIS/0008-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0009">
+		<presentation file-name="VIS/0009-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0009">
+		<presentation file-name="VIS/0009-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0009">
+		<presentation file-name="VIS/0009-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0009">
+		<presentation file-name="VIS/0009-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0010">
+		<presentation file-name="VIS/0010-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0010">
+		<presentation file-name="VIS/0010-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0010">
+		<presentation file-name="VIS/0010-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0010">
+		<presentation file-name="VIS/0010-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0011">
+		<presentation file-name="VIS/0011-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0011">
+		<presentation file-name="VIS/0011-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0011">
+		<presentation file-name="VIS/0011-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0011">
+		<presentation file-name="VIS/0011-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0012">
+		<presentation file-name="VIS/0012-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0012">
+		<presentation file-name="VIS/0012-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0012">
+		<presentation file-name="VIS/0012-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0012">
+		<presentation file-name="VIS/0012-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0013">
+		<presentation file-name="VIS/0013-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0013">
+		<presentation file-name="VIS/0013-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0013">
+		<presentation file-name="VIS/0013-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0013">
+		<presentation file-name="VIS/0013-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0014">
+		<presentation file-name="VIS/0014-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0014">
+		<presentation file-name="VIS/0014-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0014">
+		<presentation file-name="VIS/0014-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0014">
+		<presentation file-name="VIS/0014-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0015">
+		<presentation file-name="VIS/0015-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0015">
+		<presentation file-name="VIS/0015-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0015">
+		<presentation file-name="VIS/0015-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0015">
+		<presentation file-name="VIS/0015-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0016">
+		<presentation file-name="VIS/0016-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0016">
+		<presentation file-name="VIS/0016-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0016">
+		<presentation file-name="VIS/0016-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0016">
+		<presentation file-name="VIS/0016-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0017">
+		<presentation file-name="VIS/0017-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0017">
+		<presentation file-name="VIS/0017-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0017">
+		<presentation file-name="VIS/0017-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0017">
+		<presentation file-name="VIS/0017-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0018">
+		<presentation file-name="VIS/0018-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0018">
+		<presentation file-name="VIS/0018-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0018">
+		<presentation file-name="VIS/0018-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0018">
+		<presentation file-name="VIS/0018-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0019">
+		<presentation file-name="VIS/0019-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0019">
+		<presentation file-name="VIS/0019-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0019">
+		<presentation file-name="VIS/0019-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0019">
+		<presentation file-name="VIS/0019-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0020">
+		<presentation file-name="VIS/0020-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0020">
+		<presentation file-name="VIS/0020-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0020">
+		<presentation file-name="VIS/0020-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0020">
+		<presentation file-name="VIS/0020-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0021">
+		<presentation file-name="VIS/0021-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0021">
+		<presentation file-name="VIS/0021-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0021">
+		<presentation file-name="VIS/0021-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0021">
+		<presentation file-name="VIS/0021-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0022">
+		<presentation file-name="VIS/0022-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0022">
+		<presentation file-name="VIS/0022-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0022">
+		<presentation file-name="VIS/0022-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0022">
+		<presentation file-name="VIS/0022-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0023">
+		<presentation file-name="VIS/0023-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0023">
+		<presentation file-name="VIS/0023-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0023">
+		<presentation file-name="VIS/0023-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0023">
+		<presentation file-name="VIS/0023-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0024">
+		<presentation file-name="VIS/0024-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0024">
+		<presentation file-name="VIS/0024-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0024">
+		<presentation file-name="VIS/0024-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0024">
+		<presentation file-name="VIS/0024-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0025">
+		<presentation file-name="VIS/0025-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0025">
+		<presentation file-name="VIS/0025-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0025">
+		<presentation file-name="VIS/0025-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0025">
+		<presentation file-name="VIS/0025-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0026">
+		<presentation file-name="VIS/0026-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0026">
+		<presentation file-name="VIS/0026-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0026">
+		<presentation file-name="VIS/0026-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0026">
+		<presentation file-name="VIS/0026-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0027">
+		<presentation file-name="VIS/0027-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0027">
+		<presentation file-name="VIS/0027-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0027">
+		<presentation file-name="VIS/0027-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0027">
+		<presentation file-name="VIS/0027-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0028">
+		<presentation file-name="VIS/0028-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0028">
+		<presentation file-name="VIS/0028-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0028">
+		<presentation file-name="VIS/0028-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0028">
+		<presentation file-name="VIS/0028-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0029">
+		<presentation file-name="VIS/0029-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0029">
+		<presentation file-name="VIS/0029-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0029">
+		<presentation file-name="VIS/0029-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0029">
+		<presentation file-name="VIS/0029-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0030">
+		<presentation file-name="VIS/0030-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0030">
+		<presentation file-name="VIS/0030-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0030">
+		<presentation file-name="VIS/0030-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0030">
+		<presentation file-name="VIS/0030-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0031">
+		<presentation file-name="VIS/0031-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0031">
+		<presentation file-name="VIS/0031-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0031">
+		<presentation file-name="VIS/0031-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0031">
+		<presentation file-name="VIS/0031-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0032">
+		<presentation file-name="VIS/0032-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0032">
+		<presentation file-name="VIS/0032-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0032">
+		<presentation file-name="VIS/0032-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0032">
+		<presentation file-name="VIS/0032-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0033">
+		<presentation file-name="VIS/0033-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0033">
+		<presentation file-name="VIS/0033-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0033">
+		<presentation file-name="VIS/0033-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0033">
+		<presentation file-name="VIS/0033-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0034">
+		<presentation file-name="VIS/0034-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0034">
+		<presentation file-name="VIS/0034-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0034">
+		<presentation file-name="VIS/0034-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0034">
+		<presentation file-name="VIS/0034-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0035">
+		<presentation file-name="VIS/0035-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0035">
+		<presentation file-name="VIS/0035-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0035">
+		<presentation file-name="VIS/0035-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0035">
+		<presentation file-name="VIS/0035-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0036">
+		<presentation file-name="VIS/0036-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0036">
+		<presentation file-name="VIS/0036-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0036">
+		<presentation file-name="VIS/0036-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0036">
+		<presentation file-name="VIS/0036-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0037">
+		<presentation file-name="VIS/0037-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0037">
+		<presentation file-name="VIS/0037-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0037">
+		<presentation file-name="VIS/0037-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0037">
+		<presentation file-name="VIS/0037-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0038">
+		<presentation file-name="VIS/0038-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0038">
+		<presentation file-name="VIS/0038-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0038">
+		<presentation file-name="VIS/0038-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0038">
+		<presentation file-name="VIS/0038-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0039">
+		<presentation file-name="VIS/0039-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0039">
+		<presentation file-name="VIS/0039-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0039">
+		<presentation file-name="VIS/0039-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0039">
+		<presentation file-name="VIS/0039-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0040">
+		<presentation file-name="VIS/0040-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0040">
+		<presentation file-name="VIS/0040-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0040">
+		<presentation file-name="VIS/0040-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0040">
+		<presentation file-name="VIS/0040-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0041">
+		<presentation file-name="VIS/0041-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0041">
+		<presentation file-name="VIS/0041-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0041">
+		<presentation file-name="VIS/0041-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0041">
+		<presentation file-name="VIS/0041-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0042">
+		<presentation file-name="VIS/0042-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0042">
+		<presentation file-name="VIS/0042-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0042">
+		<presentation file-name="VIS/0042-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0042">
+		<presentation file-name="VIS/0042-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0043">
+		<presentation file-name="VIS/0043-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0043">
+		<presentation file-name="VIS/0043-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0043">
+		<presentation file-name="VIS/0043-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0043">
+		<presentation file-name="VIS/0043-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0044">
+		<presentation file-name="VIS/0044-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0044">
+		<presentation file-name="VIS/0044-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0044">
+		<presentation file-name="VIS/0044-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0044">
+		<presentation file-name="VIS/0044-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0045">
+		<presentation file-name="VIS/0045-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0045">
+		<presentation file-name="VIS/0045-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0045">
+		<presentation file-name="VIS/0045-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0045">
+		<presentation file-name="VIS/0045-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0046">
+		<presentation file-name="VIS/0046-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0046">
+		<presentation file-name="VIS/0046-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0046">
+		<presentation file-name="VIS/0046-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0046">
+		<presentation file-name="VIS/0046-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0047">
+		<presentation file-name="VIS/0047-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0047">
+		<presentation file-name="VIS/0047-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0047">
+		<presentation file-name="VIS/0047-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0047">
+		<presentation file-name="VIS/0047-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0048">
+		<presentation file-name="VIS/0048-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0048">
+		<presentation file-name="VIS/0048-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0048">
+		<presentation file-name="VIS/0048-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0048">
+		<presentation file-name="VIS/0048-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0049">
+		<presentation file-name="VIS/0049-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0049">
+		<presentation file-name="VIS/0049-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0049">
+		<presentation file-name="VIS/0049-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0049">
+		<presentation file-name="VIS/0049-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0050">
+		<presentation file-name="VIS/0050-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0050">
+		<presentation file-name="VIS/0050-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0050">
+		<presentation file-name="VIS/0050-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0050">
+		<presentation file-name="VIS/0050-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0051">
+		<presentation file-name="VIS/0051-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0051">
+		<presentation file-name="VIS/0051-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0051">
+		<presentation file-name="VIS/0051-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0051">
+		<presentation file-name="VIS/0051-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0052">
+		<presentation file-name="VIS/0052-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0052">
+		<presentation file-name="VIS/0052-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0052">
+		<presentation file-name="VIS/0052-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0052">
+		<presentation file-name="VIS/0052-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0053">
+		<presentation file-name="VIS/0053-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0053">
+		<presentation file-name="VIS/0053-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0053">
+		<presentation file-name="VIS/0053-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0053">
+		<presentation file-name="VIS/0053-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0054">
+		<presentation file-name="VIS/0054-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0054">
+		<presentation file-name="VIS/0054-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0054">
+		<presentation file-name="VIS/0054-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0054">
+		<presentation file-name="VIS/0054-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0055">
+		<presentation file-name="VIS/0055-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0055">
+		<presentation file-name="VIS/0055-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0055">
+		<presentation file-name="VIS/0055-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0055">
+		<presentation file-name="VIS/0055-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0056">
+		<presentation file-name="VIS/0056-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0056">
+		<presentation file-name="VIS/0056-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0056">
+		<presentation file-name="VIS/0056-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0056">
+		<presentation file-name="VIS/0056-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0057">
+		<presentation file-name="VIS/0057-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0057">
+		<presentation file-name="VIS/0057-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0057">
+		<presentation file-name="VIS/0057-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0057">
+		<presentation file-name="VIS/0057-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0058">
+		<presentation file-name="VIS/0058-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0058">
+		<presentation file-name="VIS/0058-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0058">
+		<presentation file-name="VIS/0058-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0058">
+		<presentation file-name="VIS/0058-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0059">
+		<presentation file-name="VIS/0059-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0059">
+		<presentation file-name="VIS/0059-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0059">
+		<presentation file-name="VIS/0059-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0059">
+		<presentation file-name="VIS/0059-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0060">
+		<presentation file-name="VIS/0060-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0060">
+		<presentation file-name="VIS/0060-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0060">
+		<presentation file-name="VIS/0060-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0060">
+		<presentation file-name="VIS/0060-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0061">
+		<presentation file-name="VIS/0061-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0061">
+		<presentation file-name="VIS/0061-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0061">
+		<presentation file-name="VIS/0061-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0061">
+		<presentation file-name="VIS/0061-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0062">
+		<presentation file-name="VIS/0062-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0062">
+		<presentation file-name="VIS/0062-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0062">
+		<presentation file-name="VIS/0062-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0062">
+		<presentation file-name="VIS/0062-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0063">
+		<presentation file-name="VIS/0063-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0063">
+		<presentation file-name="VIS/0063-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0063">
+		<presentation file-name="VIS/0063-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0063">
+		<presentation file-name="VIS/0063-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0064">
+		<presentation file-name="VIS/0064-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0064">
+		<presentation file-name="VIS/0064-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0064">
+		<presentation file-name="VIS/0064-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0064">
+		<presentation file-name="VIS/0064-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0065">
+		<presentation file-name="VIS/0065-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0065">
+		<presentation file-name="VIS/0065-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0065">
+		<presentation file-name="VIS/0065-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0065">
+		<presentation file-name="VIS/0065-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0066">
+		<presentation file-name="VIS/0066-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0066">
+		<presentation file-name="VIS/0066-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0066">
+		<presentation file-name="VIS/0066-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0066">
+		<presentation file-name="VIS/0066-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0067">
+		<presentation file-name="VIS/0067-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0067">
+		<presentation file-name="VIS/0067-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0067">
+		<presentation file-name="VIS/0067-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0067">
+		<presentation file-name="VIS/0067-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0068">
+		<presentation file-name="VIS/0068-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0068">
+		<presentation file-name="VIS/0068-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0068">
+		<presentation file-name="VIS/0068-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0068">
+		<presentation file-name="VIS/0068-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0069">
+		<presentation file-name="VIS/0069-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0069">
+		<presentation file-name="VIS/0069-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0069">
+		<presentation file-name="VIS/0069-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0069">
+		<presentation file-name="VIS/0069-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0070">
+		<presentation file-name="VIS/0070-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0070">
+		<presentation file-name="VIS/0070-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0070">
+		<presentation file-name="VIS/0070-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0070">
+		<presentation file-name="VIS/0070-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0071">
+		<presentation file-name="VIS/0071-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0071">
+		<presentation file-name="VIS/0071-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0071">
+		<presentation file-name="VIS/0071-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0071">
+		<presentation file-name="VIS/0071-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0072">
+		<presentation file-name="VIS/0072-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0072">
+		<presentation file-name="VIS/0072-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0072">
+		<presentation file-name="VIS/0072-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0072">
+		<presentation file-name="VIS/0072-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0073">
+		<presentation file-name="VIS/0073-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0073">
+		<presentation file-name="VIS/0073-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0073">
+		<presentation file-name="VIS/0073-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0073">
+		<presentation file-name="VIS/0073-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0074">
+		<presentation file-name="VIS/0074-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0074">
+		<presentation file-name="VIS/0074-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0074">
+		<presentation file-name="VIS/0074-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0074">
+		<presentation file-name="VIS/0074-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0075">
+		<presentation file-name="VIS/0075-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0075">
+		<presentation file-name="VIS/0075-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0075">
+		<presentation file-name="VIS/0075-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0075">
+		<presentation file-name="VIS/0075-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0076">
+		<presentation file-name="VIS/0076-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0076">
+		<presentation file-name="VIS/0076-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0076">
+		<presentation file-name="VIS/0076-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0076">
+		<presentation file-name="VIS/0076-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0077">
+		<presentation file-name="VIS/0077-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0077">
+		<presentation file-name="VIS/0077-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0077">
+		<presentation file-name="VIS/0077-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0077">
+		<presentation file-name="VIS/0077-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0078">
+		<presentation file-name="VIS/0078-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0078">
+		<presentation file-name="VIS/0078-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0078">
+		<presentation file-name="VIS/0078-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0078">
+		<presentation file-name="VIS/0078-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0079">
+		<presentation file-name="VIS/0079-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0079">
+		<presentation file-name="VIS/0079-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0079">
+		<presentation file-name="VIS/0079-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0079">
+		<presentation file-name="VIS/0079-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0080">
+		<presentation file-name="VIS/0080-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0080">
+		<presentation file-name="VIS/0080-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0080">
+		<presentation file-name="VIS/0080-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0080">
+		<presentation file-name="VIS/0080-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0081">
+		<presentation file-name="VIS/0081-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0081">
+		<presentation file-name="VIS/0081-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0081">
+		<presentation file-name="VIS/0081-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0081">
+		<presentation file-name="VIS/0081-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0082">
+		<presentation file-name="VIS/0082-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0082">
+		<presentation file-name="VIS/0082-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0082">
+		<presentation file-name="VIS/0082-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0082">
+		<presentation file-name="VIS/0082-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0083">
+		<presentation file-name="VIS/0083-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0083">
+		<presentation file-name="VIS/0083-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0083">
+		<presentation file-name="VIS/0083-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0083">
+		<presentation file-name="VIS/0083-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0084">
+		<presentation file-name="VIS/0084-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0084">
+		<presentation file-name="VIS/0084-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0084">
+		<presentation file-name="VIS/0084-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0084">
+		<presentation file-name="VIS/0084-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0085">
+		<presentation file-name="VIS/0085-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0085">
+		<presentation file-name="VIS/0085-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0085">
+		<presentation file-name="VIS/0085-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0085">
+		<presentation file-name="VIS/0085-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0086">
+		<presentation file-name="VIS/0086-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0086">
+		<presentation file-name="VIS/0086-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0086">
+		<presentation file-name="VIS/0086-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0086">
+		<presentation file-name="VIS/0086-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0087">
+		<presentation file-name="VIS/0087-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0087">
+		<presentation file-name="VIS/0087-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0087">
+		<presentation file-name="VIS/0087-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0087">
+		<presentation file-name="VIS/0087-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0088">
+		<presentation file-name="VIS/0088-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0088">
+		<presentation file-name="VIS/0088-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0088">
+		<presentation file-name="VIS/0088-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0088">
+		<presentation file-name="VIS/0088-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0089">
+		<presentation file-name="VIS/0089-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0089">
+		<presentation file-name="VIS/0089-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0089">
+		<presentation file-name="VIS/0089-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0089">
+		<presentation file-name="VIS/0089-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0090">
+		<presentation file-name="VIS/0090-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0090">
+		<presentation file-name="VIS/0090-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0090">
+		<presentation file-name="VIS/0090-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0090">
+		<presentation file-name="VIS/0090-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0091">
+		<presentation file-name="VIS/0091-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0091">
+		<presentation file-name="VIS/0091-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0091">
+		<presentation file-name="VIS/0091-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0091">
+		<presentation file-name="VIS/0091-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0092">
+		<presentation file-name="VIS/0092-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0092">
+		<presentation file-name="VIS/0092-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0092">
+		<presentation file-name="VIS/0092-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0092">
+		<presentation file-name="VIS/0092-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0093">
+		<presentation file-name="VIS/0093-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0093">
+		<presentation file-name="VIS/0093-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0093">
+		<presentation file-name="VIS/0093-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0093">
+		<presentation file-name="VIS/0093-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0094">
+		<presentation file-name="VIS/0094-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0094">
+		<presentation file-name="VIS/0094-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0094">
+		<presentation file-name="VIS/0094-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0094">
+		<presentation file-name="VIS/0094-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0095">
+		<presentation file-name="VIS/0095-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0095">
+		<presentation file-name="VIS/0095-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0095">
+		<presentation file-name="VIS/0095-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0095">
+		<presentation file-name="VIS/0095-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0096">
+		<presentation file-name="VIS/0096-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0096">
+		<presentation file-name="VIS/0096-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0096">
+		<presentation file-name="VIS/0096-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0096">
+		<presentation file-name="VIS/0096-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0097">
+		<presentation file-name="VIS/0097-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0097">
+		<presentation file-name="VIS/0097-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0097">
+		<presentation file-name="VIS/0097-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0097">
+		<presentation file-name="VIS/0097-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0098">
+		<presentation file-name="VIS/0098-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0098">
+		<presentation file-name="VIS/0098-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0098">
+		<presentation file-name="VIS/0098-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0098">
+		<presentation file-name="VIS/0098-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0099">
+		<presentation file-name="VIS/0099-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0099">
+		<presentation file-name="VIS/0099-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0099">
+		<presentation file-name="VIS/0099-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0099">
+		<presentation file-name="VIS/0099-4.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0100">
+		<presentation file-name="VIS/0100-1.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0100">
+		<presentation file-name="VIS/0100-2.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0100">
+		<presentation file-name="VIS/0100-3.bmp" />
+	</biometric-signature>
+	<biometric-signature name="0100">
+		<presentation file-name="VIS/0100-4.bmp" />
+	</biometric-signature>
+</biometric-signature-set>

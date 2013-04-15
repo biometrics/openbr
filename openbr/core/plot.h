@@ -26,7 +26,8 @@ namespace br
 {
 
 void Confusion(const QString &file, float score, int &true_positives, int &false_positives, int &true_negatives, int &false_negatives);
-float Evaluate(const QString &simmat, const QString &mask, const QString &csv = ""); // Returns TAR @ FAR = 0.01
+float Evaluate(const QString &simmat, const QString &mask = "", const QString &csv = ""); // Returns TAR @ FAR = 0.01
+float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv = "", int parition = 0);
 float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &csv = "");
 bool Plot(const QStringList &files, const br::File &destination, bool show = false);
 bool PlotMetadata(const QStringList &files, const QString &destination, bool show = false);

@@ -7,6 +7,14 @@ if [ ! -f evalFaceRecognition-MEDS.sh ]; then
   exit
 fi
 
+if ! hash br 2>/dev/null; then
+  echo "Can't find 'br'. Did you forget to build and install OpenBR? Here's some help: http://openbiometrics.org/doxygen/latest/installation.html"
+  exit
+fi
+
+# Get the data
+./downloadDatasets.sh
+
 if [ ! -e Algorithm_Dataset ]; then
   mkdir Algorithm_Dataset
 fi

@@ -26,7 +26,7 @@ class CrossValidateTransform : public MetaTransform
         int numPartitions = 0;
         QList<int> partitions; partitions.reserve(data.size());
         foreach (const File &file, data.files()) {
-            partitions.append(file.get<int>("Cross_Validation_Partition", 0));
+            partitions.append(file.get<int>("Partition", 0));
             numPartitions = std::max(numPartitions, partitions.last()+1);
         }
 
@@ -53,7 +53,7 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        transforms[src.file.get<int>("Cross_Validation_Partition", 0)]->project(src, dst);
+        transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
     }
 
     void store(QDataStream &stream) const
@@ -87,8 +87,9 @@ class CrossValidateDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
-        const int partitionA = a.file.get<int>("Cross_Validation_Partition", 0);
-        const int partitionB = b.file.get<int>("Cross_Validation_Partition", 0);
+        static const QString key("Partition"); // More efficient to preallocate this
+        const int partitionA = a.file.get<int>(key, 0);
+        const int partitionB = b.file.get<int>(key, 0);
         return (partitionA != partitionB) ? -std::numeric_limits<float>::max() : 0;
     }
 };

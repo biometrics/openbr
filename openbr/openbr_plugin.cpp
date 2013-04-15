@@ -357,7 +357,7 @@ QList<int> FileList::crossValidationPartitions() const
 {
     QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
     foreach (const File &f, *this)
-        crossValidationPartitions.append(f.get<int>("Cross_Validation_Partition", 0));
+        crossValidationPartitions.append(f.get<int>("Partition", 0));
     return crossValidationPartitions;
 }
 
@@ -411,15 +411,14 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
+            newTemplates[i].file.set("Gallery", gallery.name);
             if (newTemplates[i].file.getBool("allPartitions")) {
                 if (crossValidate > 0) {
                     // Set template to the first parition
-                    newTemplates[i].file.set("Cross_Validation_Partition", QVariant(0));
+                    newTemplates[i].file.set("Partition", QVariant(0));
                     for (int j=crossValidate-1; j>=1; j--) {
                         Template allPartitionTemplate = newTemplates[i];
-                        allPartitionTemplate.file.append(gallery.localMetadata());
-                        allPartitionTemplate.file.append(file.localMetadata());
-                        allPartitionTemplate.file.set("Cross_Validation_Partition", j);
+                        allPartitionTemplate.file.set("Partition", j);
                         allPartitionTemplate.file.set("Label", i+templates.size());
                         // Insert templates for all the other partitions
                         newTemplates.insert(i+1, allPartitionTemplate);
@@ -427,7 +426,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                 }
                 else newTemplates[i].file.set("Label", i+templates.size());
             }
-            else if (crossValidate > 0) newTemplates[i].file.set("Cross_Validation_Partition", rand()%crossValidate);
+            else if (crossValidate > 0) newTemplates[i].file.set("Partition", rand()%crossValidate);
         }
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {

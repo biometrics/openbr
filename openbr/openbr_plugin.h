@@ -17,6 +17,8 @@
 #ifndef __OPENBR_PLUGIN_H
 #define __OPENBR_PLUGIN_H
 
+#ifdef __cplusplus
+
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
@@ -1236,5 +1238,7 @@ Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(QList<float>)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
 Q_DECLARE_METATYPE(QList<br::Distance*>)
+
+#endif // __cplusplus
 
 #endif // __OPENBR_PLUGIN_H
