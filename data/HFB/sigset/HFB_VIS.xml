@@ -12,16 +12,16 @@
 	<biometric-signature name="0001">
 		<presentation file-name="VIS/0001-4.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="VIS/0002-1.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="VIS/0002-2.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="VIS/0002-3.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="VIS/0002-4.bmp" />
 	</biometric-signature>
 	<biometric-signature name="0003">
@@ -254,9 +254,6 @@
 	</biometric-signature>
 	<biometric-signature name="0022">
 		<presentation file-name="VIS/0022-1.bmp" />
-	</biometric-signature>
-	<biometric-signature name="0022">
-		<presentation file-name="VIS/0022-2.bmp" />
 	</biometric-signature>
 	<biometric-signature name="0022">
 		<presentation file-name="VIS/0022-3.bmp" />

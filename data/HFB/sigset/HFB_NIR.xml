@@ -12,16 +12,16 @@
 	<biometric-signature name="0001">
 		<presentation file-name="NIR/0001-4.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="NIR/0002-1.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="NIR/0002-2.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="NIR/0002-3.bmp" />
 	</biometric-signature>
-	<biometric-signature name="0001">
+	<biometric-signature name="0002">
 		<presentation file-name="NIR/0002-4.bmp" />
 	</biometric-signature>
 	<biometric-signature name="0003">
