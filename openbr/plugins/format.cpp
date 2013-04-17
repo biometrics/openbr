@@ -205,19 +205,7 @@ class DefaultFormat : public Format
                 t = url->read();
             }
         } else {
-            QString fileName = file.name;
-            if (!QFileInfo(fileName).exists()) {
-                fileName = file.get<QString>("path") + "/" + file.name;
-                if (!QFileInfo(fileName).exists()) {
-                    fileName = file.fileName();
-                    if (!QFileInfo(fileName).exists()) {
-                        fileName = file.get<QString>("path") + "/" + file.fileName();
-                        if (!QFileInfo(fileName).exists()) return t;
-                    }
-                }
-            }
-
-            Mat m = imread(fileName.toStdString());
+            Mat m = imread(file.resolved().toStdString());
             if (m.data) {
                 t.append(m);
             } else {

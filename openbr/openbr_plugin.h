@@ -550,6 +550,7 @@ public:
 
     /*!
      * \brief Path to use when resolving images specified with relative paths.
+     * Multiple paths can be specified using a semicolon separator.
      */
     Q_PROPERTY(QString path READ get_path WRITE set_path RESET reset_path)
     BR_PROPERTY(QString, path, "")

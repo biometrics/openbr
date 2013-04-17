@@ -112,7 +112,17 @@ QList<File> File::split(const QString &separator) const
 
 QString File::resolved() const
 {
-    return exists() ? name : Globals->path + "/" + name;
+    if (exists()) return name;
+    QStringList paths = get<QString>("path").split(";", QString::SkipEmptyParts);
+    foreach (const QString &path, paths) {
+        const File resolved = path + "/" + name;
+        if (resolved.exists()) return resolved;
+    }
+    foreach (const QString &path, paths) {
+        const File resolved = path + "/" + fileName();
+        if (resolved.exists()) return resolved;
+    }
+    return name;
 }
 
 bool File::contains(const QString &key) const
