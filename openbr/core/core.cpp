@@ -179,7 +179,7 @@ struct AlgorithmCore
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
-        if ((file.suffix() == "gal") || (file.suffix() == "mem")) {
+        if ((file.suffix() == "gal") || (file.suffix() == "mem") || (file.suffix() == "template")) {
             // Retrieve it
             gallery.reset(Gallery::make(file));
             galleryFiles = gallery->files();
