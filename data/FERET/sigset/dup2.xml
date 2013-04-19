@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biometric-signature-set>
+	<biometric-signature name="29">
+		<presentation file-name="00029fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="108">
+		<presentation file-name="00108fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="108">
+		<presentation file-name="00108fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="468">
+		<presentation file-name="00468fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="468">
+		<presentation file-name="00468fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="469">
+		<presentation file-name="00469fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="469">
+		<presentation file-name="00469fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="660">
+		<presentation file-name="00660fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="660">
+		<presentation file-name="00660fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="704">
+		<presentation file-name="00704fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="704">
+		<presentation file-name="00704fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="705">
+		<presentation file-name="00705fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="705">
+		<presentation file-name="00705fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="706">
+		<presentation file-name="00706fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="706">
+		<presentation file-name="00706fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="708">
+		<presentation file-name="00708fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="708">
+		<presentation file-name="00708fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="709">
+		<presentation file-name="00709fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="709">
+		<presentation file-name="00709fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="710">
+		<presentation file-name="00710fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="710">
+		<presentation file-name="00710fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="711">
+		<presentation file-name="00711fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="711">
+		<presentation file-name="00711fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="714">
+		<presentation file-name="00714fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="714">
+		<presentation file-name="00714fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="717">
+		<presentation file-name="00717fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="717">
+		<presentation file-name="00717fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="722">
+		<presentation file-name="00722fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="722">
+		<presentation file-name="00722fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="724">
+		<presentation file-name="00724fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="724">
+		<presentation file-name="00724fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="730">
+		<presentation file-name="00730fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="730">
+		<presentation file-name="00730fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fa010a_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fb010a_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="733">
+		<presentation file-name="00733fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="733">
+		<presentation file-name="00733fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="737">
+		<presentation file-name="00737fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="737">
+		<presentation file-name="00737fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="743">
+		<presentation file-name="00743fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="743">
+		<presentation file-name="00743fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="744">
+		<presentation file-name="00744fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="744">
+		<presentation file-name="00744fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="745">
+		<presentation file-name="00745fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="745">
+		<presentation file-name="00745fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="750">
+		<presentation file-name="00750fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="750">
+		<presentation file-name="00750fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="751">
+		<presentation file-name="00751fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="751">
+		<presentation file-name="00751fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="752">
+		<presentation file-name="00752fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="752">
+		<presentation file-name="00752fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="758">
+		<presentation file-name="00758fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="758">
+		<presentation file-name="00758fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="760">
+		<presentation file-name="00760fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="760">
+		<presentation file-name="00760fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="763">
+		<presentation file-name="00763fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="763">
+		<presentation file-name="00763fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="766">
+		<presentation file-name="00766fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="766">
+		<presentation file-name="00766fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="767">
+		<presentation file-name="00767fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="767">
+		<presentation file-name="00767fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="768">
+		<presentation file-name="00768fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="768">
+		<presentation file-name="00768fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fa010a_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fb010a_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="771">
+		<presentation file-name="00771fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="771">
+		<presentation file-name="00771fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="772">
+		<presentation file-name="00772fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="772">
+		<presentation file-name="00772fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="773">
+		<presentation file-name="00773fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="773">
+		<presentation file-name="00773fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="775">
+		<presentation file-name="00775fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="775">
+		<presentation file-name="00775fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="779">
+		<presentation file-name="00779fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="779">
+		<presentation file-name="00779fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="780">
+		<presentation file-name="00780fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="780">
+		<presentation file-name="00780fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="781">
+		<presentation file-name="00781fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="781">
+		<presentation file-name="00781fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="789">
+		<presentation file-name="00789fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="789">
+		<presentation file-name="00789fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="794">
+		<presentation file-name="00794fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="794">
+		<presentation file-name="00794fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="804">
+		<presentation file-name="00804fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="804">
+		<presentation file-name="00804fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="809">
+		<presentation file-name="00809fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="809">
+		<presentation file-name="00809fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="811">
+		<presentation file-name="00811fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="811">
+		<presentation file-name="00811fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="812">
+		<presentation file-name="00812fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="812">
+		<presentation file-name="00812fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="816">
+		<presentation file-name="00816fa010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="816">
+		<presentation file-name="00816fb010_960530.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="468">
+		<presentation file-name="00468fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="468">
+		<presentation file-name="00468fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="469">
+		<presentation file-name="00469fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="469">
+		<presentation file-name="00469fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="660">
+		<presentation file-name="00660fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="660">
+		<presentation file-name="00660fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="705">
+		<presentation file-name="00705fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="705">
+		<presentation file-name="00705fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="706">
+		<presentation file-name="00706fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="706">
+		<presentation file-name="00706fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="708">
+		<presentation file-name="00708fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="708">
+		<presentation file-name="00708fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="710">
+		<presentation file-name="00710fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="710">
+		<presentation file-name="00710fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="711">
+		<presentation file-name="00711fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="711">
+		<presentation file-name="00711fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="714">
+		<presentation file-name="00714fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="714">
+		<presentation file-name="00714fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="717">
+		<presentation file-name="00717fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="717">
+		<presentation file-name="00717fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="719">
+		<presentation file-name="00719fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="719">
+		<presentation file-name="00719fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="720">
+		<presentation file-name="00720fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="720">
+		<presentation file-name="00720fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="724">
+		<presentation file-name="00724fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="724">
+		<presentation file-name="00724fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="730">
+		<presentation file-name="00730fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="730">
+		<presentation file-name="00730fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="737">
+		<presentation file-name="00737fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="737">
+		<presentation file-name="00737fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="743">
+		<presentation file-name="00743fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="743">
+		<presentation file-name="00743fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="744">
+		<presentation file-name="00744fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="744">
+		<presentation file-name="00744fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="745">
+		<presentation file-name="00745fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="745">
+		<presentation file-name="00745fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="751">
+		<presentation file-name="00751fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="751">
+		<presentation file-name="00751fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="752">
+		<presentation file-name="00752fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="752">
+		<presentation file-name="00752fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="760">
+		<presentation file-name="00760fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="760">
+		<presentation file-name="00760fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="766">
+		<presentation file-name="00766fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="766">
+		<presentation file-name="00766fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="770">
+		<presentation file-name="00770fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="772">
+		<presentation file-name="00772fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="772">
+		<presentation file-name="00772fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="773">
+		<presentation file-name="00773fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="773">
+		<presentation file-name="00773fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="774">
+		<presentation file-name="00774fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="774">
+		<presentation file-name="00774fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="787">
+		<presentation file-name="00787fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="787">
+		<presentation file-name="00787fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="789">
+		<presentation file-name="00789fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="789">
+		<presentation file-name="00789fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="794">
+		<presentation file-name="00794fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="794">
+		<presentation file-name="00794fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="797">
+		<presentation file-name="00797fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="797">
+		<presentation file-name="00797fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="806">
+		<presentation file-name="00806fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="806">
+		<presentation file-name="00806fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="809">
+		<presentation file-name="00809fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="809">
+		<presentation file-name="00809fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="810">
+		<presentation file-name="00810fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="810">
+		<presentation file-name="00810fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="816">
+		<presentation file-name="00816fa010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="816">
+		<presentation file-name="00816fb010_960620.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="146">
+		<presentation file-name="00146fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="465">
+		<presentation file-name="00465fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="465">
+		<presentation file-name="00465fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="472">
+		<presentation file-name="00472fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="472">
+		<presentation file-name="00472fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="473">
+		<presentation file-name="00473fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="473">
+		<presentation file-name="00473fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="474">
+		<presentation file-name="00474fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="474">
+		<presentation file-name="00474fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="491">
+		<presentation file-name="00491fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="491">
+		<presentation file-name="00491fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="500">
+		<presentation file-name="00500fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="500">
+		<presentation file-name="00500fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="501">
+		<presentation file-name="00501fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="501">
+		<presentation file-name="00501fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="505">
+		<presentation file-name="00505fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="505">
+		<presentation file-name="00505fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="508">
+		<presentation file-name="00508fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="508">
+		<presentation file-name="00508fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="519">
+		<presentation file-name="00519fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="519">
+		<presentation file-name="00519fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="522">
+		<presentation file-name="00522fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="522">
+		<presentation file-name="00522fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="532">
+		<presentation file-name="00532fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="532">
+		<presentation file-name="00532fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="533">
+		<presentation file-name="00533fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="533">
+		<presentation file-name="00533fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="543">
+		<presentation file-name="00543fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="543">
+		<presentation file-name="00543fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="713">
+		<presentation file-name="00713fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="713">
+		<presentation file-name="00713fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="722">
+		<presentation file-name="00722fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="722">
+		<presentation file-name="00722fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="732">
+		<presentation file-name="00732fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fa010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761fb010_960627.tif" />
+	</biometric-signature>
+	<biometric-signature name="19">
+		<presentation file-name="00019ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="19">
+		<presentation file-name="00019bj010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="29">
+		<presentation file-name="00029bj010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="268">
+		<presentation file-name="00268bj010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="647">
+		<presentation file-name="00647ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="647">
+		<presentation file-name="00647bj010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="700">
+		<presentation file-name="00700ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="700">
+		<presentation file-name="00700bj010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761ba010_960521.tif" />
+	</biometric-signature>
+	<biometric-signature name="761">
+		<presentation file-name="00761bj010_960521.tif" />
+	</biometric-signature>
+</biometric-signature-set>

@@ -88,7 +88,7 @@ BR_REGISTER(Format, videoFormat)
 /*!
  * \ingroup formats
  * \brief A simple binary matrix format.
- * \author Josh Klonyz \cite jklontz
+ * \author Josh Klontz \cite jklontz
  * First 4 bytes indicate the number of rows.
  * Second 4 bytes indicate the number of columns.
  * The rest of the bytes are 32-bit floating data elements in row-major order.
@@ -96,28 +96,39 @@ BR_REGISTER(Format, videoFormat)
 class binFormat : public Format
 {
     Q_OBJECT
+    Q_PROPERTY(bool raw READ get_raw WRITE set_raw RESET reset_raw STORED false)
+    BR_PROPERTY(bool, raw, false)
 
     Template read() const
     {
         QByteArray data;
         QtUtils::readFile(file, data);
-        return Template(file, Mat(((quint32*)data.data())[0],
-                                  ((quint32*)data.data())[1],
-                                  CV_32FC1,
-                                  data.data()+8).clone());
+        if (raw) {
+            return Template(file, Mat(1, data.size(), CV_8UC1, data.data()).clone());
+        } else {
+            return Template(file, Mat(((quint32*)data.data())[0],
+                                      ((quint32*)data.data())[1],
+                                      CV_32FC1,
+                                      data.data()+8).clone());
+        }
     }
 
     void write(const Template &t) const
     {
-        Mat m;
-        t.m().convertTo(m, CV_32F);
-        if (m.channels() != 1) qFatal("Only supports single channel matrices.");
-
         QByteArray data;
         QDataStream stream(&data, QFile::WriteOnly);
-        stream.writeRawData((const char*)&m.rows, 4);
-        stream.writeRawData((const char*)&m.cols, 4);
-        stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
+        if (raw) {
+            const Mat &m = t;
+            stream.writeRawData((const char*)m.data, m.total()*m.elemSize());
+        } else {
+            Mat m;
+            t.m().convertTo(m, CV_32F);
+            if (m.channels() != 1) qFatal("Only supports single channel matrices.");
+
+            stream.writeRawData((const char*)&m.rows, 4);
+            stream.writeRawData((const char*)&m.cols, 4);
+            stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
+        }
 
         QtUtils::writeFile(file, data);
     }
@@ -205,19 +216,7 @@ class DefaultFormat : public Format
                 t = url->read();
             }
         } else {
-            QString fileName = file.name;
-            if (!QFileInfo(fileName).exists()) {
-                fileName = file.get<QString>("path") + "/" + file.name;
-                if (!QFileInfo(fileName).exists()) {
-                    fileName = file.fileName();
-                    if (!QFileInfo(fileName).exists()) {
-                        fileName = file.get<QString>("path") + "/" + file.fileName();
-                        if (!QFileInfo(fileName).exists()) return t;
-                    }
-                }
-            }
-
-            Mat m = imread(fileName.toStdString());
+            Mat m = imread(file.resolved().toStdString());
             if (m.data) {
                 t.append(m);
             } else {

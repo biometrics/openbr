@@ -15,7 +15,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
+
 #include "openbr_internal.h"
+#include "openbr/core/opencvutils.h"
 
 using namespace cv;
 
@@ -74,8 +76,7 @@ BR_REGISTER(Transform, ByRowTransform)
 
 /*!
  * \ingroup transforms
- * \brief Concatenates all input matrices into a single floating point matrix.
- * No requirements are placed on input matrices size and type.
+ * \brief Concatenates all input matrices into a single matrix.
  * \author Josh Klontz \cite jklontz
  */
 class CatTransform : public UntrainableMetaTransform
@@ -108,6 +109,24 @@ class CatTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, CatTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Concatenates all input matrices by row into a single matrix.
+ * All matricies must have the same row counts.
+ * \author Josh Klontz \cite jklontz
+ */
+class CatRowsTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = Template(src.file, OpenCVUtils::toMatByRow(src));
+    }
+};
+
+BR_REGISTER(Transform, CatRowsTransform)
 
 /*!
  * \ingroup transforms

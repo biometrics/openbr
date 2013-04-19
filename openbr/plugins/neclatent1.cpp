@@ -1,5 +1,6 @@
-#include "openbr_internal.h"
 #include <LatentEFS.h>
+
+#include "openbr_internal.h"
 
 // Necessary to allocate a large memory though the actual template size may be much smaller
 #define MAX_TEMPLATE_SIZE 400000
@@ -60,9 +61,9 @@ private:
         uchar *data = src.m().data;
         const int rows = src.m().rows;
         const int columns = src.m().cols;
+
         uchar buff[MAX_TEMPLATE_SIZE];
         uchar* pBuff = NULL;
-
         int size, error;
         if (latent) {
             if      (algorithm == LFML) error = NEC_LFML_ExtractLatent(data, rows, columns, 500, buff, &size);
@@ -76,7 +77,7 @@ private:
 
         if (!error) {
             cv::Mat n(1, size, CV_8UC1);
-            memcpy(n.data, buff, size);
+            memcpy(n.data, pBuff ? pBuff : buff, size);
             dst.m() = n;
         } else {
             qWarning("NECLatent1EnrollTransform error %d for file %s.", error, qPrintable(src.file.flat()));

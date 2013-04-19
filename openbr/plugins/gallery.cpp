@@ -605,6 +605,32 @@ BR_REGISTER(Gallery, xmlGallery)
 
 /*!
  * \ingroup galleries
+ * \brief Treat the file as a single binary template.
+ * \author Josh Klontz \cite jklontz
+ */
+class templateGallery : public Gallery
+{
+    Q_OBJECT
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        QByteArray data;
+        QtUtils::readFile(file.name.left(file.name.size()-QString(".template").size()), data);
+        return TemplateList() << Template(file, cv::Mat(1, data.size(), CV_8UC1, data.data()).clone());
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        qFatal("No supported.");
+    }
+};
+
+BR_REGISTER(Gallery, templateGallery)
+
+/*!
+ * \ingroup galleries
  * \brief Database input.
  * \author Josh Klontz \cite jklontz
  */
