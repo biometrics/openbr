@@ -137,7 +137,7 @@ QVariant File::value(const QString &key) const
 
 QVariant File::parse(const QString &value)
 {
-    bool ok;
+    bool ok = false;
     const QPointF point = QtUtils::toPoint(value, &ok);
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
@@ -1003,7 +1003,7 @@ void Output::reformat(const FileList &targetFiles, const FileList &queryFiles, c
     const int columns = targetFiles.size();
     for (int i=0; i<rows; i++)
         for (int j=0; j<columns; j++)
-            o->setRelative(m.at<float>(i,i), i, j);
+            o->setRelative(m.at<float>(i,j), i, j);
 }
 
 /* Output - protected methods */

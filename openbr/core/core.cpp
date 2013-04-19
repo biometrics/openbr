@@ -248,9 +248,8 @@ struct AlgorithmCore
                     if (!partitionSizes.empty()) targetPartitions = targets.partition(partitionSizes);
                     else targetPartitions.append(targets);
 
-                    if (queryPartitions[i].first().size() != targetPartitions[i].first().size()) qFatal("Query and target templates have different number of matrices.");
-
                     outputs[i]->setBlock(queryBlock, targetBlock);
+
                     distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
 
                     Globals->currentStep += double(targets.size()) * double(queries.size());

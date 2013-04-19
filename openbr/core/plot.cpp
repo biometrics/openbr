@@ -268,7 +268,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     }
 
     // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 100;
+    const int Max_Retrieval = 200;
     const int Report_Retrieval = 5;
 
     float reportRetrievalRate = -1;
@@ -471,6 +471,8 @@ struct RPlot
         return success;
     }
 };
+
+// Does not work if dataset folder starts with a number
 
 bool Plot(const QStringList &files, const br::File &destination, bool show)
 {
