@@ -248,24 +248,29 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
     lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getTAR(operatingPoints, 0.01), 'f', 3))));
 
+
     // Write SD & KDE
     points = qMin(qMin(Max_Points, genuines.size()), impostors.size());
     QList<double> sampledGenuineScores; sampledGenuineScores.reserve(points);
     QList<double> sampledImpostorScores; sampledImpostorScores.reserve(points);
-    for (int i=0; i<points; i++) {
-        float genuineScore = genuines[double(i) / double(points-1) * double(genuines.size()-1)];
-        float impostorScore = impostors[double(i) / double(points-1) * double(impostors.size()-1)];
-        if (genuineScore == -std::numeric_limits<float>::max()) genuineScore = minGenuineScore;
-        if (impostorScore == -std::numeric_limits<float>::max()) impostorScore = minImpostorScore;
-        lines.append(QString("SD,%1,Genuine").arg(QString::number(genuineScore)));
-        lines.append(QString("SD,%1,Impostor").arg(QString::number(impostorScore)));
-        sampledGenuineScores.append(genuineScore);
-        sampledImpostorScores.append(impostorScore);
+
+    if (points > 1) {
+        for (int i=0; i<points; i++) {
+            float genuineScore = genuines[double(i) / double(points-1) * double(genuines.size()-1)];
+            float impostorScore = impostors[double(i) / double(points-1) * double(impostors.size()-1)];
+            if (genuineScore == -std::numeric_limits<float>::max()) genuineScore = minGenuineScore;
+            if (impostorScore == -std::numeric_limits<float>::max()) impostorScore = minImpostorScore;
+            lines.append(QString("SD,%1,Genuine").arg(QString::number(genuineScore)));
+            lines.append(QString("SD,%1,Impostor").arg(QString::number(impostorScore)));
+            sampledGenuineScores.append(genuineScore);
+            sampledImpostorScores.append(impostorScore);
+        }
     }
 
     // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 100;
+    const int Max_Retrieval = 200;
     const int Report_Retrieval = 5;
+
     float reportRetrievalRate = -1;
     for (int i=1; i<=Max_Retrieval; i++) {
         int realizedReturns = 0, possibleReturns = 0;
@@ -466,6 +471,8 @@ struct RPlot
         return success;
     }
 };
+
+// Does not work if dataset folder starts with a number
 
 bool Plot(const QStringList &files, const br::File &destination, bool show)
 {

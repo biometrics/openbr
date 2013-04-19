@@ -410,7 +410,7 @@ struct TemplateList : public QList<Template>
             sum+=partitionSizes[i];
         }
 
-        if (sum != first().size()) qFatal("Partition sizes do not span template matrices properly");
+        if (sum != first().size()) qFatal("Partition sizes %i do not span template matrices %i properly", sum, first().size());
 
         foreach (const Template &t, *this) {
             int index = 0;
