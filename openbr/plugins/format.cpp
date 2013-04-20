@@ -317,6 +317,7 @@ BR_REGISTER(Format, maskFormat)
  * \brief MATLAB <tt>.mat</tt> format.
  * \author Josh Klontz \cite jklontz
  * http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf
+ * \note matFormat is known not to work with compressed matrices
  */
 class matFormat : public Format
 {
@@ -324,12 +325,18 @@ class matFormat : public Format
 
     struct Element
     {
+        // It is always best to cast integers to a Qt integer type, such as qint16 or quint32, when reading and writing.
+        // This ensures that you always know exactly what size integers you are reading and writing, no matter what the
+        // underlying platform and architecture the application happens to be running on.
+        // http://qt-project.org/doc/qt-4.8/datastreamformat.html
         quint32 type, bytes;
         QByteArray data;
         Element() : type(0), bytes(0) {}
         Element(QDataStream &stream)
             : type(0), bytes(0)
         {
+            // Read first 4 bytes into type (32 bit integer),
+            // specifying the type of data used
             if (stream.readRawData((char*)&type, 4) != 4)
                 qFatal("Unexpected end of file.");
 
@@ -340,11 +347,16 @@ class matFormat : public Format
                 bytes = bytes >> 16;
             } else {
                 // Regular format
+                // Read 4 bytes into bytes (32 bit integer),
+                // specifying the size of the element
                 if (stream.readRawData((char*)&bytes, 4) != 4)
                     qFatal("Unexpected end of file.");
             }
 
+            // Set the size of data to bytes
             data.resize(bytes);
+
+            // Read bytes amount of data from the file into data
             if (int(bytes) != stream.readRawData(data.data(), bytes))
                 qFatal("Unexpected end of file.");
 
@@ -372,8 +384,9 @@ class matFormat : public Format
         while (!f.atEnd()) {
             Element element(f);
 
-            // miCOMPRESS
+            // miCOMPRESSED
             if (element.type == 15) {
+                // Prepend the number of bytes to element.data
                 element.data.prepend((char*)&element.bytes, 4); // Qt zlib wrapper requires this to preallocate the buffer
                 QDataStream uncompressed(qUncompress(element.data));
                 element = Element(uncompressed);

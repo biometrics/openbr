@@ -45,8 +45,12 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
             qFatal("Input order mismatch.");
 
         // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QStringList predictedSubjects = predicted[i].file.get<QStringList>("Subject");
-        QStringList trueSubjects = truth[i].file.get<QStringList>("Subject");
+        QString predictedSubject = predicted[i].file.subject();
+        QString trueSubject = truth[i].file.subject();
+
+        QStringList predictedSubjects(predictedSubject);
+        QStringList trueSubjects(trueSubject);
+
         foreach (const QString &subject, trueSubjects.toVector() /* Hack to copy the list. */) {
             if (predictedSubjects.contains(subject)) {
                 counters[subject].truePositive++;

@@ -11,9 +11,9 @@
 #include <exception>
 #include <string>
 #include <vector>
-#include "openbr_internal.h"
 
-#include "core/resource.h"
+#include "openbr_internal.h"
+#include "openbr/core/resource.h"
 
 using namespace cv;
 using namespace br;

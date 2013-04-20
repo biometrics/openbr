@@ -34,7 +34,7 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \author Scott Klum \cite sklum
  */
 // TODO: Use a global mutex to prevent concurrent calls to AsmSearchDll
-#if 0
+
 class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -46,6 +46,9 @@ class StasmTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+        static QMutex mutex;
+        QMutexLocker locker(&mutex);
+
         int nlandmarks;
         int landmarks[500];
 
@@ -68,7 +71,6 @@ class StasmTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, StasmTransform)
-#endif
 
 } // namespace br
 

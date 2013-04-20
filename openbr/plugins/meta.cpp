@@ -76,7 +76,7 @@ class PipeTransform : public CompositeTransform
 {
     Q_OBJECT    
 
-    void _projectPartial(Template *srcdst, int startIndex, int stopIndex)
+    void _projectPartial(TemplateList *srcdst, int startIndex, int stopIndex)
     {
         for (int i=startIndex; i<stopIndex; i++)
             *srcdst >> *transforms[i];
@@ -87,6 +87,14 @@ class PipeTransform : public CompositeTransform
         if (!trainable) return;
 
         TemplateList copy(data);
+        QList<TemplateList> singleItemLists;
+        for (int i=0; i < copy.size(); i++)
+        {
+            TemplateList temp;
+            temp.append(copy[i]);
+            singleItemLists.append(temp);
+        }
+
         int i = 0;
         while (i < transforms.size()) {
             fprintf(stderr, "\n%s", qPrintable(transforms[i]->objectName()));
@@ -109,9 +117,14 @@ class PipeTransform : public CompositeTransform
 
             fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
-            for (int j=0; j<copy.size(); j++)
-                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &copy[j], i, nextTrainableTransform));
+            for (int j=0; j < singleItemLists.size(); j++)
+                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &singleItemLists[j], i, nextTrainableTransform));
             futures.waitForFinished();
+
+            copy.clear();
+            for (int j=0; j < singleItemLists.size(); j++)
+                copy.append(singleItemLists[j]);
+
             i = nextTrainableTransform;
         }
     }
