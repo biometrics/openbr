@@ -183,6 +183,11 @@ float File::label() const
     if (s.isNull()) return -1;
 
     const QString subject = s.toString();
+
+    bool is_num = false;
+    float num = subject.toFloat(&is_num);
+    if (is_num) return num;
+
     static QMutex mutex;
     QMutexLocker mutexLocker(&mutex);
     if (!Globals->subjects.contains(subject))
