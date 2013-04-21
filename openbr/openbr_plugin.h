@@ -906,8 +906,8 @@ public:
     bool selfSimilar; /*!< \brief \c true if the \em targetFiles == \em queryFiles, \c false otherwise. */
 
     virtual ~Output() {}
-    void setBlock(int rowBlock, int columnBlock); /*!< \brief Set the current block. */
-    void setRelative(float value, int i, int j); /*!< \brief Set a score relative to the current block. */
+    virtual void setBlock(int rowBlock, int columnBlock); /*!< \brief Set the current block. */
+    virtual void setRelative(float value, int i, int j); /*!< \brief Set a score relative to the current block. */
 
     static Output *make(const File &file, const FileList &targetFiles, const FileList &queryFiles); /*!< \brief Make an output from a file and gallery/probe file lists. */
     static void reformat(const FileList &targetFiles, const FileList &queryFiles, const File &simmat, const File &output); /*!< \brief Create an output from a similarity matrix and file lists. */
