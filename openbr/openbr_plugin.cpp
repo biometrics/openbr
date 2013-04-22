@@ -968,6 +968,13 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
 Context *br::Globals = NULL;
 
 /* Output - public methods */
+void Output::initialize(const FileList &targetFiles, const FileList &queryFiles)
+{
+    this->targetFiles = targetFiles;
+    this->queryFiles = queryFiles;
+    selfSimilar = (queryFiles == targetFiles) && (targetFiles.size() > 1) && (queryFiles.size() > 1);
+}
+
 void Output::setBlock(int rowBlock, int columnBlock)
 {
     offset = QPoint((columnBlock == -1) ? 0 : Globals->blockSize*columnBlock,
@@ -993,30 +1000,6 @@ Output *Output::make(const File &file, const FileList &targetFiles, const FileLi
         output = newOutput;
     }
     return output;
-}
-
-void Output::reformat(const FileList &targetFiles, const FileList &queryFiles, const File &simmat, const File &output)
-{
-    qDebug("Reformating %s to %s", qPrintable(simmat.flat()), qPrintable(output.flat()));
-
-    Mat m = BEE::readSimmat(simmat);
-
-    QSharedPointer<Output> o(Factory<Output>::make(output));
-    o->initialize(targetFiles, queryFiles);
-
-    const int rows = queryFiles.size();
-    const int columns = targetFiles.size();
-    for (int i=0; i<rows; i++)
-        for (int j=0; j<columns; j++)
-            o->setRelative(m.at<float>(i,j), i, j);
-}
-
-/* Output - protected methods */
-void Output::initialize(const FileList &targetFiles, const FileList &queryFiles)
-{
-    this->targetFiles = targetFiles;
-    this->queryFiles = queryFiles;
-    selfSimilar = (queryFiles == targetFiles) && (targetFiles.size() > 1) && (queryFiles.size() > 1);
 }
 
 /* MatrixOutput - public methods */

@@ -126,11 +126,8 @@ public:
                 check(parc >= 2, "Insufficient parameter count for 'cat'.");
                 br_cat(parc-1, parv, parv[parc-1]);
             } else if (!strcmp(fun, "convert")) {
-                check(parc == 2, "Incorrect parameter count for 'convert'.");
-                br_convert(parv[0], parv[1]);
-            } else if (!strcmp(fun, "reformat")) {
-                check(parc == 4, "Incorrect parameter count for 'reformat'.");
-                br_reformat(parv[0], parv[1], parv[2], parv[3]);
+                check(parc == 3, "Incorrect parameter count for 'convert'.");
+                br_convert(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "evalClassification")) {
                 check(parc == 2, "Incorrect parameter count for 'evalClassification'.");
                 br_eval_classification(parv[0], parv[1]);
@@ -172,6 +169,14 @@ public:
             } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;
+            } else if (!strcmp(fun, "getHeader")) {
+                check(parc == 1, "Incorrect parameter count for 'getHeader'.");
+                const char *target_gallery, *query_gallery;
+                br_get_header(parv[0], &target_gallery, &query_gallery);
+                printf("%s\n%s\n", target_gallery, query_gallery);
+            } else if (!strcmp(fun, "setHeader")) {
+                check(parc == 3, "Incorrect parameter count for 'setHeader'.");
+                br_set_header(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "br")) {
                 printf("That's me!\n");
             } else if (parc <= 1) {
@@ -210,22 +215,22 @@ private:
                "-makeMask <target_gallery> <query_gallery> {mask}\n"
                "-combineMasks <mask> ... <mask> {mask} (And|Or)\n"
                "-cat <gallery> ... <gallery> {gallery}\n"
-               "-convert <template> {template}\n"
-               "-reformat <target_sigset> <query_sigset> <simmat> {output}\n"
+               "-convert (Format|Gallery|Output) <input_file> {output_file}\n"
                "-evalClassification <predicted_gallery> <truth_gallery>\n"
                "-evalRegression <predicted_gallery> <truth_gallery>\n"
                "-evalClusters <clusters> <sigset>\n"
                "-confusion <file> <score>\n"
                "-plotMetadata <file> ... <file> <columns>\n"
-               "\n"
-               "==== Configuration ====\n"
+               "-getHeader <matrix>\n"
+               "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"
                "-<key> <value>\n"
                "\n"
                "==== Miscellaneous ====\n"
+               "-help\n"
                "-objects [abstraction [implementation]]\n"
                "-about\n"
                "-version\n"
-               "-shell\n"
+               "-daemon\n"
                "-exit\n");
     }
 };

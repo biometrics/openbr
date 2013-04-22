@@ -131,7 +131,7 @@ BR_EXPORT void br_confusion(const char *file, float score,
 /*!
  * \brief Wraps br::Convert()
  */
-BR_EXPORT void br_convert(const char *input, const char *output);
+BR_EXPORT void br_convert(const char *file_type, const char *input_file, const char *output_file);
 
 /*!
  * \brief Constructs template(s) from an input.
@@ -307,15 +307,6 @@ BR_EXPORT float br_progress();
 BR_EXPORT void br_read_pipe(const char *pipe, int *argc, char ***argv);
 
 /*!
- * \brief Converts a simmat to a new output format.
- * \param target_input The target br::Input used to make \em simmat.
- * \param query_input The query br::Input used to make \em simmat.
- * \param simmat The \ref simmat to reformat.
- * \param output The br::Output to create.
- */
-BR_EXPORT void br_reformat(const char *target_input, const char *query_input, const char *simmat, const char *output);
-
-/*!
  * \brief Wraps br::Context::scratchPath()
  * \note \ref managed_return_value
  * \see br_version
@@ -328,6 +319,25 @@ BR_EXPORT const char *br_scratch_path();
  * \see br_initialize
  */
 BR_EXPORT const char *br_sdk_path();
+
+/*!
+ * \brief Retrieve the target and query inputs in the BEE matrix header.
+ * \param matrix The BEE matrix file to modify
+ * \param[out] target_gallery The matrix target
+ * \param[out] query_gallery The matrix query
+ * \note \ref managed_return_value
+ * \see br_set_header
+ */
+BR_EXPORT void br_get_header(const char *matrix, const char **target_gallery, const char **query_gallery);
+
+/*!
+ * \brief Update the target and query inputs in the BEE matrix header.
+ * \param matrix The BEE matrix file to modify
+ * \param target_gallery The matrix target
+ * \param query_gallery The matrix query
+ * \see br_get_header
+ */
+BR_EXPORT void br_set_header(const char *matrix, const char *target_gallery, const char *query_gallery);
 
 /*!
  *\brief Wraps br::Context::setProperty()

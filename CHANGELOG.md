@@ -9,6 +9,7 @@
 * Added algorithm to show face detection results (#25)
 * Reorganized GUI code and include paths (#31)
 * 'br -daemon' to listen for commands on stdin
+* Generalized 'br -convert', now requires three parameters
 
 0.2.0 - 2/23/13
 ===============

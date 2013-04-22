@@ -16,8 +16,9 @@
 
 #include <openbr/openbr_plugin.h>
 
-#include "openbr/core/common.h"
-#include "openbr/core/qtutils.h"
+#include "bee.h"
+#include "common.h"
+#include "qtutils.h"
 
 using namespace br;
 
@@ -368,12 +369,34 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
-void br::Convert(const File &src, const File &dst)
+void br::Convert(const File &fileType, const File &inputFile, const File &outputFile)
 {
-    qDebug("Converting %s to %s", qPrintable(src.flat()), qPrintable(dst.flat()));
-    QScopedPointer<Format> before(Factory<Format>::make(src));
-    QScopedPointer<Format> after(Factory<Format>::make(dst));
-    after->write(before->read());
+    qDebug("Converting %s %s to %s", qPrintable(fileType.flat()), qPrintable(inputFile.flat()), qPrintable(outputFile.flat()));
+
+    if (fileType == "Format") {
+        QScopedPointer<Format> before(Factory<Format>::make(inputFile));
+        QScopedPointer<Format> after(Factory<Format>::make(outputFile));
+        after->write(before->read());
+    } else if (fileType == "Gallery") {
+        QScopedPointer<Gallery> before(Gallery::make(inputFile));
+        QScopedPointer<Gallery> after(Gallery::make(outputFile));
+        bool done = false;
+        while (!done) after->writeBlock(before->readBlock(&done));
+    } else if (fileType == "Output") {
+        QString target, query;
+        cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
+        const FileList targetFiles = TemplateList::fromGallery(target).files();
+        const FileList queryFiles = TemplateList::fromGallery(query).files();
+
+        QSharedPointer<Output> o(Factory<Output>::make(outputFile));
+        o->initialize(targetFiles, queryFiles);
+
+        for (int i=0; i<queryFiles.size(); i++)
+            for (int j=0; j<targetFiles.size(); j++)
+                o->setRelative(m.at<float>(i,j), i, j);
+    } else {
+        qFatal("Unrecognized file type %s.", qPrintable(fileType.flat()));
+    }
 }
 
 void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)

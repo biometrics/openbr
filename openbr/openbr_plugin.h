@@ -906,14 +906,11 @@ public:
     bool selfSimilar; /*!< \brief \c true if the \em targetFiles == \em queryFiles, \c false otherwise. */
 
     virtual ~Output() {}
+    virtual void initialize(const FileList &targetFiles, const FileList &queryFiles); /*!< \brief Initializes class data members. */
     virtual void setBlock(int rowBlock, int columnBlock); /*!< \brief Set the current block. */
     virtual void setRelative(float value, int i, int j); /*!< \brief Set a score relative to the current block. */
 
     static Output *make(const File &file, const FileList &targetFiles, const FileList &queryFiles); /*!< \brief Make an output from a file and gallery/probe file lists. */
-    static void reformat(const FileList &targetFiles, const FileList &queryFiles, const File &simmat, const File &output); /*!< \brief Create an output from a similarity matrix and file lists. */
-
-protected:
-    virtual void initialize(const FileList &targetFiles, const FileList &queryFiles); /*!< \brief Initializes class data members. */
 
 private:
     QSharedPointer<Output> next;
@@ -1210,11 +1207,12 @@ BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
 
 /*!
- * \brief To convert between matrix/template formats.
- * \param input The input matrix or template.
- * \param output The output matrix or template.
+ * \brief Change file formats.
+ * \param fileType One of \c Format, \c Gallery, or \c Output.
+ * \param inputFile The source file to convert from.
+ * \param outputFile The destination file to convert to.
  */
-BR_EXPORT void Convert(const File &input, const File &output);
+BR_EXPORT void Convert(const File &fileType, const File &inputFile, const File &outputFile);
 
 /*!
  * \brief Concatenate several galleries into one.

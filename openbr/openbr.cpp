@@ -56,9 +56,9 @@ void br_confusion(const char *file, float score, int *true_positives, int *false
     return Confusion(file, score, *true_positives, *false_positives, *true_negatives, *false_negatives);
 }
 
-void br_convert(const char *input, const char *output)
+void br_convert(const char *file_type, const char *input_file, const char *output_file)
 {
-    Convert(File(input), File(output));
+    Convert(File(file_type), File(input_file), File(output_file));
 }
 
 void br_enroll(const char *input, const char *gallery)
@@ -209,11 +209,6 @@ void br_read_pipe(const char *pipe, int *argc, char ***argv)
     *argv = rawCharArrayList.data();
 }
 
-void br_reformat(const char *target_input, const char *query_input, const char *simmat, const char *output)
-{
-    Output::reformat(TemplateList::fromGallery(target_input).files(), TemplateList::fromGallery(query_input).files(), simmat, output);
-}
-
 const char *br_scratch_path()
 {
     static QByteArray byteArray;
@@ -225,6 +220,22 @@ const char *br_sdk_path()
 {
     static QByteArray sdkPath = QDir(Globals->sdkPath).absolutePath().toLocal8Bit();
     return sdkPath.data();
+}
+
+void br_get_header(const char *matrix, const char **target_gallery, const char **query_gallery)
+{
+    static QByteArray targetGalleryData, queryGalleryData;
+    QString targetGalleryString, queryGalleryString;
+    BEE::readMatrixHeader(matrix, &targetGalleryString, &queryGalleryString);
+    targetGalleryData = targetGalleryString.toLatin1();
+    queryGalleryData = queryGalleryString.toLatin1();
+    *target_gallery = targetGalleryData.data();
+    *query_gallery = queryGalleryData.data();
+}
+
+void br_set_header(const char *matrix, const char *target_gallery, const char *query_gallery)
+{
+    BEE::writeMatrixHeader(matrix, target_gallery, query_gallery);
 }
 
 void br_set_property(const char *key, const char *value)

@@ -34,13 +34,13 @@ using namespace cv;
 using namespace br;
 
 /**** BEE ****/
-FileList BEE::readSigset(const QString &sigset, bool ignoreMetadata)
+FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
 {
     FileList fileList;
 
 #ifndef BR_EMBEDDED
-    QDomDocument doc(sigset);
-    QFile file(sigset);
+    QDomDocument doc(sigset.fileName());
+    QFile file(sigset.resolved());
     bool success;
     success = file.open(QIODevice::ReadOnly); if (!success) qFatal("Unable to open %s for reading.", qPrintable(sigset));
     success = doc.setContent(&file);          if (!success) qFatal("Unable to parse %s.", qPrintable(sigset));
@@ -227,6 +227,20 @@ void BEE::writeSimmat(const Mat &m, const QString &simmat, const QString &target
 void BEE::writeMask(const Mat &m, const QString &mask, const QString &targetSigset, const QString &querySigset)
 {
     writeMatrix<Mask_t>(m, mask, targetSigset, querySigset);
+}
+
+void BEE::readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset)
+{
+    qDebug("Reading %s header.", qPrintable(matrix));
+    if (matrix.endsWith("mask")) readMatrix<  Mask_t>(matrix, targetSigset, querySigset);
+    else                         readMatrix<Simmat_t>(matrix, targetSigset, querySigset);
+}
+
+void BEE::writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset)
+{
+    qDebug("Writing %s header to %s %s.", qPrintable(matrix), qPrintable(targetSigset), qPrintable(querySigset));
+    if (matrix.endsWith("mask")) writeMatrix<  Mask_t>(readMatrix<  Mask_t>(matrix), matrix, targetSigset, querySigset);
+    else                         writeMatrix<Simmat_t>(readMatrix<Simmat_t>(matrix), matrix, targetSigset, querySigset);
 }
 
 void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
