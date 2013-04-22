@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <QCoreApplication>
+#include <QCryptographicHash>
 #include <QFutureSynchronizer>
 #include <QMetaProperty>
 #include <QPointF>
@@ -443,7 +444,9 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         newTemplates.insert(i+1, allPartitionTemplate);
                     }
                 } else {
-                    newTemplates[i].file.set("Partition", rand() % crossValidate);
+                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.subject().toLatin1(), QCryptographicHash::Md5);
+                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                    newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                 }
             }
         }

@@ -203,7 +203,7 @@ class mtxOutput : public Output
         if (!f.open(QFile::ReadWrite))
             qFatal("Unable to open %s for modifying.", qPrintable(file));
         for (int i=0; i<blockScores.rows; i++) {
-            f.seek(headerSize + sizeof(float)*((rowBlock*Globals->blockSize+i)*targetFiles.size()+(columnBlock*Globals->blockSize)));
+            f.seek(headerSize + sizeof(float)*(quint64(rowBlock*Globals->blockSize+i)*targetFiles.size()+(columnBlock*Globals->blockSize)));
             f.write((const char*)blockScores.row(i).data, sizeof(float)*blockScores.cols);
         }
         f.close();
