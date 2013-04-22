@@ -403,6 +403,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     foreach (const br::File &file, gallery.split()) {
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
+
+        // If file is a Format not a Gallery
+        if (newTemplates.isEmpty())
+            newTemplates.append(file);
+
         newTemplates = newTemplates.mid(gallery.get<int>("pos", 0), gallery.get<int>("length", -1));
 
         const int step = gallery.get<int>("step", 1);
@@ -413,13 +418,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates = downsampled;
         }
 
-        if (gallery.get<bool>("reduce", false)) newTemplates = newTemplates.reduced();
+        if (gallery.getBool("reduce"))
+            newTemplates = newTemplates.reduced();
+
         const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
-
-        // If file is a Format not a Gallery
-        if (newTemplates.isEmpty())
-            newTemplates.append(file);
 
         // Propogate metadata
         for (int i=newTemplates.size()-1; i>=0; i--) {
@@ -427,21 +430,22 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
             newTemplates[i].file.set("Gallery", gallery.name);
-            if (newTemplates[i].file.getBool("allPartitions")) {
-                if (crossValidate > 0) {
+
+            if (crossValidate > 0) {
+                if (newTemplates[i].file.getBool("allPartitions")) {
                     // Set template to the first parition
                     newTemplates[i].file.set("Partition", QVariant(0));
+
+                    // Insert templates for all the other partitions
                     for (int j=crossValidate-1; j>=1; j--) {
                         Template allPartitionTemplate = newTemplates[i];
                         allPartitionTemplate.file.set("Partition", j);
-                        allPartitionTemplate.file.set("Label", i+templates.size());
-                        // Insert templates for all the other partitions
                         newTemplates.insert(i+1, allPartitionTemplate);
                     }
+                } else {
+                    newTemplates[i].file.set("Partition", rand() % crossValidate);
                 }
-                else newTemplates[i].file.set("Label", i+templates.size());
             }
-            else if (crossValidate > 0) newTemplates[i].file.set("Partition", rand()%crossValidate);
         }
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
