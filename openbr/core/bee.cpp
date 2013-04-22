@@ -265,6 +265,9 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 
+    for (int i = 0; i < 5; i++) qDebug() << "QueryPartition " << queries[i].fileName() << ": " << queryPartitions[i];
+    for (int i = 0; i < 5; i++) qDebug() << "TargetPartition " << targets[i].fileName() << ": " << targetPartitions[i];
+
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];

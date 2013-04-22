@@ -197,7 +197,10 @@ class AverageDistance : public Distance
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         float score = 0;
-        for (int i = 0; i < a.size(); i++) score += distance->compare(a[i],b[i]);
+        for (int i = 0; i < a.size(); i++) {
+            qDebug() << "Computing score for: " << a.file.name << " vs. " << b.file.name;
+            score += distance->compare(a[i],b[i]);
+        }
 
         return score/(float)a.size();
     }

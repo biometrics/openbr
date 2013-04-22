@@ -33,15 +33,13 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \brief Wraps STASM key point detector
  * \author Scott Klum \cite sklum
  */
-// TODO: Use a global mutex to prevent concurrent calls to AsmSearchDll
-
 class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
 
     void init()
     {
-        Globals->setProperty("parallelism", "0"); // Can only work in single threaded mode
+        // Load models
     }
 
     void project(const Template &src, Template &dst) const
@@ -49,22 +47,22 @@ class StasmTransform : public UntrainableTransform
         static QMutex mutex;
         QMutexLocker locker(&mutex);
 
-        int nlandmarks;
+        int numLandmarks;
         int landmarks[500];
 
-        AsmSearchDll(&nlandmarks, landmarks,
-                     qPrintable(src.file.name), reinterpret_cast<char*>(src.m().data), src.m().cols, src.m().rows,
-                     src.m(), (src.m().channels() == 3), qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-68-1d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-76-2d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/"));
+        AsmSearchDll(numLandmarks, landmarks, qPrintable(src.file.name), reinterpret_cast<char*>(src.m().data), src.m(), qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-68-1d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/mu-76-2d.conf"),  qPrintable(Globals->sdkPath + "/share/openbr/models/stasm/"));
 
-        if (nlandmarks == 0) {
+        if (numLandmarks == 0) {
             qWarning("Unable to detect Stasm landmarks for %s", qPrintable(src.file.fileName()));
             dst.file.set("FTE", true);
             dst.m() = src.m();
             return;
         }
 
-        for (int i = 0; i < nlandmarks; i++)
+        for (int i = 0; i < numLandmarks; i++) {
+            qDebug() << QPointF(landmarks[2 * i], landmarks[2 * i + 1]);
             dst.file.appendPoint(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
+        }
 
         dst.m() = src.m();
     }

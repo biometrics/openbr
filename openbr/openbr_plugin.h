@@ -299,7 +299,7 @@ struct BR_EXPORT FileList : public QList<File>
  * \brief A list of matrices associated with a file.
  *
  * The br::Template is one of the workhorse classes in OpenBR.
- * A template represents a biometric at various stages of enrollment and can be modified br::Transform and compared to other templates with br::Distance.
+ * A template represents a biometric at various stages of enrollment and can be modified by br::Transform and compared to other templates with br::Distance.
  *
  * While there exist many cases (ex. video enrollment, multiple face detects, per-patch subspace learning, ...) where the template will contain more than one matrix,
  * in most cases templates have exactly one matrix in their list representing a single image at various stages of enrollment.

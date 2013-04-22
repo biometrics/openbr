@@ -307,7 +307,7 @@ BR_REGISTER(Transform, LabelTransform)
 
 /*!
  * \ingroup transforms
- * \brief Name a point
+ * \brief Remove a name from a point
  * \author Scott Klum \cite sklum
  */
 class AnonymizeTransform : public UntrainableMetaTransform

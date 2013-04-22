@@ -401,6 +401,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 {
     TemplateList templates;
     foreach (const br::File &file, gallery.split()) {
+        qDebug() << file.name;
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
@@ -424,7 +425,6 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
 
-        // Propogate metadata
         for (int i=newTemplates.size()-1; i>=0; i--) {
             newTemplates[i].file.append(gallery.localMetadata());
             newTemplates[i].file.append(file.localMetadata());
