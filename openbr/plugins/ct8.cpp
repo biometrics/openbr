@@ -422,8 +422,14 @@ struct CT8Compare : public Distance,
         if (!srcA.m().data || !srcB.m().data) return score;
 
         try {
+            static QMutex mutex;
+            QMutexLocker locker(&mutex);
+
+            // Internally Cognitec keeps a total count of the allocated templates,
+            // it seems that this reference count update is not thread safe
             FRsdk::FIR firA = firBuilder->build( (FRsdk::Byte *) srcA.m().data, srcA.m().cols);
             FRsdk::FIR firB = firBuilder->build( (FRsdk::Byte *) srcB.m().data, srcB.m().cols);
+
             score = (float)facialMatchingEngine->compare(firA, firB);
         } catch (std::exception &e) {
             qFatal("CT8Compare Exception: %s", e.what());
