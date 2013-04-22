@@ -153,7 +153,7 @@ BR_EXPORT void br_enroll_n(int num_inputs, const char *inputs[], const char *gal
  * \param simmat The \ref simmat to use.
  * \param mask The \ref mask to use.
  * \param csv Optional \c .csv file to contain performance metrics.
- * \return True accept rate at a false accept rate of one in one hundred.
+ * \return True accept rate at a false accept rate of one in one thousand.
  * \see br_plot
  */
 BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "");

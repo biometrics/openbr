@@ -245,9 +245,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     }
 
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getTAR(operatingPoints, 0.01), 'f', 3))));
-
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getTAR(operatingPoints, 0.001), 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(getTAR(operatingPoints, 0.01), 'f', 3))));
 
     // Write SD & KDE
     points = qMin(qMin(Max_Points, genuines.size()), impostors.size());
@@ -286,7 +285,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     }
 
     if (!csv.isEmpty()) QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
+    qDebug("TAR @ FAR = 0.001: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
     return result;
 }
 
