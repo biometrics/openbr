@@ -101,6 +101,7 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
         if (index == operatingPoints.size())
             return 1;
     }
+
     const float x1 = (index == 0 ? 0 : operatingPoints[index-1].FAR);
     const float y1 = (index == 0 ? 0 : operatingPoints[index-1].TAR);
     const float x2 = operatingPoints[index].FAR;
@@ -174,7 +175,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     std::sort(comparisons.begin(), comparisons.end());
 
     QList<OperatingPoint> operatingPoints;
-    QList<float> genuines, impostors;
+    QList<float> genuines; genuines.reserve(sqrt(comparisons.size()));
+    QList<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
     int falsePositives = 0, previousFalsePositives = 0;
@@ -212,7 +214,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
             // Restrict the extreme ends of the curve
-            if ((falsePositives >= 10) && (falsePositives < impostorCount/2))
+            if ((truePositives >= 10) && (falsePositives < impostorCount/2))
                 operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
             previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
