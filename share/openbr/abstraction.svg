@@ -39,16 +39,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1446731"
-     inkscape:cx="314.85998"
+     inkscape:cx="160.23068"
      inkscape:cy="221.30937"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1383"
+     inkscape:window-width="1386"
      inkscape:window-height="856"
-     inkscape:window-x="57"
+     inkscape:window-x="54"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -67,27 +67,27 @@
      id="layer1"
      transform="translate(0,-636.36218)">
     <path
-       style="fill:#ffffb3;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:#ffffbf;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
        d="m 385,725.36218 110.00001,0 0,62 -110.00001,0 0,-14 26.32194,0 -0.26587,-34 -26.05607,0 z"
        id="rect3169"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccc" />
     <rect
-       style="fill:#8dd3c7;fill-opacity:1;stroke:#000000;stroke-width:1.99999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#fc8d59;fill-opacity:1;stroke:#000000;stroke-width:1.99999988000000006;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect5563"
        width="153"
        height="62"
        x="342"
        y="653.36218" />
     <rect
-       style="fill:#8dd3c7;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#fc8d59;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985"
        width="153"
        height="62"
        x="17"
        y="653.36218" />
     <path
-       style="fill:#ffffb3;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:#ffffbf;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
        d="m 17,725.36218 360,0 0,21 26,0 0,20 -26,0 0,21 -360,0 z"
        id="rect2989"
        inkscape:connector-curvature="0"
@@ -154,28 +154,28 @@
          x="367.25104"
          y="257.92224" /></text>
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:1.99999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999997, 7.99999995;stroke-dashoffset:0"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:1.99999988000000006;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999997000000018, 7.99999995000000030;stroke-dashoffset:0"
        id="rect3848"
        width="126"
        height="62.000004"
        x="369"
        y="797.36218" />
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999988, 7.99999978;stroke-dashoffset:0"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999987999999984, 7.99999977999999867;stroke-dashoffset:0"
        id="rect3854"
        width="62"
        height="62"
        x="225"
        y="797.36212" />
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0"
        id="rect3856"
        width="62"
        height="62"
        x="225"
        y="869.36218" />
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0"
        id="rect3858"
        width="61.999996"
        height="62"
@@ -215,7 +215,7 @@
          x="327.84473"
          y="836.1073">SVM</tspan></text>
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.00000014, 8.00000028;stroke-dashoffset:0"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.00000014000000004, 8.00000028000000007;stroke-dashoffset:0"
        id="rect3860"
        width="62.000004"
        height="62.000004"
@@ -267,7 +267,7 @@
          id="tspan5661"
          style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;font-family:Sans;-inkscape-font-specification:Sans">Application</tspan></text>
     <rect
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3901"
        width="31.999998"
        height="32"
@@ -329,14 +329,14 @@
          y="1047.37"
          id="tspan5528" /></text>
     <rect
-       style="fill:#ffffb3;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffffbf;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect5635"
        width="32"
        height="32"
        x="32"
        y="993.36218" />
     <rect
-       style="fill:#8dd3c7;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#fc8d59;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect5641"
        width="32"
        height="32"
@@ -348,7 +348,7 @@
        height="62.000004"
        width="126"
        id="rect3923"
-       style="fill:#ffffb3;fill-opacity:1;stroke:#000000;stroke-width:1.99999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999997, 7.99999995;stroke-dashoffset:0" />
+       style="fill:#ffffbf;fill-opacity:1;stroke:#000000;stroke-width:1.99999988000000006;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999997000000018, 7.99999995000000030;stroke-dashoffset:0" />
     <text
        sodipodi:linespacing="125%"
        id="text3925"
@@ -372,7 +372,7 @@
        height="62"
        width="152"
        id="rect3937"
-       style="fill:#8dd3c7;fill-opacity:1;stroke:#000000;stroke-width:1.99999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:#fc8d59;fill-opacity:1;stroke:#000000;stroke-width:1.99999988000000006;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <text
        sodipodi:linespacing="125%"
        id="text3939"
@@ -396,7 +396,7 @@
        height="134"
        width="126"
        id="rect3947"
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
@@ -461,14 +461,14 @@
        height="62"
        width="62"
        id="rect3974"
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999988, 7.99999978;stroke-dashoffset:0" />
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.99999987999999984, 7.99999977999999867;stroke-dashoffset:0" />
     <rect
        y="869.36218"
        x="153"
        height="62"
        width="62"
        id="rect3976"
-       style="fill:#bebada;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0" />
+       style="fill:#99d59e;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 8;stroke-dashoffset:0" />
     <text
        sodipodi:linespacing="125%"
        id="text3978"
