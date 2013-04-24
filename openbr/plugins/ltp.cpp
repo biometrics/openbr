@@ -17,7 +17,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <limits>
 #include "openbr_internal.h"
-#include <iostream>
 
 using namespace cv;
 
