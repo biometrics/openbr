@@ -75,7 +75,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
     }
 }
 
-void br::Fuse(const QStringList &inputSimmats, const QString &mask, const QString &normalization, const QString &fusion, const QString &outputSimmat)
+void br::Fuse(const QStringList &inputSimmats, File mask, const QString &normalization, const QString &fusion, const QString &outputSimmat)
 {
     qDebug("Fusing %d to %s", inputSimmats.size(), qPrintable(outputSimmat));
     QList<Mat> matrices;
@@ -83,6 +83,9 @@ void br::Fuse(const QStringList &inputSimmats, const QString &mask, const QStrin
         matrices.append(BEE::readSimmat(simmat));
     if ((matrices.size() < 2) && (fusion != "None")) qFatal("Expected at least two similarity matrices.");
     if ((matrices.size() > 1) && (fusion == "None")) qFatal("Expected exactly one similarity matrix.");
+
+    mask.set("rows", matrices.first().rows);
+    mask.set("columns", matrices.first().cols);
     Mat matrix_mask = BEE::readMask(mask);
 
     for (int i=0; i<matrices.size(); i++)

@@ -27,6 +27,7 @@
 #include "openbr_internal.h"
 
 #include "openbr/core/bee.h"
+#include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
 
@@ -834,22 +835,26 @@ BR_REGISTER(Gallery, googleGallery)
 
 /*!
  * \ingroup galleries
- * \brief Count the number of templates.
+ * \brief Print template statistics.
  * \author Josh Klontz \cite jklontz
  */
-class TemplateCountGallery : public Gallery
+class statGallery : public Gallery
 {
     Q_OBJECT
-    int count;
+    QList<int> bytes;
 
-    ~TemplateCountGallery()
+    ~statGallery()
     {
-        printf("%d\n", count);
-    }
+        int emptyTemplates = 0;
+        for (int i=bytes.size()-1; i>=0; i--)
+            if (bytes[i] == 0) {
+                bytes.removeAt(i);
+                emptyTemplates++;
+            }
 
-    void init()
-    {
-        count = 0;
+        double bytesMean, bytesStdDev;
+        Common::MeanStdDev(bytes, &bytesMean, &bytesStdDev);
+        printf("Empty Templates: %d/%d\nBytes/Template: %.4g +/- %.4g\n", emptyTemplates, emptyTemplates+bytes.size(), bytesMean, bytesStdDev);
     }
 
     TemplateList readBlock(bool *done)
@@ -860,12 +865,11 @@ class TemplateCountGallery : public Gallery
 
     void write(const Template &t)
     {
-        (void) t;
-        count++;
+        bytes.append(t.bytes());
     }
 };
 
-BR_REGISTER(Gallery, TemplateCountGallery)
+BR_REGISTER(Gallery, statGallery)
 
 } // namespace br
 

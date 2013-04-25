@@ -56,7 +56,7 @@ class CrossValidateTransform : public MetaTransform
         // If the src partition is greater than the number of training partitions,
         // assume that projection should be done using the same training data for all partitions.
         int partition = src.file.get<int>("Partition", 0);
-        if (partition >= transforms.size()-1) partition = 0;
+        if (partition >= transforms.size()) partition = 0;
 
         transforms[partition]->project(src, dst);
     }
