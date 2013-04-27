@@ -25,35 +25,34 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Colorspace conversion
+ * \brief Colorspace conversion.
  * \author Josh Klontz \cite jklontz
  */
 class CvtTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_ENUMS(Code)
-    Q_PROPERTY(Code code READ get_code WRITE set_code RESET reset_code STORED false)
+    Q_ENUMS(ColorSpace)
+    Q_PROPERTY(ColorSpace colorSpace READ get_colorSpace WRITE set_colorSpace RESET reset_colorSpace STORED false)
     Q_PROPERTY(int channel READ get_channel WRITE set_channel RESET reset_channel STORED false)
 
 public:
-    /*!< */
-    enum Code { Gray = CV_BGR2GRAY,
-                RGBGray = CV_RGB2GRAY,
-                HLS = CV_BGR2HLS,
-                HSV = CV_BGR2HSV,
-                Lab = CV_BGR2Lab,
-                Luv = CV_BGR2Luv,
-                RGB = CV_BGR2RGB,
-                XYZ = CV_BGR2XYZ,
-                YCrCb = CV_BGR2YCrCb };
+    enum ColorSpace { Gray = CV_BGR2GRAY,
+                      RGBGray = CV_RGB2GRAY,
+                      HLS = CV_BGR2HLS,
+                      HSV = CV_BGR2HSV,
+                      Lab = CV_BGR2Lab,
+                      Luv = CV_BGR2Luv,
+                      RGB = CV_BGR2RGB,
+                      XYZ = CV_BGR2XYZ,
+                      YCrCb = CV_BGR2YCrCb };
 
 private:
-    BR_PROPERTY(Code, code, Gray)
+    BR_PROPERTY(ColorSpace, colorSpace, Gray)
     BR_PROPERTY(int, channel, -1)
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() > 1) cvtColor(src, dst, code);
+        if (src.m().channels() > 1) cvtColor(src, dst, colorSpace);
         else                        dst = src;
 
         if (channel != -1) {
