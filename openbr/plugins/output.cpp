@@ -355,6 +355,23 @@ BR_REGISTER(Output, evalOutput)
 
 /*!
  * \ingroup outputs
+ * \brief Discards the scores.
+ * \author Josh Klontz \cite jklontz
+ */
+class nullOutput : public Output
+{
+    Q_OBJECT
+
+    void set(float value, int i, int j)
+    {
+        (void) value; (void) i; (void) j;
+    }
+};
+
+BR_REGISTER(Output, nullOutput)
+
+/*!
+ * \ingroup outputs
  * \brief Outputs highest ranked matches with scores.
  * \author Scott Klum \cite sklum
  */
