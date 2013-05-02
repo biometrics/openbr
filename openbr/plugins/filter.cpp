@@ -31,7 +31,7 @@ namespace br
 class GammaTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(float gamma READ get_gamma WRITE set_gamma RESET reset_gamma)
+    Q_PROPERTY(float gamma READ get_gamma WRITE set_gamma RESET reset_gamma STORED false)
     BR_PROPERTY(float, gamma, 0.2)
 
     Mat lut;
