@@ -5,7 +5,7 @@
 #include <NeoFacePro.h>
 
 #include "openbr_internal.h"
-#include "core/resource.h"
+#include "openbr/core/resource.h"
 
 using namespace br;
 

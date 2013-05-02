@@ -123,12 +123,6 @@ endif()
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
 install(DIRECTORY data share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
-include(InstallDependencies)
-install_compiler_libraries()
-install_qt_libraries(QT_DEPENDENCIES)
-install_qt_imageformats()
-install_qt_misc()
-install_opencv_libraries(OPENCV_DEPENDENCIES)
 
 # Package
 set(CPACK_BINARY_BUNDLE       OFF)

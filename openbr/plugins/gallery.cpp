@@ -841,6 +841,7 @@ BR_REGISTER(Gallery, googleGallery)
 class statGallery : public Gallery
 {
     Q_OBJECT
+    QSet<QString> subjects;
     QList<int> bytes;
 
     ~statGallery()
@@ -854,7 +855,8 @@ class statGallery : public Gallery
 
         double bytesMean, bytesStdDev;
         Common::MeanStdDev(bytes, &bytesMean, &bytesStdDev);
-        printf("Empty Templates: %d/%d\nBytes/Template: %.4g +/- %.4g\n", emptyTemplates, emptyTemplates+bytes.size(), bytesMean, bytesStdDev);
+        printf("Subjects: %d\nEmpty Templates: %d/%d\nBytes/Template: %.4g +/- %.4g\n",
+               subjects.size(), emptyTemplates, emptyTemplates+bytes.size(), bytesMean, bytesStdDev);
     }
 
     TemplateList readBlock(bool *done)
@@ -865,6 +867,7 @@ class statGallery : public Gallery
 
     void write(const Template &t)
     {
+        subjects.insert(t.file.subject());
         bytes.append(t.bytes());
     }
 };

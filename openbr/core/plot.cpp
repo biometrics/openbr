@@ -175,7 +175,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     std::sort(comparisons.begin(), comparisons.end());
 
     QList<OperatingPoint> operatingPoints;
-    QList<float> genuines; genuines.reserve(sqrt(comparisons.size()));
+    QList<float> genuines; genuines.reserve(sqrt((float)comparisons.size()));
     QList<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
