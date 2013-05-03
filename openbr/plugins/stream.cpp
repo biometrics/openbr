@@ -393,7 +393,6 @@ public:
     bool open(Template & input)
     {
         close();
-        bool open_res = false;
         final_frame = -1;
         last_issued = -2;
         last_received = -3;
@@ -401,12 +400,12 @@ public:
         // Input has no matrices? Its probably a video that hasn't been loaded yet
         if (input.empty()) {
             actualSource = new VideoDataSource(0);
-            open_res = actualSource->open(input);
+            actualSource->open(input);
         }
         else {
             // create frame dealer
             actualSource = new TemplateDataSource(0);
-            open_res = actualSource->open(input);
+            actualSource->open(input);
         }
         if (!isOpen()) {
             delete actualSource;
