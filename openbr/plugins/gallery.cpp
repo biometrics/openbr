@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
@@ -128,10 +129,13 @@ BR_REGISTER(Gallery, galGallery)
  * \ingroup galleries
  * \brief Reads/writes templates to/from folders.
  * \author Josh Klontz \cite jklontz
+ * \param regexp An optional regular expression to match against the files extension.
  */
 class EmptyGallery : public Gallery
 {
     Q_OBJECT
+    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    BR_PROPERTY(QString, regexp, "")
 
     void init()
     {
@@ -159,6 +163,13 @@ class EmptyGallery : public Gallery
         // Add root folder
         foreach (const QString &fileName, QtUtils::getFiles(file.name, false))
             templates.append(File(fileName, dir.dirName()));
+
+        if (!regexp.isEmpty()) {
+            const QRegularExpression re(regexp);
+            for (int i=templates.size()-1; i>=0; i--)
+                if (!re.match(templates[i].file.suffix()).hasMatch())
+                    templates.removeAt(i);
+        }
 
         return templates;
     }
