@@ -753,7 +753,7 @@ void Object::init(const File &file_)
             int argumentNumber =  key.mid(4).toInt();
             int targetIdx = argumentNumber + firstAvailablePropertyIdx;
             if (targetIdx >= metaObject()->propertyCount()) {
-                qWarning("too many arguments for transform %s, ignoring %s", qPrintable(objectName()), qPrintable(valueString));
+                qWarning("Too many arguments for object %s, ignoring %s", qPrintable(objectName()), qPrintable(valueString));
                 continue;
             }
             key = metaObject()->property(targetIdx).name();
