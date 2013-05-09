@@ -25,13 +25,12 @@
 #include <QtConcurrentRun>
 #include <algorithm>
 #include <iostream>
-#include <openbr/openbr_plugin.h>
-#include <openbr/plugins/openbr_internal.h>
 
 #ifndef BR_EMBEDDED
 #include <QApplication>
 #endif
 
+#include "openbr_plugin.h"
 #include "version.h"
 #include "core/bee.h"
 #include "core/common.h"

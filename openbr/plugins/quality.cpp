@@ -181,8 +181,9 @@ class MatchProbabilityDistance : public Distance
     float compare(const Template &target, const Template &query) const
     {
         float rawScore = distance->compare(target, query);
-        if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
-        return mp(rawScore, gaussian);
+        return -log(rawScore+1);
+        //if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
+        //return mp(rawScore, gaussian);
     }
 
     void store(QDataStream &stream) const

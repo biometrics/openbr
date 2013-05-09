@@ -96,7 +96,7 @@ namespace br
  *
  * \b Example:<br>
  * Note the symmetry between \c BR_PROPERTY and \c Q_PROPERTY.
- * \snippet sdk/plugins/misc.cpp example_transform
+ * \snippet openbr/plugins/misc.cpp example_transform
  */
 #define BR_PROPERTY(TYPE,NAME,DEFAULT)                  \
 TYPE NAME;                                              \
@@ -715,6 +715,7 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
+     * \param use_gui Create a QApplication instead of a QCoreApplication.
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
@@ -858,7 +859,7 @@ const FactoryInstance<_Abstraction,_Implementation> FactoryInstance<_Abstraction
  *
  * \b Example:<br>
  * Note the use of \c Q_OBJECT at the beginning of the class declaration and \c BR_REGISTER after the class declaration.
- * \snippet sdk/plugins/misc.cpp example_transform
+ * \snippet openbr/plugins/misc.cpp example_transform
  */
 #define BR_REGISTER(ABSTRACTION,IMPLEMENTATION)       \
 template class                                        \

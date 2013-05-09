@@ -300,6 +300,7 @@ BR_EXPORT float br_progress();
  *
  * Used by the \ref cli to implement \c -daemon, generally not useful otherwise.
  * Guaranteed to return at least one argument.
+ * \param pipe Pipe name
  * \param[out] argc argument count
  * \param[out] argv argument list
  * \note \ref managed_return_value
