@@ -44,7 +44,7 @@
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
- * \brief Plugin API for developing new algorithms.
+ * \brief Plugin API for extending OpenBR functionality.
  *
  * \code
  * #include <openbr/openbr_plugin.h>

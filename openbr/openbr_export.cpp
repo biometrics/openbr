@@ -17,22 +17,27 @@
 /*!
  * \mainpage
  * \section overview Overview
- * OpenBR \cite openbr is a toolkit for biometric recognition and evaluation.
- * Supported use cases include training new recognition algorithms, interfacing with commercial systems, and measuring algorithm performance.
- * Free algorithms are also available for specific modalities including \ref cpp_face_recognition, \ref cpp_age_estimation, and \ref cpp_gender_estimation.
+ * OpenBR \cite openbr is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
+ * The project is designed to facilitate rapid algorithm prototyping, and features a mature core framework, flexible plugin system, and support for open and closed source development.
+ * Off-the-shelf algorithms are also available for specific modalities including \ref cpp_face_recognition, \ref cpp_age_estimation, and \ref cpp_gender_estimation.
  *
- * There are three modules users may interact with:
- * - \ref cli - \copybrief cli
- * - \ref c_sdk - \copybrief c_sdk
- * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
+ * OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
+ * The project was later published as open source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license and is <i>free for academic and commercial use</i>.
+ *
+ * \image html "share/openbr/abstraction.svg" "The two principal software artifacts are the shared library 'openbr' and command line application 'br'."
  *
  * \section get_started Get Started
  * - \ref installation - \copybrief installation
+ *
+ * \section learn_more Learn More
+ * - \ref cli - \copybrief cli
+ * - \ref c_sdk - \copybrief c_sdk
+ * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
  */
 
 /*!
  * \page installation Installation
- * \brief A hacker's guide to building, editing, and running the project.
+ * \brief A hacker's guide to building, editing, and running OpenBR.
  *
  * \section installation_from_source From Source
  * Installation from source is the recommended method for getting OpenBR on your machine.

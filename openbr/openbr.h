@@ -25,7 +25,7 @@ extern "C" {
 
  /*!
  * \defgroup c_sdk C SDK
- * \brief High-level API for running algorithms and evaluating results with wrappers available for other programming languages.
+ * \brief High-level API for running algorithms and evaluating results.
  *
  * In order to provide a high-level interface that is usable from the command line and callable from other programming languages,
  * the API is designed to operate at the "file system" level.
