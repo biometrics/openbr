@@ -701,42 +701,27 @@ QStringList Object::parse(const QString &string, char split)
 /* Object - private methods */
 void Object::init(const File &file_)
 {
-    this->file = file_;
+    file = file_;
 
-    // Set name
-    QString name = metaObject()->className();
-    if (name.startsWith("br::")) name = name.right(name.size()-4);
-
-    firstAvailablePropertyIdx = metaObject()->propertyCount();
-
-    const QMetaObject * baseClass = metaObject();
-    const QMetaObject * superClass = metaObject()->superClass();
-
-    while (superClass != NULL) {
-        const QMetaObject * nextClass = superClass->superClass();
-
-        // baseClass <- something <- br::Object
-        // baseClass is the highest class whose properties we can set via positional arguments
-        if (nextClass && !strcmp(nextClass->className(),"br::Object")) {
+    // Determine interfaceName and firstAvailablePropertyIdx
+    QString interfaceName;
+    const QMetaObject *baseClass = metaObject();
+    while (true) {
+        if (!strcmp(baseClass->superClass()->className(), "br::Object") /* Special case for classes that inherit directly from br::Object */ ||
+            !strcmp(baseClass->superClass()->superClass()->className(), "br::Object") /* General case for plugins that inherit indirectly from br::Object */) {
             firstAvailablePropertyIdx = baseClass->propertyOffset();
+            interfaceName = QString(baseClass->superClass()->className()).remove("br::");
+            break;
         }
-
-        QString superClassName = superClass->className();
-
-        // strip br:: prefix from superclass name
-        if (superClassName.startsWith("br::"))
-            superClassName = superClassName.right(superClassName.size()-4);
-
-        // Strip superclass name from base class name (e.g. PipeTransform -> Pipe)
-        if (name.endsWith(superClassName))
-            name = name.left(name.size() - superClassName.size());
-        baseClass = superClass;
-        superClass = superClass->superClass();
-
+        baseClass = baseClass->superClass();
     }
+
+    // Strip interface name from object name (e.g. PipeTransform -> Pipe)
+    QString name = QString(metaObject()->className()).remove("br::");
+    if (name.endsWith(interfaceName)) name = name.left(name.size() - interfaceName.size());
     setObjectName(name);
 
-    // Reset all properties
+    // Set properties to their default values
     for (int i=0; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
         if (property.isResettable())

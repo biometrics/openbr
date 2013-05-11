@@ -498,9 +498,7 @@ struct TemplateList : public QList<Template>
 class BR_EXPORT Object : public QObject
 {
     Q_OBJECT
-
-    // Index of the first property that can be set via command line arguments
-    int firstAvailablePropertyIdx;
+    int firstAvailablePropertyIdx; /*!< \brief Index of the first property that can be set via command line arguments. */
 
 public:
     File file; /*!< \brief The file used to construct the plugin. */
