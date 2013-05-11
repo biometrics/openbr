@@ -1105,14 +1105,9 @@ Transform *Transform::make(QString str, QObject *parent)
     Transform *transform = Factory<Transform>::make(f);
 
     if (transform->independent) {
-//        Transform *independentTransform = Factory<Transform>::make(".Independent");
-//        static_cast<QObject*>(independentTransform)->setProperty("transform", qVariantFromValue<void*>(transform));
-//        independentTransform->init();
-//        transform = independentTransform;
-
-                File independent(".Independent");
-                independent.set("transform", qVariantFromValue<void*>(transform));
-                transform = Factory<Transform>::make(independent);
+        File independent(".Independent");
+        independent.set("transform", qVariantFromValue<void*>(transform));
+        transform = Factory<Transform>::make(independent);
     }
 
     transform->setParent(parent);
