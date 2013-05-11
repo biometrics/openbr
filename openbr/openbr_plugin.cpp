@@ -633,62 +633,73 @@ void Object::load(QDataStream &stream)
     init();
 }
 
-void Object::setProperty(const QString &name, const QString &value)
+void Object::setProperty(const QString &name, QVariant value)
 {
     QString type;
     int index = metaObject()->indexOfProperty(qPrintable(name));
     if (index != -1) type = metaObject()->property(index).typeName();
-    else             type = "";
 
-    QVariant variant;
-    if (type.startsWith("QList<") && type.endsWith(">")) {
-        if (!value.startsWith('[')) qFatal("Expected a list.");
-        const QStringList strings = parse(value.mid(1, value.size()-2));
+    if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
+        QVariantList elements;
+        if (value.canConvert<QVariantList>()) {
+            elements = value.value<QVariantList>();
+        } else if (value.canConvert<QString>()) {
+            QString string = value.value<QString>();
+            if (!string.startsWith('[') || !string.endsWith(']'))
+                qFatal("Expected a list to start with '[' and end with 'brackets']'.");
+            foreach (const QString &element, parse(string.mid(1, string.size()-2)))
+                elements.append(element);
+        } else {
+            qFatal("Expected a list.");
+        }
 
-        if (type == "QList<float>") {
-            QList<float> values;
-            foreach (const QString &string, strings)
-                values.append(string.toFloat());
-            variant.setValue(values);
+        if ((type == "QList<QString>") || (type == "QStringList")) {
+            QStringList parsedValues;
+            foreach (const QVariant &element, elements)
+                parsedValues.append(element.toString());
+            value.setValue(parsedValues);
+        } else if (type == "QList<float>") {
+            QList<float> parsedValues; bool ok;
+            foreach (const QVariant &element, elements) {
+                parsedValues.append(element.toFloat(&ok));
+                if (!ok) qFatal("Failed to convert element to floating point format.");
+            }
+            value.setValue(parsedValues);
         } else if (type == "QList<int>") {
-            QList<int> values;
-            foreach (const QString &string, strings)
-                values.append(string.toInt());
-            variant.setValue(values);
+            QList<int> parsedValues; bool ok;
+            foreach (const QVariant &element, elements) {
+                parsedValues.append(element.toInt(&ok));
+                if (!ok) qFatal("Failed to convert element to integer format.");
+            }
+            value.setValue(parsedValues);
         } else if (type == "QList<br::Transform*>") {
-            QList<Transform*> values;
-            foreach (const QString &string, strings)
-                values.append(Transform::make(string, this));
-            variant.setValue(values);
+            QList<Transform*> parsedValues;
+            foreach (const QVariant &element, elements)
+                if (element.canConvert<QString>()) parsedValues.append(Transform::make(element.toString(), this));
+                else                               parsedValues.append(element.value<Transform*>());
+            value.setValue(parsedValues);
         } else if (type == "QList<br::Distance*>") {
-            QList<Distance*> values;
-            foreach (const QString &string, strings)
-                values.append(Distance::make(string, this));
-            variant.setValue(values);
+            QList<Distance*> parsedValues;
+            foreach (const QVariant &element, elements)
+                if (element.canConvert<QString>()) parsedValues.append(Distance::make(element.toString(), this));
+                else                               parsedValues.append(element.value<Distance*>());
+            value.setValue(parsedValues);
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
     } else if (type == "br::Transform*") {
-        variant.setValue(Transform::make(value, this));
+        if (value.canConvert<QString>())
+            value.setValue(Transform::make(value.toString(), this));
     } else if (type == "br::Distance*") {
-        variant.setValue(Distance::make(value, this));
-    } else if (type == "QStringList") {
-        variant.setValue(parse(value.mid(1, value.size()-2)));
+        if (value.canConvert<QString>())
+            value.setValue(Distance::make(value.toString(), this));
     } else if (type == "bool") {
-        if      (value.isEmpty())  variant = true;
-        else if (value == "false") variant = false;
-        else if (value == "true")  variant = true;
-        else                       variant = value;
-    } else {
-        variant = value;
+        if      (value.isNull())   value = true;
+        else if (value == "false") value = false;
+        else if (value == "true")  value = true;
     }
 
-    setProperty(name, variant, !type.isEmpty());
-}
-
-void Object::setProperty(const QString &name, const QVariant &value, bool failOnError)
-{
-    if (!QObject::setProperty(qPrintable(name), value) && failOnError)
+    if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
         qFatal("Failed to set %s::%s to: %s",
                metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
 }
@@ -731,20 +742,16 @@ void Object::init(const File &file_)
 
     foreach (QString key, file.localKeys()) {
         const QVariant value = file.value(key);
-        const QString valueString = value.toString();
-
         if (key.startsWith(("_Arg"))) {
             int argumentNumber =  key.mid(4).toInt();
             int targetIdx = argumentNumber + firstAvailablePropertyIdx;
             if (targetIdx >= metaObject()->propertyCount()) {
-                qWarning("Too many arguments for object %s, ignoring %s", qPrintable(objectName()), qPrintable(valueString));
+                qWarning("Too many arguments for object: %s, ignoring: %s", qPrintable(objectName()), qPrintable(value.toString()));
                 continue;
             }
             key = metaObject()->property(targetIdx).name();
         }
-
-        if (valueString.isEmpty()) setProperty(key, value);       // Set the property directly
-        else                       setProperty(key, valueString); // Parse the value first
+        setProperty(key, value);
     }
 
     init();

@@ -511,8 +511,7 @@ public:
     QStringList arguments() const; /*!< \brief A string describing the values the object has. */
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
-    void setProperty(const QString &name, const QString &value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
-    void setProperty(const QString &name, const QVariant &value, bool failOnError = false); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:
