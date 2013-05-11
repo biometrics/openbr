@@ -121,7 +121,7 @@ endif()
 
 # Install
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
-install(DIRECTORY data share DESTINATION .)
+install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 
 # Package
