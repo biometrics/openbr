@@ -25,7 +25,7 @@ extern "C" {
 
  /*!
  * \defgroup c_sdk C SDK
- * \brief High-level API for running algorithms and evaluating results with wrappers available for other programming languages.
+ * \brief High-level API for running algorithms and evaluating results.
  *
  * In order to provide a high-level interface that is usable from the command line and callable from other programming languages,
  * the API is designed to operate at the "file system" level.
@@ -300,6 +300,7 @@ BR_EXPORT float br_progress();
  *
  * Used by the \ref cli to implement \c -daemon, generally not useful otherwise.
  * Guaranteed to return at least one argument.
+ * \param pipe Pipe name
  * \param[out] argc argument count
  * \param[out] argv argument list
  * \note \ref managed_return_value

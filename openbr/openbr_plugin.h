@@ -44,7 +44,7 @@
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
- * \brief Plugin API for developing new algorithms.
+ * \brief Plugin API for extending OpenBR functionality.
  *
  * \code
  * #include <openbr/openbr_plugin.h>
@@ -96,7 +96,7 @@ namespace br
  *
  * \b Example:<br>
  * Note the symmetry between \c BR_PROPERTY and \c Q_PROPERTY.
- * \snippet sdk/plugins/misc.cpp example_transform
+ * \snippet openbr/plugins/misc.cpp example_transform
  */
 #define BR_PROPERTY(TYPE,NAME,DEFAULT)                  \
 TYPE NAME;                                              \
@@ -107,19 +107,28 @@ void reset_##NAME() { NAME = DEFAULT; }
 /*!
  * \brief A file path with associated metadata.
  *
- * The br::File is one of the workhorse classes in OpenBR.
+ * The File is one of two important data structures in OpenBR (the Template is the other).
  * It is typically used to store the path to a file on disk with associated metadata.
- * The ability to associate a metadata map with the file helps keep the API simple and stable while providing customizable behavior when appropriate.
+ * The ability to associate a key/value metadata table with the file helps keep the API simple while providing customizable behavior.
  *
- * When querying the value of a metadata key, the value will first try to be resolved using the file's private metadata.
- * If the key does not exist in the local map then it will be resolved using the properities in the global br::Context.
- * This has the desirable effect that file metadata may optionally be set globally using br::Context::set to operate on all files.
+ * When querying the value of a metadata key, the value will first try to be resolved against the file's private metadata table.
+ * If the key does not exist in its local table then it will be resolved against the properities in the global Context.
+ * By design file metadata may be set globally using Context::setProperty to operate on all files.
  *
  * Files have a simple grammar that allow them to be converted to and from strings.
  * If a string ends with a \c ] or \c ) then the text within the final \c [] or \c () are parsed as comma sperated metadata fields.
- * Fields within \c [] are expected to have the format <tt>[key1=value1, key2=value2, ..., keyN=valueN]</tt>.
- * Fields within \c () are expected to have the format <tt>(value1, value2, ..., valueN)</tt> with the keys determined from the order of \c Q_PROPERTY.
- * The rest of the string is assigned to #name.
+ * By convention, fields within \c [] are expected to have the format <tt>[key1=value1, key2=value2, ..., keyN=valueN]</tt> where order is irrelevant.
+ * Fields within \c () are expected to have the format <tt>(value1, value2, ..., valueN)</tt> where order matters and the key context dependent.
+ * The left hand side of the string not parsed in a manner described above is assigned to #name.
+ *
+ * Values are not necessarily stored as strings in the metadata table.
+ * The system will attempt to infer and convert them to their "native" type.
+ * The conversion logic is as follows:
+ * -# If the value starts with \c [ and ends with \c ] then it is treated as a comma separated list and represented with \c QVariantList. Each value in the list is parsed recursively.
+ * -# If the value starts with \c ( and ends with \c ) and contains four comma separated elements, each convertable to a floating point number, then it is represented with \c QRectF.
+ * -# If the value starts with \c ( and ends with \c ) and contains two comma separated elements, each convertable to a floating point number, then it is represented with \c QPointF.
+ * -# If the value is convertable to a floating point number then it is represented with \c float.
+ * -# Otherwise, it is represented with \c QString.
  *
  * The metadata keys \c Subject and \c Label have special significance in the system.
  * \c Subject is a string specifying a unique identifier used to determine ground truth match/non-match.
@@ -298,7 +307,7 @@ struct BR_EXPORT FileList : public QList<File>
 /*!
  * \brief A list of matrices associated with a file.
  *
- * The br::Template is one of the workhorse classes in OpenBR.
+ * The Template is one of two important data structures in OpenBR (the File is the other).
  * A template represents a biometric at various stages of enrollment and can be modified by br::Transform and compared to other templates with br::Distance.
  *
  * While there exist many cases (ex. video enrollment, multiple face detects, per-patch subspace learning, ...) where the template will contain more than one matrix,
@@ -489,9 +498,7 @@ struct TemplateList : public QList<Template>
 class BR_EXPORT Object : public QObject
 {
     Q_OBJECT
-
-    // Index of the first property that can be set via command line arguments
-    int firstAvailablePropertyIdx;
+    int firstAvailablePropertyIdx; /*!< \brief Index of the first property that can be set via command line arguments. */
 
 public:
     File file; /*!< \brief The file used to construct the plugin. */
@@ -504,8 +511,7 @@ public:
     QStringList arguments() const; /*!< \brief A string describing the values the object has. */
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
-    void setProperty(const QString &name, const QString &value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
-    void setProperty(const QString &name, const QVariant &value, bool failOnError = false); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:
@@ -715,6 +721,7 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
+     * \param use_gui Create a QApplication instead of a QCoreApplication.
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
@@ -858,7 +865,7 @@ const FactoryInstance<_Abstraction,_Implementation> FactoryInstance<_Abstraction
  *
  * \b Example:<br>
  * Note the use of \c Q_OBJECT at the beginning of the class declaration and \c BR_REGISTER after the class declaration.
- * \snippet sdk/plugins/misc.cpp example_transform
+ * \snippet openbr/plugins/misc.cpp example_transform
  */
 #define BR_REGISTER(ABSTRACTION,IMPLEMENTATION)       \
 template class                                        \

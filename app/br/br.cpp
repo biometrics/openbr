@@ -24,9 +24,9 @@
 
 /*!
  * \defgroup cli Command Line Interface
- * \brief Command line application for running algorithms and evaluating results.
+ * \brief Command line wrapper of the \ref c_sdk.
  *
- * The easiest and fastest way to leverage the project, we use it all the time!
+ * The easiest and fastest way to run algorithms and evaluating results, we use it all the time!
  * Commands are designed to mirror the \ref c_sdk and are evaluated in the order they are entered.
  * To get started, try running:
  * \code
