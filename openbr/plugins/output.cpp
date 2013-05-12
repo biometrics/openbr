@@ -80,7 +80,7 @@ class csvOutput : public MatrixOutput
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList words;
             for (int j=0; j<targetFiles.size(); j++)
-                words.append(toString(i,j));
+                words.append(toString(i,j));  // The toString idiom is used to output match scores - see MatrixOutput
             lines.append(queryFiles[i].name+","+words.join(","));
         }
         QtUtils::writeFile(file, lines);
@@ -88,6 +88,46 @@ class csvOutput : public MatrixOutput
 };
 
 BR_REGISTER(Output, csvOutput)
+
+/*!
+ * \ingroup outputs
+ * \brief Matrix-like output for heat maps.
+ * \author Scott Klum \cite sklum
+ */
+class heatOutput : public MatrixOutput
+{
+    Q_OBJECT
+    Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
+    BR_PROPERTY(int, rows, -1)
+    Q_PROPERTY(int cols READ get_cols WRITE set_cols RESET reset_cols STORED false)
+    BR_PROPERTY(int, cols, -1)
+
+    ~heatOutput()
+    {
+        if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
+
+        if (rows*cols > targetFiles.size()) qFatal("Incompatible heatmap output dimensionality");
+
+        QStringList lines;
+        for (int col = 0; col < cols; col++) {
+            QStringList words;
+            for (int row = 0; row < rows; row++)
+                words.append(toString(row,col));
+            lines.append(words.join(","));
+        }
+        QtUtils::writeFile(file, lines);
+    }
+
+    void initialize(const FileList &targetFiles, const FileList &queryFiles)
+    {
+        if (rows == -1 || cols == -1) qFatal("heatOutput requires dimensionality");
+
+        Output::initialize(targetFiles, queryFiles);
+        data.create(rows, cols, CV_32FC1);
+    }
+};
+
+BR_REGISTER(Output, heatOutput)
 
 /*!
  * \ingroup outputs
