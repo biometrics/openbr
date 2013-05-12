@@ -265,9 +265,6 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 
-    for (int i = 0; i < 5; i++) qDebug() << "QueryPartition " << queries[i].fileName() << ": " << queryPartitions[i];
-    for (int i = 0; i < 5; i++) qDebug() << "TargetPartition " << targets[i].fileName() << ": " << targetPartitions[i];
-
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];
@@ -283,9 +280,10 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             if      (fileA == fileB)           val = DontCare;
             else if (labelA == -1)             val = DontCare;
             else if (labelB == -1)             val = DontCare;
-            else if (partitionA != partitionB) val = DontCare;
             else if (partitionA != partition)  val = DontCare;
+            else if (partitionB == -1)         val = NonMatch;
             else if (partitionB != partition)  val = DontCare;
+            else if (partitionA != partitionB) val = DontCare;
             else if (labelA == labelB)         val = Match;
             else                               val = NonMatch;
             mask.at<Mask_t>(i,j) = val;

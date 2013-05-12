@@ -228,7 +228,6 @@ class RectFromPointsTransform : public UntrainableTransform
             }
         }
 
-        // Padding is .05
         double width = maxX-minX;
         double deltaWidth = width*padding;
         width += deltaWidth;

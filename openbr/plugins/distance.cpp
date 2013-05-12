@@ -198,7 +198,6 @@ class AverageDistance : public Distance
 
         float score = 0;
         for (int i = 0; i < a.size(); i++) {
-            qDebug() << "Computing score for: " << a.file.name << " vs. " << b.file.name;
             score += distance->compare(a[i],b[i]);
         }
 
@@ -295,9 +294,51 @@ class IdenticalDistance : public Distance
             if (am.data[i] != bm.data[i]) return 0;
         return 1;
     }
-};
+};        
 
 BR_REGISTER(Distance, IdenticalDistance)
+
+class HeatMapDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    Q_PROPERTY(int rowSize READ get_rowSize WRITE set_rowSize RESET reset_rowSize STORED false)
+    BR_PROPERTY(int, rowSize, 1)
+
+    void train(const TemplateList &src)
+    {
+        distance->train(src);
+    }
+
+
+    float compare(const Template &a, const Template &b) const
+    {
+        qFatal("HeatMap expects a TemplateList");
+
+        (void) a; (void) b;
+    }
+
+    void compare(const TemplateList &target, const TemplateList &query, Output *output) const
+    {
+        int i = 0;
+        int j = 0;
+        for (int index = 0; index < target.size(); index++) {
+            float score = distance->compare(target[index],query[index]);
+
+            if (j >= rowSize) {
+                i++;
+                j = 0;
+            }
+
+            output->setRelative(score, i, j);
+
+            j++;
+        }
+    }
+};
+
+BR_REGISTER(Distance, HeatMapDistance)
 
 } // namespace br
 

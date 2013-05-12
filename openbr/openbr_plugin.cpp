@@ -401,7 +401,6 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 {
     TemplateList templates;
     foreach (const br::File &file, gallery.split()) {
-        qDebug() << file.name;
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
@@ -432,7 +431,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates[i].file.set("Gallery", gallery.name);
 
             if (crossValidate > 0) {
-                if (newTemplates[i].file.getBool("allPartitions")) {
+                if (newTemplates[i].file.getBool("duplicatePartitions")) {
+                    // The duplicatePartitions flag is used to add target images
+                    // crossValidate times to the simmat/mask
+                    // when multiple training sets are being used
+
                     // Set template to the first parition
                     newTemplates[i].file.set("Partition", QVariant(0));
 
@@ -442,6 +445,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         allPartitionTemplate.file.set("Partition", j);
                         newTemplates.insert(i+1, allPartitionTemplate);
                     }
+                } else if (newTemplates[i].file.getBool("allPartitions")) {
+                    // The allPartitions flag is used to add an extended set
+                    // of target images to every partition
+
+                    newTemplates[i].file.set("Partition", -1);
                 } else {
                     const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.subject().toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
