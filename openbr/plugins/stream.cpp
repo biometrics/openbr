@@ -270,7 +270,23 @@ public:
 
         next_idx = 0;
         basis = input;
-        video.open(input.file.name.toStdString());
+        bool is_int = false;
+        int anInt = input.file.name.toInt(&is_int);
+        if (is_int)
+        {
+            bool rc = video.open(anInt);
+
+            if (!rc)
+            {
+                qDebug("open failed!");
+            }
+            if (!video.isOpened())
+            {
+                qDebug("Video not open!");
+            }
+        }
+        else video.open(input.file.name.toStdString());
+
         return video.isOpened();
     }
 
