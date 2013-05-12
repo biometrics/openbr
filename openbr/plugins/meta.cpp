@@ -326,7 +326,6 @@ class ForkTransform : public CompositeTransform
 
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
-        dst = src;
         dst.reserve(src.size());
         for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
         foreach (Transform *f, transforms) {
