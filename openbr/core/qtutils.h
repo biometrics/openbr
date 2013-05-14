@@ -60,7 +60,7 @@ namespace QtUtils
     QStringList toStringList(const std::vector<std::string> &string_list);
     QStringList toStringList(int num_strings, const char* strings[]);
     QString shortTextHash(QString string);
-    QStringList parse(QString args, char split = ',');
+    QStringList parse(QString args, char split = ',', bool *ok = NULL);
     void checkArgsSize(const QString &name, const QStringList &args, int min, int max);
     QPointF toPoint(const QString &string, bool *ok = NULL);
     QRectF toRect(const QString &string, bool *ok = NULL);

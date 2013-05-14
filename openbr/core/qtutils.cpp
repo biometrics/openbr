@@ -241,7 +241,7 @@ QString QtUtils::shortTextHash(QString string)
     return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegExp("[^a-zA-Z1-9]")).left(6);
 }
 
-QStringList QtUtils::parse(QString args, char split)
+QStringList QtUtils::parse(QString args, char split, bool *ok)
 {
     if (args.isEmpty()) return QStringList();
 
@@ -259,13 +259,29 @@ QStringList QtUtils::parse(QString args, char split)
             } else if ((args[i] == '(') || (args[i] == '[') || (args[i] == '<') || (args[i] == '{')) {
                 subexpressions.push(args[i]);
             } else if (args[i] == ')') {
-                if (subexpressions.pop() != '(') qFatal("Unexpected ')'.");
+                if (subexpressions.isEmpty() || (subexpressions.pop() != '(')) {
+                    if (ok) *ok = false;
+                    else    qFatal("Unexpected ')'.");
+                    return words;
+                }
             } else if (args[i] == ']') {
-                if (subexpressions.pop() != '[') qFatal("Unexpected ']'.");
+                if (subexpressions.isEmpty() || (subexpressions.pop() != '[')) {
+                    if (ok) *ok = false;
+                    else    qFatal("Unexpected ']'.");
+                    return words;
+                }
             } else if (args[i] == '>') {
-                if (subexpressions.pop() != '<') qFatal("Unexpected '>'.");
+                if (subexpressions.isEmpty() || (subexpressions.pop() != '<')) {
+                    if (ok) *ok = false;
+                    else    qFatal("Unexpected '>'.");
+                    return words;
+                }
             } else if (args[i] == '}') {
-                if (subexpressions.pop() != '{') qFatal("Unexpected '}'.");
+                if (subexpressions.isEmpty() || (subexpressions.pop() != '{')) {
+                    if (ok) *ok = false;
+                    else    qFatal("Unexpected '}'.");
+                    return words;
+                }
             } else if (subexpressions.isEmpty() && (args[i] == split)) {
                 words.append(args.mid(start, i-start).trimmed());
                 start = i+1;
@@ -273,6 +289,7 @@ QStringList QtUtils::parse(QString args, char split)
         }
     }
 
+    if (ok) *ok = true;
     words.append(args.mid(start).trimmed());
     return words;
 }
@@ -288,8 +305,9 @@ void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int mi
 QPointF QtUtils::toPoint(const QString &string, bool *ok)
 {
     if (string.startsWith('(') && string.endsWith(')')) {
-        const QStringList words = parse(string.mid(1, string.size()-2));
-        if (words.size() == 2) {
+        bool okParse;
+        const QStringList words = parse(string.mid(1, string.size()-2), ',', &okParse);
+        if (okParse && (words.size() == 2)) {
             float x, y;
             bool okX, okY;
             x = words[0].toFloat(&okX);
@@ -308,8 +326,9 @@ QPointF QtUtils::toPoint(const QString &string, bool *ok)
 QRectF QtUtils::toRect(const QString &string, bool *ok)
 {
     if (string.startsWith('(') && string.endsWith(')')) {
-        const QStringList words = parse(string.mid(1, string.size()-2));
-        if (words.size() == 4) {
+        bool okParse;
+        const QStringList words = parse(string.mid(1, string.size()-2), ',', &okParse);
+        if (okParse && (words.size() == 4)) {
             float x, y, width, height;
             bool okX, okY, okWidth, okHeight;
             x = words[0].toFloat(&okX);
