@@ -96,7 +96,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
                 if ((key == "Index") || (key == "Subject")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
-        lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
+        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Subject") +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
     }
@@ -260,8 +260,8 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
 
 cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)
 {
-    QList<float> targetLabels = targets.labels();
-    QList<float> queryLabels = queries.labels();
+    QList<float> targetLabels = targets.collectValues<float>("Label");
+    QList<float> queryLabels = queries.collectValues<float>("Label");
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 

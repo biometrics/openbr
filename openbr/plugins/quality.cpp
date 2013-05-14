@@ -26,10 +26,10 @@ class ImpostorUniquenessMeasureTransform : public Transform
 
     float calculateIUM(const Template &probe, const TemplateList &gallery) const
     {
-        const int probeLabel = probe.file.label();
+        const int probeLabel = probe.file.get<float>("Label");
         TemplateList subset = gallery;
         for (int j=subset.size()-1; j>=0; j--)
-            if (subset[j].file.label() == probeLabel)
+            if (subset[j].file.get<int>("Label") == probeLabel)
                 subset.removeAt(j);
 
         QList<float> scores = distance->compare(subset, probe);
@@ -159,7 +159,7 @@ class MatchProbabilityDistance : public Distance
     {
         distance->train(src);
 
-        const QList<int> labels = src.labels<int>();
+        const QList<int> labels = src.collectValues<int>("Label");
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(src.size()), FileList(src.size())));
         distance->compare(src, src, matrixOutput.data());
 
@@ -219,7 +219,7 @@ class UnitDistance : public Distance
     void train(const TemplateList &templates)
     {
         const TemplateList samples = templates.mid(0, 2000);
-        const QList<float> sampleLabels = samples.labels<float>();
+        const QList<float> sampleLabels = samples.collectValues<float>("Label");
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(samples.size()), FileList(samples.size())));
         Distance::compare(samples, samples, matrixOutput.data());
 

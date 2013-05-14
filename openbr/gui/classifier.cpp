@@ -42,15 +42,16 @@ void Classifier::_classify(File file)
         if (!f.contains("Label"))
             continue;
 
+        // What's with the special casing -cao
         if (algorithm == "GenderClassification") {
             key = "Gender";
-            value = (f.label() == 0 ? "Male" : "Female");
+            value = (f.get<QString>("Subject"));
         } else if (algorithm == "AgeRegression") {
             key = "Age";
-            value = QString::number(int(f.label()+0.5)) + " Years";
+            value = QString::number(int(f.get<float>("Label")+0.5)) + " Years";
         } else {
             key = algorithm;
-            value = QString::number(f.label());
+            value = QString::number(f.get<float>("Label"));
         }
         break;
     }

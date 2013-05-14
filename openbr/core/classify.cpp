@@ -45,8 +45,8 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
             qFatal("Input order mismatch.");
 
         // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QString predictedSubject = predicted[i].file.subject();
-        QString trueSubject = truth[i].file.subject();
+        QString predictedSubject = predicted[i].file.get<QString>("Subject");
+        QString trueSubject = truth[i].file.get<QString>("Subject");
 
         QStringList predictedSubjects(predictedSubject);
         QStringList trueSubjects(trueSubject);
@@ -80,7 +80,8 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         const float precision = counter.truePositive / (float)(counter.truePositive + counter.falsePositive);
         const float recall = counter.truePositive / (float)(counter.truePositive + counter.falseNegative);
         const float fscore = 2 * precision * recall / (precision + recall);
-        output->setRelative(File("", subject).label(), i, 0);
+        // problem -cao
+        output->setRelative(File("", subject).get<int>("Label"), i, 0);
         output->setRelative(count, i, 1);
         output->setRelative(precision, i, 2);
         output->setRelative(recall, i, 3);
@@ -103,9 +104,9 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.label()-truth[i].file.label(), 2.f);
-        truthValues.append(QString::number(truth[i].file.label()));
-        predictedValues.append(QString::number(predicted[i].file.label()));
+        rmsError += pow(predicted[i].file.get<float>("Label")-truth[i].file.get<float>("Label"), 2.f);
+        truthValues.append(QString::number(truth[i].file.get<float>("Label")));
+        predictedValues.append(QString::number(predicted[i].file.get<float>("Label")));
     }
 
     QStringList rSource;

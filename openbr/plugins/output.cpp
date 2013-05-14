@@ -153,8 +153,8 @@ class meltOutput : public MatrixOutput
 
         QStringList lines;
         if (file.baseName() != "terminal") lines.append(QString("Query,Target,Mask,Similarity%1").arg(keys));
-        QList<float> queryLabels = queryFiles.labels();
-        QList<float> targetLabels = targetFiles.labels();
+        QList<float> queryLabels = queryFiles.collectValues<float>("Label");
+        QList<float> targetLabels = targetFiles.collectValues<float>("Label");
         for (int i=0; i<queryFiles.size(); i++) {
             for (int j=(selfSimilar ? i+1 : 0); j<targetFiles.size(); j++) {
                 const bool genuine = queryLabels[i] == targetLabels[j];
@@ -304,7 +304,7 @@ class txtOutput : public MatrixOutput
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
         QStringList lines;
         foreach (const File &file, queryFiles)
-            lines.append(file.name + " " + file.subject());
+            lines.append(file.name + " " + file.get<QString>("Subject"));
         QtUtils::writeFile(file, lines);
     }
 };

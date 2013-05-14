@@ -125,7 +125,7 @@ private:
     void train(const TemplateList &_data)
     {
         Mat data = OpenCVUtils::toMat(_data.data());
-        Mat lab = OpenCVUtils::toMat(_data.labels<float>());
+        Mat lab = OpenCVUtils::toMat(_data.collectValues<float>("Label"));
         trainSVM(svm, data, lab, kernel, type, C, gamma);
     }
 
@@ -182,7 +182,7 @@ private:
     void train(const TemplateList &src)
     {
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> lab = src.labels<int>();
+        const QList<int> lab = src.collectValues<int>("Label");
 
         const int instances = data.rows * (data.rows+1) / 2;
         Mat deltaData(instances, data.cols, data.type());

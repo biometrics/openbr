@@ -166,7 +166,7 @@ class PerPixelClassifierTransform : public MetaTransform
                 }
 
                 transform->project(temp,dstTemp);
-                pdst[r*cols+c] = dstTemp.file.label();
+                pdst[r*cols + c] = dstTemp.file.get<float>("Label");
             }
         }
     }

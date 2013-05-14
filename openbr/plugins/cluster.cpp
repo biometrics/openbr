@@ -111,13 +111,13 @@ class KNNTransform : public Transform
             QHash<QString, float> votes;
             const int max = (k < 1) ? sortedScores.size() : std::min(k, sortedScores.size());
             for (int j=0; j<max; j++)
-                votes[gallery[sortedScores[j].second].file.subject()] += (weighted ? sortedScores[j].first : 1);
+                votes[gallery[sortedScores[j].second].file.get<QString>("Subject")] += (weighted ? sortedScores[j].first : 1);
             subjects.append(votes.keys()[votes.values().indexOf(Common::Max(votes.values()))]);
 
             // Remove subject from consideration
             if (subjects.size() < numSubjects)
                 for (int j=sortedScores.size()-1; j>=0; j--)
-                    if (gallery[sortedScores[j].second].file.subject() == subjects.last())
+                    if (gallery[sortedScores[j].second].file.get<QString>("Subject") == subjects.last())
                         sortedScores.removeAt(j);
         }
 

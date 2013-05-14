@@ -167,34 +167,6 @@ bool File::getBool(const QString &key, bool defaultValue) const
     return variant.value<bool>();
 }
 
-QString File::subject() const
-{
-    const QVariant l = m_metadata.value("Label");
-    if (!l.isNull()) return Globals->subjects.key(l.toFloat(), l.toString());
-    return m_metadata.value("Subject").toString();
-}
-
-float File::label() const
-{
-    const QVariant l = m_metadata.value("Label");
-    if (!l.isNull()) return l.toFloat();
-
-    const QVariant s = m_metadata.value("Subject");
-    if (s.isNull()) return -1;
-
-    const QString subject = s.toString();
-
-    bool is_num = false;
-    float num = subject.toFloat(&is_num);
-    if (is_num) return num;
-
-    static QMutex mutex;
-    QMutexLocker mutexLocker(&mutex);
-    if (!Globals->subjects.contains(subject))
-        Globals->subjects.insert(subject, Globals->subjects.size());
-    return Globals->subjects.value(subject);
-}
-
 QList<QPointF> File::namedPoints() const
 {
     QList<QPointF> landmarks;
@@ -360,14 +332,6 @@ void FileList::sort(const QString& key)
     *this = sortedList;
 }
 
-QList<float> FileList::labels() const
-{
-    QList<float> labels; labels.reserve(size());
-    foreach (const File &f, *this)
-        labels.append(f.label());
-    return labels;
-}
-
 QList<int> FileList::crossValidationPartitions() const
 {
     QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
@@ -451,7 +415,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
                     newTemplates[i].file.set("Partition", -1);
                 } else {
-                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.subject().toLatin1(), QCryptographicHash::Md5);
+                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                 }
@@ -471,9 +435,9 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     return templates;
 }
 
-TemplateList TemplateList::relabel(const TemplateList &tl)
+TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
 {
-    const QList<int> originalLabels = tl.labels<int>();
+    const QList<int> originalLabels = tl.collectValues<int>(propName);
     QHash<int,int> labelTable;
     foreach (int label, originalLabels)
         if (!labelTable.contains(label))

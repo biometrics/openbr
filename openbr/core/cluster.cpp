@@ -278,7 +278,7 @@ void br::EvalClustering(const QString &csv, const QString &input)
 {
     qDebug("Evaluating %s against %s", qPrintable(csv), qPrintable(input));
 
-    QList<float> labels = TemplateList::fromGallery(input).files().labels();
+    QList<float> labels = TemplateList::fromGallery(input).files().collectValues<float>("Label");
 
     QHash<int, int> labelToIndex;
     int nClusters = 0;

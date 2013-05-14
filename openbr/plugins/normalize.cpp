@@ -126,7 +126,7 @@ private:
     {
         Mat m;
         OpenCVUtils::toMat(data.data()).convertTo(m, CV_64F);
-        const QList<int> labels = data.labels<int>();
+        const QList<int> labels = data.collectValues<int>("Label");
         const int dims = m.cols;
 
         vector<Mat> mv, av, bv;
