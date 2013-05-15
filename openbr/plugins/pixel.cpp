@@ -28,6 +28,7 @@ namespace br
  */
 class PerPixelClassifierTransform : public MetaTransform
 {
+    // problematic -cao
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
     Q_PROPERTY(int pixels READ get_pixels WRITE set_pixels RESET reset_pixels STORED false)
@@ -273,6 +274,7 @@ BR_REGISTER(Transform, ToBinaryVectorTransform)
  * \author E. Taborsky \cite mmtaborsky
  */
 
+// What does this do? -cao
 class ToMetadataTransform : public UntrainableMetaTransform
 {
     Q_OBJECT

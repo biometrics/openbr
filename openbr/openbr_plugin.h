@@ -306,6 +306,15 @@ struct BR_EXPORT FileList : public QList<File>
             values.append(f.get<T>(propName));
         return values;
     }
+    template<typename T>
+    QList<T> collectValues(const QString & propName, T defaultValue) const
+    {
+        QList<T> values; values.reserve(size());
+        foreach (const File &f, *this)
+            values.append(f.contains(propName) ? f.get<T>(propName) : defaultValue);
+        return values;
+    }
+
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
 };
@@ -392,6 +401,11 @@ struct TemplateList : public QList<Template>
 
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList & tl, const QString & propName);
+
+    QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
+    QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
+    QList<int> applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const;
+
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -658,7 +672,6 @@ public:
     BR_PROPERTY(int, crossValidate, 0)
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
-    QHash<QString,int> subjects; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
 
     /*!

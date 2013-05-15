@@ -121,28 +121,46 @@ private:
     BR_PROPERTY(float, gamma, -1)
 
     SVM svm;
+    QHash<QString, int> labelMap;
+    QHash<int, QVariant> reverseLookup;
 
     void train(const TemplateList &_data)
     {
         Mat data = OpenCVUtils::toMat(_data.data());
-        Mat lab = OpenCVUtils::toMat(_data.collectValues<float>("Label"));
+        Mat lab;
+        // If we are doing regression, assume subject has float values
+        if (type == EPS_SVR || type == NU_SVR) {
+            lab = OpenCVUtils::toMat(_data.collectValues<float>("Subject"));
+        }
+        // If we are doing classification, assume subject has discrete values, map them
+        // and store the mapping data
+        else {
+            QList<int> dataLabels = _data.indexProperty("Subject", labelMap, reverseLookup);
+            lab = OpenCVUtils::toMat(dataLabels);
+        }
         trainSVM(svm, data, lab, kernel, type, C, gamma);
     }
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.set("Label", svm.predict(src.m().reshape(1, 1)));
+        float prediction = svm.predict(src.m().reshape(1, 1));
+        if (type == EPS_SVR || type == NU_SVR)
+            dst.file.set("Subject", prediction);
+        else
+            dst.file.set("Subject", reverseLookup[prediction]);
     }
 
     void store(QDataStream &stream) const
     {
         storeSVM(svm, stream);
+        stream << labelMap << reverseLookup;
     }
 
     void load(QDataStream &stream)
     {
         loadSVM(svm, stream);
+        stream >> labelMap >> reverseLookup;
     }
 };
 

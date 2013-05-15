@@ -153,8 +153,10 @@ class meltOutput : public MatrixOutput
 
         QStringList lines;
         if (file.baseName() != "terminal") lines.append(QString("Query,Target,Mask,Similarity%1").arg(keys));
-        QList<float> queryLabels = queryFiles.collectValues<float>("Label");
-        QList<float> targetLabels = targetFiles.collectValues<float>("Label");
+
+        QList<QString> queryLabels = queryFiles.collectValues<QString>("Subject");
+        QList<QString> targetLabels = targetFiles.collectValues<QString>("Subject");
+
         for (int i=0; i<queryFiles.size(); i++) {
             for (int j=(selfSimilar ? i+1 : 0); j<targetFiles.size(); j++) {
                 const bool genuine = queryLabels[i] == targetLabels[j];

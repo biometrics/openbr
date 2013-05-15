@@ -435,17 +435,65 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     return templates;
 }
 
+// indexes some property, assigns an integer id to each unique value of propName
+// stores the index values in "Label" of the output template list -cao
 TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
 {
-    const QList<int> originalLabels = tl.collectValues<int>(propName);
-    QHash<int,int> labelTable;
-    foreach (int label, originalLabels)
+    const QList<QString> originalLabels = tl.collectValues<QString>(propName);
+    QHash<QString,int> labelTable;
+    foreach (const QString & label, originalLabels)
         if (!labelTable.contains(label))
             labelTable.insert(label, labelTable.size());
 
     TemplateList result = tl;
     for (int i=0; i<result.size(); i++)
         result[i].file.set("Label", labelTable[originalLabels[i]]);
+    return result;
+}
+
+QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
+{
+    QHash<QString, int> dummyForwards;
+    QHash<int, QVariant> dummyBackwards;
+
+    if (!valueMap) valueMap = &dummyForwards;
+    if (!reverseLookup) reverseLookup = &dummyBackwards;
+
+    return indexProperty(propName, *valueMap, *reverseLookup);
+}
+
+QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const
+{
+    valueMap.clear();
+    reverseLookup.clear();
+
+    const QList<QVariant> originalLabels = collectValues<QVariant>(propName);
+    foreach (const QVariant & label, originalLabels) {
+        QString labelString = label.toString();
+        if (!valueMap.contains(labelString)) {
+            reverseLookup.insert(valueMap.size(), label);
+            valueMap.insert(labelString, valueMap.size());
+        }
+    }
+
+    QList<int> result;
+    for (int i=0; i<originalLabels.size(); i++)
+        result.append(valueMap[originalLabels[i].toString()]);
+
+    return result;
+}
+
+// uses -1 for missing values
+QList<int> TemplateList::applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const
+{
+    const QList<QString> originalLabels = collectValues<QString>(propName);
+
+    QList<int> result;
+    for (int i=0; i<originalLabels.size(); i++) {
+        if (!valueMap.contains(originalLabels[i])) result.append(-1);
+        else result.append(valueMap[originalLabels[i]]);
+    }
+
     return result;
 }
 
@@ -989,7 +1037,8 @@ QString MatrixOutput::toString(int row, int column) const
 {
     if (targetFiles[column] == "Subject") {
         const int label = data.at<float>(row,column);
-        return Globals->subjects.key(label, QString::number(label));
+        // problem -cao
+        return QString::number(label);
     }
     return QString::number(data.at<float>(row,column));
 }

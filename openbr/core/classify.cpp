@@ -104,9 +104,9 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.get<float>("Label")-truth[i].file.get<float>("Label"), 2.f);
-        truthValues.append(QString::number(truth[i].file.get<float>("Label")));
-        predictedValues.append(QString::number(predicted[i].file.get<float>("Label")));
+        rmsError += pow(predicted[i].file.get<float>("Subject")-truth[i].file.get<float>("Subject"), 2.f);
+        truthValues.append(QString::number(truth[i].file.get<float>("Subject")));
+        predictedValues.append(QString::number(predicted[i].file.get<float>("Subject")));
     }
 
     QStringList rSource;

@@ -20,21 +20,23 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
     const bool atLeast = transform->instances < 0;
     const int instances = abs(transform->instances);
 
-    QList<int> allLabels = templates.collectValues<int>("Label");
-    QList<int> uniqueLabels = allLabels.toSet().toList();
+    QList<QString> allLabels = templates.collectValues<QString>("Subject");
+    QList<QString> uniqueLabels = allLabels.toSet().toList();
     qSort(uniqueLabels);
 
-    QMap<int,int> counts = templates.countValues<int>("Label", instances != std::numeric_limits<int>::max());
+    QMap<QString,int> counts = templates.countValues<QString>("Subject", instances != std::numeric_limits<int>::max());
+
     if ((instances != std::numeric_limits<int>::max()) && (transform->classes != std::numeric_limits<int>::max()))
-        foreach (int label, counts.keys())
+        foreach (const QString & label, counts.keys())
             if (counts[label] < instances)
                 counts.remove(label);
+
     uniqueLabels = counts.keys();
     if ((transform->classes != std::numeric_limits<int>::max()) && (uniqueLabels.size() < transform->classes))
         qWarning("Downsample requested %d classes but only %d are available.", transform->classes, uniqueLabels.size());
 
     Common::seedRNG();
-    QList<int> selectedLabels = uniqueLabels;
+    QList<QString> selectedLabels = uniqueLabels;
     if (transform->classes < uniqueLabels.size()) {
         std::random_shuffle(selectedLabels.begin(), selectedLabels.end());
         selectedLabels = selectedLabels.mid(0, transform->classes);
@@ -42,7 +44,7 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
 
     TemplateList downsample;
     for (int i=0; i<selectedLabels.size(); i++) {
-        const int selectedLabel = selectedLabels[i];
+        const QString selectedLabel = selectedLabels[i];
         QList<int> indices;
         for (int j=0; j<allLabels.size(); j++)
             if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)))
