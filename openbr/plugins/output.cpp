@@ -97,33 +97,25 @@ BR_REGISTER(Output, csvOutput)
 class heatOutput : public MatrixOutput
 {
     Q_OBJECT
-    Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
-    BR_PROPERTY(int, rows, -1)
-    Q_PROPERTY(int cols READ get_cols WRITE set_cols RESET reset_cols STORED false)
-    BR_PROPERTY(int, cols, -1)
+    Q_PROPERTY(int patches READ get_patches WRITE set_patches RESET reset_patches STORED false)
+    BR_PROPERTY(int, patches, -1);
 
     ~heatOutput()
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
 
-        if (rows*cols > targetFiles.size()) qFatal("Incompatible heatmap output dimensionality");
-
         QStringList lines;
-        for (int col = 0; col < cols; col++) {
-            QStringList words;
-            for (int row = 0; row < rows; row++)
-                words.append(toString(row,col));
-            lines.append(words.join(","));
+        for (int i=0; i<data.rows; i++) {
+            lines.append(toString(i,0));
         }
         QtUtils::writeFile(file, lines);
     }
 
     void initialize(const FileList &targetFiles, const FileList &queryFiles)
     {
-        if (rows == -1 || cols == -1) qFatal("heatOutput requires dimensionality");
-
+        if (patches == -1) qFatal("Heat output requires the number of patches");
         Output::initialize(targetFiles, queryFiles);
-        data.create(rows, cols, CV_32FC1);
+        data.create(patches, 1, CV_32FC1);
     }
 };
 
