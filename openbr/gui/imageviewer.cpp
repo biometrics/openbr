@@ -36,7 +36,8 @@ void br::ImageViewer::setDefaultText(const QString &text)
 
 void br::ImageViewer::setImage(const QString &file, bool async)
 {
-    src = QImage(file);
+    if(file.isNull()) src = QImage(); // Gets rid of runtime FileEngine::open warning
+    else src = QImage(file);
     updatePixmap(async);
 }
 

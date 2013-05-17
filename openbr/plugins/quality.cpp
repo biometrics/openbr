@@ -269,6 +269,8 @@ class HeatMapDistance : public Distance
         (void) target;
         (void) query;
         qFatal("You did this wrong");
+
+        return 0;
     }
 
     // Switch this to template list version, use compare(template, template) in
