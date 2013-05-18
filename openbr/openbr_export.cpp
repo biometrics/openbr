@@ -24,7 +24,7 @@
  * OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
  * The project was later published as open source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license and is <i>free for academic and commercial use</i>.
  *
- * \image html "share/openbr/abstraction.svg" "The two principal software artifacts are the shared library 'openbr' and command line application 'br'."
+ * \image html "abstraction.svg" "The two principal software artifacts are the shared library 'openbr' and command line application 'br'."
  *
  * \section get_started Get Started
  * - \ref installation - \copybrief installation
@@ -70,13 +70,13 @@ $ export DYLD_FRAMEWORK_PATH=../lib:${DYLD_FRAMEWORK_PATH}
  *  No configuration is necessary!
  *
  * \section installation_license_dongle License Dongle
- *  If you were given a USB License Dongle, then dongle must be in the computer in order to use the SDK.
+ *  In the unlikely event that you were given a USB License Dongle, then dongle must be in the computer in order to use the SDK.
  *  No configuration of the dongle is needed.
  *
  * \section installation_done Start Working
  * To test for successful installation:
 \verbatim
-$ cd bin/
+$ cd bin
 $ br -help
 \endverbatim
  */
@@ -244,7 +244,7 @@ $ br -help
 /*!
  * \page osx_clang OS X Mountain Lion - Clang/LLVM 3.1 - x64
  * -# Download and install the latest "Xcode" and "Command Line Tools" from the <a href="https://developer.apple.com/downloads/index.action#">Apple Developer Downloads</a> page.
- * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz">Download CMake 2.8.10.2</a>.
+ * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz">Download CMake 2.8.10.2</a>
  * \code
  * $ cd ~/Downloads
  * $ tar -xf cmake-2.8.10.2.tar.gz
@@ -253,22 +253,22 @@ $ br -help
  * $ make -j4
  * $ sudo make install
  * $ cd ..
- * $ rm -r cmake-2.8.10.2
+ * $ rm -rf cmake-2.8.10.2*
  * \endcode
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>
  * \code
  * $ cd ~/Downloads
- * $ tar -xf OpenCV-2.4.4.tar.bz2
- * $ cd OpenCV-2.4.4
+ * $ tar -xf opencv-2.4.5.tar.gz
+ * $ cd opencv-2.4.5
  * $ mkdir build
  * $ cd build
- * $ cmake -DBUILD_opencv_java=OFF -DBUILD_opencv_world=OFF -DCMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * $ cd ../..
- * $ rm -r OpenCV-2.4.4
+ * $ rm -rf opencv-2.4.5*
  * \endcode
- * -# <a href="http://releases.qt-project.org/qt5/5.0.1/qt-mac-opensource-5.0.1-clang-offline.dmg">Download Qt 5.0.1</a> and install.
+ * -# <a href="http://download.qt-project.org/official_releases/qt/5.0/5.0.2/qt-mac-opensource-5.0.2-clang-offline.dmg">Download and install Qt 5.0.2</a>
  * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  * \code
  * $ git clone https://github.com/biometrics/openbr.git
@@ -281,27 +281,34 @@ $ br -help
  * $ cd openbr
  * $ mkdir build
  * $ cd build
- * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.1/5.0.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
+ * $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.0.2/5.0.2/clang_64 -DCMAKE_BUILD_TYPE=Release ..
  * $ make -j4
  * $ sudo make install
  * \endcode
  * -# Hack OpenBR!
  *  -# Open Qt Creator IDE
  *  \code
- *  $ open ~/Qt5.0.1/Qt\ Creator.app
+ *  $ open ~/Qt5.0.2/Qt\ Creator.app
  *  \endcode
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
- *  -# Select "~/openbr/CMakeLists.txt" then "Open".
- *  -# Browse to your prexisting build directory "~/openbr/build" then select "Continue".
+ *  -# Select "openbr/CMakeLists.txt" then "Open".
+ *  -# Browse to your prexisting build directory "openbr/build" then select "Continue".
  *  -# Select "Run CMake" then "Done".
  *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
+ * -# (Optional) Test OpenBR!
+ * \code
+ * $ cd openbr/scripts
+ * $ ./downloadDatasets.sh
+ * $ cd ../build
+ * $ make test
+ * \endcode
  * -# (Optional) Package OpenBR!
  * \code
  * $ cd openbr/build
- * $ make package
+ * $ cpack -G TGZ
  * \endcode
  * -# (Optional) Build OpenBR documentation!
- *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a> and install:
+ *  -# <a href="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.2.src.tar.gz">Download Doxygen 1.8.2</a>
  *  \code
  *  $ cd ~/Downloads
  *  $ tar -xf doxygen-1.8.2.src.tar.gz
@@ -310,9 +317,9 @@ $ br -help
  *  $ make -j4
  *  $ sudo make install
  *  $ cd ..
- *  $ rm -r doxygen-1.8.2
+ *  $ rm -rf doxygen-1.8.2*
  *  \endcode
- *  -# Modify build settings and recompile:
+ *  -# Modify build settings and recompile.
  *  \code
  *  $ cd openbr/build
  *  $ cmake -DBR_BUILD_DOCUMENTATION=ON ..
