@@ -298,46 +298,6 @@ class IdenticalDistance : public Distance
 
 BR_REGISTER(Distance, IdenticalDistance)
 
-class HeatMapDistance : public Distance
-{
-    Q_OBJECT
-    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-    Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
-    BR_PROPERTY(int, rows, -1)
-    Q_PROPERTY(int cols READ get_cols WRITE set_cols RESET reset_cols STORED false)
-    BR_PROPERTY(int, cols, -1)
-
-    void train(const TemplateList &src)
-    {
-        distance->train(src);
-    }
-
-
-    float compare(const Template &a, const Template &b) const
-    {
-        qFatal("HeatMap expects a TemplateList");
-
-        (void) a; (void) b;
-    }
-
-   void compare(const TemplateList &target, const TemplateList &query, Output *output) const
-    {
-        if (rows*cols > target.size()) qFatal("Incompatible heatmap comparison dimensionality");
-
-        int index = 0;
-        for (int col = 0; col < cols; col++) {
-            for (int row = 0; row < rows; row++) {
-                float score = distance->compare(target[index],query[index]);
-                output->setRelative(score, row, col);
-                index++;
-            }
-        }
-    }
-};
-
-BR_REGISTER(Distance, HeatMapDistance)
-
 } // namespace br
 
 #include "distance.moc"

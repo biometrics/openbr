@@ -150,8 +150,7 @@ class MatchProbabilityDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-    BR_PROPERTY(bool, gaussian, true)
+    Q_PROPERTY(bool crossModality READ get_crossModality WRITE set_crossModality RESET reset_crossModality STORED false)
 
     MP mp;
 
@@ -160,6 +159,7 @@ class MatchProbabilityDistance : public Distance
         distance->train(src);
 
         const QList<int> labels = src.labels<int>();
+
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(src.size()), FileList(src.size())));
         distance->compare(src, src, matrixOutput.data());
 
@@ -170,6 +170,7 @@ class MatchProbabilityDistance : public Distance
             for (int j=0; j<i; j++) {
                 const float score = matrixOutput.data()->data.at<float>(i, j);
                 if (score == -std::numeric_limits<float>::max()) continue;
+                if (crossModality) if(src[i].file.get<QString>("Modality") == src[j].file.get<QString>("Modality")) continue;
                 if (labels[i] == labels[j]) genuineScores.append(score);
                 else                        impostorScores.append(score);
             }
@@ -196,9 +197,107 @@ class MatchProbabilityDistance : public Distance
         distance->load(stream);
         stream >> mp;
     }
+
+protected:
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    BR_PROPERTY(bool, gaussian, true)
+    BR_PROPERTY(bool, crossModality, false)
 };
 
 BR_REGISTER(Distance, MatchProbabilityDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Match Probability modification for heat maps \cite klare12
+ * \author Scott Klum \cite sklum
+ */
+class HeatMapDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
+    Q_PROPERTY(bool crossModality READ get_crossModality WRITE set_crossModality RESET reset_crossModality STORED false)
+    Q_PROPERTY(int step READ get_step WRITE set_step RESET reset_step STORED false)
+    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    BR_PROPERTY(bool, gaussian, true)
+    BR_PROPERTY(bool, crossModality, false)
+    BR_PROPERTY(int, step, 1)
+
+    QList<MP> mp;
+
+    void train(const TemplateList &src)
+    {
+        distance->train(src);
+
+        const QList<int> labels = src.labels<int>();
+
+        QList<TemplateList> patches;
+
+        // Split src into list of TemplateLists of corresponding patches across all Templates
+        for (int i=0; i<step; i++) {
+            TemplateList patchBuffer;
+            for (int j=i; j<src.size(); j+=step) {
+                patchBuffer.append(src[j]);
+            }
+            patches.append(patchBuffer);
+            patchBuffer.clear();
+        }
+
+        QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(patches[0].size()), FileList(patches[0].size())));
+
+        for (int i=0; i<step; i++) {
+            distance->compare(patches[i], patches[i], matrixOutput.data());
+            QList<float> genuineScores, impostorScores;
+            genuineScores.reserve(step);
+            impostorScores.reserve(step);
+            for (int j=0; j<matrixOutput.data()->data.rows; j++) {
+                for (int k=0; k<j; k++) {
+                    const float score = matrixOutput.data()->data.at<float>(j, k);
+                    if (score == -std::numeric_limits<float>::max()) continue;
+                    if (crossModality) if(src[j*step].file.get<QString>("MODALITY") == src[k*step].file.get<QString>("MODALITY")) continue;
+                    if (labels[j*step] == labels[k*step]) genuineScores.append(score);
+                    else                                                        impostorScores.append(score);
+                }
+            }
+
+            mp.append(MP(genuineScores, impostorScores));
+        }
+    }
+
+    float compare(const Template &target, const Template &query) const
+    {
+        (void) target;
+        (void) query;
+        qFatal("You did this wrong");
+
+        return 0;
+    }
+
+    // Switch this to template list version, use compare(template, template) in
+    // heat map distance, and index into the proper match probability
+    void compare(const TemplateList &target, const TemplateList &query, Output *output) const
+    {
+        for (int i=0; i<step; i++) {
+            float rawScore = distance->compare(target[i],query[i]);
+            if (rawScore == -std::numeric_limits<float>::max()) output->setRelative(rawScore, i, 0);
+            else output->setRelative(mp[i](rawScore, gaussian), i, 0);
+        }
+     }
+
+    void store(QDataStream &stream) const
+    {
+        distance->store(stream);
+        stream << mp;
+    }
+
+    void load(QDataStream &stream)
+    {
+        distance->load(stream);
+        stream >> mp;
+    }
+};
+
+BR_REGISTER(Distance, HeatMapDistance)
 
 /*!
  * \ingroup distances
