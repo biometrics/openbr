@@ -180,7 +180,7 @@ $ br -help
  *  $ cmake -G "MinGW Makefiles" -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
  *  $ mingw32-make
  *  $ mingw32-make install
- *  $ cmake -DCMAKE_BUILD_TYPE=Release
+ *  $ cmake -DCMAKE_BUILD_TYPE=Release ..
  *  $ mingw32-make
  *  $ mingw32-make install
  *  $ mingw32-make clean
