@@ -14,7 +14,6 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <QFile>
 #include <QList>
 #include <QStringList>
 #include <limits>
