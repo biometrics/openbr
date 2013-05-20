@@ -87,17 +87,17 @@ $ br -help
  *  -# You will have to register with Microsoft after installation, but it's free.
  *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
  *  -# Download and install <a href="http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx">Windows 8 SDK</a>.
- * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
+ * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download and Install CMake 2.8.10.2</a>
  *  -# During installation setup select "add CMake to PATH".
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>.
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
- *  -# Move the "OpenCV-2.4.4" folder to "C:\".
+ *  -# Move the "opencv-2.4.5" folder to "C:\".
  *  -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
  *  \code
- *  $ cd C:\OpenCV-2.4.4
+ *  $ cd C:\opencv-2.4.5
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "NMake Makefiles" -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
+ *  $ cmake -G "NMake Makefiles" -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
  *  $ nmake
  *  $ nmake install
  *  $ cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -105,19 +105,7 @@ $ br -help
  *  $ nmake install
  *  $ nmake clean
  *  \endcode
- * -# <a href="http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and unzip.
- *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
- *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install.
- *  -# From the VS2012 x64 Cross Tools Command Prompt:
- *  \code
- *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\msvc2012 -opensource -confirm-license -nomake examples -nomake tests
- *  $ nmake
- *  $ nmake install
- *  $ cd ..
- *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
- *  \endcode
- *  -# nmake will take several hours to finish.
+ * -# <a href="http://download.qt-project.org/official_releases/qt/5.0/5.0.2/qt-windows-opensource-5.0.2-msvc2012_64-x64-offline.exe">Download and Install Qt 5.0.2</a>
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
  *  -# Launch "Git Bash" from the Desktop and clone OpenBR:
  *  \code
@@ -133,31 +121,30 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-msvc2012
  *  $ cd build-msvc2012
- *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-msvc2012/install;C:/Qt/5.0.1/msvc2012" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/openCV-2.4.5/build-msvc2012/install;C:/Qt/Qt5.0.2/5.0.2/msvc2012_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ nmake
  *  $ nmake install
  *  \endcode
  *  -# Check out the "install" folder.
  * -# Hack OpenBR!
- *  -# <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Download Qt Creator</a> IDE and install.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
- *  $ C:\Qt\qtcreator-2.6.2\bin\qtcreator.exe
+ *  $ C:\Qt\Qt5.0.2\Tools\QtCreator\bin\qtcreator.exe
  *  \endcode
  *  -# From the Qt Creator "Tools" menu select "Options..."
  *  -# Under "Kits" select "Desktop (default)"
- *  -# For "Compiler:" select "Microsoft Visual C++ Compiler 11.0 (amd64)" and click "OK"
+ *  -# For "Compiler:" select "Microsoft Visual C++ Compiler 11.0 (x86_amd64)" and click "OK"
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
+ *  -# If prompted for the location of CMake, enter "C:\Program Files (x86)\CMake 2.8\bin\cmake.exe".
  *  -# Browse to your pre-existing build directory "C:\openbr\build-msvc2012" then select "Next".
- *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
- *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
+ *  -# Select "Run CMake" then "Finish".
+ *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
  * -# (Optional) Package OpenBR!
- *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the VS2012 x64 Cross Tools Command Prompt:
  *  \code
  *  $ cd C:\openbr\build-msvc2012
- *  $ nmake package
+ *  $ cpack -G ZIP
  *  \endcode
  */
 
