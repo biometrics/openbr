@@ -130,7 +130,7 @@ private:
         Mat lab;
         // If we are doing regression, assume subject has float values
         if (type == EPS_SVR || type == NU_SVR) {
-            lab = OpenCVUtils::toMat(_data.collectValues<float>("Subject"));
+            lab = OpenCVUtils::toMat(_data.get<float>("Subject"));
         }
         // If we are doing classification, assume subject has discrete values, map them
         // and store the mapping data
@@ -200,7 +200,7 @@ private:
     void train(const TemplateList &src)
     {
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> lab = src.collectValues<int>("Label");
+        const QList<int> lab = src.indexProperty("Subject");
 
         const int instances = data.rows * (data.rows+1) / 2;
         Mat deltaData(instances, data.cols, data.type());

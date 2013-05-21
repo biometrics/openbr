@@ -437,7 +437,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 // stores the index values in "Label" of the output template list -cao
 TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
 {
-    const QList<QString> originalLabels = tl.collectValues<QString>(propName);
+    const QList<QString> originalLabels = tl.get<QString>(propName);
     QHash<QString,int> labelTable;
     foreach (const QString & label, originalLabels)
         if (!labelTable.contains(label))
@@ -465,7 +465,7 @@ QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, 
     valueMap.clear();
     reverseLookup.clear();
 
-    const QList<QVariant> originalLabels = collectValues<QVariant>(propName);
+    const QList<QVariant> originalLabels = values(propName);
     foreach (const QVariant & label, originalLabels) {
         QString labelString = label.toString();
         if (!valueMap.contains(labelString)) {
@@ -484,7 +484,7 @@ QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, 
 // uses -1 for missing values
 QList<int> TemplateList::applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const
 {
-    const QList<QString> originalLabels = collectValues<QString>(propName);
+    const QList<QString> originalLabels = get<QString>(propName);
 
     QList<int> result;
     for (int i=0; i<originalLabels.size(); i++) {

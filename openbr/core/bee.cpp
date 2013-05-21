@@ -262,8 +262,8 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
 {
     // Would like to use indexProperty for this, but didn't make a version of that for Filelist yet
     // -cao
-    QList<QString> targetLabels = targets.collectValues<QString>("Subject", "-1");
-    QList<QString> queryLabels = queries.collectValues<QString>("Subject", "-1");
+    QList<QString> targetLabels = targets.get<QString>("Subject", "-1");
+    QList<QString> queryLabels = queries.get<QString>("Subject", "-1");
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 

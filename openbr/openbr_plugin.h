@@ -297,9 +297,9 @@ struct BR_EXPORT FileList : public QList<File>
     QStringList flat() const; /*!< \brief Returns br::File::flat() for each file in the list. */
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
     void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
-     /*!< \brief Returns br::File::label() for each file in the list. */
+     /*!< \brief Returns values associated with the input propName for each file in the list. */
     template<typename T>
-    QList<T> collectValues(const QString & propName) const
+    QList<T> get(const QString & propName) const
     {
         QList<T> values; values.reserve(size());
         foreach (const File &f, *this)
@@ -307,7 +307,7 @@ struct BR_EXPORT FileList : public QList<File>
         return values;
     }
     template<typename T>
-    QList<T> collectValues(const QString & propName, T defaultValue) const
+    QList<T> get(const QString & propName, T defaultValue) const
     {
         QList<T> values; values.reserve(size());
         foreach (const File &f, *this)
@@ -480,10 +480,16 @@ struct TemplateList : public QList<Template>
      * \brief Returns br::Template::label() for each template in the list.
      */
     template<typename T>
-    QList<T> collectValues(const QString & propName) const
+    QList<T> get(const QString & propName) const
     {
         QList<T> values; values.reserve(size());
         foreach (const Template &t, *this) values.append(t.file.get<T>(propName));
+        return values;
+    }
+    QList<QVariant> values(const QString & propName) const
+    {
+        QList<QVariant> values; values.reserve(size());
+        foreach (const Template &t, *this) values.append(t.file.value(propName));
         return values;
     }
 

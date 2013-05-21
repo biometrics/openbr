@@ -343,14 +343,12 @@ class LDATransform : public Transform
 
         TemplateList ldaTrainingSet;
         static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
-        // Reindex label, is this still necessary? -cao
-        ldaTrainingSet = TemplateList::relabel(ldaTrainingSet, "Label");
 
         int dimsIn = ldaTrainingSet.first().m().rows * ldaTrainingSet.first().m().cols;
 
         // OpenBR ensures that class values range from 0 to numClasses-1.
         // Label exists because we created it earlier with relabel
-        QList<int> classes = trainingSet.collectValues<int>("Label");
+        QList<int> classes = trainingSet.get<int>("Label");
         QMap<int, int> classCounts = trainingSet.countValues<int>("Label");
         const int numClasses = classCounts.size();
 
