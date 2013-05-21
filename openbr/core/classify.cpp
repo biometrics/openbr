@@ -66,11 +66,12 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
                 counters[subject].falsePositive += 1.f / predictedSubjects.size();
     }
 
-    QSharedPointer<Output> output(Output::make("", FileList() << "Subject" << "Count" << "Precision" << "Recall" << "F-score", FileList(counters.size())));
+    const QStringList keys = counters.keys();
+    QSharedPointer<Output> output(Output::make("", FileList() << "Count" << "Precision" << "Recall" << "F-score", FileList(keys)));
 
     int tpc = 0;
     int fnc = 0;
-    const QStringList keys = counters.keys();
+
     for (int i=0; i<counters.size(); i++) {
         const QString &subject = keys[i];
         const Counter &counter = counters[subject];
@@ -80,12 +81,10 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         const float precision = counter.truePositive / (float)(counter.truePositive + counter.falsePositive);
         const float recall = counter.truePositive / (float)(counter.truePositive + counter.falseNegative);
         const float fscore = 2 * precision * recall / (precision + recall);
-        // problem -cao
-        output->setRelative(File("", subject).get<int>("Label"), i, 0);
-        output->setRelative(count, i, 1);
-        output->setRelative(precision, i, 2);
-        output->setRelative(recall, i, 3);
-        output->setRelative(fscore, i, 4);
+	output->setRelative(count, i, 0);
+	output->setRelative(precision, i, 1);
+	output->setRelative(recall, i, 2);
+	output->setRelative(fscore, i, 3);
     }
 
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
