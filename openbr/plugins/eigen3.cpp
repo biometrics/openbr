@@ -329,7 +329,7 @@ class LDATransform : public Transform
 
     void train(const TemplateList &_trainingSet)
     {
-        // creates "Label" -cao
+        // creates "Label"
         TemplateList trainingSet = TemplateList::relabel(_trainingSet, "Subject");
 
         int instances = trainingSet.size();

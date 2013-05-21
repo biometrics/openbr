@@ -141,7 +141,6 @@ int32_t SdkEstimator::estimate_gender(const ONEFACE &input_face, int8_t &gender,
     TemplateList templates;
     templates.append(templateFromONEFACE(input_face));
     templates >> *frvt2012_gender_transform.data();
-    // TODO: lookup gender strings/expected int outputs -cao
     mf = gender = templates.first().file.get<QString>("Subject") == "Male" ? 0 : 1;
     return templates.first().file.failed() ? 4 : 0;
 }

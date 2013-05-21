@@ -434,7 +434,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 }
 
 // indexes some property, assigns an integer id to each unique value of propName
-// stores the index values in "Label" of the output template list -cao
+// stores the index values in "Label" of the output template list
 TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
 {
     const QList<QString> originalLabels = tl.get<QString>(propName);
