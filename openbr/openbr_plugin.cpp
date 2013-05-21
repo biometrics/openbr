@@ -1033,11 +1033,6 @@ MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &qu
 /* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
-    if (targetFiles[column] == "Subject") {
-        const int label = data.at<float>(row,column);
-        // problem -cao
-        return QString::number(label);
-    }
     return QString::number(data.at<float>(row,column));
 }
 
