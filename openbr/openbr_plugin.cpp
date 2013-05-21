@@ -425,8 +425,6 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         if (crossValidate > 0) srand(0);
 
         for (int i=newTemplates.size()-1; i>=0; i--) {
-            newTemplates[i].file.append(gallery.localMetadata());
-            newTemplates[i].file.append(file.localMetadata());
             newTemplates[i].file.set("Index", i+templates.size());
             newTemplates[i].file.set("Gallery", gallery.name);
 
