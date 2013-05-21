@@ -28,6 +28,7 @@
  *
  * \section get_started Get Started
  * - \ref installation - \copybrief installation
+ * - \ref qmake_integration - \copybrief qmake_integration
  *
  * \section learn_more Learn More
  * - \ref cli - \copybrief cli
@@ -389,6 +390,15 @@ $ br -help
  * $ sudo apt-get install libgnome2-bin
  * $ gnome-open html/index.html
  * \endcode
+ */
+
+/*!
+ * \page qmake_integration QMake Integration
+ * \brief Add OpenBR to your Qt <tt>.pro</tt> project.
+ *
+ * After completing the \ref installation instructions, try launching Qt Creator and opening <tt><path_to_openbr_installation>/share/openbr/qmake_tutorial/hello.pro</tt>.
+ *
+ * Happy hacking!
  */
 
 /*!
