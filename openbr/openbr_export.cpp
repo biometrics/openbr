@@ -28,6 +28,7 @@
  *
  * \section get_started Get Started
  * - \ref installation - \copybrief installation
+ * - \ref qmake_integration - \copybrief qmake_integration
  *
  * \section learn_more Learn More
  * - \ref cli - \copybrief cli
@@ -57,7 +58,7 @@
 $ cd bin
 $ export LD_LIBRARY_PATH=../lib:${LD_LIBRARY_PATH}
 $ sudo ldconfig
-$ sudo cp ../share/70-yubikey.rules /etc/udev/rules.d # Only needed if you were given a license dongle.
+$ sudo cp ../share/openbr/70-yubikey.rules /etc/udev/rules.d # Only needed if you were given a license dongle.
 \endverbatim
  * \par OS X
 \verbatim
@@ -89,7 +90,7 @@ $ br -help
  *  -# Download and install <a href="http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx">Windows 8 SDK</a>.
  * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download and Install CMake 2.8.10.2</a>
  *  -# During installation setup select "add CMake to PATH".
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
  *  -# Move the "opencv-2.4.5" folder to "C:\".
  *  -# Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
@@ -150,20 +151,20 @@ $ br -help
 
 /*!
  * \page windows_mingw Windows 7 - MinGW-w64 2.0 - x64
- * -# <a href="http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.7-release/x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb.7z/download">Download MinGW-w64 GCC 4.7.2</a> and unarchive.
+ * -# <a href="http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/rubenvb/gcc-4.7-release/x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb.7z/download">Download and Unarchive MinGW-w64 GCC 4.7.2</a>
  *  -# Use the free open source program <a href="http://www.7-zip.org/">7-Zip</a> to unarchive.
  *  -# Move "x86_64-w64-mingw32-gcc-4.7.2-release-win64_rubenvb\mingw64" to "C:\".
- * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download CMake 2.8.10.2</a> and install.
+ * -# <a href="http://www.cmake.org/files/v2.8/cmake-2.8.10.2-win32-x86.exe">Download and Install CMake 2.8.10.2</a>
  *  -# During installation setup select "add CMake to PATH".
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.4/OpenCV-2.4.4.tar.bz2">Download OpenCV 2.4.4</a>.
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>
  *  -# Consider the free open source program <a href="http://www.7-zip.org/">7-Zip</a> if you need a program to unarchive tarballs.
- *  -# Move the "OpenCV-2.4.4" folder to "C:\".
+ *  -# Move the "opencv-2.4.5" folder to "C:\".
  *  -# From the MinGW-w64 Command Prompt (double-click "C:\mingw64\mingw64env.cmd"):
  *  \code
- *  $ cd C:\OpenCV-2.4.4
+ *  $ cd C:\opencv-2.4.5
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "MinGW Makefiles" -DBUILD_opencv_java=OFF -DBUILD_opencv_world=ON -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
+ *  $ cmake -G "MinGW Makefiles" -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
  *  $ mingw32-make
  *  $ mingw32-make install
  *  $ cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -171,17 +172,17 @@ $ br -help
  *  $ mingw32-make install
  *  $ mingw32-make clean
  *  \endcode
- * -# <a href="http://releases.qt-project.org/qt5/5.0.1/single/qt-everywhere-opensource-src-5.0.1.zip">Download Qt 5.0.1</a> and unzip.
+ * -# <a href="http://download.qt-project.org/official_releases/qt/5.0/5.0.2/single/qt-everywhere-opensource-src-5.0.2.zip">Download and Unzip Qt 5.0.2</a>
  *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
- *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install. You may also need to install the latest OpenGL drivers from your graphics card manufacturer.
+ *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download and Install Direct X Software Developement Kit</a>, you may also need to install the latest OpenGL drivers from your graphics card manufacturer.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
- *  $ cd qt-everywhere-opensource-src-5.0.1
- *  $ configure -prefix C:\Qt\5.0.1\mingw64 -opensource -confirm-license -nomake examples -nomake tests -opengl desktop
+ *  $ cd qt-everywhere-opensource-src-5.0.2
+ *  $ configure -prefix C:\Qt\Qt5.0.2\5.0.2\mingw64 -opensource -confirm-license -nomake examples -nomake tests -opengl desktop
  *  $ mingw32-make
  *  $ mingw32-make install
  *  $ cd ..
- *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.1
+ *  $ rmdir /Q /S qt-everywhere-opensource-src-5.0.2
  *  \endcode
  *  -# mingw32-make will take several hours to finish.
  * -# Create a <a href="github.com">GitHub</a> account and follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
@@ -199,31 +200,30 @@ $ br -help
  *  $ cd C:\openbr
  *  $ mkdir build-mingw64
  *  $ cd build-mingw64
- *  $ cmake -G "CodeBlocks - MinGW Makefiles" -DCMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -DCMAKE_PREFIX_PATH="C:/OpenCV-2.4.4/build-mingw64/install;C:/Qt/5.0.1/mingw64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+ *  $ cmake -G "CodeBlocks - MinGW Makefiles" -DCMAKE_RC_COMPILER="C:/mingw64/bin/windres.exe" -DCMAKE_PREFIX_PATH="C:/opencv-2.4.5/build-mingw64/install;C:/Qt/Qt5.0.2/5.0.2/mingw64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
  *  $ mingw32-make
  *  $ mingw32-make install
  *  \endcode
  *  -# Check out the "install" folder.
  * -# Hack OpenBR!
- *  -# <a href="http://releases.qt-project.org/qtcreator/2.6.2/qt-creator-windows-opensource-2.6.2.exe">Download Qt Creator</a> IDE and install.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
- *  $ "C:\Qt\qtcreator-2.6.2\bin\qtcreator.exe"
+ *  $ C:\Qt\Qt5.0.2\Tools\QtCreator\bin\qtcreator.exe
  *  \endcode
  *  -# From the Qt Creator "Tools" menu select "Options..."
  *  -# Under "Kits" select "Desktop (default)"
- *  -# For "Compiler:" select "MinGW (x86 64bit)" and click "OK"
+ *  -# For "Compiler:" select "MinGW (x86 64bit in C:\mingw64\bin)" and click "OK"
  *  -# From the Qt Creator "File" menu select "Open File or Project...".
  *  -# Select "C:\openbr\CMakeLists.txt" then "Open".
+ *  -# If prompted for the location of CMake, enter "C:\Program Files (x86)\CMake 2.8\bin\cmake.exe".
  *  -# Browse to your pre-existing build directory "C:\openbr\build-mingw64" then select "Next".
  *  -# Clear any text in the "arguments" box then select "Run CMake" then "Finish".
- *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator-2.6/">here</a> if you need.
+ *  -# You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
  * -# (Optional) Package OpenBR!
- *  -# <a href="http://sourceforge.net/projects/nsis/files/NSIS%202/2.46/nsis-2.46-setup.exe/download?use_mirror=iweb&download=">Download NSIS 2.46</a> and install.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
  *  $ cd C:\openbr\build-mingw64
- *  $ mingw32-make package
+ *  $ cpack -G ZIP
  *  \endcode
  */
 
@@ -389,6 +389,15 @@ $ br -help
  * $ sudo apt-get install libgnome2-bin
  * $ gnome-open html/index.html
  * \endcode
+ */
+
+/*!
+ * \page qmake_integration QMake Integration
+ * \brief Add OpenBR to your Qt <tt>.pro</tt> project.
+ *
+ * After completing the \ref installation instructions, try launching Qt Creator and opening <tt>\<path_to_openbr_installation\>/share/openbr/qmake_tutorial/hello.pro</tt>.
+ *
+ * Happy hacking!
  */
 
 /*!
