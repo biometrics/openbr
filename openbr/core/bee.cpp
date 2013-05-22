@@ -107,8 +107,6 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
 template <typename T>
 Mat readMatrix(const br::File &matrix, QString *targetSigset = NULL, QString *querySigset = NULL)
 {
-    qDebug() << matrix;
-
     // Special case matrix construction
     if (matrix == "Identity") {
         int rows = matrix.get<int>("rows", -1);
@@ -162,9 +160,6 @@ Mat readMatrix(const br::File &matrix, QString *targetSigset = NULL, QString *qu
     QStringList words = QString(file.readLine()).split(" ");
     int rows = words[1].toInt();
     int cols = words[2].toInt();
-
-    qDebug() << rows;
-    qDebug() << cols;
 
     // Get matrix data
     qint64 bytesExpected = (qint64)rows*(qint64)cols*(qint64)sizeof(T);
