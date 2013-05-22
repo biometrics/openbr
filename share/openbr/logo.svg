@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="openbr2.svg">
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png"
+   inkscape:export-xdpi="78.628136"
+   inkscape:export-ydpi="78.628136">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,11 +27,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="401.55465"
-     inkscape:cy="469.36679"
+     inkscape:zoom="3.52"
+     inkscape:cx="337.72687"
+     inkscape:cy="492.13242"
      inkscape:document-units="px"
-     inkscape:current-layer="g3045"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1222"
      inkscape:window-height="756"
@@ -57,10 +60,10 @@
        id="path2987"
        sodipodi:cx="371.42856"
        sodipodi:cy="579.50507"
-       sodipodi:rx="247.14285"
-       sodipodi:ry="247.14285"
-       d="m 618.57141,579.50507 a 247.14285,247.14285 0 1 1 -494.2857,0 247.14285,247.14285 0 1 1 494.2857,0 z"
-       transform="matrix(0.81021055,0,0,0.81021055,67.493221,92.983946)" />
+       sodipodi:rx="212.58394"
+       sodipodi:ry="212.58394"
+       d="m 584.0125,579.50507 a 212.58394,212.58394 0 1 1 -425.16788,0 212.58394,212.58394 0 1 1 425.16788,0 z"
+       transform="matrix(0.67143477,0,0,0.67143477,119.03851,174.90671)" />
     <path
        sodipodi:type="arc"
        style="fill:#ffffff"
@@ -70,7 +73,10 @@
        sodipodi:rx="150"
        sodipodi:ry="150"
        d="m 551.42856,273.79074 a 150,150 0 1 1 -300,0 150,150 0 1 1 300,0 z"
-       transform="matrix(1.054074,0,0,1.0407406,-54.675124,280.16303)" />
+       transform="matrix(0.86501586,0,0,0.85407393,21.11727,331.21667)"
+       inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:#000000"
        d=""
@@ -83,7 +89,10 @@
        inkscape:connector-curvature="0" />
     <g
        id="g3045"
-       transform="translate(-2,0)">
+       transform="translate(-2,0)"
+       inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png"
+       inkscape:export-xdpi="78.628136"
+       inkscape:export-ydpi="78.628136">
       <text
          transform="scale(-1,1)"
          sodipodi:linespacing="125%"
@@ -109,24 +118,60 @@
            y="639.84802"
            x="336.8999"
            id="tspan2997"
-           sodipodi:role="line">R</tspan></text>
-      <path
-         inkscape:connector-curvature="0"
-         id="path2999"
-         d="m 376.64255,559.82572 0,57.41929"
-         style="fill:none;stroke:#000000;stroke-width:14.14735699px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3027"
-         d="m 449.17728,629.69928 -13.48069,-23.91744 5.61212,-3.50574 c 3.08674,-1.92816 5.63077,-3.47956 5.65343,-3.44757 0.0354,0.0502 26.69583,47.38268 26.9055,47.76805 0.0844,0.15482 -10.32171,6.79078 -10.87151,6.93281 -0.2009,0.0519 -5.80772,-9.61681 -13.81885,-23.83011 l 0,0 z"
-         style="fill:#000000" />
-      <rect
-         y="615.26532"
-         x="418.04288"
-         height="55.380844"
-         width="68.445038"
-         id="rect3043"
-         style="fill:#ffffff" />
+           sodipodi:role="line" /></text>
     </g>
+    <g
+       transform="matrix(-1,0,0,1,735.68951,0)"
+       id="g3013"
+       inkscape:export-xdpi="78.628136"
+       inkscape:export-ydpi="78.628136"
+       inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png">
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="-382.20804"
+         y="617.177"
+         id="text3015"
+         sodipodi:linespacing="125%"
+         transform="scale(-1,1)"><tspan
+           sodipodi:role="line"
+           id="tspan3017"
+           x="-382.20804"
+           y="617.177"
+           style="font-size:144px">B</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:37.91703796px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="336.8999"
+         y="639.84802"
+         id="text3019"
+         sodipodi:linespacing="125%"
+         transform="scale(1.0549347,0.94792599)"><tspan
+           sodipodi:role="line"
+           id="tspan3021"
+           x="336.8999"
+           y="639.84802"
+           style="font-size:136.50134277px" /></text>
+    </g>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3025"
+       width="14.95"
+       height="30.339096"
+       x="427.095"
+       y="586.8631"
+       inkscape:export-xdpi="78.628136"
+       inkscape:export-ydpi="78.628136"
+       inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="rect3023"
+       width="45.287998"
+       height="47.707817"
+       x="381.81201"
+       y="586.75787"
+       inkscape:export-xdpi="78.628136"
+       inkscape:export-ydpi="78.628136"
+       inkscape:export-filename="/Users/scottklum/openbr/share/openbr/logo.png" />
   </g>
 </svg>
