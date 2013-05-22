@@ -58,7 +58,7 @@
 $ cd bin
 $ export LD_LIBRARY_PATH=../lib:${LD_LIBRARY_PATH}
 $ sudo ldconfig
-$ sudo cp ../share/70-yubikey.rules /etc/udev/rules.d # Only needed if you were given a license dongle.
+$ sudo cp ../share/openbr/70-yubikey.rules /etc/udev/rules.d # Only needed if you were given a license dongle.
 \endverbatim
  * \par OS X
 \verbatim
