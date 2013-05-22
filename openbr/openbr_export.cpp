@@ -172,9 +172,9 @@ $ br -help
  *  $ mingw32-make install
  *  $ mingw32-make clean
  *  \endcode
- * -# <a href="http://download.qt-project.org/official_releases/qt/5.0/5.0.2/single/qt-everywhere-opensource-src-5.0.2.zip">Download and Unzip Qt 5.0.2</a>.
+ * -# <a href="http://download.qt-project.org/official_releases/qt/5.0/5.0.2/single/qt-everywhere-opensource-src-5.0.2.zip">Download and Unzip Qt 5.0.2</a>
  *  -# Install Perl/Python/Ruby dependencies as explained in the "Windows" section of "README". Make sure they are added to "path" when given the option during installation.
- *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download Direct X Software Developement Kit</a> and install. You may also need to install the latest OpenGL drivers from your graphics card manufacturer.
+ *  -# <a href="http://www.microsoft.com/en-us/download/confirmation.aspx?id=6812">Download and Install Direct X Software Developement Kit</a>, you may also need to install the latest OpenGL drivers from your graphics card manufacturer.
  *  -# From the MinGW-w64 Command Prompt:
  *  \code
  *  $ cd qt-everywhere-opensource-src-5.0.2
