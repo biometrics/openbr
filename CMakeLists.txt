@@ -25,13 +25,13 @@ endif()
 
 # Define resources
 if(WIN32)
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.ico")
 elseif(APPLE)
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.icns")
 else()
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.png")
 endif()
 
