@@ -783,6 +783,7 @@ struct Factory
     /*!
      * \brief Constructs a plugin from a file.
      */
+    //! [Factory make]
     static T *make(const File &file)
     {
         QString name = file.suffix();
@@ -791,11 +792,11 @@ struct Factory
             else if (names().contains("Default"))                 name = "Default";
             else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
         }
-        if (registry->contains("_"+name)) name.prepend('_'); // Hook to override with "native" implementation
         T *object = registry->value(name)->_make();
         object->init(file);
         return object;
     }
+    //! [Factory make]
 
     /*!
      * \brief Constructs all the available plugins.

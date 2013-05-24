@@ -31,6 +31,7 @@
  * - \ref qmake_integration - \copybrief qmake_integration
  *
  * \section learn_more Learn More
+ * - \ref algorithm_grammar - \copybrief algorithm_grammar
  * - \ref cli - \copybrief cli
  * - \ref c_sdk - \copybrief c_sdk
  * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
@@ -398,6 +399,67 @@ $ br -help
  * After completing the \ref installation instructions, try launching Qt Creator and opening <tt>\<path_to_openbr_installation\>/share/openbr/qmake_tutorial/hello.pro</tt>.
  *
  * Happy hacking!
+ */
+
+/*!
+ * \page algorithm_grammar Algorithm Grammar
+ * \brief How algorithms are constructed from string descriptions.
+ *
+ * <b>So you've run <tt>scripts/helloWorld.sh</tt> and it generally makes sense, except you have no idea what <tt>'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)'</tt> means or how it is executed.</b>
+ * Well if this is the case, you've found the right documentation.
+ * Let's get started!
+ *
+ * In OpenBR an <i>algorithm</i> is a technique for enrolling templates associated with a technique for comparing them.
+ * Recall that our ultimate goal is to be able to say how similar two face images are (or two fingerprints, irises, etc.).
+ * Instead of storing the entire raw image for comparison, it is common practice to store an optimized representation, or <i>template</i>, of the image for the task at hand.
+ * The process of generating this optimized representatation is called <i>template enrollment</i> or <i>template generation</i>.
+ * Given two templates, <i>template comparison</i> computes the similarity between them, where the higher values indicate more probable matches and the threshold for determining what constitutes an adaquate match is determined operationally.
+ * The goal of template generation is to design templates that are small, accurate, and fast to compare.
+ * Ok, you probably knew all of this already, let's move on.
+ *
+ * The only way of creating an algorithm in OpenBR is from a text string that describes it.
+ * We call this string the <i>algorithm description</i>.
+ * The algorithm description is seperated into two parts by a ':', with the left hand side indicating how to generate templates and the right hand side indicating how to compare them.
+ * Some algorithms, like \ref cpp_gender_estimation and \ref cpp_age_estimation are <i>classifiers</i> that don't create templates.
+ * In these cases, the colon and the template comparison technique can be omitted from the algorithm description.
+ *
+ * There are several motivations for mandating that algorithms are defined from these strings, here are the most important:
+ * -# It ensures good software development practices by forcibly decoupling the development of each step in an algorithm, facilitating the modification of algorithms and the re-use of individual steps.
+ * -# It spares the creation and maintainance of a lot of very similar header files that would otherwise be needed for each step in an algorithm, observe the abscence of headers in <tt>openbr/plugins</tt>.
+ * -# It allows for algorithm parameter tuning without recompiling.
+ * -# It is completely unambiguous, both the OpenBR interpreter and anyone familiar with the project can understand exactly what your algorithm does just from this description.
+ *
+ * Let's look at some of the important parts of the code base that make this possible!
+ *
+ * In <tt>AlgorithmCore::init()</tt> in <tt>openbr/core/core.cpp</tt> you can see the code for splitting the algorithm description at the colon:
+ * \snippet openbr/core/core.cpp Parsing the algorithm description
+ *
+ * Shortly thereafter in this function we <i>make</i> the template generation and comparison methods:
+ * \snippet openbr/core/core.cpp Creating the template generation and comparison methods
+ * These make calls are defined in the public \ref cpp_plugin_sdk and can also be called from end user code.
+ *
+ * Below we discuss some of the source code for \ref br::Transform::make in <tt>openbr/openbr_plugin.cpp</tt>.
+ * Note, \ref br::Distance::make is similar in spirit and will not be covered.
+ *
+ * One of the first steps when converting the template enrollment description into a \ref br::Transform is to replace the operators, like '+', with their full form:
+ * \snippet openbr/openbr_plugin.cpp Make a pipe
+ * A pipe (see \ref br::PipeTransform in <tt>openbr/plugins/meta.cpp</tt>) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
+ * PipeTransform takes a list of transforms, and <i>projects</i> templates through each transform in order.
+ *
+ * After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recurively starting at the root of the tree:
+ * \snippet openbr/openbr_plugin.cpp Construct the root transform
+ *
+ * At this point we reach arguably the most important code in the entire framework, the <i>object factory</i> in <tt>openbr/openbr_plugin.h</tt>.
+ * The \ref br::Factory class is responsible for constructing an object from a string:
+ * \snippet openbr/openbr_plugin.h Factory make
+ *
+ * Going back to our original example, a \ref br::PipeTransform will be created with \ref br::OpenTransform, \ref br::CvtTransform, \ref br::CascadeTransform, \ref br::ASEFEyesTransform, \ref br::AffineTransform, \ref br::CvtFloatTransform, and \ref br::PCATransform as its children.
+ * If you want all the tedious details about what exactly this algoritm does, then you should read the \ref br::Transform::project function implemented by each of these plugins.
+ * The brief explanation is that it <i>reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images</i>.
+ * If you are familiar with face recognition, you will likely recognize this as the Eigenfaces \cite turk1991eigenfaces algorithm.
+ *
+ * As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
+ * Since OpenBR expects <i>similarity</i> values when comparing templates, and not <i>distances</i>, \ref br::DistDistance will return <i>-log(distance+1)</i> so that larger values indicate more similarity.
  */
 
 /*!

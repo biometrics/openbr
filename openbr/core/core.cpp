@@ -291,14 +291,18 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
+        //! [Parsing the algorithm description]
         QStringList words = QtUtils::parse(description.flat(), ':');
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
+        //! [Parsing the algorithm description]
 
         if (description.getBool("distribute", true))
             words[0] = "DistributeTemplate(" + words[0] + ")";
 
+        //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
+        //! [Creating the template generation and comparison methods]
     }
 };
 
