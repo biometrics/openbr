@@ -167,34 +167,6 @@ bool File::getBool(const QString &key, bool defaultValue) const
     return variant.value<bool>();
 }
 
-QString File::subject() const
-{
-    const QVariant l = m_metadata.value("Label");
-    if (!l.isNull()) return Globals->subjects.key(l.toFloat(), l.toString());
-    return m_metadata.value("Subject").toString();
-}
-
-float File::label() const
-{
-    const QVariant l = m_metadata.value("Label");
-    if (!l.isNull()) return l.toFloat();
-
-    const QVariant s = m_metadata.value("Subject");
-    if (s.isNull()) return -1;
-
-    const QString subject = s.toString();
-
-    bool is_num = false;
-    float num = subject.toFloat(&is_num);
-    if (is_num) return num;
-
-    static QMutex mutex;
-    QMutexLocker mutexLocker(&mutex);
-    if (!Globals->subjects.contains(subject))
-        Globals->subjects.insert(subject, Globals->subjects.size());
-    return Globals->subjects.value(subject);
-}
-
 QList<QPointF> File::namedPoints() const
 {
     QList<QPointF> landmarks;
@@ -360,14 +332,6 @@ void FileList::sort(const QString& key)
     *this = sortedList;
 }
 
-QList<float> FileList::labels() const
-{
-    QList<float> labels; labels.reserve(size());
-    foreach (const File &f, *this)
-        labels.append(f.label());
-    return labels;
-}
-
 QList<int> FileList::crossValidationPartitions() const
 {
     QList<int> crossValidationPartitions; crossValidationPartitions.reserve(size());
@@ -449,7 +413,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
                     newTemplates[i].file.set("Partition", -1);
                 } else {
-                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.subject().toLatin1(), QCryptographicHash::Md5);
+                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                 }
@@ -469,17 +433,65 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     return templates;
 }
 
-TemplateList TemplateList::relabel(const TemplateList &tl)
+// indexes some property, assigns an integer id to each unique value of propName
+// stores the index values in "Label" of the output template list
+TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
 {
-    const QList<int> originalLabels = tl.labels<int>();
-    QHash<int,int> labelTable;
-    foreach (int label, originalLabels)
+    const QList<QString> originalLabels = tl.get<QString>(propName);
+    QHash<QString,int> labelTable;
+    foreach (const QString & label, originalLabels)
         if (!labelTable.contains(label))
             labelTable.insert(label, labelTable.size());
 
     TemplateList result = tl;
     for (int i=0; i<result.size(); i++)
         result[i].file.set("Label", labelTable[originalLabels[i]]);
+    return result;
+}
+
+QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
+{
+    QHash<QString, int> dummyForwards;
+    QHash<int, QVariant> dummyBackwards;
+
+    if (!valueMap) valueMap = &dummyForwards;
+    if (!reverseLookup) reverseLookup = &dummyBackwards;
+
+    return indexProperty(propName, *valueMap, *reverseLookup);
+}
+
+QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const
+{
+    valueMap.clear();
+    reverseLookup.clear();
+
+    const QList<QVariant> originalLabels = values(propName);
+    foreach (const QVariant & label, originalLabels) {
+        QString labelString = label.toString();
+        if (!valueMap.contains(labelString)) {
+            reverseLookup.insert(valueMap.size(), label);
+            valueMap.insert(labelString, valueMap.size());
+        }
+    }
+
+    QList<int> result;
+    for (int i=0; i<originalLabels.size(); i++)
+        result.append(valueMap[originalLabels[i].toString()]);
+
+    return result;
+}
+
+// uses -1 for missing values
+QList<int> TemplateList::applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const
+{
+    const QList<QString> originalLabels = get<QString>(propName);
+
+    QList<int> result;
+    for (int i=0; i<originalLabels.size(); i++) {
+        if (!valueMap.contains(originalLabels[i])) result.append(-1);
+        else result.append(valueMap[originalLabels[i]]);
+    }
+
     return result;
 }
 
@@ -1021,10 +1033,6 @@ MatrixOutput *MatrixOutput::make(const FileList &targetFiles, const FileList &qu
 /* MatrixOutput - protected methods */
 QString MatrixOutput::toString(int row, int column) const
 {
-    if (targetFiles[column] == "Subject") {
-        const int label = data.at<float>(row,column);
-        return Globals->subjects.key(label, QString::number(label));
-    }
     return QString::number(data.at<float>(row,column));
 }
 

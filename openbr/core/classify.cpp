@@ -45,8 +45,8 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
             qFatal("Input order mismatch.");
 
         // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QString predictedSubject = predicted[i].file.subject();
-        QString trueSubject = truth[i].file.subject();
+        QString predictedSubject = predicted[i].file.get<QString>("Subject");
+        QString trueSubject = truth[i].file.get<QString>("Subject");
 
         QStringList predictedSubjects(predictedSubject);
         QStringList trueSubjects(trueSubject);
@@ -66,11 +66,12 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
                 counters[subject].falsePositive += 1.f / predictedSubjects.size();
     }
 
-    QSharedPointer<Output> output(Output::make("", FileList() << "Subject" << "Count" << "Precision" << "Recall" << "F-score", FileList(counters.size())));
+    const QStringList keys = counters.keys();
+    QSharedPointer<Output> output(Output::make("", FileList() << "Count" << "Precision" << "Recall" << "F-score", FileList(keys)));
 
     int tpc = 0;
     int fnc = 0;
-    const QStringList keys = counters.keys();
+
     for (int i=0; i<counters.size(); i++) {
         const QString &subject = keys[i];
         const Counter &counter = counters[subject];
@@ -80,11 +81,10 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         const float precision = counter.truePositive / (float)(counter.truePositive + counter.falsePositive);
         const float recall = counter.truePositive / (float)(counter.truePositive + counter.falseNegative);
         const float fscore = 2 * precision * recall / (precision + recall);
-        output->setRelative(File("", subject).label(), i, 0);
-        output->setRelative(count, i, 1);
-        output->setRelative(precision, i, 2);
-        output->setRelative(recall, i, 3);
-        output->setRelative(fscore, i, 4);
+	output->setRelative(count, i, 0);
+	output->setRelative(precision, i, 1);
+	output->setRelative(recall, i, 2);
+	output->setRelative(fscore, i, 3);
     }
 
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
@@ -103,9 +103,9 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.label()-truth[i].file.label(), 2.f);
-        truthValues.append(QString::number(truth[i].file.label()));
-        predictedValues.append(QString::number(predicted[i].file.label()));
+        rmsError += pow(predicted[i].file.get<float>("Subject")-truth[i].file.get<float>("Subject"), 2.f);
+        truthValues.append(QString::number(truth[i].file.get<float>("Subject")));
+        predictedValues.append(QString::number(predicted[i].file.get<float>("Subject")));
     }
 
     QStringList rSource;

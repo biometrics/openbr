@@ -329,7 +329,8 @@ class LDATransform : public Transform
 
     void train(const TemplateList &_trainingSet)
     {
-        TemplateList trainingSet = TemplateList::relabel(_trainingSet);
+        // creates "Label"
+        TemplateList trainingSet = TemplateList::relabel(_trainingSet, "Subject");
 
         int instances = trainingSet.size();
 
@@ -342,13 +343,13 @@ class LDATransform : public Transform
 
         TemplateList ldaTrainingSet;
         static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
-        ldaTrainingSet = TemplateList::relabel(ldaTrainingSet);
 
         int dimsIn = ldaTrainingSet.first().m().rows * ldaTrainingSet.first().m().cols;
 
         // OpenBR ensures that class values range from 0 to numClasses-1.
-        QList<int> classes = trainingSet.labels<int>();
-        QMap<int, int> classCounts = trainingSet.labelCounts();
+        // Label exists because we created it earlier with relabel
+        QList<int> classes = trainingSet.get<int>("Label");
+        QMap<int, int> classCounts = trainingSet.countValues<int>("Label");
         const int numClasses = classCounts.size();
 
         // Map Eigen into OpenCV

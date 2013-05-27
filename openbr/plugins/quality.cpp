@@ -26,10 +26,10 @@ class ImpostorUniquenessMeasureTransform : public Transform
 
     float calculateIUM(const Template &probe, const TemplateList &gallery) const
     {
-        const int probeLabel = probe.file.label();
+        const QString probeLabel = probe.file.get<QString>("Subject");
         TemplateList subset = gallery;
         for (int j=subset.size()-1; j>=0; j--)
-            if (subset[j].file.label() == probeLabel)
+            if (subset[j].file.get<QString>("Subject") == probeLabel)
                 subset.removeAt(j);
 
         QList<float> scores = distance->compare(subset, probe);
@@ -158,8 +158,7 @@ class MatchProbabilityDistance : public Distance
     {
         distance->train(src);
 
-        const QList<int> labels = src.labels<int>();
-
+        const QList<int> labels = src.indexProperty("Subject");
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(src.size()), FileList(src.size())));
         distance->compare(src, src, matrixOutput.data());
 
@@ -229,7 +228,7 @@ class HeatMapDistance : public Distance
     {
         distance->train(src);
 
-        const QList<int> labels = src.labels<int>();
+        const QList<int> labels = src.indexProperty("Subject");
 
         QList<TemplateList> patches;
 
@@ -317,7 +316,7 @@ class UnitDistance : public Distance
     void train(const TemplateList &templates)
     {
         const TemplateList samples = templates.mid(0, 2000);
-        const QList<float> sampleLabels = samples.labels<float>();
+        const QList<int> sampleLabels = samples.indexProperty("Subject");
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(samples.size()), FileList(samples.size())));
         Distance::compare(samples, samples, matrixOutput.data());
 
