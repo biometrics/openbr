@@ -65,13 +65,13 @@ class arffGallery : public Gallery
             const int dimensions = t.m().rows * t.m().cols;
             for (int i=0; i<dimensions; i++)
                 arffFile.write(qPrintable("@ATTRIBUTE v" + QString::number(i) + " REAL\n"));
-            arffFile.write(qPrintable("@ATTRIBUTE class {" + QStringList(Globals->subjects.keys()).join(',') + "}\n"));
+            arffFile.write(qPrintable("@ATTRIBUTE class string\n"));
 
             arffFile.write("\n@DATA\n");
         }
 
         arffFile.write(qPrintable(OpenCVUtils::matrixToStringList(t).join(',')));
-        arffFile.write(qPrintable(",'" + t.file.subject() + "'\n"));
+        arffFile.write(qPrintable(",'" + t.file.get<QString>("Subject") + "'\n"));
     }
 };
 
@@ -517,11 +517,7 @@ class csvGallery : public Gallery
 
     static QString getCSVElement(const QString &key, const QVariant &value, bool header)
     {
-        if ((key == "Label") && !header) {
-            QString stringLabel = Globals->subjects.key(value.value<int>());
-            if (stringLabel.isEmpty()) return value.value<QString>();
-            else                       return stringLabel;
-        } else if (value.canConvert<QString>()) {
+        if (value.canConvert<QString>()) {
             if (header) return key;
             else        return value.value<QString>();
         } else if (value.canConvert<QPointF>()) {
@@ -878,7 +874,7 @@ class statGallery : public Gallery
 
     void write(const Template &t)
     {
-        subjects.insert(t.file.subject());
+        subjects.insert(t.file.get<QString>("Subject"));
         bytes.append(t.bytes());
     }
 };

@@ -254,8 +254,6 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
-    QString subject() const; /*!< \brief Looks up the subject from the file's label. */
-    float label() const; /*!< \brief Convenience function for retrieving the file's \c Label. */
     inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
     QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
@@ -299,7 +297,24 @@ struct BR_EXPORT FileList : public QList<File>
     QStringList flat() const; /*!< \brief Returns br::File::flat() for each file in the list. */
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
     void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
-    QList<float> labels() const; /*!< \brief Returns br::File::label() for each file in the list. */
+     /*!< \brief Returns values associated with the input propName for each file in the list. */
+    template<typename T>
+    QList<T> get(const QString & propName) const
+    {
+        QList<T> values; values.reserve(size());
+        foreach (const File &f, *this)
+            values.append(f.get<T>(propName));
+        return values;
+    }
+    template<typename T>
+    QList<T> get(const QString & propName, T defaultValue) const
+    {
+        QList<T> values; values.reserve(size());
+        foreach (const File &f, *this)
+            values.append(f.contains(propName) ? f.get<T>(propName) : defaultValue);
+        return values;
+    }
+
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
 };
@@ -383,7 +398,14 @@ struct TemplateList : public QList<Template>
     TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
     TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
-    BR_EXPORT static TemplateList relabel(const TemplateList &tl); /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
+
+    /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
+    BR_EXPORT static TemplateList relabel(const TemplateList & tl, const QString & propName);
+
+    QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
+    QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
+    QList<int> applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const;
+
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -457,23 +479,30 @@ struct TemplateList : public QList<Template>
     /*!
      * \brief Returns br::Template::label() for each template in the list.
      */
-    template <typename T>
-    QList<T> labels() const
+    template<typename T>
+    QList<T> get(const QString & propName) const
     {
-        QList<T> labels; labels.reserve(size());
-        foreach (const Template &t, *this) labels.append(t.file.label());
-        return labels;
+        QList<T> values; values.reserve(size());
+        foreach (const Template &t, *this) values.append(t.file.get<T>(propName));
+        return values;
+    }
+    QList<QVariant> values(const QString & propName) const
+    {
+        QList<QVariant> values; values.reserve(size());
+        foreach (const Template &t, *this) values.append(t.file.value(propName));
+        return values;
     }
 
     /*!
      * \brief Returns the number of occurences for each label in the list.
      */
-    QMap<int,int> labelCounts(bool excludeFailures = false) const
+    template<typename T>
+    QMap<T,int> countValues(const QString & propName, bool excludeFailures = false) const
     {
-        QMap<int, int> labelCounts;
+        QMap<T, int> labelCounts;
         foreach (const File &file, files())
             if (!excludeFailures || !file.failed())
-                labelCounts[file.label()]++;
+                labelCounts[file.get<T>(propName)]++;
         return labelCounts;
     }
 
@@ -649,7 +678,6 @@ public:
     BR_PROPERTY(int, crossValidate, 0)
 
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
-    QHash<QString,int> subjects; /*!< \brief Used by classifiers to associate text class labels with unique integers IDs. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
 
     /*!

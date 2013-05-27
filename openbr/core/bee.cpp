@@ -96,7 +96,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
                 if ((key == "Index") || (key == "Subject")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
-        lines.append("\t<biometric-signature name=\"" + file.subject() +"\">");
+        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Subject") +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
     }
@@ -260,26 +260,28 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
 
 cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)
 {
-    QList<float> targetLabels = targets.labels();
-    QList<float> queryLabels = queries.labels();
+    // Would like to use indexProperty for this, but didn't make a version of that for Filelist yet
+    // -cao
+    QList<QString> targetLabels = targets.get<QString>("Subject", "-1");
+    QList<QString> queryLabels = queries.get<QString>("Subject", "-1");
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];
-        const int labelA = queryLabels[i];
+        const QString labelA = queryLabels[i];
         const int partitionA = queryPartitions[i];
 
         for (int j=0; j<targets.size(); j++) {
             const QString &fileB = targets[j];
-            const int labelB = targetLabels[j];
+            const QString labelB = targetLabels[j];
             const int partitionB = targetPartitions[j];
 
             Mask_t val;
             if      (fileA == fileB)           val = DontCare;
-            else if (labelA == -1)             val = DontCare;
-            else if (labelB == -1)             val = DontCare;
+            else if (labelA == "-1")             val = DontCare;
+            else if (labelB == "-1")             val = DontCare;
             else if (partitionA != partition)  val = DontCare;
             else if (partitionB == -1)         val = NonMatch;
             else if (partitionB != partition)  val = DontCare;
