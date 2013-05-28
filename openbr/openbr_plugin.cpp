@@ -1098,11 +1098,13 @@ Transform *Transform::make(QString str, QObject *parent)
         str.replace("!","+Expand+");
     }
 
+    //! [Make a pipe]
     { // Check for use of '+' as shorthand for Pipe(...)
         QStringList words = parse(str, '+');
         if (words.size() > 1)
             return make("Pipe([" + words.join(",") + "])", parent);
     }
+    //! [Make a pipe]
 
     { // Check for use of '/' as shorthand for Fork(...)
         QStringList words = parse(str, '/');
@@ -1122,8 +1124,9 @@ Transform *Transform::make(QString str, QObject *parent)
     if (str.startsWith('(') && str.endsWith(')'))
         return make(str.mid(1, str.size()-2), parent);
 
-    File f = "." + str;
-    Transform *transform = Factory<Transform>::make(f);
+    //! [Construct the root transform]
+    Transform *transform = Factory<Transform>::make("." + str);
+    //! [Construct the root transform]
 
     if (transform->independent) {
         File independent(".Independent");

@@ -18,6 +18,7 @@
 #include <QMutexLocker>
 #include <QSizePolicy>
 #include <QTimer>
+#include <QDebug>
 
 #include "imageviewer.h"
 
@@ -36,6 +37,7 @@ void br::ImageViewer::setDefaultText(const QString &text)
 
 void br::ImageViewer::setImage(const QString &file, bool async)
 {
+    QMutexLocker locker(&mutex);
     if(file.isNull()) src = QImage(); // Gets rid of runtime FileEngine::open warning
     else src = QImage(file);
     updatePixmap(async);
@@ -43,12 +45,14 @@ void br::ImageViewer::setImage(const QString &file, bool async)
 
 void br::ImageViewer::setImage(const QImage &image, bool async)
 {
+    QMutexLocker locker(&mutex);
 	src = image.copy();
     updatePixmap(async);
 }
 
 void br::ImageViewer::setImage(const QPixmap &pixmap, bool async)
 {
+    QMutexLocker locker(&mutex);
     src = pixmap.toImage();
     updatePixmap(async);
 }

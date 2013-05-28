@@ -1,5 +1,8 @@
-0.3.0 - ??/??/??
+0.4.0 - ??/??/??
 ================
+
+0.3.0 - 5/22/13
+===============
 * Added wrapper to NEC Latent SDK
 * Enrolling files/folders are now sorted naturally instead of alpha numerically
 * YouTubeFacesDBTransform implements Dr. Wolf's experimental protocol
@@ -10,6 +13,7 @@
 * Reorganized GUI code and include paths (#31)
 * 'br -daemon' to listen for commands on stdin
 * Generalized 'br -convert', now requires three parameters
+* Official icon, thanks @sklum!
 
 0.2.0 - 2/23/13
 ===============

@@ -9,7 +9,7 @@ set(CPACK_PACKAGE_VENDOR "OpenBR")
 set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 3)
+set(CPACK_PACKAGE_VERSION_MINOR 4)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
@@ -25,13 +25,13 @@ endif()
 
 # Define resources
 if(WIN32)
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.ico")
 elseif(APPLE)
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.icns")
 else()
-  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr-small.png")
+  set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}/openbr_small.png")
   set(NATIVE_ICON "${BR_SHARE_DIR}/openbr.png")
 endif()
 
@@ -69,7 +69,7 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
-set(OPENCV_DEPENDENCIES opencv_core opencv_features2d opencv_flann opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo)
+set(OPENCV_DEPENDENCIES opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum
