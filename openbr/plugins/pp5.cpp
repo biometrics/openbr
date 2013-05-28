@@ -73,7 +73,7 @@ struct PP5Context
 
         default_settings.detection.adaptive_max_size = 1.f;
         default_settings.detection.adaptive_min_size = 0.01f;
-        default_settings.detection.detect_best_face_only = true;
+        default_settings.detection.detect_best_face_only = !Globals->enrollAll;
         default_settings.detection.enable = 1;
         default_settings.detection.min_size = 4;
         default_settings.detection.use_serial_face_detection = 1;
@@ -220,47 +220,73 @@ class PP5EnrollTransform : public UntrainableTransform
     BR_PROPERTY(bool, detectOnly, false)
     Resource<PP5Context> contexts;
 
-    void project(const Template &src, Template &dst) const
+    void project(const Template & src, Template & dst) const
     {
+        if (Globals->enrollAll)
+            qFatal("single template project doesn't support enrollAll");
+
+        TemplateList srcList;
+        srcList.append(src);
+        TemplateList dstList;
+        project(srcList, dstList);
+        dst = dstList.first();
+    }
+
+    void project(const TemplateList &srcList, TemplateList & dstList) const
+    {
+        // Nothing to do here
+        if (srcList.empty())
+            return;
+
         PP5Context *context = contexts.acquire();
 
-        ppr_raw_image_type raw_image;
-        PP5Context::createRawImage(src, raw_image);
-        ppr_image_type image;
-        TRY(ppr_create_image(raw_image, &image))
-        ppr_face_list_type face_list;
-        TRY(ppr_detect_faces(context->context, image, &face_list))
+        foreach(const Template & src, srcList) {
+            ppr_raw_image_type raw_image;
+            PP5Context::createRawImage(src, raw_image);
+            ppr_image_type image;
+            TRY(ppr_create_image(raw_image, &image))
+            ppr_face_list_type face_list;
+            TRY(ppr_detect_faces(context->context, image, &face_list))
 
-        for (int i=0; i<face_list.length; i++) {
-            ppr_face_type face = face_list.faces[i];
-            int extractable;
-            TRY(ppr_is_template_extractable(context->context, face, &extractable))
-            if (!extractable && !detectOnly) continue;
+            for (int i=0; i<face_list.length; i++) {
+                ppr_face_type face = face_list.faces[i];
+                int extractable;
+                TRY(ppr_is_template_extractable(context->context, face, &extractable))
+                if (!extractable && !detectOnly) continue;
 
-            cv::Mat m;
-            if (detectOnly) {
-                m = src;
-            } else {
-                TRY(ppr_extract_face_template(context->context, image, &face))
-                context->createMat(face, m);
+                cv::Mat m;
+                if (detectOnly) {
+                    m = src;
+                } else {
+                    TRY(ppr_extract_face_template(context->context, image, &face))
+                    context->createMat(face, m);
+                }
+                Template dst;
+                dst.file = src.file;
+
+                dst.file.append(PP5Context::toMetadata(face));
+                dst += m;
+                dstList.append(dst);
+
+                // Found a face, nothing else to do (if we aren't trying to find multiple faces).
+                if (!Globals->enrollAll)
+                    break;
             }
 
-            dst.file.append(PP5Context::toMetadata(face));
-            dst += m;
-
-            if (!src.file.getBool("enrollAll")) break;
+            ppr_free_face_list(face_list);
+            ppr_free_image(image);
+            ppr_raw_image_free(raw_image);
         }
 
-        ppr_free_face_list(face_list);
-        ppr_free_image(image);
-        ppr_raw_image_free(raw_image);
+        // No faces were detected, output something with FTE set.
+        if (dstList.empty()) {
+            dstList.append(srcList.first());
+            dstList.first().file.set("FTE",true);
+            if (!detectOnly)
+                dstList.first().m() = cv::Mat();
+        }
 
         contexts.release(context);
-
-        if (!src.file.getBool("enrollAll") && dst.isEmpty()) {
-            if (detectOnly) dst += src;
-            else            dst += cv::Mat();
-        }
     }
 };
 
