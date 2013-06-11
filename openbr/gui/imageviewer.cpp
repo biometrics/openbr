@@ -24,7 +24,8 @@
 
 /*** PUBLIC ***/
 br::ImageViewer::ImageViewer(QWidget *parent)
-    : QLabel(parent)
+    : QLabel(parent),
+    mutex(QMutex::Recursive)
 {
     setAlignment(Qt::AlignCenter);
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -40,38 +41,39 @@ void br::ImageViewer::setImage(const QString &file, bool async)
     QMutexLocker locker(&mutex);
     if(file.isNull()) src = QImage(); // Gets rid of runtime FileEngine::open warning
     else src = QImage(file);
-    updatePixmap(async);
+    updatePixmap(src, async);
 }
 
 void br::ImageViewer::setImage(const QImage &image, bool async)
 {
     QMutexLocker locker(&mutex);
 	src = image.copy();
-    updatePixmap(async);
+    updatePixmap(src, async);
 }
 
 void br::ImageViewer::setImage(const QPixmap &pixmap, bool async)
 {
     QMutexLocker locker(&mutex);
     src = pixmap.toImage();
-    updatePixmap(async);
+    updatePixmap(src, async);
 }
 
 /*** PRIVATE ***/
-void br::ImageViewer::updatePixmap(bool async)
+void br::ImageViewer::updatePixmap(QImage image, bool async)
 {
+    // For the time being, disabling this is sufficient
     if (async) {
-        QTimer::singleShot(0, this, SLOT(updatePixmap()));
-        return;
+        //QTimer::singleShot(0, this, SLOT(updatePixmap(image)));
+        //return;
     }
 
-	QMutexLocker locker(&mutex);
-    if (src.isNull() || size().isNull()) {
+    QMutexLocker locker(&mutex);
+    if (image.isNull() || size().isNull()) {
         QLabel::setPixmap(QPixmap());
         QLabel::setText(defaultText);
     } else {
 		QLabel::clear();
-        QLabel::setPixmap(QPixmap::fromImage(src.scaled(size(), Qt::KeepAspectRatio)));
+        QLabel::setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
     }
 }
 
@@ -98,5 +100,5 @@ void br::ImageViewer::resizeEvent(QResizeEvent *event)
 {
     QLabel::resizeEvent(event);
     event->accept();
-    updatePixmap();
+    updatePixmap(src);
 }

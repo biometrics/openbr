@@ -56,7 +56,7 @@ protected slots:
     void resizeEvent(QResizeEvent *event);
 
 private slots:
-    void updatePixmap(bool async = false);
+    void updatePixmap(QImage image, bool async = false);
 };
 
 } // namespace br

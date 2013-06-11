@@ -654,7 +654,7 @@ class xmlFormat : public Format
         Template t;
 
 #ifndef BR_EMBEDDED
-        QString fileName = file.get<QString>("path") + "/" + file.name;
+        QString fileName = file.get<QString>("path") + file.name;
 
         QDomDocument doc(fileName);
         QFile f(fileName);
