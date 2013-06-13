@@ -157,11 +157,11 @@ class MetadataDistance : public Distance
             if (aValue[0] == '(') /* Range */ {
                 QStringList values = aValue.split(',');
 
-                int age = values[0].mid(1).toInt();
+                int value = values[0].mid(1).toInt();
                 values[1].chop(1);
                 int upperBound = values[1].toInt();
 
-                while (age <= upperBound) {
+                while (value <= upperBound) {
                     if (aValue == bValue) {
                         keep = true;
                         break;

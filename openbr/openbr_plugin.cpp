@@ -410,7 +410,6 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                 } else if (newTemplates[i].file.getBool("allPartitions")) {
                     // The allPartitions flag is used to add an extended set
                     // of target images to every partition
-
                     newTemplates[i].file.set("Partition", -1);
                 } else {
                     const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
