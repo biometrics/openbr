@@ -51,7 +51,7 @@
  * \endcode
  *
  * \par Development
- * Plugins should be developed in <tt>sdk/plugins/</tt>.
+ * Plugins should be developed in <tt>openbr/plugins/</tt>.
  * See this folder for numerous examples of existing plugins to follow when writing your own.
  * Plugins may optionally include a <tt>.cmake</tt> file to control build configuration.
  *
