@@ -72,6 +72,10 @@ class AffineTransform : public UntrainableTransform
             (src.file.contains("Affine_2") || twoPoints)) {
             srcPoints[0] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_0"));
             srcPoints[1] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_1"));
+
+            dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
+            dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
+
             if (!twoPoints) srcPoints[2] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_2"));
         } else {
             const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
@@ -93,9 +97,6 @@ class AffineTransform : public UntrainableTransform
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
         warpAffine(src, dst, getAffineTransform(srcPoints, dstPoints), Size(width, height));
-
-        dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
-        dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
     }
 };
 

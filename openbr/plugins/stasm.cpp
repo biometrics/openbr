@@ -57,10 +57,15 @@ class StasmTransform : public UntrainableTransform
         int landmarks[500];
 
         DET_PARAMS parameters;
-        parameters.lex = src.file.get<QPoint>("Affine_0").x() - src.m().cols/2;
-        parameters.ley = src.m().rows/2 - src.file.get<QPoint>("Affine_0").y();
-        parameters.rex = src.file.get<QPoint>("Affine_1").x() - src.m().cols/2;
-        parameters.rey = src.m().rows/2 - src.file.get<QPoint>("Affine_1").y();
+
+        if (src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
+            parameters.lex = src.file.get<QPoint>("Affine_0").x() - src.m().cols/2;
+            parameters.ley = src.m().rows/2 - src.file.get<QPoint>("Affine_0").y();
+            parameters.rex = src.file.get<QPoint>("Affine_1").x() - src.m().cols/2;
+            parameters.rey = src.m().rows/2 - src.file.get<QPoint>("Affine_1").y();
+        } else {
+            parameters.lex = parameters.ley = parameters.rex = parameters.rey = INVALID;
+        }
 
         AsmSearchDll(numLandmarks, landmarks, qPrintable(src.file.name),
                      reinterpret_cast<char*>(src.m().data), src.m(), models,
