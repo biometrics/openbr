@@ -167,6 +167,7 @@ struct AlgorithmCore
             }
 
             const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
+            qDebug() << Globals->startTime.elapsed();
             if (!Globals->quiet && (Globals->totalSteps > 1))
                 fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
                         speed, totalBytes/totalCount, failureCount, totalCount);
