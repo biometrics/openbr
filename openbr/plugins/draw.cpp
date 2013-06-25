@@ -41,7 +41,7 @@ class DrawTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         const Scalar color(0,255,0);
-        const Scalar verboseColor(255, 255, 0);
+        const Scalar verboseColor(0, 0, 0);
         dst = src.m().clone();
 
         if (points) {

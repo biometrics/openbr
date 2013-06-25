@@ -1,9 +1,9 @@
-set(BR_WITH_STASM OFF CACHE BOOL "Build with Stasm")
+set(BR_WITH_STASM4 OFF CACHE BOOL "Build with Stasm")
 
-if(${BR_WITH_STASM})
-  find_package(Stasm REQUIRED)
-  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} plugins/stasm.cpp)
-  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Stasm_LIBS})
+if(${BR_WITH_STASM4})
+  find_package(Stasm4 REQUIRED)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} plugins/stasm4.cpp)
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Stasm4_LIBS})
 
   if(WIN32)
     install(DIRECTORY ${Stasm_DIR}/build/ DESTINATION bin)
@@ -11,5 +11,5 @@ if(${BR_WITH_STASM})
     install(DIRECTORY ${Stasm_DIR}/build/ DESTINATION lib)
   endif()
 
-  install(DIRECTORY ${Stasm_DIR}/models/ DESTINATION share/openbr/models/stasm)
+  #install(DIRECTORY ${Stasm_DIR}/models/ DESTINATION share/openbr/models/stasm)
 endif()
