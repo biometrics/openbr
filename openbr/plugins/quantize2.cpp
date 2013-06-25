@@ -77,7 +77,7 @@ class BayesianQuantizationTransform : public Transform
     void train(const TemplateList &src)
     {
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> labels = src.indexProperty("Subject");
+        const QList<int> labels = src.indexProperty("Label");
 
         thresholds = QVector<float>(256*data.cols);
 

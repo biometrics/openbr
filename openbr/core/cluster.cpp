@@ -279,8 +279,8 @@ void br::EvalClustering(const QString &csv, const QString &input)
     qDebug("Evaluating %s against %s", qPrintable(csv), qPrintable(input));
 
     // We assume clustering algorithms store assigned cluster labels as integers (since the clusters are
-    // not named).
-    QList<int> labels = TemplateList::fromGallery(input).files().get<int>("Subject");
+    // not named). Direct use of ClusterID is not general -cao
+    QList<int> labels = TemplateList::fromGallery(input).files().get<int>("ClusterID");
 
     QHash<int, int> labelToIndex;
     int nClusters = 0;

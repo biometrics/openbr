@@ -22,7 +22,7 @@
 
 namespace br
 {
-    void EvalClassification(const QString &predictedInput, const QString &truthInput);
+    void EvalClassification(const QString &predictedInput, const QString &truthInput, const QString & predictedProperty="Label", const QString & truthProperty="Label");
     void EvalRegression(const QString &predictedInput, const QString &truthInput);
 }
 

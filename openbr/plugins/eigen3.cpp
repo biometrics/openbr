@@ -318,10 +318,12 @@ class LDATransform : public Transform
     Q_PROPERTY(bool pcaWhiten READ get_pcaWhiten WRITE set_pcaWhiten RESET reset_pcaWhiten STORED false)
     Q_PROPERTY(int directLDA READ get_directLDA WRITE set_directLDA RESET reset_directLDA STORED false)
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
     BR_PROPERTY(float, directDrop, 0.1)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     int dimsOut;
     Eigen::VectorXf mean;
@@ -330,7 +332,7 @@ class LDATransform : public Transform
     void train(const TemplateList &_trainingSet)
     {
         // creates "Label"
-        TemplateList trainingSet = TemplateList::relabel(_trainingSet, "Subject");
+        TemplateList trainingSet = TemplateList::relabel(_trainingSet, inputVariable);
 
         int instances = trainingSet.size();
 

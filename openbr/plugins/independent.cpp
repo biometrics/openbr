@@ -20,11 +20,11 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
     const bool atLeast = transform->instances < 0;
     const int instances = abs(transform->instances);
 
-    QList<QString> allLabels = templates.get<QString>("Subject");
+    QList<QString> allLabels = templates.get<QString>("Label");
     QList<QString> uniqueLabels = allLabels.toSet().toList();
     qSort(uniqueLabels);
 
-    QMap<QString,int> counts = templates.countValues<QString>("Subject", instances != std::numeric_limits<int>::max());
+    QMap<QString,int> counts = templates.countValues<QString>("Label", instances != std::numeric_limits<int>::max());
 
     if ((instances != std::numeric_limits<int>::max()) && (transform->classes != std::numeric_limits<int>::max()))
         foreach (const QString & label, counts.keys())

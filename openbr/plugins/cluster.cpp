@@ -89,10 +89,12 @@ class KNNTransform : public Transform
     Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(bool weighted READ get_weighted WRITE set_weighted RESET reset_weighted STORED false)
     Q_PROPERTY(int numSubjects READ get_numSubjects WRITE set_numSubjects RESET reset_numSubjects STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(int, k, 1)
     BR_PROPERTY(br::Distance*, distance, NULL)
     BR_PROPERTY(bool, weighted, false)
     BR_PROPERTY(int, numSubjects, 1)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     TemplateList gallery;
 
@@ -111,13 +113,13 @@ class KNNTransform : public Transform
             QHash<QString, float> votes;
             const int max = (k < 1) ? sortedScores.size() : std::min(k, sortedScores.size());
             for (int j=0; j<max; j++)
-                votes[gallery[sortedScores[j].second].file.get<QString>("Subject")] += (weighted ? sortedScores[j].first : 1);
+                votes[gallery[sortedScores[j].second].file.get<QString>(inputVariable)] += (weighted ? sortedScores[j].first : 1);
             subjects.append(votes.keys()[votes.values().indexOf(Common::Max(votes.values()))]);
 
             // Remove subject from consideration
             if (subjects.size() < numSubjects)
                 for (int j=sortedScores.size()-1; j>=0; j--)
-                    if (gallery[sortedScores[j].second].file.get<QString>("Subject") == subjects.last())
+                    if (gallery[sortedScores[j].second].file.get<QString>(inputVariable) == subjects.last())
                         sortedScores.removeAt(j);
         }
 

@@ -93,10 +93,10 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
         QStringList metadata;
         if (!ignoreMetadata)
             foreach (const QString &key, file.localKeys()) {
-                if ((key == "Index") || (key == "Subject")) continue;
+                if ((key == "Index") || (key == "Label")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
-        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Subject") +"\">");
+        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Label") +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
     }
@@ -260,10 +260,10 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
 
 cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)
 {
-    // Would like to use indexProperty for this, but didn't make a version of that for Filelist yet
-    // -cao
-    QList<QString> targetLabels = targets.get<QString>("Subject", "-1");
-    QList<QString> queryLabels = queries.get<QString>("Subject", "-1");
+    // Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
+    // doing string comparisons (but that isn't implemented yet for FileList) -cao
+    QList<QString> targetLabels = targets.get<QString>("Label", "-1");
+    QList<QString> queryLabels = queries.get<QString>("Label", "-1");
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 

@@ -29,7 +29,8 @@
 
 static void printTemplate(const br::Template &t)
 {
-    printf("%s age: %d\n", qPrintable(t.file.fileName()), int(t.file.get<float>("Subject")));
+    // may use age directly -cao
+    printf("%s age: %d\n", qPrintable(t.file.fileName()), int(t.file.get<float>("Regressand")));
 }
 
 int main(int argc, char *argv[])

@@ -146,8 +146,8 @@ class meltOutput : public MatrixOutput
         QStringList lines;
         if (file.baseName() != "terminal") lines.append(QString("Query,Target,Mask,Similarity%1").arg(keys));
 
-        QList<QString> queryLabels = queryFiles.get<QString>("Subject");
-        QList<QString> targetLabels = targetFiles.get<QString>("Subject");
+        QList<QString> queryLabels = queryFiles.get<QString>("Label");
+        QList<QString> targetLabels = targetFiles.get<QString>("Label");
 
         for (int i=0; i<queryFiles.size(); i++) {
             for (int j=(selfSimilar ? i+1 : 0); j<targetFiles.size(); j++) {
@@ -298,7 +298,7 @@ class txtOutput : public MatrixOutput
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
         QStringList lines;
         foreach (const File &file, queryFiles)
-            lines.append(file.name + " " + file.get<QString>("Subject"));
+            lines.append(file.name + " " + file.get<QString>("Label"));
         QtUtils::writeFile(file, lines);
     }
 };
@@ -426,7 +426,7 @@ class rankOutput : public MatrixOutput
             typedef QPair<float,int> Pair;
             int rank = 1;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true)) {
-                if (targetFiles[pair.second].get<QString>("Subject") == queryFiles[i].get<QString>("Subject")) {
+                if (targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
                     ranks.append(rank);
                     positions.append(pair.second);
                     scores.append(pair.first);

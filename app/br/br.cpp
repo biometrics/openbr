@@ -130,7 +130,7 @@ public:
                 br_convert(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "evalClassification")) {
                 check(parc == 2, "Incorrect parameter count for 'evalClassification'.");
-                br_eval_classification(parv[0], parv[1]);
+                br_eval_classification(parv[0], parv[1], parc >= 3 ? parv[2] : NULL, parc >= 4 ? parv[3] : NULL);
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc == 2, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1]);

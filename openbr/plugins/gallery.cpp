@@ -71,7 +71,7 @@ class arffGallery : public Gallery
         }
 
         arffFile.write(qPrintable(OpenCVUtils::matrixToStringList(t).join(',')));
-        arffFile.write(qPrintable(",'" + t.file.get<QString>("Subject") + "'\n"));
+        arffFile.write(qPrintable(",'" + t.file.get<QString>("Label") + "'\n"));
     }
 };
 
@@ -874,7 +874,7 @@ class statGallery : public Gallery
 
     void write(const Template &t)
     {
-        subjects.insert(t.file.get<QString>("Subject"));
+        subjects.insert(t.file.get<QString>("Label"));
         bytes.append(t.bytes());
     }
 };

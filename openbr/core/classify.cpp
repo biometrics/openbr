@@ -31,7 +31,7 @@ struct Counter
     }
 };
 
-void br::EvalClassification(const QString &predictedInput, const QString &truthInput)
+void br::EvalClassification(const QString &predictedInput, const QString &truthInput, const QString & predictedProperty, const QString & truthProperty)
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
 
@@ -44,9 +44,8 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QString predictedSubject = predicted[i].file.get<QString>("Subject");
-        QString trueSubject = truth[i].file.get<QString>("Subject");
+        QString predictedSubject = predicted[i].file.get<QString>(predictedProperty);
+        QString trueSubject = truth[i].file.get<QString>(truthProperty);
 
         QStringList predictedSubjects(predictedSubject);
         QStringList trueSubjects(trueSubject);
@@ -99,13 +98,19 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;
+    float maeError = 0;
+    // Direct use of Regressor/Regressand is not general -cao
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.get<float>("Subject")-truth[i].file.get<float>("Subject"), 2.f);
-        truthValues.append(QString::number(truth[i].file.get<float>("Subject")));
-        predictedValues.append(QString::number(predicted[i].file.get<float>("Subject")));
+
+        float difference = predicted[i].file.get<float>("Regressand") - truth[i].file.get<float>("Regressor");
+
+        rmsError += pow(difference, 2.f);
+        maeError += fabsf(difference);
+        truthValues.append(QString::number(truth[i].file.get<float>("Regressor")));
+        predictedValues.append(QString::number(predicted[i].file.get<float>("Regressand")));
     }
 
     QStringList rSource;
@@ -125,4 +130,6 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
     if (success) QtUtils::showFile("EvalRegression.pdf");
 
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
+    qDebug("MAE = %f", maeError/predicted.size());
+
 }

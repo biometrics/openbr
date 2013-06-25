@@ -150,7 +150,7 @@ class BayesianQuantizationDistance : public Distance
             qFatal("Expected sigle matrix templates of type CV_8UC1!");
 
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> templateLabels = src.indexProperty("Subject");
+        const QList<int> templateLabels = src.indexProperty("Label");
         loglikelihoods = QVector<float>(data.cols*256, 0);
 
         QFutureSynchronizer<void> futures;
@@ -474,7 +474,7 @@ private:
         Mat data = OpenCVUtils::toMat(src.data());
         const int step = getStep(data.cols);
 
-        const QList<int> labels = src.indexProperty("Subject");
+        const QList<int> labels = src.indexProperty("Label");
 
         Mat &lut = ProductQuantizationLUTs[index];
         lut = Mat(getDims(data.cols), 256*(256+1)/2, CV_32FC1);
