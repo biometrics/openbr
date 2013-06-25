@@ -53,6 +53,8 @@ class StasmTransform : public UntrainableTransform
         //qDebug() << "PittPatt X: " << src.file.get<QPoint>("Affine_0").x() - src.m().cols/2 << src.file.get<QPoint>("Affine_1").x() - src.m().cols/2;
         //qDebug() << "PittPatt Y: " << src.m().rows/2 - src.file.get<QPoint>("Affine_0").y() << src.m().rows/2 - src.file.get<QPoint>("Affine_1").y();
 
+        qDebug() << src.file.fileName();
+
         int numLandmarks;
         int landmarks[500];
 
