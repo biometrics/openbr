@@ -43,13 +43,11 @@ void Classifier::_classify(File file)
             continue;
 
         if (algorithm == "GenderClassification") {
-            // Should maybe use gender directly -cao
             key = "Gender";
-            value = f.get<QString>("Label");
+            value = f.get<QString>(key);
         } else if (algorithm == "AgeRegression") {
             key = "Age";
-            // similarly, age -cao
-            value = QString::number(int(f.get<float>("Regressand")+0.5)) + " Years";
+            value = QString::number(int(f.get<float>(key)+0.5)) + " Years";
         } else {
             key = algorithm;
             value = f.get<QString>("Label");

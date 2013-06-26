@@ -79,12 +79,7 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
 
 void br_eval_classification(const char *predicted_input, const char *truth_input, const char *predicted_property, const char * truth_property)
 {
-    if (predicted_property && truth_property)
-        EvalClassification(predicted_input, truth_input, predicted_property, truth_property);
-    else if (predicted_property)
-        EvalClassification(predicted_input, truth_input, predicted_property);
-    else
-        EvalClassification(predicted_input, truth_input);
+    EvalClassification(predicted_input, truth_input, predicted_property, truth_property);
 }
 
 void br_eval_clustering(const char *csv, const char *input)
@@ -92,9 +87,9 @@ void br_eval_clustering(const char *csv, const char *input)
     EvalClustering(csv, input);
 }
 
-void br_eval_regression(const char *predicted_input, const char *truth_input)
+void br_eval_regression(const char *predicted_input, const char *truth_input, const char * predicted_property, const char * truth_property)
 {
-    EvalRegression(predicted_input, truth_input);
+    EvalRegression(predicted_input, truth_input, predicted_property, truth_property);
 }
 
 void br_finalize()

@@ -75,8 +75,8 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("FaceRecognitionQuantization", "(Normalize(L1)+Quantize)");
         Globals->abbreviations.insert("FaceClassificationRegistration", "(ASEFEyes+Affine(56,72,0.33,0.45)+FTE(DFFS))");
         Globals->abbreviations.insert("FaceClassificationExtraction", "((Grid(7,7)+SIFTDescriptor(8)+ByRow)/DenseLBP+PCA(0.95,instances=-1)+Cat)");
-        Globals->abbreviations.insert("AgeRegressor", "Center(Range,instances=-1)+SVM(RBF,EPS_SVR,instances=100)");
-        Globals->abbreviations.insert("GenderClassifier", "Center(Range,instances=-1)+SVM(RBF,C_SVC,instances=4000)");
+        Globals->abbreviations.insert("AgeRegressor", "Center(Range,instances=-1)+SVM(RBF,EPS_SVR,inputVariable=Age,instances=100)");
+        Globals->abbreviations.insert("GenderClassifier", "Center(Range,instances=-1)+SVM(RBF,C_SVC,inputVariable=Gender,instances=4000)");
         Globals->abbreviations.insert("UCharL1", "Unit(ByteL1)");
     }
 };
