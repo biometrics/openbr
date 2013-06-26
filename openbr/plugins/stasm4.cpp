@@ -1,4 +1,5 @@
 #include <stasm_lib.h>
+#include <stasmcascadeclassifier.h>
 #include <opencv2/objdetect/objdetect.hpp>
 #include "openbr_internal.h"
 
@@ -7,28 +8,15 @@ using namespace cv;
 namespace br
 {
 
-class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
+class StasmResourceMaker : public ResourceMaker<StasmCascadeClassifier>
 {
-    QString file;
-
-public:
-    CascadeResourceMaker(const QString &model)
-    {
-        file = Globals->sdkPath + "/share/openbr/models/";
-        if      (model == "Ear")         file += "haarcascades/haarcascade_ear.xml";
-        else if (model == "Eye")         file += "haarcascades/haarcascade_eye_tree_eyeglasses.xml";
-        else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";
-        else if (model == "ProfileFace") file += "haarcascades/haarcascade_profileface.xml";
-        else                             qFatal("Invalid model.");
-    }
-
 private:
-    CascadeClassifier *make() const
+    StasmCascadeClassifier *make() const
     {
-        CascadeClassifier *cascade = new CascadeClassifier();
-        if (!cascade->load(file.toStdString()))
-            qFatal("Failed to load: %s", qPrintable(file));
-        return cascade;
+        StasmCascadeClassifier *stasmCascade = new StasmCascadeClassifier();
+        if (!stasmCascade->load(Globals->sdkPath.toStdString() + "/share/openbr/models/"))
+            qFatal("Failed to load Stasm Cascade");
+        return stasmCascade;
     }
 };
 
@@ -61,31 +49,25 @@ class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
 
-    //QList<ASM_MODEL> models;
-    mutable QMutex mutex;
-
-    Resource<CascadeClassifier> cascadeResource;
+    Resource<StasmCascadeClassifier> stasmCascadeResource;
 
     void init()
     {
         if (!stasm_init(qPrintable(Globals->sdkPath + "/share/openbr/models/stasm"), 0)) qFatal("Failed to initalize stasm.");
-        cascadeResource.setResourceMaker(new CascadeResourceMaker("FrontalFace"));
+        stasmCascadeResource.setResourceMaker(new StasmResourceMaker());
     }
 
     void project(const Template &src, Template &dst) const
     {
-        QMutexLocker locker(&mutex);
-
-        CascadeClassifier *cascade = cascadeResource.acquire();
+        StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
 
         int foundface;
         float landmarks[2 * stasm_NLANDMARKS]; // x,y coords (note the 2)
-        stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *cascade, NULL, NULL);
+        stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
 
-        cascadeResource.release(cascade);
+        stasmCascadeResource.release(stasmCascade);
 
-        if (!foundface)
-             qDebug() << "No face found in " << qPrintable("/Users/scottklum/facesketchid/data/img/" + src.file.path() + "/" + src.file.fileName());
+        if (!foundface) qDebug() << "No face found in " << src.file.fileName();
 
         for (int i = 0; i < stasm_NLANDMARKS; i++) {
             dst.file.appendPoint(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
