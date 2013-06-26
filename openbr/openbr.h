@@ -164,7 +164,7 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
  * \param truth_input The ground truth br::Input.
  * \see br_enroll
  */
-BR_EXPORT void br_eval_classification(const char *predicted_input, const char *truth_input, const char * predicted_property, const char * truth_property);
+BR_EXPORT void br_eval_classification(const char *predicted_input, const char *truth_input, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
@@ -180,7 +180,7 @@ BR_EXPORT void br_eval_clustering(const char *csv, const char *input);
  * \param truth_input The ground truth br::Input.
  * \see br_enroll
  */
-BR_EXPORT void br_eval_regression(const char *predicted_input, const char *truth_input);
+BR_EXPORT void br_eval_regression(const char *predicted_input, const char *truth_input, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Wraps br::Context::finalize()

@@ -31,9 +31,19 @@ struct Counter
     }
 };
 
-void br::EvalClassification(const QString &predictedInput, const QString &truthInput, const QString & predictedProperty, const QString & truthProperty)
+void br::EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Label";
+    // If predictedProperty is specified, but truthProperty isn't, copy over the value from
+    // predicted property
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        truthProperty = "Label";
 
     TemplateList predicted(TemplateList::fromGallery(predictedInput));
     TemplateList truth(TemplateList::fromGallery(truthInput));
@@ -89,9 +99,19 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
-void br::EvalRegression(const QString &predictedInput, const QString &truthInput)
+void br::EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Regressor";
+    // If predictedProperty is specified, but truthProperty isn't, copy the value over
+    // rather than using the default for truthProperty
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        predictedProperty = "Regressand";
 
     const TemplateList predicted(TemplateList::fromGallery(predictedInput));
     const TemplateList truth(TemplateList::fromGallery(truthInput));
@@ -99,18 +119,17 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
 
     float rmsError = 0;
     float maeError = 0;
-    // Direct use of Regressor/Regressand is not general -cao
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        float difference = predicted[i].file.get<float>("Regressand") - truth[i].file.get<float>("Regressor");
+        float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
 
         rmsError += pow(difference, 2.f);
         maeError += fabsf(difference);
-        truthValues.append(QString::number(truth[i].file.get<float>("Regressor")));
-        predictedValues.append(QString::number(predicted[i].file.get<float>("Regressand")));
+        truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
+        predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
     }
 
     QStringList rSource;
@@ -131,5 +150,4 @@ void br::EvalRegression(const QString &predictedInput, const QString &truthInput
 
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
     qDebug("MAE = %f", maeError/predicted.size());
-
 }

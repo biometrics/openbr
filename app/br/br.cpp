@@ -129,11 +129,11 @@ public:
                 check(parc == 3, "Incorrect parameter count for 'convert'.");
                 br_convert(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "evalClassification")) {
-                check(parc == 2, "Incorrect parameter count for 'evalClassification'.");
-                br_eval_classification(parv[0], parv[1], parc >= 3 ? parv[2] : NULL, parc >= 4 ? parv[3] : NULL);
+                check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalClassification'.");
+                br_eval_classification(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
             } else if (!strcmp(fun, "evalRegression")) {
-                check(parc == 2, "Incorrect parameter count for 'evalRegression'.");
-                br_eval_regression(parv[0], parv[1]);
+                check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
+                br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
             } else if (!strcmp(fun, "evalClusters")) {
                 check(parc == 2, "Incorrect parameter count for 'evalClusters'.");
                 br_eval_clustering(parv[0], parv[1]);
