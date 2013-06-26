@@ -1,11 +1,36 @@
 #include <stasm_lib.h>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
 #include "openbr_internal.h"
 
 using namespace cv;
 
 namespace br
 {
+
+class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
+{
+    QString file;
+
+public:
+    CascadeResourceMaker(const QString &model)
+    {
+        file = Globals->sdkPath + "/share/openbr/models/";
+        if      (model == "Ear")         file += "haarcascades/haarcascade_ear.xml";
+        else if (model == "Eye")         file += "haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+        else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";
+        else if (model == "ProfileFace") file += "haarcascades/haarcascade_profileface.xml";
+        else                             qFatal("Invalid model.");
+    }
+
+private:
+    CascadeClassifier *make() const
+    {
+        CascadeClassifier *cascade = new CascadeClassifier();
+        if (!cascade->load(file.toStdString()))
+            qFatal("Failed to load: %s", qPrintable(file));
+        return cascade;
+    }
+};
 
 /*!
  * \ingroup initializers
@@ -39,18 +64,25 @@ class StasmTransform : public UntrainableTransform
     //QList<ASM_MODEL> models;
     mutable QMutex mutex;
 
+    Resource<CascadeClassifier> cascadeResource;
+
     void init()
     {
-
+        if (!stasm_init(qPrintable(Globals->sdkPath + "/share/openbr/models/stasm"), 0)) qFatal("Failed to initalize stasm.");
+        cascadeResource.setResourceMaker(new CascadeResourceMaker("FrontalFace"));
     }
 
     void project(const Template &src, Template &dst) const
     {
         QMutexLocker locker(&mutex);
 
+        CascadeClassifier *cascade = cascadeResource.acquire();
+
         int foundface;
         float landmarks[2 * stasm_NLANDMARKS]; // x,y coords (note the 2)
-        stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL, "/Users/scottklum/openbr/3rdparty/stasm4.0.0/data");
+        stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *cascade, NULL, NULL);
+
+        cascadeResource.release(cascade);
 
         if (!foundface)
              qDebug() << "No face found in " << qPrintable("/Users/scottklum/facesketchid/data/img/" + src.file.path() + "/" + src.file.fileName());
