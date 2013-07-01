@@ -67,7 +67,7 @@ class StasmTransform : public UntrainableTransform
 
         stasmCascadeResource.release(stasmCascade);
 
-        if (!foundface) qWarning("No face found in %s", src.file.fileName());
+        if (!foundface) qWarning("No face found in %s", qPrintable(src.file.fileName()));
         else {
             for (int i = 0; i < stasm_NLANDMARKS; i++)
                 dst.file.appendPoint(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
