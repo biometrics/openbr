@@ -213,7 +213,7 @@ struct PP5Context
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
-class PP5EnrollTransform : public UntrainableTransform
+class PP5EnrollTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
