@@ -1,0 +1,57 @@
+# makefile_include:
+# These are the makefile flags for Microsoft Visual C++ 2008
+# This file in included into makefile with a "!INCLUDE" in that file
+
+OPENCV_LIBDIR = $(OPENCV_HOME)/build/x86/vc9/lib
+
+# Create the precompiled stasm.h in stasm.pch
+CFLAGS_PRECOMPILE=$(CFLAGS) /Ycstasm.h
+
+# Compile using the precompiled stasm.h
+CFLAGS=$(CFLAGS) /Yustasm.h
+
+# Compile without using the precompiled stasm.h.
+# The rule here is that if the file does not include stasm.h then
+# it must not use the precompiled header.
+CFLAGS_NOPRECOMPILE=$(CFLAGS)
+
+# We include setargv.obj for executables that do command line filename globbing.
+# PROGRAMFILES is inherited from the shell evironment (where it is
+# called ProgramFiles, but nmake converts it to upper case).  This allows us
+# to work with systems that use \Program Files or \Program Files x86.
+
+SETARGV = "$(PROGRAMFILES)/Microsoft Visual Studio 9.0/VC/lib/setargv.obj"
+
+!IF  "$(CFG)" == "Release"
+# -EHsc No asynch exceptions, externs never throw exceptions
+# -O2   Creates fast code
+# -W3   Sets warning level
+# -Gy   Enable function-level linking
+# Object files go to -Fo
+CFLAGS_=-EHsc -O2 -W3 -Gy -nologo $(INCL) -Fo$(OUTDIR)/
+LFLAGS=-nodefaultlib:LIBC -nologo
+!ENDIF
+
+!IF  "$(CFG)" == "Debug"
+# -Zi  Generates complete debugging information
+# -MTd Creates a debug multithreaded executable file
+# No need to define _DEBUG, compiler does it for us if -MTd flag is on
+CFLAGS_=-MTd -EHsc -Zi -W3 -Fo$(OUTDIR)/ -nologo $(INCL)
+LFLAGS=-debug -nodefaultlib:LIBCD -nodefaultlib:LIBC -nologo
+!ENDIF
+
+!IF  "$(CFG)" == "ReleaseWithSymbols"
+# This build is used for taking snapshots of the stack for profiling purposes.
+# It is like Debug in that the symbols are generated (but no range checks etc.).
+# But it is like Release in that the code is optimized.
+# We use -MT not -MTd because we don't want _DEBUG defined.
+# To take a noninvasive stack snapshot of stasm.exe while it is running:
+#    "C:\Program Files\Debugging Tools for Windows (x64)\cdb.exe" -pv -pn stasm.exe -lines -c "~*kb 5;q"
+# To see just the relevant stasm stuff:
+#    "C:\Program Files\Debugging Tools for Windows (x64)\cdb.exe" -pv -pn stasm.exe -lines -c "~*kb 5;q" | egrep "stasm!|opencv_.*!"
+# To see just the current function:
+#    "C:\Program Files\Debugging Tools for Windows (x64)\cdb.exe" -pv -pn stasm.exe -lines -c "~*kb 5;q" | egrep "^[^ ]*!"
+# For more details, see the R file profile-snap.R.
+CFLAGS_=-MT -EHsc -Zi -O2 -W3 -Fo$(OUTDIR)/ -nologo $(INCL)
+LFLAGS=-debug -nodefaultlib:LIBC -nologo
+!ENDIF

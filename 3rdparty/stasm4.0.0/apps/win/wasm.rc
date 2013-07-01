@@ -1,0 +1,19 @@
+// wasm.rc
+
+#include "windows.h"
+#include "wasm.h"
+
+wasm               ICON   DISCARDABLE   "wasm.ico"
+IDR_TOOLBAR_BITMAP BITMAP MOVEABLE PURE "wasm.bmp"
+
+HelpDlg DIALOG DISCARDABLE 20, 20, 110, 94
+STYLE DS_MODALFRAME | WS_POPUP
+CAPTION "Wasm Help"
+FONT 8, "MS Sans Serif"
+{
+    ICON          "wasm",    IDC_STATIC,         4,  8, 24, 24
+    CTEXT         "",        IDC_VERSION,       30,  4, 70,  8
+    DEFPUSHBUTTON "readme",  IDC_README,        34, 38, 30, 14
+    DEFPUSHBUTTON "website", IDC_WEBSITE,       34, 56, 30, 14
+    DEFPUSHBUTTON "OK",      IDOK,              34, 74, 30, 14
+}

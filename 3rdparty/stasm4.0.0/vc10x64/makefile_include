@@ -1,0 +1,42 @@
+# makefile_include:
+# These are the makefile flags for Microsoft Visual C++ 2010
+# This file in included into makefile with a "!INCLUDE" in that file
+
+OPENCV_LIBDIR = $(OPENCV_HOME)/build/x64/vc10/lib
+
+# Create the precompiled stasm.h in stasm.pch
+CFLAGS_PRECOMPILE=$(CFLAGS) /Ycstasm.h
+
+# Compile using the precompiled stasm.h
+CFLAGS=$(CFLAGS) /Yustasm.h
+
+# Compile without using the precompiled stasm.h.
+# The rule here is that if the file does not include stasm.h then
+# it must not use the precompiled header.
+CFLAGS_NOPRECOMPILE=$(CFLAGS)
+
+# We include setargv.obj for executables that do command line filename globbing.
+
+SETARGV = "c:/Program Files (x86)/Microsoft Visual Studio 10.0/VC/lib/amd64/setargv.obj"
+
+!IF  "$(CFG)" == "Release"
+# -EHsc No asynch exceptions, externs never throw exceptions
+# -O2   Creates fast code
+# -W3   Sets warning level
+# Object files go to -Fo
+CFLAGS_=-EHsc -O2 -W3 -Fo$(OUTDIR)/ -nologo $(INCL) 
+LFLAGS=-nodefaultlib:LIBC -nologo
+!ENDIF
+
+!IF  "$(CFG)" == "Debug"
+# -Zi  Generates complete debugging information
+# -MTd Creates a debug multithreaded executable file
+# No need to define _DEBUG, compiler does it for us if -MTd flag is on
+CFLAGS_=-MTd -EHsc -Zi -W3 -Fo$(OUTDIR)/ -nologo $(INCL)
+LFLAGS=-debug -nodefaultlib:LIBCD -nodefaultlib:LIBC -nologo
+!ENDIF
+
+!IF  "$(CFG)" == "ReleaseWithSymbols"
+CFLAGS_=-MT -EHsc -Zi -O2 -W3 -Fo$(OUTDIR)/ -nologo $(INCL)
+LFLAGS=-debug -nodefaultlib:LIBC -nologo
+!ENDIF

@@ -1,0 +1,1097 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p00.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p01.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p02.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p03.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p04.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p05.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p06.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p07.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p08.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p09.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p10.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p11.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p12.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p13.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p14.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev0_p15.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p00.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p01.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p02.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p03.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p04.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p05.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p06.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p07.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p08.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p09.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p10.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p11.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p12.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p13.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p14.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev1_p15.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p00.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p01.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p02.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p03.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p04.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p05.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p06.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p07.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p08.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p09.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p10.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p11.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p12.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p13.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p14.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev2_p15.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p00.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p01.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p02.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p03.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p04.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p05.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p06.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p07.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p08.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p09.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p10.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p11.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p12.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p13.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p14.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p15.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p16.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p17.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p18.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p19.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p20.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p21.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p22.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p23.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p24.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p25.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p26.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p27.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p28.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p29.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p30.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p31.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p32.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p33.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p34.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p35.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p36.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p37.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p38.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p39.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p40.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p41.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p42.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p43.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p44.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p45.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p46.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p47.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p48.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p49.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p50.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p51.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p52.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p53.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p54.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p55.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p56.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p57.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p58.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p59.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p60.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p61.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p62.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p63.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p64.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p65.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p66.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p67.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p68.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p69.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p70.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p71.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p72.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p73.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p74.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p75.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\classic_yaw00_lev3_p76.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\README.txt">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\classic\yaw00_shapemodel.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p16.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p17.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p18.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p19.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p20.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p21.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p22.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p23.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p24.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p25.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p26.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p27.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p28.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p29.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p30.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p31.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p32.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p33.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p34.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p35.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p36.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p37.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p38.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p39.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p40.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p41.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p42.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p43.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p44.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p45.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p46.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p47.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p48.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p49.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p50.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p51.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p52.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p53.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p54.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p55.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p56.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p57.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p58.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p59.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p60.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p61.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p62.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p63.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p64.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p65.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p66.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p67.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p68.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p69.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p70.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p71.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p72.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p73.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p74.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p75.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev0_p76.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p16.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p17.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p18.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p19.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p20.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p21.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p22.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p23.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p24.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p25.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p26.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p27.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p28.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p29.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p30.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p31.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p32.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p33.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p34.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p35.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p36.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p37.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p38.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p39.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p40.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p41.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p42.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p43.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p44.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p45.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p46.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p47.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p48.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p49.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p50.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p51.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p52.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p53.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p54.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p55.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p56.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p57.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p58.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p59.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p60.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p61.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p62.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p63.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p64.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p65.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p66.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p67.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p68.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p69.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p70.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p71.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p72.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p73.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p74.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p75.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev1_p76.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p16.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p17.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p18.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p19.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p20.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p21.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p22.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p23.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p24.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p25.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p26.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p27.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p28.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p29.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p30.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p31.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p32.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p33.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p34.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p35.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p36.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p37.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p38.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p39.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p40.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p41.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p42.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p43.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p44.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p45.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p46.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p47.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p48.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p49.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p50.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p51.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p52.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p53.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p54.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p55.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p56.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p57.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p58.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p59.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p60.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p61.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p62.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p63.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p64.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p65.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p66.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p67.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p68.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p69.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p70.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p71.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p72.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p73.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p74.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p75.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\hat_yaw00_lev2_p76.mh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\stasm\MOD_1\hat\README.txt">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\stasm\MOD_1\facedet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\MOD_1\initasm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\MOD_1\yaw00.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\asm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\basedesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\classicdesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\convshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\err.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\eyedet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\eyedist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\faceroi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\hat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\hatdesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\landmarks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\pinstart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\shape17.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\shapehacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\shapemod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\startshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\stasm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\stasm_landmarks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\stasm_lib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stasm\stasm_lib_ext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\stasm\asm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\classicdesc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\convshape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\err.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\eyedet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\eyedist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\faceroi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\hat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\hatdesc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\landmarks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\pinstart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\print.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\shape17.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\shapehacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\shapemod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\startshape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\stasm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\stasm_lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apps\minimal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\MOD_1\facedet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stasm\MOD_1\initasm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
