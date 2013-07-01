@@ -1,0 +1,31 @@
+              Stasm License Agreement
+
+Copyright (C) 2005-2013, Stephen Milborrow
+All rights reserved.
+
+Redistribution of Stasm in source and binary forms, with or
+without modification, is permitted provided that the following
+conditions are met:
+  * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimers.
+
+  * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimers in the documentation
+    and/or other materials provided with the distribution.
+
+A SIFT patent restriction may be in conflict with the copyright
+freedoms granted by this license.  This license does not give you
+permission to infringe patents.
+
+This software is provided by the copyright holders and contributors "as is" and
+any express or implied warranties, including, but not limited to, the implied
+warranties of merchantability and fitness for a particular purpose are disclaimed.
+In no event shall the copyright holder be liable for any direct,
+indirect, incidental, special, exemplary, or consequential damages
+(including, but not limited to, procurement of substitute goods or services;
+loss of use, data, or profits; or business interruption) however caused
+and on any theory of liability, whether in contract, strict liability,
+or tort (including negligence or otherwise) arising in any way out of
+the use of this software, even if advised of the possibility of such damage.
+
+Note that Stasm versions prior to version 4.0.0 had a different license.
