@@ -1,0 +1,37 @@
+// classic_yaw00_lev3_p00: machine generated classical descriptor model
+
+#ifndef STASM_CLASSIC_YAW00_LEV3_P00_MH
+#define STASM_CLASSIC_YAW00_LEV3_P00_MH
+
+namespace stasm {
+
+// Generated from muct77_w09.asm
+// static const int EYAW = 1;
+// static const int NORMALIZEDEYEMOUTHDIST = 100;
+// static const double PYR_RATIO = 2;
+// static const int FACE_SCALE_METHOD = 1;
+// static const int PYR_SCALE_METHOD = 1;
+// static const double SIGMOID_SCALE = 0;
+
+static const double yaw00_prof_lev3_p00[9] =
+{
+    -0.26934, -0.27514, -0.36838, -0.54867, 1.5687, 0.86451, 0.21825, 0.24086, 0.32685
+};
+
+static const double yaw00_cov_lev3_p00[9*9] =
+{
+    10000, 466, 1152, 1230, 828, 225, 82, 159, 161,
+    466, 6699, 628, 964, 709, 148, -82, 204, 236,
+    1152, 628, 4538, 879, 643, -190, -102, 72, -31,
+    1230, 964, 879, 3032, 419, -158, -335, -127, -40,
+    828, 709, 643, 419, 1778, 344, 171, 307, 281,
+    225, 148, -190, -158, 344, 4130, -19, 720, 588,
+    82, -82, -102, -335, 171, -19, 5841, 759, 805,
+    159, 204, 72, -127, 307, 720, 759, 5270, 634,
+    161, 236, -31, -40, 281, 588, 805, 634, 5024
+};
+
+static const ClassicDescMod classic_yaw00_lev3_p00(9, yaw00_prof_lev3_p00, yaw00_cov_lev3_p00);
+
+} // namespace stasm
+#endif // STASM_CLASSIC_YAW00_LEV3_P00_MH
