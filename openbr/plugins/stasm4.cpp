@@ -1,7 +1,11 @@
 #include <stasm_lib.h>
 #include <stasmcascadeclassifier.h>
-#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/opencv.hpp>
 #include "openbr_internal.h"
+#include "openbr/core/qtutils.h"
+#include "openbr/core/opencvutils.h"
+#include <QString>
+#include <Eigen/SVD>
 
 using namespace cv;
 
@@ -78,6 +82,109 @@ class StasmTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, StasmTransform)
+
+#include <iostream>
+
+/*!
+ * \ingroup transforms
+ * \brief Wraps STASM key point detector
+ * \author Scott Klum \cite sklum
+ */
+class ProcrustesTransform : public Transform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString principalShapePath READ get_principalShapePath WRITE set_principalShapePath RESET reset_principalShapePath STORED false)
+    BR_PROPERTY(QString, principalShapePath, QString())
+
+    Eigen::MatrixXf meanShape;
+
+    void train(const TemplateList &data)
+    {
+        QList< QList<cv::Point2f> > normalizedPoints;
+
+        // Normalize all sets of points
+        foreach (br::Template datum, data) {
+            QList<cv::Point2f> points = OpenCVUtils::toPoints(datum.file.points());
+
+            if (points.empty()) {
+                continue;
+            }
+
+            cv::Scalar mean = cv::mean(points.toVector().toStdVector());
+            for (int i = 0; i < points.size(); i++) {
+                points[i].x -= mean[0];
+                points[i].y -= mean[1];
+            }
+
+            float norm = cv::norm(points.toVector().toStdVector());
+            for (int i = 0; i < points.size(); i++) {
+                points[i].x /= norm;
+                points[i].y /= norm;
+            }
+
+            normalizedPoints.append(points);
+        }
+
+        // Determine mean shape
+        Eigen::MatrixXf shapeTest(normalizedPoints[0].size(), 2);
+
+        cv::Mat shapeBuffer(normalizedPoints[0].size(), 2, CV_32F);
+
+        for (int i = 0; i < normalizedPoints[0].size(); i++) {
+
+            double x = 0;
+            double y = 0;
+
+            for (int j = 0; j < normalizedPoints.size(); j++) {
+                x += normalizedPoints[j][i].x;
+                y += normalizedPoints[j][i].y;
+            }
+
+            x /= (double)normalizedPoints.size();
+            y /= (double)normalizedPoints.size();
+
+            shapeBuffer.at<float>(i,0) = x;
+            shapeBuffer.at<float>(i,1) = y;
+
+            shapeTest(i,0) = x;
+            shapeTest(i,1) = y;
+        }
+
+        meanShape = shapeTest;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        QList<QPointF> points = src.file.points();
+
+        cv::Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
+
+        for (int i = 0; i < points.size(); i++) points[i] -= QPointF(mean[0],mean[1]);
+
+        float norm = cv::norm(OpenCVUtils::toPoints(points).toVector().toStdVector());
+
+        Eigen::MatrixXf srcPoints(points.size(), 2);
+        for (int i = 0; i < points.size(); i++) {
+            srcPoints(i,0) = points[i].x()/norm;
+            srcPoints(i,1) = points[i].y()/norm;
+        }
+
+        Eigen::JacobiSVD<Eigen::MatrixXf> svd(srcPoints.transpose()*meanShape, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+        Eigen::MatrixXf R = svd.matrixU()*svd.matrixV().transpose();
+
+        std::cout << R(1,0) << std::endl;
+        // Determine transformation matrix
+
+        // Apply transformation matrix
+        //dst.file.setPoints(meanShape);*/
+        dst.m() = src.m();
+    }
+
+};
+
+BR_REGISTER(Transform, ProcrustesTransform)
 
 } // namespace br
 
