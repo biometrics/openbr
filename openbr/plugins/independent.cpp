@@ -9,7 +9,7 @@ using namespace cv;
 namespace br
 {
 
-static TemplateList Downsample(const TemplateList &templates, const Transform *transform)
+static TemplateList Downsample(const TemplateList &templates, const Transform *transform, const QString & inputVariable)
 {
     // Return early when no downsampling is required
     if ((transform->classes == std::numeric_limits<int>::max()) &&
@@ -20,11 +20,11 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
     const bool atLeast = transform->instances < 0;
     const int instances = abs(transform->instances);
 
-    QList<QString> allLabels = templates.get<QString>("Label");
+    QList<QString> allLabels = templates.get<QString>(inputVariable);
     QList<QString> uniqueLabels = allLabels.toSet().toList();
     qSort(uniqueLabels);
 
-    QMap<QString,int> counts = templates.countValues<QString>("Label", instances != std::numeric_limits<int>::max());
+    QMap<QString,int> counts = templates.countValues<QString>(inputVariable, instances != std::numeric_limits<int>::max());
 
     if ((instances != std::numeric_limits<int>::max()) && (transform->classes != std::numeric_limits<int>::max()))
         foreach (const QString & label, counts.keys())
@@ -74,7 +74,9 @@ class IndependentTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(br::Transform*, transform, NULL)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     QList<Transform*> transforms;
 
@@ -123,7 +125,7 @@ class IndependentTransform : public MetaTransform
             transforms.append(transform->clone());
 
         for (int i=0; i<templatesList.size(); i++)
-            templatesList[i] = Downsample(templatesList[i], transforms[i]);
+            templatesList[i] = Downsample(templatesList[i], transforms[i], inputVariable);
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++)

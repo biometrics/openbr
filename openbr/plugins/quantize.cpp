@@ -120,6 +120,10 @@ BR_REGISTER(Transform, HistEqQuantizationTransform)
 class BayesianQuantizationDistance : public Distance
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, "Label")
+
     QVector<float> loglikelihoods;
 
     static void computeLogLikelihood(const Mat &data, const QList<int> &labels, float *loglikelihood)
@@ -150,7 +154,7 @@ class BayesianQuantizationDistance : public Distance
             qFatal("Expected sigle matrix templates of type CV_8UC1!");
 
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> templateLabels = src.indexProperty("Label");
+        const QList<int> templateLabels = src.indexProperty(inputVariable);
         loglikelihoods = QVector<float>(data.cols*256, 0);
 
         QFutureSynchronizer<void> futures;
@@ -343,9 +347,11 @@ class ProductQuantizationTransform : public Transform
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
     Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(int, n, 2)
     BR_PROPERTY(br::Distance*, distance, Distance::make("L2", this))
     BR_PROPERTY(bool, bayesian, false)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     quint16 index;
     QList<Mat> centers;
@@ -474,7 +480,7 @@ private:
         Mat data = OpenCVUtils::toMat(src.data());
         const int step = getStep(data.cols);
 
-        const QList<int> labels = src.indexProperty("Label");
+        const QList<int> labels = src.indexProperty(inputVariable);
 
         Mat &lut = ProductQuantizationLUTs[index];
         lut = Mat(getDims(data.cols), 256*(256+1)/2, CV_32FC1);
