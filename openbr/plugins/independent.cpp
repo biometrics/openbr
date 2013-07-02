@@ -73,7 +73,7 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
 class IndependentTransform : public MetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform STORED false)
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     BR_PROPERTY(br::Transform*, transform, NULL)
 
     QList<Transform*> transforms;

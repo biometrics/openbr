@@ -75,7 +75,6 @@ class AffineTransform : public UntrainableTransform
 
             dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
             dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
-
             if (!twoPoints) srcPoints[2] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_2"));
         } else {
             const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());

@@ -25,7 +25,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Renders metadata onto the image
+ * \brief Renders metadata onto the image.
+ *
+ * The inPlace argument controls whether or not the image is cloned before the metadata is drawn.
+ *
  * \author Josh Klontz \cite jklontz
  */
 class DrawTransform : public UntrainableTransform
@@ -34,15 +37,17 @@ class DrawTransform : public UntrainableTransform
     Q_PROPERTY(bool verbose READ get_verbose WRITE set_verbose RESET reset_verbose STORED false)
     Q_PROPERTY(bool points READ get_points WRITE set_points RESET reset_points STORED false)
     Q_PROPERTY(bool rects READ get_rects WRITE set_rects RESET reset_rects STORED false)
+    Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
     BR_PROPERTY(bool, verbose, false)
     BR_PROPERTY(bool, points, true)
     BR_PROPERTY(bool, rects, true)
+    BR_PROPERTY(bool, inPlace, false)
 
     void project(const Template &src, Template &dst) const
     {
         const Scalar color(0,255,0);
         const Scalar verboseColor(255, 255, 0);
-        dst = src.m().clone();
+        dst.m() = inPlace ? src.m() : src.m().clone();
 
         if (points) {
             const QList<Point2f> pointsList = OpenCVUtils::toPoints(src.file.namedPoints() + src.file.points());
@@ -62,13 +67,23 @@ class DrawTransform : public UntrainableTransform
 BR_REGISTER(Transform, DrawTransform)
 
 
+/*!
+ * \ingroup transforms
+ * \brief Draw the value of the specified property at the specified point on the image
+ *
+ * The inPlace argument controls whether or not the image is cloned before it is drawn on.
+ *
+ * \author Charles Otto \cite caotto
+ */
 class DrawPropertyPointTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
     Q_PROPERTY(QString pointName READ get_pointName WRITE set_pointName RESET reset_pointName STORED false)
+    Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
     BR_PROPERTY(QString, propName, "")
     BR_PROPERTY(QString, pointName, "")
+    BR_PROPERTY(bool, inPlace, false)
 
 
     void project(const Template &src, Template &dst) const
@@ -76,6 +91,8 @@ class DrawPropertyPointTransform : public UntrainableTransform
         dst = src;
         if (propName.isEmpty() || pointName.isEmpty())
             return;
+
+        dst.m() = inPlace ? src.m() : src.m().clone();
 
         const Scalar textColor(255, 255, 0);
 
@@ -94,11 +111,72 @@ class DrawPropertyPointTransform : public UntrainableTransform
         QPointF targetPoint = point.toPointF();
 
         Point2f cvPoint =OpenCVUtils::toPoint(targetPoint);
-        putText(dst, propString.toStdString(), cvPoint, FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1);
+
+        std::string text = propName.toStdString() + ": " + propString.toStdString();
+        putText(dst, text, cvPoint, FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1);
     }
 
 };
 BR_REGISTER(Transform, DrawPropertyPointTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Draw the values of a list of properties at the specified point on the image
+ *
+ * The inPlace argument controls whether or not the image is cloned before it is drawn on.
+ *
+ * \author Charles Otto \cite caotto
+ */
+class DrawPropertiesPointTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QStringList propNames READ get_propNames WRITE set_propNames RESET reset_propNames STORED false)
+    Q_PROPERTY(QString pointName READ get_pointName WRITE set_pointName RESET reset_pointName STORED false)
+    Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
+    BR_PROPERTY(QStringList, propNames, QStringList())
+    BR_PROPERTY(QString, pointName, "")
+    BR_PROPERTY(bool, inPlace, false)
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (propNames.isEmpty() || pointName.isEmpty())
+            return;
+
+        dst.m() = inPlace ? src.m() : src.m().clone();
+
+        QVariant point = dst.file.value(pointName);
+
+        if (!point.canConvert(QVariant::PointF))
+            return;
+
+        QPointF targetPoint = point.toPointF();
+
+        Point2f cvPoint =OpenCVUtils::toPoint(targetPoint);
+
+
+        const Scalar textColor(255, 255, 0);
+
+        std::string outString = "";
+        foreach (const QString & propName, propNames)
+        {
+            QVariant prop = dst.file.value(propName);
+
+            if (!prop.canConvert(QVariant::String))
+                continue;
+            QString propString = prop.toString();
+            outString += propName.toStdString() + ": " + propString.toStdString() + " ";
+
+        }
+        if (outString.empty())
+            return;
+
+        putText(dst, outString, cvPoint, FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1);
+    }
+
+};
+BR_REGISTER(Transform, DrawPropertiesPointTransform)
+
 
 /*!
  * \ingroup transforms
