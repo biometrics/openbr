@@ -2,6 +2,7 @@
 #include "openbr_internal.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/eigenutils.h"
 #include <QString>
 #include <Eigen/SVD>
 
@@ -13,50 +14,36 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Wraps STASM key point detector
+ * \brief Procrustes alignment of points
  * \author Scott Klum \cite sklum
  */
 class ProcrustesTransform : public Transform
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString principalShapePath READ get_principalShapePath WRITE set_principalShapePath RESET reset_principalShapePath STORED false)
-    BR_PROPERTY(QString, principalShapePath, QString())
-
     Eigen::MatrixXf meanShape;
-    Mat shapeMat;
 
     void train(const TemplateList &data)
     {
-        QList< QList<cv::Point2f> > normalizedPoints;
+        QList< QList<QPointF> > normalizedPoints;
 
         // Normalize all sets of points
         foreach (br::Template datum, data) {
-            QList<cv::Point2f> points = OpenCVUtils::toPoints(datum.file.points());
+            QList<QPointF> points = datum.file.points();
 
-            if (points.empty()) {
-                continue;
-            }
+            if (points.empty()) continue;
 
-            cv::Scalar mean = cv::mean(points.toVector().toStdVector());
-            for (int i = 0; i < points.size(); i++) {
-                points[i].x -= mean[0];
-                points[i].y -= mean[1];
-            }
+            cv::Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
+            for (int i = 0; i < points.size(); i++) points[i] -= QPointF(mean[0],mean[1]);
 
-            float norm = cv::norm(points.toVector().toStdVector());
-            for (int i = 0; i < points.size(); i++) {
-                points[i].x /= (norm);
-                points[i].y /= (norm);
-            }
+            float norm = cv::norm(OpenCVUtils::toPoints(points).toVector().toStdVector());
+            for (int i = 0; i < points.size(); i++) points[i] /= norm;
 
             normalizedPoints.append(points);
         }
 
         // Determine mean shape
-        Eigen::MatrixXf shapeTest(normalizedPoints[0].size(), 2);
-
-        cv::Mat shapeBuffer(normalizedPoints[0].size(), 2, CV_32F);
+        Eigen::MatrixXf shapeBuffer(normalizedPoints[0].size(), 2);
 
         for (int i = 0; i < normalizedPoints[0].size(); i++) {
 
@@ -64,21 +51,18 @@ class ProcrustesTransform : public Transform
             double y = 0;
 
             for (int j = 0; j < normalizedPoints.size(); j++) {
-                x += normalizedPoints[j][i].x;
-                y += normalizedPoints[j][i].y;
+                x += normalizedPoints[j][i].x();
+                y += normalizedPoints[j][i].y();
             }
 
             x /= (double)normalizedPoints.size();
             y /= (double)normalizedPoints.size();
 
-            shapeBuffer.at<float>(i,0) = x;
-            shapeBuffer.at<float>(i,1) = y;
-
-            shapeTest(i,0) = x;
-            shapeTest(i,1) = y;
+            shapeBuffer(i,0) = x;
+            shapeBuffer(i,1) = y;
         }
 
-        meanShape = shapeTest;
+        meanShape = shapeBuffer;
     }
 
     void project(const Template &src, Template &dst) const
@@ -86,11 +70,9 @@ class ProcrustesTransform : public Transform
         QList<QPointF> points = src.file.points();
 
         cv::Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
-
         for (int i = 0; i < points.size(); i++) points[i] -= QPointF(mean[0],mean[1]);
 
         float norm = cv::norm(OpenCVUtils::toPoints(points).toVector().toStdVector());
-
         Eigen::MatrixXf srcPoints(points.size(), 2);
 
         for (int i = 0; i < points.size(); i++) {
@@ -108,7 +90,17 @@ class ProcrustesTransform : public Transform
 
         for (int i = 0; i < dstPoints.rows(); i++) points.append(QPointF(dstPoints(i,0),dstPoints(i,1)));
 
-        dst.file.setPoints(points);
+        dst.file.appendPoints(points);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << meanShape;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> meanShape;
     }
 
 };
@@ -133,7 +125,7 @@ class DelauneyTransform : public UntrainableTransform
 
         Subdiv2D subdiv(Rect(0,0,src.m().cols,src.m().rows));
 
-                                     foreach(const cv::Point2f& point, OpenCVUtils::toPoints(src.file.points())) subdiv.insert(point);
+        foreach(const cv::Point2f& point, OpenCVUtils::toPoints(src.file.points())) subdiv.insert(point);
 
         vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
@@ -142,18 +134,24 @@ class DelauneyTransform : public UntrainableTransform
         Scalar delaunay_color(0, 0, 0);
 
         if (draw) {
-            for(size_t i = 0; i < triangleList.size(); ++i) {
+                int count = 0;
+                for(size_t i = 0; i < triangleList.size(); ++i) {
                 Vec6f t = triangleList[i];
 
                 pt[0] = Point(cvRound(t[0]), cvRound(t[1]));
                 pt[1] = Point(cvRound(t[2]), cvRound(t[3]));
                 pt[2] = Point(cvRound(t[4]), cvRound(t[5]));
-                bool outside = true;
+
+                bool inside = true;
                 for (int i = 0; i < 3; i++) {
-                    if(pt[i].x > dst.m().cols || pt[i].y > dst.m().rows || pt[i].x <= 0 || pt[i].y <= 0)
-                        outside = false;
+                    if(pt[i].x > dst.m().cols || pt[i].y > dst.m().rows || pt[i].x <= 0 || pt[i].y <= 0) {
+                        inside = false;
+                    }
+
                 }
-                if (outside) {
+                if (inside) {
+                    count++;
+                    //qDebug() << count << pt[0] << pt[1] << pt[2] << "Area" << contourArea(pt);
                     line(dst.m(), pt[0], pt[1], delaunay_color, 1);
                     line(dst.m(), pt[1], pt[2], delaunay_color, 1);
                     line(dst.m(), pt[2], pt[0], delaunay_color, 1);
