@@ -201,7 +201,7 @@ class RectFromPointsTransform : public UntrainableTransform
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     Q_PROPERTY(double padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
     Q_PROPERTY(double aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED false)
-    Q_PROPERTY(bool crop READ get_crop WRITE set_crop RESET reset_crop STORED false);
+    Q_PROPERTY(bool crop READ get_crop WRITE set_crop RESET reset_crop STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
     BR_PROPERTY(double, padding, 0)
     BR_PROPERTY(double, aspectRatio, 1.0)
@@ -220,13 +220,15 @@ class RectFromPointsTransform : public UntrainableTransform
         int maxX, maxY;
         maxX = maxY = -std::numeric_limits<int>::max();
 
+        QList<QPointF> points;
+
         foreach(int index, indices) {
             if (src.file.points().size() > index) {
                 if (src.file.points()[index].x() < minX) minX = src.file.points()[index].x();
                 if (src.file.points()[index].x() > maxX) maxX = src.file.points()[index].x();
                 if (src.file.points()[index].y() < minY) minY = src.file.points()[index].y();
                 if (src.file.points()[index].y() > maxY) maxY = src.file.points()[index].y();
-                dst.file.appendPoint(src.file.points()[index]);
+                points.append(src.file.points()[index]);
             }
         }
 
@@ -237,6 +239,8 @@ class RectFromPointsTransform : public UntrainableTransform
         double height = maxY-minY;
         double deltaHeight = width/aspectRatio - height;
         height += deltaHeight;
+
+        dst.file.setPoints(points);
 
         if (crop) dst.m() = src.m()(Rect(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
         else dst.m() = src.m();
