@@ -89,7 +89,7 @@ else()
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import") # Fixes a linker warning
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
   elseif(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4018 /wd4244 /wd4267 /wd4305 /wd4308 /wd4307 /wd4554 /wd4996 /nologo /MP")
   endif()
 endif()
 
