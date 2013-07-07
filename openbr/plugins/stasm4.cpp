@@ -1,8 +1,13 @@
 #include <stasm_lib.h>
 #include <stasmcascadeclassifier.h>
-#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/opencv.hpp>
 #include "openbr_internal.h"
+#include "openbr/core/qtutils.h"
+#include "openbr/core/opencvutils.h"
+#include <QString>
+#include <Eigen/SVD>
 
+using namespace std;
 using namespace cv;
 
 namespace br
