@@ -243,7 +243,10 @@ class RectFromPointsTransform : public UntrainableTransform
         dst.file.setPoints(points);
 
         if (crop) dst.m() = src.m()(Rect(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
-        else dst.m() = src.m();
+        else {
+            dst.file.appendRect(QRectF(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
+            dst.m() = src.m();
+        }
     }
 };
 
