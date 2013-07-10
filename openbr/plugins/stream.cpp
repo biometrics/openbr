@@ -241,7 +241,7 @@ public:
     }
 
     virtual void close() = 0;
-    virtual bool open(Template & output) = 0;
+    virtual bool open(Template & output, int start_index=0) = 0;
     virtual bool isOpen() = 0;
 
     virtual bool getNext(FrameData & input) = 0;
@@ -262,13 +262,13 @@ class VideoDataSource : public DataSource
 public:
     VideoDataSource(int maxFrames) : DataSource(maxFrames) {}
 
-    bool open(Template &input)
+    bool open(Template &input, int start_index=0)
     {
         final_frame = -1;
         last_issued = -2;
         last_received = -3;
 
-        next_idx = 0;
+        next_idx = start_index;
         basis = input;
         bool is_int = false;
         int anInt = input.file.name.toInt(&is_int);
@@ -336,11 +336,11 @@ public:
     }
     bool data_ok;
 
-    bool open(Template &input)
+    bool open(Template &input, int start_index=0)
     {
         basis = input;
         current_idx = 0;
-        next_sequence = 0;
+        next_sequence = start_index;
         final_frame = -1;
         last_issued = -2;
         last_received = -3;
@@ -406,22 +406,31 @@ public:
         }
     }
 
-    bool open(Template & input)
+    bool open(TemplateList & input)
+    {
+        currentIdx = 0;
+        templates = input;
+
+        return open(templates[currentIdx]);
+    }
+
+    bool open(Template & input, int start_index=0)
     {
         close();
         final_frame = -1;
         last_issued = -2;
         last_received = -3;
+        next_frame = start_index;
 
         // Input has no matrices? Its probably a video that hasn't been loaded yet
         if (input.empty()) {
             actualSource = new VideoDataSource(0);
-            actualSource->open(input);
+            actualSource->open(input, next_frame);
         }
         else {
             // create frame dealer
             actualSource = new TemplateDataSource(0);
-            actualSource->open(input);
+            actualSource->open(input, next_frame);
         }
         if (!isOpen()) {
             delete actualSource;
@@ -434,10 +443,31 @@ public:
     bool isOpen() { return !actualSource ? false : actualSource->isOpen(); }
 
 protected:
+    int currentIdx;
+    int next_frame;
+    TemplateList templates;
     DataSource * actualSource;
     bool getNext(FrameData & output)
     {
-        return actualSource->getNext(output);
+        bool res = actualSource->getNext(output);
+        if (res) {
+            next_frame = output.sequenceNumber+1;
+            return true;
+        }
+
+        while(!res) {
+            currentIdx++;
+
+            if (currentIdx >= templates.size())
+                return false;
+            bool open_res = open(templates[currentIdx], next_frame);
+            if (!open_res)
+                return false;
+            res = actualSource->getNext(output);
+        }
+
+        next_frame = output.sequenceNumber+1;
+        return res;
     }
 
 };
@@ -796,11 +826,9 @@ public:
     // start processing
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
-        if (src.size() != 1)
-            qFatal("Expected single template input to stream");
-
         dst = src;
-        bool res = readStage->dataSource.open(dst[0]);
+
+        bool res = readStage->dataSource.open(dst);
         if (!res) return;
 
         QThreadPool::globalInstance()->releaseThread();
