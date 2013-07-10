@@ -243,7 +243,6 @@ public:
 
         last_time = current_time;
 
-        qDebug("time is %d wait is %d", current_time, wait_time);
         if (wait_time < 0) {
             return;
         }
