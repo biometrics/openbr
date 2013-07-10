@@ -220,16 +220,16 @@ signals:
 
 BR_REGISTER(Transform, ShowTransform)
 
-class FPSSynch : public TimeVaryingTransform
+class FPSLimit : public TimeVaryingTransform
 {
     Q_OBJECT
     Q_PROPERTY(int targetFPS READ get_targetFPS WRITE set_targetFPS RESET reset_targetFPS STORED false)
     BR_PROPERTY(int, targetFPS, 30)
 
 public:
-    FPSSynch() : TimeVaryingTransform(false, false) {}
+    FPSLimit() : TimeVaryingTransform(false, false) {}
 
-    ~FPSSynch() {}
+    ~FPSLimit() {}
 
     void train(const TemplateList &data) { (void) data; }
 
@@ -237,16 +237,19 @@ public:
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
-        qint64 time_delta = timer.elapsed();
+        qint64 current_time = timer.elapsed();
+        qint64 target_time = last_time + target_wait;
+        qint64 wait_time = target_time - current_time;
 
-        qint64 wait_time = target_wait - time_delta;
-        timer.start();
+        last_time = current_time;
 
+        qDebug("time is %d wait is %d", current_time, wait_time);
         if (wait_time < 0) {
             return;
         }
 
         QThread::msleep(wait_time);
+        last_time = timer.elapsed();
     }
 
     void finalize(TemplateList & output)
@@ -256,15 +259,17 @@ public:
 
     void init()
     {
-        target_wait = 1000 / targetFPS;
+        target_wait = 1000.0 / targetFPS;
         timer.start();
+        last_time = timer.elapsed();
     }
 
 protected:
     QElapsedTimer timer;
     qint64 target_wait;
+    qint64 last_time;
 };
-BR_REGISTER(Transform, FPSSynch)
+BR_REGISTER(Transform, FPSLimit)
 
 class FPSCalc : public TimeVaryingTransform
 {
