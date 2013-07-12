@@ -276,7 +276,7 @@ class DelaunayTransform : public UntrainableTransform
 
                 bitwise_and(buffer,mask,output);
 
-                dst.m() += output; // Need to xor stuff out
+                dst.m() += output;
             }
 
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
@@ -295,7 +295,7 @@ BR_REGISTER(Transform, DelaunayTransform)
 
 /*!
  * \ingroup transforms
- * \brief Wraps STASM key point detector
+ * \brief Computes the mean of a set of templates. Suitable for visualization only as it sets every projected template to the mean template.
  * \author Scott Klum \cite sklum
  */
 class MeanTransform : public Transform
@@ -308,13 +308,13 @@ class MeanTransform : public Transform
     {
         mean = Mat::zeros(data[0].m().rows,data[0].m().cols,CV_32F);
 
-        for (int i = 0; i < data.size()/2; i++) {
+        for (int i = 0; i < data.size(); i++) {
             Mat converted;
             data[i].m().convertTo(converted, CV_32F);
             mean += converted;
         }
 
-        mean /= data.size()/2;
+        mean /= data.size();
     }
 
     void project(const Template &src, Template &dst) const
