@@ -21,6 +21,13 @@ class ProcrustesTransform : public Transform
 {
     Q_OBJECT
 
+    Q_PROPERTY(float normReduction READ get_normReduction WRITE set_normReduction RESET reset_normReduction STORED false)
+    Q_PROPERTY(bool center READ get_center WRITE set_center RESET reset_center STORED false)
+    Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
+    BR_PROPERTY(float, normReduction, 1)
+    BR_PROPERTY(bool, center, true)
+    BR_PROPERTY(bool, warp, true)
+
     Eigen::MatrixXf meanShape;
 
     void train(const TemplateList &data)
@@ -30,32 +37,36 @@ class ProcrustesTransform : public Transform
         // Normalize all sets of points
         foreach (br::Template datum, data) {
             QList<QPointF> points = datum.file.points();
-
-            if (points.empty()) continue;
-
             QList<QRectF> rects = datum.file.rects();
 
-            if (rects.size() > 1) qWarning("More than one rect in training data templates.");
+            if (points.empty() || rects.empty()) continue;
 
-            points.append(rects[0].topLeft());
-            points.append(rects[0].topRight());
-            points.append(rects[0].bottomLeft());
-            points.append(rects[0].bottomRight());
+            // Assume rect appended last was bounding box
+            points.append(rects.last().topLeft());
+            points.append(rects.last().topRight());
+            points.append(rects.last().bottomLeft());
+            points.append(rects.last().bottomRight());
 
-            cv::Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
+            // Center shape at origin
+            Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
             for (int i = 0; i < points.size(); i++) points[i] -= QPointF(mean[0],mean[1]);
 
+            // Remove scale component
             float norm = cv::norm(OpenCVUtils::toPoints(points).toVector().toStdVector());
-            for (int i = 0; i < points.size(); i++) points[i] /= norm;
+            for (int i = 0; i < points.size(); i++) {
+                points[i] /= (norm/normReduction);
+                if (center) points[i] += QPointF(datum.m().cols/2,datum.m().rows/2);
+            }
 
             normalizedPoints.append(points);
         }
 
-        // Determine mean shape
-        Eigen::MatrixXf shapeBuffer(normalizedPoints[0].size(), 2);
+        if (normalizedPoints.empty()) qFatal("Unable to calculate normalized points");
+
+        // Determine mean shape, assuming all shapes contain the same number of points
+        meanShape = Eigen::MatrixXf(normalizedPoints[0].size(), 2);
 
         for (int i = 0; i < normalizedPoints[0].size(); i++) {
-
             double x = 0;
             double y = 0;
 
@@ -67,47 +78,49 @@ class ProcrustesTransform : public Transform
             x /= (double)normalizedPoints.size();
             y /= (double)normalizedPoints.size();
 
-            shapeBuffer(i,0) = x;
-            shapeBuffer(i,1) = y;
+            meanShape(i,0) = x;
+            meanShape(i,1) = y;
         }
-
-        meanShape = shapeBuffer;
     }
 
     void project(const Template &src, Template &dst) const
     {
-        dst.m() = src.m();
-
         QList<QPointF> points = src.file.points();
         QList<QRectF> rects = src.file.rects();
 
         if (points.empty() || rects.empty()) {
             dst = src;
-            qWarning("Points/rects are empty.");
+            qWarning("Procrustes alignment failed because points or rects are empty.");
             return;
         }
 
-        if (rects.size() > 1) qWarning("More than one rect in training data templates.");
+        // Assume rect appended last was bounding box
+        points.append(rects.last().topLeft());
+        points.append(rects.last().topRight());
+        points.append(rects.last().bottomLeft());
+        points.append(rects.last().bottomRight());
 
-        points.append(rects[0].topLeft());
-        points.append(rects[0].topRight());
-        points.append(rects[0].bottomLeft());
-        points.append(rects[0].bottomRight());
-
-        cv::Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
+        Scalar mean = cv::mean(OpenCVUtils::toPoints(points).toVector().toStdVector());
         for (int i = 0; i < points.size(); i++) points[i] -= QPointF(mean[0],mean[1]);
 
+        Eigen::MatrixXf srcMat(points.size(), 2);
         float norm = cv::norm(OpenCVUtils::toPoints(points).toVector().toStdVector());
-        Eigen::MatrixXf srcPoints(points.size(), 2);
-
         for (int i = 0; i < points.size(); i++) {
-            srcPoints(i,0) = points[i].x()/(norm/100.)+50;
-            srcPoints(i,1) = points[i].y()/(norm/100.)+50;
+            points[i] /= (norm/normReduction);
+            if (center) points[i] += QPointF(src.m().cols/2,src.m().rows/2);
+            srcMat(i,0) = points[i].x();
+            srcMat(i,1) = points[i].y();
         }
 
-        Eigen::JacobiSVD<Eigen::MatrixXf> svd(srcPoints.transpose()*meanShape, Eigen::ComputeThinU | Eigen::ComputeThinV);
-
+        Eigen::JacobiSVD<Eigen::MatrixXf> svd(srcMat.transpose()*meanShape, Eigen::ComputeThinU | Eigen::ComputeThinV);
         Eigen::MatrixXf R = svd.matrixU()*svd.matrixV().transpose();
+
+        dst = src;
+
+        if (warp) {
+            Eigen::MatrixXf dstMat = srcMat*R;
+            for (int i = 0; i < dstMat.rows(); i++) dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
+        }
 
         dst.file.set("Procrustes_0_0", R(0,0));
         dst.file.set("Procrustes_1_0", R(1,0));
@@ -134,7 +147,7 @@ BR_REGISTER(Transform, ProcrustesTransform)
 
 /*!
  * \ingroup transforms
- * \brief Creates a delauney triangulation based on a set of points
+ * \brief Creates a Delaunay triangulation based on a set of points
  * \author Scott Klum \cite sklum
  */
 class DelaunayTransform : public UntrainableTransform
@@ -146,7 +159,6 @@ class DelaunayTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-
         Subdiv2D subdiv(Rect(0,0,src.m().cols,src.m().rows));
 
         QList<cv::Point2f> points = OpenCVUtils::toPoints(src.file.points());
@@ -171,7 +183,6 @@ class DelaunayTransform : public UntrainableTransform
         subdiv.getTriangleList(triangleList);
 
         QList< QList<Point> > validTriangles;
-        int count = 0;
 
         for (size_t i = 0; i < triangleList.size(); ++i) {
             vector<Point> pt(3);
@@ -188,8 +199,6 @@ class DelaunayTransform : public UntrainableTransform
             }
 
             if (inside) {
-                count++;
-
                 QList<Point> triangleBuffer;
 
                 triangleBuffer << pt[0] << pt[1] << pt[2];
@@ -231,6 +240,7 @@ class DelaunayTransform : public UntrainableTransform
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
 
                 for (int j = 0; j < validTriangles[i].size(); j++) {
+                    // WRONG WRONG WRONG cept not
                     srcMat(j,0) = (validTriangles[i][j].x-mean[0])/(norm/100.)+50;
                     srcMat(j,1) = (validTriangles[i][j].y-mean[1])/(norm/100.)+50;
                 }
@@ -295,7 +305,8 @@ BR_REGISTER(Transform, DelaunayTransform)
 
 /*!
  * \ingroup transforms
- * \brief Computes the mean of a set of templates. Suitable for visualization only as it sets every projected template to the mean template.
+ * \brief Computes the mean of a set of templates.
+ * \note Suitable for visualization only as it sets every projected template to the mean template.
  * \author Scott Klum \cite sklum
  */
 class MeanTransform : public Transform
