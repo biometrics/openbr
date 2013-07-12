@@ -81,6 +81,12 @@ class ProcrustesTransform : public Transform
         QList<QPointF> points = src.file.points();
         QList<QRectF> rects = src.file.rects();
 
+        if (points.empty() || rects.empty()) {
+            dst = src;
+            qWarning("Points/rects are empty.");
+            return;
+        }
+
         if (rects.size() > 1) qWarning("More than one rect in training data templates.");
 
         points.append(rects[0].topLeft());
@@ -95,8 +101,8 @@ class ProcrustesTransform : public Transform
         Eigen::MatrixXf srcPoints(points.size(), 2);
 
         for (int i = 0; i < points.size(); i++) {
-            srcPoints(i,0) = points[i].x()/(norm/150.)+50;
-            srcPoints(i,1) = points[i].y()/(norm/150.)+50;
+            srcPoints(i,0) = points[i].x()/(norm/100.)+50;
+            srcPoints(i,1) = points[i].y()/(norm/100.)+50;
         }
 
         Eigen::JacobiSVD<Eigen::MatrixXf> svd(srcPoints.transpose()*meanShape, Eigen::ComputeThinU | Eigen::ComputeThinV);
@@ -140,10 +146,17 @@ class DelaunayTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+
         Subdiv2D subdiv(Rect(0,0,src.m().cols,src.m().rows));
 
         QList<cv::Point2f> points = OpenCVUtils::toPoints(src.file.points());
         QList<QRectF> rects = src.file.rects();
+
+        if (points.empty() || rects.empty()) {
+            dst = src;
+            qWarning("Points/rects are empty.");
+            return;
+        }
 
         if (rects.size() > 1) qWarning("More than one rect in training data templates.");
 
@@ -176,7 +189,6 @@ class DelaunayTransform : public UntrainableTransform
 
             if (inside) {
                 count++;
-                qDebug() << count << pt[0] << pt[1] << pt[2] << "Area" << contourArea(pt);
 
                 QList<Point> triangleBuffer;
 
@@ -209,38 +221,36 @@ class DelaunayTransform : public UntrainableTransform
             mean[0] = src.file.get<float>("Procrustes_mean_0");
             mean[1] = src.file.get<float>("Procrustes_mean_1");
 
-            qDebug() << mean[0] << mean[1];
-
             float norm = src.file.get<float>("Procrustes_norm");
-
-            qDebug() << norm;
 
             dst.m() = Mat::zeros(src.m().rows,src.m().cols,src.m().type());
 
-            foreach(const QList<Point> &triangle, validTriangles) {
-                Eigen::MatrixXf srcPoints(triangle.size(), 2);
+            QList<Point2f> mappedPoints;
 
-                for (int j = 0; j < triangle.size(); j++) {
-                    srcPoints(j,0) = (triangle[j].x-mean[0])/(norm/150.)+50;
-                    srcPoints(j,1) = (triangle[j].y-mean[1])/(norm/150.)+50;
+            for (int i = 0; i < validTriangles.size(); i++) {
+                Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
+
+                for (int j = 0; j < validTriangles[i].size(); j++) {
+                    srcMat(j,0) = (validTriangles[i][j].x-mean[0])/(norm/100.)+50;
+                    srcMat(j,1) = (validTriangles[i][j].y-mean[1])/(norm/100.)+50;
                 }
 
-                Eigen::MatrixXf dstMat = srcPoints*R;
+                Eigen::MatrixXf dstMat = srcMat*R;
 
-                Point2f test[3];
-                test[0] = triangle[0];
-                test[1] = triangle[1];
-                test[2] = triangle[2];
+                Point2f srcPoints[3];
+                for (int j = 0; j < 3; j++) srcPoints[j] = validTriangles[i][j];
+
                 Point2f dstPoints[3];
-                dstPoints[0] = Point2f(dstMat(0,0),dstMat(0,1));
-                dstPoints[1] = Point2f(dstMat(1,0),dstMat(1,1));
-                dstPoints[2] = Point2f(dstMat(2,0),dstMat(2,1));
+                for (int j = 0; j < 3; j++) {
+                    dstPoints[j] = Point2f(dstMat(j,0),dstMat(j,1));
+                    mappedPoints.append(dstPoints[j]);
+                }
 
                 Mat buffer(src.m().rows,src.m().cols,src.m().type());
 
-                warpAffine(src.m(), buffer, getAffineTransform(test, dstPoints), Size(src.m().cols,src.m().rows));
+                warpAffine(src.m(), buffer, getAffineTransform(srcPoints, dstPoints), Size(src.m().cols,src.m().rows));
 
-                Mat mask = Mat::zeros(src.m().rows, src.m().cols, CV_8U);
+                Mat mask = Mat::zeros(src.m().rows, src.m().cols, CV_8UC1);
                 Point maskPoints[1][3];
                 maskPoints[0][0] = dstPoints[0];
                 maskPoints[0][1] = dstPoints[1];
@@ -251,10 +261,31 @@ class DelaunayTransform : public UntrainableTransform
 
                 Mat output(src.m().rows,src.m().cols,src.m().type());
 
+                // Optimize
+                if (i > 0) {
+                    Mat overlap;
+                    bitwise_and(dst.m(),mask,overlap);
+                    for (int j = 0; j < overlap.rows; j++) {
+                        for (int k = 0; k < overlap.cols; k++) {
+                            if (overlap.at<uchar>(k,j) != 0) {
+                                mask.at<uchar>(k,j) = 0;
+                            }
+                        }
+                    }
+                }
+
                 bitwise_and(buffer,mask,output);
 
-                dst.m() += output;
+                dst.m() += output; // Need to xor stuff out
             }
+
+            Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
+            boundingBox.x += boundingBox.width * .025;
+            boundingBox.y += boundingBox.height * .025; // 0.025 for nose, .05 for mouth, .10 for brow
+            boundingBox.width *= .975;
+            boundingBox.height *= .975; // .975 for nose, .95 for mouth, .925 for brow
+
+            dst.m() = Mat(dst.m(), boundingBox);
         }
     }
 

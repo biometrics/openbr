@@ -659,8 +659,8 @@ class xmlFormat : public Format
         QDomDocument doc(fileName);
         QFile f(fileName);
 
-        if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(file.flat()));
-        if (!doc.setContent(&f))          qFatal("Unable to parse %s.", qPrintable(file.flat()));
+        if (!f.open(QIODevice::ReadOnly)) qWarning("Unable to open %s for reading.", qPrintable(file.flat()));
+        if (!doc.setContent(&f))          qWarning("Unable to parse %s.", qPrintable(file.flat()));
         f.close();
 
         QDomElement docElem = doc.documentElement();
