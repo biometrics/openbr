@@ -293,10 +293,6 @@ class DelaunayTransform : public UntrainableTransform
             }
 
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
-            boundingBox.x += boundingBox.width * .05;
-            boundingBox.y += boundingBox.height * .1; // 0.025 for nose, .05 for mouth, .10 for brow
-            boundingBox.width *= .975;
-            boundingBox.height *= .925; // .975 for nose, .95 for mouth, .925 for brow
 
             dst.m() = Mat(dst.m(), boundingBox);
         }

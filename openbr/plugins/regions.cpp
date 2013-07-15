@@ -238,7 +238,7 @@ class RectFromPointsTransform : public UntrainableTransform
 
         double height = maxY-minY;
         double deltaHeight = width/aspectRatio - height;
-        height += deltaHeight;
+        height += deltaHeight;                                       
 
         dst.file.setPoints(points);
 
