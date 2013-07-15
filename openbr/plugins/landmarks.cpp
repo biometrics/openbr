@@ -119,7 +119,9 @@ class ProcrustesTransform : public Transform
 
         if (warp) {
             Eigen::MatrixXf dstMat = srcMat*R;
-            for (int i = 0; i < dstMat.rows(); i++) dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
+            for (int i = 0; i < dstMat.rows(); i++) {
+                dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
+            }
         }
 
         dst.file.set("Procrustes_0_0", R(0,0));
@@ -154,30 +156,40 @@ class DelaunayTransform : public UntrainableTransform
 {
     Q_OBJECT
 
+    Q_PROPERTY(float normReduction READ get_normReduction WRITE set_normReduction RESET reset_normReduction STORED false)
+    Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
     Q_PROPERTY(bool draw READ get_draw WRITE set_draw RESET reset_draw STORED false)
+    BR_PROPERTY(float, normReduction, 1)
+    BR_PROPERTY(bool, warp, true)
     BR_PROPERTY(bool, draw, false)
 
     void project(const Template &src, Template &dst) const
     {
         Subdiv2D subdiv(Rect(0,0,src.m().cols,src.m().rows));
 
-        QList<cv::Point2f> points = OpenCVUtils::toPoints(src.file.points());
+        QList<QPointF> points = src.file.points();
         QList<QRectF> rects = src.file.rects();
 
         if (points.empty() || rects.empty()) {
             dst = src;
-            qWarning("Points/rects are empty.");
+            qWarning("Delauney triangulation failed because points or rects are empty.");
             return;
         }
 
-        if (rects.size() > 1) qWarning("More than one rect in training data templates.");
+        // Assume rect appended last was bounding box
+        points.append(rects.last().topLeft());
+        points.append(rects.last().topRight());
+        points.append(rects.last().bottomLeft());
+        points.append(rects.last().bottomRight());
 
-        points.append(OpenCVUtils::toPoint(rects[0].topLeft()));
-        points.append(OpenCVUtils::toPoint(rects[0].topRight()));
-        points.append(OpenCVUtils::toPoint(rects[0].bottomLeft()));
-        points.append(OpenCVUtils::toPoint(rects[0].bottomRight()));
-
-        for (int i = 0; i < points.size(); i++) subdiv.insert(points[i]);
+        for (int i = 0; i < points.size(); i++) {
+            if (points[i].x() < 0 || points[i].y() < 0 || points[i].y() >= src.m().rows || points[i].x() >= src.m().cols) {
+                dst = src;
+                qWarning("Delauney triangulation failed because points lie on boundary.");
+                return;
+            }
+            subdiv.insert(OpenCVUtils::toPoint(points[i]));
+        }
 
         vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
@@ -185,26 +197,18 @@ class DelaunayTransform : public UntrainableTransform
         QList< QList<Point> > validTriangles;
 
         for (size_t i = 0; i < triangleList.size(); ++i) {
+
             vector<Point> pt(3);
-
-            Vec6f t = triangleList[i];
-
-            pt[0] = Point(cvRound(t[0]), cvRound(t[1]));
-            pt[1] = Point(cvRound(t[2]), cvRound(t[3]));
-            pt[2] = Point(cvRound(t[4]), cvRound(t[5]));
+            pt[0] = Point(cvRound(triangleList[i][0]), cvRound(triangleList[i][1]));
+            pt[1] = Point(cvRound(triangleList[i][2]), cvRound(triangleList[i][3]));
+            pt[2] = Point(cvRound(triangleList[i][4]), cvRound(triangleList[i][5]));
 
             bool inside = true;
             for (int j = 0; j < 3; j++) {
                 if (pt[j].x > src.m().cols || pt[j].y > src.m().rows || pt[j].x <= 0 || pt[j].y <= 0) inside = false;
             }
 
-            if (inside) {
-                QList<Point> triangleBuffer;
-
-                triangleBuffer << pt[0] << pt[1] << pt[2];
-
-                validTriangles.append(triangleBuffer);
-            }
+            if (inside) validTriangles.append(QList<Point>()<< pt[0] << pt[1] << pt[2]);
         }
 
         dst.m() = src.m().clone();
@@ -240,9 +244,8 @@ class DelaunayTransform : public UntrainableTransform
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
 
                 for (int j = 0; j < validTriangles[i].size(); j++) {
-                    // WRONG WRONG WRONG cept not
-                    srcMat(j,0) = (validTriangles[i][j].x-mean[0])/(norm/100.)+50;
-                    srcMat(j,1) = (validTriangles[i][j].y-mean[1])/(norm/100.)+50;
+                    srcMat(j,0) = (validTriangles[i][j].x-mean[0])/(norm/normReduction)+src.m().cols/2;
+                    srcMat(j,1) = (validTriangles[i][j].y-mean[1])/(norm/normReduction)+src.m().rows/2;
                 }
 
                 Eigen::MatrixXf dstMat = srcMat*R;
@@ -290,10 +293,10 @@ class DelaunayTransform : public UntrainableTransform
             }
 
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
-            boundingBox.x += boundingBox.width * .025;
-            boundingBox.y += boundingBox.height * .025; // 0.025 for nose, .05 for mouth, .10 for brow
+            boundingBox.x += boundingBox.width * .05;
+            boundingBox.y += boundingBox.height * .1; // 0.025 for nose, .05 for mouth, .10 for brow
             boundingBox.width *= .975;
-            boundingBox.height *= .975; // .975 for nose, .95 for mouth, .925 for brow
+            boundingBox.height *= .925; // .975 for nose, .95 for mouth, .925 for brow
 
             dst.m() = Mat(dst.m(), boundingBox);
         }

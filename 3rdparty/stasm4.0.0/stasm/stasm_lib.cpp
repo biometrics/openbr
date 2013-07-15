@@ -157,7 +157,6 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
 {
     int returnval = 1;     // assume success
     *foundface = 0;        // but assume no face found
-    CatchOpenCvErrs();
     try
     {
         CheckStasmInit();
@@ -204,7 +203,6 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
     {
         returnval = 0; // a call was made to Err or a CV_Assert failed
     }
-    UncatchOpenCvErrs();
     return returnval;
 }
 
