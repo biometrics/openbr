@@ -50,7 +50,7 @@ class DrawTransform : public UntrainableTransform
         dst.m() = inPlace ? src.m() : src.m().clone();
 
         if (points) {
-            const QList<Point2f> pointsList = OpenCVUtils::toPoints(src.file.points());
+            const QList<Point2f> pointsList = OpenCVUtils::toPoints(src.file.namedPoints() + src.file.points());
             for (int i=0; i<pointsList.size(); i++) {
                 const Point2f &point = pointsList[i];
                 circle(dst, point, 3, color, -1);
