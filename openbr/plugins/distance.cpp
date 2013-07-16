@@ -300,4 +300,5 @@ BR_REGISTER(Distance, IdenticalDistance)
 
 } // namespace br
 
+
 #include "distance.moc"
