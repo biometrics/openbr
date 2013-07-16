@@ -35,19 +35,17 @@ class OpenTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (!src.m().empty()) dst.append(src.clone());
-        else {
-            if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
-            dst.file = src.file;
-            foreach (const File &file, src.file.split()) {
-                QScopedPointer<Format> format(Factory<Format>::make(file));
-                Template t = format->read();
-                if (t.isEmpty()) qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
-                dst.append(t);
-                dst.file.append(t.file.localMetadata());
-            }
-            dst.file.set("FTO", dst.isEmpty());
+        if (!src.isEmpty()) { dst = src; return; }
+        if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
+        dst.file = src.file;
+        foreach (const File &file, src.file.split()) {
+            QScopedPointer<Format> format(Factory<Format>::make(file));
+            Template t = format->read();
+            if (t.isEmpty()) qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
+            dst.append(t);
+            dst.file.append(t.file.localMetadata());
         }
+        dst.file.set("FTO", dst.isEmpty());
     }
 };
 
