@@ -320,8 +320,7 @@ class OnlineDistance : public Distance
         float currentScore = distance->compare(target, query);
 
         QMutexLocker mutexLocker(&mutex);
-        if (!scoreHash.contains(target.file.name))      scoreHash[target.file.name] = 0.0f; 
-        return (1.0- alpha) * scoreHash[target.file.name] + alpha * currentScore;
+        return scoreHash[target.file.name] = (1.0- alpha) * scoreHash[target.file.name] + alpha * currentScore;
     }
 };
 
