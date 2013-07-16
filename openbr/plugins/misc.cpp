@@ -35,6 +35,7 @@ class OpenTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
+        if (!src.isEmpty()) { dst = src; return; }
         if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
         dst.file = src.file;
         foreach (const File &file, src.file.split()) {
