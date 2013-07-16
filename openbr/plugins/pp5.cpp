@@ -305,10 +305,14 @@ class PP5CompareDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        (void) target;
-        (void) query;
-        qFatal("Compare single templates should never be called!");
-        return 0;
+        TemplateList targetList;
+        targetList.append(target);
+        TemplateList queryList;
+        queryList.append(query);
+        MatrixOutput *score = MatrixOutput::make(targetList.files(), queryList.files());
+        compare(targetList, queryList, score);
+        return score->data.at<float>(0);
+
     }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
