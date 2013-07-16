@@ -1040,6 +1040,21 @@ private:
  *  @{
  */
 
+class TemplateEvent : public QObject
+{
+    Q_OBJECT
+
+public:
+    void pulseSignal(const Template & output) const
+    {
+        emit theSignal(output);
+    }
+
+signals:
+    void theSignal(const Template & output) const;
+};
+
+
 /*!
  * \brief Plugin base class for processing a template.
  *
@@ -1143,6 +1158,15 @@ public:
      * done, returning this is sufficient.
      */
     virtual Transform * smartCopy() { return this;}
+
+    /*!
+     * \brief Recursively retrieve a named event, returns NULL if an event is not found.
+     */
+    virtual TemplateEvent * getEvent(const QString & name)
+    {
+        (void) name;
+        return NULL;
+    }
 
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */

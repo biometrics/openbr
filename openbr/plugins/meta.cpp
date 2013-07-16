@@ -615,6 +615,12 @@ public:
         return output;
     }
 
+    virtual TemplateEvent * getEvent(const QString & name)
+    {
+        return transform->getEvent(name);
+    }
+
+
     void train(const TemplateList &data)
     {
         transform->train(data);
