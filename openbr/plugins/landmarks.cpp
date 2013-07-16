@@ -112,7 +112,6 @@ class ProcrustesTransform : public Transform
         if (warp) {
             Eigen::MatrixXf dstMat = srcMat*R;
             for (int i = 0; i < dstMat.rows(); i++) {
-                qDebug() << QPointF(dstMat(i,0),dstMat(i,1));
                 dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
             }
         }
@@ -181,7 +180,6 @@ class DelaunayTransform : public UntrainableTransform
 
         for (int i = 0; i < points.size(); i++) {
             if (points[i].x() < 0 || points[i].y() < 0 || points[i].y() >= src.m().rows || points[i].x() >= src.m().cols) {
-                qDebug() << points[i] << src.m().rows << src.m().cols;
                 dst = src;
                 qWarning("Delauney triangulation failed because points lie on boundary.");
                 return;
@@ -296,8 +294,6 @@ class DelaunayTransform : public UntrainableTransform
             boundingBox.y += boundingBox.height * QtUtils::toPoint(heightCrop).x();
             boundingBox.width *= 1-QtUtils::toPoint(widthCrop).y();
             boundingBox.height *= 1-QtUtils::toPoint(heightCrop).y();
-
-            qDebug() << boundingBox;
 
             dst.m() = Mat(dst.m(), boundingBox);
         }
