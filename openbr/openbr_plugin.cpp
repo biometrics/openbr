@@ -368,7 +368,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
-        // If file is a Format not a Gallery
+        // If file is a Format not a Gallery (e.g. XML Format vs. XML Gallery)
         if (newTemplates.isEmpty())
             newTemplates.append(file);
 

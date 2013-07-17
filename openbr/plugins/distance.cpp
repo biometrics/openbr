@@ -56,6 +56,8 @@ private:
 
     float compare(const Template &a, const Template &b) const
     {
+        if (a.file.getBool("FTO") || b.file.getBool("FTO")) return -std::numeric_limits<float>::max();
+
         if ((a.m().size != b.m().size) ||
             (a.m().type() != b.m().type()))
                 return -std::numeric_limits<float>::max();

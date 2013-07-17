@@ -95,8 +95,9 @@ class CatTransform : public UntrainableMetaTransform
         for (int i=0; i<src.size(); i++)
             sizes[i%partitions] += src[i].total();
 
-        foreach (int size, sizes)
-            dst.append(Mat(1, size, src.m().type()));
+        if (!src.empty())
+            foreach (int size, sizes)
+                dst.append(Mat(1, size, src.m().type()));
 
         QVector<int> offsets(partitions, 0);
         for (int i=0; i<src.size(); i++) {
