@@ -1192,7 +1192,7 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     futures.waitForFinished();
 }
 
-QList<Transform *> Transform::getChildren()
+QList<Transform *> Transform::getChildren() const
 {
     QList<Transform *> output;
     for (int i=0; i < metaObject()->propertyCount(); i++) {
@@ -1205,6 +1205,18 @@ QList<Transform *> Transform::getChildren()
             output.append(variant.value<QList<Transform *> >());
     }
     return output;
+}
+
+TemplateEvent * Transform::getEvent(const QString & name)
+{
+    foreach(Transform * child, getChildren())
+    {
+        TemplateEvent * probe = child->getEvent(name);
+        if (probe)
+            return probe;
+    }
+
+    return NULL;
 }
 
 /* Distance - public methods */

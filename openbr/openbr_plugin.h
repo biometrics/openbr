@@ -1162,21 +1162,15 @@ public:
     /*!
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
      */
-    virtual TemplateEvent * getEvent(const QString & name)
-    {
-        foreach(Transform * child, getChildren())
-        {
-            TemplateEvent * probe = child->getEvent(name);
-            if (probe)
-                return probe;
-        }
+    virtual TemplateEvent * getEvent(const QString & name);
 
-        return NULL;
-    }
+    /*!
+     * \brief Get a list of child transforms of this transform, child transforms are considered to be
+     * any transforms stored as properties of this transform.
+     */
+    QList<Transform *> getChildren() const;
 
 protected:
-    QList<Transform *> getChildren();
-
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
 };
