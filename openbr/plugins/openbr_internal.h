@@ -234,19 +234,6 @@ public:
         return output;
     }
 
-    virtual TemplateEvent * getEvent(const QString & name)
-    {
-        foreach(Transform* t, transforms )
-        {
-            TemplateEvent * probe = t->getEvent(name);
-            if (probe)
-                return probe;
-        }
-
-        return NULL;
-    }
-
-
 protected:
     bool isTimeVarying;
 

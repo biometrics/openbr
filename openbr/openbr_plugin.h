@@ -1164,11 +1164,19 @@ public:
      */
     virtual TemplateEvent * getEvent(const QString & name)
     {
-        (void) name;
+        foreach(Transform * child, getChildren())
+        {
+            TemplateEvent * probe = child->getEvent(name);
+            if (probe)
+                return probe;
+        }
+
         return NULL;
     }
 
 protected:
+    QList<Transform *> getChildren();
+
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */
     inline Transform *make(const QString &description) { return make(description, this); } /*!< \brief Make a subtransform. */
 };

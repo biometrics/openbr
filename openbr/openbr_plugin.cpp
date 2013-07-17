@@ -1192,6 +1192,21 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     futures.waitForFinished();
 }
 
+QList<Transform *> Transform::getChildren()
+{
+    QList<Transform *> output;
+    for (int i=0; i < metaObject()->propertyCount(); i++) {
+        const char * prop_name = metaObject()->property(i).name();
+        const QVariant & variant = this->property(prop_name);
+
+        if (variant.canConvert<Transform *>())
+            output.append(variant.value<Transform *>());
+        if (variant.canConvert<QList<Transform *> >())
+            output.append(variant.value<QList<Transform *> >());
+    }
+    return output;
+}
+
 /* Distance - public methods */
 Distance *Distance::make(QString str, QObject *parent)
 {
