@@ -230,6 +230,7 @@ class RectFromPointsTransform : public UntrainableTransform
                 if (src.file.points()[index].y() > maxY) maxY = src.file.points()[index].y();
                 points.append(src.file.points()[index]);
             }
+            else qFatal("Incorrect indices");
         }
 
         double width = maxX-minX;
