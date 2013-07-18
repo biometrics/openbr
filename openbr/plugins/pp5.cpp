@@ -97,8 +97,8 @@ struct PP5Context
 
     static void createRawImage(const cv::Mat &src, ppr_raw_image_type &dst)
     {
-        if (!src.isContinuous()) qFatal("PP5Context::createRawImage requires continuous data.");
-        if      (src.channels() == 3) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
+        if      (!src.isContinuous()) qFatal("PP5Context::createRawImage requires continuous data.");
+        else if (src.channels() == 3) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
         else if (src.channels() == 1) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_GRAY8);
         else                          qFatal("PP5Context::createRawImage invalid channel count.");
         memcpy(dst.data, src.data, src.channels()*src.rows*src.cols);
