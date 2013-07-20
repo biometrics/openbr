@@ -368,7 +368,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         QScopedPointer<Gallery> i(Gallery::make(file));
         TemplateList newTemplates = i->read();
 
-        // If file is a Format not a Gallery
+        // If file is a Format not a Gallery (e.g. XML Format vs. XML Gallery)
         if (newTemplates.isEmpty())
             newTemplates.append(file);
 
@@ -1191,6 +1191,33 @@ void Transform::backProject(const TemplateList &dst, TemplateList &src) const
     for (int i=0; i<dst.size(); i++)
         futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
     futures.waitForFinished();
+}
+
+QList<Transform *> Transform::getChildren() const
+{
+    QList<Transform *> output;
+    for (int i=0; i < metaObject()->propertyCount(); i++) {
+        const char * prop_name = metaObject()->property(i).name();
+        const QVariant & variant = this->property(prop_name);
+
+        if (variant.canConvert<Transform *>())
+            output.append(variant.value<Transform *>());
+        if (variant.canConvert<QList<Transform *> >())
+            output.append(variant.value<QList<Transform *> >());
+    }
+    return output;
+}
+
+TemplateEvent * Transform::getEvent(const QString & name)
+{
+    foreach(Transform * child, getChildren())
+    {
+        TemplateEvent * probe = child->getEvent(name);
+        if (probe)
+            return probe;
+    }
+
+    return NULL;
 }
 
 /* Distance - public methods */

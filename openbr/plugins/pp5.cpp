@@ -97,8 +97,8 @@ struct PP5Context
 
     static void createRawImage(const cv::Mat &src, ppr_raw_image_type &dst)
     {
-        if (!src.isContinuous()) qFatal("PP5Context::createRawImage requires continuous data.");
-        if      (src.channels() == 3) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
+        if      (!src.isContinuous()) qFatal("PP5Context::createRawImage requires continuous data.");
+        else if (src.channels() == 3) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_BGR24);
         else if (src.channels() == 1) ppr_raw_image_create(&dst, src.cols, src.rows, PPR_RAW_IMAGE_GRAY8);
         else                          qFatal("PP5Context::createRawImage invalid channel count.");
         memcpy(dst.data, src.data, src.channels()*src.rows*src.cols);
@@ -241,41 +241,43 @@ class PP5EnrollTransform : public UntrainableMetaTransform
         PP5Context *context = contexts.acquire();
 
         foreach(const Template & src, srcList) {
-            ppr_raw_image_type raw_image;
-            PP5Context::createRawImage(src, raw_image);
-            ppr_image_type image;
-            TRY(ppr_create_image(raw_image, &image))
-            ppr_face_list_type face_list;
-            TRY(ppr_detect_faces(context->context, image, &face_list))
+            if (!src.isEmpty()) {
+                ppr_raw_image_type raw_image;
+                PP5Context::createRawImage(src, raw_image);
+                ppr_image_type image;
+                TRY(ppr_create_image(raw_image, &image))
+                ppr_face_list_type face_list;
+                TRY(ppr_detect_faces(context->context, image, &face_list))
 
-            for (int i=0; i<face_list.length; i++) {
-                ppr_face_type face = face_list.faces[i];
-                int extractable;
-                TRY(ppr_is_template_extractable(context->context, face, &extractable))
-                if (!extractable && !detectOnly) continue;
+                for (int i=0; i<face_list.length; i++) {
+                    ppr_face_type face = face_list.faces[i];
+                    int extractable;
+                    TRY(ppr_is_template_extractable(context->context, face, &extractable))
+                    if (!extractable && !detectOnly) continue;
 
-                cv::Mat m;
-                if (detectOnly) {
-                    m = src;
-                } else {
-                    TRY(ppr_extract_face_template(context->context, image, &face))
-                    context->createMat(face, m);
-                }
-                Template dst;
-                dst.file = src.file;
+                    cv::Mat m;
+                    if (detectOnly) {
+                        m = src;
+                    } else {
+                        TRY(ppr_extract_face_template(context->context, image, &face))
+                        context->createMat(face, m);
+                    }
+                    Template dst;
+                    dst.file = src.file;
 
-                dst.file.append(PP5Context::toMetadata(face));
-                dst += m;
-                dstList.append(dst);
+                    dst.file.append(PP5Context::toMetadata(face));
+                    dst += m;
+                    dstList.append(dst);
 
-                // Found a face, nothing else to do (if we aren't trying to find multiple faces).
-                if (!Globals->enrollAll)
-                    break;
+                    // Found a face, nothing else to do (if we aren't trying to find multiple faces).
+                    if (!Globals->enrollAll)
+                        break;
+                    }
+
+                ppr_free_face_list(face_list);
+                ppr_free_image(image);
+                ppr_raw_image_free(raw_image);
             }
-
-            ppr_free_face_list(face_list);
-            ppr_free_image(image);
-            ppr_raw_image_free(raw_image);
         }
 
         // No faces were detected, output something with FTE set.
@@ -305,10 +307,14 @@ class PP5CompareDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        (void) target;
-        (void) query;
-        qFatal("Compare single templates should never be called!");
-        return 0;
+        TemplateList targetList;
+        targetList.append(target);
+        TemplateList queryList;
+        queryList.append(query);
+        MatrixOutput *score = MatrixOutput::make(targetList.files(), queryList.files());
+        compare(targetList, queryList, score);
+        return score->data.at<float>(0);
+
     }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const

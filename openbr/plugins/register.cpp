@@ -28,10 +28,22 @@ namespace br
  * \ingroup transforms
  * \brief Performs a two or three point registration.
  * \author Josh Klontz \cite jklontz
+ * \note Method: Area should be used for shrinking an image, Cubic for slow but accurate enlargment, Bilin for fast enlargement.
  */
 class AffineTransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_ENUMS(Method)
+
+public:
+    /*!< */
+    enum Method { Near = INTER_NEAREST,
+                  Area = INTER_AREA,
+                  Bilin = INTER_LINEAR,
+                  Cubic = INTER_CUBIC,
+                  Lanczo = INTER_LANCZOS4};
+
+private:
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
     Q_PROPERTY(int height READ get_height WRITE set_height RESET reset_height STORED false)
     Q_PROPERTY(float x1 READ get_x1 WRITE set_x1 RESET reset_x1 STORED false)
@@ -40,6 +52,7 @@ class AffineTransform : public UntrainableTransform
     Q_PROPERTY(float y2 READ get_y2 WRITE set_y2 RESET reset_y2 STORED false)
     Q_PROPERTY(float x3 READ get_x3 WRITE set_x3 RESET reset_x3 STORED false)
     Q_PROPERTY(float y3 READ get_y3 WRITE set_y3 RESET reset_y3 STORED false)
+    Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
     BR_PROPERTY(int, width, 64)
     BR_PROPERTY(int, height, 64)
     BR_PROPERTY(float, x1, 0)
@@ -48,6 +61,7 @@ class AffineTransform : public UntrainableTransform
     BR_PROPERTY(float, y2, -1)
     BR_PROPERTY(float, x3, -1)
     BR_PROPERTY(float, y3, -1)
+    BR_PROPERTY(Method, method, Bilin)
 
     static Point2f getThirdAffinePoint(const Point2f &a, const Point2f &b)
     {
@@ -72,9 +86,6 @@ class AffineTransform : public UntrainableTransform
             (src.file.contains("Affine_2") || twoPoints)) {
             srcPoints[0] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_0"));
             srcPoints[1] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_1"));
-
-            dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
-            dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
             if (!twoPoints) srcPoints[2] = OpenCVUtils::toPoint(src.file.get<QPointF>("Affine_2"));
         } else {
             const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
@@ -89,13 +100,12 @@ class AffineTransform : public UntrainableTransform
 
                 dst.file.set("Affine_0", OpenCVUtils::fromPoint(landmarks[0]));
                 dst.file.set("Affine_1", OpenCVUtils::fromPoint(landmarks[1]));
-
                 if (!twoPoints) dst.file.set("Affine_2", OpenCVUtils::fromPoint(landmarks[2]));
             }
         }
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
-        warpAffine(src, dst, getAffineTransform(srcPoints, dstPoints), Size(width, height));
+        warpAffine(src, dst, getAffineTransform(srcPoints, dstPoints), Size(width, height), method);
     }
 };
 

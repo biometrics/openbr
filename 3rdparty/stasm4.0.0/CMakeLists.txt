@@ -32,8 +32,12 @@ if(MSVC)
 endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/stasm)
+if(MSVC)
+  add_library(stasm STATIC ${SOURCE})
+else()
+  add_library(stasm SHARED ${SOURCE})
+endif()
 
-add_library(stasm SHARED ${SOURCE})
 qt5_use_modules(stasm ${QT_DEPENDENCIES})
 set(SOURCE ${SOURCE} PARENT_SCOPE)
 target_link_libraries(stasm ${OpenCV_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})

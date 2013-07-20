@@ -95,8 +95,9 @@ class CatTransform : public UntrainableMetaTransform
         for (int i=0; i<src.size(); i++)
             sizes[i%partitions] += src[i].total();
 
-        foreach (int size, sizes)
-            dst.append(Mat(1, size, src.m().type()));
+        if (!src.empty())
+            foreach (int size, sizes)
+                dst.append(Mat(1, size, src.m().type()));
 
         QVector<int> offsets(partitions, 0);
         for (int i=0; i<src.size(); i++) {
@@ -230,6 +231,7 @@ class RectFromPointsTransform : public UntrainableTransform
                 if (src.file.points()[index].y() > maxY) maxY = src.file.points()[index].y();
                 points.append(src.file.points()[index]);
             }
+            else qFatal("Incorrect indices");
         }
 
         double width = maxX-minX;
@@ -238,12 +240,15 @@ class RectFromPointsTransform : public UntrainableTransform
 
         double height = maxY-minY;
         double deltaHeight = width/aspectRatio - height;
-        height += deltaHeight;
+        height += deltaHeight;                                       
 
         dst.file.setPoints(points);
 
         if (crop) dst.m() = src.m()(Rect(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
-        else dst.m() = src.m();
+        else {
+            dst.file.appendRect(QRectF(std::max(0.0, minX - deltaWidth/2.0), std::max(0.0, minY - deltaHeight/2.0), std::min((double)src.m().cols, width), std::min((double)src.m().rows, height)));
+            dst.m() = src.m();
+        }
     }
 };
 

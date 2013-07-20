@@ -43,8 +43,14 @@ FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
     QFile file(sigset.resolved());
     bool success;
     success = file.open(QIODevice::ReadOnly); if (!success) qFatal("Unable to open %s for reading.", qPrintable(sigset));
-    success = doc.setContent(&file);          if (!success) qFatal("Unable to parse %s.", qPrintable(sigset));
+    success = doc.setContent(&file);
+
     file.close();
+
+    if (!success) {
+        qWarning("Unable to parse %s.", qPrintable(sigset));
+        return fileList;
+    }
 
     QDomElement docElem = doc.documentElement();
     if (docElem.nodeName() != "biometric-signature-set")
