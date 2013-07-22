@@ -12,4 +12,3 @@ foreach(PLUGIN ${PLUGINS} ${BR_THIRDPARTY_PLUGINS})
     set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${PLUGIN})
   endif()
 endforeach()
-
