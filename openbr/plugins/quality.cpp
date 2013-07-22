@@ -272,8 +272,6 @@ class HeatMapDistance : public Distance
         return 0;
     }
 
-    // Switch this to template list version, use compare(template, template) in
-    // heat map distance, and index into the proper match probability
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
     {
         for (int i=0; i<step; i++) {

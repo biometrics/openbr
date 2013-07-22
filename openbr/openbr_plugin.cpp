@@ -1269,5 +1269,6 @@ void Distance::compareBlock(const TemplateList &target, const TemplateList &quer
 {
     for (int i=0; i<query.size(); i++)
         for (int j=0; j<target.size(); j++)
-            output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
+            if (target[j].isEmpty() || query[i].isEmpty()) output->setRelative(-std::numeric_limits<float>::max(),i+queryOffset, j+targetOffset);
+            else output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
 }
