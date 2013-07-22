@@ -4,6 +4,9 @@
 # BR_THIRDPARTY_SRC         - Additional source code needed by a plugin
 # BR_THIRDPARTY_LIBS        - Additional libaries needed by a plugin
 
+# Also look for CMake modules in the thirdparty plugins folder(s)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${BR_THIRDPARTY_PLUGINS_DIR})
+
 foreach(DIR ${BR_THIRDPARTY_PLUGINS_DIR})
   file(GLOB PLUGINS ${DIR}/*.cpp ${DIR}/*.h) # Add the headers too so MOC runs on them
   set(BR_THIRDPARTY_PLUGINS ${BR_THIRDPARTY_PLUGINS} ${PLUGINS})
