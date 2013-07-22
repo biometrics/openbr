@@ -1,5 +1,13 @@
-# Add source to BR_THIRDPARTY_SRC
-# Add libs to BR_THIRDPARTY_LIBS
+# Optional Appendable CMake Variables:
+# BR_THIRDPARTY_PLUGINS     - Additional plugins
+# BR_THIRDPARTY_PLUGINS_DIR - Additional folder(s) of plugins
+# BR_THIRDPARTY_SRC         - Additional source code needed by a plugin
+# BR_THIRDPARTY_LIBS        - Additional libaries needed by a plugin
+
+foreach(DIR ${BR_THIRDPARTY_PLUGINS_DIR})
+  file(GLOB PLUGINS ${DIR}/*.cpp ${DIR}/*.h) # Add the headers too so MOC runs on them
+  set(BR_THIRDPARTY_PLUGINS ${BR_THIRDPARTY_PLUGINS} ${PLUGINS})
+endforeach()
 
 file(GLOB PLUGINS plugins/*.cpp plugins/*.h)
 foreach(PLUGIN ${PLUGINS} ${BR_THIRDPARTY_PLUGINS})
