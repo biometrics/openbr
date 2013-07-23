@@ -160,27 +160,35 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
 
 /*!
  * \brief Evaluates and prints classification accuracy to terminal.
- * \param predicted_input The predicted br::Input.
- * \param truth_input The ground truth br::Input.
+ * \param predicted_input The predicted br::Gallery.
+ * \param truth_input The ground truth br::Gallery.
  * \see br_enroll
  */
-BR_EXPORT void br_eval_classification(const char *predicted_input, const char *truth_input);
+BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery);
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
  * \param csv The cluster results file.
- * \param input The br::input used to generate the \ref simmat that was clustered.
+ * \param gallery The br::Gallery used to generate the \ref simmat that was clustered.
  * \see br_cluster
  */
-BR_EXPORT void br_eval_clustering(const char *csv, const char *input);
+BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery);
+
+/*!
+ * \brief Evaluates and prints detection accuracy to terminal.
+ * \param predicted_gallery The predicted br::Gallery.
+ * \param truth_galery The ground truth br::Gallery.
+ * \see br_enroll
+ */
+BR_EXPORT void br_eval_detection(const char *predicted_gallery, const char *truth_gallery);
 
 /*!
  * \brief Evaluates regression accuracy to disk.
- * \param predicted_input The predicted br::Input.
- * \param truth_input The ground truth br::Input.
+ * \param predicted_input The predicted br::Gallery.
+ * \param truth_input The ground truth br::Gallery.
  * \see br_enroll
  */
-BR_EXPORT void br_eval_regression(const char *predicted_input, const char *truth_input);
+BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery);
 
 /*!
  * \brief Wraps br::Context::finalize()

@@ -81,13 +81,19 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
         const float precision = counter.truePositive / (float)(counter.truePositive + counter.falsePositive);
         const float recall = counter.truePositive / (float)(counter.truePositive + counter.falseNegative);
         const float fscore = 2 * precision * recall / (precision + recall);
-	output->setRelative(count, i, 0);
-	output->setRelative(precision, i, 1);
-	output->setRelative(recall, i, 2);
-	output->setRelative(fscore, i, 3);
+        output->setRelative(count, i, 0);
+        output->setRelative(precision, i, 1);
+        output->setRelative(recall, i, 2);
+        output->setRelative(fscore, i, 3);
     }
 
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
+}
+
+void br::EvalDetection(const QString &predictedInput, const QString &truthInput)
+{
+    (void) predictedInput;
+    (void) truthInput;
 }
 
 void br::EvalRegression(const QString &predictedInput, const QString &truthInput)
