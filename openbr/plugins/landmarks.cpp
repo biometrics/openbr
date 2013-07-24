@@ -149,13 +149,9 @@ class DelaunayTransform : public UntrainableTransform
     Q_OBJECT
 
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
-    Q_PROPERTY(QString widthCrop READ get_widthCrop WRITE set_widthCrop RESET reset_widthCrop STORED false)
-    Q_PROPERTY(QString heightCrop READ get_heightCrop WRITE set_heightCrop RESET reset_heightCrop STORED false)
     Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
     Q_PROPERTY(bool draw READ get_draw WRITE set_draw RESET reset_draw STORED false)
     BR_PROPERTY(float, scaleFactor, 1)
-    BR_PROPERTY(QString, widthCrop, QString())
-    BR_PROPERTY(QString, heightCrop, QString())
     BR_PROPERTY(bool, warp, true)
     BR_PROPERTY(bool, draw, false)
 
@@ -289,54 +285,13 @@ class DelaunayTransform : public UntrainableTransform
             }
 
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
-
-            boundingBox.x += boundingBox.width * QtUtils::toPoint(widthCrop).x();
-            boundingBox.y += boundingBox.height * QtUtils::toPoint(heightCrop).x();
-            boundingBox.width *= 1-QtUtils::toPoint(widthCrop).y();
-            boundingBox.height *= 1-QtUtils::toPoint(heightCrop).y();
-
-            dst.m() = Mat(dst.m(), boundingBox);
+            dst.file.appendRect(OpenCVUtils::fromRect(boundingBox));
         }
     }
 
 };
 
 BR_REGISTER(Transform, DelaunayTransform)
-
-/*!
- * \ingroup transforms
- * \brief Computes the mean of a set of templates.
- * \note Suitable for visualization only as it sets every projected template to the mean template.
- * \author Scott Klum \cite sklum
- */
-class MeanTransform : public Transform
-{
-    Q_OBJECT
-
-    Mat mean;
-
-    void train(const TemplateList &data)
-    {
-        mean = Mat::zeros(data[0].m().rows,data[0].m().cols,CV_32F);
-
-        for (int i = 0; i < data.size(); i++) {
-            Mat converted;
-            data[i].m().convertTo(converted, CV_32F);
-            mean += converted;
-        }
-
-        mean /= data.size();
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-        dst.m() = mean;
-    }
-
-};
-
-BR_REGISTER(Transform, MeanTransform)
 
 } // namespace br
 

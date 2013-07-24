@@ -191,6 +191,87 @@ BR_REGISTER(Transform, DupTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Expand the width and height of a template's rects by input width and height factors.
+ * \author Charles Otto \cite caotto
+ */
+class ExpandRectTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(float widthExpand READ get_widthExpand WRITE set_widthExpand RESET reset_widthExpand STORED false)
+    Q_PROPERTY(float heightExpand READ get_heightExpand WRITE set_heightExpand RESET reset_heightExpand STORED false)
+    BR_PROPERTY(float, widthExpand, .5)
+    BR_PROPERTY(float, heightExpand, .5)
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        QList<QRectF> rects = dst.file.rects();
+        for (int i=0;i < rects.size(); i++) {
+            QRectF rect = rects[i];
+
+            qreal width = rect.width();
+            qreal height = rect.height();
+            float half_w_expansion = widthExpand / 2;
+            float half_h_expansion = heightExpand / 2;
+
+            qreal half_width = width * widthExpand;
+            qreal quarter_width = width * half_w_expansion;
+            qreal half_height = height * heightExpand;
+            qreal quarter_height = height * half_h_expansion;
+
+            rect.setX(std::max(qreal(0),(rect.x() - quarter_width)));
+            rect.setY(std::max(qreal(0),(rect.y() - quarter_height)));
+
+            qreal x2 = std::min(rect.width() + half_width + rect.x(), qreal(src.m().cols) - 1);
+            qreal y2 = std::min(rect.height() + half_height + rect.y(), qreal(src.m().rows) - 1);
+
+            rect.setWidth(x2 - rect.x());
+            rect.setHeight(y2 - rect.y());
+
+            rects[i] = rect;
+        }
+        dst.file.setRects(rects);
+    }
+};
+
+BR_REGISTER(Transform, ExpandRectTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Crops the width and height of a template's rects by input width and height factors.
+ * \author Scott Klum \cite sklum
+ */
+class CropRectTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString widthCrop READ get_widthCrop WRITE set_widthCrop RESET reset_widthCrop STORED false)
+    Q_PROPERTY(QString heightCrop READ get_heightCrop WRITE set_heightCrop RESET reset_heightCrop STORED false)
+    BR_PROPERTY(QString, widthCrop, QString())
+    BR_PROPERTY(QString, heightCrop, QString())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        QList<QRectF> rects = dst.file.rects();
+        for (int i=0;i < rects.size(); i++) {
+            QRectF rect = rects[i];
+
+            // Do a bit of error checking
+            rect.x += rect.width * QtUtils::toPoint(widthCrop).x();
+            rect.y += rect.height * QtUtils::toPoint(heightCrop).x();
+            rect.width *= 1-QtUtils::toPoint(widthCrop).y();
+            rect.height *= 1-QtUtils::toPoint(heightCrop).y();
+
+            dst.m() = Mat(dst.m(), rect);
+        }
+        dst.file.setRects(rects);
+    }
+};
+
+BR_REGISTER(Transform, CropRectTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Create matrix from landmarks.
  * \author Scott Klum \cite sklum
  * \todo Padding should be a percent of total image size

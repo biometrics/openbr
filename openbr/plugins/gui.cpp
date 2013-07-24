@@ -67,6 +67,10 @@ public:
         {
             wait.wakeAll();
         }
+        else if (event->type() == QEvent::MouseButtonPress)
+        {
+            qDebug() << "hey there";
+        }
         return QObject::eventFilter(obj, event);
     }
 
