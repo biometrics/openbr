@@ -814,7 +814,8 @@ struct Factory
     //! [Factory make]
     static T *make(const File &file)
     {
-        QString name = file.suffix();
+        QString name = file.get<QString>("plugin", "");
+        if (name.isEmpty()) name = file.suffix();
         if (!names().contains(name)) {
             if      (names().contains("Empty") && name.isEmpty()) name = "Empty";
             else if (names().contains("Default"))                 name = "Default";
