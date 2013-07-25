@@ -228,7 +228,20 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
-    /*!< \brief Returns a list of type T for the key, throwing an error if the key does not exist or if the value cannot be converted to the specified type. */
+    /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
+    template <typename T>
+    T get(const QString &key, const T &defaultValue) const
+    {
+        if (!contains(key)) return defaultValue;
+        QVariant variant = value(key);
+        if (!variant.canConvert<T>()) return defaultValue;
+        return variant.value<T>();
+    }
+
+    /*!< \brief Specialization for boolean type. */
+    bool getBool(const QString &key, bool defaultValue = false) const;
+
+    /*!< \brief Specialization for list type. Returns a list of type T for the key, throwing an error if the key does not exist or if the value cannot be converted to the specified type. */
     template <typename T>
     QList<T> getList(const QString &key) const
     {
@@ -241,17 +254,31 @@ struct BR_EXPORT File
         return list;
     }
 
-    /*!< \brief Specialization for boolean type. */
-    bool getBool(const QString &key, bool defaultValue = false) const;
-
-    /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
-    template <typename T>
-    T get(const QString &key, const T &defaultValue) const
+    /*!< \brief Returns the value for the specified key for every file in the list. */
+    template<class U>
+    static QList<QVariant> values(const QList<U> &fileList, const QString &key)
     {
-        if (!contains(key)) return defaultValue;
-        QVariant variant = value(key);
-        if (!variant.canConvert<T>()) return defaultValue;
-        return variant.value<T>();
+        QList<QVariant> values; values.reserve(fileList.size());
+        foreach (const U &f, fileList) values.append(((const File&)f).value(key));
+        return values;
+    }
+
+    /*!< \brief Returns a value for the key for every file in the list, throwing an error if the key does not exist. */
+    template<class T, class U>
+    static QList<T> get(const QList<U> &fileList, const QString &key)
+    {
+        QList<T> result; result.reserve(fileList.size());
+        foreach (const U &f, fileList) result.append(((const File&)f).get<T>(key));
+        return result;
+    }
+
+    /*!< \brief Returns a value for the key for every file in the list, returning \em defaultValue if the key does not exist or can't be converted. */
+    template<class T, class U>
+    static QList<T> get(const QList<U> &fileList, const QString &key, const T &defaultValue)
+    {
+        QList<T> result; result.reserve(fileList.size());
+        foreach (const U &f, fileList) result.append(static_cast<const File&>(f).get<T>(key, defaultValue));
+        return result;
     }
 
     inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
@@ -297,23 +324,6 @@ struct BR_EXPORT FileList : public QList<File>
     QStringList flat() const; /*!< \brief Returns br::File::flat() for each file in the list. */
     QStringList names() const; /*!<  \brief Returns #br::File::name for each file in the list. */
     void sort(const QString& key); /*!<  \brief Sort the list based on metadata. */
-     /*!< \brief Returns values associated with the input propName for each file in the list. */
-    template<typename T>
-    QList<T> get(const QString & propName) const
-    {
-        QList<T> values; values.reserve(size());
-        foreach (const File &f, *this)
-            values.append(f.get<T>(propName));
-        return values;
-    }
-    template<typename T>
-    QList<T> get(const QString & propName, T defaultValue) const
-    {
-        QList<T> values; values.reserve(size());
-        foreach (const File &f, *this)
-            values.append(f.contains(propName) ? f.get<T>(propName) : defaultValue);
-        return values;
-    }
 
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
@@ -344,6 +354,7 @@ struct Template : public QList<cv::Mat>
     inline const cv::Mat &m() const { static const cv::Mat NullMatrix;
                                       return isEmpty() ? qFatal("Empty template."), NullMatrix : last(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline cv::Mat &m() { return isEmpty() ? append(cv::Mat()), last() : last(); } /*!< \brief Idiom to treat the template as a matrix. */
+    inline const File &operator()() const { return file; }
     inline cv::Mat &operator=(const cv::Mat &other) { return m() = other; } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator const cv::Mat&() const { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
     inline operator cv::Mat&() { return m(); } /*!< \brief Idiom to treat the template as a matrix. */
@@ -405,7 +416,6 @@ struct TemplateList : public QList<Template>
     QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
     QList<int> applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const;
-
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -475,23 +485,6 @@ struct TemplateList : public QList<Template>
      * \brief Returns #br::Template::file for each template in the list.
      */
     FileList operator()() const { return files(); }
-
-    /*!
-     * \brief Returns br::Template::label() for each template in the list.
-     */
-    template<typename T>
-    QList<T> get(const QString & propName) const
-    {
-        QList<T> values; values.reserve(size());
-        foreach (const Template &t, *this) values.append(t.file.get<T>(propName));
-        return values;
-    }
-    QList<QVariant> values(const QString & propName) const
-    {
-        QList<QVariant> values; values.reserve(size());
-        foreach (const Template &t, *this) values.append(t.file.value(propName));
-        return values;
-    }
 
     /*!
      * \brief Returns the number of occurences for each label in the list.
@@ -1025,7 +1018,7 @@ public:
     virtual TemplateList readBlock(bool *done) = 0; /*!< \brief Retrieve a portion of the stored templates. */
     void writeBlock(const TemplateList &templates); /*!< \brief Serialize a template list. */
     virtual void write(const Template &t) = 0; /*!< \brief Serialize a template. */
-    static Gallery *make(const File &file); /*!< \brief Make a gallery from a file list. */
+    static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
 
 private:
     QSharedPointer<Gallery> next;
