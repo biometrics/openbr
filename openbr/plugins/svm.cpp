@@ -130,7 +130,7 @@ private:
         Mat lab;
         // If we are doing regression, assume subject has float values
         if (type == EPS_SVR || type == NU_SVR) {
-            lab = OpenCVUtils::toMat(_data.get<float>("Subject"));
+            lab = OpenCVUtils::toMat(File::get<float>(_data, "Subject"));
         }
         // If we are doing classification, assume subject has discrete values, map them
         // and store the mapping data
