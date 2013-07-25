@@ -3,6 +3,9 @@
 #include <QElapsedTimer>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QMouseEvent>
+#include <QPainter>
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include "openbr_internal.h"
 
@@ -61,27 +64,31 @@ class GUIProxy : public QObject
 
 public:
 
-    bool eventFilter(QObject * obj, QEvent * event)
-    {
-        if (event->type() == QEvent::KeyPress)
-        {
-            wait.wakeAll();
-        }
-        else if (event->type() == QEvent::MouseButtonPress)
-        {
-            qDebug() << "hey there";
-        }
-        return QObject::eventFilter(obj, event);
-    }
+    QLabel *window;
+    QPixmap pixmap;
 
-    QLabel * window;
     GUIProxy()
     {
         window = NULL;
     }
 
-    void waitForKey()
+    bool eventFilter(QObject * obj, QEvent * event)
     {
+        if (event->type() == QEvent::KeyPress)
+        {
+            event->accept();
+
+            wait.wakeAll();
+            return true;
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+    }
+
+    virtual void waitForKey(Template &dst)
+    {
+        (void) dst;
+
         QMutexLocker locker(&lock);
         wait.wait(&lock);
     }
@@ -90,8 +97,10 @@ public slots:
 
     void showImage(const QPixmap & input)
     {
+        pixmap = input;
+
         window->show();
-        window->setPixmap(input);
+        window->setPixmap(pixmap);
         window->setFixedSize(input.size());
     }
 
@@ -109,6 +118,56 @@ public slots:
         flags = flags & ~Qt::WindowCloseButtonHint;
         window->setWindowFlags(flags);
     }
+
+};
+
+class EyeProxy : public GUIProxy
+{
+    Q_OBJECT
+
+public:
+
+    bool eventFilter(QObject *obj, QEvent *event)
+    {
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            event->accept();
+
+            QMouseEvent *mouseEvent = (QMouseEvent*)event;
+
+            if (mouseEvent->button() == Qt::LeftButton) leftEye = mouseEvent->pos();
+            else if (mouseEvent->button() == Qt::RightButton) rightEye = mouseEvent->pos();
+
+            QPixmap pixmapBuffer = pixmap;
+
+            QPainter painter(&pixmapBuffer);
+            painter.setBrush(Qt::black);
+
+            painter.drawEllipse(leftEye, 4, 4);
+            painter.drawEllipse(rightEye, 4, 4);
+
+            window->setPixmap(pixmapBuffer);
+
+            return true;
+        } else {
+            return GUIProxy::eventFilter(obj, event);
+        }
+    }
+
+    void waitForKey(Template &dst)
+    {
+        leftEye = rightEye = QPointF();
+
+        GUIProxy::waitForKey(dst);
+
+        dst.file.set("leftEye", leftEye);
+        dst.file.set("rightEye", rightEye);
+    }
+
+private:
+
+    QPointF leftEye;
+    QPointF rightEye;
 };
 
 /*!
@@ -131,17 +190,6 @@ public:
     {
         gui = NULL;
         displayBuffer = NULL;
-        if (!Globals->useGui)
-            return;
-        displayBuffer = new QPixmap();
-        // Create our GUI proxy
-        gui = new GUIProxy();
-        // Move it to the main thread, this means signals we send to it will
-        // be run in the main thread, which is hopefully in an event loop
-        gui->moveToThread(QApplication::instance()->thread());
-        // Connect our signals to the proxy's slots
-        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
     }
 
     ~ShowTransform()
@@ -181,14 +229,16 @@ public:
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
-                // Emit an explicit  copy of our pixmap so that the pixmap used
+                // Emit an explicit copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
                 emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
                 // Blocking wait for a key-press
-                if (this->waitInput)
-                    gui->waitForKey();
+                if (this->waitInput) {
+                    Template blank;
+                    gui->waitForKey(blank);
+                }
 
             }
         }
@@ -204,6 +254,18 @@ public:
     {
         if (!Globals->useGui)
             return;
+
+        displayBuffer = new QPixmap();
+
+        // Create our GUI proxy
+        gui = new GUIProxy();
+        // Move it to the main thread, this means signals we send to it will
+        // be run in the main thread, which is hopefully in an event loop
+        gui->moveToThread(QApplication::instance()->thread());
+
+        // Connect our signals to the proxy's slots
+        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
 
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
@@ -221,8 +283,66 @@ signals:
     void changeTitle(const QString & input);
     void hideWindow();
 };
-
 BR_REGISTER(Transform, ShowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Displays templates in a GUI pop-up window using QT.
+ * \author Charles Otto \cite caotto
+ * Can be used with parallelism enabled, although it is considered TimeVarying.
+ */
+class ManualTransform : public ShowTransform
+{
+    Q_OBJECT
+
+    // Specify key
+
+public:
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        dst = src;
+
+        if (src.empty() || !Globals->useGui)
+            return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            qImageBuffer = toQImage(dst[i].m());
+            displayBuffer->convertFromImage(qImageBuffer);
+
+            emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+            // Blocking wait for a key-press
+            if (this->waitInput) {
+                gui->waitForKey(dst[i]);
+                qDebug() << dst[i].file.get<QPointF>("leftEye");
+                qDebug() << dst[i].file.get<QPointF>("rightEye");
+            }
+        }
+    }
+
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+
+        displayBuffer = new QPixmap();
+
+        // Create our GUI proxy
+        gui = new EyeProxy();
+
+        // Move it to the main thread, this means signals we send to it will
+        // be run in the main thread, which is hopefully in an event loop
+        gui->moveToThread(QApplication::instance()->thread());
+
+        // Connect our signals to the proxy's slots
+        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+        emit needWindow();
+        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
+    }
+};
+
+BR_REGISTER(Transform, ManualTransform)
 
 class FPSLimit : public TimeVaryingTransform
 {

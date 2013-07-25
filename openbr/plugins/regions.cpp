@@ -15,7 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include "openbr/core/qtutils.h"
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
@@ -239,6 +239,7 @@ BR_REGISTER(Transform, ExpandRectTransform)
  * \ingroup transforms
  * \brief Crops the width and height of a template's rects by input width and height factors.
  * \author Scott Klum \cite sklum
+ * \todo Error checking
  */
 class CropRectTransform : public UntrainableTransform
 {
@@ -257,12 +258,12 @@ class CropRectTransform : public UntrainableTransform
             QRectF rect = rects[i];
 
             // Do a bit of error checking
-            rect.x += rect.width * QtUtils::toPoint(widthCrop).x();
-            rect.y += rect.height * QtUtils::toPoint(heightCrop).x();
-            rect.width *= 1-QtUtils::toPoint(widthCrop).y();
-            rect.height *= 1-QtUtils::toPoint(heightCrop).y();
+            rect.setX(rect.x() + rect.width() * QtUtils::toPoint(widthCrop).x());
+            rect.setY(rect.y() + rect.height() * QtUtils::toPoint(heightCrop).x());
+            rect.setWidth(rect.width() * (1-QtUtils::toPoint(widthCrop).y()));
+            rect.setHeight(rect.height() * (1-QtUtils::toPoint(heightCrop).y()));
 
-            dst.m() = Mat(dst.m(), rect);
+            dst.m() = Mat(dst.m(), OpenCVUtils::toRect(rect));
         }
         dst.file.setRects(rects);
     }

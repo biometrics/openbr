@@ -63,6 +63,8 @@ int stasm_init_ext(        // extended version of stasm_init
     int         trace,     // in: 0 normal use, 1 trace to stdout and stasm.log
     void*       detparams) // in: NULL or face detector parameters
 {
+    (void) detparams;
+
     int returnval = 1;     // assume success
     CatchOpenCvErrs();
     try
@@ -111,6 +113,12 @@ int stasm_open_image_ext(  // extended version of stasm_open_image
     int         minwidth,  // in: min face width as percentage of img width
     void*       user)      // in: NULL or pointer to user abort func
 {
+    (void) img;
+    (void) width;
+    (void) height;
+    (void) imgpath;
+    (void) user;
+
     int returnval = 1;     // assume success
     CatchOpenCvErrs();
     try
@@ -241,6 +249,11 @@ int stasm_search_pinned(    // call after the user has pinned some points
     int          height,    // in: image height
     const char*  imgpath)   // in: image path, used only for err msgs and debug
 {
+    (void) img;
+    (void) width;
+    (void) height;
+    (void) imgpath;
+
     int returnval = 1;     // assume success
     CatchOpenCvErrs();
     try

@@ -40,6 +40,7 @@ void OpenLogFile(void)  // also inits the global variable logfile_g
 
 void lprintf(const char* format, ...)   // args like printf
 {
+    (void) format;
     /*
     if (print_g)
     {
@@ -57,6 +58,7 @@ void lprintf(const char* format, ...)   // args like printf
 
 void logprintf(const char* format, ...) // args like printf
 {
+    (void) format;
     /*
     if (logfile_g)
     {
@@ -76,6 +78,7 @@ void logprintf(const char* format, ...) // args like printf
 
 void lputs(const char* s)
 {
+    (void) s;
     /*
     printf("%s", s);
     fflush(stdout);     // flush so if there is a crash we can see what happened
