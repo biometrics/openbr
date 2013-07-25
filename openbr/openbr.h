@@ -115,20 +115,6 @@ BR_EXPORT void br_combine_masks(int num_input_masks, const char *input_masks[], 
 BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
 /*!
- * \brief Computes the confusion matrix for a dataset at a particular threshold.
- *
- * <a href="http://en.wikipedia.org/wiki/Confusion_matrix">Wikipedia Explanation</a>
- * \param file <tt>.csv</tt> file created using \ref br_eval.
- * \param score The similarity score to threshold at.
- * \param[out] true_positives The true positive count.
- * \param[out] false_positives The false positive count.
- * \param[out] true_negatives The true negative count.
- * \param[out] false_negatives The false negative count.
- */
-BR_EXPORT void br_confusion(const char *file, float score,
-                            int *true_positives, int *false_positives, int *true_negatives, int *false_negatives);
-
-/*!
  * \brief Wraps br::Convert()
  */
 BR_EXPORT void br_convert(const char *file_type, const char *input_file, const char *output_file);

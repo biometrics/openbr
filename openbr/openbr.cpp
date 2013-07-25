@@ -17,8 +17,8 @@
 #include <openbr/openbr_plugin.h>
 
 #include "core/bee.h"
-#include "core/classify.h"
 #include "core/cluster.h"
+#include "core/eval.h"
 #include "core/fuse.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
@@ -49,11 +49,6 @@ void br_combine_masks(int num_input_masks, const char *input_masks[], const char
 void br_compare(const char *target_gallery, const char *query_gallery, const char *output)
 {
     Compare(File(target_gallery), File(query_gallery), File(output));
-}
-
-void br_confusion(const char *file, float score, int *true_positives, int *false_positives, int *true_negatives, int *false_negatives)
-{
-    return Confusion(file, score, *true_positives, *false_positives, *true_negatives, *false_negatives);
 }
 
 void br_convert(const char *file_type, const char *input_file, const char *output_file)
