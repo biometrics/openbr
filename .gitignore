@@ -29,3 +29,6 @@ scripts/results
 
 ### OS X ###
 *.DS_Store
+
+### vim ###
+*.swp
