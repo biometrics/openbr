@@ -348,7 +348,7 @@ class LDATransform : public Transform
 
         // OpenBR ensures that class values range from 0 to numClasses-1.
         // Label exists because we created it earlier with relabel
-        QList<int> classes = trainingSet.get<int>("Label");
+        QList<int> classes = File::get<int>(trainingSet, "Label");
         QMap<int, int> classCounts = trainingSet.countValues<int>("Label");
         const int numClasses = classCounts.size();
 
