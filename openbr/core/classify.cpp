@@ -34,7 +34,6 @@ struct Counter
 void br::EvalClassification(const QString &predictedInput, const QString &truthInput)
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
-
     TemplateList predicted(TemplateList::fromGallery(predictedInput));
     TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
@@ -90,16 +89,46 @@ void br::EvalClassification(const QString &predictedInput, const QString &truthI
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
+struct Detection
+{
+    QRectF boundingBox;
+    float confidence;
+    Detection() {}
+    Detection(const QRectF &boundingBox_, float confidence_ = -1)
+        : boundingBox(boundingBox_), confidence(confidence_) {}
+};
+
+struct Detections
+{
+    QList<Detection> predicted, truth;
+};
+
 void br::EvalDetection(const QString &predictedInput, const QString &truthInput)
 {
-    (void) predictedInput;
-    (void) truthInput;
+    qDebug("Evaluating detection of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
+    const TemplateList truth(TemplateList::fromGallery(truthInput));
+
+    // Figure out which metadata field contains a bounding box
+    QString detectKey;
+    foreach (const QString &key, truth.first().file.localKeys())
+        if (!truth.first().file.get<QRectF>(key, QRectF()).isNull()) {
+            detectKey = key;
+            break;
+        }
+    if (detectKey.isNull()) qFatal("No suitable metadata key found.");
+    else                    qDebug("Using metadata key: %s", qPrintable(detectKey));
+
+    QHash<QString, Detections> allDetections; // Organized by file
+    foreach (const Template &t, predicted)
+        allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(detectKey), t.file.get<float>("Confidence", -1)));
+    foreach (const Template &t, truth)
+        allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(detectKey)));
 }
 
 void br::EvalRegression(const QString &predictedInput, const QString &truthInput)
 {
     qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
-
     const TemplateList predicted(TemplateList::fromGallery(predictedInput));
     const TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
