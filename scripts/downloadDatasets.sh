@@ -48,3 +48,19 @@ if [ ! -d ../data/MEDS/img ]; then
   mv data/*/*.jpg ../data/MEDS/img
   rm -r data NIST_SD32_MEDS-II_face.zip
 fi
+
+# KTH
+if [ ! -d ../data/KTH/vid ]; then
+  echo "Downloading KTH..."
+  mkdir ../data/KTH/vid
+  for vidclass in {'boxing','handclapping','handwaving','jogging','running','walking'}; do
+    if hash curl 2>/dev/null; then
+      curl -OL http://www.nada.kth.se/cvap/actions/${vidclass}.zip
+    else
+      wget http://www.nada.kth.se/cvap/actions/${vidclass}.zip
+    fi
+    mkdir ../data/KTH/vid/${vidclass}
+    unzip ${vidclass}.zip -d ../data/KTH/vid/${vidclass}
+	rm ${vidclass}.zip
+  done
+fi

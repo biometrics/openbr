@@ -9,6 +9,7 @@
 * [MEDS](MEDS/README.md)
 * [MNIST](MNIST/README.md)
 * [PCSO](PCSO/README.md)
+* [KTH](KTH/README.md)
 
 For both practical and legal reasons we only include images for some of the datasets in this repository.
 Researchers should contact the respective owners of the other datasets in order to obtain a copy.
