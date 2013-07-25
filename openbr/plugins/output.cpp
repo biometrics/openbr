@@ -35,9 +35,9 @@
 #include "openbr_internal.h"
 
 #include "openbr/core/bee.h"
+#include "openbr/core/eval.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
-#include "openbr/core/plot.h"
 #include "openbr/core/qtutils.h"
 
 namespace br
