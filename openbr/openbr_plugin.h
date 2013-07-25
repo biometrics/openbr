@@ -277,7 +277,7 @@ struct BR_EXPORT File
     static QList<T> get(const QList<U> &fileList, const QString &key, const T &defaultValue)
     {
         QList<T> result; result.reserve(fileList.size());
-        foreach (const U &f, fileList) result.append(((const File&)f).get<T>(key, defaultValue));
+        foreach (const U &f, fileList) result.append(static_cast<const File&>(f).get<T>(key, defaultValue));
         return result;
     }
 
