@@ -316,9 +316,17 @@ struct Detection
 {
     QRectF boundingBox;
     float confidence;
+
     Detection() {}
     Detection(const QRectF &boundingBox_, float confidence_ = -1)
         : boundingBox(boundingBox_), confidence(confidence_) {}
+
+    float area() const { return boundingBox.width() * boundingBox.height(); }
+    float overlap(const Detection &other) const
+    {
+        const Detection intersection(boundingBox.intersected(other.boundingBox));
+        return intersection.area() / (area() + other.area() - 2*intersection.area());
+    }
 };
 
 struct Detections
@@ -326,7 +334,15 @@ struct Detections
     QList<Detection> predicted, truth;
 };
 
-void EvalDetection(const QString &predictedInput, const QString &truthInput)
+struct DetectionOperatingPoint
+{
+    float confidence, overlap;
+    DetectionOperatingPoint() : confidence(-1), overlap(-1) {}
+    DetectionOperatingPoint(float confidence_, float overlap_) : confidence(confidence_), overlap(overlap_) {}
+    inline bool operator<(const DetectionOperatingPoint &other) const { return confidence > other.confidence; }
+};
+
+float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
     const TemplateList predicted(TemplateList::fromGallery(predictedInput));
@@ -347,6 +363,39 @@ void EvalDetection(const QString &predictedInput, const QString &truthInput)
         allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(detectKey), t.file.get<float>("Confidence", -1)));
     foreach (const Template &t, truth)
         allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(detectKey)));
+
+    QList<DetectionOperatingPoint> points;
+    foreach (Detections detections, allDetections.values()) {
+        while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
+            Detection truth = detections.truth.takeFirst();
+            int bestIndex = -1;
+            float bestOverlap = -1;
+            for (int i=0; i<detections.predicted.size(); i++) {
+                const float overlap = truth.overlap(detections.predicted[i]);
+                if (overlap > bestOverlap) {
+                    bestOverlap = overlap;
+                    bestIndex = i;
+                }
+            }
+            Detection predicted = detections.predicted.takeAt(bestIndex);
+            points.append(DetectionOperatingPoint(predicted.confidence, bestOverlap));
+        }
+
+        foreach (const Detection &detection, detections.predicted)
+            points.append(DetectionOperatingPoint(detection.confidence, 0));
+        for (int i=0; i<detections.truth.size(); i++)
+            points.append(DetectionOperatingPoint(-std::numeric_limits<float>::max(), 0));
+    }
+
+    std::sort(points.begin(), points.end());
+
+    QStringList lines;
+    lines.append("Plot, X, Y");
+
+    // TODO: finish implementing
+
+    (void) csv;
+    return 0;
 }
 
 void EvalRegression(const QString &predictedInput, const QString &truthInput)
