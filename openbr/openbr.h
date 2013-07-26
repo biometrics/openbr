@@ -148,7 +148,6 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
  * \brief Evaluates and prints classification accuracy to terminal.
  * \param predicted_input The predicted br::Gallery.
  * \param truth_input The ground truth br::Gallery.
- * \see br_enroll
  */
 BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery);
 
@@ -164,15 +163,15 @@ BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery);
  * \brief Evaluates and prints detection accuracy to terminal.
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_galery The ground truth br::Gallery.
- * \see br_enroll
+ * \param csv Optional \c .csv file to contain performance metrics.
+ * \return Average detection bounding box overlap.
  */
-BR_EXPORT void br_eval_detection(const char *predicted_gallery, const char *truth_gallery);
+BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "");
 
 /*!
  * \brief Evaluates regression accuracy to disk.
  * \param predicted_input The predicted br::Gallery.
  * \param truth_input The ground truth br::Gallery.
- * \see br_enroll
  */
 BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery);
 

@@ -23,6 +23,8 @@ using namespace cv;
 namespace br
 {
 
+static const int Max_Points = 500; // Maximum number of points to render on plots
+
 struct Comparison
 {
     float score;
@@ -100,7 +102,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
 
-    const int Max_Points = 500;
     float result = -1;
 
     // Make comparisons
@@ -237,7 +238,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         if (i == Report_Retrieval) reportRetrievalRate = retrievalRate;
     }
 
-    if (!csv.isEmpty()) QtUtils::writeFile(csv, lines);
+    QtUtils::writeFile(csv, lines);
     qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
     return result;
 }
@@ -325,7 +326,7 @@ struct Detection
     float overlap(const Detection &other) const
     {
         const Detection intersection(boundingBox.intersected(other.boundingBox));
-        return intersection.area() / (area() + other.area() - 2*intersection.area());
+        return intersection.area() / (area() + other.area() - intersection.area());
     }
 };
 
@@ -334,13 +335,52 @@ struct Detections
     QList<Detection> predicted, truth;
 };
 
-struct DetectionOperatingPoint
+struct ResolvedDetection
 {
     float confidence, overlap;
-    DetectionOperatingPoint() : confidence(-1), overlap(-1) {}
-    DetectionOperatingPoint(float confidence_, float overlap_) : confidence(confidence_), overlap(overlap_) {}
-    inline bool operator<(const DetectionOperatingPoint &other) const { return confidence > other.confidence; }
+    ResolvedDetection() : confidence(-1), overlap(-1) {}
+    ResolvedDetection(float confidence_, float overlap_) : confidence(confidence_), overlap(overlap_) {}
+    inline bool operator<(const ResolvedDetection &other) const { return confidence > other.confidence; }
 };
+
+struct DetectionOperatingPoint
+{
+    float Recall, FalsePositives, Precision;
+    DetectionOperatingPoint() : Recall(-1), FalsePositives(-1), Precision(-1) {}
+    DetectionOperatingPoint(float TP, float FP, float totalPositives)
+        : Recall(TP/totalPositives), FalsePositives(FP), Precision(TP/(TP+FP)) {}
+};
+
+static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalPositives, bool discrete)
+{
+    QList<DetectionOperatingPoint> points;
+    float TP = 0, FP = 0, prevFP = 0;
+    for (int i=0; i<detections.size(); i++) {
+        const ResolvedDetection &detection = detections[i];
+        if (discrete) {
+            if (detection.overlap >= 0.5) TP++;
+            else                          FP++;
+        } else {
+            TP += detection.overlap;
+            FP += 1 - detection.overlap;
+        }
+        if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
+            if (FP > prevFP) {
+                points.append(DetectionOperatingPoint(TP, FP, totalPositives));
+                prevFP = FP;
+            }
+        }
+    }
+
+    const int keep = qMin(points.size(), Max_Points);
+    QStringList lines; lines.reserve(keep);
+    for (int i=0; i<keep; i++) {
+        const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
+        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
+        lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Precision), QString::number(point.Recall)));
+    }
+    return lines;
+}
 
 float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv)
 {
@@ -358,18 +398,18 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     if (detectKey.isNull()) qFatal("No suitable metadata key found.");
     else                    qDebug("Using metadata key: %s", qPrintable(detectKey));
 
-    QHash<QString, Detections> allDetections; // Organized by file
+    QMap<QString, Detections> allDetections; // Organized by file, QMap used to preserve order
     foreach (const Template &t, predicted)
         allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(detectKey), t.file.get<float>("Confidence", -1)));
     foreach (const Template &t, truth)
         allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(detectKey)));
 
-    QList<DetectionOperatingPoint> points;
+    QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     foreach (Detections detections, allDetections.values()) {
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
-            Detection truth = detections.truth.takeFirst();
+            const Detection truth = detections.truth.takeFirst();
             int bestIndex = -1;
-            float bestOverlap = -1;
+            float bestOverlap = -std::numeric_limits<float>::max();
             for (int i=0; i<detections.predicted.size(); i++) {
                 const float overlap = truth.overlap(detections.predicted[i]);
                 if (overlap > bestOverlap) {
@@ -377,25 +417,40 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
                     bestIndex = i;
                 }
             }
-            Detection predicted = detections.predicted.takeAt(bestIndex);
-            points.append(DetectionOperatingPoint(predicted.confidence, bestOverlap));
+            const Detection predicted = detections.predicted.takeAt(bestIndex);
+            resolvedDetections.append(ResolvedDetection(predicted.confidence, bestOverlap));
         }
 
         foreach (const Detection &detection, detections.predicted)
-            points.append(DetectionOperatingPoint(detection.confidence, 0));
+            resolvedDetections.append(ResolvedDetection(detection.confidence, 0));
         for (int i=0; i<detections.truth.size(); i++)
-            points.append(DetectionOperatingPoint(-std::numeric_limits<float>::max(), 0));
+            falseNegativeDetections.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
     }
 
-    std::sort(points.begin(), points.end());
+    std::sort(resolvedDetections.begin(), resolvedDetections.end());
 
     QStringList lines;
     lines.append("Plot, X, Y");
+    lines.append(computeDetectionResults(resolvedDetections, truth.size(), true));
+    lines.append(computeDetectionResults(resolvedDetections, truth.size(), false));
 
-    // TODO: finish implementing
+    float averageOverlap;
+    { // Overlap Density
+        QList<ResolvedDetection> allDetections; allDetections << resolvedDetections << falseNegativeDetections;
+        const int keep = qMin(allDetections.size(), Max_Points);
+        lines.reserve(lines.size() + keep);
+        float totalOverlap = 0;
+        for (int i=0; i<keep; i++) {
+            const float overlap = allDetections[double(i) / double(keep-1) * double(allDetections.size()-1)].overlap;
+            totalOverlap += overlap;
+            lines.append(QString("Overlap,%1,1").arg(QString::number(allDetections[double(i) / double(keep-1) * double(allDetections.size()-1)].overlap)));
+        }
+        averageOverlap = totalOverlap / keep;
+    }
 
-    (void) csv;
-    return 0;
+    QtUtils::writeFile(csv, lines);
+    qDebug("Average Overlap = %.3f", averageOverlap);
+    return averageOverlap;
 }
 
 void EvalRegression(const QString &predictedInput, const QString &truthInput)

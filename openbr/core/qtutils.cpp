@@ -105,6 +105,7 @@ void QtUtils::writeFile(const QString &file, const QString &data)
 
 void QtUtils::writeFile(const QString &file, const QByteArray &data, int compression)
 {
+    if (file.isEmpty()) return;
     const QString baseName = QFileInfo(file).baseName();
     const QByteArray contents = (compression == 0) ? data : qCompress(data, compression);
     if (baseName == "terminal") {

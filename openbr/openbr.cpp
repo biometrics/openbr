@@ -82,9 +82,9 @@ void br_eval_clustering(const char *csv, const char *gallery)
     EvalClustering(csv, gallery);
 }
 
-void br_eval_detection(const char *predicted_gallery, const char *truth_gallery)
+float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv)
 {
-    EvalDetection(predicted_gallery, truth_gallery);
+    return EvalDetection(predicted_gallery, truth_gallery, csv);
 }
 
 void br_eval_regression(const char *predicted_gallery, const char *truth_gallery)
