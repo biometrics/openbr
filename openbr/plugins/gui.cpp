@@ -292,6 +292,9 @@ public:
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
+        if (Globals->parallelism > 1)
+            qFatal("ManualTransform cannot execute in parallel.");
+
         dst = src;
 
         if (src.empty())
@@ -320,9 +323,6 @@ public:
 
     void init()
     {
-        if (Globals->parallelism > 1)
-            qFatal("ManualTransform cannot be run in parallel.");
-
         if (!Globals->useGui)
             return;
 
