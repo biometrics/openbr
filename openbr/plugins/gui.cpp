@@ -136,7 +136,7 @@ public:
             QMouseEvent *mouseEvent = (QMouseEvent*)event;
 
             if (mouseEvent->button() == Qt::LeftButton) points.append(mouseEvent->pos());
-            else if (mouseEvent->button() == Qt::RightButton) points.removeLast();
+            else if (mouseEvent->button() == Qt::RightButton && !points.isEmpty()) points.removeLast();
 
             QPixmap pixmapBuffer = pixmap;
 
