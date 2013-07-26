@@ -121,7 +121,7 @@ public slots:
 
 };
 
-class EyeProxy : public GUIProxy
+class LandmarkProxy : public GUIProxy
 {
     Q_OBJECT
 
@@ -329,7 +329,7 @@ public:
         displayBuffer = new QPixmap();
 
         // Create our GUI proxy
-        gui = new EyeProxy();
+        gui = new LandmarkProxy();
 
         // Move it to the main thread, this means signals we send to it will
         // be run in the main thread, which is hopefully in an event loop
