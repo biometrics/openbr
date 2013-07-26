@@ -64,6 +64,8 @@ class StasmTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+        if (src.m().channels() != 1) qFatal("Stasm expects single channel matrices.");
+
         StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
 
         int foundface;
