@@ -85,12 +85,12 @@ public:
         }
     }
 
-    virtual void waitForKey(Template &dst)
+    virtual QList<QPointF> waitForKey()
     {
-        (void) dst;
-
         QMutexLocker locker(&lock);
         wait.wait(&lock);
+
+        return QList<QPointF>();
     }
 
 public slots:
@@ -135,16 +135,14 @@ public:
 
             QMouseEvent *mouseEvent = (QMouseEvent*)event;
 
-            if (mouseEvent->button() == Qt::LeftButton) leftEye = mouseEvent->pos();
-            else if (mouseEvent->button() == Qt::RightButton) rightEye = mouseEvent->pos();
+            if (mouseEvent->button() == Qt::LeftButton) points.append(mouseEvent->pos());
+            else if (mouseEvent->button() == Qt::RightButton) points.removeLast();
 
             QPixmap pixmapBuffer = pixmap;
 
             QPainter painter(&pixmapBuffer);
-            painter.setBrush(Qt::black);
-
-            painter.drawEllipse(leftEye, 4, 4);
-            painter.drawEllipse(rightEye, 4, 4);
+            painter.setBrush(Qt::red);
+            foreach(const QPointF &point, points) painter.drawEllipse(point, 4, 4);
 
             window->setPixmap(pixmapBuffer);
 
@@ -154,20 +152,18 @@ public:
         }
     }
 
-    void waitForKey(Template &dst)
+    QList<QPointF> waitForKey()
     {
-        leftEye = rightEye = QPointF();
+        points.clear();
 
-        GUIProxy::waitForKey(dst);
+        GUIProxy::waitForKey();
 
-        dst.file.set("leftEye", leftEye);
-        dst.file.set("rightEye", rightEye);
+        return points;
     }
 
 private:
 
-    QPointF leftEye;
-    QPointF rightEye;
+    QList<QPointF> points;
 };
 
 /*!
@@ -184,7 +180,7 @@ public:
     BR_PROPERTY(bool, waitInput, true)
 
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
-    BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
+    BR_PROPERTY(QStringList, keys, QStringList())
 
     ShowTransform() : TimeVaryingTransform(false, false)
     {
@@ -235,10 +231,8 @@ public:
                 emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
                 // Blocking wait for a key-press
-                if (this->waitInput) {
-                    Template blank;
-                    gui->waitForKey(blank);
-                }
+                if (this->waitInput)
+                    gui->waitForKey();
 
             }
         }
@@ -287,41 +281,48 @@ BR_REGISTER(Transform, ShowTransform)
 
 /*!
  * \ingroup transforms
- * \brief Displays templates in a GUI pop-up window using QT.
- * \author Charles Otto \cite caotto
- * Can be used with parallelism enabled, although it is considered TimeVarying.
+ * \brief Manual selection of landmark locations
+ * \author Scott Klum \cite sklum
  */
 class ManualTransform : public ShowTransform
 {
     Q_OBJECT
 
-    // Specify key
-
 public:
+
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
 
-        if (src.empty() || !Globals->useGui)
+        if (src.empty())
             return;
 
         for (int i = 0; i < dst.size(); i++) {
-            qImageBuffer = toQImage(dst[i].m());
-            displayBuffer->convertFromImage(qImageBuffer);
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
 
-            emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
-            // Blocking wait for a key-press
-            if (this->waitInput) {
-                gui->waitForKey(dst[i]);
-                qDebug() << dst[i].file.get<QPointF>("leftEye");
-                qDebug() << dst[i].file.get<QPointF>("rightEye");
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    QList<QPointF> points = gui->waitForKey();
+                    if (keys.isEmpty()) dst[i].file.appendPoints(points);
+                    else {
+                        if (keys.size() == points.size())
+                            for (int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j], points[j]);
+                        else qWarning("Incorrect number of points specified for %s", qPrintable(dst[i].file.name));
+                    }
+                }
             }
         }
     }
 
     void init()
     {
+        if (Globals->parallelism > 1)
+            qFatal("ManualTransform cannot be run in parallel.");
+
         if (!Globals->useGui)
             return;
 
@@ -337,6 +338,7 @@ public:
         // Connect our signals to the proxy's slots
         connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+
         emit needWindow();
         connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
     }
