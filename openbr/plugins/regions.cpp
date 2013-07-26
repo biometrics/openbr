@@ -239,7 +239,6 @@ BR_REGISTER(Transform, ExpandRectTransform)
  * \ingroup transforms
  * \brief Crops the width and height of a template's rects by input width and height factors.
  * \author Scott Klum \cite sklum
- * \todo Error checking
  */
 class CropRectTransform : public UntrainableTransform
 {
@@ -257,7 +256,6 @@ class CropRectTransform : public UntrainableTransform
         for (int i=0;i < rects.size(); i++) {
             QRectF rect = rects[i];
 
-            // Do a bit of error checking
             rect.setX(rect.x() + rect.width() * QtUtils::toPoint(widthCrop).x());
             rect.setY(rect.y() + rect.height() * QtUtils::toPoint(heightCrop).x());
             rect.setWidth(rect.width() * (1-QtUtils::toPoint(widthCrop).y()));
