@@ -133,12 +133,13 @@ private:
     {
         Mat data = OpenCVUtils::toMat(_data.data());
         Mat lab;
-        // If we are doing regression, the input variable should have float values
+        // If we are doing regression, the input variable should have float
+	// values
         if (type == EPS_SVR || type == NU_SVR) {
-            lab = OpenCVUtils::toMat(_data.get<float>(inputVariable));
+            lab = OpenCVUtils::toMat(File::get<float>(_data, inputVariable));
         }
-        // If we are doing classification, we should be dealing with discrete values. Map them
-        // and store the mapping data
+        // If we are doing classification, we should be dealing with discrete
+	// values. Map them and store the mapping data
         else {
             QList<int> dataLabels = _data.indexProperty(inputVariable, labelMap, reverseLookup);
             lab = OpenCVUtils::toMat(dataLabels);

@@ -14,17 +14,22 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __CLASSIFY_H
-#define __CLASSIFY_H
+#ifndef __EVAL_H
+#define __EVAL_H
 
 #include <QList>
 #include <QString>
+#include "openbr/openbr_plugin.h"
 
 namespace br
 {
+    float Evaluate(const QString &simmat, const QString &mask = "", const QString &csv = ""); // Returns TAR @ FAR = 0.001
+    float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv = "", int parition = 0);
+    float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &csv = "");
     void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
+    float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv = ""); // Return average overlap
     void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
 }
 
-#endif // __CLASSIFY_H
+#endif // __EVAL_H
 

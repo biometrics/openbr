@@ -115,20 +115,6 @@ BR_EXPORT void br_combine_masks(int num_input_masks, const char *input_masks[], 
 BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
 /*!
- * \brief Computes the confusion matrix for a dataset at a particular threshold.
- *
- * <a href="http://en.wikipedia.org/wiki/Confusion_matrix">Wikipedia Explanation</a>
- * \param file <tt>.csv</tt> file created using \ref br_eval.
- * \param score The similarity score to threshold at.
- * \param[out] true_positives The true positive count.
- * \param[out] false_positives The false positive count.
- * \param[out] true_negatives The true negative count.
- * \param[out] false_negatives The false negative count.
- */
-BR_EXPORT void br_confusion(const char *file, float score,
-                            int *true_positives, int *false_positives, int *true_negatives, int *false_negatives);
-
-/*!
  * \brief Wraps br::Convert()
  */
 BR_EXPORT void br_convert(const char *file_type, const char *input_file, const char *output_file);
@@ -160,27 +146,34 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
 
 /*!
  * \brief Evaluates and prints classification accuracy to terminal.
- * \param predicted_input The predicted br::Input.
- * \param truth_input The ground truth br::Input.
- * \see br_enroll
+ * \param predicted_gallery The predicted br::Gallery.
+ * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_classification(const char *predicted_input, const char *truth_input, const char * predicted_property="", const char * truth_property="");
+BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
  * \param csv The cluster results file.
- * \param input The br::input used to generate the \ref simmat that was clustered.
+ * \param gallery The br::Gallery used to generate the \ref simmat that was clustered.
  * \see br_cluster
  */
-BR_EXPORT void br_eval_clustering(const char *csv, const char *input);
+BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery);
+
+/*!
+ * \brief Evaluates and prints detection accuracy to terminal.
+ * \param predicted_gallery The predicted br::Gallery.
+ * \param truth_gallery The ground truth br::Gallery.
+ * \param csv Optional \c .csv file to contain performance metrics.
+ * \return Average detection bounding box overlap.
+ */
+BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "");
 
 /*!
  * \brief Evaluates regression accuracy to disk.
- * \param predicted_input The predicted br::Input.
- * \param truth_input The ground truth br::Input.
- * \see br_enroll
+ * \param predicted_gallery The predicted br::Gallery.
+ * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_regression(const char *predicted_input, const char *truth_input, const char * predicted_property="", const char * truth_property="");
+BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Wraps br::Context::finalize()

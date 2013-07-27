@@ -889,6 +889,45 @@ class statGallery : public Gallery
 
 BR_REGISTER(Gallery, statGallery)
 
+/*!
+ * \ingroup galleries
+ * \brief Implements the FDDB detection format.
+ * \author Josh Klontz \cite jklontz
+ *
+ * http://vis-www.cs.umass.edu/fddb/README.txt
+ */
+class FDDBGallery : public Gallery
+{
+    Q_OBJECT
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        QStringList lines = QtUtils::readLines(file);
+        TemplateList templates;
+        while (!lines.empty()) {
+            const QString fileName = lines.takeFirst();
+            int numDetects = lines.takeFirst().toInt();
+            for (int i=0; i<numDetects; i++) {
+                const QStringList detect = lines.takeFirst().split(' ');
+                Template t(fileName);
+                t.file.set("Face", QRectF(detect[0].toFloat(), detect[1].toFloat(), detect[2].toFloat(), detect[3].toFloat()));
+                t.file.set("Confidence", detect[4].toFloat());
+                templates.append(t);
+            }
+        }
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        qFatal("Not implemented.");
+    }
+};
+
+BR_REGISTER(Gallery, FDDBGallery)
+
 } // namespace br
 
 #include "gallery.moc"

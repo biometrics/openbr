@@ -17,7 +17,7 @@
 /*!
  * \mainpage
  * \section overview Overview
- * OpenBR \cite openbr is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
+ * OpenBR \cite klontz2013open is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
  * The project is designed to facilitate rapid algorithm prototyping, and features a mature core framework, flexible plugin system, and support for open and closed source development.
  * Off-the-shelf algorithms are also available for specific modalities including \ref cpp_face_recognition, \ref cpp_age_estimation, and \ref cpp_gender_estimation.
  *
@@ -27,14 +27,24 @@
  * \image html "abstraction.svg" "The two principal software artifacts are the shared library 'openbr' and command line application 'br'."
  *
  * \section get_started Get Started
- * - \ref installation - \copybrief installation
- * - \ref qmake_integration - \copybrief qmake_integration
+ * - \ref introduction - A high-level technical overview of OpenBR.
+ * - \ref installation - A hacker's guide to building, editing, and running OpenBR.
+ * - \ref qmake_integration - Add OpenBR to your Qt <tt>.pro</tt> project.
  *
  * \section learn_more Learn More
- * - \ref algorithm_grammar - \copybrief algorithm_grammar
- * - \ref cli - \copybrief cli
- * - \ref c_sdk - \copybrief c_sdk
- * - \ref cpp_plugin_sdk - \copybrief cpp_plugin_sdk
+ * - \ref algorithm_grammar - How algorithms are constructed from string descriptions.
+ * - \ref cli - Command line wrapper of the \ref c_sdk.
+ * - \ref c_sdk - High-level API for running algorithms and evaluating results.
+ * - \ref cpp_plugin_sdk - Plugin API for extending OpenBR functionality.
+ * - \ref bee - A <a href="http://www.nist.gov/index.html">NIST</a> standard for evaluating biometric algorithms.
+ */
+
+/*!
+ * \page introduction Introduction
+ * \brief A high-level technical overview of OpenBR.
+ *
+ * We strongly encourage users new to OpenBR to read our <a href="www.openbiometrics.org/publications/klontz2013open.pdf"><b>publication</b></a> for an introduction to the core concepts.
+ * Researchers incorporating OpenBR into their own work are kindly requested to cite this paper.
  */
 
 /*!

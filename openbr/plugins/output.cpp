@@ -35,9 +35,9 @@
 #include "openbr_internal.h"
 
 #include "openbr/core/bee.h"
+#include "openbr/core/eval.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
-#include "openbr/core/plot.h"
 #include "openbr/core/qtutils.h"
 
 namespace br
@@ -146,8 +146,8 @@ class meltOutput : public MatrixOutput
         QStringList lines;
         if (file.baseName() != "terminal") lines.append(QString("Query,Target,Mask,Similarity%1").arg(keys));
 
-        QList<QString> queryLabels = queryFiles.get<QString>("Label");
-        QList<QString> targetLabels = targetFiles.get<QString>("Label");
+        QList<QString> queryLabels = File::get<QString>(queryFiles, "Label");
+        QList<QString> targetLabels = File::get<QString>(targetFiles, "Label");
 
         for (int i=0; i<queryFiles.size(); i++) {
             for (int j=(selfSimilar ? i+1 : 0); j<targetFiles.size(); j++) {

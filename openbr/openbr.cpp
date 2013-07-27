@@ -17,8 +17,8 @@
 #include <openbr/openbr_plugin.h>
 
 #include "core/bee.h"
-#include "core/classify.h"
 #include "core/cluster.h"
+#include "core/eval.h"
 #include "core/fuse.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
@@ -51,11 +51,6 @@ void br_compare(const char *target_gallery, const char *query_gallery, const cha
     Compare(File(target_gallery), File(query_gallery), File(output));
 }
 
-void br_confusion(const char *file, float score, int *true_positives, int *false_positives, int *true_negatives, int *false_negatives)
-{
-    return Confusion(file, score, *true_positives, *false_positives, *true_negatives, *false_negatives);
-}
-
 void br_convert(const char *file_type, const char *input_file, const char *output_file)
 {
     Convert(File(file_type), File(input_file), File(output_file));
@@ -77,19 +72,24 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
     return Evaluate(simmat, mask, csv);
 }
 
-void br_eval_classification(const char *predicted_input, const char *truth_input, const char *predicted_property, const char * truth_property)
+void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char * truth_property)
 {
-    EvalClassification(predicted_input, truth_input, predicted_property, truth_property);
+    EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
-void br_eval_clustering(const char *csv, const char *input)
+void br_eval_clustering(const char *csv, const char *gallery)
 {
-    EvalClustering(csv, input);
+    EvalClustering(csv, gallery);
 }
 
-void br_eval_regression(const char *predicted_input, const char *truth_input, const char * predicted_property, const char * truth_property)
+float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv)
 {
-    EvalRegression(predicted_input, truth_input, predicted_property, truth_property);
+    return EvalDetection(predicted_gallery, truth_gallery, csv);
+}
+
+void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property, const char * truth_property)
+{
+    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
 void br_finalize()

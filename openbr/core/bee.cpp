@@ -268,8 +268,9 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
 {
     // Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
     // doing string comparisons (but that isn't implemented yet for FileList) -cao
-    QList<QString> targetLabels = targets.get<QString>("Label", "-1");
-    QList<QString> queryLabels = queries.get<QString>("Label", "-1");
+    QList<QString> targetLabels = File::get<QString>(targets, "Label", "-1");
+    QList<QString> queryLabels = File::get<QString>(queries, "Label", "-1");
+
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 

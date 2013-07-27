@@ -20,7 +20,7 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
     const bool atLeast = instances < 0;
     instances = abs(instances);
 
-    QList<QString> allLabels = templates.get<QString>(inputVariable);
+    QList<QString> allLabels = File::get<QString>(templates, inputVariable);
     QList<QString> uniqueLabels = allLabels.toSet().toList();
     qSort(uniqueLabels);
 

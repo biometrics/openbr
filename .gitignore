@@ -2,6 +2,7 @@
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
 data/*/img
+data/*/vid
 data/PCSO/*
 build*
 scripts/results
@@ -29,3 +30,6 @@ scripts/results
 
 ### OS X ###
 *.DS_Store
+
+### vim ###
+*.swp

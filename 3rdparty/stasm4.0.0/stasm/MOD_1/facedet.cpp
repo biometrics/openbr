@@ -19,6 +19,7 @@ void FaceDet::OpenFaceDetector_( // called by stasm_init, init face det from XML
     const char* datadir,         // in: directory of face detector files
     void*)                       // in: unused (func signature compatibility)
 {
+    (void) datadir;
     //OpenDetector(facedet_g, "haarcascade_frontalface_alt2.xml",  datadir);
 }
 
@@ -145,6 +146,10 @@ static void TraceFaces(         // write image showing detected face rects
     const Image&      img,      // in
     const char*       filename) // in
 {
+    (void) detpars;
+    (void) img;
+    (void) filename;
+
 #if TRACE_IMAGES // will be 0 unless debugging (defined in stasm.h)
 
     CImage cimg; cvtColor(img, cimg, CV_GRAY2BGR); // color image

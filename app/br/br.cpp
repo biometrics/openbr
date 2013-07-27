@@ -131,19 +131,15 @@ public:
             } else if (!strcmp(fun, "evalClassification")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalClassification'.");
                 br_eval_classification(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
+            } else if (!strcmp(fun, "evalClustering")) {
+                check(parc == 2, "Incorrect parameter count for 'evalClustering'.");
+                br_eval_clustering(parv[0], parv[1]);
+            } else if (!strcmp(fun, "evalDetection")) {
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalDetection'.");
+                br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
-            } else if (!strcmp(fun, "evalClusters")) {
-                check(parc == 2, "Incorrect parameter count for 'evalClusters'.");
-                br_eval_clustering(parv[0], parv[1]);
-            } else if (!strcmp(fun, "confusion")) {
-                check(parc == 2, "Incorrect parameter count for 'confusion'.");
-                int true_positives, false_positives, true_negatives, false_negatives;
-                br_confusion(parv[0], atof(parv[1]),
-                        &true_positives, &false_positives, &true_negatives, &false_negatives);
-                printf("True Positives = %d\nFalse Positives = %d\nTrue Negatives = %d\nFalseNegatives = %d\n",
-                       true_positives, false_positives, true_negatives, false_negatives);
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
@@ -217,9 +213,9 @@ private:
                "-cat <gallery> ... <gallery> {gallery}\n"
                "-convert (Format|Gallery|Output) <input_file> {output_file}\n"
                "-evalClassification <predicted_gallery> <truth_gallery>\n"
+               "-evalClustering <clusters> <gallery>\n"
+               "-evalDetection <predicted_gallery> <truth_gallery> [{csv}]\n"
                "-evalRegression <predicted_gallery> <truth_gallery>\n"
-               "-evalClusters <clusters> <sigset>\n"
-               "-confusion <file> <score>\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"

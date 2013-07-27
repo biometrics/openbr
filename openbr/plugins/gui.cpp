@@ -3,6 +3,9 @@
 #include <QElapsedTimer>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QMouseEvent>
+#include <QPainter>
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include "openbr_internal.h"
 
@@ -61,33 +64,43 @@ class GUIProxy : public QObject
 
 public:
 
-    bool eventFilter(QObject * obj, QEvent * event)
-    {
-        if (event->type() == QEvent::KeyPress)
-        {
-            wait.wakeAll();
-        }
-        return QObject::eventFilter(obj, event);
-    }
+    QLabel *window;
+    QPixmap pixmap;
 
-    QLabel * window;
     GUIProxy()
     {
         window = NULL;
     }
 
-    void waitForKey()
+    bool eventFilter(QObject * obj, QEvent * event)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            event->accept();
+
+            wait.wakeAll();
+            return true;
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+    }
+
+    virtual QList<QPointF> waitForKey()
     {
         QMutexLocker locker(&lock);
         wait.wait(&lock);
+
+        return QList<QPointF>();
     }
 
 public slots:
 
     void showImage(const QPixmap & input)
     {
+        pixmap = input;
+
         window->show();
-        window->setPixmap(input);
+        window->setPixmap(pixmap);
         window->setFixedSize(input.size());
     }
 
@@ -105,6 +118,52 @@ public slots:
         flags = flags & ~Qt::WindowCloseButtonHint;
         window->setWindowFlags(flags);
     }
+
+};
+
+class LandmarkProxy : public GUIProxy
+{
+    Q_OBJECT
+
+public:
+
+    bool eventFilter(QObject *obj, QEvent *event)
+    {
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            event->accept();
+
+            QMouseEvent *mouseEvent = (QMouseEvent*)event;
+
+            if (mouseEvent->button() == Qt::LeftButton) points.append(mouseEvent->pos());
+            else if (mouseEvent->button() == Qt::RightButton && !points.isEmpty()) points.removeLast();
+
+            QPixmap pixmapBuffer = pixmap;
+
+            QPainter painter(&pixmapBuffer);
+            painter.setBrush(Qt::red);
+            foreach(const QPointF &point, points) painter.drawEllipse(point, 4, 4);
+
+            window->setPixmap(pixmapBuffer);
+
+            return true;
+        } else {
+            return GUIProxy::eventFilter(obj, event);
+        }
+    }
+
+    QList<QPointF> waitForKey()
+    {
+        points.clear();
+
+        GUIProxy::waitForKey();
+
+        return points;
+    }
+
+private:
+
+    QList<QPointF> points;
 };
 
 /*!
@@ -121,23 +180,12 @@ public:
     BR_PROPERTY(bool, waitInput, true)
 
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
-    BR_PROPERTY(QStringList, keys, QStringList("FrameNumber"))
+    BR_PROPERTY(QStringList, keys, QStringList())
 
     ShowTransform() : TimeVaryingTransform(false, false)
     {
         gui = NULL;
         displayBuffer = NULL;
-        if (!Globals->useGui)
-            return;
-        displayBuffer = new QPixmap();
-        // Create our GUI proxy
-        gui = new GUIProxy();
-        // Move it to the main thread, this means signals we send to it will
-        // be run in the main thread, which is hopefully in an event loop
-        gui->moveToThread(QApplication::instance()->thread());
-        // Connect our signals to the proxy's slots
-        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
     }
 
     ~ShowTransform()
@@ -177,7 +225,7 @@ public:
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
-                // Emit an explicit  copy of our pixmap so that the pixmap used
+                // Emit an explicit copy of our pixmap so that the pixmap used
                 // by the main thread isn't damaged when we update displayBuffer
                 // later.
                 emit updateImage(displayBuffer->copy(displayBuffer->rect()));
@@ -201,6 +249,18 @@ public:
         if (!Globals->useGui)
             return;
 
+        displayBuffer = new QPixmap();
+
+        // Create our GUI proxy
+        gui = new GUIProxy();
+        // Move it to the main thread, this means signals we send to it will
+        // be run in the main thread, which is hopefully in an event loop
+        gui->moveToThread(QApplication::instance()->thread());
+
+        // Connect our signals to the proxy's slots
+        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+
         emit needWindow();
         connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
         connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
@@ -217,8 +277,74 @@ signals:
     void changeTitle(const QString & input);
     void hideWindow();
 };
-
 BR_REGISTER(Transform, ShowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Manual selection of landmark locations
+ * \author Scott Klum \cite sklum
+ */
+class ManualTransform : public ShowTransform
+{
+    Q_OBJECT
+
+public:
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (Globals->parallelism > 1)
+            qFatal("ManualTransform cannot execute in parallel.");
+
+        dst = src;
+
+        if (src.empty())
+            return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    QList<QPointF> points = gui->waitForKey();
+                    if (keys.isEmpty()) dst[i].file.appendPoints(points);
+                    else {
+                        if (keys.size() == points.size())
+                            for (int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j], points[j]);
+                        else qWarning("Incorrect number of points specified for %s", qPrintable(dst[i].file.name));
+                    }
+                }
+            }
+        }
+    }
+
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+
+        displayBuffer = new QPixmap();
+
+        // Create our GUI proxy
+        gui = new LandmarkProxy();
+
+        // Move it to the main thread, this means signals we send to it will
+        // be run in the main thread, which is hopefully in an event loop
+        gui->moveToThread(QApplication::instance()->thread());
+
+        // Connect our signals to the proxy's slots
+        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+
+        emit needWindow();
+        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
+    }
+};
+
+BR_REGISTER(Transform, ManualTransform)
 
 class FPSLimit : public TimeVaryingTransform
 {
