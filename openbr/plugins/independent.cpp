@@ -9,16 +9,16 @@ using namespace cv;
 namespace br
 {
 
-static TemplateList Downsample(const TemplateList &templates, const Transform *transform, const QString & inputVariable)
+static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString & inputVariable)
 {
     // Return early when no downsampling is required
-    if ((transform->classes == std::numeric_limits<int>::max()) &&
-            (transform->instances == std::numeric_limits<int>::max()) &&
-            (transform->fraction >= 1))
+    if ((classes == std::numeric_limits<int>::max()) &&
+            (instances == std::numeric_limits<int>::max()) &&
+            (fraction >= 1))
         return templates;
 
-    const bool atLeast = transform->instances < 0;
-    const int instances = abs(transform->instances);
+    const bool atLeast = instances < 0;
+    instances = abs(instances);
 
     QList<QString> allLabels = templates.get<QString>(inputVariable);
     QList<QString> uniqueLabels = allLabels.toSet().toList();
@@ -26,20 +26,20 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
 
     QMap<QString,int> counts = templates.countValues<QString>(inputVariable, instances != std::numeric_limits<int>::max());
 
-    if ((instances != std::numeric_limits<int>::max()) && (transform->classes != std::numeric_limits<int>::max()))
+    if ((instances != std::numeric_limits<int>::max()) && (classes != std::numeric_limits<int>::max()))
         foreach (const QString & label, counts.keys())
             if (counts[label] < instances)
                 counts.remove(label);
 
     uniqueLabels = counts.keys();
-    if ((transform->classes != std::numeric_limits<int>::max()) && (uniqueLabels.size() < transform->classes))
-        qWarning("Downsample requested %d classes but only %d are available.", transform->classes, uniqueLabels.size());
+    if ((classes != std::numeric_limits<int>::max()) && (uniqueLabels.size() < classes))
+        qWarning("Downsample requested %d classes but only %d are available.", classes, uniqueLabels.size());
 
     Common::seedRNG();
     QList<QString> selectedLabels = uniqueLabels;
-    if (transform->classes < uniqueLabels.size()) {
+    if (classes < uniqueLabels.size()) {
         std::random_shuffle(selectedLabels.begin(), selectedLabels.end());
-        selectedLabels = selectedLabels.mid(0, transform->classes);
+        selectedLabels = selectedLabels.mid(0, classes);
     }
 
     TemplateList downsample;
@@ -56,13 +56,44 @@ static TemplateList Downsample(const TemplateList &templates, const Transform *t
             downsample.append(templates.value(indices[j]));
     }
 
-    if (transform->fraction < 1) {
+    if (fraction < 1) {
         std::random_shuffle(downsample.begin(), downsample.end());
-        downsample = downsample.mid(0, downsample.size()*transform->fraction);
+        downsample = downsample.mid(0, downsample.size()*fraction);
     }
 
     return downsample;
 }
+
+class DownsampleTrainingTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED true)
+    Q_PROPERTY(int classes READ get_classes WRITE set_classes RESET reset_classes STORED false)
+    Q_PROPERTY(int instances READ get_instances WRITE set_instances RESET reset_instances STORED false)
+    Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(br::Transform*, transform, NULL)
+    BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
+    BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
+    BR_PROPERTY(float, fraction, 1)
+    BR_PROPERTY(QString, inputVariable, "Label")
+
+    void project(const Template & src, Template & dst) const
+    {
+       transform->project(src,dst);      
+    }
+  
+	  
+    void train(const TemplateList &data)
+    {
+        if (!transform || !transform->trainable)
+            return;
+
+        TemplateList downsampled = Downsample(data, classes, instances, fraction, inputVariable);
+        transform->train(downsampled);
+    }
+};
+BR_REGISTER(Transform, DownsampleTrainingTransform)
 
 /*!
  * \ingroup transforms
@@ -74,9 +105,7 @@ class IndependentTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
-    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(br::Transform*, transform, NULL)
-    BR_PROPERTY(QString, inputVariable, "Label")
 
     QList<Transform*> transforms;
 
@@ -124,13 +153,10 @@ class IndependentTransform : public MetaTransform
         while (transforms.size() < templatesList.size())
             transforms.append(transform->clone());
 
-        for (int i=0; i<templatesList.size(); i++)
-            templatesList[i] = Downsample(templatesList[i], transforms[i], inputVariable);
-
         QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++)
-            futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-        futures.waitForFinished();
+	  futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
+	futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const

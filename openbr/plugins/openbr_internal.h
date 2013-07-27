@@ -225,10 +225,6 @@ public:
         }
 
         output->file = this->file;
-        output->classes = classes;
-        output->instances = instances;
-        output->fraction = fraction;
-
         output->init();
 
         return output;

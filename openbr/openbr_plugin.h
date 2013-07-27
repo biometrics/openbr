@@ -1068,12 +1068,6 @@ class BR_EXPORT Transform : public Object
     Q_OBJECT
 
 public:
-    Q_PROPERTY(int classes READ get_classes WRITE set_classes RESET reset_classes STORED false)
-    Q_PROPERTY(int instances READ get_instances WRITE set_instances RESET reset_instances STORED false)
-    Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
-    BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
-    BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
-    BR_PROPERTY(float, fraction, 1)
     bool independent, trainable;
 
     virtual ~Transform() {}

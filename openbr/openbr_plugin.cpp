@@ -1083,9 +1083,6 @@ Transform::Transform(bool _independent, bool _trainable)
 {
     independent = _independent;
     trainable = _trainable;
-    classes = std::numeric_limits<int>::max();
-    instances = std::numeric_limits<int>::max();
-    fraction = 1;
 }
 
 Transform *Transform::make(QString str, QObject *parent)
@@ -1141,9 +1138,6 @@ Transform *Transform::make(QString str, QObject *parent)
 Transform *Transform::clone() const
 {
     Transform *clone = Factory<Transform>::make(file.flat());
-    clone->classes = classes;
-    clone->instances = instances;
-    clone->fraction = fraction;
     return clone;
 }
 
