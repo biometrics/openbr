@@ -891,6 +891,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
 
     qInstallMessageHandler(messageHandler);
 
+    Common::seedRNG();
+
     // Search for SDK
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();

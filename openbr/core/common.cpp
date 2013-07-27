@@ -15,11 +15,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "common.h"
+#include <QMutex>
 
 using namespace std;
 
 /**** GLOBAL ****/
 void Common::seedRNG() {
+    static QMutex seedControl;
+    QMutexLocker lock(&seedControl);
+
     static bool seeded = false;
     if (!seeded) {
         srand(0); // We seed with 0 instead of time(NULL) to have reproducible randomness
@@ -29,8 +33,6 @@ void Common::seedRNG() {
 
 QList<int> Common::RandSample(int n, int max, int min, bool unique)
 {
-    seedRNG();
-
     QList<int> samples; samples.reserve(n);
     int range = max-min;
     if (range <= 0) qFatal("Non-positive range.");
@@ -50,8 +52,6 @@ QList<int> Common::RandSample(int n, int max, int min, bool unique)
 
 QList<int> Common::RandSample(int n, const QSet<int> &values, bool unique)
 {
-    seedRNG();
-
     QList<int> valueList = values.toList();
     if (unique && (values.size() <= n)) return valueList;
 

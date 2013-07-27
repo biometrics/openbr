@@ -35,7 +35,6 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
     if ((classes != std::numeric_limits<int>::max()) && (uniqueLabels.size() < classes))
         qWarning("Downsample requested %d classes but only %d are available.", classes, uniqueLabels.size());
 
-    Common::seedRNG();
     QList<QString> selectedLabels = uniqueLabels;
     if (classes < uniqueLabels.size()) {
         std::random_shuffle(selectedLabels.begin(), selectedLabels.end());
