@@ -49,6 +49,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("DisplayVideo", "Stream([Show(false,[FrameNumber])+Discard])");
         Globals->abbreviations.insert("PerFrameDetection", "Stream([SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+RestoreMat(original)+Draw(inPlace=true),Show(false,[FrameNumber])+Discard])");
         Globals->abbreviations.insert("AgeGenderDemo", "Stream([SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+Expand+<FaceClassificationRegistration>+<FaceClassificationExtraction>+(<AgeRegressor>+Rename(Subject,Age)+Discard)/(<GenderClassifier>+Rename(Subject,Gender)+Discard)+RestoreMat(original)+Draw(inPlace=true)+DrawPropertiesPoint([Age,Gender],Affine_0,inPlace=true)+SaveMat(original)+Discard+Contract,RestoreMat(original)+FPSCalc+Show(false,[AvgFPS,Age,Gender])+Discard])");
+        Globals->abbreviations.insert("HoF", "Stream([KeyPointDetector(SIFT),AggregateFrames(2)+OpticalFlow,InterestRegions,Hist])");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
