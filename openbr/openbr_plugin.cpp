@@ -1166,7 +1166,8 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
         dst.append(Template());
     QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        if (Globals->parallelism > 1) futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        else                          _project(this, &src[i], &dst[i]);
     futures.waitForFinished();
 }
 
