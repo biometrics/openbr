@@ -28,7 +28,7 @@ class AggregateFrames : public TimeVaryingTransform
         buffer.append(src);
         if (buffer.size() < n) return;
         foreach (const Template &t, buffer) dst.append(t);
-        buffer.removeFirst();
+        dst.file = buffer.takeFirst().file;
     }
 
     void store(QDataStream &stream) const
