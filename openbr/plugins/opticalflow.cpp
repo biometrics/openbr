@@ -38,6 +38,8 @@ class OpticalFlowTransform : public UntrainableTransform
         Mat flow;
         calcOpticalFlowFarneback(prevImg, nextImg, flow, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
         dst += flow;
+        // propagate interest points thru
+        dst.file = src.file;
     }
 };
 
