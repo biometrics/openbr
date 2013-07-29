@@ -79,7 +79,7 @@ struct RPlot
 
     Pivot major, minor;
 
-    RPlot(QStringList files, const br::File &destination, bool isEvalFormat = true)
+    RPlot(QStringList files, const File &destination, bool isEvalFormat = true)
     {
         if (files.isEmpty()) qFatal("Empty file list.");
         qSort(files.begin(), files.end(), sortFiles);
@@ -214,7 +214,7 @@ struct RPlot
 };
 
 // Does not work if dataset folder starts with a number
-bool Plot(const QStringList &files, const br::File &destination, bool show)
+bool Plot(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
 
@@ -268,6 +268,15 @@ bool Plot(const QStringList &files, const br::File &destination, bool show)
                             QString(" + scale_y_log10(labels=percent) + annotation_logticks(sides=\"l\")") +
                             ((p.flip ? p.minor.size : p.major.size) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minor.header : p.major.header) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
+
+    return p.finalize(show);
+}
+
+bool PlotDetection(const QStringList &files, const File &destination, bool show)
+{
+    qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
+
+    RPlot p(files, destination, false);
 
     return p.finalize(show);
 }
