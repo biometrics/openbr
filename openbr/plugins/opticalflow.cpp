@@ -8,7 +8,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Gets a two-channel dense optical flow from an image
+ * \brief Gets a two-channel dense optical flow from two images
  * \author Austin Blanton \cite imaus10
  */
 class OpticalFlowTransform : public UntrainableTransform
@@ -32,8 +32,12 @@ class OpticalFlowTransform : public UntrainableTransform
 
 	void project(const Template &src, Template &dst) const
 	{
-		// TODO: get the two images from AggregateFrames
-		calcOpticalFlowFarneback(prevImg, nextImg, dst, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
+		// get the two images put there by AggregateFrames
+		Mat prevImg = src[0];
+		Mat nextImg = src[1];
+		Mat flow;
+		calcOpticalFlowFarneback(prevImg, nextImg, flow, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
+		dst += flow;
 	}
 };
 
