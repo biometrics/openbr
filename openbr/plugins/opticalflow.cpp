@@ -8,7 +8,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Gets a two-channel dense optical flow from two images
+ * \brief Gets a one-channel dense optical flow from two images
  * \author Austin Blanton \cite imaus10
  */
 class OpticalFlowTransform : public UntrainableTransform
@@ -37,7 +37,14 @@ class OpticalFlowTransform : public UntrainableTransform
         Mat nextImg = src[1];
         Mat flow;
         calcOpticalFlowFarneback(prevImg, nextImg, flow, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
-        dst += flow;
+        
+        // the result is two channels
+        std::vector<Mat> channels(2);
+        split(flow, channels);
+        Mat flowOneCh;
+        magnitude(channels[0], channels[1], flowOneCh);
+
+        dst += flowOneCh;
         // propagate interest points thru
         dst.file = src.file;
     }
