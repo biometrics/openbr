@@ -18,6 +18,10 @@ class AggregateFrames : public TimeVaryingTransform
 
     TemplateList buffer;
 
+public:
+    AggregateFrames() : TimeVaryingTransform(false) {}
+
+private:
     void train(const TemplateList &data)
     {
         (void) data;
