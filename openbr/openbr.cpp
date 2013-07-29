@@ -82,9 +82,9 @@ void br_eval_clustering(const char *csv, const char *gallery)
     EvalClustering(csv, gallery);
 }
 
-void br_eval_detection(const char *predicted_gallery, const char *truth_gallery)
+float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv)
 {
-    EvalDetection(predicted_gallery, truth_gallery);
+    return EvalDetection(predicted_gallery, truth_gallery, csv);
 }
 
 void br_eval_regression(const char *predicted_gallery, const char *truth_gallery)
@@ -170,6 +170,11 @@ const char *br_objects(const char *abstractions, const char *implementations, bo
 bool br_plot(int num_files, const char *files[], const char *destination, bool show)
 {
     return Plot(QtUtils::toStringList(num_files, files), destination, show);
+}
+
+bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotDetection(QtUtils::toStringList(num_files, files), destination, show);
 }
 
 bool br_plot_metadata(int num_files, const char *files[], const char *columns, bool show)

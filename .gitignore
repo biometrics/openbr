@@ -2,6 +2,7 @@
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
 data/*/img
+data/*/vid
 data/PCSO/*
 build*
 scripts/results

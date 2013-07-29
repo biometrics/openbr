@@ -135,11 +135,14 @@ public:
                 check(parc == 2, "Incorrect parameter count for 'evalClustering'.");
                 br_eval_clustering(parv[0], parv[1]);
             } else if (!strcmp(fun, "evalDetection")) {
-                check(parc == 2, "Incorrect parameter count for 'evalDetection'.");
-                br_eval_detection(parv[0], parv[1]);
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalDetection'.");
+                br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc == 2, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1]);
+            } else if (!strcmp(fun, "plotDetection")) {
+                check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
+                br_plot_detection(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
@@ -214,8 +217,9 @@ private:
                "-convert (Format|Gallery|Output) <input_file> {output_file}\n"
                "-evalClassification <predicted_gallery> <truth_gallery>\n"
                "-evalClustering <clusters> <gallery>\n"
-               "-evalDetection <predicted_gallery> <truth_gallery>\n"
+               "-evalDetection <predicted_gallery> <truth_gallery> [{csv}]\n"
                "-evalRegression <predicted_gallery> <truth_gallery>\n"
+               "-plotDetection <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"
