@@ -64,5 +64,5 @@ if [ ! -d ../data/KTH/vid ]; then
 	rm ${vidclass}.zip
   done
   # this file is corrupted
-  rm ../data/KTH/vid/boxing/person01_boxing_d3_uncomp.avi
+  rm ../data/KTH/vid/boxing/person01_boxing_d4_uncomp.avi
 fi
