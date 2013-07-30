@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/nonfree/nonfree.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
@@ -194,7 +195,7 @@ class HoGDescriptorTransform : public UntrainableTransform
         Size winStride = Size(0,0);
         Size padding = Size(0,0);
         hog.compute(src, descriptorVals, winStride, padding, locations);
-        Mat HoGFeats = Mat<float>(descriptorVals, true);
+        Mat HoGFeats = Mat(descriptorVals, true);
         dst += HoGFeats;
     }
 };
