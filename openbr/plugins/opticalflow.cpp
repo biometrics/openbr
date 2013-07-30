@@ -14,7 +14,6 @@ namespace br
 class OpticalFlowTransform : public UntrainableTransform
 {
     Q_OBJECT
-    // these defaults are optimized for KTH
     Q_PROPERTY(double pyr_scale READ get_pyr_scale WRITE set_pyr_scale RESET reset_pyr_scale STORE false)
     Q_PROPERTY(int levels READ get_levels WRITE set_levels RESET reset_levels STORE false)
     Q_PROPERTY(int winsize READ get_winsize WRITE set_winsize RESET reset_winsize STORE false)
@@ -22,6 +21,7 @@ class OpticalFlowTransform : public UntrainableTransform
     Q_PROPERTY(int poly_n READ get_poly_n WRITE set_poly_n RESET reset_poly_n STORE false)
     Q_PROPERTY(double poly_sigma READ get_poly_sigma WRITE set_poly_sigma RESET reset_poly_sigma STORE false)
     Q_PROPERTY(int flags READ get_flags WRITE set_flags RESET reset_flags STORE false)
+    // these defaults are optimized for KTH
     BR_PROPERTY(double, pyr_scale, 0.1)
     BR_PROPERTY(int, levels, 1)
     BR_PROPERTY(int, winsize, 5)
