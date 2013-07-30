@@ -597,6 +597,26 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
     transform->project(*src, *dst);
 }
 
+class ProjectListJob : public QRunnable
+{
+public:
+    ProjectListJob(Transform * _transform, const TemplateList * _src, TemplateList * _dst)
+    {
+        transform = _transform;
+        src = _src;
+        dst = _dst;
+        this->setAutoDelete(true);
+    }
+
+    Transform * transform;
+    const TemplateList * src;
+    TemplateList * dst;
+    void run()
+    {
+        _projectList(transform, src, dst);
+    }
+};
+
 class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT
@@ -650,13 +670,17 @@ public:
             output_buffer.append(TemplateList());
         }
 
-        QFutureSynchronizer<void> futures;
         for (int i=0; i<src.size(); i++) {
             input_buffer[i].append(src[i]);
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
-            else                                                          _projectList( transform, &input_buffer[i], &output_buffer[i]);
+
+            if (Globals->parallelism)
+                QThreadPool::globalInstance()->start(new ProjectListJob(transform, &input_buffer[i], &output_buffer[i]), 0);
+            else _projectList(transform, &input_buffer[i], &output_buffer[i]);
         }
-        futures.waitForFinished();
+
+        bool wait_res = QThreadPool::globalInstance()->waitForDone();
+        if (!wait_res)
+            qDebug("global thread pool wait failed!");
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
     }

@@ -235,8 +235,10 @@ int main(int argc, char *argv[])
 {
     br_initialize(argc, argv);
 
+    QThreadPool separate;
+    separate.setMaxThreadCount(1);
     FakeMain *fakeMain = new FakeMain(argc, argv);
-    QThreadPool::globalInstance()->start(fakeMain);
+    separate.start(fakeMain);
     QCoreApplication::exec();
 
     br_finalize();
