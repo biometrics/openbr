@@ -102,7 +102,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
                 if ((key == "Index") || (key == "Subject")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
-        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Subject", file.name) +"\">");
+        lines.append("\t<biometric-signature name=\"" + file.name +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
     }
@@ -273,6 +273,11 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 
+    qDebug() << "Targets: " << targetLabels << "\n";
+    qDebug() << "Targets: " << targetPartitions << "\n";
+    qDebug() << "Queries: " << queryLabels << "\n";
+    qDebug() << "Queries: " << queryPartitions << "\n";
+
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];
@@ -297,6 +302,8 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             mask.at<Mask_t>(i,j) = val;
         }
     }
+
+    qDebug() << mask.row(0);
 
     return mask;
 }

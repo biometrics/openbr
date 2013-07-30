@@ -231,7 +231,6 @@ class DelaunayTransform : public UntrainableTransform
             QList<Point2f> mappedPoints;
 
             dst.file = src.file;
-            qDebug() << dst.file.name;
 
             for (int i = 0; i < validTriangles.size(); i++) {
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
@@ -289,8 +288,8 @@ class DelaunayTransform : public UntrainableTransform
             }
 
             // Overwrite any rects
-            //Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
-            //dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
+            Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
+            dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
         }
     }
 
