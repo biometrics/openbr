@@ -226,6 +226,12 @@ public:
         last_received = inputFrame->sequenceNumber;
 
         if (inputFrame->sequenceNumber == final_frame) {
+            // This is the reserveThread that matches the releaseThread in
+            // Stream::projectUpdate, we do it here to prevent a gap where the
+            // thread count is still increased, but a stream worker thread is not
+            // running, which might allow something to start that shouldn't
+            // start yet.
+            QThreadPool::globalInstance()->reserveThread();
             // We just received the last frame, better pulse
             lastReturned.wakeAll();
             rval = true;
@@ -630,7 +636,7 @@ public:
             next->start_idx = this->stage_id;
             next->startItem = newItem;
 
-            QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
+            QThreadPool::globalInstance()->start(next, stages->size() - stage_id);
         }
 
         return input;
@@ -700,7 +706,7 @@ public:
         next->start_idx = this->stage_id;
         next->startItem = NULL;
 
-        QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
+        QThreadPool::globalInstance()->start(next, stages->size() - stage_id);
 
         return input;
     }
@@ -791,7 +797,7 @@ public:
             next->start_idx = this->stage_id;
             next->startItem = newItem;
 
-            QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
+            QThreadPool::globalInstance()->start(next, stages->size() - stage_id);
         }
 
         return input;
@@ -831,7 +837,6 @@ public:
         bool res = readStage->dataSource.open(dst);
         if (!res) return;
 
-        QThreadPool::globalInstance()->releaseThread();
         readStage->currentStatus = SingleThreadStage::STARTING;
 
         BasicLoop loop;
@@ -840,11 +845,14 @@ public:
         loop.startItem = NULL;
         loop.setAutoDelete(false);
 
+        // Create a thread, then allow it to start by releasing. We queue the thread
+        // first so that any lower priority threads that are already queued don't start
+        // instead of the new one.
         QThreadPool::globalInstance()->start(&loop, processingStages.size() - processingStages[0]->stage_id);
+        QThreadPool::globalInstance()->releaseThread();
 
         // Wait for the end.
         readStage->dataSource.waitLast();
-        QThreadPool::globalInstance()->reserveThread();
 
         TemplateList final_output;
 
