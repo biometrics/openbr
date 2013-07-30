@@ -212,8 +212,11 @@ public:
         foreach (const Template & t, src) {
             // build label
             QString newTitle;
+
             foreach (const QString & s, keys) {
-                if (t.file.contains(s)) {
+                if (s.compare("name", Qt::CaseInsensitive) == 0) {
+                    newTitle = newTitle + s + ": " + file.name + " ";
+                } else if (t.file.contains(s)) {
                     QString out = t.file.get<QString>(s);
                     newTitle = newTitle + s + ": " + out + " ";
                 }
