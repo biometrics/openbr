@@ -663,7 +663,7 @@ public:
         // waiting thread will wait on them in the order added (which for uniform priority
         // threads is the order of execution), and we want the waiting thread to go in the opposite order
         // so that it can steal runnables and do something besides wait.
-        for (int i = temp.size() - 1; i > 0; i--) {
+        for (int i = temp.size() - 1; i >= 0; i--) {
             futures.addFuture(temp[i]);
         }
 
