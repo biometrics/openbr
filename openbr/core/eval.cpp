@@ -387,7 +387,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     for (int i=0; i<keep; i++) {
         const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
         lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
-        lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Precision), QString::number(point.Recall)));
+        lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
     }
     return lines;
 }

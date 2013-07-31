@@ -165,10 +165,13 @@ class EmptyGallery : public Gallery
             templates.append(File(fileName, dir.dirName()));
 
         if (!regexp.isEmpty()) {
-            const QRegularExpression re(regexp);
-            for (int i=templates.size()-1; i>=0; i--)
-                if (!re.match(templates[i].file.suffix()).hasMatch())
+            QRegExp re(regexp);
+            re.setPatternSyntax(QRegExp::Wildcard);
+            for (int i=templates.size()-1; i>=0; i--) {
+                if (!re.exactMatch(templates[i].file.fileName())) {
                     templates.removeAt(i);
+                }
+            }
         }
 
         return templates;
@@ -267,67 +270,6 @@ class matrixGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, matrixGallery)
-
-/*!
- * \ingroup galleries
-  * \brief Treat a video as a gallery, making a single template from each frame
-  * \author Charles Otto \cite caotto
-  */
-class aviGallery : public  Gallery
-{
-    Q_OBJECT
-
-    TemplateList output_set;
-    QScopedPointer<cv::VideoWriter> videoOut;
-
-    ~aviGallery()
-    {
-        if (videoOut && videoOut->isOpened()) videoOut->release();
-    }
-
-    TemplateList readBlock(bool * done)
-    {
-        std::string fname = file.name.toStdString();
-        *done = true;
-
-        TemplateList output;
-        if (!file.exists())
-            return output;
-
-        cv::VideoCapture videoReader(file.name.toStdString());
-
-        bool open = videoReader.isOpened();
-
-        while (open) {
-            cv::Mat frame;
-            
-            open = videoReader.read(frame);
-            if (!open) break;
-            output.append(Template());
-            output.back() = frame.clone();
-        }
-
-        return TemplateList();
-    }
-
-    void write(const Template & t)
-    {
-        if (videoOut.isNull() || !videoOut->isOpened()) {
-            int fourcc = OpenCVUtils::getFourcc(); 
-            videoOut.reset(new cv::VideoWriter(qPrintable(file.name), fourcc, 30, t.m().size()));
-        }
-
-        if (!videoOut->isOpened()) {
-            qWarning("Failed to open %s for writing\n", qPrintable(file.name));
-            return;
-        }
-
-        foreach(const cv::Mat & m, t) {
-            videoOut->write(m);
-        }
-    }
-};
-BR_REGISTER(Gallery, aviGallery)
 
 /*!
  * \ingroup initializers

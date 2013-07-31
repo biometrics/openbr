@@ -102,7 +102,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
                 if ((key == "Index") || (key == "Label")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
-        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Label") +"\">");
+        lines.append("\t<biometric-signature name=\"" + file.get<QString>("Label",file.fileName()) +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
     }

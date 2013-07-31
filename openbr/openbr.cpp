@@ -172,6 +172,11 @@ bool br_plot(int num_files, const char *files[], const char *destination, bool s
     return Plot(QtUtils::toStringList(num_files, files), destination, show);
 }
 
+bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotDetection(QtUtils::toStringList(num_files, files), destination, show);
+}
+
 bool br_plot_metadata(int num_files, const char *files[], const char *columns, bool show)
 {
     return PlotMetadata(QtUtils::toStringList(num_files, files), columns, show);

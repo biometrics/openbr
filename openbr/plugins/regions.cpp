@@ -252,16 +252,12 @@ class CropRectTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        QList<QRectF> rects = dst.file.rects();
+        QList<QRectF> rects = src.file.rects();
         for (int i=0;i < rects.size(); i++) {
-            QRectF rect = rects[i];
-
-            rect.setX(rect.x() + rect.width() * QtUtils::toPoint(widthCrop).x());
-            rect.setY(rect.y() + rect.height() * QtUtils::toPoint(heightCrop).x());
-            rect.setWidth(rect.width() * (1-QtUtils::toPoint(widthCrop).y()));
-            rect.setHeight(rect.height() * (1-QtUtils::toPoint(heightCrop).y()));
-
-            dst.m() = Mat(dst.m(), OpenCVUtils::toRect(rect));
+            rects[i].setX(rects[i].x() + rects[i].width() * QtUtils::toPoint(widthCrop).x());
+            rects[i].setY(rects[i].y() + rects[i].height() * QtUtils::toPoint(heightCrop).x());
+            rects[i].setWidth(rects[i].width() * (1-QtUtils::toPoint(widthCrop).y()));
+            rects[i].setHeight(rects[i].height() * (1-QtUtils::toPoint(heightCrop).y()));
         }
         dst.file.setRects(rects);
     }

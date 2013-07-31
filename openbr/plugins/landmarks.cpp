@@ -230,6 +230,8 @@ class DelaunayTransform : public UntrainableTransform
 
             QList<Point2f> mappedPoints;
 
+            dst.file = src.file;
+
             for (int i = 0; i < validTriangles.size(); i++) {
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
 
@@ -272,8 +274,8 @@ class DelaunayTransform : public UntrainableTransform
                     bitwise_and(dst.m(),mask,overlap);
                     for (int j = 0; j < overlap.rows; j++) {
                         for (int k = 0; k < overlap.cols; k++) {
-                            if (overlap.at<uchar>(k,j) != 0) {
-                                mask.at<uchar>(k,j) = 0;
+                            if (overlap.at<uchar>(j,k) != 0) {
+                                mask.at<uchar>(j,k) = 0;
                             }
                         }
                     }
@@ -281,11 +283,13 @@ class DelaunayTransform : public UntrainableTransform
 
                 bitwise_and(buffer,mask,output);
 
+
                 dst.m() += output;
             }
 
+            // Overwrite any rects
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
-            dst.file.appendRect(OpenCVUtils::fromRect(boundingBox));
+            dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
         }
     }
 

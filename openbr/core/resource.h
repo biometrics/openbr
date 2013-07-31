@@ -24,6 +24,7 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QThread>
+#include <openbr/openbr_plugin.h>
 
 template <typename T>
 class ResourceMaker
@@ -52,7 +53,7 @@ public:
         : resourceMaker(rm)
         , availableResources(new QList<T*>())
         , lock(new QMutex())
-        , totalResources(new QSemaphore(QThread::idealThreadCount()))
+        , totalResources(new QSemaphore(br::Globals->parallelism))
     {}
 
     ~Resource()

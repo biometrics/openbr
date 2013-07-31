@@ -813,7 +813,7 @@ float br::Context::progress() const
 
 void br::Context::setProperty(const QString &key, const QString &value)
 {
-    Object::setProperty(key, value);
+    Object::setProperty(key, value.isEmpty() ? QVariant() : value);
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
@@ -1163,7 +1163,8 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
         dst.append(Template());
     QFutureSynchronizer<void> futures;
     for (int i=0; i<dst.size(); i++)
-        futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        if (Globals->parallelism > 1) futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
+        else                          _project(this, &src[i], &dst[i]);
     futures.waitForFinished();
 }
 
