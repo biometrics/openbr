@@ -268,6 +268,18 @@ BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destinati
 
 /*!
  * \brief Renders detection performance figures for a set of <tt>.csv</tt> files created by \ref br_eval_detection.
+ *
+ * In order of their output, the figures are:
+ * -# Discrete Receiver Operating Characteristic (DiscreteROC)
+ * -# Continuous Receiver Operating Characteristic (ContinuousROC)
+ * -# Discrete Precision Recall (DiscretePR)
+ * -# Continuous Precision Recall (ContinuousPR)
+ * -# Bounding Box Overlap Histogram (Overlap)
+ *
+ * Detection accuracy is measured with <i>overlap fraction = bounding box intersection / union</i>.
+ * When computing <i>discrete</i> curves, an overlap >= 0.5 is considered a true positive, otherwise it is considered a false negative.
+ * When computing <i>continuous</i> curves, true positives and false negatives are measured fractionally as <i>overlap</i> and <i>1-overlap</i> respectively.
+ *
  * \see br_plot
  */
 BR_EXPORT bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show = false);

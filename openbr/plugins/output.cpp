@@ -98,7 +98,7 @@ class heatOutput : public MatrixOutput
 {
     Q_OBJECT
     Q_PROPERTY(int patches READ get_patches WRITE set_patches RESET reset_patches STORED false)
-    BR_PROPERTY(int, patches, -1);
+    BR_PROPERTY(int, patches, -1)
 
     ~heatOutput()
     {
@@ -426,19 +426,25 @@ class rankOutput : public MatrixOutput
             typedef QPair<float,int> Pair;
             int rank = 1;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true)) {
-                if (targetFiles[pair.second].get<QString>("Subject") == queryFiles[i].get<QString>("Subject")) {
-                    ranks.append(rank);
-                    positions.append(pair.second);
-                    scores.append(pair.first);
-                    break;
+                if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
+                    if (QString(targetFiles[pair.second]) != QString(queryFiles[i])) {
+                        if (targetFiles[pair.second].get<QString>("Subject") == queryFiles[i].get<QString>("Subject")) {
+                            ranks.append(rank);
+                            positions.append(pair.second);
+                            scores.append(pair.first);
+                            break;
+                        }
+                        rank++;
+                    }
                 }
-                rank++;
             }
         }
 
         typedef QPair<int,int> RankPair;
         foreach (const RankPair &pair, Common::Sort(ranks, false))
+            // pair.first == rank retrieved, pair.second == original position
             lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[positions[pair.second]].name);
+
 
         QtUtils::writeFile(file, lines);
     }
