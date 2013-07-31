@@ -812,7 +812,7 @@ float br::Context::progress() const
 
 void br::Context::setProperty(const QString &key, const QString &value)
 {
-    Object::setProperty(key, value);
+    Object::setProperty(key, value.isEmpty() ? QVariant() : value);
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
