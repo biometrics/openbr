@@ -442,7 +442,9 @@ class rankOutput : public MatrixOutput
 
         typedef QPair<int,int> RankPair;
         foreach (const RankPair &pair, Common::Sort(ranks, false))
+            // pair.first == rank retrieved, pair.second == original position
             lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[positions[pair.second]].name);
+
 
         QtUtils::writeFile(file, lines);
     }

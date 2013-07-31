@@ -215,7 +215,7 @@ public:
 
             foreach (const QString & s, keys) {
                 if (s.compare("name", Qt::CaseInsensitive) == 0) {
-                    newTitle = newTitle + s + ": " + t.file.name + " ";
+                    newTitle = newTitle + s + ": " + t.file.fileName() + " ";
                 } else if (t.file.contains(s)) {
                     QString out = t.file.get<QString>(s);
                     newTitle = newTitle + s + ": " + out + " ";

@@ -119,9 +119,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         }
     }
 
-    qDebug() << genuineCount;
-    qDebug() << impostorCount;
-
     if (numNaNs > 0) qWarning("Encountered %d NaN scores!", numNaNs);
     if (genuineCount == 0) qFatal("No genuine scores!");
     if (impostorCount == 0) qFatal("No impostor scores!");

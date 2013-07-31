@@ -168,7 +168,7 @@ class EmptyGallery : public Gallery
             QRegExp re(regexp);
             re.setPatternSyntax(QRegExp::Wildcard);
             for (int i=templates.size()-1; i>=0; i--) {
-                if (!re.exactMatch(templates[i].file.suffix())) {
+                if (!re.exactMatch(templates[i].file.fileName())) {
                     templates.removeAt(i);
                 }
             }
