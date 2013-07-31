@@ -194,9 +194,11 @@ class HoGDescriptorTransform : public UntrainableTransform
         std::vector<Point> locations;
         Size winStride = Size(0,0);
         Size padding = Size(0,0);
-        hog.compute(src, descriptorVals, winStride, padding, locations);
-        Mat HoGFeats = Mat(descriptorVals, true);
-        dst += HoGFeats;
+        foreach (const Mat &rect, src) {
+            hog.compute(rect, descriptorVals, winStride, padding, locations);
+            Mat HoGFeats(descriptorVals, true);
+            dst += HoGFeats;
+        }
     }
 };
 
