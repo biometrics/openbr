@@ -597,26 +597,6 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
     transform->project(*src, *dst);
 }
 
-class ProjectListJob : public QRunnable
-{
-public:
-    ProjectListJob(Transform * _transform, const TemplateList * _src, TemplateList * _dst)
-    {
-        transform = _transform;
-        src = _src;
-        dst = _dst;
-        this->setAutoDelete(true);
-    }
-
-    Transform * transform;
-    const TemplateList * src;
-    TemplateList * dst;
-    void run()
-    {
-        _projectList(transform, src, dst);
-    }
-};
-
 class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT
@@ -665,22 +645,29 @@ public:
         QList<TemplateList> input_buffer;
         input_buffer.reserve(src.size());
 
+        QFutureSynchronizer<void> futures;
+
         for (int i =0; i < src.size();i++) {
             input_buffer.append(TemplateList());
             output_buffer.append(TemplateList());
         }
-
+        QList<QFuture<void> > temp;
+        temp.reserve(src.size());
         for (int i=0; i<src.size(); i++) {
             input_buffer[i].append(src[i]);
 
-            if (Globals->parallelism)
-                QThreadPool::globalInstance()->start(new ProjectListJob(transform, &input_buffer[i], &output_buffer[i]), 0);
+            if (Globals->parallelism > 1) temp.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
             else _projectList(transform, &input_buffer[i], &output_buffer[i]);
         }
+        // We add the futures in reverse order, since in Qt 5.1 at least the
+        // waiting thread will wait on them in the order added (which for uniform priority
+        // threads is the order of execution), and we want the waiting thread to go in the opposite order
+        // so that it can steal runnables and do something besides wait.
+        for (int i = temp.size() - 1; i > 0; i--) {
+            futures.addFuture(temp[i]);
+        }
 
-        bool wait_res = QThreadPool::globalInstance()->waitForDone();
-        if (!wait_res)
-            qDebug("global thread pool wait failed!");
+        futures.waitForFinished();
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
     }
