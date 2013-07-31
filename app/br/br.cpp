@@ -140,6 +140,9 @@ public:
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc == 2, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1]);
+            } else if (!strcmp(fun, "plotDetection")) {
+                check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
+                br_plot_detection(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
@@ -216,6 +219,7 @@ private:
                "-evalClustering <clusters> <gallery>\n"
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}]\n"
                "-evalRegression <predicted_gallery> <truth_gallery>\n"
+               "-plotDetection <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"

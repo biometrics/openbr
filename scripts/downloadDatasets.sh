@@ -63,4 +63,6 @@ if [ ! -d ../data/KTH/vid ]; then
     unzip ${vidclass}.zip -d ../data/KTH/vid/${vidclass}
 	rm ${vidclass}.zip
   done
+  # this file is corrupted
+  rm -f ../data/KTH/vid/boxing/person01_boxing_d4_uncomp.avi
 fi

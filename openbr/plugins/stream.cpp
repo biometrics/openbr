@@ -331,8 +331,11 @@ public:
             {
                 qDebug("Video not open!");
             }
+        } else {
+            // Yes, we should specify absolute path:
+            // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
+            video.open(QFileInfo(input.file.name).absoluteFilePath().toStdString());
         }
-        else video.open(input.file.name.toStdString());
 
         return video.isOpened();
     }

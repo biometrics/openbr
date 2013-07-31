@@ -240,7 +240,7 @@ BR_EXPORT const char *br_most_recent_message();
 BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true);
 
 /*!
- * \brief Renders performance figures for a set of <tt>.csv</tt> files.
+ * \brief Renders recognition performance figures for a set of <tt>.csv</tt> files created by \ref br_eval.
  *
  * In order of their output, the figures are:
  * -# Metadata table
@@ -262,9 +262,27 @@ BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *im
  * \return Returns \c true on success. Returns false on a failure to compile the figures due to a missing, out of date, or incomplete \c R installation.
  * \note This function requires a current <a href="http://www.r-project.org/">R</a> installation with the following packages:
  * \code install.packages(c("ggplot2", "gplots", "reshape", "scales")) \endcode
- * \see br_plot_metadata
+ * \see br_eval
  */
 BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destination, bool show = false);
+
+/*!
+ * \brief Renders detection performance figures for a set of <tt>.csv</tt> files created by \ref br_eval_detection.
+ *
+ * In order of their output, the figures are:
+ * -# Discrete Receiver Operating Characteristic (DiscreteROC)
+ * -# Continuous Receiver Operating Characteristic (ContinuousROC)
+ * -# Discrete Precision Recall (DiscretePR)
+ * -# Continuous Precision Recall (ContinuousPR)
+ * -# Bounding Box Overlap Histogram (Overlap)
+ *
+ * Detection accuracy is measured with <i>overlap fraction = bounding box intersection / union</i>.
+ * When computing <i>discrete</i> curves, an overlap >= 0.5 is considered a true positive, otherwise it is considered a false negative.
+ * When computing <i>continuous</i> curves, true positives and false negatives are measured fractionally as <i>overlap</i> and <i>1-overlap</i> respectively.
+ *
+ * \see br_plot
+ */
+BR_EXPORT bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show = false);
 
 /*!
  * \brief Renders metadata figures for a set of <tt>.csv</tt> files with specified columns.

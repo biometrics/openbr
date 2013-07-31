@@ -165,10 +165,13 @@ class EmptyGallery : public Gallery
             templates.append(File(fileName, dir.dirName()));
 
         if (!regexp.isEmpty()) {
-            const QRegularExpression re(regexp);
-            for (int i=templates.size()-1; i>=0; i--)
-                if (!re.match(templates[i].file.suffix()).hasMatch())
+            QRegExp re(regexp);
+            re.setPatternSyntax(QRegExp::Wildcard);
+            for (int i=templates.size()-1; i>=0; i--) {
+                if (!re.exactMatch(templates[i].file.fileName())) {
                     templates.removeAt(i);
+                }
+            }
         }
 
         return templates;
