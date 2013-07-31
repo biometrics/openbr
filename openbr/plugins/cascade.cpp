@@ -80,11 +80,7 @@ class CascadeTransform : public UntrainableMetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        static const int rejectLevelWeight = 1000.0;
-        static const int stageSumWeight = 1.0;
-
         CascadeClassifier *cascade = cascadeResource.acquire();
-
         foreach (const Template &t, src) {
             const bool enrollAll = t.file.getBool("enrollAll");
 
@@ -100,10 +96,13 @@ class CascadeTransform : public UntrainableMetaTransform
                     rects.push_back(Rect(0, 0, m.cols, m.rows));
 
                 for (size_t j=0; j<rects.size(); j++) {
-                    dst.append(Template(t.file, m));
+                    Template u(t.file, m);
                     if (rejectLevels.size() > j)
-                        dst.last().file.set("Confidence", rejectLevels[j]*rejectLevelWeight + levelWeights[j]*stageSumWeight);
-                    dst.last().file.appendRect(OpenCVUtils::fromRect(rects[j]));
+                        u.file.set("Confidence", rejectLevels[j]*1000.0 + levelWeights[j]*1.0);
+                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                    u.file.appendRect(rect);
+                    u.file.set(model, rect);
+                    dst.append(u);
                 }
             }
         }
