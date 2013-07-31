@@ -58,25 +58,6 @@ BR_REGISTER(Transform, RectRegionsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Subdivide matrix into rectangular subregions based on interest points.
- * \author Austin Blanton \cite imaus10
- */
-class InterestRegionsTransform : public UntrainableTransform
-{
-    Q_OBJECT
-
-    void project(const Template &src, Template &dst) const
-    {
-        const Mat &m = src;
-        foreach (const Rect &rect, OpenCVUtils::toRects(src.file.rects()))
-            dst += m(rect);
-    }
-};
-
-BR_REGISTER(Transform, InterestRegionsTransform)
-
-/*!
- * \ingroup transforms
  * \brief Turns each row into its own matrix.
  * \author Josh Klontz \cite jklontz
  */
