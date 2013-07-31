@@ -238,7 +238,6 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + scale_x_log10(labels=percent) + scale_y_log10(labels=percent) + annotation_logticks()\n\n")));
 
-
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score%1\"").arg((p.flip ? p.major.size : p.minor.size) > 1 ? " / " + (p.flip ? p.major.header : p.minor.header) : QString()) +
                             QString(", ylab=\"Frequency%1\"").arg((p.flip ? p.minor.size : p.major.size) > 1 ? " / " + (p.flip ? p.minor.header : p.major.header) : QString()) +
@@ -277,6 +276,39 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
 
     RPlot p(files, destination, false);
+
+    p.file.write("# Split data into individual plots\n"
+                 "plot_index = which(names(data)==\"Plot\")\n"
+                 "DiscreteROC <- data[grep(\"DiscreteROC\",data$Plot),-c(1)]\n"
+                 "ContinuousROC <- data[grep(\"ContinuousROC\",data$Plot),-c(1)]\n"
+                 "DiscretePR <- data[grep(\"DiscretePR\",data$Plot),-c(1)]\n"
+                 "ContinuousPR <- data[grep(\"ContinuousPR\",data$Plot),-c(1)]\n"
+                 "Overlap <- data[grep(\"Overlap\",data$Plot),-c(1)]\n"
+                 "rm(data)\n"
+                 "\n");
+
+    foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+                                (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
+                                (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
+                                QString(", xlab=\"False Accepts\", ylab=\"True Accept Rate\") + theme_minimal()") +
+                                (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
+                                (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
+                                QString(" + scale_x_log10() + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\")\n\n").arg(type)));
+
+    foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+                                (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
+                                (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
+                                QString(", xlab=\"Recall\", ylab=\"Precision\") + theme_minimal()") +
+                                (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
+                                (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
+                                QString(" + scale_x_continuous(labels=percent) + scale_y_continuous(labels=percent) + ggtitle(\"%1\")\n\n").arg(type)));
+
+    p.file.write(qPrintable(QString("qplot(X, data=Overlap, geom=\"histogram\", position=\"identity\", xlab=\"Overlap\", ylab=\"Frequency\")") +
+                            QString(" + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
+                            (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg(p.minor.header, p.major.header) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
+                            QString(" + theme(aspect.ratio=1)\n\n")));
 
     return p.finalize(show);
 }
