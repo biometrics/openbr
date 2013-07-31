@@ -52,7 +52,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("BoVW", "Flatten+CatRows+KMeans(500)+Hist(500)");
         Globals->abbreviations.insert("HOF", "Stream([KeyPointDetector(SIFT),AggregateFrames(2)+OpticalFlow,ROI,HoGDescriptor])+BoVW");
         Globals->abbreviations.insert("HoG", "Stream([KeyPointDetector(SIFT),ROI,HoGDescriptor])+BoVW");
-        Globals->abbreviations.insert("HoGHOF", "Stream([KeyPointDetector(SIFT),AggregateFrames(2),(OpticalFlow+ROI+HoGDescriptor)/(KeepFirst+ROI+HoGDescriptor),Cat])+BoVW");
+        Globals->abbreviations.insert("HoGHOF", "Stream([KeyPointDetector(SIFT),AggregateFrames(2),(OpticalFlow+ROI+HoGDescriptor)/(First+ROI+HoGDescriptor),Cat])+BoVW");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");
