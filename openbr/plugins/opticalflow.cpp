@@ -45,8 +45,6 @@ class OpticalFlowTransform : public UntrainableTransform
         magnitude(channels[0], channels[1], flowOneCh);
 
         dst += flowOneCh;
-        // propagate interest points thru
-        dst.file = src.file;
     }
 };
 
