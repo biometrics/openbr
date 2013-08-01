@@ -958,6 +958,8 @@ public:
     {
         if (transforms.isEmpty()) return;
 
+        CompositeTransform::init();
+
         // We share a thread pool across streams attached to the same
         // parent tranform, retrieve or create a thread pool based
         // on our parent transform.
