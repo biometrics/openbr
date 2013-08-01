@@ -59,21 +59,6 @@ public:
     PCATransform() : keep(0.95), drop(0), whiten(false) {}
 
 private:
-    /*
-    void backProject(const Template &src, Template &dst) const
-    {
-        const cv::Mat &m = src;
-        dst = cv::Mat(originalRows, m.rows*m.cols/originalRows, CV_32FC1);
-
-        // Map Eigen into OpenCV
-        Eigen::Map<const Eigen::MatrixXf> inMap(m.ptr<float>(), keep, 1);
-        Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), m.rows*m.cols, 1);
-
-        // Do projection
-        outMap = (eVecs * inMap) + mean;
-    }
-    */
-
     double residualReconstructionError(const Template &src) const
     {
         Template proj;
