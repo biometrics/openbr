@@ -129,26 +129,6 @@ class PipeTransform : public CompositeTransform
         }
     }
 
-    void backProject(const Template &dst, Template &src) const
-    {
-        // Backprojecting a time-varying transform is probably not going to work.
-        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
-
-        src = dst;
-        // Reverse order in which transforms are processed
-        int length = transforms.length();
-        for (int i=length-1; i>=0; i--) {
-            Transform *f = transforms.at(i);
-            try {
-                src >> *f;
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
-                src = Template(src.file);
-                src.file.set("FTE", true);
-            }
-        }
-    }
-
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
@@ -305,8 +285,6 @@ class ForkTransform : public CompositeTransform
             futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
         futures.waitForFinished();
     }
-
-    void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
 
     // same as _project, but calls projectUpdate on sub-transforms
     void projectupdate(const Template & src, Template & dst)

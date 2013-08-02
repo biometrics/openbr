@@ -334,8 +334,8 @@ QRectF QtUtils::toRect(const QString &string, bool *ok)
             bool okX, okY, okWidth, okHeight;
             x = words[0].toFloat(&okX);
             y = words[1].toFloat(&okY);
-            width = words[0].toFloat(&okWidth);
-            height = words[1].toFloat(&okHeight);
+            width = words[2].toFloat(&okWidth);
+            height = words[3].toFloat(&okHeight);
             if (okX && okY && okWidth && okHeight) {
                 if (ok) *ok = true;
                 return QRectF(x, y, width, height);

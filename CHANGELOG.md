@@ -1,6 +1,7 @@
 0.4.0 - ??/??/??
 ================
 * Added -evalDetection and -plotDetection for evaluating and plotting object detection accuracy (#9)
+* Deprecated Transform::backProject
 
 0.3.0 - 5/22/13
 ===============

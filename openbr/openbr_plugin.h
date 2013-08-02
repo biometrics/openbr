@@ -602,13 +602,6 @@ public:
     BR_PROPERTY(int, blockSize, parallelism * ((sizeof(void*) == 4) ? 128 : 1024))
 
     /*!
-     * \brief true if backProject should be used instead of project (the algorithm should be inverted)
-     */
-    Q_PROPERTY(bool backProject READ get_backProject WRITE set_backProject RESET reset_backProject)
-    BR_PROPERTY(bool, backProject, false)
-
-
-    /*!
      * \brief If \c true no messages will be sent to the terminal, \c false by default.
      */
     Q_PROPERTY(bool quiet READ get_quiet WRITE set_quiet RESET reset_quiet)
@@ -1034,6 +1027,10 @@ private:
  *  @{
  */
 
+/*!
+ * \brief For asynchronous events during template projection.
+ * \see #Transform::getEvent
+ */
 class TemplateEvent : public QObject
 {
     Q_OBJECT
@@ -1047,7 +1044,6 @@ public:
 signals:
     void theSignal(const Template & output) const;
 };
-
 
 /*!
  * \brief Plugin base class for processing a template.
@@ -1078,8 +1074,6 @@ public:
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
-    virtual void backProject(const Template &dst, Template &src) const { src = dst; } /*!< \brief Invert the transform. */
-    virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
     /*!< \brief Apply the transform, may update the transform's internal state */
     virtual void projectUpdate(const Template &src, Template &dst)
