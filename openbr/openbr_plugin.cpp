@@ -412,7 +412,8 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                     // of target images to every partition
                     newTemplates[i].file.set("Partition", -1);
                 } else {
-                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
+                    // Direct use of "Label" is not general -cao
+                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                 }
@@ -890,6 +891,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
 
     qInstallMessageHandler(messageHandler);
 
+    Common::seedRNG();
+
     // Search for SDK
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();
@@ -1082,9 +1085,6 @@ Transform::Transform(bool _independent, bool _trainable)
 {
     independent = _independent;
     trainable = _trainable;
-    classes = std::numeric_limits<int>::max();
-    instances = std::numeric_limits<int>::max();
-    fraction = 1;
 }
 
 Transform *Transform::make(QString str, QObject *parent)
@@ -1140,9 +1140,6 @@ Transform *Transform::make(QString str, QObject *parent)
 Transform *Transform::clone() const
 {
     Transform *clone = Factory<Transform>::make(file.flat());
-    clone->classes = classes;
-    clone->instances = instances;
-    clone->fraction = fraction;
     return clone;
 }
 

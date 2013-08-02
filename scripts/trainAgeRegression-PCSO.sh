@@ -6,6 +6,11 @@ fi
 
 #rm -f ../share/openbr/models/features/FaceClassificationRegistration
 #rm -f ../share/openbr/models/features/FaceClassificationExtraction
-rm -f ../share/openbr/models/algorithms/AgeRegression
+#rm -f ../share/openbr/models/algorithms/AgeRegression
 
-br -algorithm AgeRegression -path ../data/PCSO/Images -train "../data/PCSO/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 15 AND AGE <= 75', subset=0:200]" ../share/openbr/models/algorithms/AgeRegression
+export BR=../build/app/br/br
+export ageAlg=AgeRegression
+
+export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
+
+$BR -useGui 0 -algorithm $ageAlg -path $PCSO_DIR/Images -train "$PCSO_DIR/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 17 AND AGE <= 68', subset=0:200]" ../share/openbr/models/algorithms/AgeRegression

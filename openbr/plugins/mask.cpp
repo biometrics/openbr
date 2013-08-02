@@ -158,6 +158,9 @@ class LargestConvexAreaTransform : public UntrainableTransform
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
+    BR_PROPERTY(QString, outputVariable, "Label")
+
     void project(const Template &src, Template &dst) const
     {
         std::vector< std::vector<Point> > contours;
@@ -171,7 +174,7 @@ class LargestConvexAreaTransform : public UntrainableTransform
             if (area / hullArea > 0.98)
                 maxArea = std::max(maxArea, area);
         }
-        dst.file.set("Label", maxArea);
+        dst.file.set(outputVariable, maxArea);
     }
 };
 

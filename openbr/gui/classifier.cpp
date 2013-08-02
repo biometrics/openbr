@@ -39,19 +39,23 @@ void Classifier::_classify(File file)
 {
     QString key, value;
     foreach (const File &f, Enroll(file.flat(), File("[algorithm=" + algorithm + "]"))) {
-        if (!f.contains("Label"))
-            continue;
 
         if (algorithm == "GenderClassification") {
             key = "Gender";
-            value = (f.get<QString>("Subject"));
         } else if (algorithm == "AgeRegression") {
             key = "Age";
-            value = QString::number(int(f.get<float>("Subject")+0.5)) + " Years";
         } else {
             key = algorithm;
-            value = f.get<QString>("Subject");
         }
+
+        if (!f.contains(key))
+            continue;
+
+        if (algorithm == "AgeRegression")
+            value = QString::number(int(f.get<float>(key)+0.5)) + " Years";
+        else
+            value = f.get<QString>(key);
+
         break;
     }
 

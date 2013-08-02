@@ -149,7 +149,7 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery);
+BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
@@ -173,7 +173,7 @@ BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *tru
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery);
+BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Wraps br::Context::finalize()
