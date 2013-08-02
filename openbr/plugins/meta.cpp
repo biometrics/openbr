@@ -104,22 +104,21 @@ class PipeTransform : public CompositeTransform
                 fprintf(stderr, " training...");
                 transforms[i]->train(copy);
             }
-            // if the transform is time varying, we batch project it.
+
+            // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
                 fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
-                transforms[i]->projectUpdate(copy, copy);
+                for (int j=0; j < singleItemLists.size();j++)
+                    transforms[i]->projectUpdate(singleItemLists[j], singleItemLists[j]);
 
                 // advance i since we already projected for this stage.
                 i++;
 
-                // set up the single item lists since they are inconsistent again.
-                singleItemLists.clear();
-                for (int j=0; j < copy.size(); j++)
-                {
-                    TemplateList temp;
-                    temp.append(copy[j]);
-                    singleItemLists.append(temp);
-                }
+                // set up copy again
+                copy.clear();
+                for (int j=0; j < singleItemLists.size(); j++)
+                    copy.append(singleItemLists[j]);
+
                 // the next stage might be trainable, so continue to evaluate it.
                 continue;
             }
