@@ -538,6 +538,32 @@ class EventTransform : public UntrainableMetaTransform
 };
 BR_REGISTER(Transform, EventTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Flattens a list of Templates into a single Template
+ * \author Austin Blanton \cite imaus10
+ */
+class FlattenTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Template flat;
+        foreach (const Template &tmpl, src)
+            flat.append(tmpl);
+        dst.append(flat);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void) src;
+        (void) dst;
+        qFatal("You shouldn't do that!");
+    }
+};
+BR_REGISTER(Transform, FlattenTransform)
+
 }
 
 #include "misc.moc"
