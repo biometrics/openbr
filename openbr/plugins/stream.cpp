@@ -1035,6 +1035,21 @@ protected:
 
     QList<ProcessingStage *> processingStages;
 
+    // This is a map from parent transforms (of Streams) to thread pools. Rather
+    // than starting threads on the global thread pool, Stream uses separate thread pools
+    // keyed on their parent transform. This is necessary because stream's project starts
+    // threads, then enters an indefinite wait for them to finish. Since we are starting
+    // threads using thread pools, threads themselves are a limited resource. Therefore,
+    // the type of hold and wait done by stream project can lead to deadlock unless
+    // resources are ordered in such a way that a circular wait will not occur. The points
+    // of this hash is to introduce a resource ordering (on threads) that mirrors the structure
+    // of the algorithm. So, as long as the structure of the algorithm is a DAG, the wait done
+    // by stream project will not be circular, since every thread in stream project is waiting
+    // for threads at a lower level to do the work.
+    // This issue doesn't come up in distribute, since a thread waiting on a QFutureSynchronizer
+    // will steal work from those jobs, so in that sense distribute isn't doing a hold and wait.
+    // Waiting for a QFutureSynchronzier isn't really possible here since stream runs an indeteriminate
+    // number of jobs.
     static QHash<QObject *, QThreadPool *> pools;
     static QMutex poolsAccess;
     QThreadPool * threads;
