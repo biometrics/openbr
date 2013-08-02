@@ -98,7 +98,7 @@ class CascadeTransform : public UntrainableMetaTransform
                 for (size_t j=0; j<rects.size(); j++) {
                     Template u(t.file, m);
                     if (rejectLevels.size() > j)
-                        u.file.set("Confidence", rejectLevels[j]*1000.0 + levelWeights[j]*1.0);
+                        u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
                     u.file.set(model, rect);

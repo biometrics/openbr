@@ -104,6 +104,25 @@ class PipeTransform : public CompositeTransform
                 fprintf(stderr, " training...");
                 transforms[i]->train(copy);
             }
+            // if the transform is time varying, we batch project it.
+            if (transforms[i]->timeVarying()) {
+                fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
+                transforms[i]->projectUpdate(copy, copy);
+
+                // advance i since we already projected for this stage.
+                i++;
+
+                // set up the single item lists since they are inconsistent again.
+                singleItemLists.clear();
+                for (int j=0; j < copy.size(); j++)
+                {
+                    TemplateList temp;
+                    temp.append(copy[j]);
+                    singleItemLists.append(temp);
+                }
+                // the next stage might be trainable, so continue to evaluate it.
+                continue;
+            }
 
             // We project through any subsequent untrainable transforms at once
             //   as a memory optimization in case any of these intermediate
@@ -112,7 +131,8 @@ class PipeTransform : public CompositeTransform
             //   by that transform at once if we can avoid it.
             int nextTrainableTransform = i+1;
             while ((nextTrainableTransform < transforms.size()) &&
-                   !transforms[nextTrainableTransform]->trainable)
+                   !transforms[nextTrainableTransform]->trainable &&
+                   !transforms[nextTrainableTransform]->timeVarying())
                 nextTrainableTransform++;
 
             fprintf(stderr, " projecting...");
@@ -126,26 +146,6 @@ class PipeTransform : public CompositeTransform
                 copy.append(singleItemLists[j]);
 
             i = nextTrainableTransform;
-        }
-    }
-
-    void backProject(const Template &dst, Template &src) const
-    {
-        // Backprojecting a time-varying transform is probably not going to work.
-        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
-
-        src = dst;
-        // Reverse order in which transforms are processed
-        int length = transforms.length();
-        for (int i=length-1; i>=0; i--) {
-            Transform *f = transforms.at(i);
-            try {
-                src >> *f;
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
-                src = Template(src.file);
-                src.file.set("FTE", true);
-            }
         }
     }
 
@@ -305,8 +305,6 @@ class ForkTransform : public CompositeTransform
             futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
         futures.waitForFinished();
     }
-
-    void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
 
     // same as _project, but calls projectUpdate on sub-transforms
     void projectupdate(const Template & src, Template & dst)

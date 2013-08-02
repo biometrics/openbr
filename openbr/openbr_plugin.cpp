@@ -1168,28 +1168,6 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
     futures.waitForFinished();
 }
 
-static void _backProject(const Transform *transform, const Template *dst, Template *src)
-{
-    try {
-        transform->backProject(*dst, *src);
-    } catch (...) {
-        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
-        *src = Template(dst->file);
-        src->file.set("FTE", true);
-    }
-}
-
-void Transform::backProject(const TemplateList &dst, TemplateList &src) const
-{
-    src.reserve(dst.size());
-    for (int i=0; i<dst.size(); i++) src.append(Template());
-
-    QFutureSynchronizer<void> futures;
-    for (int i=0; i<dst.size(); i++)
-        futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
-    futures.waitForFinished();
-}
-
 QList<Transform *> Transform::getChildren() const
 {
     QList<Transform *> output;

@@ -146,13 +146,7 @@ struct AlgorithmCore
                                 data.removeAt(i);
                     const int numFiles = data.size();
 
-                    if (Globals->backProject) {
-                        TemplateList backProjectedData;
-                        transform->backProject(data, backProjectedData);
-                        data = backProjectedData;
-                    } else {
-                        data >> *transform;
-                    }
+                    data >> *transform;
 
                     g->writeBlock(data);
                     const FileList newFiles = data.files();
