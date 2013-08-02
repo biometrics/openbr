@@ -613,7 +613,7 @@ public:
             qFatal("null input to multi-thread stage");
         }
         // Project the input we got
-        transform->projectUpdate(input->data);
+        input->data >> *transform;
 
         should_continue = nextStage->tryAcquireNextStage(input);
 
@@ -681,7 +681,7 @@ public:
         next_target = input->sequenceNumber + 1;
 
         // Project the input we got
-        transform->projectUpdate(input->data);
+        input->data >> *transform;
 
         should_continue = nextStage->tryAcquireNextStage(input);
 
@@ -896,14 +896,8 @@ public:
         qFatal("nope");
     }
 
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        (void) src; (void) dst;
-        qFatal("whatever");
-    }
-
     // start processing
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         dst = src;
 
@@ -931,7 +925,7 @@ public:
 
             for (int j=i+1; j < transforms.size();j++)
             {
-                transforms[j]->projectUpdate(output_set);
+                output_set >> *transforms[j];
             }
             final_output.append(output_set);
         }
@@ -950,7 +944,7 @@ public:
     {
         (void) output;
         // Nothing in particular to do here, stream calls finalize
-        // on all child transforms as part of projectUpdate
+        // on all child transforms as part of project
     }
 
     // Create and link stages

@@ -109,7 +109,7 @@ class PipeTransform : public CompositeTransform
             if (transforms[i]->timeVarying()) {
                 fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
                 for (int j=0; j < singleItemLists.size();j++)
-                    transforms[i]->projectUpdate(singleItemLists[j], singleItemLists[j]);
+                    transforms[i]->project(singleItemLists[j], singleItemLists[j]);
 
                 // advance i since we already projected for this stage.
                 i++;
@@ -148,31 +148,6 @@ class PipeTransform : public CompositeTransform
         }
     }
 
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        dst = src;
-        foreach (Transform *f, transforms) {
-            try {
-                f->projectUpdate(dst);
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
-                dst = Template(src.file);
-                dst.file.set("FTE", true);
-            }
-        }
-    }
-
-    // For time varying transforms, parallel execution over individual templates
-    // won't work.
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
-    {
-        dst = src;
-        foreach (Transform *f, transforms)
-        {
-            f->projectUpdate(dst);
-        }
-    }
-
     virtual void finalize(TemplateList & output)
     {
         output.clear();
@@ -188,7 +163,7 @@ class PipeTransform : public CompositeTransform
             // Push any templates received through the remaining transforms in the sequence
             for (int j = (i+1); j < transforms.size();j++)
             {
-                transforms[j]->projectUpdate(last_set);
+                last_set >> *transforms[j];
             }
             // append the result to the output set
             output.append(last_set);
@@ -198,7 +173,7 @@ class PipeTransform : public CompositeTransform
 protected:
     // Template list project -- process templates in parallel through Transform::project
     // or if parallelism is disabled, handle them sequentially
-   void _project(const TemplateList &src, TemplateList &dst) const
+   void project(const TemplateList &src, TemplateList &dst) const
     {
         dst = src;
         foreach (const Transform *f, transforms) {
@@ -207,7 +182,7 @@ protected:
     }
 
    // Single template const project, pass the template through each sub-transform, one after the other
-   virtual void _project(const Template & src, Template & dst) const
+   virtual void project(const Template & src, Template & dst) const
    {
        dst = src;
        foreach (const Transform *f, transforms) {
@@ -305,34 +280,6 @@ class ForkTransform : public CompositeTransform
         futures.waitForFinished();
     }
 
-    // same as _project, but calls projectUpdate on sub-transforms
-    void projectupdate(const Template & src, Template & dst)
-    {
-        foreach (Transform *f, transforms) {
-            try {
-                Template res;
-                f->projectUpdate(src, res);
-                dst.merge(res);
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
-                dst = Template(src.file);
-                dst.file.set("FTE", true);
-            }
-        }
-    }
-
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
-    {
-        dst.reserve(src.size());
-        for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
-        foreach (Transform *f, transforms) {
-            TemplateList m;
-            f->projectUpdate(src, m);
-            if (m.size() != dst.size()) qFatal("TemplateList is of an unexpected size.");
-            for (int i=0; i<src.size(); i++) dst[i].merge(m[i]);
-        }
-    }
-
     // this is probably going to go bad, fork transform probably won't work well in a variable
     // input/output scenario
     virtual void finalize(TemplateList & output)
@@ -364,7 +311,7 @@ class ForkTransform : public CompositeTransform
 protected:
 
     // Apply each transform to src, concatenate the results
-    void _project(const Template &src, Template &dst) const
+    void project(const Template &src, Template &dst) const
     {
         foreach (const Transform *f, transforms) {
             try {
@@ -377,7 +324,7 @@ protected:
         }
     }
 
-    void _project(const TemplateList &src, TemplateList &dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         dst.reserve(src.size());
         for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
@@ -667,12 +614,6 @@ public:
         futures.waitForFinished();
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);
-    }
-
-    void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        this->project(src, dst);
-        return;
     }
 
     void init()

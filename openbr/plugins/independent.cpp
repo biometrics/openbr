@@ -172,27 +172,6 @@ class IndependentTransform : public MetaTransform
         dst.append(mats);
     }
 
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        dst.file = src.file;
-        QList<Mat> mats;
-        for (int i=0; i<src.size(); i++) {
-            transforms[i%transforms.size()]->projectUpdate(Template(src.file, src[i]), dst);
-            mats.append(dst);
-            dst.clear();
-        }
-        dst.append(mats);
-    }
-
-    void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        dst.reserve(src.size());
-        foreach (const Template &t, src) {
-            dst.append(Template());
-            projectUpdate(t, dst.last());
-        }
-    }
-
     void store(QDataStream &stream) const
     {
         const int size = transforms.size();

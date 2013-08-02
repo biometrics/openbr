@@ -196,10 +196,11 @@ public:
 
     void train(const TemplateList &data) { (void) data; }
 
-    void project(const TemplateList &src, TemplateList &dst) const
+    void projectUpdate(const Template &src, Template &dst)
     {
-        Transform * non_const = (ShowTransform *) this;
-        non_const->projectUpdate(src,dst);
+        TemplateList temp;
+        projectUpdate(TemplateList() << src, temp);
+        if (temp.size() > 1) dst = temp.first();
     }
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
@@ -362,6 +363,11 @@ public:
 
     void train(const TemplateList &data) { (void) data; }
 
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        (void) src; (void) dst;
+        qFatal("Only got a single template!");
+    }
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
@@ -413,6 +419,11 @@ public:
 
     void train(const TemplateList &data) { (void) data; }
 
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        (void) src; (void) dst;
+        qFatal("Only got a single template!");
+    }
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
