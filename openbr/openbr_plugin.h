@@ -1062,34 +1062,6 @@ public:
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
 
-    /*!< \brief Apply the transform, may update the transform's internal state */
-    virtual void projectUpdate(const Template &src, Template &dst)
-    {
-        project(src, dst);
-    }
-
-    /*!< \brief Apply the transform, may update the transform's internal state */
-    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        project(src,dst);
-    }
-
-    /*!< \brief inplace projectUpdate. */
-    void projectUpdate(Template &srcdst)
-    {
-        Template dst;
-        projectUpdate(srcdst, dst);
-        srcdst = dst;
-    }
-
-    /*!< \brief inplace projectUpdate. */
-    void projectUpdate(TemplateList &srcdst)
-    {
-        TemplateList dst;
-        projectUpdate(srcdst, dst);
-        srcdst = dst;
-    }
-
     /*!
      * Time-varying transforms may move away from a single input->single output model, and only emit
      * templates under some conditions (e.g. a tracking thing may emit a template for each detected

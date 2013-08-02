@@ -42,27 +42,21 @@ class BR_EXPORT TimeVaryingTransform : public Transform
     Q_OBJECT
 
 public:
-    virtual bool timeVarying() const { return true; }
+    bool timeVarying() const { return true; }
 
-    virtual void project(const Template &src, Template &dst) const
+    void project(const Template &src, Template &dst) const
     {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
+        // TODO: Fix the temporary hack that no one wants to see
+        // by moving time varying object management into this class.
+        const_cast<TimeVaryingTransform*>(this)->projectUpdate(src, dst);
     }
 
-    virtual void project(const TemplateList &src, TemplateList &dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
+        const_cast<TimeVaryingTransform*>(this)->projectUpdate(src, dst);
     }
 
-    // Get a compile failure if this isn't here to go along with the other
-    // projectUpdate, no idea why
-    virtual void projectUpdate(const Template & src, Template & dst)
-    {
-        (void) src; (void) dst;
-        qFatal("do something useful");
-    }
+    virtual void projectUpdate(const Template &src, Template &dst) = 0;
 
     virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
@@ -128,7 +122,7 @@ public:
     virtual void project(const Template &src, Template &dst) const
     {
         Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
+        aTransform->project(src, dst);
         transformSource.release(aTransform);
     }
 
@@ -136,7 +130,7 @@ public:
     void project(const TemplateList &src, TemplateList &dst) const
     {
         Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
+        aTransform->project(src, dst);
         transformSource.release(aTransform);
     }
 
@@ -153,30 +147,13 @@ private:
 /*!
  * \brief A MetaTransform that aggregates some sub-transforms
  */
-class BR_EXPORT CompositeTransform : public TimeVaryingTransform
+class BR_EXPORT CompositeTransform : public MetaTransform
 {
     Q_OBJECT
 
 public:
     Q_PROPERTY(QList<br::Transform*> transforms READ get_transforms WRITE set_transforms RESET reset_transforms)
     BR_PROPERTY(QList<br::Transform*>, transforms, QList<br::Transform*>())
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
-        _project(src, dst);
-    }
-
-    virtual void project(const TemplateList &src, TemplateList &dst) const
-    {
-        if (timeVarying()) {
-            CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
-            non_const->projectUpdate(src,dst);
-            return;
-        }
-        _project(src, dst);
-    }
-
 
     bool timeVarying() const { return isTimeVarying; }
 
@@ -226,11 +203,6 @@ public:
 
 protected:
     bool isTimeVarying;
-
-    virtual void _project(const Template & src, Template & dst) const = 0;
-    virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
-
-    CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
 }
