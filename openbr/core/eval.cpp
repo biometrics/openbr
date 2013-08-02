@@ -255,9 +255,20 @@ struct Counter
     }
 };
 
-void EvalClassification(const QString &predictedInput, const QString &truthInput)
+void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Label";
+    // If predictedProperty is specified, but truthProperty isn't, copy over the value from
+    // predicted property
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        truthProperty = "Label";
+
     TemplateList predicted(TemplateList::fromGallery(predictedInput));
     TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
@@ -267,9 +278,8 @@ void EvalClassification(const QString &predictedInput, const QString &truthInput
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QString predictedSubject = predicted[i].file.get<QString>("Subject");
-        QString trueSubject = truth[i].file.get<QString>("Subject");
+        QString predictedSubject = predicted[i].file.get<QString>(predictedProperty);
+        QString trueSubject = truth[i].file.get<QString>(truthProperty);
 
         QStringList predictedSubjects(predictedSubject);
         QStringList trueSubjects(trueSubject);
@@ -466,21 +476,37 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     return averageOverlap;
 }
 
-void EvalRegression(const QString &predictedInput, const QString &truthInput)
+void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Regressor";
+    // If predictedProperty is specified, but truthProperty isn't, copy the value over
+    // rather than using the default for truthProperty
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        predictedProperty = "Regressand";
+
     const TemplateList predicted(TemplateList::fromGallery(predictedInput));
     const TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;
+    float maeError = 0;
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.get<float>("Subject")-truth[i].file.get<float>("Subject"), 2.f);
-        truthValues.append(QString::number(truth[i].file.get<float>("Subject")));
-        predictedValues.append(QString::number(predicted[i].file.get<float>("Subject")));
+
+        float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
+
+        rmsError += pow(difference, 2.f);
+        maeError += fabsf(difference);
+        truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
+        predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
     }
 
     QStringList rSource;
@@ -500,6 +526,7 @@ void EvalRegression(const QString &predictedInput, const QString &truthInput)
     if (success) QtUtils::showFile("EvalRegression.pdf");
 
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
+    qDebug("MAE = %f", maeError/predicted.size());
 }
 
 } // namespace br

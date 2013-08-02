@@ -72,9 +72,9 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
     return Evaluate(simmat, mask, csv);
 }
 
-void br_eval_classification(const char *predicted_gallery, const char *truth_gallery)
+void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char * truth_property)
 {
-    EvalClassification(predicted_gallery, truth_gallery);
+    EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
 void br_eval_clustering(const char *csv, const char *gallery)
@@ -87,9 +87,9 @@ float br_eval_detection(const char *predicted_gallery, const char *truth_gallery
     return EvalDetection(predicted_gallery, truth_gallery, csv);
 }
 
-void br_eval_regression(const char *predicted_gallery, const char *truth_gallery)
+void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property, const char * truth_property)
 {
-    EvalRegression(predicted_gallery, truth_gallery);
+    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
 void br_finalize()

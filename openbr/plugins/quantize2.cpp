@@ -19,6 +19,10 @@ namespace br
 class BayesianQuantizationTransform : public Transform
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, "Label")
+
     QVector<float> thresholds;
 
     static void computeThresholdsRecursive(const QVector<int> &cumulativeGenuines, const QVector<int> &cumulativeImpostors,
@@ -77,7 +81,7 @@ class BayesianQuantizationTransform : public Transform
     void train(const TemplateList &src)
     {
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> labels = src.indexProperty("Subject");
+        const QList<int> labels = src.indexProperty(inputVariable);
 
         thresholds = QVector<float>(256*data.cols);
 

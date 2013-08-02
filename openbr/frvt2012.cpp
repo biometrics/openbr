@@ -132,7 +132,7 @@ int32_t SdkEstimator::estimate_age(const ONEFACE &input_face, int32_t &age)
     TemplateList templates;
     templates.append(templateFromONEFACE(input_face));
     templates >> *frvt2012_age_transform.data();
-    age = templates.first().file.get<float>("Subject");
+    age = templates.first().file.get<float>("Age");
     return templates.first().file.failed() ? 4 : 0;
 }
 
@@ -141,6 +141,6 @@ int32_t SdkEstimator::estimate_gender(const ONEFACE &input_face, int8_t &gender,
     TemplateList templates;
     templates.append(templateFromONEFACE(input_face));
     templates >> *frvt2012_gender_transform.data();
-    mf = gender = templates.first().file.get<QString>("Subject") == "Male" ? 0 : 1;
+    mf = gender = templates.first().file.get<QString>("Gender") == "Male" ? 0 : 1;
     return templates.first().file.failed() ? 4 : 0;
 }
