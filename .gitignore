@@ -20,6 +20,7 @@ scripts/results
 
 ### QtCreator ###
 *CMakeLists.txt.user*
+*.autosave
 
 ### R ###
 *.RData
