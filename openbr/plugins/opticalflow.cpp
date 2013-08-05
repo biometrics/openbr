@@ -1,5 +1,6 @@
 #include <opencv2/video/tracking.hpp>
 #include "openbr_internal.h"
+#include "openbr/core/opencvutils.h"
 
 using namespace cv;
 
@@ -11,7 +12,7 @@ namespace br
  * \brief Gets a one-channel dense optical flow from two images
  * \author Austin Blanton \cite imaus10
  */
-class OpticalFlowTransform : public UntrainableTransform
+class OpticalFlowTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(double pyr_scale READ get_pyr_scale WRITE set_pyr_scale RESET reset_pyr_scale STORED false)
@@ -33,18 +34,19 @@ class OpticalFlowTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         // get the two images put there by AggregateFrames
-        Mat prevImg = src[0];
-        Mat nextImg = src[1];
-        Mat flow;
+        if (src.size() < 2) return;
+        Mat prevImg = src[0], nextImg = src[1], flow, flowOneCh;
+        if (src[0].channels() != 1) OpenCVUtils::cvtGray(src[0], prevImg);
+        if (src[1].channels() != 1) OpenCVUtils::cvtGray(src[1], nextImg);
         calcOpticalFlowFarneback(prevImg, nextImg, flow, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
-        
+
         // the result is two channels
         std::vector<Mat> channels(2);
         split(flow, channels);
-        Mat flowOneCh;
         magnitude(channels[0], channels[1], flowOneCh);
 
         dst += flowOneCh;
+        dst.file = src.file;
     }
 };
 
