@@ -55,8 +55,7 @@ class HistTransform : public UntrainableTransform
             Mat hist, chan = mv[i];
             // calcHist requires F or U, might as well convert just in case
             if (mv[i].depth() != CV_8U || mv[i].depth() == CV_32F)
-                mv[i].convertTo(chan, CV_32FC1);
-//            qDebug("clust r %i c %i ch %i", chan.rows, chan.cols, chan.channels());
+                mv[i].convertTo(chan, CV_32F);
             calcHist(&chan, 1, channels, Mat(), hist, 1, histSize, ranges);
             memcpy(m.ptr(i), hist.ptr(), dims * sizeof(float));
         }
