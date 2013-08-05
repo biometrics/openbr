@@ -388,33 +388,44 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         const int crossValidate = gallery.get<int>("crossValidate");
         if (crossValidate > 0) srand(0);
 
-        for (int i=newTemplates.size()-1; i>=0; i--) {
-            newTemplates[i].file.set("Index", i+templates.size());
-            newTemplates[i].file.set("Gallery", gallery.name);
+        if (gallery.getBool("leaveOneOut", 0)) {
+            QStringList subjects = File::get(newTemplates.files(),"Subject","-1");
+            subjects.
+            // Get QStringLists of unique subjects
 
-            if (crossValidate > 0) {
-                if (newTemplates[i].file.getBool("duplicatePartitions")) {
-                    // The duplicatePartitions flag is used to add target images
-                    // crossValidate times to the simmat/mask
-                    // when multiple training sets are being used
+            // For each list of unique subjects, decide randomly which to test on
+            for (int i = 0; i < subjects.size(); i++) {
+                if (subjects
+            }
+        } else {
+            for (int i=newTemplates.size()-1; i>=0; i--) {
+                newTemplates[i].file.set("Index", i+templates.size());
+                newTemplates[i].file.set("Gallery", gallery.name);
 
-                    // Set template to the first parition
-                    newTemplates[i].file.set("Partition", QVariant(0));
+                if (crossValidate > 0) {
+                    if (newTemplates[i].file.getBool("duplicatePartitions")) {
+                        // The duplicatePartitions flag is used to add target images
+                        // crossValidate times to the simmat/mask
+                        // when multiple training sets are being used
 
-                    // Insert templates for all the other partitions
-                    for (int j=crossValidate-1; j>=1; j--) {
-                        Template allPartitionTemplate = newTemplates[i];
-                        allPartitionTemplate.file.set("Partition", j);
-                        newTemplates.insert(i+1, allPartitionTemplate);
+                        // Set template to the first parition
+                        newTemplates[i].file.set("Partition", QVariant(0));
+
+                        // Insert templates for all the other partitions
+                        for (int j=crossValidate-1; j>0; j--) {
+                            Template duplicatePartitionsTemplate = newTemplates[i];
+                            duplicatePartitionsTemplate.file.set("Partition", j);
+                            newTemplates.insert(i+1, duplicatePartitionsTemplate);
+                        }
+                    } else if (newTemplates[i].file.getBool("allPartitions")) {
+                        // The allPartitions flag is used to add an extended set
+                        // of target images to every partition
+                        newTemplates[i].file.set("Partition", -1);
+                    } else {
+                        const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
+                        // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                        newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                     }
-                } else if (newTemplates[i].file.getBool("allPartitions")) {
-                    // The allPartitions flag is used to add an extended set
-                    // of target images to every partition
-                    newTemplates[i].file.set("Partition", -1);
-                } else {
-                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
-                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                    newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                 }
             }
         }
