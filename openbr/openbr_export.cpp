@@ -69,7 +69,6 @@
 $ cd bin
 $ export LD_LIBRARY_PATH=../lib:${LD_LIBRARY_PATH}
 $ sudo ldconfig
-$ sudo cp ../share/openbr/70-yubikey.rules /etc/udev/rules.d # Only needed if you were given a license dongle.
 \endverbatim
  * \par OS X
 \verbatim
@@ -79,10 +78,6 @@ $ export DYLD_FRAMEWORK_PATH=../lib:${DYLD_FRAMEWORK_PATH}
 \endverbatim
  * \par Windows
  *  No configuration is necessary!
- *
- * \section installation_license_dongle License Dongle
- *  In the unlikely event that you were given a USB License Dongle, then dongle must be in the computer in order to use the SDK.
- *  No configuration of the dongle is needed.
  *
  * \section installation_done Start Working
  * To test for successful installation:
