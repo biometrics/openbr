@@ -179,6 +179,10 @@ class FirstTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
+        // AggregateFrames will leave the Template empty
+        // if it hasn't filled up the buffer
+        // so we gotta anticipate an empty Template
+        if (src.empty()) return;
         dst.file = src.file;
         dst = src.m();
     }
