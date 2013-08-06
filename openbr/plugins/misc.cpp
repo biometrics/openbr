@@ -554,6 +554,8 @@ class FlattenTransform : public UntrainableMetaTransform
     void project(const TemplateList &src, TemplateList &dst) const
     {
         Template flat;
+        // let's hope that all Templates belong to the same file
+        flat.file = src.first().file;
         foreach (const Template &tmpl, src)
             flat.append(tmpl);
         dst.append(flat);
