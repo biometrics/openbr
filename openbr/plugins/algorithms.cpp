@@ -49,7 +49,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("DisplayVideo", "Stream([FPSLimit(30)+Show(false,[FrameNumber])+Discard])");
         Globals->abbreviations.insert("PerFrameDetection", "Stream([SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+RestoreMat(original)+Draw(inPlace=true),Show(false,[FrameNumber])+Discard])");
         Globals->abbreviations.insert("AgeGenderDemo", "Stream([SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+Expand+<FaceClassificationRegistration>+<FaceClassificationExtraction>+<AgeRegressor>/<GenderClassifier>+Discard+RestoreMat(original)+Draw(inPlace=true)+DrawPropertiesPoint([Age,Gender],Affine_0,inPlace=true)+SaveMat(original)+Discard+Contract,RestoreMat(original)+FPSCalc+Show(false,[AvgFPS,Age,Gender])+Discard])");
-        Globals->abbreviations.insert("HOG", "Stream([KeyPointDetector(SIFT)+Gradient+Bin(0,360,8)+ROI+Hist(8)])+Flatten+CatRows+KMeans(500)+Hist(500)");
+        Globals->abbreviations.insert("HOG", "Stream([KeyPointDetector(SIFT)+Gradient+Bin(0,360,8)+ROI+Hist(8)])+Flatten+CatRows+KMeans(500)+Hist(500)+SVM");
         Globals->abbreviations.insert("HOF", "Stream([KeyPointDetector(SIFT),AggregateFrames(2)+OpticalFlow+Gradient+Bin(0,360,8)+ROI+Hist(8)])+Flatten+CatRows+KMeans(500)+Hist(500)");
         Globals->abbreviations.insert("HOGHOF", "Stream([Cvt(Gray),KeyPointDetector(SIFT),AggregateFrames(2),(OpticalFlow+Gradient+Bin(0,360,8)+ROI+Hist(8))/(First+Gradient+Bin(0,360,8)+ROI+Hist(8)),CatCols])+Flatten+CatRows+KMeans(500)+Hist(500)");
 
