@@ -226,9 +226,6 @@ public:
         if (aFrame == NULL)
             return NULL;
 
-        aFrame->data.clear();
-        aFrame->sequenceNumber = -1;
-
         // Try to actually read a frame, if this returns false the data source is broken
         bool res = getNext(*aFrame);
 
@@ -262,6 +259,8 @@ public:
     {
         int frameNumber = inputFrame->sequenceNumber;
 
+        inputFrame->data.clear();
+        inputFrame->sequenceNumber = -1;
         allFrames.addItem(inputFrame);
 
         bool rval = false;
@@ -1061,6 +1060,7 @@ public:
         FrameData * firstFrame = readStage->dataSource.tryGetFrame(last_frame);
         if (firstFrame == NULL)
             qFatal("Failed to read first frame of video");
+
         readStage->startThread(firstFrame);
         lock.unlock();
 
