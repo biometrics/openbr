@@ -379,7 +379,8 @@ public:
         // overload of open that takes an integer, not a string.
         // So, does this look like an integer?
         bool is_int = false;
-        int anInt = input.file.name.toInt(&is_int);
+        QString fileName = (Globals->path.isEmpty() ? "" : Globals->path + "/") + input.file.name;
+        int anInt = fileName.toInt(&is_int);
         if (is_int)
         {
             bool rc = video.open(anInt);
@@ -395,7 +396,7 @@ public:
         } else {
             // Yes, we should specify absolute path:
             // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
-            video.open(QFileInfo(input.file.name).absoluteFilePath().toStdString());
+            video.open(QFileInfo(fileName).absoluteFilePath().toStdString());
         }
 
         return video.isOpened();
