@@ -140,7 +140,13 @@ public:
         transformSource.release(aTransform);
     }
 
-    void train(const TemplateList &data)
+    void train(const TemplateList & data)
+    {
+        (void) data;
+        qFatal("terminal train called on non-leaf node");
+    }
+
+    void train(const QList<TemplateList> &data)
     {
         baseTransform->train(data);
     }

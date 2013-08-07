@@ -1058,7 +1058,19 @@ public:
     static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's transform. */
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
+    /*!< \brief Train the transform, separate list items represent the way calls to project would be broken up*/
+    virtual void train(const QList<TemplateList> &data)
+    {
+        TemplateList combined;
+        foreach(const TemplateList & set, data) {
+            combined.append(set);
+        }
+        train(combined);
+    }
+
+    // Terminal train, call with a complete training set when no further structure is needed
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
+
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
 

@@ -6,6 +6,11 @@
 namespace br
 {
 
+static void _train(Transform * transform, TemplateList data) // think data has to be a copy -cao
+{
+    transform->train(data);
+}
+
 /*!
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
@@ -46,7 +51,8 @@ class CrossValidateTransform : public MetaTransform
                 if (partitions[j] == i)
                     partitionedData.removeAt(j);
             // Train on the remaining templates
-            futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
+            //futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
         }
         futures.waitForFinished();
     }
