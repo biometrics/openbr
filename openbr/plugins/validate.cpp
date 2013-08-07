@@ -147,26 +147,29 @@ class MetadataDistance : public Distance
     float compare(const Template &a, const Template &b) const
     {
         foreach (const QString &key, filters) {
+            QString aValue = a.file.get<QString>(key, QString());
+            QString bValue = b.file.get<QString>(key, QString());
 
-            const QString aValue = a.file.get<QString>(key, "");
-            const QString bValue = b.file.get<QString>(key, "");
+            // The query value may be a range. Let's check.
+            if (bValue.isEmpty()) bValue = QtUtils::toString(b.file.get<QPointF>(key, QPointF()));
 
             if (aValue.isEmpty() || bValue.isEmpty()) continue;
 
             bool keep = false;
+            bool ok;
 
-            if (aValue[0] == '(') /* Range */ {
-                QStringList values = aValue.split(',');
+            QPointF range = QtUtils::toPoint(bValue,&ok);
 
-                int value = values[0].mid(1).toInt();
-                values[1].chop(1);
-                int upperBound = values[1].toInt();
+            if (ok) /* Range */ {
+                int value = range.x();
+                int upperBound = range.y();
 
                 while (value <= upperBound) {
-                    if (aValue == bValue) {
+                    if (aValue == QString::number(value)) {
                         keep = true;
                         break;
                     }
+                    value++;
                 }
             }
             else if (aValue == bValue) keep = true;
