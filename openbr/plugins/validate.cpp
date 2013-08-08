@@ -1,6 +1,7 @@
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include <openbr/core/qtutils.h>
 
 namespace br
@@ -17,7 +18,9 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(bool leaveOneOut READ get_leaveOneOut WRITE set_leaveOneOut RESET reset_leaveOneOut STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(bool, leaveOneOut, false)
 
     QList<br::Transform*> transforms;
 
@@ -41,11 +44,25 @@ class CrossValidateTransform : public MetaTransform
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
             TemplateList partitionedData = data;
+            QList<int> removed;
             for (int j=partitionedData.size()-1; j>=0; j--)
-                // Remove all templates from partition i
-                if (partitions[j] == i)
-                    partitionedData.removeAt(j);
+                // Remove all templates belonging to partition i
+                // if leaveOneOut is true,
+                // and i is greater than the number of images for a particular subject
+                // even if the partitions are different
+                if (leaveOneOut) {
+                        QList<int> subjectIndices = partitionedData.find("Subject",partitionedData.at(j).file.get<QString>("Subject"));
+                        qDebug() << i << subjectIndices.size();
+                        if (i > subjectIndices.size()) {
+                            qDebug() << i%subjectIndices.size();
+                            removed.append(subjectIndices[i%subjectIndices.size()]);
+                        }
+                } else if (partitions[j] == i)
+                    removed.append(j);
+            typedef QPair<int,int> Pair;
+            foreach (const Pair &pair, Common::Sort(removed,true)) partitionedData.removeAt(pair.first);
             // Train on the remaining templates
+            foreach (const Template &t, partitionedData) qDebug() << "Remaining data for partition " << i << ": " << t.file.baseName();
             futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
         }
         futures.waitForFinished();

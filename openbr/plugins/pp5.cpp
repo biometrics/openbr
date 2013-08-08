@@ -299,6 +299,7 @@ BR_REGISTER(Transform, PP5EnrollTransform)
  * \brief Compare templates with PP5
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
+ * \note PP5 distance is known to be asymmetric
  */
 class PP5CompareDistance : public Distance
                          , public PP5Context

@@ -386,16 +386,27 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates = newTemplates.reduced();
 
         const int crossValidate = gallery.get<int>("crossValidate");
-        if (crossValidate > 0) srand(0);
 
-        if (gallery.getBool("leaveOneOut", 0)) {
-            QStringList subjects = File::get(newTemplates.files(),"Subject","-1");
-            subjects.
-            // Get QStringLists of unique subjects
-
-            // For each list of unique subjects, decide randomly which to test on
-            for (int i = 0; i < subjects.size(); i++) {
-                if (subjects
+        if (gallery.getBool("leaveOneOut")) {
+            QStringList subjects;
+            for (int i = 0; i < newTemplates.size(); i++) {
+                QString subject = newTemplates.at(i).file.get<QString>("Subject");
+                // Have we seen this subject before?
+                if (subjects.contains(subject)) {
+                    subjects.append(subject);
+                    // Get indices belonging to this subject
+                    QList<int> subjectIndices = newTemplates.find("Subject",subject);
+                    for (int j = 0; j < subjectIndices.size(); j++) {
+                        // Set subject partitions
+                        newTemplates[subjectIndices[j]].file.set("Partition",j);
+                    }
+                    // Generate more templates if necessary
+                    for (int j=0; j<crossValidate-subjectIndices.size(); j++) {
+                        Template leaveOneOutTemplate = newTemplates[subjectIndices[j%subjectIndices.size()]];
+                        leaveOneOutTemplate.file.set("Partition", j+subjectIndices.size());
+                        newTemplates.append(leaveOneOutTemplate);
+                    }
+                }
             }
         } else {
             for (int i=newTemplates.size()-1; i>=0; i--) {

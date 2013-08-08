@@ -41,6 +41,7 @@ struct AlgorithmCore
 
     void train(const File &input, const QString &model)
     {
+        qDebug() << input;
         TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
@@ -393,6 +394,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
 
+        qDebug() << m.rows << m.cols << targetFiles.size() << queryFiles.size();
         for (int i=0; i<queryFiles.size(); i++)
             for (int j=0; j<targetFiles.size(); j++)
                 o->setRelative(m.at<float>(i,j), i, j);
