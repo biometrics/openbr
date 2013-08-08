@@ -182,8 +182,8 @@ private:
         float second_eye_y = (right_rect.y + maxLoc.y)*gray.rows/height+roi.y;
 
         dst.m() = src.m();
-        //dst.file.appendPoint(QPointF(first_eye_x, first_eye_y));
-        //dst.file.appendPoint(QPointF(second_eye_x, second_eye_y));
+        dst.file.appendPoint(QPointF(first_eye_x, first_eye_y));
+        dst.file.appendPoint(QPointF(second_eye_x, second_eye_y));
         dst.file.set("First_Eye", QPointF(first_eye_x, first_eye_y));
         dst.file.set("Second_Eye", QPointF(second_eye_x, second_eye_y));
     }

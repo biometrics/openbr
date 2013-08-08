@@ -52,11 +52,7 @@ class CrossValidateTransform : public MetaTransform
                 // even if the partitions are different
                 if (leaveOneOut) {
                         QList<int> subjectIndices = partitionedData.find("Subject",partitionedData.at(j).file.get<QString>("Subject"));
-                        qDebug() << i << subjectIndices.size();
-                        if (i > subjectIndices.size()) {
-                            qDebug() << i%subjectIndices.size();
-                            removed.append(subjectIndices[i%subjectIndices.size()]);
-                        }
+                        if (i > subjectIndices.size()) removed.append(subjectIndices[i%subjectIndices.size()]);
                 } else if (partitions[j] == i)
                     removed.append(j);
             typedef QPair<int,int> Pair;

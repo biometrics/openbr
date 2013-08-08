@@ -313,7 +313,8 @@ class LoadLandmarksTransform : public UntrainableTransform
     {
         dst = src;
 
-        QString path = Globals->path + "/" + src.file.baseName() + ".dat";
+        // Assume the fiduciary file has the same basename as src
+        QString path = filePath + "/" + src.file.baseName() + ".dat";
 
         QFile f(path);
         if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(path));
@@ -328,6 +329,8 @@ class LoadLandmarksTransform : public UntrainableTransform
                 landmarks.append(QPointF(points[0].toFloat(),points[1].toFloat()));
             }
         }
+
+        if (landmarks.size() < 35) qFatal("Unrecognized landmark set format.");
 
         dst.file.set("rightEye", landmarks[16]);
         dst.file.set("leftEye", landmarks[18]);

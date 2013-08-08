@@ -390,12 +390,12 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         if (gallery.getBool("leaveOneOut")) {
             QStringList subjects;
             for (int i = 0; i < newTemplates.size(); i++) {
-                QString subject = newTemplates.at(i).file.get<QString>("Subject");
+                QString subject = newTemplates.at(i).file.get<QString>("Label");
                 // Have we seen this subject before?
                 if (subjects.contains(subject)) {
                     subjects.append(subject);
                     // Get indices belonging to this subject
-                    QList<int> subjectIndices = newTemplates.find("Subject",subject);
+                    QList<int> subjectIndices = newTemplates.find("Label",subject);
                     for (int j = 0; j < subjectIndices.size(); j++) {
                         // Set subject partitions
                         newTemplates[subjectIndices[j]].file.set("Partition",j);

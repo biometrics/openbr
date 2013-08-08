@@ -41,7 +41,6 @@ struct AlgorithmCore
 
     void train(const File &input, const QString &model)
     {
-        qDebug() << input;
         TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
