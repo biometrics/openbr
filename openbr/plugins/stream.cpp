@@ -1024,6 +1024,7 @@ public:
 
     void train(const TemplateList & data)
     {
+        qFatal("Stream train is currently not implemented.");
         foreach(Transform * transform, transforms) {
             transform->train(data);
         }
