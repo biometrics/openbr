@@ -29,7 +29,7 @@
 
 static void printTemplate(const br::Template &t)
 {
-    printf("%s gender: %s\n", qPrintable(t.file.fileName()), qPrintable(t.file.get<QString>("Subject")));
+    printf("%s gender: %s\n", qPrintable(t.file.fileName()), qPrintable(t.file.get<QString>("Gender")));
 }
 
 int main(int argc, char *argv[])

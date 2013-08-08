@@ -186,7 +186,6 @@ private:
         //dst.file.appendPoint(QPointF(second_eye_x, second_eye_y));
         dst.file.set("First_Eye", QPointF(first_eye_x, first_eye_y));
         dst.file.set("Second_Eye", QPointF(second_eye_x, second_eye_y));
-        dst.file.set("Face", QRect(roi.x, roi.y, roi.width, roi.height));
     }
 };
 

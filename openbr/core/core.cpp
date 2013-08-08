@@ -147,13 +147,7 @@ struct AlgorithmCore
                                 data.removeAt(i);
                     const int numFiles = data.size();
 
-                    if (Globals->backProject) {
-                        TemplateList backProjectedData;
-                        transform->backProject(data, backProjectedData);
-                        data = backProjectedData;
-                    } else {
-                        data >> *transform;
-                    }
+                    data >> *transform;
 
                     g->writeBlock(data);
                     const FileList newFiles = data.files();
@@ -394,7 +388,6 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
 
-        qDebug() << m.rows << m.cols << targetFiles.size() << queryFiles.size();
         for (int i=0; i<queryFiles.size(); i++)
             for (int j=0; j<targetFiles.size(); j++)
                 o->setRelative(m.at<float>(i,j), i, j);

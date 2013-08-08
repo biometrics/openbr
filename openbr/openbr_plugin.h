@@ -130,13 +130,6 @@ void reset_##NAME() { NAME = DEFAULT; }
  * -# If the value is convertable to a floating point number then it is represented with \c float.
  * -# Otherwise, it is represented with \c QString.
  *
- * The metadata keys \c Subject and \c Label have special significance in the system.
- * \c Subject is a string specifying a unique identifier used to determine ground truth match/non-match.
- * \c Label is a floating point value used for supervised learning.
- * When the system needs labels for training, but only subjects are provided in the file metadata, the rule for generating labels is as follows.
- * If the subject value can be converted to a float then do so and consider that the label.
- * Otherwise, generate a unique integer ID for the string starting from zero and incrementing by one everytime another ID is needed.
- *
  * Metadata keys fall into one of two categories:
  * - \c camelCaseKeys are inputs that specify how to process the file.
  * - \c Capitalized_Underscored_Keys are outputs computed from processing the file.
@@ -147,8 +140,6 @@ void reset_##NAME() { NAME = DEFAULT; }
  * ---             | ----           | -----------
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
- * Subject         | QString        | Class name
- * Label           | float          | Class value
  * Confidence      | float          | Classification/Regression quality
  * FTE             | bool           | Failure to enroll
  * FTO             | bool           | Failure to open
@@ -157,13 +148,15 @@ void reset_##NAME() { NAME = DEFAULT; }
  * *_Width         | float          | Size
  * *_Height        | float          | Size
  * *_Radius        | float          | Size
+ * Label           | QString        | Class label
  * Theta           | float          | Pose
  * Roll            | float          | Pose
  * Pitch           | float          | Pose
  * Yaw             | float          | Pose
  * Points          | QList<QPointF> | List of unnamed points
  * Rects           | QList<Rect>    | List of unnamed rects
- * Age             | QString        | Age used for demographic filtering
+ * Age             | float          | Age used for demographic filtering
+ * Gender          | QString        | Subject gender
  * _*              | *              | Reserved for internal use
  */
 struct BR_EXPORT File
@@ -172,7 +165,7 @@ struct BR_EXPORT File
 
     File() {}
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
-    File(const QString &file, const QVariant &subject) { init(file); set("Subject", subject); } /*!< \brief Construct a file from a string and assign a label. */
+    File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
@@ -616,13 +609,6 @@ public:
     BR_PROPERTY(int, blockSize, parallelism * ((sizeof(void*) == 4) ? 128 : 1024))
 
     /*!
-     * \brief true if backProject should be used instead of project (the algorithm should be inverted)
-     */
-    Q_PROPERTY(bool backProject READ get_backProject WRITE set_backProject RESET reset_backProject)
-    BR_PROPERTY(bool, backProject, false)
-
-
-    /*!
      * \brief If \c true no messages will be sent to the terminal, \c false by default.
      */
     Q_PROPERTY(bool quiet READ get_quiet WRITE set_quiet RESET reset_quiet)
@@ -1048,6 +1034,10 @@ private:
  *  @{
  */
 
+/*!
+ * \brief For asynchronous events during template projection.
+ * \see #Transform::getEvent
+ */
 class TemplateEvent : public QObject
 {
     Q_OBJECT
@@ -1062,7 +1052,6 @@ signals:
     void theSignal(const Template & output) const;
 };
 
-
 /*!
  * \brief Plugin base class for processing a template.
  *
@@ -1076,12 +1065,6 @@ class BR_EXPORT Transform : public Object
     Q_OBJECT
 
 public:
-    Q_PROPERTY(int classes READ get_classes WRITE set_classes RESET reset_classes STORED false)
-    Q_PROPERTY(int instances READ get_instances WRITE set_instances RESET reset_instances STORED false)
-    Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
-    BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
-    BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
-    BR_PROPERTY(float, fraction, 1)
     bool independent, trainable;
 
     virtual ~Transform() {}
@@ -1092,8 +1075,6 @@ public:
     virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
     virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
     virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
-    virtual void backProject(const Template &dst, Template &src) const { src = dst; } /*!< \brief Invert the transform. */
-    virtual void backProject(const TemplateList &dst, TemplateList &src) const; /*!< \brief Invert the transform. */
 
     /*!< \brief Apply the transform, may update the transform's internal state */
     virtual void projectUpdate(const Template &src, Template &dst)

@@ -97,6 +97,7 @@ class CenterTransform : public Transform
     Q_OBJECT
     Q_ENUMS(Method)
     Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
 
 public:
     /*!< */
@@ -107,6 +108,7 @@ public:
 
 private:
     BR_PROPERTY(Method, method, Mean)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     Mat a, b; // dst = (src - b) / a
 
@@ -127,7 +129,7 @@ private:
         Mat m;
         OpenCVUtils::toMat(data.data()).convertTo(m, CV_64F);
 
-        const QList<int> labels = data.indexProperty("Subject");
+        const QList<int> labels = data.indexProperty(inputVariable);
         const int dims = m.cols;
 
         vector<Mat> mv, av, bv;

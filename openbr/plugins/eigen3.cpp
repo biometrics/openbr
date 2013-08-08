@@ -59,21 +59,6 @@ public:
     PCATransform() : keep(0.95), drop(0), whiten(false) {}
 
 private:
-    /*
-    void backProject(const Template &src, Template &dst) const
-    {
-        const cv::Mat &m = src;
-        dst = cv::Mat(originalRows, m.rows*m.cols/originalRows, CV_32FC1);
-
-        // Map Eigen into OpenCV
-        Eigen::Map<const Eigen::MatrixXf> inMap(m.ptr<float>(), keep, 1);
-        Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), m.rows*m.cols, 1);
-
-        // Do projection
-        outMap = (eVecs * inMap) + mean;
-    }
-    */
-
     double residualReconstructionError(const Template &src) const
     {
         Template proj;
@@ -318,10 +303,12 @@ class LDATransform : public Transform
     Q_PROPERTY(bool pcaWhiten READ get_pcaWhiten WRITE set_pcaWhiten RESET reset_pcaWhiten STORED false)
     Q_PROPERTY(int directLDA READ get_directLDA WRITE set_directLDA RESET reset_directLDA STORED false)
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
     BR_PROPERTY(float, directDrop, 0.1)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     int dimsOut;
     Eigen::VectorXf mean;
@@ -330,7 +317,7 @@ class LDATransform : public Transform
     void train(const TemplateList &_trainingSet)
     {
         // creates "Label"
-        TemplateList trainingSet = TemplateList::relabel(_trainingSet, "Subject");
+        TemplateList trainingSet = TemplateList::relabel(_trainingSet, inputVariable);
 
         int instances = trainingSet.size();
 

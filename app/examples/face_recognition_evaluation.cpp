@@ -25,8 +25,7 @@
  *      -compare target.gal query.gal scores.mtx \
  *      -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
  *      -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
- *      -eval ../data/MEDS/simmat/COTS_MEDS.mtx MEDS.mask Algorithm_Dataset/COTS_MEDS.csv \
- *      -plot Algorithm_Dataset/FaceRecognition_MEDS.csv Algorithm_Dataset/COTS_MEDS.csv MEDS
+ *      -plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
  * \endcode
  */
 

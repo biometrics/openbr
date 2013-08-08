@@ -437,6 +437,18 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                         newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                     }
+<<<<<<< HEAD
+=======
+                } else if (newTemplates[i].file.getBool("allPartitions")) {
+                    // The allPartitions flag is used to add an extended set
+                    // of target images to every partition
+                    newTemplates[i].file.set("Partition", -1);
+                } else {
+                    // Direct use of "Label" is not general -cao
+                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
+                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                    newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+>>>>>>> c2b1835e05d3b229db72d8829fb9ebf7e3cf31d8
                 }
             }
         }
@@ -834,7 +846,7 @@ float br::Context::progress() const
 
 void br::Context::setProperty(const QString &key, const QString &value)
 {
-    Object::setProperty(key, value);
+    Object::setProperty(key, value.isEmpty() ? QVariant() : value);
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
@@ -911,6 +923,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     Globals->useGui = use_gui;
 
     qInstallMessageHandler(messageHandler);
+
+    Common::seedRNG();
 
     // Search for SDK
     if (sdkPath.isEmpty()) {
@@ -1104,9 +1118,6 @@ Transform::Transform(bool _independent, bool _trainable)
 {
     independent = _independent;
     trainable = _trainable;
-    classes = std::numeric_limits<int>::max();
-    instances = std::numeric_limits<int>::max();
-    fraction = 1;
 }
 
 Transform *Transform::make(QString str, QObject *parent)
@@ -1162,9 +1173,6 @@ Transform *Transform::make(QString str, QObject *parent)
 Transform *Transform::clone() const
 {
     Transform *clone = Factory<Transform>::make(file.flat());
-    clone->classes = classes;
-    clone->instances = instances;
-    clone->fraction = fraction;
     return clone;
 }
 
@@ -1190,28 +1198,6 @@ void Transform::project(const TemplateList &src, TemplateList &dst) const
     for (int i=0; i<dst.size(); i++)
         if (Globals->parallelism > 1) futures.addFuture(QtConcurrent::run(_project, this, &src[i], &dst[i]));
         else                          _project(this, &src[i], &dst[i]);
-    futures.waitForFinished();
-}
-
-static void _backProject(const Transform *transform, const Template *dst, Template *src)
-{
-    try {
-        transform->backProject(*dst, *src);
-    } catch (...) {
-        qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
-        *src = Template(dst->file);
-        src->file.set("FTE", true);
-    }
-}
-
-void Transform::backProject(const TemplateList &dst, TemplateList &src) const
-{
-    src.reserve(dst.size());
-    for (int i=0; i<dst.size(); i++) src.append(Template());
-
-    QFutureSynchronizer<void> futures;
-    for (int i=0; i<dst.size(); i++)
-        futures.addFuture(QtConcurrent::run(_backProject, this, &dst[i], &src[i]));
     futures.waitForFinished();
 }
 

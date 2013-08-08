@@ -49,19 +49,20 @@ private:
     }
 };
 
-
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV cascade classifier
  * \author Josh Klontz \cite jklontz
  */
-class CascadeTransform : public UntrainableTransform
+class CascadeTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+    Q_PROPERTY(bool ROCMode READ get_ROCMode WRITE set_ROCMode RESET reset_ROCMode STORED false)
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
+    BR_PROPERTY(bool, ROCMode, false)
 
     Resource<CascadeClassifier> cascadeResource;
 
@@ -72,18 +73,54 @@ class CascadeTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+        TemplateList temp;
+        project(TemplateList() << src, temp);
+        if (!temp.isEmpty()) dst = temp.first();
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
         CascadeClassifier *cascade = cascadeResource.acquire();
-        vector<Rect> rects;
-        cascade->detectMultiScale(src, rects, 1.2, 5, src.file.get<bool>("enrollAll", false) ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
-        cascadeResource.release(cascade);
+        foreach (const Template &t, src) {
+            const bool enrollAll = t.file.getBool("enrollAll");
 
-        if (!src.file.get<bool>("enrollAll", false) && rects.empty())
-            rects.push_back(Rect(0, 0, src.m().cols, src.m().rows));
+            for (int i=0; i<t.size(); i++) {
+                const Mat &m = t[i];
+                vector<Rect> rects;
+                vector<int> rejectLevels;
+                vector<double> levelWeights;
+                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, 5, (enrollAll ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT) | CV_HAAR_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
+                else         cascade->detectMultiScale(m, rects, 1.2, 5, enrollAll ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
 
-        foreach (const Rect &rect, rects) {
-            dst += src;
-            dst.file.appendRect(OpenCVUtils::fromRect(rect));
+                if (!enrollAll && rects.empty())
+                    rects.push_back(Rect(0, 0, m.cols, m.rows));
+
+                for (size_t j=0; j<rects.size(); j++) {
+                    Template u(t.file, m);
+                    if (rejectLevels.size() > j)
+                        u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
+                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                    u.file.appendRect(rect);
+                    u.file.set(model, rect);
+                    dst.append(u);
+                }
+            }
         }
+
+        cascadeResource.release(cascade);
+    }
+
+    // TODO: Remove this code when ready to break binary compatibility
+    void store(QDataStream &stream) const
+    {
+        int size = 1;
+        stream << size;
+    }
+
+    void load(QDataStream &stream)
+    {
+        int size;
+        stream >> size;
     }
 };
 

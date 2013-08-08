@@ -71,7 +71,7 @@ class arffGallery : public Gallery
         }
 
         arffFile.write(qPrintable(OpenCVUtils::matrixToStringList(t).join(',')));
-        arffFile.write(qPrintable(",'" + t.file.get<QString>("Subject") + "'\n"));
+        arffFile.write(qPrintable(",'" + t.file.get<QString>("Label") + "'\n"));
     }
 };
 
@@ -643,10 +643,15 @@ class dbGallery : public Gallery
             query = query.mid(1, query.size()-2);
         if (!q.exec(query))
             qFatal("%s.", qPrintable(q.lastError().text()));
+
         if ((q.record().count() == 0) || (q.record().count() > 3))
             qFatal("Query record expected one to three fields, got %d.", q.record().count());
         const bool hasMetadata = (q.record().count() >= 2);
         const bool hasFilter = (q.record().count() >= 3);
+
+        QString labelName = "Label";
+        if (q.record().count() >= 2)
+            labelName = q.record().fieldName(1);
 
         // subset = seed:subjectMaxSize:numSubjects:subjectMinSize or
         // subset = seed:{Metadata,...,Metadata}:numSubjects
@@ -673,6 +678,7 @@ class dbGallery : public Gallery
         QHash<QString, QList<Entry> > entries; // QHash<Label, QList<Entry> >
         while (q.next()) {
             if (hasFilter && (seed >= 0) && (qHash(q.value(2).toString()) % 2 != (uint)seed % 2)) continue; // Ensures training and testing filters don't overlap
+
             if (metadataFields.isEmpty())
                 entries[hasMetadata ? q.value(1).toString() : ""].append(QPair<QString,QString>(q.value(0).toString(), hasFilter ? q.value(2).toString() : ""));
             else
@@ -707,8 +713,10 @@ class dbGallery : public Gallery
 
                 if (entryList.size() > subjectMaxSize)
                     std::random_shuffle(entryList.begin(), entryList.end());
-                foreach (const Entry &entry, entryList.mid(0, subjectMaxSize))
-                    templates.append(File(entry.first, label));
+                foreach (const Entry &entry, entryList.mid(0, subjectMaxSize)) {
+                    templates.append(File(entry.first));
+                    templates.last().file.set(labelName, label);
+                }
                 numSubjects--;
             }
         }
@@ -816,7 +824,7 @@ class statGallery : public Gallery
 
     void write(const Template &t)
     {
-        subjects.insert(t.file.get<QString>("Subject"));
+        subjects.insert(t.file.get<QString>("Label"));
         bytes.append(t.bytes());
     }
 };

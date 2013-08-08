@@ -105,6 +105,24 @@ class PipeTransform : public CompositeTransform
                 transforms[i]->train(copy);
             }
 
+            // if the transform is time varying, we can't project it in parallel
+            if (transforms[i]->timeVarying()) {
+                fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
+                for (int j=0; j < singleItemLists.size();j++)
+                    transforms[i]->projectUpdate(singleItemLists[j], singleItemLists[j]);
+
+                // advance i since we already projected for this stage.
+                i++;
+
+                // set up copy again
+                copy.clear();
+                for (int j=0; j < singleItemLists.size(); j++)
+                    copy.append(singleItemLists[j]);
+
+                // the next stage might be trainable, so continue to evaluate it.
+                continue;
+            }
+
             // We project through any subsequent untrainable transforms at once
             //   as a memory optimization in case any of these intermediate
             //   transforms allocate a lot of memory (like OpenTransform)
@@ -112,7 +130,8 @@ class PipeTransform : public CompositeTransform
             //   by that transform at once if we can avoid it.
             int nextTrainableTransform = i+1;
             while ((nextTrainableTransform < transforms.size()) &&
-                   !transforms[nextTrainableTransform]->trainable)
+                   !transforms[nextTrainableTransform]->trainable &&
+                   !transforms[nextTrainableTransform]->timeVarying())
                 nextTrainableTransform++;
 
             fprintf(stderr, " projecting...");
@@ -126,26 +145,6 @@ class PipeTransform : public CompositeTransform
                 copy.append(singleItemLists[j]);
 
             i = nextTrainableTransform;
-        }
-    }
-
-    void backProject(const Template &dst, Template &src) const
-    {
-        // Backprojecting a time-varying transform is probably not going to work.
-        if (timeVarying()) qFatal("No backProject defined for time-varying transform");
-
-        src = dst;
-        // Reverse order in which transforms are processed
-        int length = transforms.length();
-        for (int i=length-1; i>=0; i--) {
-            Transform *f = transforms.at(i);
-            try {
-                src >> *f;
-            } catch (...) {
-                qWarning("Exception triggered when processing %s with transform %s", qPrintable(dst.file.flat()), qPrintable(f->objectName()));
-                src = Template(src.file);
-                src.file.set("FTE", true);
-            }
         }
     }
 
@@ -305,8 +304,6 @@ class ForkTransform : public CompositeTransform
             futures.addFuture(QtConcurrent::run(_train, transforms[i], &data));
         futures.waitForFinished();
     }
-
-    void backProject(const Template &dst, Template &src) const {Transform::backProject(dst, src);}
 
     // same as _project, but calls projectUpdate on sub-transforms
     void projectupdate(const Template & src, Template & dst)
@@ -645,17 +642,28 @@ public:
         QList<TemplateList> input_buffer;
         input_buffer.reserve(src.size());
 
+        QFutureSynchronizer<void> futures;
+
         for (int i =0; i < src.size();i++) {
             input_buffer.append(TemplateList());
             output_buffer.append(TemplateList());
         }
-
-        QFutureSynchronizer<void> futures;
+        QList<QFuture<void> > temp;
+        temp.reserve(src.size());
         for (int i=0; i<src.size(); i++) {
             input_buffer[i].append(src[i]);
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
-            else                                                          _projectList( transform, &input_buffer[i], &output_buffer[i]);
+
+            if (Globals->parallelism > 1) temp.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
+            else _projectList(transform, &input_buffer[i], &output_buffer[i]);
         }
+        // We add the futures in reverse order, since in Qt 5.1 at least the
+        // waiting thread will wait on them in the order added (which for uniform priority
+        // threads is the order of execution), and we want the waiting thread to go in the opposite order
+        // so that it can steal runnables and do something besides wait.
+        for (int i = temp.size() - 1; i >= 0; i--) {
+            futures.addFuture(temp[i]);
+        }
+
         futures.waitForFinished();
 
         for (int i=0; i<src.size(); i++) dst.append(output_buffer[i]);

@@ -31,8 +31,10 @@ public:
     virtual ~SharedBuffer() {}
 
     virtual void addItem(FrameData * input)=0;
+    virtual void reset()=0;
 
     virtual FrameData * tryGetItem()=0;
+    virtual int size()=0;
 };
 
 // for n - 1 boundaries, multiple threads call addItem, the frames are
@@ -74,6 +76,21 @@ public:
         return output;
     }
 
+    virtual int size()
+    {
+        QMutexLocker lock(&bufferGuard);
+        return buffer.size();
+    }
+    virtual void reset()
+    {
+        if (size() != 0)
+            qDebug("Sequencing buffer has non-zero size during reset!");
+
+        QMutexLocker lock(&bufferGuard);
+        next_target = 0;
+    }
+
+
 private:
     QMutex bufferGuard;
     int next_target;
@@ -95,6 +112,11 @@ public:
         outputBuffer = &buffer2;
     }
 
+    int size()
+    {
+        QReadLocker readLock(&bufferGuard);
+        return inputBuffer->size() + outputBuffer->size();
+    }
 
     // called from the producer thread
     void addItem(FrameData * input)
@@ -133,6 +155,13 @@ public:
         return output;
     }
 
+    virtual void reset()
+    {
+        if (this->size() != 0)
+            qDebug("Shared buffer has non-zero size during reset!");
+    }
+
+
 private:
     // The read-write lock. The thread adding to this buffer can add
     // to the current input buffer if it has a read lock. The thread
@@ -160,9 +189,8 @@ class DataSource
 public:
     DataSource(int maxFrames=500)
     {
+        // The sequence number of the last frame
         final_frame = -1;
-        last_issued = -2;
-        last_received = -3;
         for (int i=0; i < maxFrames;i++)
         {
             allFrames.addItem(new FrameData());
@@ -181,52 +209,67 @@ public:
     }
 
     // non-blocking version of getFrame
-    FrameData * tryGetFrame()
+    // Returns a NULL FrameData if too many frames are out, or the
+    // data source is broken. Sets last_frame to true iff the FrameData
+    // returned is the last valid frame, and the data source is now broken.
+    FrameData * tryGetFrame(bool & last_frame)
     {
+        last_frame = false;
+
+        if (is_broken) {
+            return NULL;
+        }
+
+        // Try to get a FrameData from the pool, if we can't it means too many
+        // frames are already out, and we will return NULL to indicate failure
         FrameData * aFrame = allFrames.tryGetItem();
         if (aFrame == NULL)
             return NULL;
 
-        aFrame->data.clear();
-        aFrame->sequenceNumber = -1;
-
+        // Try to actually read a frame, if this returns false the data source is broken
         bool res = getNext(*aFrame);
 
-        // The datasource broke.
-        if (!res) {
-            allFrames.addItem(aFrame);
-
+        // The datasource broke, update final_frame
+        if (!res)
+        {
             QMutexLocker lock(&last_frame_update);
-            // Did we already receive the last frame?
-            final_frame = last_issued;
-
-            // We got the last frame before the data source broke,
-            // better pulse lastReturned
-            if (final_frame == last_received) {
-                lastReturned.wakeAll();
-            }
-            else if (final_frame < last_received)
-                std::cout << "Bad last frame " << final_frame << " but received " << last_received << std::endl;
-
-            return NULL;
+            final_frame = lookAhead.back()->sequenceNumber;
+            allFrames.addItem(aFrame);
         }
-        last_issued = aFrame->sequenceNumber;
-        return aFrame;
+        else {
+            lookAhead.push_back(aFrame);
+        }
+
+        // we will return the first frame on the lookAhead buffer
+        FrameData * rVal = lookAhead.first();
+        lookAhead.pop_front();
+
+        // If this is the last frame, say so
+        if (rVal->sequenceNumber == final_frame) {
+            last_frame = true;
+            is_broken = true;
+        }
+
+        return rVal;
     }
 
-    // Returns true if the frame returned was the last
+    // Return a frame to the pool, returns true if the frame returned was the last
     // frame issued, false otherwise
     bool returnFrame(FrameData * inputFrame)
     {
+        int frameNumber = inputFrame->sequenceNumber;
+
+        inputFrame->data.clear();
+        inputFrame->sequenceNumber = -1;
         allFrames.addItem(inputFrame);
 
         bool rval = false;
 
         QMutexLocker lock(&last_frame_update);
-        last_received = inputFrame->sequenceNumber;
 
-        if (inputFrame->sequenceNumber == final_frame) {
+        if (frameNumber == final_frame) {
             // We just received the last frame, better pulse
+            allReturned = true;
             lastReturned.wakeAll();
             rval = true;
         }
@@ -234,23 +277,88 @@ public:
         return rval;
     }
 
-    void waitLast()
+    bool waitLast()
     {
         QMutexLocker lock(&last_frame_update);
-        lastReturned.wait(&last_frame_update);
+
+        while (!allReturned)
+        {
+            // This would be a safer wait if we used a timeout, but
+            // theoretically that should never matter.
+            lastReturned.wait(&last_frame_update);
+        }
+        return true;
     }
 
-    virtual void close() = 0;
-    virtual bool open(Template & output, int start_index=0) = 0;
-    virtual bool isOpen() = 0;
+    bool open(Template & output, int start_index = 0)
+    {
+        is_broken = false;
+        allReturned = false;
 
+        // The last frame isn't initialized yet
+        final_frame = -1;
+        // Start our sequence numbers from the input index
+        next_sequence_number = start_index;
+
+        // Actually open the data source
+        bool open_res = concreteOpen(output);
+
+        // We couldn't open the data source
+        if (!open_res) {
+            is_broken = true;
+            return false;
+        }
+
+        // Try to get a frame from the global pool
+        FrameData * firstFrame = allFrames.tryGetItem();
+
+        // If this fails, things have gone pretty badly.
+        if (firstFrame == NULL) {
+            is_broken = true;
+            return false;
+        }
+
+        // Read a frame from the video source
+        bool res = getNext(*firstFrame);
+
+        // the data source broke already, we couldn't even get one frame
+        // from it even though it claimed to have opened successfully.
+        if (!res) {
+            is_broken = true;
+            return false;
+        }
+
+        // We read one frame ahead of the last one returned, this allows
+        // us to know which frame is the final frame when we return it.
+        lookAhead.append(firstFrame);
+        return true;
+    }
+
+    /*
+     * Pure virtual methods
+     */
+
+    // isOpen doesn't appear to particularly work when used on opencv
+    // VideoCaptures, so we don't use it for anything important.
+    virtual bool isOpen()=0;
+    // Called from open, open the data source specified by the input
+    // template, don't worry about setting any of the state variables
+    // set in open.
+    virtual bool concreteOpen(Template & output) = 0;
+    // Get the next frame from the data source, store the results in
+    // FrameData (including the actual frame and appropriate sequence
+    // number).
     virtual bool getNext(FrameData & input) = 0;
+    // close the currently open data source.
+    virtual void close() = 0;
 
+    int next_sequence_number;
 protected:
     DoubleBuffer allFrames;
     int final_frame;
-    int last_issued;
-    int last_received;
+    bool is_broken;
+    bool allReturned;
+    QList<FrameData *> lookAhead;
 
     QWaitCondition lastReturned;
     QMutex last_frame_update;
@@ -262,14 +370,14 @@ class VideoDataSource : public DataSource
 public:
     VideoDataSource(int maxFrames) : DataSource(maxFrames) {}
 
-    bool open(Template &input, int start_index=0)
+    bool concreteOpen(Template &input)
     {
-        final_frame = -1;
-        last_issued = -2;
-        last_received = -3;
-
-        next_idx = start_index;
         basis = input;
+
+        // We can open either files (well actually this includes addresses of ip cameras
+        // through ffmpeg), or webcams. Webcam VideoCaptures are created through a separate
+        // overload of open that takes an integer, not a string.
+        // So, does this look like an integer?
         bool is_int = false;
         int anInt = input.file.name.toInt(&is_int);
         if (is_int)
@@ -287,7 +395,8 @@ public:
         } else {
             // Yes, we should specify absolute path:
             // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
-            video.open(QFileInfo(input.file.name).absoluteFilePath().toStdString());
+            QString fileName = (Globals->path.isEmpty() ? "" : Globals->path + "/") + input.file.name;
+            video.open(QFileInfo(fileName).absoluteFilePath().toStdString());
         }
 
         return video.isOpened();
@@ -302,29 +411,38 @@ public:
 private:
     bool getNext(FrameData & output)
     {
-        if (!isOpen())
+        if (!isOpen()) {
+            qDebug("video source is not open");
             return false;
+        }
 
         output.data.append(Template(basis.file));
-        output.data.last().append(cv::Mat());
+        output.data.last().m() = cv::Mat();
 
-        output.sequenceNumber = next_idx;
-        next_idx++;
+        output.sequenceNumber = next_sequence_number;
+        next_sequence_number++;
 
-        bool res = video.read(output.data.last().last());
-        output.data.last().last() = output.data.last().last().clone();
+        cv::Mat temp;
+        bool res = video.read(temp);
 
         if (!res) {
+            // The video capture broke, return false.
+            output.data.last().m() = cv::Mat();
             close();
             return false;
         }
+
+        // This clone is critical, if we don't do it then the matrix will
+        // be an alias of an internal buffer of the video source, leading
+        // to various problems later.
+        output.data.last().m() = temp.clone();
+
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
         return true;
     }
 
     cv::VideoCapture video;
     Template basis;
-    int next_idx;
 };
 
 // Given a template as input, return its matrices one by one on subsequent calls
@@ -334,21 +452,18 @@ class TemplateDataSource : public DataSource
 public:
     TemplateDataSource(int maxFrames) : DataSource(maxFrames)
     {
-        current_idx = INT_MAX;
+        current_matrix_idx = INT_MAX;
         data_ok = false;
     }
-    bool data_ok;
 
-    bool open(Template &input, int start_index=0)
+    // To "open" it we just set appropriate indices, we assume that if this
+    // is an image, it is already loaded into memory.
+    bool concreteOpen(Template &input)
     {
         basis = input;
-        current_idx = 0;
-        next_sequence = start_index;
-        final_frame = -1;
-        last_issued = -2;
-        last_received = -3;
+        current_matrix_idx = 0;
 
-        data_ok = current_idx < basis.size();
+        data_ok = current_matrix_idx < basis.size();
         return data_ok;
     }
 
@@ -358,39 +473,41 @@ public:
 
     void close()
     {
-        current_idx = INT_MAX;
+        current_matrix_idx = INT_MAX;
         basis.clear();
     }
 
 private:
     bool getNext(FrameData & output)
     {
-        data_ok = current_idx < basis.size();
+        data_ok = current_matrix_idx < basis.size();
         if (!data_ok)
             return false;
 
-        output.data.append(basis[current_idx]);
-        current_idx++;
+        output.data.append(basis[current_matrix_idx]);
+        current_matrix_idx++;
 
-        output.sequenceNumber = next_sequence;
-        next_sequence++;
+        output.sequenceNumber = next_sequence_number;
+        next_sequence_number++;
 
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
         return true;
     }
 
     Template basis;
-    int current_idx;
-    int next_sequence;
+    // Index of the next matrix to output from the template
+    int current_matrix_idx;
+
+    // is current_matrix_idx in bounds?
+    bool data_ok;
 };
 
-// Given a template as input, create a VideoDataSource or a TemplateDataSource
-// depending on whether or not it looks like the input template has already
-// loaded frames into memory.
+// Given a templatelist as input, create appropriate data source for each
+// individual template
 class DataSourceManager : public DataSource
 {
 public:
-    DataSourceManager()
+    DataSourceManager(int activeFrames=100) : DataSource(activeFrames)
     {
         actualSource = NULL;
     }
@@ -398,6 +515,11 @@ public:
     ~DataSourceManager()
     {
         close();
+    }
+
+    int size()
+    {
+        return this->allFrames.size();
     }
 
     void close()
@@ -409,33 +531,40 @@ public:
         }
     }
 
+    // We are used through a call to open(TemplateList)
     bool open(TemplateList & input)
     {
-        currentIdx = 0;
+        // Set up variables specific to us
+        current_template_idx = 0;
         templates = input;
 
-        return open(templates[currentIdx]);
+        // Call datasourece::open on the first template to set up
+        // state variables
+        return DataSource::open(templates[current_template_idx]);
     }
 
-    bool open(Template & input, int start_index=0)
+    // Create an actual data source of appropriate type for this template
+    // (initially called via the call to DataSource::open, called later
+    // as we run out of frames on our templates).
+    bool concreteOpen(Template & input)
     {
         close();
-        final_frame = -1;
-        last_issued = -2;
-        last_received = -3;
-        next_frame = start_index;
 
+        bool open_res = false;
         // Input has no matrices? Its probably a video that hasn't been loaded yet
         if (input.empty()) {
             actualSource = new VideoDataSource(0);
-            actualSource->open(input, next_frame);
+            open_res = actualSource->concreteOpen(input);
         }
+        // If the input is not empty, we assume it is a set of frames already
+        // in memory.
         else {
-            // create frame dealer
             actualSource = new TemplateDataSource(0);
-            actualSource->open(input, next_frame);
+            open_res = actualSource->concreteOpen(input);
         }
-        if (!isOpen()) {
+
+        // The data source failed to open
+        if (!open_res) {
             delete actualSource;
             actualSource = NULL;
             return false;
@@ -446,30 +575,55 @@ public:
     bool isOpen() { return !actualSource ? false : actualSource->isOpen(); }
 
 protected:
-    int currentIdx;
-    int next_frame;
+    // Index of the template in the templatelist we are currently reading from
+    int current_template_idx;
+
     TemplateList templates;
     DataSource * actualSource;
+    // Get the next frame, if we run out of frames on the current template
+    // move on to the next one.
     bool getNext(FrameData & output)
     {
         bool res = actualSource->getNext(output);
+        output.sequenceNumber = next_sequence_number;
+
+        // OK we got a frame
         if (res) {
-            next_frame = output.sequenceNumber+1;
+            // Override the sequence number set by actualSource
+            output.data.last().file.set("FrameNumber", output.sequenceNumber);
+            next_sequence_number++;
+            if (output.data.last().last().empty())
+                qDebug("broken matrix");
             return true;
         }
 
+        // We didn't get a frame, try to move on to the next template.
         while(!res) {
-            currentIdx++;
+            output.data.clear();
+            current_template_idx++;
 
-            if (currentIdx >= templates.size())
+            // No more templates? We're done
+            if (current_template_idx >= templates.size())
                 return false;
-            bool open_res = open(templates[currentIdx], next_frame);
+
+            // open the next data source
+            bool open_res = concreteOpen(templates[current_template_idx]);
+            // We couldn't open it, give up? We could maybe continue here
+            // but don't currently.
             if (!open_res)
                 return false;
+
+            // get a frame from the newly opened data source, if that fails
+            // we continue to open the next one.
             res = actualSource->getNext(output);
         }
+        // Finally, set the sequence number for the frame we actually return.
+        output.sequenceNumber = next_sequence_number++;
+        output.data.last().file.set("FrameNumber", output.sequenceNumber);
 
-        next_frame = output.sequenceNumber+1;
+        if (output.data.last().last().empty())
+            qDebug("broken matrix");
+
         return res;
     }
 
@@ -477,9 +631,14 @@ protected:
 
 class ProcessingStage;
 
-class BasicLoop : public QRunnable
+class BasicLoop : public QRunnable, public QFutureInterface<void>
 {
 public:
+    BasicLoop()
+    {
+        this->reportStarted();
+    }
+
     void run();
 
     QList<ProcessingStage *> * stages;
@@ -506,12 +665,15 @@ public:
 
     virtual void reset()=0;
 
+    virtual void status()=0;
+
 protected:
     int thread_count;
 
     SharedBuffer * inputBuffer;
     ProcessingStage * nextStage;
     QList<ProcessingStage *> * stages;
+    QThreadPool * threads;
     Transform * transform;
 
 };
@@ -530,6 +692,7 @@ void BasicLoop::run()
         current_idx++;
         current_idx = current_idx % stages->size();
     }
+    this->reportFinished();
 }
 
 class MultiThreadStage : public ProcessingStage
@@ -537,7 +700,8 @@ class MultiThreadStage : public ProcessingStage
 public:
     MultiThreadStage(int _input) : ProcessingStage(_input) {}
 
-
+    // Not much to worry about here, we will project the input
+    // and try to continue to the next stage.
     FrameData * run(FrameData * input, bool & should_continue)
     {
         if (input == NULL) {
@@ -551,7 +715,8 @@ public:
         return input;
     }
 
-    // Called from a different thread than run
+    // Called from a different thread than run. Nothing to worry about
+    // we offer no restrictions on when loops may enter this stage.
     virtual bool tryAcquireNextStage(FrameData *& input)
     {
         (void) input;
@@ -562,8 +727,10 @@ public:
     {
         // nothing to do.
     }
+    void status(){
+        qDebug("multi thread stage %d, nothing to worry about", this->stage_id);
+    }
 };
-
 
 class SingleThreadStage : public ProcessingStage
 {
@@ -572,13 +739,18 @@ public:
     {
         currentStatus = STOPPING;
         next_target = 0;
+        // If the previous stage is single-threaded, queued inputs
+        // are stored in a double buffer
         if (input_variance) {
             this->inputBuffer = new DoubleBuffer();
         }
+        // If it's multi-threaded we need to put the inputs back in order
+        // before we can use them, so we use a sequencing buffer.
         else {
             this->inputBuffer = new SequencingBuffer();
         }
     }
+
     ~SingleThreadStage()
     {
         delete inputBuffer;
@@ -589,6 +761,7 @@ public:
         QWriteLocker writeLock(&statusLock);
         currentStatus = STOPPING;
         next_target = 0;
+        inputBuffer->reset();
     }
 
 
@@ -627,16 +800,24 @@ public:
         lock.unlock();
 
         if (newItem)
-        {
-            BasicLoop * next = new BasicLoop();
-            next->stages = stages;
-            next->start_idx = this->stage_id;
-            next->startItem = newItem;
-
-            QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
-        }
+            startThread(newItem);
 
         return input;
+    }
+
+    void startThread(br::FrameData * newItem)
+    {
+        BasicLoop * next = new BasicLoop();
+        next->stages = stages;
+        next->start_idx = this->stage_id;
+        next->startItem = newItem;
+
+        // We start threads with priority equal to their stage id
+        // This is intended to ensure progression, we do queued late stage
+        // jobs before queued early stage jobs, and so tend to finish frames
+        // rather than go stage by stage. In Qt 5.1, priorities are priorities
+        // so we use the stage_id directly.
+        this->threads->start(next, stage_id);
     }
 
 
@@ -671,79 +852,109 @@ public:
 
         return true;
     }
+
+    void status(){
+        qDebug("single thread stage %d, status starting? %d, next %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->inputBuffer->size());
+    }
+
 };
 
-// No input buffer, instead we draw templates from some data source
-// Will be operated by the main thread for the stream
+// This stage reads new frames from the data source.
 class FirstStage : public SingleThreadStage
 {
 public:
-    FirstStage() : SingleThreadStage(true) {}
+    FirstStage(int activeFrames = 100) : SingleThreadStage(true), dataSource(activeFrames){ }
 
     DataSourceManager dataSource;
 
+    void reset()
+    {
+        dataSource.close();
+        SingleThreadStage::reset();
+    }
+
     FrameData * run(FrameData * input, bool & should_continue)
     {
-        // Is there anything on our input buffer? If so we should start a thread with that.
-        QWriteLocker lock(&statusLock);
-        input = dataSource.tryGetFrame();
-        // Datasource broke?
-        if (!input)
-        {
-            currentStatus = STOPPING;
-            should_continue = false;
-            return NULL;
-        }
-        lock.unlock();
+        if (input == NULL)
+            qFatal("NULL frame in input stage");
 
+        // Can we enter the next stage?
         should_continue = nextStage->tryAcquireNextStage(input);
 
-        BasicLoop * next = new BasicLoop();
-        next->stages = stages;
-        next->start_idx = this->stage_id;
-        next->startItem = NULL;
+        // Try to get a frame from the datasource, we keep working on
+        // the frame we have, but we will queue another job for the next
+        // frame if a frame is currently available.
+        QWriteLocker lock(&statusLock);
+        bool last_frame = false;
+        FrameData * newFrame = dataSource.tryGetFrame(last_frame);
 
-        QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
+        // Were we able to get a frame?
+        if (newFrame) startThread(newFrame);
+        // If not this stage will enter a stopped state.
+        else {
+            currentStatus = STOPPING;
+        }
+
+        lock.unlock();
 
         return input;
     }
 
-    // Calledfrom a different thread than run.
+    // The last stage, trying to access the first stage
     bool tryAcquireNextStage(FrameData *& input)
     {
+        // Return the frame, was it the last one?
         bool was_last = dataSource.returnFrame(input);
         input = NULL;
+
+        // OK we won't continue.
         if (was_last) {
             return false;
         }
 
-        if (!dataSource.isOpen())
-            return false;
-
         QReadLocker lock(&statusLock);
-        // Thread is already running, we should just return
+        // If the first stage is already active we will just end.
         if (currentStatus == STARTING)
         {
             return false;
         }
-        // Have to change to a write lock to modify currentStatus
+
+        // Otherwise we will try to continue, but to do so we have to
+        // escalate the lock, and sadly there is no way to do so without
+        // releasing the read-mode lock, and getting a new write-mode lock.
         lock.unlock();
 
         QWriteLocker writeLock(&statusLock);
-        // But someone else might have started a thread in the meantime
+        // currentStatus might have changed in the gap between releasing the read
+        // lock and getting the write lock.
         if (currentStatus == STARTING)
         {
             return false;
         }
-        // Ok we'll start a thread
+
+        bool last_frame = false;
+        // Try to get a frame from the data source, if we get one we will
+        // continue to the first stage.
+        input = dataSource.tryGetFrame(last_frame);
+
+        if (!input) {
+            return false;
+        }
+
         currentStatus = STARTING;
 
-        // We always start a readstage thread with null input, so nothing to do here
         return true;
     }
 
+    void status(){
+        qDebug("Read stage %d, status starting? %d, next frame %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->dataSource.size());
+    }
+
+
 };
 
+// Appened to the end of a Stream's transform sequence. Collects the output
+// from each frame on a single templatelist
 class LastStage : public SingleThreadStage
 {
 public:
@@ -756,6 +967,7 @@ public:
 private:
     TemplateList collectedOutput;
 public:
+
     void reset()
     {
         collectedOutput.clear();
@@ -774,11 +986,14 @@ public:
         }
         next_target = input->sequenceNumber + 1;
 
+        // add the item to our output buffer
         collectedOutput.append(input->data);
 
+        // Can we enter the read stage?
         should_continue = nextStage->tryAcquireNextStage(input);
 
-        // Is there anything on our input buffer? If so we should start a thread with that.
+        // Is there anything on our input buffer? If so we should start a thread
+        // in this stage to process that frame.
         QWriteLocker lock(&statusLock);
         FrameData * newItem = inputBuffer->tryGetItem();
         if (!newItem)
@@ -788,23 +1003,25 @@ public:
         lock.unlock();
 
         if (newItem)
-        {
-            BasicLoop * next = new BasicLoop();
-            next->stages = stages;
-            next->start_idx = this->stage_id;
-            next->startItem = newItem;
-
-            QThreadPool::globalInstance()->start(next, stages->size() - this->stage_id);
-        }
+            startThread(newItem);
 
         return input;
     }
+
+    void status(){
+        qDebug("Collection stage %d, status starting? %d, next %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->inputBuffer->size());
+    }
+
 };
+
 
 class StreamTransform : public CompositeTransform
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
+    BR_PROPERTY(int, activeFrames, 100)
+
     void train(const TemplateList & data)
     {
         foreach(Transform * transform, transforms) {
@@ -826,7 +1043,8 @@ public:
         qFatal("whatever");
     }
 
-    // start processing
+    // start processing, consider all templates in src a continuous
+    // 'video'
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
         dst = src;
@@ -834,21 +1052,27 @@ public:
         bool res = readStage->dataSource.open(dst);
         if (!res) return;
 
-        QThreadPool::globalInstance()->releaseThread();
+        // Start the first thread in the stream.
+        QWriteLocker lock(&readStage->statusLock);
         readStage->currentStatus = SingleThreadStage::STARTING;
 
-        BasicLoop loop;
-        loop.stages = &this->processingStages;
-        loop.start_idx = 0;
-        loop.startItem = NULL;
-        loop.setAutoDelete(false);
+        // We have to get a frame before starting the thread
+        bool last_frame = false;
+        FrameData * firstFrame = readStage->dataSource.tryGetFrame(last_frame);
+        if (firstFrame == NULL)
+            qFatal("Failed to read first frame of video");
 
-        QThreadPool::globalInstance()->start(&loop, processingStages.size() - processingStages[0]->stage_id);
+        readStage->startThread(firstFrame);
+        lock.unlock();
 
-        // Wait for the end.
-        readStage->dataSource.waitLast();
-        QThreadPool::globalInstance()->reserveThread();
+        // Wait for the stream to process the last frame available from
+        // the data source.
+        bool wait_res = false;
+        wait_res = readStage->dataSource.waitLast();
 
+        // Now that there are no more incoming frames, call finalize
+        // on each transform in turn to collect any last templates
+        // they wish to issue.
         TemplateList final_output;
 
         // Push finalize through the stages
@@ -864,7 +1088,8 @@ public:
             final_output.append(output_set);
         }
 
-        // dst is set to all output received by the final stage
+        // dst is set to all output received by the final stage, along
+        // with anything output via the calls to finalize.
         dst = collectionStage->getOutput();
         dst.append(final_output);
 
@@ -876,7 +1101,8 @@ public:
     virtual void finalize(TemplateList & output)
     {
         (void) output;
-        // Not handling this yet -cao
+        // Nothing in particular to do here, stream calls finalize
+        // on all child transforms as part of projectUpdate
     }
 
     // Create and link stages
@@ -884,26 +1110,49 @@ public:
     {
         if (transforms.isEmpty()) return;
 
+        // call CompositeTransform::init so that trainable is set
+        // correctly.
+        CompositeTransform::init();
+
+        // We share a thread pool across streams attached to the same
+        // parent tranform, retrieve or create a thread pool based
+        // on our parent transform.
+        QMutexLocker poolLock(&poolsAccess);
+        QHash<QObject *, QThreadPool *>::Iterator it;
+        if (!pools.contains(this->parent())) {
+            it = pools.insert(this->parent(), new QThreadPool(this));
+            it.value()->setMaxThreadCount(Globals->parallelism);
+        }
+        else it = pools.find(this->parent());
+        threads = it.value();
+        poolLock.unlock();
+
+        // Are our children time varying or not? This decides whether
+        // we run them in single threaded or multi threaded stages
         stage_variance.reserve(transforms.size());
         foreach (const br::Transform *transform, transforms) {
             stage_variance.append(transform->timeVarying());
         }
 
-        readStage = new FirstStage();
+        // Additionally, we have a separate stage responsible for reading
+        // frames from the data source
+        readStage = new FirstStage(activeFrames);
 
         processingStages.push_back(readStage);
         readStage->stage_id = 0;
         readStage->stages = &this->processingStages;
+        readStage->threads = this->threads;
 
+        // Initialize and link a processing stage for each of our child
+        // transforms.
         int next_stage_id = 1;
-
         bool prev_stage_variance = true;
         for (int i =0; i < transforms.size(); i++)
         {
             if (stage_variance[i])
-            {
+                // Whether or not the previous stage is multi-threaded controls
+                // the type of input buffer we need in a single threaded stage.
                 processingStages.append(new SingleThreadStage(prev_stage_variance));
-            }
             else
                 processingStages.append(new MultiThreadStage(Globals->parallelism));
 
@@ -914,24 +1163,31 @@ public:
             processingStages[i]->nextStage = processingStages[i+1];
 
             processingStages.last()->stages = &this->processingStages;
+            processingStages.last()->threads = this->threads;
 
             processingStages.last()->transform = transforms[i];
             prev_stage_variance = stage_variance[i];
         }
 
+        // We also have the last stage, which just puts the output of the
+        // previous stages on a template list.
         collectionStage = new LastStage(prev_stage_variance);
         processingStages.append(collectionStage);
         collectionStage->stage_id = next_stage_id;
         collectionStage->stages = &this->processingStages;
+        collectionStage->threads = this->threads;
 
+        // the last transform stage points to collection stage
         processingStages[processingStages.size() - 2]->nextStage = collectionStage;
 
-        // It's a ring buffer, get it?
+        // And the collection stage points to the read stage, because this is
+        // a ring buffer.
         collectionStage->nextStage = readStage;
     }
 
     ~StreamTransform()
     {
+        // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
             delete processingStages[i];
         }
@@ -945,6 +1201,25 @@ protected:
 
     QList<ProcessingStage *> processingStages;
 
+    // This is a map from parent transforms (of Streams) to thread pools. Rather
+    // than starting threads on the global thread pool, Stream uses separate thread pools
+    // keyed on their parent transform. This is necessary because stream's project starts
+    // threads, then enters an indefinite wait for them to finish. Since we are starting
+    // threads using thread pools, threads themselves are a limited resource. Therefore,
+    // the type of hold and wait done by stream project can lead to deadlock unless
+    // resources are ordered in such a way that a circular wait will not occur. The points
+    // of this hash is to introduce a resource ordering (on threads) that mirrors the structure
+    // of the algorithm. So, as long as the structure of the algorithm is a DAG, the wait done
+    // by stream project will not be circular, since every thread in stream project is waiting
+    // for threads at a lower level to do the work.
+    // This issue doesn't come up in distribute, since a thread waiting on a QFutureSynchronizer
+    // will steal work from those jobs, so in that sense distribute isn't doing a hold and wait.
+    // Waiting for a QFutureSynchronzier isn't really possible here since stream runs an indeteriminate
+    // number of jobs.
+    static QHash<QObject *, QThreadPool *> pools;
+    static QMutex poolsAccess;
+    QThreadPool * threads;
+
     void _project(const Template &src, Template &dst) const
     {
         (void) src; (void) dst;
@@ -956,6 +1231,9 @@ protected:
         qFatal("nope");
     }
 };
+
+QHash<QObject *, QThreadPool *> StreamTransform::pools;
+QMutex StreamTransform::poolsAccess;
 
 BR_REGISTER(Transform, StreamTransform)
 

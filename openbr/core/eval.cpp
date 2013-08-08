@@ -255,9 +255,20 @@ struct Counter
     }
 };
 
-void EvalClassification(const QString &predictedInput, const QString &truthInput)
+void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Label";
+    // If predictedProperty is specified, but truthProperty isn't, copy over the value from
+    // predicted property
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        truthProperty = "Label";
+
     TemplateList predicted(TemplateList::fromGallery(predictedInput));
     TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
@@ -267,9 +278,8 @@ void EvalClassification(const QString &predictedInput, const QString &truthInput
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        // Typically these lists will be of length one, but this generalization allows measuring multi-class labeling accuracy.
-        QString predictedSubject = predicted[i].file.get<QString>("Subject");
-        QString trueSubject = truth[i].file.get<QString>("Subject");
+        QString predictedSubject = predicted[i].file.get<QString>(predictedProperty);
+        QString trueSubject = truth[i].file.get<QString>(truthProperty);
 
         QStringList predictedSubjects(predictedSubject);
         QStringList trueSubjects(trueSubject);
@@ -373,6 +383,8 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     }
 
     const int keep = qMin(points.size(), Max_Points);
+    if (keep < 2) qFatal("Insufficient points.");
+
     QStringList lines; lines.reserve(keep);
     for (int i=0; i<keep; i++) {
         const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
@@ -382,6 +394,15 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     return lines;
 }
 
+QString getDetectKey(const TemplateList &templates)
+{
+    const File &f = templates.first().file;
+    foreach (const QString &key, f.localKeys())
+        if (!f.get<QRectF>(key, QRectF()).isNull())
+            return key;
+    return "";
+}
+
 float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
@@ -389,20 +410,22 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     const TemplateList truth(TemplateList::fromGallery(truthInput));
 
     // Figure out which metadata field contains a bounding box
-    QString detectKey;
-    foreach (const QString &key, truth.first().file.localKeys())
-        if (!truth.first().file.get<QRectF>(key, QRectF()).isNull()) {
-            detectKey = key;
-            break;
-        }
-    if (detectKey.isNull()) qFatal("No suitable metadata key found.");
-    else                    qDebug("Using metadata key: %s", qPrintable(detectKey));
+    QString truthDetectKey = getDetectKey(truth);
+    if (truthDetectKey.isEmpty()) qFatal("No suitable ground truth metadata key found.");
+    QString predictedDetectKey = truthDetectKey;
+    if (predicted.first().file.get<QRectF>(predictedDetectKey, QRectF()).isNull())
+        predictedDetectKey = getDetectKey(predicted);
+    if (predictedDetectKey.isEmpty()) qFatal("No suitable predicted metadata key found.");
+
+    qDebug("Using metadata key: %s%s",
+           qPrintable(predictedDetectKey),
+           qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
 
     QMap<QString, Detections> allDetections; // Organized by file, QMap used to preserve order
     foreach (const Template &t, predicted)
-        allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(detectKey), t.file.get<float>("Confidence", -1)));
+        allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(predictedDetectKey), t.file.get<float>("Confidence", -1)));
     foreach (const Template &t, truth)
-        allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(detectKey)));
+        allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(truthDetectKey)));
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     foreach (Detections detections, allDetections.values()) {
@@ -453,21 +476,44 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     return averageOverlap;
 }
 
-void EvalRegression(const QString &predictedInput, const QString &truthInput)
+void EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv)
+{
+    (void) predictedInput;
+    (void) truthInput;
+    (void) csv;
+}
+
+void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
 {
     qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+
+    if (predictedProperty.isEmpty())
+        predictedProperty = "Regressor";
+    // If predictedProperty is specified, but truthProperty isn't, copy the value over
+    // rather than using the default for truthProperty
+    else if (truthProperty.isEmpty())
+        truthProperty = predictedProperty;
+
+    if (truthProperty.isEmpty())
+        predictedProperty = "Regressand";
+
     const TemplateList predicted(TemplateList::fromGallery(predictedInput));
     const TemplateList truth(TemplateList::fromGallery(truthInput));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;
+    float maeError = 0;
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
-        rmsError += pow(predicted[i].file.get<float>("Subject")-truth[i].file.get<float>("Subject"), 2.f);
-        truthValues.append(QString::number(truth[i].file.get<float>("Subject")));
-        predictedValues.append(QString::number(predicted[i].file.get<float>("Subject")));
+
+        float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
+
+        rmsError += pow(difference, 2.f);
+        maeError += fabsf(difference);
+        truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
+        predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
     }
 
     QStringList rSource;
@@ -487,6 +533,7 @@ void EvalRegression(const QString &predictedInput, const QString &truthInput)
     if (success) QtUtils::showFile("EvalRegression.pdf");
 
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
+    qDebug("MAE = %f", maeError/predicted.size());
 }
 
 } // namespace br
