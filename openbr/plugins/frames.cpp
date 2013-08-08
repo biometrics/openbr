@@ -29,6 +29,9 @@ private:
 
     void projectUpdate(const Template &src, Template &dst)
     {
+        // DropFrames will pass on empty Templates
+        // but we only want to use non-dropped frames
+        if (src.empty()) return;
         buffer.append(src);
         if (buffer.size() < n) return;
         foreach (const Template &t, buffer) dst.append(t);
