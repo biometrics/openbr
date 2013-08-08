@@ -137,6 +137,9 @@ public:
             } else if (!strcmp(fun, "evalDetection")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalDetection'.");
                 br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");
+            } else if (!strcmp(fun, "evalLandmarking")) {
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalLandmarking'.");
+                br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
@@ -218,6 +221,7 @@ private:
                "-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth proprty name>\n"
                "-evalClustering <clusters> <gallery>\n"
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}]\n"
+               "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv}]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
