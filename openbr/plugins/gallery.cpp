@@ -135,7 +135,7 @@ class EmptyGallery : public Gallery
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    BR_PROPERTY(QString, regexp, "")
+    BR_PROPERTY(QString, regexp, QString())
 
     void init()
     {
@@ -184,7 +184,10 @@ class EmptyGallery : public Gallery
         // Enrolling a null file is used as an idiom to initialize an algorithm
         if (file.name.isEmpty()) return;
 
-        const QString destination = file.name + "/" + (file.getBool("preservePath") ? t.file.name : t.file.fileName());
+        const QString newFormat = file.get<QString>("newFormat",QString());
+        QString destination = file.name + "/" + (file.getBool("preservePath") ? t.file.path()+"/" : QString());
+        destination += (newFormat.isEmpty() ? t.file.fileName() : t.file.baseName()+newFormat);
+
         QMutexLocker diskLocker(&diskLock); // Windows prefers to crash when writing to disk in parallel
         if (t.isNull()) {
             QtUtils::copyFile(t.file.resolved(), destination);

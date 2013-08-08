@@ -433,22 +433,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         // of target images to every partition
                         newTemplates[i].file.set("Partition", -1);
                     } else {
-                        const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Subject").toLatin1(), QCryptographicHash::Md5);
-                        // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                        newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
-                    }
-<<<<<<< HEAD
-=======
-                } else if (newTemplates[i].file.getBool("allPartitions")) {
-                    // The allPartitions flag is used to add an extended set
-                    // of target images to every partition
-                    newTemplates[i].file.set("Partition", -1);
-                } else {
                     // Direct use of "Label" is not general -cao
                     const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
->>>>>>> c2b1835e05d3b229db72d8829fb9ebf7e3cf31d8
+                    }
                 }
             }
         }

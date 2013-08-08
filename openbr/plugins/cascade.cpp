@@ -84,6 +84,7 @@ class CascadeTransform : public UntrainableMetaTransform
         foreach (const Template &t, src) {
             const bool enrollAll = t.file.getBool("enrollAll");
 
+            qDebug() << enrollAll;
             for (int i=0; i<t.size(); i++) {
                 const Mat &m = t[i];
                 vector<Rect> rects;
