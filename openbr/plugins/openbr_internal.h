@@ -170,14 +170,8 @@ public:
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         if (timeVarying()) {
-            if (!this->timeInvariantAlias) {
-                QMutexLocker lock(&aliasLock);
-                CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
-                non_const->timeInvariantAlias = non_const->smartCopy();
-                non_const->timeInvariantAlias->setParent(non_const);
-                lock.unlock();
-            }
-            timeInvariantAlias->projectUpdate(src,dst);
+            CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
+            non_const->projectUpdate(src,dst);
             return;
         }
         _project(src, dst);
@@ -225,10 +219,6 @@ public:
         }
 
         output->file = this->file;
-        output->classes = classes;
-        output->instances = instances;
-        output->fraction = fraction;
-
         output->init();
 
         return output;
@@ -237,13 +227,10 @@ public:
 protected:
     bool isTimeVarying;
 
-    mutable QMutex aliasLock;
-    Transform * timeInvariantAlias;
-
     virtual void _project(const Template & src, Template & dst) const = 0;
     virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
 
-    CompositeTransform() : TimeVaryingTransform(false) { timeInvariantAlias = NULL; }
+    CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
 }

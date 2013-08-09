@@ -114,7 +114,7 @@ BR_REGISTER(Transform, CatTransform)
 /*!
  * \ingroup transforms
  * \brief Concatenates all input matrices by row into a single matrix.
- * All matricies must have the same row counts.
+ * All matricies must have the same column counts.
  * \author Josh Klontz \cite jklontz
  */
 class CatRowsTransform : public UntrainableMetaTransform
@@ -128,6 +128,31 @@ class CatRowsTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, CatRowsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Concatenates all input matrices by column into a single matrix.
+ * Use after a fork to concatenate two feature matrices by column.
+ * \author Austin Blanton \cite imaus10
+ */
+class CatColsTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (src.empty()) return;
+        dst.file = src.file;
+        Mat m = OpenCVUtils::toMatByRow(src);
+        // right now this just splits src in half and joins them horizontally
+        // TODO: add partitions parameter for more than a single split
+        Mat first = m.rowRange(Range(0, m.rows/2));
+        Mat second = m.rowRange(Range(m.rows/2, m.rows));
+        hconcat(first, second, dst);
+    }
+};
+
+BR_REGISTER(Transform, CatColsTransform)
 
 /*!
  * \ingroup transforms

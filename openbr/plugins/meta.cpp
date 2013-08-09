@@ -105,6 +105,24 @@ class PipeTransform : public CompositeTransform
                 transforms[i]->train(copy);
             }
 
+            // if the transform is time varying, we can't project it in parallel
+            if (transforms[i]->timeVarying()) {
+                fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
+                for (int j=0; j < singleItemLists.size();j++)
+                    transforms[i]->projectUpdate(singleItemLists[j], singleItemLists[j]);
+
+                // advance i since we already projected for this stage.
+                i++;
+
+                // set up copy again
+                copy.clear();
+                for (int j=0; j < singleItemLists.size(); j++)
+                    copy.append(singleItemLists[j]);
+
+                // the next stage might be trainable, so continue to evaluate it.
+                continue;
+            }
+
             // We project through any subsequent untrainable transforms at once
             //   as a memory optimization in case any of these intermediate
             //   transforms allocate a lot of memory (like OpenTransform)
@@ -112,7 +130,8 @@ class PipeTransform : public CompositeTransform
             //   by that transform at once if we can avoid it.
             int nextTrainableTransform = i+1;
             while ((nextTrainableTransform < transforms.size()) &&
-                   !transforms[nextTrainableTransform]->trainable)
+                   !transforms[nextTrainableTransform]->trainable &&
+                   !transforms[nextTrainableTransform]->timeVarying())
                 nextTrainableTransform++;
 
             fprintf(stderr, " projecting...");

@@ -101,6 +101,8 @@ class SVMTransform : public Transform
     Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
     Q_PROPERTY(float C READ get_C WRITE set_C RESET reset_C STORED false)
     Q_PROPERTY(float gamma READ get_gamma WRITE set_gamma RESET reset_gamma STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
 
 public:
     enum Kernel { Linear = CvSVM::LINEAR,
@@ -119,6 +121,9 @@ private:
     BR_PROPERTY(Type, type, C_SVC)
     BR_PROPERTY(float, C, -1)
     BR_PROPERTY(float, gamma, -1)
+    BR_PROPERTY(QString, inputVariable, "")
+    BR_PROPERTY(QString, outputVariable, "")
+
 
     SVM svm;
     QHash<QString, int> labelMap;
@@ -128,14 +133,15 @@ private:
     {
         Mat data = OpenCVUtils::toMat(_data.data());
         Mat lab;
-        // If we are doing regression, assume subject has float values
+        // If we are doing regression, the input variable should have float
+	// values
         if (type == EPS_SVR || type == NU_SVR) {
-            lab = OpenCVUtils::toMat(File::get<float>(_data, "Subject"));
+            lab = OpenCVUtils::toMat(File::get<float>(_data, inputVariable));
         }
-        // If we are doing classification, assume subject has discrete values, map them
-        // and store the mapping data
+        // If we are doing classification, we should be dealing with discrete
+	// values. Map them and store the mapping data
         else {
-            QList<int> dataLabels = _data.indexProperty("Subject", labelMap, reverseLookup);
+            QList<int> dataLabels = _data.indexProperty(inputVariable, labelMap, reverseLookup);
             lab = OpenCVUtils::toMat(dataLabels);
         }
         trainSVM(svm, data, lab, kernel, type, C, gamma);
@@ -146,9 +152,9 @@ private:
         dst = src;
         float prediction = svm.predict(src.m().reshape(1, 1));
         if (type == EPS_SVR || type == NU_SVR)
-            dst.file.set("Subject", prediction);
+            dst.file.set(outputVariable, prediction);
         else
-            dst.file.set("Subject", reverseLookup[prediction]);
+            dst.file.set(outputVariable, reverseLookup[prediction]);
     }
 
     void store(QDataStream &stream) const
@@ -161,6 +167,24 @@ private:
     {
         loadSVM(svm, stream);
         stream >> labelMap >> reverseLookup;
+    }
+
+    void init()
+    {
+        // Since SVM can do regression or classification, we have to check the problem type before
+        // specifying target variable names
+        if (inputVariable.isEmpty())
+        {
+            if (type == EPS_SVR || type == NU_SVR) {
+                inputVariable = "Regressor";
+                if (outputVariable.isEmpty())
+                    outputVariable = "Regressand";
+            }
+            else
+                inputVariable = "Label";
+        }
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
     }
 };
 
@@ -178,6 +202,8 @@ class SVMDistance : public Distance
     Q_ENUMS(Type)
     Q_PROPERTY(Kernel kernel READ get_kernel WRITE set_kernel RESET reset_kernel STORED false)
     Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+
 
 public:
     enum Kernel { Linear = CvSVM::LINEAR,
@@ -194,13 +220,14 @@ public:
 private:
     BR_PROPERTY(Kernel, kernel, Linear)
     BR_PROPERTY(Type, type, EPS_SVR)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     SVM svm;
 
     void train(const TemplateList &src)
     {
         const Mat data = OpenCVUtils::toMat(src.data());
-        const QList<int> lab = src.indexProperty("Subject");
+        const QList<int> lab = src.indexProperty(inputVariable);
 
         const int instances = data.rows * (data.rows+1) / 2;
         Mat deltaData(instances, data.cols, data.type());

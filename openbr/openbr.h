@@ -149,7 +149,7 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery);
+BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
@@ -169,11 +169,21 @@ BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery);
 BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "");
 
 /*!
+ * \brief Evaluates and prints landmarking accuracy to terminal.
+ * \param predicted_gallery The predicted br::Gallery.
+ * \param truth_gallery The ground truth br::Gallery.
+ * \param csv Optional \c .csv file to contain performance metrics.
+ * \param normalization_index_a Optional first index in the list of points to use for normalization.
+ * \param normalization_index_b Optional second index in the list of points to use for normalization.
+ */
+BR_EXPORT float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv = "", int normalization_index_a = 0, int normalization_index_b = 1);
+
+/*!
  * \brief Evaluates regression accuracy to disk.
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
  */
-BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery);
+BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
 
 /*!
  * \brief Wraps br::Context::finalize()

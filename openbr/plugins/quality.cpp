@@ -19,17 +19,20 @@ class ImpostorUniquenessMeasureTransform : public Transform
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(double mean READ get_mean WRITE set_mean RESET reset_mean)
     Q_PROPERTY(double stddev READ get_stddev WRITE set_stddev RESET reset_stddev)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(br::Distance*, distance, Distance::make("Dist(L2)", this))
     BR_PROPERTY(double, mean, 0)
     BR_PROPERTY(double, stddev, 1)
+    BR_PROPERTY(QString, inputVariable, "Label")
+
     TemplateList impostors;
 
     float calculateIUM(const Template &probe, const TemplateList &gallery) const
     {
-        const QString probeLabel = probe.file.get<QString>("Subject");
+        const QString probeLabel = probe.file.get<QString>(inputVariable);
         TemplateList subset = gallery;
         for (int j=subset.size()-1; j>=0; j--)
-            if (subset[j].file.get<QString>("Subject") == probeLabel)
+            if (subset[j].file.get<QString>(inputVariable) == probeLabel)
                 subset.removeAt(j);
 
         QList<float> scores = distance->compare(subset, probe);
@@ -151,6 +154,7 @@ class MatchProbabilityDistance : public Distance
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
     Q_PROPERTY(bool crossModality READ get_crossModality WRITE set_crossModality RESET reset_crossModality STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
 
     MP mp;
 
@@ -158,7 +162,7 @@ class MatchProbabilityDistance : public Distance
     {
         distance->train(src);
 
-        const QList<int> labels = src.indexProperty("Subject");
+        const QList<int> labels = src.indexProperty(inputVariable);
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(src.size()), FileList(src.size())));
         distance->compare(src, src, matrixOutput.data());
 
@@ -201,6 +205,7 @@ protected:
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
     BR_PROPERTY(bool, gaussian, true)
     BR_PROPERTY(bool, crossModality, false)
+    BR_PROPERTY(QString, inputVariable, "Label")
 };
 
 BR_REGISTER(Distance, MatchProbabilityDistance)
@@ -217,10 +222,12 @@ class HeatMapDistance : public Distance
     Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
     Q_PROPERTY(bool crossModality READ get_crossModality WRITE set_crossModality RESET reset_crossModality STORED false)
     Q_PROPERTY(int step READ get_step WRITE set_step RESET reset_step STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
     BR_PROPERTY(bool, gaussian, true)
     BR_PROPERTY(bool, crossModality, false)
     BR_PROPERTY(int, step, 1)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     QList<MP> mp;
 
@@ -228,7 +235,7 @@ class HeatMapDistance : public Distance
     {
         distance->train(src);
 
-        const QList<int> labels = src.indexProperty("Subject");
+        const QList<int> labels = src.indexProperty(inputVariable);
 
         QList<TemplateList> patches;
 
@@ -307,14 +314,16 @@ class UnitDistance : public Distance
     Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance)
     Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
     Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
     BR_PROPERTY(float, a, 1)
     BR_PROPERTY(float, b, 0)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     void train(const TemplateList &templates)
     {
         const TemplateList samples = templates.mid(0, 2000);
-        const QList<int> sampleLabels = samples.indexProperty("Subject");
+        const QList<int> sampleLabels = samples.indexProperty(inputVariable);
         QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(samples.size()), FileList(samples.size())));
         Distance::compare(samples, samples, matrixOutput.data());
 

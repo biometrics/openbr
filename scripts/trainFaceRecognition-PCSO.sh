@@ -8,6 +8,13 @@ fi
 #rm -f ../share/openbr/models/features/FaceRecognitionExtraction
 #rm -f ../share/openbr/models/features/FaceRecognitionEmbedding
 #rm -f ../share/openbr/models/features/FaceRecognitionQuantization
-rm -f ../share/openbr/models/algorithms/FaceRecognition
+#rm -f ../share/openbr/models/algorithms/FaceRecognition
 
-br -algorithm FaceRecognition -path ../data/PCSO/img -train "../data/PCSO/PCSO.db[query='SELECT File,'S'||PersonID,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
+export BR=../build/app/br/br
+
+export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
+
+
+
+$BR -useGui 0 -algorithm FaceRecognition -path "$PCSO_DIR/Images/" -train "$PCSO_DIR/PCSO.db[query='SELECT File,PersonID as Label,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
+
