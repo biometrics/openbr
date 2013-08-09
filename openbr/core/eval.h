@@ -28,7 +28,7 @@ namespace br
     float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &csv = "");
     void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
     float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv = ""); // Return average overlap
-    void EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv = "");
+    float EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1); // Return average error
     void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
 }
 

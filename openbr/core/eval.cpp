@@ -476,11 +476,15 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     return averageOverlap;
 }
 
-void EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv)
+float EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv, int normalizationIndexA, int normalizationIndexB)
 {
     (void) predictedInput;
     (void) truthInput;
     (void) csv;
+    (void) normalizationIndexA;
+    (void) normalizationIndexB;
+
+    return 0;
 }
 
 void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
