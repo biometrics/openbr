@@ -127,12 +127,12 @@ QString File::resolved() const
 
 bool File::contains(const QString &key) const
 {
-    return m_metadata.contains(key) || Globals->contains(key);
+    return m_metadata.contains(key) || Globals->contains(key) || key == "name";
 }
 
 QVariant File::value(const QString &key) const
 {
-    return m_metadata.contains(key) ? m_metadata.value(key) : Globals->property(qPrintable(key));
+    return m_metadata.contains(key) ? m_metadata.value(key) : (key == "name" ? name : Globals->property(qPrintable(key)));
 }
 
 QVariant File::parse(const QString &value)
