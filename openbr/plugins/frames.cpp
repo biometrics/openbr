@@ -35,6 +35,12 @@ private:
         dst.file = buffer.takeFirst().file;
     }
 
+    void finalize(TemplateList & output)
+    {
+        (void) output;
+        buffer.clear();
+    }
+
     void store(QDataStream &stream) const
     {
         (void) stream;
