@@ -138,6 +138,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * Key             | Value          | Description
  * ---             | ----           | -----------
+ * name            | QString        | Contents of #name
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
  * Confidence      | float          | Classification/Regression quality
