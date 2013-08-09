@@ -1024,6 +1024,10 @@ public:
 
     void train(const TemplateList & data)
     {
+        if (!trainable) {
+            qWarning("How did this happen? You're training a nontrainable transform.");
+            return;
+        }
         qFatal("Stream train is currently not implemented.");
         foreach(Transform * transform, transforms) {
             transform->train(data);
