@@ -11,6 +11,7 @@ namespace br
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
+ * \author Scott Klum \cite sklum
  * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
  *       against for all testing partitions.
  */
@@ -43,22 +44,46 @@ class CrossValidateTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
+            QList<int> partitionsBuffer = partitions;
             TemplateList partitionedData = data;
-            QList<int> removed;
-            for (int j=partitionedData.size()-1; j>=0; j--)
+            int j = partitionedData.size()-1;
+            while (j>=0) {
                 // Remove all templates belonging to partition i
                 // if leaveOneOut is true,
                 // and i is greater than the number of images for a particular subject
                 // even if the partitions are different
                 if (leaveOneOut) {
-                        QList<int> subjectIndices = partitionedData.find("Subject",partitionedData.at(j).file.get<QString>("Subject"));
-                        if (i > subjectIndices.size()) removed.append(subjectIndices[i%subjectIndices.size()]);
-                } else if (partitions[j] == i)
-                    removed.append(j);
-            typedef QPair<int,int> Pair;
-            foreach (const Pair &pair, Common::Sort(removed,true)) partitionedData.removeAt(pair.first);
+                    const QString label = partitionedData.at(j).file.get<QString>("Label");
+                    QList<int> subjectIndices = partitionedData.find("Label",label);
+                    QList<int> removed;
+                    // Remove test only data
+                    for (int k=subjectIndices.size()-1; k>=0; k--)
+                        if (partitionedData[subjectIndices[k]].file.getBool("testOnly")) {
+                            removed.append(subjectIndices[k]);
+                            subjectIndices.removeAt(k);
+                        }
+                    // Remove template that was repeated to make the testOnly template
+                    if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
+                        removed.append(subjectIndices[i%subjectIndices.size()]);
+                    }
+                    else if (partitionsBuffer[j] == i) {
+                        removed.append(j);
+                    }
+
+                    if (!removed.empty()) {
+                        typedef QPair<int,int> Pair;
+                        foreach (Pair pair, Common::Sort(removed,true)) {
+                            partitionedData.removeAt(pair.first); partitionsBuffer.removeAt(pair.first); j--;
+                        }
+                    } else {
+                        j--;
+                    }
+                } else if (partitions[j] == i) {
+                    partitionedData.removeAt(j);
+                } else j--;
+            }
             // Train on the remaining templates
-            foreach (const Template &t, partitionedData) qDebug() << "Remaining data for partition " << i << ": " << t.file.baseName();
+            foreach (const Template &t, partitionedData) qDebug() << "Remaining data for partition " << i << t.file.baseName() << t.file.get<QString>("Label") << t.file.get<QString>("Partition");
             futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
         }
         futures.waitForFinished();

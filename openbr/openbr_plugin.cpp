@@ -388,23 +388,31 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         const int crossValidate = gallery.get<int>("crossValidate");
 
         if (gallery.getBool("leaveOneOut")) {
-            QStringList subjects;
-            for (int i = 0; i < newTemplates.size(); i++) {
-                QString subject = newTemplates.at(i).file.get<QString>("Label");
+            QStringList labels;
+            for (int i=newTemplates.size()-1; i>=0; i--) {
+                newTemplates[i].file.set("Index", i+templates.size());
+                newTemplates[i].file.set("Gallery", gallery.name);
+
+                QString label = newTemplates.at(i).file.get<QString>("Label");
                 // Have we seen this subject before?
-                if (subjects.contains(subject)) {
-                    subjects.append(subject);
+                if (!labels.contains(label)) {
+                    labels.append(label);
                     // Get indices belonging to this subject
-                    QList<int> subjectIndices = newTemplates.find("Label",subject);
-                    for (int j = 0; j < subjectIndices.size(); j++) {
+                    QList<int> labelIndices = newTemplates.find("Label",label);
+                    for (int j = 0; j < labelIndices.size(); j++) {
                         // Set subject partitions
-                        newTemplates[subjectIndices[j]].file.set("Partition",j);
+                        newTemplates[labelIndices[j]].file.set("Partition",j%crossValidate);
                     }
-                    // Generate more templates if necessary
-                    for (int j=0; j<crossValidate-subjectIndices.size(); j++) {
-                        Template leaveOneOutTemplate = newTemplates[subjectIndices[j%subjectIndices.size()]];
-                        leaveOneOutTemplate.file.set("Partition", j+subjectIndices.size());
-                        newTemplates.append(leaveOneOutTemplate);
+                    // Extend the gallery for each partition
+                    for (int j=0; j<labelIndices.size(); j++) {
+                        for (int k=0; k<crossValidate; k++) {
+                            Template leaveOneOutTemplate = newTemplates[labelIndices[j]];
+                            if (k!=leaveOneOutTemplate.file.get<int>("Partition")) {
+                                leaveOneOutTemplate.file.set("Partition", k);
+                                leaveOneOutTemplate.file.set("testOnly", true);
+                                newTemplates.insert(i+1,leaveOneOutTemplate);
+                            }
+                        }
                     }
                 }
             }
