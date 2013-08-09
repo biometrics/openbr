@@ -255,9 +255,9 @@ struct Counter
     }
 };
 
-void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
+void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+    qDebug("Evaluating classification of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Label";
@@ -269,8 +269,8 @@ void EvalClassification(const QString &predictedInput, const QString &truthInput
     if (truthProperty.isEmpty())
         truthProperty = "Label";
 
-    TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    TemplateList truth(TemplateList::fromGallery(truthInput));
+    TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    TemplateList truth(TemplateList::fromGallery(truthGallery));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     QHash<QString, Counter> counters;
@@ -403,11 +403,11 @@ QString getDetectKey(const TemplateList &templates)
     return "";
 }
 
-float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
 {
-    qDebug("Evaluating detection of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
-    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    const TemplateList truth(TemplateList::fromGallery(truthInput));
+    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    const TemplateList truth(TemplateList::fromGallery(truthGallery));
 
     // Figure out which metadata field contains a bounding box
     QString truthDetectKey = getDetectKey(truth);
@@ -476,10 +476,10 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     return averageOverlap;
 }
 
-float EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv, int normalizationIndexA, int normalizationIndexB)
+float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB)
 {
-    (void) predictedInput;
-    (void) truthInput;
+    (void) predictedGallery;
+    (void) truthGallery;
     (void) csv;
     (void) normalizationIndexA;
     (void) normalizationIndexB;
@@ -487,9 +487,9 @@ float EvalLandmarking(const QString &predictedInput, const QString &truthInput, 
     return 0;
 }
 
-void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
+void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+    qDebug("Evaluating regression of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Regressor";
@@ -501,8 +501,8 @@ void EvalRegression(const QString &predictedInput, const QString &truthInput, QS
     if (truthProperty.isEmpty())
         predictedProperty = "Regressand";
 
-    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    const TemplateList truth(TemplateList::fromGallery(truthInput));
+    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    const TemplateList truth(TemplateList::fromGallery(truthGallery));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;
