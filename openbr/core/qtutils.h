@@ -73,6 +73,9 @@ namespace QtUtils
 
     /**** Variant Utilities ****/
     QString toString(const QVariant &variant);
+
+    /**** Point Utilities ****/
+    float euclideanLength(const QPointF &point);
 }
 
 #endif // __QTUTILS_H
