@@ -649,7 +649,7 @@ public:
 class ProcessingStage
 {
 public:
-    friend class StreamTransform;
+    friend class DirectStreamTransform;
 public:
     ProcessingStage(int nThreads = 1)
     {
@@ -1015,17 +1015,20 @@ public:
 };
 
 
-class StreamTransform : public CompositeTransform
+
+class DirectStreamTransform : public CompositeTransform
 {
     Q_OBJECT
 public:
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     BR_PROPERTY(int, activeFrames, 100)
 
+    friend class StreamTransfrom;
+
     void train(const TemplateList & data)
     {
         if (!trainable) {
-            qWarning("How did this happen? You're training a nontrainable transform.");
+            qWarning("Attempted to train untrainable transform, nothing will happen.");
             return;
         }
         qFatal("Stream train is currently not implemented.");
@@ -1115,6 +1118,10 @@ public:
     {
         if (transforms.isEmpty()) return;
 
+        for (int i=0; i < processingStages.size();i++)
+            delete processingStages[i];
+        processingStages.clear();
+
         // call CompositeTransform::init so that trainable is set
         // correctly.
         CompositeTransform::init();
@@ -1190,12 +1197,13 @@ public:
         collectionStage->nextStage = readStage;
     }
 
-    ~StreamTransform()
+    ~DirectStreamTransform()
     {
         // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
             delete processingStages[i];
         }
+        processingStages.clear();
     }
 
 protected:
@@ -1237,10 +1245,148 @@ protected:
     }
 };
 
-QHash<QObject *, QThreadPool *> StreamTransform::pools;
-QMutex StreamTransform::poolsAccess;
+QHash<QObject *, QThreadPool *> DirectStreamTransform::pools;
+QMutex DirectStreamTransform::poolsAccess;
+
+BR_REGISTER(Transform, DirectStreamTransform)
+
+;
+
+class StreamTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+public:
+    StreamTransform() : TimeVaryingTransform(false)
+    {
+    }
+
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform STORED false)
+    Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
+    BR_PROPERTY(br::Transform *, transform, NULL)
+    BR_PROPERTY(int, activeFrames, 100)
+
+    bool timeVarying() const { return true; }
+
+    void project(const Template &src, Template &dst) const
+    {
+        basis.project(src,dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        basis.projectUpdate(src,dst);
+    }
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        basis.projectUpdate(src,dst);
+    }
+
+
+    void train(const TemplateList & data)
+    {
+        basis.train(data);
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        (void) output;
+        // Nothing in particular to do here, stream calls finalize
+        // on all child transforms as part of projectUpdate
+    }
+
+    // reinterpret transform, set up the actual stream. We can only reinterpret pipes
+    void init()
+    {
+        if (!transform)
+            return;
+        trainable = transform->trainable;
+
+        basis.setParent(this->parent());
+        basis.transforms.clear();
+        basis.activeFrames = this->activeFrames;
+
+        // We need at least a CompositeTransform * to acess transform's children.
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (transform);
+
+        // If this isn't even a composite transform, or it's not a pipe, just set up
+        // basis with 1 stage.
+        if (!downcast || QString(transform->metaObject()->className()) != "br::PipeTransform")
+        {
+            basis.transforms.append(transform);
+            basis.init();
+            return;
+        }
+        if (downcast->transforms.empty())
+        {
+            qWarning("Trying to set up empty stream");
+            basis.init();
+            return;
+        }
+
+        // OK now we will regroup downcast's children
+        QList<QList<Transform *> > sets;
+        sets.append(QList<Transform *> ());
+        sets.last().append(downcast->transforms[0]);
+        if (downcast->transforms[0]->timeVarying())
+            sets.append(QList<Transform *> ());
+
+        for (int i=1;i < downcast->transforms.size(); i++) {
+            // If this is time varying it becomse its own stage
+            if (downcast->transforms[i]->timeVarying()) {
+                // If a set was already active, we add another one
+                if (!sets.last().empty()) {
+                    sets.append(QList<Transform *>());
+                }
+                // add the item
+                sets.last().append(downcast->transforms[i]);
+                // Add another set to indicate separation.
+                sets.append(QList<Transform *>());
+            }
+            // otherwise, we can combine non time-varying stages
+            else {
+                sets.last().append(downcast->transforms[i]);
+            }
+
+        }
+        if (sets.last().empty())
+            sets.removeLast();
+
+        QList<Transform *> transform_set;
+        transform_set.reserve(sets.size());
+        for (int i=0; i < sets.size(); i++) {
+            // If this is a single transform set, we add that to the list
+            if (sets[i].size() == 1 ) {
+                transform_set.append(sets[i].at(0));
+            }
+            //otherwise we build a pipe
+            else {
+                CompositeTransform * pipe = dynamic_cast<CompositeTransform *>(Transform::make("Pipe([])", this));
+                pipe->transforms = sets[i];
+                pipe->init();
+                transform_set.append(pipe);
+            }
+        }
+
+        basis.transforms = transform_set;
+        basis.init();
+    }
+
+    Transform * smartCopy()
+    {
+        // We just want the DirectStream to begin with, so just return a copy of that.
+        DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy();
+        res->activeFrames = this->activeFrames;
+        return res;
+    }
+
+
+private:
+    DirectStreamTransform basis;
+};
 
 BR_REGISTER(Transform, StreamTransform)
+
 
 
 } // namespace br
