@@ -271,6 +271,34 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     return p.finalize(show);
 }
 
+//Check if only one ROC point is in the file
+bool fileHasSinglePoint(const QString &evalFile) {
+    QFile file(evalFile);
+    bool success = file.open(QFile::ReadOnly);
+    if (!success) qFatal("Failed to open %s for reading.", qPrintable(evalFile));
+    QStringList lines = QString(file.readAll()).split("\n");
+    file.close();
+
+    int rocCnt = 0;
+    foreach (const QString &line, lines) {
+        if (line.contains("DiscreteROC")) {
+            rocCnt++;
+        }
+        if (rocCnt > 1)
+            return false;
+    }
+
+    return true;
+}
+
+//Check all files to see if any single file has only have one ROC point
+bool filesHaveSinglePoint(const QStringList &files) {
+    foreach (const File &file, files)
+        if (fileHasSinglePoint(file))
+            return true;
+    return false;
+}
+
 bool PlotDetection(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
@@ -287,8 +315,12 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                  "rm(data)\n"
                  "\n");
 
+    QString plotType("line");
+    if (filesHaveSinglePoint(files))
+        plotType = QString("point");
+
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
                                 (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                                 (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                                 QString(", xlab=\"False Accepts\", ylab=\"True Accept Rate\") + theme_minimal()") +
@@ -297,7 +329,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                                 QString(" + scale_x_log10() + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\")\n\n").arg(type)));
 
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
                                 (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                                 (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                                 QString(", xlab=\"Recall\", ylab=\"Precision\") + theme_minimal()") +
