@@ -1300,6 +1300,7 @@ public:
     {
         if (!transform)
             return;
+        trainable = transform->trainable;
 
         basis.setParent(this->parent());
         basis.transforms.clear();
