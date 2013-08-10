@@ -329,7 +329,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                                 QString(" + scale_x_log10() + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\")\n\n").arg(type)));
 
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
                                 (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                                 (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                                 QString(", xlab=\"Recall\", ylab=\"Precision\") + theme_minimal()") +
