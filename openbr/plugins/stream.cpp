@@ -1261,7 +1261,7 @@ public:
     {
     }
 
-    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform STORED false)
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, activeFrames, 100)
