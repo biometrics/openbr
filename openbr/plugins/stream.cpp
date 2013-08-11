@@ -1014,7 +1014,27 @@ public:
 
 };
 
+// Semi-functional, doesn't do anything productive outside of stream::train
+class CollectSets : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    CollectSets() : TimeVaryingTransform(false, false) {}
 
+    QList<TemplateList> sets;
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        (void) dst;
+        sets.append(src);
+    }
+
+    void train(const TemplateList & data)
+    {
+        (void) data;
+    }
+
+};
 
 class DirectStreamTransform : public CompositeTransform
 {
@@ -1036,16 +1056,24 @@ public:
         if (end_idx == 0)
             return;
 
+        CollectSets collector;
+
         // Set transforms to the start, up to end_idx
         QList<Transform *> backup = this->transforms;
         transforms = backup.mid(0,end_idx);
+        // We use collector to retain the project structure at the end of the
+        // truncated stream.
+        transforms.append(&collector);
 
         // Reinitialize, we now act as a shorter stream.
         init();
 
+        QList<TemplateList> output;
         for (int i=0; i < data.size(); i++) {
             projectUpdate(data[i], data[i]);
+            output.append(collector.sets);
         }
+        data = output;
         transforms = backup;
     }
 
@@ -1062,6 +1090,7 @@ public:
                 QList<TemplateList> copy = data;
                 // Project from the start to the trainable stage.
                 subProject(copy,i);
+
                 transforms[i]->train(copy);
             }
         }
