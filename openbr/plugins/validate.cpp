@@ -83,7 +83,6 @@ class CrossValidateTransform : public MetaTransform
                 } else j--;
             }
             // Train on the remaining templates
-            foreach (const Template &t, partitionedData) qDebug() << "Remaining data for partition " << i << t.file.baseName() << t.file.get<QString>("Label") << t.file.get<QString>("Partition");
             futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
         }
         futures.waitForFinished();
