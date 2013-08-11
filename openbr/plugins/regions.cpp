@@ -141,7 +141,6 @@ class CatColsTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.empty()) return;
         dst.file = src.file;
         Mat m = OpenCVUtils::toMatByRow(src);
         // right now this just splits src in half and joins them horizontally

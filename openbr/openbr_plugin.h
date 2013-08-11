@@ -138,6 +138,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * Key             | Value          | Description
  * ---             | ----           | -----------
+ * name            | QString        | Contents of #name
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
  * Confidence      | float          | Classification/Regression quality
@@ -501,6 +502,20 @@ struct TemplateList : public QList<Template>
         foreach (const Template &t, *this)
             reduced.merge(t);
         return TemplateList() << reduced;
+    }
+
+    /*!
+     * \brief Find the indices of templates with specified key, value pairs.
+     */
+    template<typename T>
+    QList<int> find(const QString& key, const T& value)
+    {
+        QList<int> indices;
+        for (int i=0; i<size(); i++)
+            if (at(i).file.contains(key))
+                if (at(i).file.get<T>(key) == value)
+                    indices.append(i);
+        return indices;
     }
 };
 

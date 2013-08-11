@@ -87,6 +87,11 @@ float br_eval_detection(const char *predicted_gallery, const char *truth_gallery
     return EvalDetection(predicted_gallery, truth_gallery, csv);
 }
 
+float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv, int normalization_index_a, int normalization_index_b)
+{
+    return EvalLandmarking(predicted_gallery, truth_gallery, csv, normalization_index_a, normalization_index_b);
+}
+
 void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property, const char * truth_property)
 {
     EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);

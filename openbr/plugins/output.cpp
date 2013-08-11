@@ -259,7 +259,8 @@ class rrOutput : public MatrixOutput
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
         const int limit = file.get<int>("limit", 20);
-        const bool byLine = file.get<bool>("byLine", false);
+        const bool byLine = file.getBool("byLine");
+        const bool simple = file.getBool("simple");
         const float threshold = file.get<float>("threshold", -std::numeric_limits<float>::max());
 
         QStringList lines;
@@ -273,7 +274,8 @@ class rrOutput : public MatrixOutput
                 if (pair.first < threshold) break;
                 File target = targetFiles[pair.second];
                 target.set("Score", QString::number(pair.first));
-                files.append(target.flat());
+                if (simple) files.append(target.baseName() + " " + QString::number(pair.first));
+                else files.append(target.flat());
             }
             lines.append(files.join(byLine ? "\n" : ","));
         }

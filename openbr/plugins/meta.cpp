@@ -255,6 +255,7 @@ class ContractTransform : public UntrainableMetaTransform
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         //dst = Expanded(src);
+        if (src.empty()) return;
         Template out;
 
         foreach (const Template & t, src) {
@@ -616,6 +617,11 @@ public:
 
     void train(const QList<TemplateList> &data)
     {
+        if (!transform->trainable) {
+            qWarning("Attempted to train untrainable transform, nothing will happen.");
+            return;
+        }
+
         QList<TemplateList> separated;
         foreach (const TemplateList & list, data) {
             foreach(const Template & t, list) {
@@ -637,7 +643,6 @@ public:
         if (output.size() != 1) qFatal("output contains more than 1 template");
         else dst = output[0];
     }
-
 
     // For each input template, form a single element TemplateList, push all those
     // lists through transform, and form dst by concatenating the results.
@@ -687,7 +692,6 @@ public:
 
     void init()
     {
-
         if (transform && transform->timeVarying())
             transform = new br::TimeInvariantWrapperTransform(transform);
     }

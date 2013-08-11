@@ -52,25 +52,32 @@ QImage toQImage(const Mat &mat)
     return QImage(mat8uc3.data, mat8uc3.cols, mat8uc3.rows, 3*mat8uc3.cols, QImage::Format_RGB888).copy();
 }
 
-
-// Provides slots for manipulating a QLabel, but does not inherit from QWidget.
-// Therefore, it can be moved to the main thread if not created there initially
-// since god forbid you create a QWidget subclass in not the main thread.
-class GUIProxy : public QObject
+class DisplayWindow : public QLabel
 {
     Q_OBJECT
+
+protected:
     QMutex lock;
     QWaitCondition wait;
+    QPixmap pixmap;
 
 public:
 
-    QLabel *window;
-    QPixmap pixmap;
-
-    GUIProxy()
+    DisplayWindow(QWidget * parent = NULL) : QLabel(parent)
     {
-        window = NULL;
+        QApplication::instance()->installEventFilter(this);
     }
+
+public slots:
+    void showImage(const QPixmap & input)
+    {
+        pixmap = input;
+
+        show();
+        setPixmap(pixmap);
+        setFixedSize(input.size());
+    }
+
 
     bool eventFilter(QObject * obj, QEvent * event)
     {
@@ -92,41 +99,10 @@ public:
 
         return QList<QPointF>();
     }
-
-public slots:
-
-    void showImage(const QPixmap & input)
-    {
-        pixmap = input;
-
-        window->show();
-        window->setPixmap(pixmap);
-        window->setFixedSize(input.size());
-    }
-
-    void createWindow()
-    {
-        delete window;
-        QApplication::instance()->removeEventFilter(this);
-
-        window = new QLabel();
-        window->setVisible(true);
-
-        QApplication::instance()->installEventFilter(this);
-        Qt::WindowFlags flags = window->windowFlags();
-
-        flags = flags & ~Qt::WindowCloseButtonHint;
-        window->setWindowFlags(flags);
-    }
-
 };
 
-class LandmarkProxy : public GUIProxy
+class PointMarkingWindow : public DisplayWindow
 {
-    Q_OBJECT
-
-public:
-
     bool eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::MouseButtonPress)
@@ -144,11 +120,11 @@ public:
             painter.setBrush(Qt::red);
             foreach(const QPointF &point, points) painter.drawEllipse(point, 4, 4);
 
-            window->setPixmap(pixmapBuffer);
+            setPixmap(pixmapBuffer);
 
             return true;
         } else {
-            return GUIProxy::eventFilter(obj, event);
+            return DisplayWindow::eventFilter(obj, event);
         }
     }
 
@@ -156,14 +132,130 @@ public:
     {
         points.clear();
 
-        GUIProxy::waitForKey();
+        DisplayWindow::waitForKey();
 
         return points;
     }
 
 private:
-
     QList<QPointF> points;
+
+
+};
+
+class PromptWindow : public DisplayWindow
+{
+    bool eventFilter(QObject * obj, QEvent * event)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            event->accept();
+
+            QKeyEvent * key_event = dynamic_cast<QKeyEvent *> (event);
+            if (key_event == NULL) {
+                qDebug("failed to donwcast key event");
+                return true;
+            }
+
+            QString text = key_event->text();
+
+            text =text.toLower();
+            if (text == "y" || text == "n")
+            {
+                gotString = key_event->text();
+                wait.wakeAll();
+            }
+            else qDebug("Please answer y/n");
+
+            return true;
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+    }
+
+public:
+    QString waitForKeyPress()
+    {
+        QMutexLocker locker(&lock);
+        wait.wait(&lock);
+
+        return gotString;
+    }
+
+private:
+    QString gotString;
+
+
+};
+
+
+// I want a template class that doesn't look like a template class
+class NominalCreation
+{
+public:
+    virtual ~NominalCreation() {}
+    virtual void creation()=0;
+};
+
+// Putting the template on a subclass means we can maintain a pointer that
+// doesn't include T in its type.
+template<typename T>
+class ActualCreation : public NominalCreation
+{
+public:
+    T * basis;
+
+    void creation()
+    {
+        basis = new T();
+    }
+};
+
+// We want to create a QLabel subclass on the main thread, but are running in another thread.
+// We cannot move QWidget subclasses to a different thread (obviously that would be crazy), but
+// we can create one of these, and move it to the main thread, and then use it to create the object
+// we want.
+// Additional fact: QObject subclasses cannot be template classes.
+class MainThreadCreator : public QObject
+{
+    Q_OBJECT
+public:
+
+    MainThreadCreator()
+    {
+        this->moveToThread(QApplication::instance()->thread());
+
+        connect(this, SIGNAL(needCreation()), this, SLOT(createThing()), Qt::BlockingQueuedConnection);
+    }
+
+    // While this cannot be a template class, it can still have a template method.
+    template<typename T>
+    T * getItem()
+    {
+        if (QThread::currentThread() == QApplication::instance()->thread())
+            return new T();
+
+        ActualCreation<T> * actualWorker;
+        actualWorker = new ActualCreation<T> ();
+        worker = actualWorker;
+
+        emit needCreation();
+
+        T * output = actualWorker->basis;
+        delete actualWorker;
+        return output;
+    }
+
+    NominalCreation * worker;
+
+signals:
+    void needCreation();
+
+public slots:
+    void createThing()
+    {
+        worker->creation();
+    }
 };
 
 /*!
@@ -184,14 +276,14 @@ public:
 
     ShowTransform() : TimeVaryingTransform(false, false)
     {
-        gui = NULL;
         displayBuffer = NULL;
+        window = NULL;
     }
 
     ~ShowTransform()
     {
-        delete gui;
         delete displayBuffer;
+        delete window;
     }
 
     void train(const TemplateList &data) { (void) data; }
@@ -235,7 +327,7 @@ public:
 
                 // Blocking wait for a key-press
                 if (this->waitInput)
-                    gui->waitForKey();
+                    window->waitForKey();
 
             }
         }
@@ -249,33 +341,36 @@ public:
 
     void init()
     {
+        initActual<DisplayWindow>();
+    }
+
+    template<typename WindowType>
+    void initActual()
+    {
         if (!Globals->useGui)
             return;
 
+        if (displayBuffer)
+            delete displayBuffer;
         displayBuffer = new QPixmap();
 
-        // Create our GUI proxy
-        gui = new GUIProxy();
-        // Move it to the main thread, this means signals we send to it will
-        // be run in the main thread, which is hopefully in an event loop
-        gui->moveToThread(QApplication::instance()->thread());
+        if (window)
+            delete window;
 
-        // Connect our signals to the proxy's slots
-        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
-
-        emit needWindow();
-        connect(this, SIGNAL(changeTitle(QString)), gui->window, SLOT(setWindowTitle(QString)));
-        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
+        window = creator.getItem<WindowType>();
+        // Connect our signals to the window's slots
+        connect(this, SIGNAL(updateImage(QPixmap)), window,SLOT(showImage(QPixmap)));
+        connect(this, SIGNAL(changeTitle(QString)), window, SLOT(setWindowTitle(QString)));
+        connect(this, SIGNAL(hideWindow()), window, SLOT(hide()));
     }
 
 protected:
-    GUIProxy * gui;
+    MainThreadCreator creator;
+    DisplayWindow * window;
     QImage qImageBuffer;
     QPixmap * displayBuffer;
 
 signals:
-    void needWindow();
     void updateImage(const QPixmap & input);
     void changeTitle(const QString & input);
     void hideWindow();
@@ -312,7 +407,7 @@ public:
 
                 // Blocking wait for a key-press
                 if (this->waitInput) {
-                    QList<QPointF> points = gui->waitForKey();
+                    QList<QPointF> points = window->waitForKey();
                     if (keys.isEmpty()) dst[i].file.appendPoints(points);
                     else {
                         if (keys.size() == points.size())
@@ -326,28 +421,73 @@ public:
 
     void init()
     {
-        if (!Globals->useGui)
-            return;
-
-        displayBuffer = new QPixmap();
-
-        // Create our GUI proxy
-        gui = new LandmarkProxy();
-
-        // Move it to the main thread, this means signals we send to it will
-        // be run in the main thread, which is hopefully in an event loop
-        gui->moveToThread(QApplication::instance()->thread());
-
-        // Connect our signals to the proxy's slots
-        connect(this, SIGNAL(needWindow()), gui, SLOT(createWindow()), Qt::BlockingQueuedConnection);
-        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
-
-        emit needWindow();
-        connect(this, SIGNAL(hideWindow()), gui->window, SLOT(hide()));
+        initActual<PointMarkingWindow>();
     }
 };
 
 BR_REGISTER(Transform, ManualTransform)
+
+
+/*!
+ * \ingroup transforms
+ * \brief Display an image, and asks a yes/no question about it
+ * \author Charles Otto \cite caotto
+ */
+class SurveyTransform : public ShowTransform
+{
+    Q_OBJECT
+
+public:
+    Q_PROPERTY(QString question READ get_question WRITE set_question RESET reset_question STORED false)
+    BR_PROPERTY(QString, question, "Yes/No")
+
+    Q_PROPERTY(QString propertyName READ get_propertyName WRITE set_propertyName RESET reset_propertyName STORED false)
+    BR_PROPERTY(QString, propertyName, "answer")
+
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (Globals->parallelism > 1)
+            qFatal("SurveyTransform cannot execute in parallel.");
+
+        dst = src;
+
+        if (src.empty())
+            return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    QString answer = p_window->waitForKeyPress();
+
+                    dst[i].file.set(this->propertyName, answer);
+                }
+            }
+        }
+    }
+    PromptWindow * p_window;
+
+
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+
+        initActual<PromptWindow>();
+        p_window = (PromptWindow *) window;
+
+        emit changeTitle(this->question);
+    }
+};
+
+BR_REGISTER(Transform, SurveyTransform)
+
 
 class FPSLimit : public TimeVaryingTransform
 {
