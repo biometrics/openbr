@@ -34,7 +34,7 @@ class OpticalFlowTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         // get the two images put there by AggregateFrames
-        if (src.size() < 2) return;
+        if (src.size() != 2) qFatal("Optical Flow requires two images.");
         Mat prevImg = src[0], nextImg = src[1], flow, flowOneCh;
         if (src[0].channels() != 1) OpenCVUtils::cvtGray(src[0], prevImg);
         if (src[1].channels() != 1) OpenCVUtils::cvtGray(src[1], nextImg);

@@ -27,12 +27,14 @@ private:
         (void) data;
     }
 
-    void projectUpdate(const Template &src, Template &dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         buffer.append(src);
         if (buffer.size() < n) return;
-        foreach (const Template &t, buffer) dst.append(t);
-        dst.file = buffer.takeFirst().file;
+        Template out;
+        foreach (const Template &t, buffer) out.append(t);
+        out.file = buffer.takeFirst().file;
+        dst.append(out);
     }
 
     void finalize(TemplateList & output)
