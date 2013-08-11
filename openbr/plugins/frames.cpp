@@ -19,7 +19,7 @@ class AggregateFrames : public TimeVaryingTransform
     TemplateList buffer;
 
 public:
-    AggregateFrames() : TimeVaryingTransform(false) {}
+    AggregateFrames() : TimeVaryingTransform(false, false) {}
 
 private:
     void train(const TemplateList &data)
@@ -29,13 +29,16 @@ private:
 
     void projectUpdate(const Template &src, Template &dst)
     {
-        // DropFrames will pass on empty Templates
-        // but we only want to use non-dropped frames
-        if (src.empty()) return;
         buffer.append(src);
         if (buffer.size() < n) return;
         foreach (const Template &t, buffer) dst.append(t);
         dst.file = buffer.takeFirst().file;
+    }
+
+    void finalize(TemplateList & output)
+    {
+        (void) output;
+        buffer.clear();
     }
 
     void store(QDataStream &stream) const
@@ -58,35 +61,21 @@ BR_REGISTER(Transform, AggregateFrames)
  *
  * For a video with m frames, DropFrames will pass on m/n frames.
  */
-class DropFrames : public TimeVaryingTransform
+class DropFrames : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int n READ get_n WRITE set_n RESET reset_n STORED false)
     BR_PROPERTY(int, n, 1)
 
-public:
-    DropFrames() : TimeVaryingTransform(false) {}
-
-private:
-    void train(const TemplateList &data)
+    void project(const TemplateList &src, TemplateList &dst) const
     {
-        (void) data;
-    }
-
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        if (src.file.get<int>("FrameNumber") % n != 0) return;
+        if (src.first().file.get<int>("FrameNumber") % n != 0) return;
         dst = src;
     }
 
-    void store(QDataStream &stream) const
+    void project(const Template &src, Template &dst) const
     {
-        (void) stream;
-    }
-
-    void load(QDataStream &stream)
-    {
-        (void) stream;
+        (void) src; (void) dst; qFatal("shouldn't be here");
     }
 };
 

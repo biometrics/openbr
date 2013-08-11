@@ -26,10 +26,10 @@ namespace br
     float Evaluate(const QString &simmat, const QString &mask = "", const QString &csv = ""); // Returns TAR @ FAR = 0.001
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv = "", int parition = 0);
     float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &csv = "");
-    void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
-    float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv = ""); // Return average overlap
-    void EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv = "");
-    void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty="", QString truthProperty="");
+    void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
+    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = ""); // Return average overlap
+    float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1); // Return average error
+    void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
 }
 
 #endif // __EVAL_H

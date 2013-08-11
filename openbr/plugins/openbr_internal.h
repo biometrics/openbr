@@ -122,7 +122,10 @@ public:
 
     TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
     {
+        if (!basis)
+            qFatal("TimeInvariantWrapper created with NULL transform");
         baseTransform = basis;
+        trainable = basis->trainable;
     }
 
     virtual void project(const Template &src, Template &dst) const
@@ -131,7 +134,6 @@ public:
         aTransform->projectUpdate(src,dst);
         transformSource.release(aTransform);
     }
-
 
     void project(const TemplateList &src, TemplateList &dst) const
     {

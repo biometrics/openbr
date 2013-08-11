@@ -16,6 +16,7 @@
 
 #include "bee.h"
 #include "eval.h"
+#include "openbr/core/common.h"
 #include "openbr/core/qtutils.h"
 
 using namespace cv;
@@ -255,9 +256,9 @@ struct Counter
     }
 };
 
-void EvalClassification(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
+void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating classification of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+    qDebug("Evaluating classification of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Label";
@@ -269,8 +270,8 @@ void EvalClassification(const QString &predictedInput, const QString &truthInput
     if (truthProperty.isEmpty())
         truthProperty = "Label";
 
-    TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    TemplateList truth(TemplateList::fromGallery(truthInput));
+    TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    TemplateList truth(TemplateList::fromGallery(truthGallery));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     QHash<QString, Counter> counters;
@@ -383,13 +384,19 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     }
 
     const int keep = qMin(points.size(), Max_Points);
-    if (keep < 2) qFatal("Insufficient points.");
+    if (keep < 1) qFatal("Insufficient points.");
 
     QStringList lines; lines.reserve(keep);
-    for (int i=0; i<keep; i++) {
-        const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
+    if (keep == 1) {
+        const DetectionOperatingPoint &point = points[0];
         lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
         lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
+    } else {
+        for (int i=0; i<keep; i++) {
+            const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
+            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
+            lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
+        }
     }
     return lines;
 }
@@ -403,11 +410,11 @@ QString getDetectKey(const TemplateList &templates)
     return "";
 }
 
-float EvalDetection(const QString &predictedInput, const QString &truthInput, const QString &csv)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
 {
-    qDebug("Evaluating detection of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
-    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    const TemplateList truth(TemplateList::fromGallery(truthInput));
+    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    const TemplateList truth(TemplateList::fromGallery(truthGallery));
 
     // Figure out which metadata field contains a bounding box
     QString truthDetectKey = getDetectKey(truth);
@@ -476,16 +483,55 @@ float EvalDetection(const QString &predictedInput, const QString &truthInput, co
     return averageOverlap;
 }
 
-void EvalLandmarking(const QString &predictedInput, const QString &truthInput, const QString &csv)
+float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB)
 {
-    (void) predictedInput;
-    (void) truthInput;
-    (void) csv;
+    qDebug("Evaluating landmarking of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    const TemplateList truth(TemplateList::fromGallery(truthGallery));
+    const QStringList predictedNames = File::get<QString>(predicted, "name");
+    const QStringList truthNames = File::get<QString>(truth, "name");
+
+    QList< QList<float> > pointErrors;
+    for (int i=0; i<predicted.size(); i++) {
+        const QString &predictedName = predictedNames[i];
+        const int truthIndex = truthNames.indexOf(predictedName);
+        if (truthIndex == -1) qFatal("Could not identify ground truth for file: %s", qPrintable(predictedName));
+        const QList<QPointF> predictedPoints = predicted[i].file.points();
+        const QList<QPointF> truthPoints = truth[truthIndex].file.points();
+        if (predictedPoints.size() != truthPoints.size()) qFatal("Points size mismatch for file: %s", qPrintable(predictedName));
+        while (pointErrors.size() < predictedPoints.size())
+            pointErrors.append(QList<float>());
+        if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
+        if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
+        const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
+        for (int j=0; j<predictedPoints.size(); j++)
+            pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
+    }
+
+    QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
+    for (int i=0; i<pointErrors.size(); i++) {
+        std::sort(pointErrors[i].begin(), pointErrors[i].end());
+        averagePointErrors.append(Common::Mean(pointErrors[i]));
+    }
+    const float averagePointError = Common::Mean(averagePointErrors);
+
+    QStringList lines;
+    lines.append("Plot,X,Y");
+    for (int i=0; i<pointErrors.size(); i++) {
+        const QList<float> &pointError = pointErrors[i];
+        const int keep = qMin(Max_Points, pointError.size());
+        for (int j=0; j<keep; j++)
+            lines.append(QString("Box,%1,%2").arg(QString::number(i), QString::number(pointError[j*(pointError.size()-1)/(keep-1)])));
+    }
+
+    QtUtils::writeFile(csv, lines);
+    qDebug("Average Error: %.3f", averagePointError);
+    return averagePointError;
 }
 
-void EvalRegression(const QString &predictedInput, const QString &truthInput, QString predictedProperty, QString truthProperty)
+void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating regression of %s against %s", qPrintable(predictedInput), qPrintable(truthInput));
+    qDebug("Evaluating regression of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Regressor";
@@ -497,8 +543,8 @@ void EvalRegression(const QString &predictedInput, const QString &truthInput, QS
     if (truthProperty.isEmpty())
         predictedProperty = "Regressand";
 
-    const TemplateList predicted(TemplateList::fromGallery(predictedInput));
-    const TemplateList truth(TemplateList::fromGallery(truthInput));
+    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    const TemplateList truth(TemplateList::fromGallery(truthGallery));
     if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
 
     float rmsError = 0;

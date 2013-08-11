@@ -143,6 +143,51 @@ private:
 
 };
 
+class PromptWindow : public DisplayWindow
+{
+    bool eventFilter(QObject * obj, QEvent * event)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            event->accept();
+
+            QKeyEvent * key_event = dynamic_cast<QKeyEvent *> (event);
+            if (key_event == NULL) {
+                qDebug("failed to donwcast key event");
+                return true;
+            }
+
+            QString text = key_event->text();
+
+            text =text.toLower();
+            if (text == "y" || text == "n")
+            {
+                gotString = key_event->text();
+                wait.wakeAll();
+            }
+            else qDebug("Please answer y/n");
+
+            return true;
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+    }
+
+public:
+    QString waitForKeyPress()
+    {
+        QMutexLocker locker(&lock);
+        wait.wait(&lock);
+
+        return gotString;
+    }
+
+private:
+    QString gotString;
+
+
+};
+
 
 // I want a template class that doesn't look like a template class
 class NominalCreation
@@ -381,6 +426,68 @@ public:
 };
 
 BR_REGISTER(Transform, ManualTransform)
+
+
+/*!
+ * \ingroup transforms
+ * \brief Display an image, and asks a yes/no question about it
+ * \author Charles Otto \cite caotto
+ */
+class SurveyTransform : public ShowTransform
+{
+    Q_OBJECT
+
+public:
+    Q_PROPERTY(QString question READ get_question WRITE set_question RESET reset_question STORED false)
+    BR_PROPERTY(QString, question, "Yes/No")
+
+    Q_PROPERTY(QString propertyName READ get_propertyName WRITE set_propertyName RESET reset_propertyName STORED false)
+    BR_PROPERTY(QString, propertyName, "answer")
+
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (Globals->parallelism > 1)
+            qFatal("SurveyTransform cannot execute in parallel.");
+
+        dst = src;
+
+        if (src.empty())
+            return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    QString answer = p_window->waitForKeyPress();
+
+                    dst[i].file.set(this->propertyName, answer);
+                }
+            }
+        }
+    }
+    PromptWindow * p_window;
+
+
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+
+        initActual<PromptWindow>();
+        p_window = (PromptWindow *) window;
+
+        emit changeTitle(this->question);
+    }
+};
+
+BR_REGISTER(Transform, SurveyTransform)
+
 
 class FPSLimit : public TimeVaryingTransform
 {

@@ -614,6 +614,11 @@ public:
 
     void train(const TemplateList &data)
     {
+        if (!transform->trainable) {
+            qWarning("Attempted to train untrainable transform, nothing will happen.");
+            return;
+        }
+
         transform->train(data);
     }
 
@@ -627,7 +632,6 @@ public:
         if (output.size() != 1) qFatal("output contains more than 1 template");
         else dst = output[0];
     }
-
 
     // For each input template, form a single element TemplateList, push all those
     // lists through transform, and form dst by concatenating the results.
@@ -677,7 +681,6 @@ public:
 
     void init()
     {
-
         if (transform && transform->timeVarying())
             transform = new br::TimeInvariantWrapperTransform(transform);
     }
