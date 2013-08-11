@@ -1072,6 +1072,7 @@ public:
         for (int i=0; i < data.size(); i++) {
             projectUpdate(data[i], data[i]);
             output.append(collector.sets);
+            collector.sets.clear();
         }
         data = output;
         transforms = backup;
