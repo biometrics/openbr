@@ -236,6 +236,7 @@ class DefaultFormat : public Format
             videoWriter.file = file;
             videoWriter.write(t);
         } else if (t.size() == 1) {
+            QtUtils::touchDir(QDir(file.path()));
             imwrite(file.name.toStdString(), t);
         }
     }

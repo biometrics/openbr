@@ -164,6 +164,7 @@ class DelaunayTransform : public UntrainableTransform
 
         if (points.empty() || rects.empty()) {
             dst = src;
+            dst.file.clearRects();
             qWarning("Delauney triangulation failed because points or rects are empty.");
             return;
         }
@@ -292,10 +293,56 @@ class DelaunayTransform : public UntrainableTransform
             dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
         }
     }
-
 };
 
 BR_REGISTER(Transform, DelaunayTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Loads a set of fiduciary points from a .dat file
+ * \author Scott Klum \cite sklum
+ */
+class LoadLandmarksTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString filePath READ get_filePath WRITE set_filePath RESET reset_filePath STORED false)
+    BR_PROPERTY(QString, filePath, QString())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        // Assume the fiduciary file has the same basename as src
+        QString path = filePath + "/" + src.file.baseName() + ".dat";
+
+        QFile f(path);
+        if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(path));
+
+        QList<QPointF> landmarks;
+        while(!f.atEnd()) {
+            QByteArray line = f.readLine();
+            QString pointSet(line);
+            pointSet = pointSet.simplified();
+            if (!pointSet.isEmpty()) {
+                QStringList points = pointSet.split(" ");
+                landmarks.append(QPointF(points[0].toFloat(),points[1].toFloat()));
+            }
+        }
+
+        if (landmarks.size() < 35) qFatal("Unrecognized landmark set format.");
+
+        dst.file.set("rightEye", landmarks[16]);
+        dst.file.set("leftEye", landmarks[18]);
+
+        landmarks.removeAt(18);
+        landmarks.removeAt(16);
+
+        dst.file.appendPoints(landmarks);
+    }
+};
+
+BR_REGISTER(Transform, LoadLandmarksTransform)
 
 } // namespace br
 

@@ -503,6 +503,20 @@ struct TemplateList : public QList<Template>
             reduced.merge(t);
         return TemplateList() << reduced;
     }
+
+    /*!
+     * \brief Find the indices of templates with specified key, value pairs.
+     */
+    template<typename T>
+    QList<int> find(const QString& key, const T& value)
+    {
+        QList<int> indices;
+        for (int i=0; i<size(); i++)
+            if (at(i).file.contains(key))
+                if (at(i).file.get<T>(key) == value)
+                    indices.append(i);
+        return indices;
+    }
 };
 
 /*!

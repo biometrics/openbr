@@ -1,6 +1,7 @@
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include <openbr/core/qtutils.h>
 
 namespace br
@@ -10,6 +11,7 @@ namespace br
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
+ * \author Scott Klum \cite sklum
  * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
  *       against for all testing partitions.
  */
@@ -17,7 +19,9 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(bool leaveOneOut READ get_leaveOneOut WRITE set_leaveOneOut RESET reset_leaveOneOut STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(bool, leaveOneOut, false)
 
     QList<br::Transform*> transforms;
 
@@ -40,11 +44,44 @@ class CrossValidateTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
+            QList<int> partitionsBuffer = partitions;
             TemplateList partitionedData = data;
-            for (int j=partitionedData.size()-1; j>=0; j--)
-                // Remove all templates from partition i
-                if (partitions[j] == i)
+            int j = partitionedData.size()-1;
+            while (j>=0) {
+                // Remove all templates belonging to partition i
+                // if leaveOneOut is true,
+                // and i is greater than the number of images for a particular subject
+                // even if the partitions are different
+                if (leaveOneOut) {
+                    const QString label = partitionedData.at(j).file.get<QString>("Label");
+                    QList<int> subjectIndices = partitionedData.find("Label",label);
+                    QList<int> removed;
+                    // Remove test only data
+                    for (int k=subjectIndices.size()-1; k>=0; k--)
+                        if (partitionedData[subjectIndices[k]].file.getBool("testOnly")) {
+                            removed.append(subjectIndices[k]);
+                            subjectIndices.removeAt(k);
+                        }
+                    // Remove template that was repeated to make the testOnly template
+                    if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
+                        removed.append(subjectIndices[i%subjectIndices.size()]);
+                    }
+                    else if (partitionsBuffer[j] == i) {
+                        removed.append(j);
+                    }
+
+                    if (!removed.empty()) {
+                        typedef QPair<int,int> Pair;
+                        foreach (Pair pair, Common::Sort(removed,true)) {
+                            partitionedData.removeAt(pair.first); partitionsBuffer.removeAt(pair.first); j--;
+                        }
+                    } else {
+                        j--;
+                    }
+                } else if (partitions[j] == i) {
                     partitionedData.removeAt(j);
+                } else j--;
+            }
             // Train on the remaining templates
             futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
         }
@@ -53,12 +90,7 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {        
-        // If the src partition is greater than the number of training partitions,
-        // assume that projection should be done using the same training data for all partitions.
-        int partition = src.file.get<int>("Partition", 0);
-        if (partition >= transforms.size()) partition = 0;
-
-        transforms[partition]->project(src, dst);
+        transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
     }
 
     void store(QDataStream &stream) const
