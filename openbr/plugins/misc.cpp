@@ -334,54 +334,6 @@ BR_REGISTER(Transform, AnonymizeTransform)
 
 /*!
  * \ingroup transforms
- * \brief Name a metadata value
- * \author Scott Klum \cite sklum
- */
-class ElicitMetadataTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-
-    Q_PROPERTY(QStringList metadata READ get_metadata WRITE set_metadata RESET reset_metadata STORED false)
-    BR_PROPERTY(QStringList, metadata, QStringList())
-
-    void init()
-    {
-        Globals->setProperty("parallelism", "0"); // Can only work in single threaded mode
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        QTextStream stream(stdin);
-
-        foreach (const QString &key, metadata) {
-            qDebug() << "Specify a value for key: " << key;
-            QString value = stream.readLine();
-            if (value[0] == '(') {
-                QStringList values = value.split(',');
-                if (values.size() == 2) /* QPointF */ {
-                    values[1].chop(1);
-                    QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
-                    if (key != "Points") dst.file.set(key, point);
-                    else dst.file.appendPoint(point);
-                }
-                else /* QRectF */ {
-                    values[3].chop(1);
-                    QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
-                    if (key != "Rects") dst.file.set(key, rect);
-                    else dst.file.appendRect(rect);
-                }
-            }
-            else dst.file.set(key, value);
-        }
-    }
-};
-
-BR_REGISTER(Transform, ElicitMetadataTransform)
-
-/*!
- * \ingroup transforms
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
