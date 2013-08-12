@@ -351,9 +351,11 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
 
     p.file.write("# Split data into individual plots\n"
                  "plot_index = which(names(data)==\"Plot\")\n"
-                 "Box <- data[grep(\"DiscreteROC\",data$Plot),-c(1)]\n"
+                 "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
                  "rm(data)\n"
                  "\n");
+
+    p.file.write("ggplot(Box, aes(factor(X),Y)) + geom_boxplot() + geom_jitter(size=1.33,alpha=0.66) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.01,0.1,1,10)) + annotation_logticks(sides=\"l\")\n\n");
 
     return p.finalize(show);
 }
