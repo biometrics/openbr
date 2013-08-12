@@ -264,7 +264,6 @@ class ContractTransform : public UntrainableMetaTransform
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        //dst = Expanded(src);
         if (src.empty()) return;
         Template out;
 
@@ -682,8 +681,10 @@ public:
 
     void init()
     {
-        if (transform && transform->timeVarying())
-            transform = new br::TimeInvariantWrapperTransform(transform);
+        if (!transform)
+            return;
+
+        trainable = transform->trainable;
     }
 
 };

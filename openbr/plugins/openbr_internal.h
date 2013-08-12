@@ -24,70 +24,6 @@ private:
 };
 
 /*!
- * \brief A br::MetaTransform that does not require training data.
- */
-class BR_EXPORT UntrainableMetaTransform : public UntrainableTransform
-{
-    Q_OBJECT
-
-protected:
-    UntrainableMetaTransform() : UntrainableTransform(false) {}
-};
-
-/*!
- * \brief A br::Transform for which the results of project may change due to prior calls to project
- */
-class BR_EXPORT TimeVaryingTransform : public Transform
-{
-    Q_OBJECT
-
-public:
-    virtual bool timeVarying() const { return true; }
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
-    }
-
-    virtual void project(const TemplateList &src, TemplateList &dst) const
-    {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
-    }
-
-    // Get a compile failure if this isn't here to go along with the other
-    // projectUpdate, no idea why
-    virtual void projectUpdate(const Template & src, Template & dst)
-    {
-        (void) src; (void) dst;
-        qFatal("do something useful");
-    }
-
-    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        foreach (const Template & src_part, src) {
-            Template out;
-            projectUpdate(src_part, out);
-            dst.append(out);
-        }
-    }
-
-    /*!
-     *\brief For transforms that don't do any training, this default implementation
-     * which creates a new copy of the Transform from its description string is sufficient.
-     */
-    virtual Transform * smartCopy()
-    {
-        return this->clone();
-    }
-
-
-protected:
-    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
-};
-
-/*!
  * \brief A br::Transform expecting multiple matrices per template.
  */
 class BR_EXPORT MetaTransform : public Transform
@@ -98,6 +34,16 @@ protected:
     MetaTransform() : Transform(false) {}
 };
 
+/*!
+ * \brief A br::MetaTransform that does not require training data.
+ */
+class BR_EXPORT UntrainableMetaTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+protected:
+    UntrainableMetaTransform() : UntrainableTransform(false) {}
+};
 
 class TransformCopier : public ResourceMaker<Transform>
 {
@@ -151,6 +97,71 @@ private:
     Transform * baseTransform;
 };
 
+/*!
+ * \brief A br::Transform for which the results of project may change due to prior calls to project
+ */
+class BR_EXPORT TimeVaryingTransform : public Transform
+{
+    Q_OBJECT
+
+public:
+
+    virtual bool timeVarying() const { return true; }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        timeInvariantAlias->project(src,dst);
+    }
+
+    virtual void project(const TemplateList &src, TemplateList &dst) const
+    {
+        timeInvariantAlias->project(src,dst);
+    }
+
+    // Get a compile failure if this isn't here to go along with the other
+    // projectUpdate, no idea why
+    virtual void projectUpdate(const Template & src, Template & dst)
+    {
+        (void) src; (void) dst;
+        qFatal("do something useful");
+    }
+
+    virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        foreach (const Template & src_part, src) {
+            Template out;
+            projectUpdate(src_part, out);
+            dst.append(out);
+        }
+    }
+
+    /*!
+     *\brief For transforms that don't do any training, this default implementation
+     * which creates a new copy of the Transform from its description string is sufficient.
+     */
+    virtual Transform * smartCopy()
+    {
+        return this->clone();
+    }
+
+    void init()
+    {
+        delete timeInvariantAlias;
+        timeInvariantAlias = new TimeInvariantWrapperTransform(this);
+    }
+
+protected:
+    Transform * timeInvariantAlias;
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable)
+    {
+        timeInvariantAlias = NULL;
+    }
+    ~TimeVaryingTransform()
+    {
+        delete timeInvariantAlias;
+    }
+};
+
 
 /*!
  * \brief A MetaTransform that aggregates some sub-transforms
@@ -165,15 +176,17 @@ public:
 
     virtual void project(const Template &src, Template &dst) const
     {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        if (timeVarying()) {
+            timeInvariantAlias->project(src,dst);
+            return;
+        }
         _project(src, dst);
     }
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         if (timeVarying()) {
-            CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
-            non_const->projectUpdate(src,dst);
+            timeInvariantAlias->project(src,dst);
             return;
         }
         _project(src, dst);
@@ -190,6 +203,10 @@ public:
             isTimeVarying = isTimeVarying || transform->timeVarying();
             trainable = trainable || transform->trainable;
         }
+
+        // If we are time varying, set up timeInvariantAlias
+        if (this->timeVarying())
+            TimeVaryingTransform::init();
     }
 
     /*!
