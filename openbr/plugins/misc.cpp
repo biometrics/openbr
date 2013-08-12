@@ -332,11 +332,9 @@ class AnonymizeTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, AnonymizeTransform)
 
-// TODO: Use a global Mutex to prevent concurrent reads from stdin
-#if 0
 /*!
  * \ingroup transforms
- * \brief Name a point
+ * \brief Name a metadata value
  * \author Scott Klum \cite sklum
  */
 class ElicitMetadataTransform : public UntrainableMetaTransform
@@ -381,7 +379,6 @@ class ElicitMetadataTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, ElicitMetadataTransform)
-#endif
 
 /*!
  * \ingroup transforms
