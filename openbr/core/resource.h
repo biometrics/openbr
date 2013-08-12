@@ -40,6 +40,9 @@ class DefaultResourceMaker : public ResourceMaker<T>
     T *make() const { return new T(); }
 };
 
+// Manage multiple copies of a limited resource in a thread-safe manner.
+// TimeVaryingTransform makes a strong assumption that ResourceMaker::Make
+// is only called in acquire, not in the constructor.
 template <typename T>
 class Resource
 {

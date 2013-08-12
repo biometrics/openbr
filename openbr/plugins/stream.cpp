@@ -1300,11 +1300,6 @@ public:
         if (!transform)
             return;
 
-        // Set up timeInvariantAlias
-        // this is only safe because copies are actually made in project
-        // calls, not during init.
-        TimeVaryingTransform::init();
-
         trainable = transform->trainable;
 
         basis.setParent(this->parent());

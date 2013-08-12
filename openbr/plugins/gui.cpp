@@ -350,8 +350,6 @@ public:
         if (!Globals->useGui)
             return;
 
-        TimeVaryingTransform::init();
-
         if (displayBuffer)
             delete displayBuffer;
         displayBuffer = new QPixmap();
@@ -532,7 +530,6 @@ public:
         target_wait = 1000.0 / targetFPS;
         timer.start();
         last_time = timer.elapsed();
-        TimeVaryingTransform::init();
     }
 
 protected:
@@ -586,7 +583,6 @@ public:
     {
         initialized = false;
         framesSeen = 0;
-        TimeVaryingTransform::init();
     }
 
 protected:
