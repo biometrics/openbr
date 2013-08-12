@@ -707,8 +707,7 @@ public:
         if (input == NULL) {
             qFatal("null input to multi-thread stage");
         }
-        // Project the input we got
-        transform->projectUpdate(input->data);
+        input->data >> *transform;
 
         should_continue = nextStage->tryAcquireNextStage(input);
 
@@ -1368,6 +1367,12 @@ public:
     {
         if (!transform)
             return;
+
+        // Set up timeInvariantAlias
+        // this is only safe because copies are actually made in project
+        // calls, not during init.
+        TimeVaryingTransform::init();
+
         trainable = transform->trainable;
 
         basis.setParent(this->parent());
