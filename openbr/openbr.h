@@ -295,6 +295,18 @@ BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destinati
 BR_EXPORT bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show = false);
 
 /*!
+ * \brief Renders landmarking performance figures for a set of <tt>.csv</tt> files created by \ref br_eval_landmarking.
+ *
+ * In order of their output, the figures are:
+ * -# Normalized error box plots (Box)
+ *
+ * Landmarking error is normalized against the distance between two predifined points, usually inter-ocular distance (IOD).
+ *
+ * \see br_plot
+ */
+BR_EXPORT bool br_plot_landmarking(int num_files, const char *files[], const char *destination, bool show = false);
+
+/*!
  * \brief Renders metadata figures for a set of <tt>.csv</tt> files with specified columns.
  *
  * Several files will be created:

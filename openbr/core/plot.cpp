@@ -302,7 +302,6 @@ bool filesHaveSinglePoint(const QStringList &files) {
 bool PlotDetection(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
-
     RPlot p(files, destination, false);
 
     p.file.write("# Split data into individual plots\n"
@@ -341,6 +340,20 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                             QString(" + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
                             (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg(p.minor.header, p.major.header) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
+
+    return p.finalize(show);
+}
+
+bool PlotLandmarking(const QStringList &files, const File &destination, bool show)
+{
+    qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
+    RPlot p(files, destination, false);
+
+    p.file.write("# Split data into individual plots\n"
+                 "plot_index = which(names(data)==\"Plot\")\n"
+                 "Box <- data[grep(\"DiscreteROC\",data$Plot),-c(1)]\n"
+                 "rm(data)\n"
+                 "\n");
 
     return p.finalize(show);
 }
