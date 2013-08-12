@@ -50,9 +50,9 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("PerFrameDetection", "Stream(SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+RestoreMat(original)+Draw(inPlace=true)+Show(false,[FrameNumber])+Discard)");
         Globals->abbreviations.insert("AgeGenderDemo", "Stream(SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+Expand+<FaceClassificationRegistration>+<FaceClassificationExtraction>+<AgeRegressor>/<GenderClassifier>+Discard+RestoreMat(original)+Draw(inPlace=true)+DrawPropertiesPoint([Age,Gender],Affine_0,inPlace=true)+SaveMat(original)+Discard+Contract+RestoreMat(original)+FPSCalc+Show(false,[AvgFPS,Age,Gender])+Discard)");
 
-        Globals->abbreviations.insert("HOG", "Stream(DropFrames(5)+Cvt(Gray)+KeyPointDetector(SIFT)+ROI+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)+SVM");
-        Globals->abbreviations.insert("HOF", "Stream(DropFrames(5)+KeyPointDetector(SIFT)+AggregateFrames(2)+OpticalFlow+ROI+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)");
-        Globals->abbreviations.insert("HOGHOF", "Stream(DropFrames(5)+KeyPointDetector(SIFT)+AggregateFrames(2)+(OpticalFlow++ROI+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat+Contract)/(First+Cvt(Gray)+ROI+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat+Contract)+CatCols)+Contract+CatRows+KMeans(500)+Hist(500)+SVM");
+        Globals->abbreviations.insert("HOG", "Stream(DropFrames(5)+Cvt(Gray)+Grid(5,5)+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)+SVM");
+        Globals->abbreviations.insert("HOF", "Stream(DropFrames(5)+Grid(5,5)+AggregateFrames(2)+OpticalFlow+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)");
+        Globals->abbreviations.insert("HOGHOF", "Stream(DropFrames(5)+Grid(5,5)+AggregateFrames(2)+(OpticalFlow+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat+Contract)/(First+Cvt(Gray)+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat+Contract)+CatCols)+Contract+CatRows+KMeans(500)+Hist(500)+SVM");
 
         // Generic Image Processing
         Globals->abbreviations.insert("SIFT", "Open+KeyPointDetector(SIFT)+KeyPointDescriptor(SIFT):KeyPointMatcher(BruteForce)");

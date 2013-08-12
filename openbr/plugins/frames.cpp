@@ -52,6 +52,11 @@ private:
     {
         (void) stream;
     }
+
+    void init()
+    {
+        TimeVaryingTransform::init();
+    }
 };
 
 BR_REGISTER(Transform, AggregateFrames)

@@ -146,6 +146,9 @@ public:
             } else if (!strcmp(fun, "plotDetection")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
                 br_plot_detection(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "plotLandmarking")) {
+                check(parc >= 2, "Incorrect parameter count for 'plotLandmarking'.");
+                br_plot_landmarking(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
@@ -224,6 +227,7 @@ private:
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-plotDetection <file> ... <file> {destination}\n"
+               "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"

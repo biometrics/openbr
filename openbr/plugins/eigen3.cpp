@@ -253,9 +253,7 @@ class DFFSTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(float keep READ get_keep WRITE set_keep RESET reset_keep STORED false)
-    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform STORED false)
     BR_PROPERTY(float, keep, 0.95)
-    BR_PROPERTY(br::Transform*, transform, NULL)
 
     PCATransform pca;
     Transform *cvtFloat;
