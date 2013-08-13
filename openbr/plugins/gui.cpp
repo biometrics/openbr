@@ -70,6 +70,7 @@ public:
 
     DisplayWindow(QWidget * parent = NULL) : QLabel(parent)
     {
+        setFixedSize(200,200);
         QApplication::instance()->installEventFilter(this);
     }
 
@@ -80,7 +81,13 @@ public slots:
 
         show();
         setPixmap(pixmap);
-        setFixedSize(input.size());
+
+        // We appear to get a warning on windows if we set window width < 104. This is of course not
+        // reflected in the Qt min size settings, and I don't know how to query it.
+        QSize temp = input.size();
+        if (temp.width() < 104)
+            temp.setWidth(104);
+        setFixedSize(temp);
     }
 
 
