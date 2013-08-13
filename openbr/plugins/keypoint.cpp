@@ -222,9 +222,9 @@ class GridTransform : public UntrainableTransform
         QList<QPointF> landmarks;
         const float row_step = 1.f * src.m().rows / rows;
         const float column_step = 1.f * src.m().cols / columns;
-        for (float i=row_step/2; i<src.m().rows; i+=row_step)
-            for (float j=column_step/2; j<src.m().cols; j+=column_step)
-                landmarks.append(QPointF(i,j));
+        for (float y=row_step/2; y<src.m().rows; y+=row_step)
+            for (float x=column_step/2; x<src.m().cols; x+=column_step)
+                landmarks.append(QPointF(x,y));
         dst = src;
         dst.file.setPoints(landmarks);
     }

@@ -89,6 +89,7 @@ class CrossValidateTransform : public MetaTransform
                     }
                 } else if (partitions[j] == i) {
                     partitionedData.removeAt(j);
+                    j--;
                 } else j--;
             }
             // Train on the remaining templates

@@ -116,12 +116,12 @@ public:
 
     virtual void project(const Template &src, Template &dst) const
     {
-        timeInvariantAlias->project(src,dst);
+        timeInvariantAlias.project(src,dst);
     }
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        timeInvariantAlias->project(src,dst);
+        timeInvariantAlias.project(src,dst);
     }
 
     // Get a compile failure if this isn't here to go along with the other
@@ -150,21 +150,13 @@ public:
         return this->clone();
     }
 
-    void init()
-    {
-        delete timeInvariantAlias;
-        timeInvariantAlias = new TimeInvariantWrapperTransform(this);
-    }
-
 protected:
-    Transform * timeInvariantAlias;
-    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable)
+    // Since copies aren't actually made until project is called, we can set up
+    // timeInvariantAlias in the constructor.
+    TimeInvariantWrapperTransform timeInvariantAlias;
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable), timeInvariantAlias(this)
     {
-        timeInvariantAlias = NULL;
-    }
-    ~TimeVaryingTransform()
-    {
-        delete timeInvariantAlias;
+        //
     }
 };
 
@@ -183,7 +175,7 @@ public:
     virtual void project(const Template &src, Template &dst) const
     {
         if (timeVarying()) {
-            timeInvariantAlias->project(src,dst);
+            timeInvariantAlias.project(src,dst);
             return;
         }
         _project(src, dst);
@@ -192,7 +184,7 @@ public:
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         if (timeVarying()) {
-            timeInvariantAlias->project(src,dst);
+            timeInvariantAlias.project(src,dst);
             return;
         }
         _project(src, dst);
@@ -209,10 +201,6 @@ public:
             isTimeVarying = isTimeVarying || transform->timeVarying();
             trainable = trainable || transform->trainable;
         }
-
-        // If we are time varying, set up timeInvariantAlias
-        if (this->timeVarying())
-            TimeVaryingTransform::init();
     }
 
     /*!

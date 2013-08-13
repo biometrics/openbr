@@ -26,6 +26,7 @@ namespace br
 {
     bool Plot(const QStringList &files, const File &destination, bool show = false);
     bool PlotDetection(const QStringList &files, const File &destination, bool show = false);
+    bool PlotLandmarking(const QStringList &files, const File &destination, bool show = false);
     bool PlotMetadata(const QStringList &files, const QString &destination, bool show = false);
 }
 

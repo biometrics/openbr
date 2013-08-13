@@ -265,6 +265,12 @@ BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *im
  * - <i>destination</i><tt>.R</tt> which is the auto-generated R script used to render the figures.
  * - <i>destination</i><tt>.pdf</tt> which has all of the figures in one file multi-page file.
  *
+ * OpenBR uses file and folder names to automatically determine the plot legend.
+ * For example, let's consider the case where three algorithms (<tt>A</tt>, <tt>B</tt>, & <tt>C</tt>) were each evaluated on two datasets (<tt>Y</tt> & <tt>Z</tt>).
+ * The suggested way to plot these experiments on the same graph is to create a folder named <tt>Algorithm_Dataset</tt> that contains the six <tt>.csv</tt> files produced by \ref br_eval: <tt>A_Y.csv</tt>, <tt>A_Z.csv</tt>, <tt>B_Y.csv</tt>, <tt>B_Z.csv</tt>, <tt>C_Y.csv</tt>, & <tt>C_Z.csv</tt>.
+ * The '<tt>_</tt>' character plays a special role in determining the legend title(s) and value(s).
+ * In this case, <tt>A</tt>, <tt>B</tt>, & <tt>C</tt> will be identified as different values of type <tt>Algorithm</tt>, and each will be assigned its own color; <tt>Y</tt> & <tt>Z</tt> will be identified as different values of type Dataset, and each will be assigned its own line style.
+ *
  * \param num_files Number of <tt>.csv</tt> files.
  * \param files <tt>.csv</tt> files created using \ref br_eval.
  * \param destination Basename for the resulting figures.
@@ -293,6 +299,20 @@ BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destinati
  * \see br_plot
  */
 BR_EXPORT bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show = false);
+
+/*!
+ * \brief Renders landmarking performance figures for a set of <tt>.csv</tt> files created by \ref br_eval_landmarking.
+ *
+ * In order of their output, the figures are:
+ * -# Cumulative landmarks less than normalized error (CD)
+ * -# Normalized error box and whisker plots (Box)
+ * -# Normalized error violin plots (Violin)
+ *
+ * Landmarking error is normalized against the distance between two predifined points, usually inter-ocular distance (IOD).
+ *
+ * \see br_plot
+ */
+BR_EXPORT bool br_plot_landmarking(int num_files, const char *files[], const char *destination, bool show = false);
 
 /*!
  * \brief Renders metadata figures for a set of <tt>.csv</tt> files with specified columns.

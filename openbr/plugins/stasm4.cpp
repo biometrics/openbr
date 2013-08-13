@@ -54,6 +54,9 @@ class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool stasm3Format READ get_stasm3Format WRITE set_stasm3Format RESET reset_stasm3Format STORED false)
+    BR_PROPERTY(bool, stasm3Format, false)
+
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
     void init()
@@ -69,14 +72,20 @@ class StasmTransform : public UntrainableTransform
         StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
 
         int foundface;
+        int nLandmarks = stasm_NLANDMARKS;
         float landmarks[2 * stasm_NLANDMARKS];
         stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+
+        if (stasm3Format) {
+            nLandmarks = 76;
+            stasm_convert_shape(landmarks, nLandmarks);
+        }
 
         stasmCascadeResource.release(stasmCascade);
 
         if (!foundface) qWarning("No face found in %s", qPrintable(src.file.fileName()));
         else {
-            for (int i = 0; i < stasm_NLANDMARKS; i++)
+            for (int i = 0; i < nLandmarks; i++)
                 dst.file.appendPoint(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
         }
 
