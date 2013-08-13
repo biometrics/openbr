@@ -1091,8 +1091,17 @@ public:
         train(combined);
     }
 
-    // Terminal train, call with a complete training set when no further structure is needed
-    virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
+    /*!< \brief Train the transform. */
+    virtual void train(const TemplateList &data)
+    {
+        if (!trainable) {
+            qWarning("Train called on untrainable transform %s", this->metaObject()->className());
+            return;
+        }
+        QList<TemplateList> input;
+        input.append(data);
+        train(input);
+    }
 
     /*!< \brief Apply the transform to a single template. Typically used by independent transforms */
     virtual void project(const Template &src, Template &dst) const = 0;

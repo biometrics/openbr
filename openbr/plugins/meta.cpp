@@ -82,12 +82,6 @@ class PipeTransform : public CompositeTransform
             *srcdst >> *transforms[i];
     }
 
-    void train(const TemplateList & data)
-    {
-        (void) data;
-        qFatal("Terminal train called on interior node");
-    }
-
     void train(const QList<TemplateList> &data)
     {
         if (!trainable) return;
@@ -286,12 +280,6 @@ class ForkTransform : public CompositeTransform
 {
     Q_OBJECT
 
-     void train(const TemplateList & data)
-     {
-         (void) data;
-         qFatal("Terminal train called on interior node.");
-     }
-
     void train(const QList<TemplateList> &data)
     {
         if (!trainable) return;
@@ -436,7 +424,7 @@ private:
         }
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         transform->train(data);
     }
@@ -606,12 +594,6 @@ public:
         DistributeTemplateTransform * output = new DistributeTemplateTransform;
         output->transform = transform->smartCopy();
         return output;
-    }
-
-    void train(const TemplateList & data)
-    {
-        (void) data;
-        qFatal("terminal train called on non-leaf transform");
     }
 
     void train(const QList<TemplateList> &data)

@@ -1047,12 +1047,6 @@ public:
 
     friend class StreamTransfrom;
 
-    void train(const TemplateList & data)
-    {
-        (void) data;
-        qFatal("terminal train called on interior node.");
-    }
-
     void subProject(QList<TemplateList> & data, int end_idx)
     {
         if (end_idx == 0)
@@ -1347,13 +1341,6 @@ public:
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
         basis.projectUpdate(src,dst);
-    }
-
-
-    void train(const TemplateList & data)
-    {
-        (void) data;
-        qFatal("terminal train called on interior node.");
     }
 
     void train(const QList<TemplateList> & data)

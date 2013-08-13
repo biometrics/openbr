@@ -48,9 +48,7 @@ struct AlgorithmCore
 
         QTime time; time.start();
         qDebug("Training Enrollment");
-        QList<TemplateList> uniform;
-        uniform.append(data);
-        transform->train(uniform);
+        transform->train(data);
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
