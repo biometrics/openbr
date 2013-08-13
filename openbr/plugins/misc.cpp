@@ -383,7 +383,7 @@ BR_REGISTER(Transform, RegexPropertyTransform)
 /*!
  * \ingroup transforms
  * \brief Remove templates with the specified file extension or metadata value.
- * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
  */
 class RemoveTemplatesTransform : public UntrainableMetaTransform
 {
