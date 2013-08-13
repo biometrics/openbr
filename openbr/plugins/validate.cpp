@@ -19,9 +19,9 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
-    Q_PROPERTY(bool leaveOneOut READ get_leaveOneOut WRITE set_leaveOneOut RESET reset_leaveOneOut STORED false)
+    Q_PROPERTY(bool leaveOneImageOut READ get_leaveOneImageOut WRITE set_leaveOneImageOut RESET reset_leaveOneImageOut STORED false)
     BR_PROPERTY(QString, description, "Identity")
-    BR_PROPERTY(bool, leaveOneOut, false)
+    BR_PROPERTY(bool, leaveOneImageOut, false)
 
     QList<br::Transform*> transforms;
 
@@ -49,10 +49,10 @@ class CrossValidateTransform : public MetaTransform
             int j = partitionedData.size()-1;
             while (j>=0) {
                 // Remove all templates belonging to partition i
-                // if leaveOneOut is true,
+                // if leaveOneImageOut is true,
                 // and i is greater than the number of images for a particular subject
                 // even if the partitions are different
-                if (leaveOneOut) {
+                if (leaveOneImageOut) {
                     const QString label = partitionedData.at(j).file.get<QString>("Label");
                     QList<int> subjectIndices = partitionedData.find("Label",label);
                     QList<int> removed;
@@ -80,6 +80,7 @@ class CrossValidateTransform : public MetaTransform
                     }
                 } else if (partitions[j] == i) {
                     partitionedData.removeAt(j);
+                    j--;
                 } else j--;
             }
             // Train on the remaining templates

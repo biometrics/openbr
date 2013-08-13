@@ -364,6 +364,7 @@ protected:
     QMutex last_frame_update;
 };
 
+static QMutex openLock;
 // Read a video frame by frame using cv::VideoCapture
 class VideoDataSource : public DataSource
 {
@@ -396,6 +397,8 @@ public:
             // Yes, we should specify absolute path:
             // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
             QString fileName = (Globals->path.isEmpty() ? "" : Globals->path + "/") + input.file.name;
+            // On windows, this appears to not be thread-safe
+            QMutexLocker lock(&openLock);
             video.open(QFileInfo(fileName).absoluteFilePath().toStdString());
         }
 
@@ -707,8 +710,7 @@ public:
         if (input == NULL) {
             qFatal("null input to multi-thread stage");
         }
-        // Project the input we got
-        transform->projectUpdate(input->data);
+        input->data >> *transform;
 
         should_continue = nextStage->tryAcquireNextStage(input);
 
@@ -1058,7 +1060,10 @@ public:
         dst = src;
 
         bool res = readStage->dataSource.open(dst);
-        if (!res) return;
+        if (!res) {
+            qDebug("stream failed to open %s", qPrintable(dst[0].file.name));
+            return;
+        }
 
         // Start the first thread in the stream.
         QWriteLocker lock(&readStage->statusLock);
@@ -1300,6 +1305,7 @@ public:
     {
         if (!transform)
             return;
+
         trainable = transform->trainable;
 
         basis.setParent(this->parent());

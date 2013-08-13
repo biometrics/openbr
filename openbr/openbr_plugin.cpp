@@ -387,7 +387,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
         const int crossValidate = gallery.get<int>("crossValidate");
 
-        if (gallery.getBool("leaveOneOut")) {
+        if (gallery.getBool("leaveOneImageOut")) {
             QStringList labels;
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
@@ -406,11 +406,11 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                     // Extend the gallery for each partition
                     for (int j=0; j<labelIndices.size(); j++) {
                         for (int k=0; k<crossValidate; k++) {
-                            Template leaveOneOutTemplate = newTemplates[labelIndices[j]];
-                            if (k!=leaveOneOutTemplate.file.get<int>("Partition")) {
-                                leaveOneOutTemplate.file.set("Partition", k);
-                                leaveOneOutTemplate.file.set("testOnly", true);
-                                newTemplates.insert(i+1,leaveOneOutTemplate);
+                            Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
+                            if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
+                                leaveOneImageOutTemplate.file.set("Partition", k);
+                                leaveOneImageOutTemplate.file.set("testOnly", true);
+                                newTemplates.insert(i+1,leaveOneImageOutTemplate);
                             }
                         }
                     }

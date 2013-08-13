@@ -182,6 +182,11 @@ bool br_plot_detection(int num_files, const char *files[], const char *destinati
     return PlotDetection(QtUtils::toStringList(num_files, files), destination, show);
 }
 
+bool br_plot_landmarking(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotLandmarking(QtUtils::toStringList(num_files, files), destination, show);
+}
+
 bool br_plot_metadata(int num_files, const char *files[], const char *columns, bool show)
 {
     return PlotMetadata(QtUtils::toStringList(num_files, files), columns, show);

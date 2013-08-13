@@ -5,6 +5,11 @@
 #include <QMutex>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QFormLayout>
+#include <QLineEdit>
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include "openbr_internal.h"
@@ -65,6 +70,7 @@ public:
 
     DisplayWindow(QWidget * parent = NULL) : QLabel(parent)
     {
+        setFixedSize(200,200);
         QApplication::instance()->installEventFilter(this);
     }
 
@@ -75,7 +81,13 @@ public slots:
 
         show();
         setPixmap(pixmap);
-        setFixedSize(input.size());
+
+        // We appear to get a warning on windows if we set window width < 104. This is of course not
+        // reflected in the Qt min size settings, and I don't know how to query it.
+        QSize temp = input.size();
+        if (temp.width() < 104)
+            temp.setWidth(104);
+        setFixedSize(temp);
     }
 
 
@@ -188,6 +200,85 @@ private:
 
 };
 
+class DisplayGUI : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+
+    DisplayGUI(QWidget * parent = NULL) : QMainWindow(parent)
+    {
+        centralWidget = new QWidget();
+        layout = new QHBoxLayout();
+        inputLayout = new QVBoxLayout();
+
+        button.setText("Set Template Metadata");
+
+        layout->addWidget(&label);
+
+        inputLayout->addWidget(&button);
+        layout->addLayout(inputLayout);
+
+        centralWidget->setLayout(layout);
+
+        setCentralWidget(centralWidget);
+
+        connect(&button, SIGNAL(clicked()), this, SLOT(buttonPressed()));
+    }
+
+public slots:
+    void showImage(const QPixmap & input)
+    {
+        pixmap = input;
+        foreach(const QString& label, keys) {
+            QLineEdit *edit = new QLineEdit;
+            fields.append(edit);
+            QFormLayout *form = new QFormLayout;
+            form->addRow(label, edit);
+            inputLayout->addLayout(form);
+        }
+
+        show();
+        label.setPixmap(pixmap);
+        label.setFixedSize(input.size());
+    }
+
+    QStringList waitForButtonPress()
+    {
+        QMutexLocker locker(&lock);
+        wait.wait(&lock);
+
+        QStringList values;
+        for(int i = 0; i<fields.size(); i++) values.append(fields.at(i)->text());
+        return values;
+    }
+
+public slots:
+
+    void buttonPressed()
+    {
+        wait.wakeAll();
+    }
+
+    void setKeys(const QStringList& k)
+    {
+        keys = k;
+    }
+
+private:
+
+    QWidget *centralWidget;
+    QStringList keys;
+    QList<QLineEdit*> fields;
+    QPushButton button;
+    QMutex lock;
+    QWaitCondition wait;
+    QPixmap pixmap;
+    QLabel label;
+    QHBoxLayout *layout;
+    QVBoxLayout *inputLayout;
+
+};
 
 // I want a template class that doesn't look like a template class
 class NominalCreation
@@ -298,7 +389,7 @@ public:
     {
         dst = src;
 
-        if (src.empty() || !Globals->useGui)
+        if (src.empty())
             return;
 
         foreach (const Template & t, src) {
@@ -427,6 +518,104 @@ public:
 
 BR_REGISTER(Transform, ManualTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Elicits metadata for templates in a pretty GUI
+ * \author Scott Klum \cite sklum
+ */
+class ElicitTransform : public TimeVaryingTransform
+{
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    BR_PROPERTY(QStringList, keys, QStringList())
+
+    Q_OBJECT
+
+    MainThreadCreator creator;
+    DisplayGUI *gui;
+    QImage qImageBuffer;
+    QPixmap *displayBuffer;
+
+public:
+    ElicitTransform() : TimeVaryingTransform(false, false)
+    {
+        displayBuffer = NULL;
+        gui = NULL;
+    }
+
+    ~ElicitTransform()
+    {
+        delete displayBuffer;
+        delete gui;
+    }
+
+    void train(const TemplateList &data) { (void) data; }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Transform * non_const = (ElicitTransform *) this;
+        non_const->projectUpdate(src,dst);
+    }
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        dst = src;
+
+        if (src.empty()) return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                QStringList metadata = gui->waitForButtonPress();
+                for(int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j],metadata[j]);
+            }
+        }
+    }
+
+    void finalize(TemplateList & output)
+    {
+        (void) output;
+        emit hideWindow();
+    }
+
+    void init()
+    {
+        initActual<DisplayGUI>();
+    }
+
+    template<typename GUIType>
+    void initActual()
+    {
+        if (!Globals->useGui)
+            return;
+
+        TimeVaryingTransform::init();
+
+        if (displayBuffer)
+            delete displayBuffer;
+
+        displayBuffer = new QPixmap();
+
+        if (gui)
+            delete gui;
+
+        gui = creator.getItem<GUIType>();
+        gui->setKeys(keys);
+        // Connect our signals to the window's slots
+        connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
+        connect(this, SIGNAL(hideWindow()), gui, SLOT(hide()));
+    }
+
+signals:
+
+    void updateImage(const QPixmap & input);
+    void hideWindow();
+
+};
+BR_REGISTER(Transform, ElicitTransform)
 
 /*!
  * \ingroup transforms
