@@ -354,32 +354,36 @@ BR_REGISTER(Transform, AsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Change the template subject using a regular expresion matched to the file's base name.
+ * \brief Apply the input regular expression to the value of inputProperty, store the matched portion in outputProperty.
  * \author Josh Klontz \cite jklontz
  */
-class SubjectTransform : public UntrainableMetaTransform
+class RegexPropertyTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    Q_PROPERTY(QString inputProperty READ get_inputProperty WRITE set_inputProperty RESET reset_inputProperty STORED false)
+    Q_PROPERTY(QString outputProperty READ get_outputProperty WRITE set_outputProperty RESET reset_outputProperty STORED false)
     BR_PROPERTY(QString, regexp, "(.*)")
+    BR_PROPERTY(QString, inputProperty, "name")
+    BR_PROPERTY(QString, outputProperty, "Label")
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
         QRegularExpression re(regexp);
-        QRegularExpressionMatch match = re.match(dst.file.baseName());
+        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProprety));
         if (!match.hasMatch())
-            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.baseName()));
-        dst.file.set("Subject", match.captured(match.lastCapturedIndex()));
+            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.get<QString>(inputProperty)));
+        dst.file.set(outputProperty, match.captured(match.lastCapturedIndex()));
     }
 };
 
-BR_REGISTER(Transform, SubjectTransform)
+BR_REGISTER(Transform, RegexPropertyTransform)
 
 /*!
  * \ingroup transforms
  * \brief Remove templates with the specified file extension or metadata value.
- * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
  */
 class RemoveTemplatesTransform : public UntrainableMetaTransform
 {
