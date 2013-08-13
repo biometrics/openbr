@@ -18,6 +18,109 @@ using namespace cv;
 
 namespace br
 {
+// Generally speaking, Qt wants GUI objects to be on the main thread, and
+// for the main thread to be in an event loop. We don't restrict transform
+// creation to just the main thread, but in br we do compromise and put
+// the main thread in an event loop (and so should any applications wanting to
+// use GUI transforms). This does mean we need a way to make our QWidget subclasses
+// on the main thread. We can't create them from an arbitrary thread, then move them
+// (you know, since that would be crazy), so we need some tricks to get the main
+// thread to make these objects.
+
+// Part 1. A generic interface for creating objects, the type of object
+// created is not exposed in the interface.
+class NominalCreation
+{
+public:
+    virtual ~NominalCreation() {}
+    virtual void creation()=0;
+};
+
+// Part 2. A template class that creates an object of the specified type
+// through the interface defined in part 1. The point of this is that the
+// type of object created can be hidden by using a NominalCreation *.
+template<typename T>
+class ActualCreation : public NominalCreation
+{
+public:
+    T * basis;
+
+    void creation()
+    {
+        basis = new T();
+    }
+};
+
+// Part 3. A class that inherits from QObject, but not QWidget. This means
+// we are free to move it to the main thread.
+// If this object is on the main thread, and we signal one of its slots, then
+// the slot will be executed by the main thread, which is what we need.
+// Unfortunately, since it uses Q_OBJECT we cannot make it a template class, but
+// we still want to be able to make objects of arbitrary type on the main thread,
+// so that we don't need a different adaptor for every type of QWidget subclass we use.
+class MainThreadCreator : public QObject
+{
+    Q_OBJECT
+public:
+
+    MainThreadCreator()
+    {
+        this->moveToThread(QApplication::instance()->thread());
+        // We actually bind a signal on this object to one of its own slots.
+        // the signal will be emitted by a call to getItem from an abitrary
+        // thread.
+        connect(this, SIGNAL(needCreation()), this, SLOT(createThing()), Qt::BlockingQueuedConnection);
+    }
+
+    // While this cannot be a template class, it can still have a template
+    // method. Which is useful, but the slot which will actually be executed
+    // by the main thread cannot be a template. So, we use the template method
+    // here (called from an arbitrary thread, to create an object of arbitrary type)
+    // to instantiate an ActualCreation object with matching type, then we hide
+    // the template with the NominalCreation interface, and call worker->creation
+    // in the slot.
+    template<typename T>
+    T * getItem()
+    {
+        // If this is called by the main thread, we can just create the object
+        // it's important to check, otherwise we will have problems trying to
+        // wait for a blocking connection that is supposed to be processed by
+        // the thread that is waiting.
+        if (QThread::currentThread() == QApplication::instance()->thread())
+            return new T();
+
+        // Create the object creation interface
+        ActualCreation<T> * actualWorker;
+        actualWorker = new ActualCreation<T> ();
+        // hide it
+        worker = actualWorker;
+
+        // emit the signal, we set up a blocking queued connection, so
+        // this is a blocking wait for the slot to finish being run.
+        emit needCreation();
+
+        // collect the results, and return.
+        T * output = actualWorker->basis;
+        delete actualWorker;
+        return output;
+    }
+
+    NominalCreation * worker;
+
+signals:
+    void needCreation();
+
+public slots:
+    // The actual slot, to be run by the main thread. The type
+    // of object being created is not, and indeed cannot, be exposed here
+    // since this cannot be a template method, and the class cannot be a
+    // template class.
+    void createThing()
+    {
+        worker->creation();
+    }
+};
+
 QImage toQImage(const Mat &mat)
 {
     // Convert to 8U depth
@@ -278,75 +381,6 @@ private:
     QHBoxLayout *layout;
     QVBoxLayout *inputLayout;
 
-};
-
-// I want a template class that doesn't look like a template class
-class NominalCreation
-{
-public:
-    virtual ~NominalCreation() {}
-    virtual void creation()=0;
-};
-
-// Putting the template on a subclass means we can maintain a pointer that
-// doesn't include T in its type.
-template<typename T>
-class ActualCreation : public NominalCreation
-{
-public:
-    T * basis;
-
-    void creation()
-    {
-        basis = new T();
-    }
-};
-
-// We want to create a QLabel subclass on the main thread, but are running in another thread.
-// We cannot move QWidget subclasses to a different thread (obviously that would be crazy), but
-// we can create one of these, and move it to the main thread, and then use it to create the object
-// we want.
-// Additional fact: QObject subclasses cannot be template classes.
-class MainThreadCreator : public QObject
-{
-    Q_OBJECT
-public:
-
-    MainThreadCreator()
-    {
-        this->moveToThread(QApplication::instance()->thread());
-
-        connect(this, SIGNAL(needCreation()), this, SLOT(createThing()), Qt::BlockingQueuedConnection);
-    }
-
-    // While this cannot be a template class, it can still have a template method.
-    template<typename T>
-    T * getItem()
-    {
-        if (QThread::currentThread() == QApplication::instance()->thread())
-            return new T();
-
-        ActualCreation<T> * actualWorker;
-        actualWorker = new ActualCreation<T> ();
-        worker = actualWorker;
-
-        emit needCreation();
-
-        T * output = actualWorker->basis;
-        delete actualWorker;
-        return output;
-    }
-
-    NominalCreation * worker;
-
-signals:
-    void needCreation();
-
-public slots:
-    void createThing()
-    {
-        worker->creation();
-    }
 };
 
 /*!
@@ -666,6 +700,11 @@ public:
 BR_REGISTER(Transform, SurveyTransform)
 
 
+/*!
+ * \ingroup transforms
+ * \brief Limits the frequency of projects going through this transform to the input targetFPS
+ * \author Charles Otto \cite caotto
+ */
 class FPSLimit : public TimeVaryingTransform
 {
     Q_OBJECT
@@ -716,6 +755,12 @@ protected:
 };
 BR_REGISTER(Transform, FPSLimit)
 
+/*!
+ * \ingroup transforms
+ * \brief Calculates the average FPS of projects going through this transform, stores the result in AvgFPS
+ * Reports an average FPS from the initialization of this transform onwards.
+ * \author Charles Otto \cite caotto
+ */
 class FPSCalc : public TimeVaryingTransform
 {
     Q_OBJECT
