@@ -706,8 +706,21 @@ class xmlFormat : public Format
 
     void write(const Template &t) const
     {
-        (void) t;
-        qFatal("Not supported.");
+        QStringList lines;
+        lines.append("<?xml version=\"1.0\" standalone=\"yes\"?>");
+        lines.append("<openbr-xml-format>");
+        lines.append("\t<xml-data>");
+        foreach (const QString &key, t.file.localKeys()) {
+            if ((key == "Index") || (key == "Label")) continue;
+            lines.append("\t\t<"+key+">"+QtUtils::toString(t.file.value(key))+"</"+key+">");
+        }
+        std::vector<uchar> data;
+        imencode(".jpg",t.m(),data);
+        QByteArray byteArray = QByteArray::fromRawData((const char*)data.data(), data.size());
+        lines.append("\t\t<FORMAL_IMG>"+byteArray.toBase64()+"</FORMAL_IMG>");
+        lines.append("\t</xml-data>");
+        lines.append("</openbr-xml-format>");
+        QtUtils::writeFile(file, lines);
     }
 };
 

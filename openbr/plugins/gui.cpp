@@ -523,32 +523,25 @@ BR_REGISTER(Transform, ManualTransform)
  * \brief Elicits metadata for templates in a pretty GUI
  * \author Scott Klum \cite sklum
  */
-class ElicitTransform : public TimeVaryingTransform
+class ElicitTransform : public ShowTransform
 {
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList())
 
     Q_OBJECT
 
-    MainThreadCreator creator;
     DisplayGUI *gui;
-    QImage qImageBuffer;
-    QPixmap *displayBuffer;
 
 public:
-    ElicitTransform() : TimeVaryingTransform(false, false)
+    ElicitTransform() : ShowTransform()
     {
-        displayBuffer = NULL;
         gui = NULL;
     }
 
     ~ElicitTransform()
     {
-        delete displayBuffer;
         delete gui;
     }
-
-    void train(const TemplateList &data) { (void) data; }
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
@@ -573,12 +566,6 @@ public:
                 for(int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j],metadata[j]);
             }
         }
-    }
-
-    void finalize(TemplateList & output)
-    {
-        (void) output;
-        emit hideWindow();
     }
 
     void init()
@@ -608,12 +595,6 @@ public:
         connect(this, SIGNAL(updateImage(QPixmap)), gui,SLOT(showImage(QPixmap)));
         connect(this, SIGNAL(hideWindow()), gui, SLOT(hide()));
     }
-
-signals:
-
-    void updateImage(const QPixmap & input);
-    void hideWindow();
-
 };
 BR_REGISTER(Transform, ElicitTransform)
 
