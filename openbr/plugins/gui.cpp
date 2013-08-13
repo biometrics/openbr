@@ -545,7 +545,7 @@ public:
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Transform * non_const = (ShowTransform *) this;
+        Transform * non_const = (ElicitTransform *) this;
         non_const->projectUpdate(src,dst);
     }
 
