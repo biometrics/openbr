@@ -379,12 +379,6 @@ public:
 
     void train(const TemplateList &data) { (void) data; }
 
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Transform * non_const = (ShowTransform *) this;
-        non_const->projectUpdate(src,dst);
-    }
-
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
@@ -549,12 +543,6 @@ public:
     }
 
     void train(const TemplateList &data) { (void) data; }
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Transform * non_const = (ElicitTransform *) this;
-        non_const->projectUpdate(src,dst);
-    }
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
