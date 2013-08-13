@@ -97,11 +97,21 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
     lines.append("<biometric-signature-set>");
     foreach (const File &file, files) {
         QStringList metadata;
-        if (!ignoreMetadata)
+        if (!ignoreMetadata) {
             foreach (const QString &key, file.localKeys()) {
-                if ((key == "Index") || (key == "Label")) continue;
+                if ((key == "Index") || (key == "Label") || (key == "Points") || (key == "Rects")) continue;
                 metadata.append(key+"=\""+QtUtils::toString(file.value(key))+"\"");
             }
+            QStringList landmarks;
+            if (!file.points().isEmpty()) {
+                foreach (const QPointF &point, file.points()) landmarks.append(QtUtils::toString(point));
+                metadata.append("Points=\"["+landmarks.join(",")+"]\""); landmarks.clear();
+            }
+            if (!file.rects().isEmpty()) {
+                foreach (const QRectF &rect, file.rects()) landmarks.append(QtUtils::toString(rect));
+                metadata.append("Rects=\"["+landmarks.join(",")+"]\"");
+            }
+        }
         lines.append("\t<biometric-signature name=\"" + file.get<QString>("Label",file.fileName()) +"\">");
         lines.append("\t\t<presentation file-name=\"" + file.name + "\" " + metadata.join(" ") + "/>");
         lines.append("\t</biometric-signature>");
