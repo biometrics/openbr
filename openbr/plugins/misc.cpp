@@ -355,7 +355,7 @@ BR_REGISTER(Transform, AsTransform)
 /*!
  * \ingroup transforms
  * \brief Apply the input regular expression to the value of inputProperty, store the matched portion in outputProperty.
- * \author Josh Klontz \cite jklontz
+ * \author Charles Otto \cite caotto
  */
 class RegexPropertyTransform : public UntrainableMetaTransform
 {
@@ -371,7 +371,7 @@ class RegexPropertyTransform : public UntrainableMetaTransform
     {
         dst = src;
         QRegularExpression re(regexp);
-        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProprety));
+        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProperty));
         if (!match.hasMatch())
             qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.get<QString>(inputProperty)));
         dst.file.set(outputProperty, match.captured(match.lastCapturedIndex()));
@@ -383,7 +383,7 @@ BR_REGISTER(Transform, RegexPropertyTransform)
 /*!
  * \ingroup transforms
  * \brief Remove templates with the specified file extension or metadata value.
- * \author Charles Otto \cite caotto
+ * \author Josh Klontz \cite jklontz
  */
 class RemoveTemplatesTransform : public UntrainableMetaTransform
 {
@@ -530,6 +530,7 @@ class IncrementalOutputTransform : public TimeVaryingTransform
     // Drop the current gallery.
     void finalize(TemplateList & data)
     {
+        (void) data;
         galleryUp = false;
     }
 
