@@ -88,7 +88,7 @@ public:
         transformSource.release(aTransform);
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         baseTransform->train(data);
     }
