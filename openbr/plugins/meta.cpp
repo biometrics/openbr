@@ -179,6 +179,26 @@ class PipeTransform : public CompositeTransform
         }
     }
 
+    void init()
+    {
+        QList<Transform *> flattened;
+        for (int i=0;i < transforms.size(); i++)
+        {
+            PipeTransform * probe = dynamic_cast<PipeTransform *> (transforms[i]);
+            if (!probe) {
+                flattened.append(transforms[i]);
+                continue;
+            }
+            for (int j=0; j < probe->transforms.size(); j++)
+            {
+                flattened.append(probe->transforms[j]);
+            }
+        }
+        transforms = flattened;
+
+        CompositeTransform::init();
+    }
+
 protected:
     // Template list project -- process templates in parallel through Transform::project
     // or if parallelism is disabled, handle them sequentially
