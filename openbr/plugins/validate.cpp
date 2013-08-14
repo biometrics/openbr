@@ -7,6 +7,11 @@
 namespace br
 {
 
+static void _train(Transform * transform, TemplateList data) // think data has to be a copy -cao
+{
+    transform->train(data);
+}
+
 /*!
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
@@ -23,8 +28,12 @@ class CrossValidateTransform : public MetaTransform
     BR_PROPERTY(QString, description, "Identity")
     BR_PROPERTY(bool, leaveOneImageOut, false)
 
+    // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
 
+    // Treating this transform as a leaf (in terms of update training scheme), the child transform
+    // of this transform will lose any structure present in the training QList<TemplateList>, which
+    // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
         int numPartitions = 0;
@@ -84,7 +93,7 @@ class CrossValidateTransform : public MetaTransform
                 } else j--;
             }
             // Train on the remaining templates
-            futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
         }
         futures.waitForFinished();
     }

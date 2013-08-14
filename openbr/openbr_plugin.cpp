@@ -1225,6 +1225,26 @@ TemplateEvent * Transform::getEvent(const QString & name)
     return NULL;
 }
 
+void Transform::train(const TemplateList &data)
+{
+    if (!trainable) {
+        qWarning("Train called on untrainable transform %s", this->metaObject()->className());
+        return;
+    }
+    QList<TemplateList> input;
+    input.append(data);
+    train(input);
+}
+
+void Transform::train(const QList<TemplateList> &data)
+{
+    TemplateList combined;
+    foreach(const TemplateList & set, data) {
+        combined.append(set);
+    }
+    train(combined);
+}
+
 /* Distance - public methods */
 Distance *Distance::make(QString str, QObject *parent)
 {
