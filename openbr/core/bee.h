@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __BEE_H
-#define __BEE_H
+#ifndef BEE_BEE_H
+#define BEE_BEE_H
 
 #include <QList>
 #include <QPair>
@@ -52,4 +52,4 @@ namespace BEE
     void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 
-#endif // __BEE_H
+#endif // BEE_BEE_H

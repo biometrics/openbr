@@ -1,5 +1,5 @@
-#ifndef __OPENBR_INTERNAL_H
-#define __OPENBR_INTERNAL_H
+#ifndef OPENBR_INTERNAL_H
+#define OPENBR_INTERNAL_H
 
 #include "openbr/openbr_plugin.h"
 #include "openbr/core/resource.h"
@@ -242,4 +242,4 @@ protected:
 
 }
 
-#endif
+#endif // OPENBR_INTERNAL_H

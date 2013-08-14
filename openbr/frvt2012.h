@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef _FRVT2012_H_
-#define _FRVT2012_H_
+#ifndef FRVT2012_H
+#define FRVT2012_H
 
 #include <string>
 #include <vector>
@@ -413,4 +413,4 @@ struct BR_EXPORT SdkEstimator : public Estimator
 
 /*! @}*/
 
-#endif // _FRVT2012_H_
+#endif // FRVT2012_H

@@ -1,5 +1,5 @@
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef BR_VIEW_H
+#define BR_VIEW_H
 
 #include <QAction>
 #include <QActionGroup>
@@ -34,4 +34,4 @@ signals:
 
 } // namespace br
 
-#endif // VIEW_H
+#endif // BR_VIEW_H

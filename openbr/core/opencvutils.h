@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENCVUTILS_H
-#define __OPENCVUTILS_H
+#ifndef OPENCVUTILS_OPENCVUTILS_H
+#define OPENCVUTILS_OPENCVUTILS_H
 
 #include <QDataStream>
 #include <QDebug>
@@ -157,4 +157,4 @@ public:
     }
 };
 
-#endif // __OPENCVUTILS_H
+#endif // OPENCVUTILS_OPENCVUTILS_H

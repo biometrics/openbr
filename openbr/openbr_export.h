@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_EXPORT_H
-#define __OPENBR_EXPORT_H
+#ifndef OPENBR_EXPORT_H
+#define OPENBR_EXPORT_H
 
 #if defined SWIG
 #  define BR_EXPORT extern
@@ -35,4 +35,4 @@
 #  endif
 #endif
 
-#endif // __OPENBR_EXPORT_H
+#endif // OPENBR_EXPORT_H

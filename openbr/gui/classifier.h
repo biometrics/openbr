@@ -1,5 +1,5 @@
-#ifndef __CLASSIFIER_H
-#define __CLASSIFIER_H
+#ifndef BR_CLASSIFIER_H
+#define BR_CLASSIFIER_H
 
 #include <QLabel>
 #include <QWidget>
@@ -33,4 +33,4 @@ signals:
 
 } // namespace br
 
-#endif // __CLASSIFIER_H
+#endif // BR_CLASSIFIER_H

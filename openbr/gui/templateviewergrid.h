@@ -1,5 +1,5 @@
-#ifndef __TEMPLATE_VIEWER_GRID_H
-#define __TEMPLATE_VIEWER_GRID_H
+#ifndef BR_TEMPLATEVIEWERGRID_H
+#define BR_TEMPLATEVIEWERGRID_H
 
 #include <QGridLayout>
 #include <QList>
@@ -35,4 +35,4 @@ signals:
 
 } // namespace br
 
-#endif // __TEMPLATE_VIEWER_GRID_H
+#endif // BR_TEMPLATEVIEWERGRID_H
