@@ -73,6 +73,8 @@ private:
         dst = src;
         Mat mask;
         mog(src, mask);
+        erode(mask, mask, Mat());
+        dilate(mask, mask, Mat());
         dst.file.set("Mask", QVariant::fromValue(mask));
     }
 
