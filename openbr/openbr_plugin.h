@@ -1074,6 +1074,9 @@ public:
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
 
+    /*!< \brief Train the transform. */
+    virtual void train(const TemplateList &data);
+
     /*!< \brief Train the transform, separate list items represent the way calls to project would be broken up
      * Transforms that have to call train on another transform should implement train(QList), the strucutre of the
      * list should mirror the calls that would be made to project by the parent transform. For example, DistributeTemplates
@@ -1082,26 +1085,7 @@ public:
      * This version of train(QList) is appropriate for transforms that perform training on themselves, and don't call train
      * on other transforms. It combines everything in data into a single TemplateList, then calls train(TemplateList)
      */
-    virtual void train(const QList<TemplateList> &data)
-    {
-        TemplateList combined;
-        foreach(const TemplateList & set, data) {
-            combined.append(set);
-        }
-        train(combined);
-    }
-
-    /*!< \brief Train the transform. */
-    virtual void train(const TemplateList &data)
-    {
-        if (!trainable) {
-            qWarning("Train called on untrainable transform %s", this->metaObject()->className());
-            return;
-        }
-        QList<TemplateList> input;
-        input.append(data);
-        train(input);
-    }
+    virtual void train(const QList<TemplateList> &data);
 
     /*!< \brief Apply the transform to a single template. Typically used by independent transforms */
     virtual void project(const Template &src, Template &dst) const = 0;
