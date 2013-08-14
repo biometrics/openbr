@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_PLUGIN_H
-#define __OPENBR_PLUGIN_H
+#ifndef BR_OPENBR_PLUGIN_H
+#define BR_OPENBR_PLUGIN_H
 
 #ifdef __cplusplus
 
@@ -1292,4 +1292,4 @@ Q_DECLARE_METATYPE(QList<br::Distance*>)
 
 #endif // __cplusplus
 
-#endif // __OPENBR_PLUGIN_H
+#endif // BR_OPENBR_PLUGIN_H

@@ -1,5 +1,5 @@
-#ifndef __DATASET_H
-#define __DATASET_H
+#ifndef BR_DATASET_H
+#define BR_DATASET_H
 
 #include <QComboBox>
 #include <QString>
@@ -30,4 +30,4 @@ signals:
 
 } // namespace br
 
-#endif // __DATASET_H
+#endif // BR_DATASET_H

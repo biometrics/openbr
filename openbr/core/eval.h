@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __EVAL_H
-#define __EVAL_H
+#ifndef BR_EVAL_H
+#define BR_EVAL_H
 
 #include <QList>
 #include <QString>
@@ -32,5 +32,5 @@ namespace br
     void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
 }
 
-#endif // __EVAL_H
+#endif // BR_EVAL_H
 

@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __COMMON_H
-#define __COMMON_H
+#ifndef COMMON_COMMON_H
+#define COMMON_COMMON_H
 
 #include <QDebug>
 #include <QList>
@@ -332,4 +332,4 @@ V<T> Downsample(V<T> vals, int k)
 
 }
 
-#endif // __COMMON_H
+#endif // COMMON_COMMON_H

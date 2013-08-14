@@ -1,5 +1,5 @@
-#ifndef __ALGORITHM_H
-#define __ALGORITHM_H
+#ifndef BR_ALGORITHM_H
+#define BR_ALGORITHM_H
 
 #include <QComboBox>
 #include <QString>
@@ -29,4 +29,4 @@ signals:
 
 }
 
-#endif // __ALGORITHM_H
+#endif // BR_ALGORITHM_H

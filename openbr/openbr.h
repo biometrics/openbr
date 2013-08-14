@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_H
-#define __OPENBR_H
+#ifndef OPENBR_H
+#define OPENBR_H
 
 #include <openbr/openbr_export.h>
 
@@ -421,4 +421,4 @@ BR_EXPORT const char *br_version();
 }
 #endif
 
-#endif // __OPENBR_H
+#endif // OPENBR_H

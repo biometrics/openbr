@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __CLUSTER_H
-#define __CLUSTER_H
+#ifndef BR_CLUSTER_H
+#define BR_CLUSTER_H
 
 #include <QList>
 #include <QString>
@@ -34,4 +34,4 @@ namespace br
     void WriteClusters(const Clusters &clusters, const QString &csv);
 }
 
-#endif // __CLUSTER_H
+#endif // BR_CLUSTER_H

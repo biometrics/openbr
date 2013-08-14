@@ -1,5 +1,5 @@
-#ifndef __TEMPLATEMETADATA_H
-#define __TEMPLATEMETADATA_H
+#ifndef BR_TEMPLATEMETADATA_H
+#define BR_TEMPLATEMETADATA_H
 
 #include <QLabel>
 #include <QList>
@@ -43,4 +43,4 @@ public slots:
 
 } // namespace br
 
-#endif // TEMPLATEMETADATA_H
+#endif // BR_TEMPLATEMETADATA_H
