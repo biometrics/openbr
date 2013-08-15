@@ -74,6 +74,10 @@
  * \ref cli_face_recognition_search "Command Line Interface Equivalent"
  * \snippet app/examples/face_recognition_search.cpp face_recognition_search
  *
+ * \subsection cpp_face_recognition_train Face Recognition Train
+ * \ref cli_face_recognition_train "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition_train.cpp face_recognition_train
+ *
  * \subsection cpp_age_estimation Age Estimation
  * \ref cli_age_estimation "Command Line Interface Equivalent"
  * \snippet app/examples/age_estimation.cpp age_estimation
@@ -1037,7 +1041,7 @@ private:
 
 /*!
  * \brief For asynchronous events during template projection.
- * \see #Transform::getEvent
+ * \see Transform::getEvent
  */
 class TemplateEvent : public QObject
 {
