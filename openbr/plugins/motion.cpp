@@ -1,4 +1,5 @@
 #include <opencv2/video/tracking.hpp>
+#include <opencv2/video/background_segm.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
@@ -52,6 +53,45 @@ class OpticalFlowTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, OpticalFlowTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Wraps OpenCV's BackgroundSubtractorMOG2 and puts the foreground mask in the Template metadata.
+ * \author Austin Blanton \cite imaus10
+ */
+class SubtractBackgroundTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    BackgroundSubtractorMOG2 mog;
+
+public:
+    SubtractBackgroundTransform() : TimeVaryingTransform(false, false) {}
+
+private:
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        dst = src;
+        Mat mask;
+        mog(src, mask);
+        erode(mask, mask, Mat());
+        dilate(mask, mask, Mat());
+        dst.file.set("Mask", QVariant::fromValue(mask));
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void) src; (void) dst; qFatal("no way");
+    }
+
+    void finalize(TemplateList &output)
+    {
+        (void) output;
+        mog = BackgroundSubtractorMOG2();
+    }
+};
+
+BR_REGISTER(Transform, SubtractBackgroundTransform)
+
 } // namespace br
 
-#include "opticalflow.moc"
+#include "motion.moc"
