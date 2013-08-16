@@ -477,6 +477,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
         }
         averageOverlap = totalOverlap / keep;
     }
+    lines.append(QString("AverageOverlap,%1,").arg(QString::number(averageOverlap)));
 
     QtUtils::writeFile(csv, lines);
     qDebug("Average Overlap = %.3f", averageOverlap);

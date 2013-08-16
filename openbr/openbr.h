@@ -295,6 +295,8 @@ BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destinati
  * -# Discrete Precision Recall (DiscretePR)
  * -# Continuous Precision Recall (ContinuousPR)
  * -# Bounding Box Overlap Histogram (Overlap)
+ * -# Average Overlap Table (AverageOverlap)
+ * -# Average Overlap Heatmap (AverageOverlap)
  *
  * Detection accuracy is measured with <i>overlap fraction = bounding box intersection / union</i>.
  * When computing <i>discrete</i> curves, an overlap >= 0.5 is considered a true positive, otherwise it is considered a false negative.
