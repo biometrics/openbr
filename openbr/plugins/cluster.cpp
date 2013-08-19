@@ -91,12 +91,14 @@ class KNNTransform : public Transform
     Q_PROPERTY(int numSubjects READ get_numSubjects WRITE set_numSubjects RESET reset_numSubjects STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
+    Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
     BR_PROPERTY(int, k, 1)
     BR_PROPERTY(br::Distance*, distance, NULL)
     BR_PROPERTY(bool, weighted, false)
     BR_PROPERTY(int, numSubjects, 1)
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "KNN")
+    BR_PROPERTY(QString, galleryName, "")
 
     TemplateList gallery;
 
@@ -126,6 +128,7 @@ class KNNTransform : public Transform
         }
 
         dst.file.set(outputVariable, subjects.size() > 1 ? "[" + subjects.join(",") + "]" : subjects.first());
+        dst.file.set("Nearest", gallery[sortedScores[0].second].file.name);
     }
 
     void store(QDataStream &stream) const
@@ -136,6 +139,12 @@ class KNNTransform : public Transform
     void load(QDataStream &stream)
     {
         stream >> gallery;
+    }
+
+    void init()
+    {
+        if (!galleryName.isEmpty())
+            gallery = TemplateList::fromGallery(galleryName);
     }
 };
 
