@@ -508,14 +508,16 @@ class IncrementalOutputTransform : public TimeVaryingTransform
         }
 
         dst = src;
+        int idx =0;
         foreach(const Template & t, src) {
             if (t.empty())
                 continue;
 
             // Build the output filename for this template
             QFileInfo finfo(t.file.name);
-            QString outputName = finfo.baseName() +"_" + t.file.get<QString>("FrameNumber") + fileFormat;
+            QString outputName = finfo.baseName() +"_" + t.file.get<QString>("FrameNumber") + "_" + QString::number(idx)+ fileFormat;
 
+            idx++;
             Template out = t;
             out.file.name = outputName;
             writer->write(out);
