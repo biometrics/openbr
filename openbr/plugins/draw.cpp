@@ -326,7 +326,7 @@ class AdjacentOverlayTransform : public Transform
         std::vector<cv::Mat> patch_channels;
         cv::split(im, patch_channels);
 
-        for (int i=0; i < channels.size(); i++)
+        for (size_t i=0; i < channels.size(); i++)
         {
             cv::addWeighted(channels[i](target_roi), 0, patch_channels[i % patch_channels.size()], 1, 0,channels[i](target_roi));
         }
