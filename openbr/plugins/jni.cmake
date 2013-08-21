@@ -9,8 +9,4 @@ if (${BR_WITH_JAVA})
 	include_directories(${JAVA_INCLUDE_PATH})
 	include_directories(${JAVA_INCLUDE_PATH2})
 
-        #include(UseJava)
-        #file(GLOB JAVA_CLASS_FILES ${BR_SHARE_DIR}/Java/*.class)
-        #add_jar(jni ${JAVA_CLASS_FILES})
-        #install(FILES ${jni} DESTINATION .)
 endif()
