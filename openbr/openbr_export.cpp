@@ -331,7 +331,7 @@ $ br -help
  * \code
  * $ sudo apt-get install cmake cmake-curses-gui
  * \endcode
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>, note <a href="https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu">this</a>
  * \code
  * $ cd ~/Downloads
  * $ tar -xf opencv-2.4.5.tar.gz
