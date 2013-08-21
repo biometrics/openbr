@@ -42,8 +42,6 @@ private:
             foreach (const Template &tmpl, data) {
                 foreach (const Rect &rect, OpenCVUtils::toRects(tmpl.file.rects())) {
                     Template pos(tmpl.file, Mat(tmpl, rect));
-                    // add the positive label
-                    pos.file.set("Label", 1);
                     full += pos;
 
                     // add random negative samples
