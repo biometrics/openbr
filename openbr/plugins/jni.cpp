@@ -91,18 +91,6 @@ class JNITransform : public UntrainableTransform
 
         JNIInitializer::jvm->DetachCurrentThread();
 	}
-
-    void store(QDataStream &stream) const
-    {
-        (void)stream;
-        qFatal("Not implemented yet");
-    }
-
-    void load(QDataStream &stream)
-    {
-        (void)stream;
-        qFatal("Not implemented yet");
-    }
 };
 
 BR_REGISTER(Transform, JNITransform)
