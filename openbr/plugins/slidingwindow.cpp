@@ -21,12 +21,14 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(double stepSize READ get_stepSize WRITE set_stepSize RESET reset_stepSize STORED false)
     Q_PROPERTY(bool takeLargestScale READ get_takeLargestScale WRITE set_takeLargestScale RESET reset_takeLargestScale STORED false)
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
+    Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(double, scaleFactor, 0.75)
     BR_PROPERTY(double, stepSize, 1)
     BR_PROPERTY(bool, takeLargestScale, true)
     BR_PROPERTY(br::Transform *, transform, NULL)
+    BR_PROPERTY(bool, negSamples, true)
     BR_PROPERTY(int, negToPosRatio, 1)
 
 public:
@@ -45,17 +47,19 @@ private:
                     full += pos;
 
                     // add random negative samples
-                    Mat m = tmpl.m();
-                    QList<int> xs = Common::RandSample(negToPosRatio, m.cols, 0, true);
-                    QList<int> ys = Common::RandSample(negToPosRatio, m.rows, 0, true);
-                    for (int i=0; i<negToPosRatio; i++) {
-                        int x = xs[i], y = ys[i];
-                        int maxWidth = m.cols - x, maxHeight = m.rows - y;
-                        int maxSize = std::min(maxWidth, maxHeight);
-                        int size = (maxSize < minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
-                        Template neg(tmpl.file, Mat(tmpl, Rect(x, y, size, size)));
-                        neg.file.set("Label", QVariant::fromValue(0));
-                        full += neg;
+                    if (negSamples) {
+                        Mat m = tmpl.m();
+                        QList<int> xs = Common::RandSample(negToPosRatio, m.cols, 0, true);
+                        QList<int> ys = Common::RandSample(negToPosRatio, m.rows, 0, true);
+                        for (int i=0; i<negToPosRatio; i++) {
+                            int x = xs[i], y = ys[i];
+                            int maxWidth = m.cols - x, maxHeight = m.rows - y;
+                            int maxSize = std::min(maxWidth, maxHeight);
+                            int size = (maxSize < minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
+                            Template neg(tmpl.file, Mat(tmpl, Rect(x, y, size, size)));
+                            neg.file.set("Label", QVariant::fromValue(0));
+                            full += neg;
+                        }
                     }
                 }
             }
