@@ -23,6 +23,7 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
+    Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(double, scaleFactor, 0.75)
     BR_PROPERTY(double, stepSize, 1)
@@ -30,6 +31,7 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(bool, negSamples, true)
     BR_PROPERTY(int, negToPosRatio, 1)
+    BR_PROPERTY(double, maxOverlap, 0)
 
 public:
     SlidingWindowTransform() : Transform(false, true) {}
@@ -47,16 +49,21 @@ private:
                     // add random negative samples
                     if (negSamples) {
                         Mat m = tmpl.m();
-                        QList<int> xs = Common::RandSample(negToPosRatio, m.cols, 0, true);
-                        QList<int> ys = Common::RandSample(negToPosRatio, m.rows, 0, true);
-                        for (int i=0; i<negToPosRatio; i++) {
-                            int x = xs[i], y = ys[i];
+                        int sample = 0;
+                        while (sample < negToPosRatio) {
+                            int x = Common::RandSample(1, m.cols)[0];
+                            int y = Common::RandSample(1, m.rows)[0];
                             int maxWidth = m.cols - x, maxHeight = m.rows - y;
                             int maxSize = std::min(maxWidth, maxHeight);
                             int size = (maxSize < minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
-                            Template neg(tmpl.file, Mat(tmpl, Rect(x, y, size, size)));
+                            Rect negRect(x, y, size, size);
+                            Rect intersect = negRect & rect;
+                            if (intersect.area() > maxOverlap*rect.area())
+                                continue;
+                            Template neg(tmpl.file, Mat(tmpl, negRect));
                             neg.file.set("Label", QVariant::fromValue(0));
                             full += neg;
+                            sample++;
                         }
                     }
                 }
