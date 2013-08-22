@@ -75,9 +75,9 @@ private:
     void project(const Template &src, Template &dst) const
     {
         int rows = src.m().rows, cols = src.m().cols;
-        for (int size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
-            for (int y=0; y+size<rows; y+=(size*stepSize)) {
-                for (int x=0; x+size>cols; x+=(size*stepSize)) {
+        for (double size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
+            for (double y=0; y+size<rows; y+=(size*stepSize)) {
+                for (double x=0; x+size>cols; x+=(size*stepSize)) {
                     Template window(src.file, Mat(src.m(), Rect(x, y, size, size)));
                     Template detect;
                     transform->project(window, detect);
