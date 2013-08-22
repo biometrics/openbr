@@ -1,651 +1,237 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <biometric-signature-set>
-	<biometric-signature name="boxing17-1">
+	<biometric-signature name="person17">
 		<presentation Label="boxing" file-name="boxing/person17_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing17-2">
 		<presentation Label="boxing" file-name="boxing/person17_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing17-3">
 		<presentation Label="boxing" file-name="boxing/person17_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing17-4">
 		<presentation Label="boxing" file-name="boxing/person17_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing18-1">
-		<presentation Label="boxing" file-name="boxing/person18_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing18-2">
-		<presentation Label="boxing" file-name="boxing/person18_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing18-3">
-		<presentation Label="boxing" file-name="boxing/person18_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing18-4">
-		<presentation Label="boxing" file-name="boxing/person18_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing19-1">
-		<presentation Label="boxing" file-name="boxing/person19_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing19-2">
-		<presentation Label="boxing" file-name="boxing/person19_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing19-3">
-		<presentation Label="boxing" file-name="boxing/person19_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing19-4">
-		<presentation Label="boxing" file-name="boxing/person19_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing20-1">
-		<presentation Label="boxing" file-name="boxing/person20_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing20-2">
-		<presentation Label="boxing" file-name="boxing/person20_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing20-3">
-		<presentation Label="boxing" file-name="boxing/person20_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing20-4">
-		<presentation Label="boxing" file-name="boxing/person20_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing21-1">
-		<presentation Label="boxing" file-name="boxing/person21_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing21-2">
-		<presentation Label="boxing" file-name="boxing/person21_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing21-3">
-		<presentation Label="boxing" file-name="boxing/person21_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing21-4">
-		<presentation Label="boxing" file-name="boxing/person21_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing22-1">
-		<presentation Label="boxing" file-name="boxing/person22_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing22-2">
-		<presentation Label="boxing" file-name="boxing/person22_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing22-3">
-		<presentation Label="boxing" file-name="boxing/person22_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing22-4">
-		<presentation Label="boxing" file-name="boxing/person22_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing23-1">
-		<presentation Label="boxing" file-name="boxing/person23_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing23-2">
-		<presentation Label="boxing" file-name="boxing/person23_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing23-3">
-		<presentation Label="boxing" file-name="boxing/person23_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing23-4">
-		<presentation Label="boxing" file-name="boxing/person23_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing24-1">
-		<presentation Label="boxing" file-name="boxing/person24_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing24-2">
-		<presentation Label="boxing" file-name="boxing/person24_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing24-3">
-		<presentation Label="boxing" file-name="boxing/person24_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing24-4">
-		<presentation Label="boxing" file-name="boxing/person24_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing25-1">
-		<presentation Label="boxing" file-name="boxing/person25_boxing_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing25-2">
-		<presentation Label="boxing" file-name="boxing/person25_boxing_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing25-3">
-		<presentation Label="boxing" file-name="boxing/person25_boxing_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="boxing25-4">
-		<presentation Label="boxing" file-name="boxing/person25_boxing_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping17-1">
 		<presentation Label="handclapping" file-name="handclapping/person17_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping17-2">
 		<presentation Label="handclapping" file-name="handclapping/person17_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping17-3">
 		<presentation Label="handclapping" file-name="handclapping/person17_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping17-4">
 		<presentation Label="handclapping" file-name="handclapping/person17_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping18-1">
-		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping18-2">
-		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping18-3">
-		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping18-4">
-		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping19-1">
-		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping19-2">
-		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping19-3">
-		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping19-4">
-		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping20-1">
-		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping20-2">
-		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping20-3">
-		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping20-4">
-		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping21-1">
-		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping21-2">
-		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping21-3">
-		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping21-4">
-		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping22-1">
-		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping22-2">
-		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping22-3">
-		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping22-4">
-		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping23-1">
-		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping23-2">
-		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping23-3">
-		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping23-4">
-		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping24-1">
-		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping24-2">
-		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping24-3">
-		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping24-4">
-		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping25-1">
-		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping25-2">
-		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping25-3">
-		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handclapping25-4">
-		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving17-1">
 		<presentation Label="handwaving" file-name="handwaving/person17_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving17-2">
 		<presentation Label="handwaving" file-name="handwaving/person17_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving17-3">
 		<presentation Label="handwaving" file-name="handwaving/person17_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving17-4">
 		<presentation Label="handwaving" file-name="handwaving/person17_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving18-1">
-		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving18-2">
-		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving18-3">
-		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving18-4">
-		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving19-1">
-		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving19-2">
-		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving19-3">
-		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving19-4">
-		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving20-1">
-		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving20-2">
-		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving20-3">
-		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving20-4">
-		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving21-1">
-		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving21-2">
-		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving21-3">
-		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving21-4">
-		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving22-1">
-		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving22-2">
-		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving22-3">
-		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving22-4">
-		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving23-1">
-		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving23-2">
-		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving23-3">
-		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving23-4">
-		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving24-1">
-		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving24-2">
-		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving24-3">
-		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving24-4">
-		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving25-1">
-		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving25-2">
-		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving25-3">
-		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="handwaving25-4">
-		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging17-1">
 		<presentation Label="jogging" file-name="jogging/person17_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging17-2">
 		<presentation Label="jogging" file-name="jogging/person17_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging17-3">
 		<presentation Label="jogging" file-name="jogging/person17_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging17-4">
 		<presentation Label="jogging" file-name="jogging/person17_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging18-1">
-		<presentation Label="jogging" file-name="jogging/person18_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging18-2">
-		<presentation Label="jogging" file-name="jogging/person18_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging18-3">
-		<presentation Label="jogging" file-name="jogging/person18_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging18-4">
-		<presentation Label="jogging" file-name="jogging/person18_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging19-1">
-		<presentation Label="jogging" file-name="jogging/person19_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging19-2">
-		<presentation Label="jogging" file-name="jogging/person19_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging19-3">
-		<presentation Label="jogging" file-name="jogging/person19_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging19-4">
-		<presentation Label="jogging" file-name="jogging/person19_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging20-1">
-		<presentation Label="jogging" file-name="jogging/person20_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging20-2">
-		<presentation Label="jogging" file-name="jogging/person20_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging20-3">
-		<presentation Label="jogging" file-name="jogging/person20_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging20-4">
-		<presentation Label="jogging" file-name="jogging/person20_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging21-1">
-		<presentation Label="jogging" file-name="jogging/person21_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging21-2">
-		<presentation Label="jogging" file-name="jogging/person21_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging21-3">
-		<presentation Label="jogging" file-name="jogging/person21_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging21-4">
-		<presentation Label="jogging" file-name="jogging/person21_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging22-1">
-		<presentation Label="jogging" file-name="jogging/person22_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging22-2">
-		<presentation Label="jogging" file-name="jogging/person22_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging22-3">
-		<presentation Label="jogging" file-name="jogging/person22_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging22-4">
-		<presentation Label="jogging" file-name="jogging/person22_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging23-1">
-		<presentation Label="jogging" file-name="jogging/person23_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging23-2">
-		<presentation Label="jogging" file-name="jogging/person23_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging23-3">
-		<presentation Label="jogging" file-name="jogging/person23_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging23-4">
-		<presentation Label="jogging" file-name="jogging/person23_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging24-1">
-		<presentation Label="jogging" file-name="jogging/person24_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging24-2">
-		<presentation Label="jogging" file-name="jogging/person24_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging24-3">
-		<presentation Label="jogging" file-name="jogging/person24_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging24-4">
-		<presentation Label="jogging" file-name="jogging/person24_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging25-1">
-		<presentation Label="jogging" file-name="jogging/person25_jogging_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging25-2">
-		<presentation Label="jogging" file-name="jogging/person25_jogging_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging25-3">
-		<presentation Label="jogging" file-name="jogging/person25_jogging_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="jogging25-4">
-		<presentation Label="jogging" file-name="jogging/person25_jogging_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running17-1">
 		<presentation Label="running" file-name="running/person17_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running17-2">
 		<presentation Label="running" file-name="running/person17_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running17-3">
 		<presentation Label="running" file-name="running/person17_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running17-4">
 		<presentation Label="running" file-name="running/person17_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running18-1">
-		<presentation Label="running" file-name="running/person18_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running18-2">
-		<presentation Label="running" file-name="running/person18_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running18-3">
-		<presentation Label="running" file-name="running/person18_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running18-4">
-		<presentation Label="running" file-name="running/person18_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running19-1">
-		<presentation Label="running" file-name="running/person19_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running19-2">
-		<presentation Label="running" file-name="running/person19_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running19-3">
-		<presentation Label="running" file-name="running/person19_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running19-4">
-		<presentation Label="running" file-name="running/person19_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running20-1">
-		<presentation Label="running" file-name="running/person20_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running20-2">
-		<presentation Label="running" file-name="running/person20_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running20-3">
-		<presentation Label="running" file-name="running/person20_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running20-4">
-		<presentation Label="running" file-name="running/person20_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running21-1">
-		<presentation Label="running" file-name="running/person21_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running21-2">
-		<presentation Label="running" file-name="running/person21_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running21-3">
-		<presentation Label="running" file-name="running/person21_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running21-4">
-		<presentation Label="running" file-name="running/person21_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running22-1">
-		<presentation Label="running" file-name="running/person22_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running22-2">
-		<presentation Label="running" file-name="running/person22_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running22-3">
-		<presentation Label="running" file-name="running/person22_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running22-4">
-		<presentation Label="running" file-name="running/person22_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running23-1">
-		<presentation Label="running" file-name="running/person23_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running23-2">
-		<presentation Label="running" file-name="running/person23_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running23-3">
-		<presentation Label="running" file-name="running/person23_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running23-4">
-		<presentation Label="running" file-name="running/person23_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running24-1">
-		<presentation Label="running" file-name="running/person24_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running24-2">
-		<presentation Label="running" file-name="running/person24_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running24-3">
-		<presentation Label="running" file-name="running/person24_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running24-4">
-		<presentation Label="running" file-name="running/person24_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running25-1">
-		<presentation Label="running" file-name="running/person25_running_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running25-2">
-		<presentation Label="running" file-name="running/person25_running_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running25-3">
-		<presentation Label="running" file-name="running/person25_running_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="running25-4">
-		<presentation Label="running" file-name="running/person25_running_d4_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking17-1">
 		<presentation Label="walking" file-name="walking/person17_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking17-2">
 		<presentation Label="walking" file-name="walking/person17_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking17-3">
 		<presentation Label="walking" file-name="walking/person17_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking17-4">
 		<presentation Label="walking" file-name="walking/person17_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking18-1">
+	<biometric-signature name="person18">
+		<presentation Label="boxing" file-name="boxing/person18_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person18_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person18_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person18_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person18_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person18_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person18_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person18_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person18_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person18_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person18_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person18_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person18_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person18_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person18_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking18-2">
 		<presentation Label="walking" file-name="walking/person18_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking18-3">
 		<presentation Label="walking" file-name="walking/person18_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking18-4">
 		<presentation Label="walking" file-name="walking/person18_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking19-1">
+	<biometric-signature name="person19">
+		<presentation Label="boxing" file-name="boxing/person19_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person19_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person19_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person19_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person19_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person19_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person19_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person19_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person19_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person19_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person19_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person19_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person19_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person19_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person19_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking19-2">
 		<presentation Label="walking" file-name="walking/person19_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking19-3">
 		<presentation Label="walking" file-name="walking/person19_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking19-4">
 		<presentation Label="walking" file-name="walking/person19_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking20-1">
+	<biometric-signature name="person20">
+		<presentation Label="boxing" file-name="boxing/person20_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person20_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person20_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person20_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person20_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person20_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person20_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person20_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person20_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person20_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person20_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person20_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person20_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person20_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person20_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking20-2">
 		<presentation Label="walking" file-name="walking/person20_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking20-3">
 		<presentation Label="walking" file-name="walking/person20_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking20-4">
 		<presentation Label="walking" file-name="walking/person20_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking21-1">
+	<biometric-signature name="person21">
+		<presentation Label="boxing" file-name="boxing/person21_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person21_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person21_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person21_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person21_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person21_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person21_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person21_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person21_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person21_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person21_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person21_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person21_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person21_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person21_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking21-2">
 		<presentation Label="walking" file-name="walking/person21_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking21-3">
 		<presentation Label="walking" file-name="walking/person21_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking21-4">
 		<presentation Label="walking" file-name="walking/person21_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking22-1">
+	<biometric-signature name="person22">
+		<presentation Label="boxing" file-name="boxing/person22_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person22_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person22_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person22_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person22_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person22_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person22_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person22_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person22_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person22_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person22_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person22_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person22_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person22_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person22_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking22-2">
 		<presentation Label="walking" file-name="walking/person22_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking22-3">
 		<presentation Label="walking" file-name="walking/person22_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking22-4">
 		<presentation Label="walking" file-name="walking/person22_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking23-1">
+	<biometric-signature name="person23">
+		<presentation Label="boxing" file-name="boxing/person23_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person23_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person23_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person23_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person23_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person23_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person23_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person23_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person23_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person23_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person23_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person23_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person23_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person23_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person23_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking23-2">
 		<presentation Label="walking" file-name="walking/person23_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking23-3">
 		<presentation Label="walking" file-name="walking/person23_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking23-4">
 		<presentation Label="walking" file-name="walking/person23_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking24-1">
+	<biometric-signature name="person24">
+		<presentation Label="boxing" file-name="boxing/person24_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person24_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person24_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person24_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person24_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person24_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person24_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person24_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person24_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person24_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person24_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person24_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person24_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person24_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person24_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking24-2">
 		<presentation Label="walking" file-name="walking/person24_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking24-3">
 		<presentation Label="walking" file-name="walking/person24_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking24-4">
 		<presentation Label="walking" file-name="walking/person24_walking_d4_uncomp.avi" />
 	</biometric-signature>
-	<biometric-signature name="walking25-1">
+	<biometric-signature name="person25">
+		<presentation Label="boxing" file-name="boxing/person25_boxing_d1_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person25_boxing_d2_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person25_boxing_d3_uncomp.avi" />
+		<presentation Label="boxing" file-name="boxing/person25_boxing_d4_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d1_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d2_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d3_uncomp.avi" />
+		<presentation Label="handclapping" file-name="handclapping/person25_handclapping_d4_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d1_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d2_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d3_uncomp.avi" />
+		<presentation Label="handwaving" file-name="handwaving/person25_handwaving_d4_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person25_jogging_d1_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person25_jogging_d2_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person25_jogging_d3_uncomp.avi" />
+		<presentation Label="jogging" file-name="jogging/person25_jogging_d4_uncomp.avi" />
+		<presentation Label="running" file-name="running/person25_running_d1_uncomp.avi" />
+		<presentation Label="running" file-name="running/person25_running_d2_uncomp.avi" />
+		<presentation Label="running" file-name="running/person25_running_d3_uncomp.avi" />
+		<presentation Label="running" file-name="running/person25_running_d4_uncomp.avi" />
 		<presentation Label="walking" file-name="walking/person25_walking_d1_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking25-2">
 		<presentation Label="walking" file-name="walking/person25_walking_d2_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking25-3">
 		<presentation Label="walking" file-name="walking/person25_walking_d3_uncomp.avi" />
-	</biometric-signature>
-	<biometric-signature name="walking25-4">
 		<presentation Label="walking" file-name="walking/person25_walking_d4_uncomp.avi" />
 	</biometric-signature>
 </biometric-signature-set>
