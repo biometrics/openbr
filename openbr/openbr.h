@@ -41,18 +41,6 @@ extern "C" {
  * \section managed_return_value Managed Return Value
  * Memory for <tt>const char*</tt> return values is managed internally and guaranteed until the next call to the function.
  *
- * \section python_api Python API
- * A Python API is available via <a href="http://www.swig.org/">SWIG</a>.
- * \code
- * $ ls include/br/python
- * \endcode
- *
- * \section java_api Java API
- * A Java API is available via <a href="http://www.swig.org/">SWIG</a>.
- * \code
- * $ ls include/br/java
- * \endcode
- *
  * \section examples Examples
  * - \ref c_face_recognition_evaluation
  *
