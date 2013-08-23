@@ -1,26 +1,16 @@
 #!/bin/bash
 
-# prints out a <presentation> element
-# additional arguments after the first two are rectangle coordinates
-# from that, it will create a nested <data:bbox> element (from the ViPER standard)
-# http://viper-toolkit.sourceforge.net/docs/file/
-writePresentation()
+# prints out a <data:bbox> element from rectangle coordinates
+# (from the ViPER standard: http://viper-toolkit.sourceforge.net/docs/file/)
+printBBox()
 {
-    pres="\t\t<presentation Label=\"pos\" file-name=\"$1/pos/$2\""
-    if [ "$#" -eq 6 ]; then
-        pres="$pres>"
-        width=$(($5-$3))
-        height=$(($6-$4))
-        pres="$pres\n\t\t\t<data:bbox height=\"$height\" width=\"$width\" x=\"$3\" y=\"$4\" />"
-        pres="$pres\n\t\t</presentation>"
-    else
-        pres="$pres />"
-    fi
-    printf "$pres\n"
+    width=$(($3-$1))
+    height=$(($4-$2))
+    echo -e "\t\t\t<data:bbox height=\"$height\" width=\"$width\" x=\"$1\" y=\"$2\" />"
 }
-# export writePresentation so xargs can call it using bash -c below
-export -f writePresentation
-SEDREGEX='s/.*(\([0-9]*\), \([0-9]*\)) - (\([0-9]*\), \([0-9]*\))/writeIt \1 \2 \3 \4/'
+# export printBBox so xargs can call it using bash -c below
+export -f printBBox
+SEDREGEX='s/.*(\([0-9]*\), \([0-9]*\)) - (\([0-9]*\), \([0-9]*\))/printBBox \1 \2 \3 \4/'
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'
 echo '<biometric-signature-set>'
@@ -32,12 +22,15 @@ for fullpath in INRIAPerson/$1/pos/*; do
     echo -e "\t<biometric-signature name=\"${filename%.*}\">"
 
     # if this folder has annotations, add bounding boxes
+    echo -en "\t\t<presentation Label=\"pos\" file-name=\"$1/pos/$filename\""
     if [ -d INRIAPerson/$1/annotations ]; then
+        echo ">"
         annotation="INRIAPerson/$1/annotations/${filename%.*}.txt"
-        grep 'Bounding box' $annotation | sed "$SEDREGEX" | xargs -n 5 bash -c "writePresentation $1 $filename \$@"
-    # otherwise, just the normal presentation
+        grep 'Bounding box' $annotation | sed "$SEDREGEX" | xargs -n 5 bash -c 'printBBox $@'
+        echo -e "\t\t</presentation>"
+    # otherwise, just end the presentation
     else
-        writePresentation $1 $filename
+        echo " />"
     fi
 
     echo -e '\t</biometric-signature>'
