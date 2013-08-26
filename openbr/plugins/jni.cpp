@@ -65,7 +65,9 @@ class JNITransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        JNIEnv *env;
+        (void)dst; //Eliminates a compiler warning.
+
+		JNIEnv *env;
 
         //Attach current thread to the thread of the JavaVM and access env
         JNIInitializer::jvm->AttachCurrentThreadAsDaemon((void**)&env, NULL);
