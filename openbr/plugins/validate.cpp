@@ -112,18 +112,36 @@ class FilterDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
-        (void) b; // Query template isn't checked
-        foreach (const QString &key, Globals->filters.keys()) {
+		QStringList filters;
+		filters << "Age" << "RACE" << "GENDER";
+            foreach (const QString &key, filters) {
+            QString aValue = a.file.get<QString>(key, QString());
+            QString bValue = b.file.get<QString>(key, QString());
+
+            // The query value may be a range. Let's check.
+            if (bValue.isEmpty()) bValue = QtUtils::toString(b.file.get<QPointF>(key, QPointF()));
+
+            if (aValue.isEmpty() || bValue.isEmpty()) continue;
+
             bool keep = false;
-            const QString metadata = a.file.get<QString>(key, "");
-            if (Globals->filters[key].isEmpty()) continue;
-            if (metadata.isEmpty()) return -std::numeric_limits<float>::max();
-            foreach (const QString &value, Globals->filters[key]) {
-                if (metadata == value) {
-                    keep = true;
-                    break;
+            bool ok;
+
+            QPointF range = QtUtils::toPoint(bValue,&ok);
+
+            if (ok) /* Range */ {
+                int value = range.x();
+                int upperBound = range.y();
+
+                while (value <= upperBound) {
+                    if (aValue == QString::number(value)) {
+                        keep = true;
+                        break;
+                    }
+                    value++;
                 }
             }
+            else if (aValue == bValue) keep = true;
+
             if (!keep) return -std::numeric_limits<float>::max();
         }
         return 0;
