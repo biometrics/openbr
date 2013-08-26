@@ -75,6 +75,21 @@ FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
                 else if (!ignoreMetadata)    file.set(key, value);
             }
 
+            // add bounding boxes, if they exist (will be child elements of <presentation>)
+            if (fileNode.hasChildNodes()) {
+                QList<QRectF> rects;
+                QDomNodeList bboxes = fileNode.childNodes();
+                for (int i=0; i<bboxes.length(); i++) {
+                    QDomElement bbox = bboxes.at(i).toElement();
+                    qreal x = bbox.attribute("x").toDouble();
+                    qreal y = bbox.attribute("y").toDouble();
+                    qreal width = bbox.attribute("width").toDouble();
+                    qreal height = bbox.attribute("height").toDouble();
+                    rects += QRectF(x, y, width, height);
+                }
+                file.setRects(rects);
+            }
+
             if (file.name.isEmpty()) qFatal("Missing file-name in %s.", qPrintable(sigset));
             fileList.append(file);
 
