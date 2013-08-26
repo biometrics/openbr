@@ -1,4 +1,4 @@
-set(BR_WITH_JAVA ON CACHE BOOL "Use Java Code")
+set(BR_WITH_JAVA OFF CACHE BOOL "Use Java Code")
 
 if (${BR_WITH_JAVA})
 	find_package(JNI REQUIRED)
