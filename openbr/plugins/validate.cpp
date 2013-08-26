@@ -1,15 +1,22 @@
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include <openbr/core/qtutils.h>
 
 namespace br
 {
 
+static void _train(Transform * transform, TemplateList data) // think data has to be a copy -cao
+{
+    transform->train(data);
+}
+
 /*!
  * \ingroup transforms
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
+ * \author Scott Klum \cite sklum
  * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
  *       against for all testing partitions.
  */
@@ -17,10 +24,16 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(bool leaveOneImageOut READ get_leaveOneImageOut WRITE set_leaveOneImageOut RESET reset_leaveOneImageOut STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(bool, leaveOneImageOut, false)
 
+    // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
 
+    // Treating this transform as a leaf (in terms of update training scheme), the child transform
+    // of this transform will lose any structure present in the training QList<TemplateList>, which
+    // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
         int numPartitions = 0;
@@ -40,25 +53,54 @@ class CrossValidateTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
+            QList<int> partitionsBuffer = partitions;
             TemplateList partitionedData = data;
-            for (int j=partitionedData.size()-1; j>=0; j--)
-                // Remove all templates from partition i
-                if (partitions[j] == i)
+            int j = partitionedData.size()-1;
+            while (j>=0) {
+                // Remove all templates belonging to partition i
+                // if leaveOneImageOut is true,
+                // and i is greater than the number of images for a particular subject
+                // even if the partitions are different
+                if (leaveOneImageOut) {
+                    const QString label = partitionedData.at(j).file.get<QString>("Label");
+                    QList<int> subjectIndices = partitionedData.find("Label",label);
+                    QList<int> removed;
+                    // Remove test only data
+                    for (int k=subjectIndices.size()-1; k>=0; k--)
+                        if (partitionedData[subjectIndices[k]].file.getBool("testOnly")) {
+                            removed.append(subjectIndices[k]);
+                            subjectIndices.removeAt(k);
+                        }
+                    // Remove template that was repeated to make the testOnly template
+                    if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
+                        removed.append(subjectIndices[i%subjectIndices.size()]);
+                    }
+                    else if (partitionsBuffer[j] == i) {
+                        removed.append(j);
+                    }
+
+                    if (!removed.empty()) {
+                        typedef QPair<int,int> Pair;
+                        foreach (Pair pair, Common::Sort(removed,true)) {
+                            partitionedData.removeAt(pair.first); partitionsBuffer.removeAt(pair.first); j--;
+                        }
+                    } else {
+                        j--;
+                    }
+                } else if (partitions[j] == i) {
                     partitionedData.removeAt(j);
+                    j--;
+                } else j--;
+            }
             // Train on the remaining templates
-            futures.addFuture(QtConcurrent::run(transforms[i], &Transform::train, partitionedData));
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
         }
         futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
     {        
-        // If the src partition is greater than the number of training partitions,
-        // assume that projection should be done using the same training data for all partitions.
-        int partition = src.file.get<int>("Partition", 0);
-        if (partition >= transforms.size()) partition = 0;
-
-        transforms[partition]->project(src, dst);
+        transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
     }
 
     void store(QDataStream &stream) const

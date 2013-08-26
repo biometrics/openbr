@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __TRANSFORMEDITOR_H
-#define __TRANSFORMEDITOR_H
+#ifndef BR_TRANSFORMEDITOR_H
+#define BR_TRANSFORMEDITOR_H
 
 #include <QHBoxLayout>
 #include <QComboBox>
@@ -38,4 +38,4 @@ public:
 
 } // namespace br
 
-#endif // __TRANSFORMEDITOR_H
+#endif // BR_TRANSFORMEDITOR_H

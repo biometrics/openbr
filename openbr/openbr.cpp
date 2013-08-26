@@ -72,7 +72,7 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
     return Evaluate(simmat, mask, csv);
 }
 
-void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char * truth_property)
+void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
 {
     EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
@@ -87,7 +87,12 @@ float br_eval_detection(const char *predicted_gallery, const char *truth_gallery
     return EvalDetection(predicted_gallery, truth_gallery, csv);
 }
 
-void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property, const char * truth_property)
+float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv, int normalization_index_a, int normalization_index_b)
+{
+    return EvalLandmarking(predicted_gallery, truth_gallery, csv, normalization_index_a, normalization_index_b);
+}
+
+void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
 {
     EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
@@ -175,6 +180,11 @@ bool br_plot(int num_files, const char *files[], const char *destination, bool s
 bool br_plot_detection(int num_files, const char *files[], const char *destination, bool show)
 {
     return PlotDetection(QtUtils::toStringList(num_files, files), destination, show);
+}
+
+bool br_plot_landmarking(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotLandmarking(QtUtils::toStringList(num_files, files), destination, show);
 }
 
 bool br_plot_metadata(int num_files, const char *files[], const char *columns, bool show)

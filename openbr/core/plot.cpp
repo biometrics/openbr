@@ -228,7 +228,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10(labels=percent) + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\")\n\n")));
+                            QString(" + scale_x_log10(labels=percent, limits=c(min(DET$X),1)) + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\")\n\n")));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
@@ -236,7 +236,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10(labels=percent) + scale_y_log10(labels=percent) + annotation_logticks()\n\n")));
+                            QString(" + scale_x_log10(labels=percent, limits=c(min(DET$X),1)) + scale_y_log10(labels=percent) + annotation_logticks()\n\n")));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score%1\"").arg((p.flip ? p.major.size : p.minor.size) > 1 ? " / " + (p.flip ? p.major.header : p.minor.header) : QString()) +
@@ -271,10 +271,37 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     return p.finalize(show);
 }
 
+//Check if only one ROC point is in the file
+bool fileHasSinglePoint(const QString &evalFile) {
+    QFile file(evalFile);
+    bool success = file.open(QFile::ReadOnly);
+    if (!success) qFatal("Failed to open %s for reading.", qPrintable(evalFile));
+    QStringList lines = QString(file.readAll()).split("\n");
+    file.close();
+
+    int rocCnt = 0;
+    foreach (const QString &line, lines) {
+        if (line.contains("DiscreteROC")) {
+            rocCnt++;
+        }
+        if (rocCnt > 1)
+            return false;
+    }
+
+    return true;
+}
+
+//Check all files to see if any single file has only have one ROC point
+bool filesHaveSinglePoint(const QStringList &files) {
+    foreach (const File &file, files)
+        if (fileHasSinglePoint(file))
+            return true;
+    return false;
+}
+
 bool PlotDetection(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
-
     RPlot p(files, destination, false);
 
     p.file.write("# Split data into individual plots\n"
@@ -284,11 +311,16 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                  "DiscretePR <- data[grep(\"DiscretePR\",data$Plot),-c(1)]\n"
                  "ContinuousPR <- data[grep(\"ContinuousPR\",data$Plot),-c(1)]\n"
                  "Overlap <- data[grep(\"Overlap\",data$Plot),-c(1)]\n"
+                 "AverageOverlap <- data[grep(\"AverageOverlap\",data$Plot),-c(1)]\n"
                  "rm(data)\n"
                  "\n");
 
+    QString plotType("line");
+    if (filesHaveSinglePoint(files))
+        plotType = QString("point");
+
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
                                 (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                                 (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                                 QString(", xlab=\"False Accepts\", ylab=\"True Accept Rate\") + theme_minimal()") +
@@ -297,7 +329,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                                 QString(" + scale_x_log10() + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\")\n\n").arg(type)));
 
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
                                 (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                                 (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                                 QString(", xlab=\"Recall\", ylab=\"Precision\") + theme_minimal()") +
@@ -309,6 +341,33 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                             QString(" + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
                             (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg(p.minor.header, p.major.header) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
+
+    p.file.write(qPrintable(QString("ggplot(AverageOverlap, aes(x=%1, y=%2, label=round(X,3)), main=\"Average Overlap\") + geom_text() + theme_minimal()").arg(p.minor.size > 1 ? p.minor.header : "'X'", p.major.size > 1 ? p.major.header : "'Y'") +
+                            QString("%1%2\n\n").arg(p.minor.size > 1 ? "" : " + xlab(NULL)", p.major.size > 1 ? "" : "ylab(NULL)")));
+
+    p.file.write(qPrintable(QString("ggplot(AverageOverlap, aes(x=%1, y=%2, fill=X)) + geom_tile() + scale_fill_continuous(\"Average Overlap\") + theme_minimal()").arg(p.minor.size > 1 ? p.minor.header : "'X'", p.major.size > 1 ? p.major.header : "'Y'") +
+                            QString("%1%2\n\n").arg(p.minor.size > 1 ? "" : " + xlab(NULL)", p.major.size > 1 ? "" : "ylab(NULL)")));
+
+    return p.finalize(show);
+}
+
+bool PlotLandmarking(const QStringList &files, const File &destination, bool show)
+{
+    qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
+    RPlot p(files, destination, false);
+
+    p.file.write("# Split data into individual plots\n"
+                 "plot_index = which(names(data)==\"Plot\")\n"
+                 "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
+                 "rm(data)\n"
+                 "\n");
+
+    p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
+                            QString(" + annotation_logticks(sides=\"b\") + stat_ecdf() + scale_x_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10)) + scale_y_continuous(\"Cumulative Density\", label=percent) + theme_minimal()\n\n")));
+    p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
+                            QString("+ annotation_logticks(sides=\"l\") + geom_boxplot(alpha=0.5) + geom_jitter(size=1, alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.01,0.1,1,10)) + theme_minimal()\n\n")));
+    p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
+                            QString("+ annotation_logticks(sides=\"l\") + geom_violin(alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10))\n\n")));
 
     return p.finalize(show);
 }

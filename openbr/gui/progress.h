@@ -1,5 +1,5 @@
-#ifndef __PROGRESS_H
-#define __PROGRESS_H
+#ifndef BR_PROGRESS_H
+#define BR_PROGRESS_H
 
 #include <QLabel>
 #include <QProgressBar>
@@ -28,4 +28,4 @@ private slots:
 
 }
 
-#endif // __PROGRESS_H
+#endif // BR_PROGRESS_H

@@ -127,12 +127,12 @@ QString File::resolved() const
 
 bool File::contains(const QString &key) const
 {
-    return m_metadata.contains(key) || Globals->contains(key);
+    return m_metadata.contains(key) || Globals->contains(key) || key == "name";
 }
 
 QVariant File::value(const QString &key) const
 {
-    return m_metadata.contains(key) ? m_metadata.value(key) : Globals->property(qPrintable(key));
+    return m_metadata.contains(key) ? m_metadata.value(key) : (key == "name" ? name : Globals->property(qPrintable(key)));
 }
 
 QVariant File::parse(const QString &value)
@@ -386,36 +386,66 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates = newTemplates.reduced();
 
         const int crossValidate = gallery.get<int>("crossValidate");
-        if (crossValidate > 0) srand(0);
 
-        for (int i=newTemplates.size()-1; i>=0; i--) {
-            newTemplates[i].file.set("Index", i+templates.size());
-            newTemplates[i].file.set("Gallery", gallery.name);
+        if (gallery.getBool("leaveOneImageOut")) {
+            QStringList labels;
+            for (int i=newTemplates.size()-1; i>=0; i--) {
+                newTemplates[i].file.set("Index", i+templates.size());
+                newTemplates[i].file.set("Gallery", gallery.name);
 
-            if (crossValidate > 0) {
-                if (newTemplates[i].file.getBool("duplicatePartitions")) {
-                    // The duplicatePartitions flag is used to add target images
-                    // crossValidate times to the simmat/mask
-                    // when multiple training sets are being used
-
-                    // Set template to the first parition
-                    newTemplates[i].file.set("Partition", QVariant(0));
-
-                    // Insert templates for all the other partitions
-                    for (int j=crossValidate-1; j>=1; j--) {
-                        Template allPartitionTemplate = newTemplates[i];
-                        allPartitionTemplate.file.set("Partition", j);
-                        newTemplates.insert(i+1, allPartitionTemplate);
+                QString label = newTemplates.at(i).file.get<QString>("Label");
+                // Have we seen this subject before?
+                if (!labels.contains(label)) {
+                    labels.append(label);
+                    // Get indices belonging to this subject
+                    QList<int> labelIndices = newTemplates.find("Label",label);
+                    for (int j = 0; j < labelIndices.size(); j++) {
+                        // Set subject partitions
+                        newTemplates[labelIndices[j]].file.set("Partition",j%crossValidate);
                     }
-                } else if (newTemplates[i].file.getBool("allPartitions")) {
-                    // The allPartitions flag is used to add an extended set
-                    // of target images to every partition
-                    newTemplates[i].file.set("Partition", -1);
-                } else {
+                    // Extend the gallery for each partition
+                    for (int j=0; j<labelIndices.size(); j++) {
+                        for (int k=0; k<crossValidate; k++) {
+                            Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
+                            if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
+                                leaveOneImageOutTemplate.file.set("Partition", k);
+                                leaveOneImageOutTemplate.file.set("testOnly", true);
+                                newTemplates.insert(i+1,leaveOneImageOutTemplate);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i=newTemplates.size()-1; i>=0; i--) {
+                newTemplates[i].file.set("Index", i+templates.size());
+                newTemplates[i].file.set("Gallery", gallery.name);
+
+                if (crossValidate > 0) {
+                    if (newTemplates[i].file.getBool("duplicatePartitions")) {
+                        // The duplicatePartitions flag is used to add target images
+                        // crossValidate times to the simmat/mask
+                        // when multiple training sets are being used
+
+                        // Set template to the first parition
+                        newTemplates[i].file.set("Partition", QVariant(0));
+
+                        // Insert templates for all the other partitions
+                        for (int j=crossValidate-1; j>0; j--) {
+                            Template duplicatePartitionsTemplate = newTemplates[i];
+                            duplicatePartitionsTemplate.file.set("Partition", j);
+                            newTemplates.insert(i+1, duplicatePartitionsTemplate);
+                        }
+                    } else if (newTemplates[i].file.getBool("allPartitions")) {
+                        // The allPartitions flag is used to add an extended set
+                        // of target images to every partition
+                        newTemplates[i].file.set("Partition", -1);
+                    } else {
                     // Direct use of "Label" is not general -cao
                     const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+                    }
                 }
             }
         }
@@ -1193,6 +1223,26 @@ TemplateEvent * Transform::getEvent(const QString & name)
     }
 
     return NULL;
+}
+
+void Transform::train(const TemplateList &data)
+{
+    if (!trainable) {
+        qWarning("Train called on untrainable transform %s", this->metaObject()->className());
+        return;
+    }
+    QList<TemplateList> input;
+    input.append(data);
+    train(input);
+}
+
+void Transform::train(const QList<TemplateList> &data)
+{
+    TemplateList combined;
+    foreach(const TemplateList & set, data) {
+        combined.append(set);
+    }
+    train(combined);
 }
 
 /* Distance - public methods */

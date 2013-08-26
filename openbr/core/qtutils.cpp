@@ -33,7 +33,10 @@
 
 using namespace br;
 
-QStringList QtUtils::getFiles(QDir dir, bool recursive)
+namespace QtUtils
+{
+
+QStringList getFiles(QDir dir, bool recursive)
 {
     dir = QDir(dir.canonicalPath());
 
@@ -51,7 +54,7 @@ QStringList QtUtils::getFiles(QDir dir, bool recursive)
     return files;
 }
 
-QStringList QtUtils::getFiles(const QString &regexp)
+QStringList getFiles(const QString &regexp)
 {
     QFileInfo fileInfo(regexp);
     QDir dir(fileInfo.dir());
@@ -65,14 +68,14 @@ QStringList QtUtils::getFiles(const QString &regexp)
     return files;
 }
 
-QStringList QtUtils::readLines(const QString &file)
+QStringList readLines(const QString &file)
 {
     QStringList lines;
     readFile(file, lines);
     return lines;
 }
 
-void QtUtils::readFile(const QString &file, QStringList &lines)
+void readFile(const QString &file, QStringList &lines)
 {
     QByteArray data;
     readFile(file, data);
@@ -81,7 +84,7 @@ void QtUtils::readFile(const QString &file, QStringList &lines)
         lines[i] = lines[i].simplified();
 }
 
-void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
+void readFile(const QString &file, QByteArray &data, bool uncompress)
 {
     QFile f(file);
     if (!f.open(QFile::ReadOnly)) {
@@ -93,17 +96,17 @@ void QtUtils::readFile(const QString &file, QByteArray &data, bool uncompress)
     f.close();
 }
 
-void QtUtils::writeFile(const QString &file, const QStringList &lines)
+void writeFile(const QString &file, const QStringList &lines)
 {
     writeFile(file, lines.join("\n"));
 }
 
-void QtUtils::writeFile(const QString &file, const QString &data)
+void writeFile(const QString &file, const QString &data)
 {
     writeFile(file, data.toLocal8Bit());
 }
 
-void QtUtils::writeFile(const QString &file, const QByteArray &data, int compression)
+void writeFile(const QString &file, const QByteArray &data, int compression)
 {
     if (file.isEmpty()) return;
     const QString baseName = QFileInfo(file).baseName();
@@ -122,7 +125,7 @@ void QtUtils::writeFile(const QString &file, const QByteArray &data, int compres
     }
 }
 
-void QtUtils::copyFile(const QString &src, const QString &dst)
+void copyFile(const QString &src, const QString &dst)
 {
     touchDir(QFileInfo(dst));
     if (!QFile::copy(src, dst)) {
@@ -131,24 +134,24 @@ void QtUtils::copyFile(const QString &src, const QString &dst)
     }
 }
 
-void QtUtils::touchDir(const QDir &dir)
+void touchDir(const QDir &dir)
 {
     if (dir.exists(".")) return;
     if (!dir.mkpath("."))
         qFatal("Unable to create path to dir %s", qPrintable(dir.absolutePath()));
 }
 
-void QtUtils::touchDir(const QFile &file)
+void touchDir(const QFile &file)
 {
     touchDir(QFileInfo(file));
 }
 
-void QtUtils::touchDir(const QFileInfo &fileInfo)
+void touchDir(const QFileInfo &fileInfo)
 {
     touchDir(fileInfo.dir());
 }
 
-void QtUtils::emptyDir(QDir &dir)
+void emptyDir(QDir &dir)
 {
     foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks)) {
         QDir subdir(dir);
@@ -166,13 +169,13 @@ void QtUtils::emptyDir(QDir &dir)
         dir.remove(symlink);
 }
 
-void QtUtils::deleteDir(QDir &dir)
+void deleteDir(QDir &dir)
 {
     emptyDir(dir);
     dir.rmdir(".");
 }
 
-QString QtUtils::find(const QString &file, const QString &alt)
+QString find(const QString &file, const QString &alt)
 {
     if (QFileInfo(file).exists()) return file;
     if (QFileInfo(alt).exists()) return alt;
@@ -180,28 +183,29 @@ QString QtUtils::find(const QString &file, const QString &alt)
     return "";
 }
 
-bool QtUtils::toBool(const QString &string)
+bool toBool(const QString &string)
 {
     bool ok;
-    bool result = (bool)string.toInt(&ok); if (!ok) qFatal("Expected integer value, got %s.", qPrintable(string));
-    return result;
+    bool result = (string.toFloat(&ok) != 0.f);
+    if (ok) return result;
+    else    return (string != "FALSE") && (string != "false") && (string != "F") && (string != "f");
 }
 
-int QtUtils::toInt(const QString &string)
+int toInt(const QString &string)
 {
     bool ok;
     int result = string.toInt(&ok); if (!ok) qFatal("Expected integer value, got %s.", qPrintable(string));
     return result;
 }
 
-float QtUtils::toFloat(const QString &string)
+float toFloat(const QString &string)
 {
     bool ok;
     float result = string.toFloat(&ok); if (!ok) qFatal("Expected floating point value, got %s.", qPrintable(string));
     return result;
 }
 
-QList<float> QtUtils::toFloats(const QStringList &strings)
+QList<float> toFloats(const QStringList &strings)
 {
     QList<float> floats;
     bool ok;
@@ -212,7 +216,7 @@ QList<float> QtUtils::toFloats(const QStringList &strings)
     return floats;
 }
 
-QStringList QtUtils::toStringList(const QList<float> &values)
+QStringList toStringList(const QList<float> &values)
 {
     QStringList result; result.reserve(values.size());
     foreach (float value, values)
@@ -220,7 +224,7 @@ QStringList QtUtils::toStringList(const QList<float> &values)
     return result;
 }
 
-QStringList QtUtils::toStringList(const std::vector<std::string> &string_list)
+QStringList toStringList(const std::vector<std::string> &string_list)
 {
     QStringList result;
     foreach (const std::string &string, string_list)
@@ -228,7 +232,7 @@ QStringList QtUtils::toStringList(const std::vector<std::string> &string_list)
     return result;
 }
 
-QStringList QtUtils::toStringList(int num_strings, const char *strings[])
+QStringList toStringList(int num_strings, const char *strings[])
 {
     QStringList result;
     for (int i=0; i<num_strings; i++)
@@ -236,13 +240,13 @@ QStringList QtUtils::toStringList(int num_strings, const char *strings[])
     return result;
 }
 
-QString QtUtils::shortTextHash(QString string)
+QString shortTextHash(QString string)
 {
     string.remove(QRegExp("[{}<>&]"));
     return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegExp("[^a-zA-Z1-9]")).left(6);
 }
 
-QStringList QtUtils::parse(QString args, char split, bool *ok)
+QStringList parse(QString args, char split, bool *ok)
 {
     if (args.isEmpty()) return QStringList();
 
@@ -295,7 +299,7 @@ QStringList QtUtils::parse(QString args, char split, bool *ok)
     return words;
 }
 
-void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int min, int max)
+void checkArgsSize(const QString &name, const QStringList &args, int min, int max)
 {
     if (max == -1) max = std::numeric_limits<int>::max();
     if (max == 0) max = min;
@@ -303,7 +307,7 @@ void QtUtils::checkArgsSize(const QString &name, const QStringList &args, int mi
     if (args.size() > max) qFatal("%s expects no more than %d arguments, got %d", qPrintable(name), max, args.size());
 }
 
-QPointF QtUtils::toPoint(const QString &string, bool *ok)
+QPointF toPoint(const QString &string, bool *ok)
 {
     if (string.startsWith('(') && string.endsWith(')')) {
         bool okParse;
@@ -324,7 +328,7 @@ QPointF QtUtils::toPoint(const QString &string, bool *ok)
     return QPointF();
 }
 
-QRectF QtUtils::toRect(const QString &string, bool *ok)
+QRectF toRect(const QString &string, bool *ok)
 {
     if (string.startsWith('(') && string.endsWith(')')) {
         bool okParse;
@@ -347,7 +351,7 @@ QRectF QtUtils::toRect(const QString &string, bool *ok)
     return QRectF();
 }
 
-QStringList QtUtils::naturalSort(const QStringList &strings)
+QStringList naturalSort(const QStringList &strings)
 {
     QList<std::string> stdStrings; stdStrings.reserve(strings.size());
     foreach (const QString &string, strings)
@@ -362,7 +366,7 @@ QStringList QtUtils::naturalSort(const QStringList &strings)
     return result;
 }
 
-bool QtUtils::runRScript(const QString &file)
+bool runRScript(const QString &file)
 {
     QProcess RScript;
     RScript.start("Rscript", QStringList() << file);
@@ -374,7 +378,7 @@ bool QtUtils::runRScript(const QString &file)
     return result;
 }
 
-bool QtUtils::runDot(const QString &file)
+bool runDot(const QString &file)
 {
     QProcess dot;
     dot.start("dot -Tpdf -O " + file);
@@ -382,7 +386,7 @@ bool QtUtils::runDot(const QString &file)
     return ((dot.exitCode() == 0) && (dot.error() == QProcess::UnknownError));
 }
 
-void QtUtils::showFile(const QString &file)
+void showFile(const QString &file)
 {
 #ifndef BR_EMBEDDED
     (void) file;
@@ -393,7 +397,7 @@ void QtUtils::showFile(const QString &file)
 #endif // BR_EMBEDDED
 }
 
-QString QtUtils::toString(const QVariant &variant)
+QString toString(const QVariant &variant)
 {
     if (variant.canConvert(QVariant::String)) return variant.toString();
     else if(variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
@@ -404,3 +408,11 @@ QString QtUtils::toString(const QVariant &variant)
                                                                                                          QString::number(qvariant_cast<QRectF>(variant).height()));
     return QString();
 }
+
+float euclideanLength(const QPointF &point)
+{
+    return sqrt(pow(point.x(), 2) + pow(point.y(), 2));
+}
+
+}  // namespace QtUtils
+

@@ -1,5 +1,5 @@
-#ifndef __TEMPLATEVIEWER_H
-#define __TEMPLATEVIEWER_H
+#ifndef BR_TEMPLATEVIEWER_H
+#define BR_TEMPLATEVIEWER_H
 
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -58,4 +58,4 @@ signals:
 
 }
 
-#endif // TEMPLATEVIEWER_H
+#endif // BR_TEMPLATEVIEWER_H

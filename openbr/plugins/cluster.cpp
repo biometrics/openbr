@@ -91,12 +91,14 @@ class KNNTransform : public Transform
     Q_PROPERTY(int numSubjects READ get_numSubjects WRITE set_numSubjects RESET reset_numSubjects STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
+    Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
     BR_PROPERTY(int, k, 1)
     BR_PROPERTY(br::Distance*, distance, NULL)
     BR_PROPERTY(bool, weighted, false)
     BR_PROPERTY(int, numSubjects, 1)
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "KNN")
+    BR_PROPERTY(QString, galleryName, "")
 
     TemplateList gallery;
 
@@ -126,6 +128,7 @@ class KNNTransform : public Transform
         }
 
         dst.file.set(outputVariable, subjects.size() > 1 ? "[" + subjects.join(",") + "]" : subjects.first());
+        dst.file.set("Nearest", gallery[sortedScores[0].second].file.name);
     }
 
     void store(QDataStream &stream) const
@@ -137,11 +140,69 @@ class KNNTransform : public Transform
     {
         stream >> gallery;
     }
+
+    void init()
+    {
+        if (!galleryName.isEmpty())
+            gallery = TemplateList::fromGallery(galleryName);
+    }
 };
 
 BR_REGISTER(Transform, KNNTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Chooses k random points to be centroids.
+ * \author Austin Blanton \cite imaus10
+ * \see KMeansTransform
+ */
+class RandomCentroidsTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(int kTrain READ get_kTrain WRITE set_kTrain RESET reset_kTrain STORED false)
+    Q_PROPERTY(int kSearch READ get_kSearch WRITE set_kSearch RESET reset_kSearch STORED false)
+    BR_PROPERTY(int, kTrain, 256)
+    BR_PROPERTY(int, kSearch, 1)
 
+    Mat centers;
+    mutable QScopedPointer<flann::Index> index;
+    mutable QMutex mutex;
+
+    void reindex()
+    {
+        index.reset(new flann::Index(centers, flann::LinearIndexParams()));
+    }
+
+    void train(const TemplateList &data)
+    {
+        Mat flat = OpenCVUtils::toMatByRow(data.data());
+        QList<int> sample = Common::RandSample(kTrain, flat.rows, 0, true);
+        foreach (const int &idx, sample)
+            centers.push_back(flat.row(idx));
+        reindex();
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        QMutexLocker locker(&mutex);
+        Mat dists, indicies;
+        index->knnSearch(src, indicies, dists, kSearch);
+        dst = indicies.reshape(1, 1);
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> centers;
+        reindex();
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << centers;
+    }
+};
+
+BR_REGISTER(Transform, RandomCentroidsTransform)
 
 } // namespace br
 

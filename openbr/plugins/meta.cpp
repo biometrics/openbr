@@ -57,7 +57,7 @@ static TemplateList Expanded(const TemplateList &templates)
     return expanded;
 }
 
-static void _train(Transform *transform, const TemplateList *data)
+static void _train(Transform *transform, const QList<TemplateList> *data)
 {
     transform->train(*data);
 }
@@ -82,18 +82,11 @@ class PipeTransform : public CompositeTransform
             *srcdst >> *transforms[i];
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         if (!trainable) return;
 
-        TemplateList copy(data);
-        QList<TemplateList> singleItemLists;
-        for (int i=0; i < copy.size(); i++)
-        {
-            TemplateList temp;
-            temp.append(copy[i]);
-            singleItemLists.append(temp);
-        }
+        QList<TemplateList> dataLines(data);
 
         int i = 0;
         while (i < transforms.size()) {
@@ -102,22 +95,17 @@ class PipeTransform : public CompositeTransform
             // Conditional statement covers likely case that first transform is untrainable
             if (transforms[i]->trainable) {
                 fprintf(stderr, " training...");
-                transforms[i]->train(copy);
+                transforms[i]->train(dataLines);
             }
 
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
                 fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
-                for (int j=0; j < singleItemLists.size();j++)
-                    transforms[i]->projectUpdate(singleItemLists[j], singleItemLists[j]);
+                for (int j=0; j < dataLines.size();j++)
+                    transforms[i]->projectUpdate(dataLines[j], dataLines[j]);
 
                 // advance i since we already projected for this stage.
                 i++;
-
-                // set up copy again
-                copy.clear();
-                for (int j=0; j < singleItemLists.size(); j++)
-                    copy.append(singleItemLists[j]);
 
                 // the next stage might be trainable, so continue to evaluate it.
                 continue;
@@ -136,13 +124,9 @@ class PipeTransform : public CompositeTransform
 
             fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
-            for (int j=0; j < singleItemLists.size(); j++)
-                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &singleItemLists[j], i, nextTrainableTransform));
+            for (int j=0; j < dataLines.size(); j++)
+                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j], i, nextTrainableTransform));
             futures.waitForFinished();
-
-            copy.clear();
-            for (int j=0; j < singleItemLists.size(); j++)
-                copy.append(singleItemLists[j]);
 
             i = nextTrainableTransform;
         }
@@ -193,6 +177,26 @@ class PipeTransform : public CompositeTransform
             // append the result to the output set
             output.append(last_set);
         }
+    }
+
+    void init()
+    {
+        QList<Transform *> flattened;
+        for (int i=0;i < transforms.size(); i++)
+        {
+            PipeTransform * probe = dynamic_cast<PipeTransform *> (transforms[i]);
+            if (!probe) {
+                flattened.append(transforms[i]);
+                continue;
+            }
+            for (int j=0; j < probe->transforms.size(); j++)
+            {
+                flattened.append(probe->transforms[j]);
+            }
+        }
+        transforms = flattened;
+
+        CompositeTransform::init();
     }
 
 protected:
@@ -264,7 +268,7 @@ class ContractTransform : public UntrainableMetaTransform
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        //dst = Expanded(src);
+        if (src.empty()) return;
         Template out;
 
         foreach (const Template & t, src) {
@@ -296,7 +300,7 @@ class ForkTransform : public CompositeTransform
 {
     Q_OBJECT
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         if (!trainable) return;
         QFutureSynchronizer<void> futures;
@@ -440,7 +444,7 @@ private:
         }
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         transform->train(data);
     }
@@ -612,9 +616,22 @@ public:
         return output;
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
-        transform->train(data);
+        if (!transform->trainable) {
+            qWarning("Attempted to train untrainable transform, nothing will happen.");
+            return;
+        }
+
+        QList<TemplateList> separated;
+        foreach (const TemplateList & list, data) {
+            foreach(const Template & t, list) {
+                separated.append(TemplateList());
+                separated.last().append(t);
+            }
+        }
+
+        transform->train(separated);
     }
 
     void project(const Template &src, Template &dst) const
@@ -627,7 +644,6 @@ public:
         if (output.size() != 1) qFatal("output contains more than 1 template");
         else dst = output[0];
     }
-
 
     // For each input template, form a single element TemplateList, push all those
     // lists through transform, and form dst by concatenating the results.
@@ -677,9 +693,10 @@ public:
 
     void init()
     {
+        if (!transform)
+            return;
 
-        if (transform && transform->timeVarying())
-            transform = new br::TimeInvariantWrapperTransform(transform);
+        trainable = transform->trainable;
     }
 
 };

@@ -137,12 +137,18 @@ public:
             } else if (!strcmp(fun, "evalDetection")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalDetection'.");
                 br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");
+            } else if (!strcmp(fun, "evalLandmarking")) {
+                check((parc >= 2) && (parc <= 5), "Incorrect parameter count for 'evalLandmarking'.");
+                br_eval_landmarking(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 1);
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
             } else if (!strcmp(fun, "plotDetection")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
                 br_plot_detection(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "plotLandmarking")) {
+                check(parc >= 2, "Incorrect parameter count for 'plotLandmarking'.");
+                br_plot_landmarking(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
@@ -218,8 +224,10 @@ private:
                "-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth proprty name>\n"
                "-evalClustering <clusters> <gallery>\n"
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}]\n"
+               "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-plotDetection <file> ... <file> {destination}\n"
+               "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"

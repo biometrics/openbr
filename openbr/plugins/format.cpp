@@ -236,6 +236,7 @@ class DefaultFormat : public Format
             videoWriter.file = file;
             videoWriter.write(t);
         } else if (t.size() == 1) {
+            QtUtils::touchDir(QDir(file.path()));
             imwrite(file.name.toStdString(), t);
         }
     }
@@ -705,12 +706,77 @@ class xmlFormat : public Format
 
     void write(const Template &t) const
     {
-        (void) t;
-        qFatal("Not supported.");
+        QStringList lines;
+        lines.append("<?xml version=\"1.0\" standalone=\"yes\"?>");
+        lines.append("<openbr-xml-format>");
+        lines.append("\t<xml-data>");
+        foreach (const QString &key, t.file.localKeys()) {
+            if ((key == "Index") || (key == "Label")) continue;
+            lines.append("\t\t<"+key+">"+QtUtils::toString(t.file.value(key))+"</"+key+">");
+        }
+        std::vector<uchar> data;
+        imencode(".jpg",t.m(),data);
+        QByteArray byteArray = QByteArray::fromRawData((const char*)data.data(), data.size());
+        lines.append("\t\t<FORMAL_IMG>"+byteArray.toBase64()+"</FORMAL_IMG>");
+        lines.append("\t</xml-data>");
+        lines.append("</openbr-xml-format>");
+        QtUtils::writeFile(file, lines);
     }
 };
 
 BR_REGISTER(Format, xmlFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads in scores or ground truth from a text table.
+ * \author Josh Klontz
+ *
+ * Example of the format:
+ * \code
+ * 2.2531514    FALSE   99990377    99990164
+ * 2.2549822    TRUE    99990101    99990101
+ * \endcode
+ */
+class scoresFormat : public Format
+{
+    Q_OBJECT
+    Q_PROPERTY(int column READ get_column WRITE set_column RESET reset_column STORED false)
+    Q_PROPERTY(bool groundTruth READ get_groundTruth WRITE set_groundTruth RESET reset_groundTruth STORED false)
+    Q_PROPERTY(QString delimiter READ get_delimiter WRITE set_delimiter RESET reset_delimiter STORED false)
+    BR_PROPERTY(int, column, 0)
+    BR_PROPERTY(bool, groundTruth, false)
+    BR_PROPERTY(QString, delimiter, "\t")
+
+    Template read() const
+    {
+        QFile f(file.name);
+        if (!f.open(QFile::ReadOnly | QFile::Text))
+            qFatal("Failed to open %s for reading.", qPrintable(f.fileName()));
+        QList<float> values;
+        while (!f.atEnd()) {
+            const QStringList words = QString(f.readLine()).split(delimiter);
+            if (words.size() <= column) qFatal("Expected file to have at least %d columns.", column+1);
+            const QString &word = words[column];
+            bool ok;
+            float value = word.toFloat(&ok);
+            if (!ok) value = (QtUtils::toBool(word) ? BEE::Match : BEE::NonMatch);
+            values.append(value);
+        }
+        if (values.size() == 1)
+            qWarning("Only one value read, double check file line endings.");
+        Mat result = OpenCVUtils::toMat(values);
+        if (groundTruth) result.convertTo(result, CV_8U);
+        return result;
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("Not implemented.");
+    }
+};
+
+BR_REGISTER(Format, scoresFormat)
 
 } // namespace br
 

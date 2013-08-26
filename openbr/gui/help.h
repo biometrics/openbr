@@ -1,5 +1,5 @@
-#ifndef HELP_H
-#define HELP_H
+#ifndef BR_HELP_H
+#define BR_HELP_H
 
 #include <QAction>
 #include <QList>
@@ -27,4 +27,4 @@ public slots:
 
 } // namespace br
 
-#endif // HELP_H
+#endif // BR_HELP_H

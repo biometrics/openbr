@@ -1,5 +1,5 @@
-#ifndef __OPENBR_INTERNAL_H
-#define __OPENBR_INTERNAL_H
+#ifndef OPENBR_INTERNAL_H
+#define OPENBR_INTERNAL_H
 
 #include "openbr/openbr_plugin.h"
 #include "openbr/core/resource.h"
@@ -24,6 +24,17 @@ private:
 };
 
 /*!
+ * \brief A br::Transform expecting multiple matrices per template.
+ */
+class BR_EXPORT MetaTransform : public Transform
+{
+    Q_OBJECT
+
+protected:
+    MetaTransform() : Transform(false) {}
+};
+
+/*!
  * \brief A br::MetaTransform that does not require training data.
  */
 class BR_EXPORT UntrainableMetaTransform : public UntrainableTransform
@@ -34,6 +45,58 @@ protected:
     UntrainableMetaTransform() : UntrainableTransform(false) {}
 };
 
+class TransformCopier : public ResourceMaker<Transform>
+{
+public:
+    Transform * basis;
+    TransformCopier(Transform * _basis)
+    {
+        basis = _basis;
+    }
+
+    virtual Transform *make() const
+    {
+        return basis->smartCopy();
+    }
+
+};
+
+class TimeInvariantWrapperTransform : public MetaTransform
+{
+public:
+    Resource<Transform> transformSource;
+
+    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
+    {
+        if (!basis)
+            qFatal("TimeInvariantWrapper created with NULL transform");
+        baseTransform = basis;
+        trainable = basis->trainable;
+    }
+
+    virtual void project(const Template &src, Template &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Transform * aTransform = transformSource.acquire();
+        aTransform->projectUpdate(src,dst);
+        transformSource.release(aTransform);
+    }
+
+    void train(const QList<TemplateList> &data)
+    {
+        baseTransform->train(data);
+    }
+
+private:
+    Transform * baseTransform;
+};
+
 /*!
  * \brief A br::Transform for which the results of project may change due to prior calls to project
  */
@@ -42,18 +105,17 @@ class BR_EXPORT TimeVaryingTransform : public Transform
     Q_OBJECT
 
 public:
+
     virtual bool timeVarying() const { return true; }
 
     virtual void project(const Template &src, Template &dst) const
     {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
+        timeInvariantAlias.project(src,dst);
     }
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
-        qFatal("No const project defined for time-varying transform");
-        (void) dst; (void) src;
+        timeInvariantAlias.project(src,dst);
     }
 
     // Get a compile failure if this isn't here to go along with the other
@@ -82,71 +144,14 @@ public:
         return this->clone();
     }
 
-
 protected:
-    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable) {}
-};
-
-/*!
- * \brief A br::Transform expecting multiple matrices per template.
- */
-class BR_EXPORT MetaTransform : public Transform
-{
-    Q_OBJECT
-
-protected:
-    MetaTransform() : Transform(false) {}
-};
-
-
-class TransformCopier : public ResourceMaker<Transform>
-{
-public:
-    Transform * basis;
-    TransformCopier(Transform * _basis)
+    // Since copies aren't actually made until project is called, we can set up
+    // timeInvariantAlias in the constructor.
+    TimeInvariantWrapperTransform timeInvariantAlias;
+    TimeVaryingTransform(bool independent = true, bool trainable = true) : Transform(independent, trainable), timeInvariantAlias(this)
     {
-        basis = _basis;
+        //
     }
-
-    virtual Transform *make() const
-    {
-        return basis->smartCopy();
-    }
-
-};
-
-class TimeInvariantWrapperTransform : public MetaTransform
-{
-public:
-    Resource<Transform> transformSource;
-
-    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
-    {
-        baseTransform = basis;
-    }
-
-    virtual void project(const Template &src, Template &dst) const
-    {
-        Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
-        transformSource.release(aTransform);
-    }
-
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Transform * aTransform = transformSource.acquire();
-        aTransform->projectUpdate(src,dst);
-        transformSource.release(aTransform);
-    }
-
-    void train(const TemplateList &data)
-    {
-        baseTransform->train(data);
-    }
-
-private:
-    Transform * baseTransform;
 };
 
 
@@ -163,15 +168,17 @@ public:
 
     virtual void project(const Template &src, Template &dst) const
     {
-        if (timeVarying()) qFatal("No const project defined for time-varying transform");
+        if (timeVarying()) {
+            timeInvariantAlias.project(src,dst);
+            return;
+        }
         _project(src, dst);
     }
 
     virtual void project(const TemplateList &src, TemplateList &dst) const
     {
         if (timeVarying()) {
-            CompositeTransform * non_const = const_cast<CompositeTransform *>(this);
-            non_const->projectUpdate(src,dst);
+            timeInvariantAlias.project(src,dst);
             return;
         }
         _project(src, dst);
@@ -235,4 +242,4 @@ protected:
 
 }
 
-#endif
+#endif // OPENBR_INTERNAL_H

@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_PLUGIN_H
-#define __OPENBR_PLUGIN_H
+#ifndef BR_OPENBR_PLUGIN_H
+#define BR_OPENBR_PLUGIN_H
 
 #ifdef __cplusplus
 
@@ -73,6 +73,10 @@
  * \subsection cpp_face_recognition_search Face Recognition Search
  * \ref cli_face_recognition_search "Command Line Interface Equivalent"
  * \snippet app/examples/face_recognition_search.cpp face_recognition_search
+ *
+ * \subsection cpp_face_recognition_train Face Recognition Train
+ * \ref cli_face_recognition_train "Command Line Interface Equivalent"
+ * \snippet app/examples/face_recognition_train.cpp face_recognition_train
  *
  * \subsection cpp_age_estimation Age Estimation
  * \ref cli_age_estimation "Command Line Interface Equivalent"
@@ -138,6 +142,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  *
  * Key             | Value          | Description
  * ---             | ----           | -----------
+ * name            | QString        | Contents of #name
  * separator       | QString        | Seperate #name into multiple files
  * Index           | int            | Index of a template in a template list
  * Confidence      | float          | Classification/Regression quality
@@ -501,6 +506,20 @@ struct TemplateList : public QList<Template>
         foreach (const Template &t, *this)
             reduced.merge(t);
         return TemplateList() << reduced;
+    }
+
+    /*!
+     * \brief Find the indices of templates with specified key, value pairs.
+     */
+    template<typename T>
+    QList<int> find(const QString& key, const T& value)
+    {
+        QList<int> indices;
+        for (int i=0; i<size(); i++)
+            if (at(i).file.contains(key))
+                if (at(i).file.get<T>(key) == value)
+                    indices.append(i);
+        return indices;
     }
 };
 
@@ -1022,7 +1041,7 @@ private:
 
 /*!
  * \brief For asynchronous events during template projection.
- * \see #Transform::getEvent
+ * \see Transform::getEvent
  */
 class TemplateEvent : public QObject
 {
@@ -1058,17 +1077,41 @@ public:
     static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's transform. */
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
-    virtual void train(const TemplateList &data) = 0; /*!< \brief Train the transform. */
-    virtual void project(const Template &src, Template &dst) const = 0; /*!< \brief Apply the transform. */
-    virtual void project(const TemplateList &src, TemplateList &dst) const; /*!< \brief Apply the transform. */
 
-    /*!< \brief Apply the transform, may update the transform's internal state */
+    /*!< \brief Train the transform. */
+    virtual void train(const TemplateList &data);
+
+    /*!< \brief Train the transform, separate list items represent the way calls to project would be broken up
+     * Transforms that have to call train on another transform should implement train(QList), the strucutre of the
+     * list should mirror the calls that would be made to project by the parent transform. For example, DistributeTemplates
+     * would make a separate project call for each template it receives, and therefore sets the QList to contain single item
+     * template lists before passing it on.
+     * This version of train(QList) is appropriate for transforms that perform training on themselves, and don't call train
+     * on other transforms. It combines everything in data into a single TemplateList, then calls train(TemplateList)
+     */
+    virtual void train(const QList<TemplateList> &data);
+
+    /*!< \brief Apply the transform to a single template. Typically used by independent transforms */
+    virtual void project(const Template &src, Template &dst) const = 0;
+    /*!< \brief Apply the transform, taking the full template list as input.
+     * A TemplateList is what is typically passed from transform to transform. Transforms that just
+     * need to operatoe on a single template at a time (and want to output exactly 1 template) can implement
+     * project(template), but transforms that want to change the structure of the TemplateList (such as flatten), or
+     * or output more or less than one template (e.g. detection methods) should implement project(TemplateList) directly
+     */
+    virtual void project(const TemplateList &src, TemplateList &dst) const;
+
+    /*!< \brief Apply the transform to a single template, may update the transform's internal state
+     * By default, just call project, we can always call a const function from a non-const function.
+     * If a transform implements projectUpdate, it should report true to timeVarying so that it can be
+     * handled correctly by e.g. Stream.
+     */
     virtual void projectUpdate(const Template &src, Template &dst)
     {
         project(src, dst);
     }
 
-    /*!< \brief Apply the transform, may update the transform's internal state */
+    /*!< \brief Apply the transform, may update the transform's internal state. */
     virtual void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         project(src,dst);
@@ -1130,7 +1173,9 @@ public:
      * \brief Perform the minimum amount of work necessary to make a
      * transform that can be used safely from a different thread than this
      * transform. For transforms that aren't time-varying, nothing needs to be
-     * done, returning this is sufficient.
+     * done, returning this is sufficient. Time varying transforms should implement this method
+     * and copy enough of their state that projectUpdate can safely be called on the original
+     * instance, and the copy concurrently.
      */
     virtual Transform * smartCopy() { return this;}
 
@@ -1277,4 +1322,4 @@ Q_DECLARE_METATYPE(QList<br::Distance*>)
 
 #endif // __cplusplus
 
-#endif // __OPENBR_PLUGIN_H
+#endif // BR_OPENBR_PLUGIN_H

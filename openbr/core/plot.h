@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __PLOT_H
-#define __PLOT_H
+#ifndef BR_PLOT_H
+#define BR_PLOT_H
 
 #include <QPair>
 #include <QString>
@@ -26,7 +26,8 @@ namespace br
 {
     bool Plot(const QStringList &files, const File &destination, bool show = false);
     bool PlotDetection(const QStringList &files, const File &destination, bool show = false);
+    bool PlotLandmarking(const QStringList &files, const File &destination, bool show = false);
     bool PlotMetadata(const QStringList &files, const QString &destination, bool show = false);
 }
 
-#endif // __PLOT_H
+#endif // BR_PLOT_H

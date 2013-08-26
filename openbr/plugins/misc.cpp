@@ -332,57 +332,6 @@ class AnonymizeTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, AnonymizeTransform)
 
-// TODO: Use a global Mutex to prevent concurrent reads from stdin
-#if 0
-/*!
- * \ingroup transforms
- * \brief Name a point
- * \author Scott Klum \cite sklum
- */
-class ElicitMetadataTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-
-    Q_PROPERTY(QStringList metadata READ get_metadata WRITE set_metadata RESET reset_metadata STORED false)
-    BR_PROPERTY(QStringList, metadata, QStringList())
-
-    void init()
-    {
-        Globals->setProperty("parallelism", "0"); // Can only work in single threaded mode
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        QTextStream stream(stdin);
-
-        foreach (const QString &key, metadata) {
-            qDebug() << "Specify a value for key: " << key;
-            QString value = stream.readLine();
-            if (value[0] == '(') {
-                QStringList values = value.split(',');
-                if (values.size() == 2) /* QPointF */ {
-                    values[1].chop(1);
-                    QPointF point(values[0].mid(1).toFloat(), values[1].toFloat());
-                    if (key != "Points") dst.file.set(key, point);
-                    else dst.file.appendPoint(point);
-                }
-                else /* QRectF */ {
-                    values[3].chop(1);
-                    QRectF rect(values[0].mid(1).toFloat(), values[1].toFloat(), values[2].toFloat(), values[3].toFloat());
-                    if (key != "Rects") dst.file.set(key, rect);
-                    else dst.file.appendRect(rect);
-                }
-            }
-            else dst.file.set(key, value);
-        }
-    }
-};
-
-BR_REGISTER(Transform, ElicitMetadataTransform)
-#endif
-
 /*!
  * \ingroup transforms
  * \brief Change the br::Template::file extension
@@ -405,27 +354,31 @@ BR_REGISTER(Transform, AsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Change the template subject using a regular expresion matched to the file's base name.
- * \author Josh Klontz \cite jklontz
+ * \brief Apply the input regular expression to the value of inputProperty, store the matched portion in outputProperty.
+ * \author Charles Otto \cite caotto
  */
-class SubjectTransform : public UntrainableMetaTransform
+class RegexPropertyTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
+    Q_PROPERTY(QString inputProperty READ get_inputProperty WRITE set_inputProperty RESET reset_inputProperty STORED false)
+    Q_PROPERTY(QString outputProperty READ get_outputProperty WRITE set_outputProperty RESET reset_outputProperty STORED false)
     BR_PROPERTY(QString, regexp, "(.*)")
+    BR_PROPERTY(QString, inputProperty, "name")
+    BR_PROPERTY(QString, outputProperty, "Label")
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
         QRegularExpression re(regexp);
-        QRegularExpressionMatch match = re.match(dst.file.baseName());
+        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProperty));
         if (!match.hasMatch())
-            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.baseName()));
-        dst.file.set("Subject", match.captured(match.lastCapturedIndex()));
+            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.get<QString>(inputProperty)));
+        dst.file.set(outputProperty, match.captured(match.lastCapturedIndex()));
     }
 };
 
-BR_REGISTER(Transform, SubjectTransform)
+BR_REGISTER(Transform, RegexPropertyTransform)
 
 /*!
  * \ingroup transforms
@@ -521,6 +474,75 @@ class RestoreMatTransform : public UntrainableMetaTransform
 BR_REGISTER(Transform, RestoreMatTransform)
 
 
+/*!
+ * \ingroup transforms
+ * \brief Incrementally output templates received to a gallery, based on the current filename
+ * When a template is received in projectUpdate for the first time since a finalize, open a new gallery based on the
+ * template's filename, and the galleryFormat property.
+ * Templates received in projectUpdate will be output to the gallery with a filename combining their original filename and
+ * their FrameNumber property, with the file extension specified by the fileFormat property.
+ * \author Charles Otto \cite caotto
+ */
+class IncrementalOutputTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString galleryFormat READ get_galleryFormat WRITE set_galleryFormat RESET reset_galleryFormat STORED false)
+    Q_PROPERTY(QString fileFormat READ get_fileFormat WRITE set_fileFormat RESET reset_fileFormat STORED false)
+    BR_PROPERTY(QString, galleryFormat, "")
+    BR_PROPERTY(QString, fileFormat, ".png")
+
+    bool galleryUp;
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (src.empty())
+            return;
+
+        if (!galleryUp) {
+            QFileInfo finfo(src[0].file.name);
+            QString galleryName = finfo.baseName() + galleryFormat;
+
+            writer = QSharedPointer<Gallery> (Factory<Gallery>::make(galleryName));
+            galleryUp = true;
+        }
+
+        dst = src;
+        int idx =0;
+        foreach(const Template & t, src) {
+            if (t.empty())
+                continue;
+
+            // Build the output filename for this template
+            QFileInfo finfo(t.file.name);
+            QString outputName = finfo.baseName() +"_" + t.file.get<QString>("FrameNumber") + "_" + QString::number(idx)+ fileFormat;
+
+            idx++;
+            Template out = t;
+            out.file.name = outputName;
+            writer->write(out);
+        }
+    }
+
+    void train(const TemplateList& data)
+    {
+        (void) data;
+    }
+
+    // Drop the current gallery.
+    void finalize(TemplateList & data)
+    {
+        (void) data;
+        galleryUp = false;
+    }
+
+    QSharedPointer<Gallery> writer;
+public:
+    IncrementalOutputTransform() : TimeVaryingTransform(false,false) {galleryUp = false;}
+};
+
+BR_REGISTER(Transform, IncrementalOutputTransform)
+
 class EventTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
@@ -541,34 +563,6 @@ class EventTransform : public UntrainableMetaTransform
     }
 };
 BR_REGISTER(Transform, EventTransform)
-
-/*!
- * \ingroup transforms
- * \brief Flattens a list of Templates into a single Template
- * \author Austin Blanton \cite imaus10
- */
-class FlattenTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        Template flat;
-        // let's hope that all Templates belong to the same file
-        flat.file = src.first().file;
-        foreach (const Template &tmpl, src)
-            flat.append(tmpl);
-        dst.append(flat);
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        (void) src;
-        (void) dst;
-        qFatal("You shouldn't do that!");
-    }
-};
-BR_REGISTER(Transform, FlattenTransform)
 
 }
 
