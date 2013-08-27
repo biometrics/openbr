@@ -76,29 +76,14 @@ class csvOutput : public MatrixOutput
     {
         if (file.isNull() || targetFiles.isEmpty() || queryFiles.isEmpty()) return;
         QStringList lines;
-        if (Globals->crossValidate == 0) {
-            for (int i=0; i<queryFiles.size(); i++) {
-                QStringList words;
-                for (int j=0; j<targetFiles.size(); j++)
-                    words.append(queryFiles[i].name+","+targetFiles[j].baseName() + "," + toString(i,j)); // The toString idiom is used to output match scores - see MatrixOutput
-                lines.append(words.join("\n"));
-            }
-            QtUtils::writeFile(file.name, lines);
-        } else {
-            for (int k=0; k<Globals->crossValidate; k++) {
-                lines.clear();
-                for (int i=0; i<queryFiles.size(); i++) {
-                    int queryPartition = queryFiles[i].get<int>("Partition");
-                    if (queryPartition != k) continue;
-                    QStringList words;
-                    QList<int> targetPartitions = targetFiles.crossValidationPartitions();
-                    for (int j=0; j<targetFiles.size(); j++)
-                        if (queryPartition == targetPartitions[j]) words.append(queryFiles[i].name+","+targetFiles[j].baseName() + "," + toString(i,j)); // The toString idiom is used to output match scores - see MatrixOutput
-                        lines.append(words.join("\n"));
-                }
-                QtUtils::writeFile(file.name.arg(QString::number(k)), lines);
-            }
+        lines.append("File," + targetFiles.names().join(","));
+        for (int i=0; i<queryFiles.size(); i++) {
+            QStringList words;
+            for (int j=0; j<targetFiles.size(); j++)
+                words.append(toString(i,j));  // The toString idiom is used to output match scores - see MatrixOutput
+            lines.append(queryFiles[i].name+","+words.join(","));
         }
+        QtUtils::writeFile(file, lines);
     }
 };
 

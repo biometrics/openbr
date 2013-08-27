@@ -228,7 +228,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10(labels=percent, limits=c(min(DET$X),1)) + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\")\n\n")));
+                            QString(" + scale_x_log10(labels=percent, limits=c(min(DET$X),1)) + scale_y_log10(labels=percent) + annotation_logticks()\n\n")));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +

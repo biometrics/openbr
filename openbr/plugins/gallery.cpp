@@ -119,7 +119,6 @@ class galGallery : public Gallery
     {
         if (t.isEmpty() && t.file.isNull())
             return;
-        if (t.file.baseName() != "204765279_PCSOdata")
             stream << t;
     }
 };
@@ -186,7 +185,7 @@ class EmptyGallery : public Gallery
         if (file.name.isEmpty()) return;
 
         const QString newFormat = file.get<QString>("newFormat",QString());
-        QString destination = file.name + "/fold_" + QString::number(t.file.get<int>("Partition")) + "/target/" + (file.getBool("preservePath") ? t.file.path()+"/" : QString());
+        QString destination = file.name + "/" + (file.getBool("preservePath") ? t.file.path()+"/" : QString());
         destination += (newFormat.isEmpty() ? t.file.fileName() : t.file.baseName()+newFormat);
 
         QMutexLocker diskLocker(&diskLock); // Windows prefers to crash when writing to disk in parallel
