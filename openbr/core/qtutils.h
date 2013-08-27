@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __QTUTILS_H
-#define __QTUTILS_H
+#ifndef QTUTILS_QTUTILS_H
+#define QTUTILS_QTUTILS_H
 
 #include <QByteArray>
 #include <QDir>
@@ -78,4 +78,4 @@ namespace QtUtils
     float euclideanLength(const QPointF &point);
 }
 
-#endif // __QTUTILS_H
+#endif // QTUTILS_QTUTILS_H

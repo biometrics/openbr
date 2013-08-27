@@ -1,5 +1,5 @@
-#ifndef GALLERYVIEWER_H
-#define GALLERYVIEWER_H
+#ifndef BR_GALLERYVIEWER_H
+#define BR_GALLERYVIEWER_H
 
 #include <QMainWindow>
 #include <QWidget>
@@ -30,4 +30,4 @@ public slots:
 
 } // namespace br
 
-#endif // GALLERYVIEWER_H
+#endif // BR_GALLERYVIEWER_H

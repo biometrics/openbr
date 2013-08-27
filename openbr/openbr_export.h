@@ -14,25 +14,21 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_EXPORT_H
-#define __OPENBR_EXPORT_H
+#ifndef OPENBR_EXPORT_H
+#define OPENBR_EXPORT_H
 
-#if defined SWIG
-#  define BR_EXPORT extern
-#else
-#  if defined BR_LIBRARY
-#    if defined _WIN32 || defined __CYGWIN__
-#      define BR_EXPORT __declspec(dllexport)
-#    else
-#      define BR_EXPORT __attribute__((visibility("default")))
-#    endif
+#if defined BR_LIBRARY
+#  if defined _WIN32 || defined __CYGWIN__
+#    define BR_EXPORT __declspec(dllexport)
 #  else
-#    if defined _WIN32 || defined __CYGWIN__
-#      define BR_EXPORT __declspec(dllimport)
-#    else
-#      define BR_EXPORT
-#    endif
+#    define BR_EXPORT __attribute__((visibility("default")))
+#  endif
+#else
+#  if defined _WIN32 || defined __CYGWIN__
+#    define BR_EXPORT __declspec(dllimport)
+#  else
+#    define BR_EXPORT
 #  endif
 #endif
 
-#endif // __OPENBR_EXPORT_H
+#endif // OPENBR_EXPORT_H

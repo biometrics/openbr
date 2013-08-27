@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __TRANSFORMLISTEDITOR_H
-#define __TRANSFORMLISTEDITOR_H
+#ifndef BR_TRANSFORMLISTEDITOR_H
+#define BR_TRANSFORMLISTEDITOR_H
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -43,4 +43,4 @@ private slots:
 
 } // namespace br
 
-#endif // __TRANSFORMLISTEDITOR_H
+#endif // BR_TRANSFORMLISTEDITOR_H

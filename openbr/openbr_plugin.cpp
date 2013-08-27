@@ -996,9 +996,9 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         switch (type) {
           case QtWarningMsg:  txt = QString("Warning: %1\n" ).arg(msg); break;
           case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
-          default:            txt = QString("Fatal: %1\n"   ).arg(msg);
+          default:            txt = QString("Fatal: %1\n"   ).arg(msg); break;
         }
-        txt += "  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
+        txt += "  SDK Path: "  + Globals->sdkPath + "\n  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
     }
 
     std::cerr << txt.toStdString();
@@ -1223,6 +1223,26 @@ TemplateEvent * Transform::getEvent(const QString & name)
     }
 
     return NULL;
+}
+
+void Transform::train(const TemplateList &data)
+{
+    if (!trainable) {
+        qWarning("Train called on untrainable transform %s", this->metaObject()->className());
+        return;
+    }
+    QList<TemplateList> input;
+    input.append(data);
+    train(input);
+}
+
+void Transform::train(const QList<TemplateList> &data)
+{
+    TemplateList combined;
+    foreach(const TemplateList & set, data) {
+        combined.append(set);
+    }
+    train(combined);
 }
 
 /* Distance - public methods */

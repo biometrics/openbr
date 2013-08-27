@@ -97,6 +97,7 @@ class KeyPointDescriptorTransform : public UntrainableTransform
         else
             foreach (const QPointF &landmark, src.file.points())
                 keyPoints.push_back(KeyPoint(landmark.x(), landmark.y(), size));
+        if (keyPoints.empty()) return;
         descriptorExtractor->compute(src, keyPoints, dst);
     }
 };

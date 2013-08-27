@@ -186,8 +186,9 @@ QString find(const QString &file, const QString &alt)
 bool toBool(const QString &string)
 {
     bool ok;
-    bool result = (bool)string.toInt(&ok); if (!ok) qFatal("Expected integer value, got %s.", qPrintable(string));
-    return result;
+    bool result = (string.toFloat(&ok) != 0.f);
+    if (ok) return result;
+    else    return (string != "FALSE") && (string != "false") && (string != "F") && (string != "f");
 }
 
 int toInt(const QString &string)

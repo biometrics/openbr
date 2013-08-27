@@ -1016,7 +1016,27 @@ public:
 
 };
 
+// Semi-functional, doesn't do anything productive outside of stream::train
+class CollectSets : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    CollectSets() : TimeVaryingTransform(false, false) {}
 
+    QList<TemplateList> sets;
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        (void) dst;
+        sets.append(src);
+    }
+
+    void train(const TemplateList & data)
+    {
+        (void) data;
+    }
+
+};
 
 class DirectStreamTransform : public CompositeTransform
 {
@@ -1027,16 +1047,52 @@ public:
 
     friend class StreamTransfrom;
 
-    void train(const TemplateList & data)
+    void subProject(QList<TemplateList> & data, int end_idx)
+    {
+        if (end_idx == 0)
+            return;
+
+        CollectSets collector;
+
+        // Set transforms to the start, up to end_idx
+        QList<Transform *> backup = this->transforms;
+        transforms = backup.mid(0,end_idx);
+        // We use collector to retain the project structure at the end of the
+        // truncated stream.
+        transforms.append(&collector);
+
+        // Reinitialize, we now act as a shorter stream.
+        init();
+
+        QList<TemplateList> output;
+        for (int i=0; i < data.size(); i++) {
+            projectUpdate(data[i], data[i]);
+            output.append(collector.sets);
+            collector.sets.clear();
+        }
+        data = output;
+        transforms = backup;
+    }
+
+    void train(const QList<TemplateList> & data)
     {
         if (!trainable) {
             qWarning("Attempted to train untrainable transform, nothing will happen.");
             return;
         }
-        qFatal("Stream train is currently not implemented.");
-        foreach(Transform * transform, transforms) {
-            transform->train(data);
+
+        for (int i=0; i < transforms.size(); i++) {
+            // OK we have a trainable transform, we need to get input data for it.
+            if (transforms[i]->trainable) {
+                QList<TemplateList> copy = data;
+                // Project from the start to the trainable stage.
+                subProject(copy,i);
+
+                transforms[i]->train(copy);
+            }
         }
+        // Re-initialize because subProject probably messed us up.
+        init();
     }
 
     bool timeVarying() const { return true; }
@@ -1287,8 +1343,7 @@ public:
         basis.projectUpdate(src,dst);
     }
 
-
-    void train(const TemplateList & data)
+    void train(const QList<TemplateList> & data)
     {
         basis.train(data);
     }

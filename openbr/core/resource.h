@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __RESOURCE_H
-#define __RESOURCE_H
+#ifndef BR_RESOURCE_H
+#define BR_RESOURCE_H
 
 #include <QHash>
 #include <QList>
@@ -25,6 +25,9 @@
 #include <QString>
 #include <QThread>
 #include <openbr/openbr_plugin.h>
+
+namespace br
+{
 
 template <typename T>
 class ResourceMaker
@@ -97,4 +100,6 @@ public:
     }
 };
 
-#endif //__RESOURCE_H
+} // namespace br
+
+#endif // BR_RESOURCE_H

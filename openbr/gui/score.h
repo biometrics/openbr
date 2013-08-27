@@ -1,5 +1,5 @@
-#ifndef __SCORE_H
-#define __SCORE_H
+#ifndef BR_SCORE_H
+#define BR_SCORE_H
 
 #include <QLabel>
 #include <QWidget>
@@ -21,4 +21,4 @@ public slots:
 
 }
 
-#endif // __SCORE_H
+#endif // BR_SCORE_H

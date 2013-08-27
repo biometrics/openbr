@@ -15,6 +15,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <vector>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
@@ -247,6 +249,100 @@ class MeanTransform : public Transform
 };
 
 BR_REGISTER(Transform, MeanTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Load the image named in the specified property, draw it on the current matrix adjacent to the rect specified in the other property.
+ * \author Charles Otto \cite caotto
+ */
+class AdjacentOverlayTransform : public Transform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString imgName READ get_imgName WRITE set_imgName RESET reset_imgName STORED false)
+    Q_PROPERTY(QString targetName READ get_targetName WRITE set_targetName RESET reset_targetName STORED false)
+    BR_PROPERTY(QString, imgName, "")
+    BR_PROPERTY(QString, targetName, "")
+
+    QSharedPointer<Transform> opener;
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (imgName.isEmpty() || targetName.isEmpty() || !dst.file.contains(imgName) || !dst.file.contains(targetName))
+            return;
+
+        QString im_name = src.file.get<QString>(imgName);
+        QRectF target_location = src.file.get<QRectF>(targetName);
+        Template temp_im;
+        opener->project(File(im_name), temp_im);
+        cv::Mat im = temp_im.m();
+
+        // match width with target region
+        qreal target_width = target_location.width();
+        qreal current_width = im.cols;
+        qreal current_height = im.rows;
+
+        qreal aspect_ratio = current_height / current_width;
+        qreal target_height = target_width * aspect_ratio;
+
+        cv::resize(im, im, cv::Size(target_width, target_height));
+
+        cv::Rect clip_roi;
+        clip_roi.x = 0;
+        clip_roi.y = 0;
+        clip_roi.width = im.cols;
+        clip_roi.height= im.rows;
+
+        int half_width = src.m().cols / 2;
+        int out_x = 0;
+        cv::Rect target_roi;
+        // Place left
+        if (target_location.center().rx() > half_width) {
+            out_x = target_location.left() - im.cols;
+            if (out_x < 0) {
+                clip_roi.width += out_x;
+                out_x = 0;
+            }
+        }
+        // place right
+        else {
+            out_x = target_location.right();
+            int high = out_x + im.cols;
+            if (high >= src.m().cols) {
+                clip_roi.width -= high - src.m().cols + 1;
+            }
+        }
+        target_roi.x = out_x;
+        target_roi.width = clip_roi.width;
+        target_roi.y = target_location.top();
+        target_roi.height = clip_roi.height;
+
+        im = im(clip_roi);
+
+        cv::Mat outIm = dst.m();
+        std::vector<cv::Mat> channels;
+        cv::split(outIm, channels);
+
+        std::vector<cv::Mat> patch_channels;
+        cv::split(im, patch_channels);
+
+        for (size_t i=0; i < channels.size(); i++)
+        {
+            cv::addWeighted(channels[i](target_roi), 0, patch_channels[i % patch_channels.size()], 1, 0,channels[i](target_roi));
+        }
+        cv::merge(channels, outIm);
+        dst.m() = outIm;
+    }
+
+    void init()
+    {
+        opener = br::Transform::fromAlgorithm("Cache(Open)");
+
+    }
+
+};
+
+BR_REGISTER(Transform, AdjacentOverlayTransform)
 
 // TODO: re-implement EditTransform using Qt
 #if 0

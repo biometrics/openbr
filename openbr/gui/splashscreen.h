@@ -1,5 +1,5 @@
-#ifndef __SPLASHSCREEN_H
-#define __SPLASHSCREEN_H
+#ifndef BR_SPLASHSCREEN_H
+#define BR_SPLASHSCREEN_H
 
 #include <QCloseEvent>
 #include <QLabel>
@@ -28,4 +28,4 @@ private slots:
 
 } // namespace br
 
-#endif // __SPLASHSCREEN_H
+#endif // BR_SPLASHSCREEN_H

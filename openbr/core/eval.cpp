@@ -79,19 +79,28 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
 
     // Read similarity matrix
     QString target, query;
-    const Mat scores = BEE::readSimmat(simmat, &target, &query);
+    Mat scores;
+    if (simmat.endsWith(".mtx")) {
+        scores = BEE::readSimmat(simmat, &target, &query);
+    } else {
+        QScopedPointer<Format> format(Factory<Format>::make(simmat));
+        scores = format->read();
+    }
 
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
         // Use the galleries specified in the similarity matrix
+        if (target.isEmpty()) qFatal("Unspecified target gallery.");
+        if (query.isEmpty()) qFatal("Unspecified query gallery.");
         truth = BEE::makeMask(TemplateList::fromGallery(target).files(),
                               TemplateList::fromGallery(query).files());
     } else {
         File maskFile(mask);
         maskFile.set("rows", scores.rows);
         maskFile.set("columns", scores.cols);
-        truth = BEE::readMask(maskFile);
+        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
+        truth = format->read();
     }
 
     return Evaluate(scores, truth, csv);
@@ -477,6 +486,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
         }
         averageOverlap = totalOverlap / keep;
     }
+    lines.append(QString("AverageOverlap,%1,").arg(QString::number(averageOverlap)));
 
     QtUtils::writeFile(csv, lines);
     qDebug("Average Overlap = %.3f", averageOverlap);

@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __OPENBR_H
-#define __OPENBR_H
+#ifndef OPENBR_H
+#define OPENBR_H
 
 #include <openbr/openbr_export.h>
 
@@ -40,18 +40,6 @@ extern "C" {
  *
  * \section managed_return_value Managed Return Value
  * Memory for <tt>const char*</tt> return values is managed internally and guaranteed until the next call to the function.
- *
- * \section python_api Python API
- * A Python API is available via <a href="http://www.swig.org/">SWIG</a>.
- * \code
- * $ ls include/br/python
- * \endcode
- *
- * \section java_api Java API
- * A Java API is available via <a href="http://www.swig.org/">SWIG</a>.
- * \code
- * $ ls include/br/java
- * \endcode
  *
  * \section examples Examples
  * - \ref c_face_recognition_evaluation
@@ -148,8 +136,10 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
  * \brief Evaluates and prints classification accuracy to terminal.
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
+ * \param predicted_property (Optional) which metadata key to use from <i>predicted_gallery</i>.
+ * \param truth_property (Optional) which metadata key to use from <i>truth_gallery</i>.
  */
-BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
+BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "");
 
 /*!
  * \brief Evaluates and prints clustering accuracy to the terminal.
@@ -182,8 +172,10 @@ BR_EXPORT float br_eval_landmarking(const char *predicted_gallery, const char *t
  * \brief Evaluates regression accuracy to disk.
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
+ * \param predicted_property (Optional) which metadata key to use from <i>predicted_gallery</i>.
+ * \param truth_property (Optional) which metadata key to use from <i>truth_gallery</i>.
  */
-BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char * predicted_property="", const char * truth_property="");
+BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "");
 
 /*!
  * \brief Wraps br::Context::finalize()
@@ -267,7 +259,7 @@ BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *im
  *
  * OpenBR uses file and folder names to automatically determine the plot legend.
  * For example, let's consider the case where three algorithms (<tt>A</tt>, <tt>B</tt>, & <tt>C</tt>) were each evaluated on two datasets (<tt>Y</tt> & <tt>Z</tt>).
- * The suggested way to plot these experiments on the same graph is to create a folder named <tt>Algorithm_Dataset</tt> that contains the six <tt>.csv</tt> files produced by \ref br_eval: <tt>A_Y.csv</tt>, <tt>A_Z.csv</tt>, <tt>B_Y.csv</tt>, <tt>B_Z.csv</tt>, <tt>C_Y.csv</tt>, & <tt>C_Z.csv</tt>.
+ * The suggested way to plot these experiments on the same graph is to create a folder named <tt>Algorithm_Dataset</tt> that contains the six <tt>.csv</tt> files produced by br_eval <tt>A_Y.csv</tt>, <tt>A_Z.csv</tt>, <tt>B_Y.csv</tt>, <tt>B_Z.csv</tt>, <tt>C_Y.csv</tt>, & <tt>C_Z.csv</tt>.
  * The '<tt>_</tt>' character plays a special role in determining the legend title(s) and value(s).
  * In this case, <tt>A</tt>, <tt>B</tt>, & <tt>C</tt> will be identified as different values of type <tt>Algorithm</tt>, and each will be assigned its own color; <tt>Y</tt> & <tt>Z</tt> will be identified as different values of type Dataset, and each will be assigned its own line style.
  *
@@ -291,6 +283,8 @@ BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destinati
  * -# Discrete Precision Recall (DiscretePR)
  * -# Continuous Precision Recall (ContinuousPR)
  * -# Bounding Box Overlap Histogram (Overlap)
+ * -# Average Overlap Table (AverageOverlap)
+ * -# Average Overlap Heatmap (AverageOverlap)
  *
  * Detection accuracy is measured with <i>overlap fraction = bounding box intersection / union</i>.
  * When computing <i>discrete</i> curves, an overlap >= 0.5 is considered a true positive, otherwise it is considered a false negative.
@@ -421,4 +415,4 @@ BR_EXPORT const char *br_version();
 }
 #endif
 
-#endif // __OPENBR_H
+#endif // OPENBR_H

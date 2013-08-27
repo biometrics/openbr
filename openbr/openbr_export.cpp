@@ -29,7 +29,7 @@
  * \section get_started Get Started
  * - \ref introduction - A high-level technical overview of OpenBR.
  * - \ref installation - A hacker's guide to building, editing, and running OpenBR.
- * - \ref qmake_integration - Add OpenBR to your Qt <tt>.pro</tt> project.
+ * - \ref examples - Source code illustrating common use cases.
  *
  * \section learn_more Learn More
  * - \ref algorithm_grammar - How algorithms are constructed from string descriptions.
@@ -37,6 +37,7 @@
  * - \ref c_sdk - High-level API for running algorithms and evaluating results.
  * - \ref cpp_plugin_sdk - Plugin API for extending OpenBR functionality.
  * - \ref bee - A <a href="http://www.nist.gov/index.html">NIST</a> standard for evaluating biometric algorithms.
+ * - \ref qmake_integration - Add OpenBR to your Qt <tt>.pro</tt> project.
  */
 
 /*!
@@ -331,7 +332,7 @@ $ br -help
  * \code
  * $ sudo apt-get install cmake cmake-curses-gui
  * \endcode
- * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>
+ * -# <a href="http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz">Download OpenCV 2.4.5</a>, note <a href="https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu">this</a>
  * \code
  * $ cd ~/Downloads
  * $ tar -xf opencv-2.4.5.tar.gz

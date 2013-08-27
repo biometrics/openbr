@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __FUSE_H
-#define __FUSE_H
+#ifndef BR_FUSE_H
+#define BR_FUSE_H
 
 #include <QString>
 #include <QStringList>
@@ -25,4 +25,4 @@ namespace br
     void Fuse(const QStringList &inputSimmats, File mask, const QString &normalization, const QString &fusion, const QString &outputSimmat);
 }
 
-#endif // __FUSE_H
+#endif // BR_FUSE_H

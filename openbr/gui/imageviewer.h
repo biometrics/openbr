@@ -14,8 +14,8 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __IMAGEVIEWER_H
-#define __IMAGEVIEWER_H
+#ifndef BR_IMAGEVIEWER_H
+#define BR_IMAGEVIEWER_H
 
 #include <QImage>
 #include <QKeyEvent>
@@ -61,4 +61,4 @@ private slots:
 
 } // namespace br
 
-#endif // __IMAGEVIEWER_H
+#endif // BR_IMAGEVIEWER_H

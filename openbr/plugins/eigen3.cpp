@@ -84,7 +84,7 @@ private:
         for (int i=0; i<instances; i++)
             data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
 
-        train(data);
+        trainCore(data);
     }
 
     void project(const Template &src, Template &dst) const
@@ -110,7 +110,7 @@ private:
     }
 
 protected:
-    void train(Eigen::MatrixXd data)
+    void trainCore(Eigen::MatrixXd data)
     {
         int dimsIn = data.rows();
         int instances = data.cols();
@@ -227,7 +227,7 @@ class RowWisePCATransform : public PCATransform
             for (int i=0; i<t.m().rows; i++)
                 data.col(index++) = Eigen::Map<const Eigen::MatrixXf>(t.m().ptr<float>(i), dimsIn, 1).cast<double>();
 
-        PCATransform::train(data);
+        PCATransform::trainCore(data);
     }
 
     void project(const Template &src, Template &dst) const
@@ -358,7 +358,7 @@ class LDATransform : public Transform
             // one per class), the total rank of the covariance/scatter
             // matrix that will be computed in PCA is bound by instances - numClasses.
             space1.keep = std::min(dimsIn, instances-numClasses);
-            space1.train(data);
+            space1.trainCore(data);
 
             // Divide each eigenvector by sqrt of eigenvalue.
             // This has the effect of whitening the within-class scatter.
@@ -369,7 +369,7 @@ class LDATransform : public Transform
         {
             space1.drop = instances - numClasses;
             space1.keep = std::min(dimsIn, instances) - space1.drop;
-            space1.train(data);
+            space1.trainCore(data);
         }
         else
         {
@@ -381,7 +381,7 @@ class LDATransform : public Transform
             // to discard Null space). We keep the Null space b/c this is where
             // the within-class scatter goes to zero, i.e. it is very useful.
             space1.keep = dimsIn;
-            space1.train(data);
+            space1.trainCore(data);
 
             if (dimsIn > instances - numClasses) {
                 // Here, we are replacing the eigenvalue of the  null space
@@ -445,7 +445,7 @@ class LDATransform : public Transform
         int dim2 = std::min((int)space1.keep, numClasses-1);
         PCATransform space2;
         space2.keep = dim2;
-        space2.train(data2);
+        space2.trainCore(data2);
 
         // Compute final projection matrix
         projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();

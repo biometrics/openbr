@@ -1,5 +1,5 @@
-#ifndef __GALLERYTOOLBAR_H
-#define __GALLERYTOOLBAR_H
+#ifndef BR_GALLERYTOOLBAR_H
+#define BR_GALLERYTOOLBAR_H
 
 #include <QFutureWatcher>
 #include <QImage>
@@ -55,4 +55,4 @@ signals:
 
 } // namespace br
 
-#endif // GALLERYTOOLBAR_H
+#endif // BR_GALLERYTOOLBAR_H
