@@ -56,7 +56,7 @@ class RndSubspaceTransform : public Transform
             for (int i=0; i<size; i++)
                 weights.append(1);
         }
-        const int dimsOut = weights.size()*fraction;
+        const int dimsOut = std::max(int(weights.size()*fraction), 1);
 
         QList<int> sample = Common::RandSample(dimsOut, weights);
         Mat xMap(1, dimsOut, CV_16SC1);

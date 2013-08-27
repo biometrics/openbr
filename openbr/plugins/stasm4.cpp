@@ -56,6 +56,8 @@ class StasmTransform : public UntrainableTransform
 
     Q_PROPERTY(bool stasm3Format READ get_stasm3Format WRITE set_stasm3Format RESET reset_stasm3Format STORED false)
     BR_PROPERTY(bool, stasm3Format, false)
+    Q_PROPERTY(bool clearLandmarks READ get_clearLandmarks WRITE set_clearLandmarks RESET reset_clearLandmarks STORED false)
+    BR_PROPERTY(bool, clearLandmarks, false)
 
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
@@ -68,6 +70,8 @@ class StasmTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         if (src.m().channels() != 1) qFatal("Stasm expects single channel matrices.");
+
+        dst = src;
 
         StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
 
@@ -83,10 +87,20 @@ class StasmTransform : public UntrainableTransform
 
         stasmCascadeResource.release(stasmCascade);
 
-        if (!foundface) qWarning("No face found in %s", qPrintable(src.file.fileName()));
-        else {
-            for (int i = 0; i < nLandmarks; i++)
-                dst.file.appendPoint(QPointF(landmarks[2 * i], landmarks[2 * i + 1]));
+        if (clearLandmarks) {
+            dst.file.clearPoints();
+            dst.file.clearRects();
+        }
+
+        if (!foundface) {
+            qWarning("No face found in %s", qPrintable(src.file.fileName()));
+        } else {
+            for (int i = 0; i < nLandmarks; i++) {
+                QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
+                dst.file.appendPoint(point);
+                if (i == 38) dst.file.set("StasmRightEye",point);
+                if (i == 39) dst.file.set("StasmLeftEye", point);
+            }
         }
 
         dst.m() = src.m();

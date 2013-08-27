@@ -310,7 +310,7 @@ class OnlineDistance : public Distance
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     Q_PROPERTY(float alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
     BR_PROPERTY(br::Distance*, distance, NULL)
-    BR_PROPERTY(float, alpha, 0.1f);
+    BR_PROPERTY(float, alpha, 0.1f)
 
     mutable QHash<QString,float> scoreHash;
     mutable QMutex mutex;

@@ -382,50 +382,38 @@ BR_REGISTER(Transform, RegexPropertyTransform)
 
 /*!
  * \ingroup transforms
- * \brief Remove templates with the specified file extension or metadata value.
- * \author Josh Klontz \cite jklontz
+ * \brief Calculate metadata statistics
+ * \author Scott Klum \cite sklum
  */
-class RemoveTemplatesTransform : public UntrainableMetaTransform
+class MetadataStatisticsTransform : public Transform
 {
     Q_OBJECT
-    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
-    BR_PROPERTY(QString, regexp, "")
-    BR_PROPERTY(QString, key, "")
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    BR_PROPERTY(QStringList, keys, QStringList())
 
-    void project(const Template &src, Template &dst) const
+    void train(const TemplateList &data)
     {
-        const QRegularExpression re(regexp);
-        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key));
-        if (match.hasMatch()) dst = Template();
-        else                  dst = src;
+        QHash<QString,int> statHash;
+
+        foreach (const Template &t, data) {
+            foreach (const QString &key, keys) {
+                QString value = t.file.get<QString>(key, QString());
+
+                if (value.isEmpty()) continue;
+                int count = statHash.value(value,0);
+                statHash.value(value,count+1);
+            }
+        }
+        foreach (const QString &key, statHash.keys()) fprintf(stdout, "%s: %s\n", qPrintable(key), qPrintable(statHash.value(key)));
     }
-};
-
-BR_REGISTER(Transform, RemoveTemplatesTransform)
-
-/*!
- * \ingroup transforms
- * \brief Remove template metadata with the specified key(s).
- * \author Josh Klontz \cite jklontz
- */
-class RemoveMetadataTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    BR_PROPERTY(QString, regexp, "")
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        const QRegularExpression re(regexp);
-        foreach (const QString &key, dst.file.localKeys())
-            if (re.match(key).hasMatch())
-                dst.file.remove(key);
     }
 };
 
-BR_REGISTER(Transform, RemoveMetadataTransform)
+BR_REGISTER(Transform, MetadataStatisticsTransform)
 
 /*!
  * \ingroup transforms
