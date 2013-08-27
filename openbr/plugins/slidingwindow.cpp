@@ -61,7 +61,7 @@ private:
                             if (intersect.area() > maxOverlap*rect.area())
                                 continue;
                             Template neg(tmpl.file, Mat(tmpl, negRect));
-                            neg.file.set("Label", QVariant::fromValue(0));
+                            neg.file.set("Label", QString("neg"));
                             full += neg;
                             sample++;
                         }
