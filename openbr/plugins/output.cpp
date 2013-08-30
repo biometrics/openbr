@@ -268,15 +268,17 @@ class rrOutput : public MatrixOutput
 
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            if (!byLine) files.append(queryFiles[i]);
+            files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
-                if (pair.first < threshold) break;
-                File target = targetFiles[pair.second];
-                target.set("Score", QString::number(pair.first));
-                if (simple) files.append(target.baseName() + " " + QString::number(pair.first));
-                else files.append(target.flat());
+                if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == -1 || targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
+                    if (pair.first < threshold) break;
+                    File target = targetFiles[pair.second];
+                    target.set("Score", QString::number(pair.first));
+                    if (simple) files.append(target.baseName() + " " + QString::number(pair.first));
+                    else files.append(target.flat());
+                }
             }
             lines.append(files.join(byLine ? "\n" : ","));
         }
@@ -429,7 +431,7 @@ class rankOutput : public MatrixOutput
             typedef QPair<float,int> Pair;
             int rank = 1;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true)) {
-                if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
+                if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == -1 || targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
                     if (QString(targetFiles[pair.second]) != QString(queryFiles[i])) {
                         if (targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
                             ranks.append(rank);

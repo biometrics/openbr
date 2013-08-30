@@ -114,6 +114,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 
     float result = -1;
 
+    qDebug() << simmat.rows << simmat.cols;
+
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;

@@ -16,6 +16,7 @@
 
 #include <QList>
 #include <QStringList>
+#include "openbr/core/opencvutils.h"
 #include <limits>
 #include <vector>
 #include <opencv2/core/core.hpp>
@@ -36,8 +37,8 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
         for (int j=0; j<matrix.cols; j++) {
             float val = matrix.at<float>(i,j);
             if ((mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) ||
-                (val == -std::numeric_limits<float>::infinity()) ||
-                (val ==  std::numeric_limits<float>::infinity()))
+                (val == -std::numeric_limits<float>::max()) ||
+                (val ==  std::numeric_limits<float>::max()))
                 continue;
             vals.append(val);
         }
@@ -53,8 +54,8 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
             for (int j=0; j<matrix.cols; j++) {
                 if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
                 float &val = matrix.at<float>(i,j);
-                if      (val == -std::numeric_limits<float>::infinity()) val = 0;
-                else if (val ==  std::numeric_limits<float>::infinity()) val = 1;
+                if      (val == -std::numeric_limits<float>::max()) val = 0;
+                else if (val ==  std::numeric_limits<float>::max()) val = 1;
                 else                                                     val = (val - min) / (max - min);
             }
         }
@@ -64,8 +65,8 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
             for (int j=0; j<matrix.cols; j++) {
                 if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
                 float &val = matrix.at<float>(i,j);
-                if      (val == -std::numeric_limits<float>::infinity()) val = (min - mean) / stddev;
-                else if (val ==  std::numeric_limits<float>::infinity()) val = (max - mean) / stddev;
+                if      (val == -std::numeric_limits<float>::max()) val = (min - mean) / stddev;
+                else if (val ==  std::numeric_limits<float>::max()) val = (max - mean) / stddev;
                 else                                                     val = (val - mean) / stddev;
             }
         }
@@ -80,6 +81,7 @@ void br::Fuse(const QStringList &inputSimmats, File mask, const QString &normali
     QList<Mat> matrices;
     foreach (const QString &simmat, inputSimmats)
         matrices.append(BEE::readSimmat(simmat));
+
     if ((matrices.size() < 2) && (fusion != "None")) qFatal("Expected at least two similarity matrices.");
     if ((matrices.size() > 1) && (fusion == "None")) qFatal("Expected exactly one similarity matrix.");
 

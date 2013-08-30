@@ -385,31 +385,25 @@ BR_REGISTER(Transform, RegexPropertyTransform)
  * \brief Calculate metadata statistics
  * \author Scott Klum \cite sklum
  */
-class MetadataStatisticsTransform : public Transform
+class MetadataStatisticsTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList())
 
-    void train(const TemplateList &data)
-    {
-        QHash<QString,int> statHash;
-
-        foreach (const Template &t, data) {
-            foreach (const QString &key, keys) {
-                QString value = t.file.get<QString>(key, QString());
-
-                if (value.isEmpty()) continue;
-                int count = statHash.value(value,0);
-                statHash.value(value,count+1);
-            }
-        }
-        foreach (const QString &key, statHash.keys()) fprintf(stdout, "%s: %s\n", qPrintable(key), qPrintable(statHash.value(key)));
-    }
+    mutable QHash<QString,int> statHash;
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
+                                                   foreach (const QString &key, keys) {
+                                                       QString value = src.file.get<QString>(key, QString());
+
+                                                       if (value.isEmpty()) continue;
+                                                       int count = statHash.value(value,0);
+                                                       statHash.insert(value,count+1);
+                                                   }
+                                               foreach (const QString &key, statHash.keys()) qDebug() << key << statHash.value(key);
     }
 };
 

@@ -78,7 +78,29 @@ class StasmTransform : public UntrainableTransform
         int foundface;
         int nLandmarks = stasm_NLANDMARKS;
         float landmarks[2 * stasm_NLANDMARKS];
-        stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+
+        bool pinned = true;
+
+        if (pinned) {
+            if (src.file.contains("Affine_0")) {
+            float eyes[2 * stasm_NLANDMARKS];
+
+            for (int i = 0; i < nLandmarks; i++) {
+                if (i == 38) { eyes[2*i] = 66.24; eyes[2*i+1] = 126; }
+                else if (i == 39) { eyes[2*i] = 125.76; eyes[2*i+1] = 126; }
+                else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
+            }
+
+            stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
+
+            foundface = 1;
+            } else {
+                qDebug() << "Single search...";
+                stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+            }
+        } else {
+            stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+        }
 
         if (stasm3Format) {
             nLandmarks = 76;
@@ -99,7 +121,7 @@ class StasmTransform : public UntrainableTransform
                 QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
                 dst.file.appendPoint(point);
                 if (i == 38) dst.file.set("StasmRightEye",point);
-                if (i == 39) dst.file.set("StasmLeftEye", point);
+                else if (i == 39) dst.file.set("StasmLeftEye", point);
             }
         }
 
