@@ -865,7 +865,8 @@ class FDDBGallery : public Gallery
                           radius = detect[1].toFloat();
                     t.file.set("Face", QRectF(x - radius,y - radius,radius * 2.0, radius * 2.0));
                     t.file.set("Confidence", detect[5].toFloat());
-                } else { //throw an exception?
+                } else {
+                    qFatal("Unknown FDDB annotation format.");
                 }
                 templates.append(t);
             }
