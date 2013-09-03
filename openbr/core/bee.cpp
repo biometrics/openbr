@@ -300,10 +300,10 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             else if (labelA == "-1")           val = DontCare;
             else if (labelB == "-1")           val = DontCare;
             else if (partitionA != partition)  val = DontCare;
-            else if (partitionB == -1)         { val = NonMatch;  nonMatchCount++; }
-            else if (partitionB != partition)  { val = DontCare; dontCareCount++; }
-            else if (labelA == labelB)         { val = Match; matchCount++; }
-            else                               { val = NonMatch;  nonMatchCount++; }
+            else if (partitionB == -1)         val = NonMatch;
+            else if (partitionB != partition)  val = DontCare;
+            else if (labelA == labelB)         val = Match;
+            else                               val = NonMatch;
             mask.at<Mask_t>(i,j) = val;
         }
     }
