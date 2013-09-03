@@ -119,7 +119,8 @@ class galGallery : public Gallery
     {
         if (t.isEmpty() && t.file.isNull())
             return;
-            stream << t;
+
+        stream << t;
     }
 };
 

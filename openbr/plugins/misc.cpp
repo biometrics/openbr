@@ -382,35 +382,6 @@ BR_REGISTER(Transform, RegexPropertyTransform)
 
 /*!
  * \ingroup transforms
- * \brief Calculate metadata statistics
- * \author Scott Klum \cite sklum
- */
-class MetadataStatisticsTransform : public UntrainableTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
-    BR_PROPERTY(QStringList, keys, QStringList())
-
-    mutable QHash<QString,int> statHash;
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-                                                   foreach (const QString &key, keys) {
-                                                       QString value = src.file.get<QString>(key, QString());
-
-                                                       if (value.isEmpty()) continue;
-                                                       int count = statHash.value(value,0);
-                                                       statHash.insert(value,count+1);
-                                                   }
-                                               foreach (const QString &key, statHash.keys()) qDebug() << key << statHash.value(key);
-    }
-};
-
-BR_REGISTER(Transform, MetadataStatisticsTransform)
-
-/*!
- * \ingroup transforms
  * \brief Store the last matrix of the input template as a metadata key with input property name.
  * \author Charles Otto \cite caotto
  */

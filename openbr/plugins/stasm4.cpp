@@ -58,6 +58,8 @@ class StasmTransform : public UntrainableTransform
     BR_PROPERTY(bool, stasm3Format, false)
     Q_PROPERTY(bool clearLandmarks READ get_clearLandmarks WRITE set_clearLandmarks RESET reset_clearLandmarks STORED false)
     BR_PROPERTY(bool, clearLandmarks, false)
+    Q_PROPERTY(QStringList pinEyes READ get_pinEyes WRITE set_pinEyes RESET reset_pinEyes STORED false)
+    BR_PROPERTY(QStringList, pinEyes, QStringList())
 
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
@@ -79,28 +81,41 @@ class StasmTransform : public UntrainableTransform
         int nLandmarks = stasm_NLANDMARKS;
         float landmarks[2 * stasm_NLANDMARKS];
 
-        bool pinned = true;
+        if (!pinEyes.isEmpty()) {
+            // Two use cases are accounted for:
+            // 1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
+            // 2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
+            // Note that for case 2, if Affine_0 and Affine_1 are not present (indicating no normalization has taken place), we default to stasm_search_single.
 
-        if (pinned) {
-            if (src.file.contains("Affine_0")) {
+            bool ok = false;
+            QPointF rightEye;
+            QPointF leftEye;
+
+            if (src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
+                rightEye = QtUtils::toPoint(pinEyes.at(0),&ok);
+                leftEye = QtUtils::toPoint(pinEyes.at(1),&ok);
+            }
+
+            if (!ok) {
+                rightEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(0), QString()),&ok);
+                leftEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(1), QString()),&ok);
+            }
+
             float eyes[2 * stasm_NLANDMARKS];
 
-            for (int i = 0; i < nLandmarks; i++) {
-                if (i == 38) { eyes[2*i] = 66.24; eyes[2*i+1] = 126; }
-                else if (i == 39) { eyes[2*i] = 125.76; eyes[2*i+1] = 126; }
-                else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
-            }
+            if (ok) {
+                for (int i = 0; i < nLandmarks; i++) {
+                    if (i == 38) /*Stasm Right Eye*/ { eyes[2*i] = rightEye.x(); eyes[2*i+1] = rightEye.y(); }
+                    else if (i == 39)  /*Stasm Left Eye*/ { eyes[2*i] = leftEye.x(); eyes[2*i+1] = leftEye.y(); }
+                    else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
+                }
+            } else qFatal("Unable to interpret pinned eyes.");
 
             stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
 
+            // The ASM in Stasm is guaranteed to converge in this case
             foundface = 1;
-            } else {
-                qDebug() << "Single search...";
-                stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
-            }
-        } else {
-            stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
-        }
+        } stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
 
         if (stasm3Format) {
             nLandmarks = 76;
@@ -109,6 +124,7 @@ class StasmTransform : public UntrainableTransform
 
         stasmCascadeResource.release(stasmCascade);
 
+        // For convenience, if these are the only points/rects we want to deal with as the algorithm progresses
         if (clearLandmarks) {
             dst.file.clearPoints();
             dst.file.clearRects();
@@ -124,8 +140,6 @@ class StasmTransform : public UntrainableTransform
                 else if (i == 39) dst.file.set("StasmLeftEye", point);
             }
         }
-
-        dst.m() = src.m();
     }
 };
 
