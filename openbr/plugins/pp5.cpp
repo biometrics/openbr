@@ -154,10 +154,10 @@ struct PP5Context
 
         ppr_face_attributes_type face_attributes;
         ppr_get_face_attributes(face, &face_attributes);
-        metadata.insert("Face", QRectF(face_attributes.position.x - face_attributes.dimensions.width/2,
-                                       face_attributes.position.y - face_attributes.dimensions.height/2,
-                                       face_attributes.dimensions.width,
-                                       face_attributes.dimensions.height));
+        metadata.insert("FrontalFace", QRectF(face_attributes.position.x - face_attributes.dimensions.width/2,
+                                              face_attributes.position.y - face_attributes.dimensions.height/2,
+                                              face_attributes.dimensions.width,
+                                              face_attributes.dimensions.height));
         metadata.insert("PP5_Face_Confidence", face_attributes.confidence);
         metadata.insert("PP5_Face_Roll", face_attributes.rotation.roll);
         metadata.insert("PP5_Face_Pitch", face_attributes.rotation.pitch);
@@ -240,7 +240,8 @@ class PP5EnrollTransform : public UntrainableMetaTransform
 
         PP5Context *context = contexts.acquire();
 
-        foreach(const Template & src, srcList) {
+        foreach (const Template &src, srcList) {
+            bool foundFace = false;
             if (!src.isEmpty()) {
                 ppr_raw_image_type raw_image;
                 PP5Context::createRawImage(src, raw_image);
@@ -254,6 +255,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                     int extractable;
                     TRY(ppr_is_template_extractable(context->context, face, &extractable))
                     if (!extractable && !detectOnly) continue;
+                    else foundFace = true;
 
                     cv::Mat m;
                     if (detectOnly) {
@@ -272,20 +274,18 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                     // Found a face, nothing else to do (if we aren't trying to find multiple faces).
                     if (!Globals->enrollAll)
                         break;
-                    }
+                }
 
                 ppr_free_face_list(face_list);
                 ppr_free_image(image);
                 ppr_raw_image_free(raw_image);
             }
-        }
 
-        // No faces were detected, output something with FTE set.
-        if (dstList.empty()) {
-            dstList.append(srcList.first());
-            dstList.first().file.set("FTE",true);
-            if (!detectOnly)
-                dstList.first().m() = cv::Mat();
+            // No faces were detected when we were expecting one, output something with FTE set.
+            if (!foundFace && !Globals->enrollAll) {
+                dstList.append(Template(src.file, detectOnly ? src.m() : cv::Mat()));
+                dstList.last().file.set("FTE", true);
+            }
         }
 
         contexts.release(context);
