@@ -55,7 +55,7 @@ private:
                             int y = Common::RandSample(1, m.rows)[0];
                             int maxWidth = m.cols - x, maxHeight = m.rows - y;
                             int maxSize = std::min(maxWidth, maxHeight);
-                            int size = (maxSize < minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
+                            int size = (maxSize <= minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
                             Rect negRect(x, y, size, size);
                             Rect intersect = negRect & rect;
                             if (intersect.area() > maxOverlap*rect.area())
