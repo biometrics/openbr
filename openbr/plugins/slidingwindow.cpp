@@ -74,6 +74,13 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
+        // no need to slide a window over ground truth data
+        if (src.file.getBool("Train", false)) {
+            dst = src;
+            return;
+        }
+
+        dst.file = src.file;
         int rows = src.m().rows, cols = src.m().cols;
         for (double size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
             for (double y=0; y+size<rows; y+=(size*stepSize)) {
