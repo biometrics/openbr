@@ -77,14 +77,13 @@ private:
         int rows = src.m().rows, cols = src.m().cols;
         for (double size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
             for (double y=0; y+size<rows; y+=(size*stepSize)) {
-                for (double x=0; x+size>cols; x+=(size*stepSize)) {
+                for (double x=0; x+size<cols; x+=(size*stepSize)) {
                     Template window(src.file, Mat(src.m(), Rect(x, y, size, size)));
                     Template detect;
                     transform->project(window, detect);
-                    // the result should be a single binary classification for the window:
-                    // detection (1) or not (0)
-                    if (countNonZero(detect) != 0) {
-                        dst += window;
+                    // the result will be in the Label
+                    if (detect.file.get<QString>(QString("Label")) == "pos") {
+                        dst += detect;
                         if (takeLargestScale) return;
                     }
                 }
