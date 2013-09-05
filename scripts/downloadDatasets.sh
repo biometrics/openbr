@@ -35,6 +35,24 @@ if [ ! -d ../data/BioID/img ]; then
   rm *.eye description.txt BioID-FaceDatabase-V1.2.zip
 fi
 
+# INRIA person
+if [ ! -d ../data/INRIAPerson/img ]; then
+  echo "Downloading INRIA person dataset..."
+  if hash curl 2>/dev/null; then
+    curl -OL http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
+  else
+    wget http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
+  fi
+  tar -xf INRIAPerson.tar
+  mkdir ../data/INRIAPerson/img ../data/INRIAPerson/sigset
+  ./writeINRIAPersonSigset.sh Train > ../data/INRIAPerson/sigset/train.xml
+  ./writeINRIAPersonSigset.sh Test > ../data/INRIAPerson/sigset/test.xml
+  ./writeINRIAPersonSigset.sh train_64x128_H96 > ../data/INRIAPerson/sigset/train_normalized.xml
+  ./writeINRIAPersonSigset.sh test_64x128_H96 > ../data/INRIAPerson/sigset/test_normalized.xml
+  mv INRIAPerson/* ../data/INRIAPerson/img
+  rm -r INRIAPerson*
+fi
+
 # KTH
 if [ ! -d ../data/KTH/vid ]; then
   echo "Downloading KTH..."
