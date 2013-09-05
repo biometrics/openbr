@@ -162,6 +162,7 @@ void reset_##NAME() { NAME = DEFAULT; }
  * Rects           | QList<Rect>    | List of unnamed rects
  * Age             | float          | Age used for demographic filtering
  * Gender          | QString        | Subject gender
+ * Train           | bool           | The data is for training, as opposed to enrollment
  * _*              | *              | Reserved for internal use
  */
 struct BR_EXPORT File
