@@ -74,23 +74,22 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
+        dst = src;
         // no need to slide a window over ground truth data
-        if (src.file.getBool("Train", false)) {
-            dst = src;
-            return;
-        }
+        if (src.file.getBool("Train", false)) return;
 
-        dst.file = src.file;
+        dst.file.clearRects();
         int rows = src.m().rows, cols = src.m().cols;
         for (double size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
             for (double y=0; y+size<rows; y+=(size*stepSize)) {
                 for (double x=0; x+size<cols; x+=(size*stepSize)) {
-                    Template window(src.file, Mat(src.m(), Rect(x, y, size, size)));
+                    Rect window(x, y, size, size);
+                    Template windowMat(src.file, Mat(src.m(), window));
                     Template detect;
-                    transform->project(window, detect);
+                    transform->project(windowMat, detect);
                     // the result will be in the Label
                     if (detect.file.get<QString>(QString("Label")) == "pos") {
-                        dst += detect;
+                        dst.file.appendRect(OpenCVUtils::fromRect(window));
                         if (takeLargestScale) return;
                     }
                 }
