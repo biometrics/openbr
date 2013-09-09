@@ -79,8 +79,10 @@ void br::Fuse(const QStringList &inputSimmats, File mask, const QString &normali
 {
     qDebug("Fusing %d to %s", inputSimmats.size(), qPrintable(outputSimmat));
     QList<Mat> matrices;
-    foreach (const QString &simmat, inputSimmats)
+    foreach (const QString &simmat, inputSimmats) {
         matrices.append(BEE::readSimmat(simmat));
+        qDebug() << matrices.last().rows << matrices.last().cols;
+    }
 
     if ((matrices.size() < 2) && (fusion != "None")) qFatal("Expected at least two similarity matrices.");
     if ((matrices.size() > 1) && (fusion == "None")) qFatal("Expected exactly one similarity matrix.");
