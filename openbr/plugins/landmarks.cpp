@@ -269,21 +269,13 @@ class DelaunayTransform : public UntrainableTransform
 
                 Mat output(src.m().rows,src.m().cols,src.m().type());
 
-                // Optimization needed
                 if (i > 0) {
                     Mat overlap;
                     bitwise_and(dst.m(),mask,overlap);
-                    for (int j = 0; j < overlap.rows; j++) {
-                        for (int k = 0; k < overlap.cols; k++) {
-                            if (overlap.at<uchar>(j,k) != 0) {
-                                mask.at<uchar>(j,k) = 0;
-                            }
-                        }
-                    }
+                    mask.setTo(0, overlap!=0);
                 }
 
                 bitwise_and(buffer,mask,output);
-
 
                 dst.m() += output;
             }
@@ -309,35 +301,35 @@ class LoadLandmarksTransform : public UntrainableTransform
     Q_PROPERTY(QString filePath READ get_filePath WRITE set_filePath RESET reset_filePath STORED false)
     BR_PROPERTY(QString, filePath, QString())
 
-    void project(const Template &src, Template &dst) const
+    QFile landmarkFile;
+    QHash< QString,QList<QPointF> > landmarkHash;
+
+    void init()
     {
-        dst = src;
+        QFile landmarkFile(filePath);
+        if (!landmarkFile.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(filePath));
 
-        // Assume the fiduciary file has the same basename as src
-        QString path = filePath + "/" + src.file.baseName() + ".dat";
-
-        QFile f(path);
-        if (!f.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(path));
-
-        QList<QPointF> landmarks;
-        while(!f.atEnd()) {
-            QByteArray line = f.readLine();
+        while(!landmarkFile.atEnd()) {
+            QByteArray line = landmarkFile.readLine();
             QString pointSet(line);
             pointSet = pointSet.simplified();
             if (!pointSet.isEmpty()) {
                 QStringList points = pointSet.split(" ");
-                landmarks.append(QPointF(points[0].toFloat(),points[1].toFloat()));
+                QList<QPointF> landmarks;
+                for (int i = 1; i < points.size(); i+=3) landmarks.append(QPointF(points[i].toFloat(),points[i+1].toFloat()));
+                landmarkHash.insert(points[0],landmarks);
             }
         }
+    }
 
-        if (landmarks.size() < 35) qFatal("Unrecognized landmark set format.");
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
 
-        dst.file.set("rightEye", landmarks[16]);
-        dst.file.set("leftEye", landmarks[18]);
+        QList<QPointF> landmarks = landmarkHash[src.file.baseName()];
 
-        landmarks.removeAt(18);
-        landmarks.removeAt(16);
-
+        dst.file.set("MorphoRightEye",landmarks[5]);
+        dst.file.set("MorphoLeftEye",landmarks[8]);
         dst.file.appendPoints(landmarks);
     }
 };
