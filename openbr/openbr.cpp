@@ -102,10 +102,10 @@ void br_finalize()
     Context::finalize();
 }
 
-void br_fuse(int num_input_simmats, const char *input_simmats[], const char *mask,
+void br_fuse(int num_input_simmats, const char *input_simmats[],
              const char *normalization, const char *fusion, const char *output_simmat)
 {
-    Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), mask, normalization, fusion, output_simmat);
+    Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), normalization, fusion, output_simmat);
 }
 
 void br_initialize(int &argc, char *argv[], const char *sdk_path)
