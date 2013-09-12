@@ -289,53 +289,6 @@ class DelaunayTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, DelaunayTransform)
 
-/*!
- * \ingroup transforms
- * \brief Loads a set of fiduciary points from a .dat file
- * \author Scott Klum \cite sklum
- */
-class LoadLandmarksTransform : public UntrainableTransform
-{
-    Q_OBJECT
-
-    Q_PROPERTY(QString filePath READ get_filePath WRITE set_filePath RESET reset_filePath STORED false)
-    BR_PROPERTY(QString, filePath, QString())
-
-    QFile landmarkFile;
-    QHash< QString,QList<QPointF> > landmarkHash;
-
-    void init()
-    {
-        QFile landmarkFile(filePath);
-        if (!landmarkFile.open(QIODevice::ReadOnly)) qFatal("Unable to open %s for reading.", qPrintable(filePath));
-
-        while(!landmarkFile.atEnd()) {
-            QByteArray line = landmarkFile.readLine();
-            QString pointSet(line);
-            pointSet = pointSet.simplified();
-            if (!pointSet.isEmpty()) {
-                QStringList points = pointSet.split(" ");
-                QList<QPointF> landmarks;
-                for (int i = 1; i < points.size(); i+=3) landmarks.append(QPointF(points[i].toFloat(),points[i+1].toFloat()));
-                landmarkHash.insert(points[0],landmarks);
-            }
-        }
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        QList<QPointF> landmarks = landmarkHash[src.file.baseName()];
-
-        dst.file.set("MorphoRightEye",landmarks[5]);
-        dst.file.set("MorphoLeftEye",landmarks[8]);
-        dst.file.appendPoints(landmarks);
-    }
-};
-
-BR_REGISTER(Transform, LoadLandmarksTransform)
-
 } // namespace br
 
 #include "landmarks.moc"
