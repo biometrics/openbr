@@ -30,6 +30,7 @@
  * - \ref introduction - A high-level technical overview of OpenBR.
  * - \ref installation - A hacker's guide to building, editing, and running OpenBR.
  * - \ref examples - Source code illustrating common use cases.
+ * - \ref help - Talk to the experts.
  *
  * \section learn_more Learn More
  * - \ref algorithm_grammar - How algorithms are constructed from string descriptions.
@@ -397,6 +398,12 @@ $ br -help
  * $ gnome-open html/index.html
  * \endcode
  */
+
+ /*!
+  * \page help Help
+  * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev@googlegroups.com</a>
+  * - IRC Channel: <a href="http://webchat.freenode.net/">irc.freenode.net#openbr</a>
+  */
 
 /*!
  * \page qmake_integration QMake Integration
