@@ -79,11 +79,6 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
 {
     qDebug("Fusing %d to %s", inputSimmats.size(), qPrintable(outputSimmat));
 
-    // Fuse e.g. two score matrices without using a mask and following the crossValidation framework
-    // We get in two simmats, and compute the mask for a given crossValidation fold if crossValidation exists
-    // Normalize both matrices using that mask and fuse
-    // Output simmat should have %1 variable for the crossValidation folds
-
     QString target, query, previousTarget, previousQuery;
     QList<Mat> originalMatrices;
     foreach (const QString &simmat, inputSimmats) {
