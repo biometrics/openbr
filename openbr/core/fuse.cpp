@@ -64,10 +64,10 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
         for (int i=0; i<matrix.rows; i++) {
             for (int j=0; j<matrix.cols; j++) {
                 if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
-                    float &val = matrix.at<float>(i,j);
-                    if      (val == -std::numeric_limits<float>::max()) val = (min - mean) / stddev;
-                    else if (val ==  std::numeric_limits<float>::max()) val = (max - mean) / stddev;
-                    else                                                val = (val - mean) / stddev;
+                float &val = matrix.at<float>(i,j);
+                if      (val == -std::numeric_limits<float>::max()) val = (min - mean) / stddev;
+                else if (val ==  std::numeric_limits<float>::max()) val = (max - mean) / stddev;
+                else                                                val = (val - mean) / stddev;
             }
         }
     } else {
