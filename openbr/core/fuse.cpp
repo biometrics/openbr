@@ -97,7 +97,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
 
     int partition = 0;
     int crossValidate = Globals->crossValidate;
-    Mat buffer = Mat::zeros(originalMatrices.last().rows,originalMatrices.last().cols,originalMatrices.last().type());
+    Mat buffer = Mat::zeros(originalMatrices.last().size(),originalMatrices.last().type());
 
     do {
         QList<Mat> matrices;
@@ -150,7 +150,11 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
             qFatal("Invalid fusion method %s.", qPrintable(fusion));
         }
 
-        add(buffer,fused,buffer);
+        // We don't want to add scores where the mask says we shouldn't care
+        Mat buffer_mask = Mat::ones(matrix_mask.size(),CV_8UC1);
+        buffer_mask.setTo(0,matrix_mask==BEE::DontCare);
+
+        add(buffer,fused,buffer,buffer_mask);
 
         partition++;
 

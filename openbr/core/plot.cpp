@@ -245,7 +245,6 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg((p.flip ? p.major.header : p.minor.header), (p.flip ? p.minor.header : p.major.header)) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
 
-
     p.file.write(qPrintable(QString("ggplot(CMC, aes(x=X, y=Y%1%2)) + xlab(\"Rank\") + ylab(\"Retrieval Rate\")").arg(p.major.size > 1 ? QString(" ,colour=factor(%1)").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             ((p.major.smooth || p.minor.smooth) ? (minimalist ? " + stat_summary(geom=\"line\", fun.y=mean)" : " + stat_summary(geom=\"line\", fun.y=min, aes(linetype=\"Min/Max\")) + stat_summary(geom=\"line\", fun.y=max, aes(linetype=\"Min/Max\")) + stat_summary(geom=\"line\", fun.y=mean, aes(linetype=\"Mean\")) + scale_linetype_manual(\"Legend\", values=c(\"Mean\"=1, \"Min/Max\"=2))") : " + geom_line()") +
                             (minimalist ? "" : " + scale_x_log10(labels=c(1,5,10,50,100), breaks=c(1,5,10,50,100)) + annotation_logticks(sides=\"b\")") +
