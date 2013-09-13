@@ -317,7 +317,6 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             else if (partitionA != partition)  val = DontCare;
             else if (partitionB == -1)         val = NonMatch;
             else if (partitionB != partition)  val = DontCare;
-            else if (partitionA != partitionB) val = DontCare;
             else if (labelA == labelB)         val = Match;
             else                               val = NonMatch;
             mask.at<Mask_t>(i,j) = val;

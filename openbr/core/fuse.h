@@ -22,7 +22,7 @@
 
 namespace br
 {
-    void Fuse(const QStringList &inputSimmats, File mask, const QString &normalization, const QString &fusion, const QString &outputSimmat);
+    void Fuse(const QStringList &inputSimmats, const QString &normalization, const QString &fusion, const QString &outputSimmat);
 }
 
 #endif // BR_FUSE_H
