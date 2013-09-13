@@ -3,6 +3,7 @@
 // Copyright (C) 2005-2013, Stephen Milborrow
 
 #include "stasm.h"
+#include <QDebug>
 
 namespace stasm
 {
@@ -267,8 +268,8 @@ void PinnedStartShapeAndRoi(   // use the pinned landmarks to init the start sha
     const Shape&   pinned)     // in: manually pinned landmarks
 {
     double rot, yaw;
-    EstRotAndYawFrom5PointShape(rot, yaw,
-                                As5PointShape(pinned, mods[0]->MeanShape_()));
+    EstRotAndYawFrom5PointShape(rot, yaw, As5PointShape(pinned, mods[0]->MeanShape_()));
+
     const EYAW eyaw = DegreesAsEyaw(yaw, NSIZE(mods));
     const int imod = EyawAsModIndex(eyaw, mods); // select ASM model based on yaw
     if (trace_g)

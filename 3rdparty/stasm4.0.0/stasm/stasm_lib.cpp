@@ -244,24 +244,21 @@ int stasm_search_single(   // wrapper for stasm_search_auto and friends
 int stasm_search_pinned(    // call after the user has pinned some points
     float*       landmarks, // out: x0, y0, x1, y1, ..., caller must allocate
     const float* pinned,    // in: pinned landmarks (0,0 points not pinned)
-    const char*  img,       // in: gray image data, top left corner at 0,0
+    const char*  data,       // in: gray image data, top left corner at 0,0
     int          width,     // in: image width
     int          height,    // in: image height
     const char*  imgpath)   // in: image path, used only for err msgs and debug
 {
-    (void) img;
     (void) width;
     (void) height;
     (void) imgpath;
 
     int returnval = 1;     // assume success
-    CatchOpenCvErrs();
     try
     {
-        CV_Assert(imgpath && STRNLEN(imgpath, SLEN) < SLEN);
         CheckStasmInit();
 
-        //img_g = Image(height, width, (unsigned char*)img);
+        Image img = Image(height, width,(unsigned char*)data);
 
         const Shape pinnedshape(LandmarksAsShape(pinned));
 
@@ -271,8 +268,7 @@ int stasm_search_pinned(    // call after the user has pinned some points
         DetPar detpar_roi; // detpar translated to ROI frame
         DetPar detpar;     // params returned by pseudo face det, in img frame
 
-        /*PinnedStartShapeAndRoi(shape, face_roi, detpar_roi, detpar, pinned_roi,
-                               img_g, mods_g, pinnedshape);*/
+        PinnedStartShapeAndRoi(shape, face_roi, detpar_roi, detpar, pinned_roi, img, mods_g, pinnedshape);
 
         // now working with maybe flipped ROI and start shape in ROI frame
         const int imod = ABS(EyawAsModIndex(detpar.eyaw, mods_g));
@@ -284,14 +280,11 @@ int stasm_search_pinned(    // call after the user has pinned some points
         RoundMat(shape);
         ForcePinnedPoints(shape, pinnedshape); // undo above RoundMat on pinned points
         ShapeToLandmarks(landmarks, shape);
-        if (trace_g)
-            lprintf("\n");
     }
     catch(...)
     {
         returnval = 0; // a call was made to Err or a CV_Assert failed
     }
-    UncatchOpenCvErrs();
     return returnval;
 }
 

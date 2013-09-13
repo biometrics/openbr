@@ -29,7 +29,8 @@
  * \section get_started Get Started
  * - \ref introduction - A high-level technical overview of OpenBR.
  * - \ref installation - A hacker's guide to building, editing, and running OpenBR.
- * - \ref qmake_integration - Add OpenBR to your Qt <tt>.pro</tt> project.
+ * - \ref examples - Source code illustrating common use cases.
+ * - \ref help - Talk to the experts.
  *
  * \section learn_more Learn More
  * - \ref algorithm_grammar - How algorithms are constructed from string descriptions.
@@ -37,6 +38,7 @@
  * - \ref c_sdk - High-level API for running algorithms and evaluating results.
  * - \ref cpp_plugin_sdk - Plugin API for extending OpenBR functionality.
  * - \ref bee - A <a href="http://www.nist.gov/index.html">NIST</a> standard for evaluating biometric algorithms.
+ * - \ref qmake_integration - Add OpenBR to your Qt <tt>.pro</tt> project.
  */
 
 /*!
@@ -396,6 +398,12 @@ $ br -help
  * $ gnome-open html/index.html
  * \endcode
  */
+
+ /*!
+  * \page help Help
+  * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev@googlegroups.com</a>
+  * - IRC Channel: <a href="http://webchat.freenode.net/">irc.freenode.net#openbr</a>
+  */
 
 /*!
  * \page qmake_integration QMake Integration

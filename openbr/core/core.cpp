@@ -43,6 +43,11 @@ struct AlgorithmCore
     {
         TemplateList data(TemplateList::fromGallery(input));
 
+        // set the Train bool metadata, in case a Transform's project
+        // needs to know if it's called during train or enroll
+        for (int i=0; i<data.size(); i++)
+            data[i].file.set("Train", true);
+
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d training files", data.size());
 

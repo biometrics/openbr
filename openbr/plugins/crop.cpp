@@ -60,8 +60,13 @@ class ROITransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        foreach (const QRectF &rect, src.file.rects())
-            dst += src.m()(OpenCVUtils::toRect(rect));
+        if (src.file.rects().empty()) {
+            dst = src;
+            qWarning("No rects present in file.");
+        }
+        else
+            foreach (const QRectF &rect, src.file.rects())
+                dst += src.m()(OpenCVUtils::toRect(rect));
     }
 };
 

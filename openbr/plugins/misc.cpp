@@ -382,53 +382,6 @@ BR_REGISTER(Transform, RegexPropertyTransform)
 
 /*!
  * \ingroup transforms
- * \brief Remove templates with the specified file extension or metadata value.
- * \author Josh Klontz \cite jklontz
- */
-class RemoveTemplatesTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
-    BR_PROPERTY(QString, regexp, "")
-    BR_PROPERTY(QString, key, "")
-
-    void project(const Template &src, Template &dst) const
-    {
-        const QRegularExpression re(regexp);
-        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key));
-        if (match.hasMatch()) dst = Template();
-        else                  dst = src;
-    }
-};
-
-BR_REGISTER(Transform, RemoveTemplatesTransform)
-
-/*!
- * \ingroup transforms
- * \brief Remove template metadata with the specified key(s).
- * \author Josh Klontz \cite jklontz
- */
-class RemoveMetadataTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
-    BR_PROPERTY(QString, regexp, "")
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-        const QRegularExpression re(regexp);
-        foreach (const QString &key, dst.file.localKeys())
-            if (re.match(key).hasMatch())
-                dst.file.remove(key);
-    }
-};
-
-BR_REGISTER(Transform, RemoveMetadataTransform)
-
-/*!
- * \ingroup transforms
  * \brief Store the last matrix of the input template as a metadata key with input property name.
  * \author Charles Otto \cite caotto
  */

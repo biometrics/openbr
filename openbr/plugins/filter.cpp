@@ -139,10 +139,8 @@ class CSDNTransform : public UntrainableTransform
 
         const int surround = s/2;
 
-        for ( int i = 0; i < nRows; i++ )
-        {
-            for ( int j = 0; j < nCols; j++ )
-            {
+        for ( int i = 0; i < nRows; i++ ) {
+            for ( int j = 0; j < nCols; j++ ) {
                 int width = min( j+surround, nCols ) - max( 0, j-surround );
                 int height = min( i+surround, nRows ) - max( 0, i-surround );
 
@@ -154,7 +152,7 @@ class CSDNTransform : public UntrainableTransform
             }
         }
 
-     dst = m;
+        dst = m;
 
     }
 };

@@ -441,10 +441,10 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         // of target images to every partition
                         newTemplates[i].file.set("Partition", -1);
                     } else {
-                    // Direct use of "Label" is not general -cao
-                    const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
-                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                    newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+                        // Direct use of "Label" is not general -cao
+                        const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
+                        // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                        newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
                     }
                 }
             }
@@ -996,9 +996,9 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         switch (type) {
           case QtWarningMsg:  txt = QString("Warning: %1\n" ).arg(msg); break;
           case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
-          default:            txt = QString("Fatal: %1\n"   ).arg(msg);
+          default:            txt = QString("Fatal: %1\n"   ).arg(msg); break;
         }
-        txt += "  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
+        txt += "  SDK Path: "  + Globals->sdkPath + "\n  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
     }
 
     std::cerr << txt.toStdString();
