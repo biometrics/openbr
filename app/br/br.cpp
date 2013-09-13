@@ -215,7 +215,7 @@ private:
                "-plot <file> ... <file> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
-               "-fuse <simmat> ... <simmat> <mask> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
+               "-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
                "-cluster <simmat> ... <simmat> <aggressiveness> {csv}\n"
                "-makeMask <target_gallery> <query_gallery> {mask}\n"
                "-combineMasks <mask> ... <mask> {mask} (And|Or)\n"
