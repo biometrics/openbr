@@ -106,7 +106,6 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        qDebug() << src.file.get<int>("Partition", 0);
         transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
     }
 
