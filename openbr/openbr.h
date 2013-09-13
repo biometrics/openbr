@@ -199,7 +199,7 @@ BR_EXPORT void br_finalize();
  *          - \c Replace - Replaces scores in the first matrix with scores in the second matrix when the mask is set.
  * \param output_simmat \ref simmat to contain the fused scores.
  */
-BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[], const char *mask,
+BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
                        const char *normalization, const char *fusion, const char *output_simmat);
 
 /*!

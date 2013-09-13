@@ -111,8 +111,8 @@ public:
 
             // Secondary Tasks
             else if (!strcmp(fun, "fuse")) {
-                check(parc >= 5, "Insufficient parameter count for 'fuse'.");
-                br_fuse(parc-4, parv, parv[parc-4], parv[parc-3], parv[parc-2], parv[parc-1]);
+                check(parc >= 4, "Insufficient parameter count for 'fuse'.");
+                br_fuse(parc-3, parv, parv[parc-3], parv[parc-2], parv[parc-1]);
             } else if (!strcmp(fun, "cluster")) {
                 check(parc >= 3, "Insufficient parameter count for 'cluster'.");
                 br_cluster(parc-2, parv, atof(parv[parc-2]), parv[parc-1]);
@@ -215,7 +215,7 @@ private:
                "-plot <file> ... <file> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
-               "-fuse <simmat> ... <simmat> <mask> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
+               "-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
                "-cluster <simmat> ... <simmat> <aggressiveness> {csv}\n"
                "-makeMask <target_gallery> <query_gallery> {mask}\n"
                "-combineMasks <mask> ... <mask> {mask} (And|Or)\n"
