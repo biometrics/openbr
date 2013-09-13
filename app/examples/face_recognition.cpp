@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
     // Initialize templates
     br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
-    br::Template queryB("../data/MEDS/img/S386-04-t10_01.jpg");
+    br::Template queryB("../data/MEDS/img/S382-08-t10_01.jpg");
     br::Template target("../data/MEDS/img/S354-02-t10_01.jpg");
 
     // Enroll templates
