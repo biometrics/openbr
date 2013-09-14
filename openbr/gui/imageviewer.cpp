@@ -34,13 +34,13 @@ br::ImageViewer::ImageViewer(QWidget *parent)
 void br::ImageViewer::setDefaultText(const QString &text)
 {
     defaultText = text;
+    updatePixmap(QImage());
 }
 
 void br::ImageViewer::setImage(const QString &file, bool async)
 {
     QMutexLocker locker(&mutex);
-    if(file.isNull()) src = QImage(); // Gets rid of runtime FileEngine::open warning
-    else src = QImage(file);
+    src = file.isNull() ? QImage() : QImage(file);
     updatePixmap(src, async);
 }
 
@@ -61,10 +61,9 @@ void br::ImageViewer::setImage(const QPixmap &pixmap, bool async)
 /*** PRIVATE ***/
 void br::ImageViewer::updatePixmap(QImage image, bool async)
 {
-    // For the time being, disabling this is sufficient
     if (async) {
-        //QTimer::singleShot(0, this, SLOT(updatePixmap(image)));
-        //return;
+        QMetaObject::invokeMethod(this, "updatePixmap", Qt::QueuedConnection, Q_ARG(QImage, image), Q_ARG(bool, false));
+        return;
     }
 
     QMutexLocker locker(&mutex);
