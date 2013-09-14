@@ -74,9 +74,7 @@ class CrossValidateTransform : public MetaTransform
                     // Remove template that was repeated to make the testOnly template
                     if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
                         removed.append(subjectIndices[i%subjectIndices.size()]);
-                    }
-                    // For the time being, we don't support addition training data added to every fold in the case of leaveOneImageOut
-                    else if (partitionsBuffer[j] == i) {
+                    } else if (partitionsBuffer[j] == i) {
                         removed.append(j);
                     }
 
@@ -88,10 +86,6 @@ class CrossValidateTransform : public MetaTransform
                     } else {
                         j--;
                     }
-                } else if (partitions[j] == -1) {
-                    // Keep data for training, but modify the partition so we project into the correct space
-                    partitionedData[j].file.set("Partition",i);
-                    j--;
                 } else if (partitions[j] == i) {
                     // Remove data, it's designated for testing
                     partitionedData.removeAt(j);
@@ -106,8 +100,8 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        qDebug() << src.file.get<int>("Partition", 0);
-        transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
+        if (src.file.getBool("Train", true)) dst = src;
+        else transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
     }
 
     void store(QDataStream &stream) const
@@ -146,6 +140,9 @@ class CrossValidateDistance : public Distance
         const int partitionB = b.file.get<int>(key, 0);
         return (partitionA != partitionB) ? -std::numeric_limits<float>::max() : 0;
     }
+
+public:
+    CrossValidateDistance() : Distance(false) {}
 };
 
 BR_REGISTER(Distance, CrossValidateDistance)
