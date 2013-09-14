@@ -374,7 +374,7 @@ struct DetectionOperatingPoint
 static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalPositives, bool discrete)
 {
     QList<DetectionOperatingPoint> points;
-    float TP = 0, FP = 0, prevFP = 0;
+    float TP = 0, FP = 0, prevFP = -1;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
@@ -385,7 +385,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
             FP += 1 - detection.overlap;
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
-            if (FP > prevFP) {
+            if (FP > prevFP || (i == detections.size()-1)) {
                 points.append(DetectionOperatingPoint(TP, FP, totalPositives));
                 prevFP = FP;
             }
