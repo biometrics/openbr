@@ -46,7 +46,9 @@ private slots:
     void selected(QPointF point);
 
 signals:
+    void newTargetFile(File file);
     void newTargetFiles(FileList files);
+    void newQueryFile(File file);
     void newQueryFiles(FileList files);
 };
 

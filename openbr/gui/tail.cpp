@@ -11,7 +11,7 @@ Tail::Tail(QWidget *parent)
 {
     count = 1;
     setOrientation(Qt::Horizontal);
-    setEnabled(false);
+    setVisible(false);
 }
 
 /*** PUBLIC SLOTS ***/
@@ -22,7 +22,9 @@ void Tail::setIndex(int index)
     if (index > scores.size() - count) index = std::max(0, scores.size() - count);
     setIndex(index);
 
+    emit newTargetFile(targets[index]);
     emit newTargetFiles(targets.mid(index, count));
+    emit newQueryFile(queries[index]);
     emit newQueryFiles(queries.mid(index, count));
 }
 
@@ -128,7 +130,7 @@ void Tail::import(QString tailFile)
     }
 
     setMaximum(scores.size()-1);
-    setEnabled(scores.size() > 0);
+    setVisible(scores.size() > 0);
     setIndex(0);
 }
 

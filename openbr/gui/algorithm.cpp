@@ -6,10 +6,16 @@
 /**** ALGORITHM ****/
 /*** PUBLIC ***/
 br::Algorithm::Algorithm(QWidget *parent)
-    : QComboBox(parent)
+    : QWidget(parent)
 {
-    setToolTip("Algorithm");
-    connect(this, SIGNAL(currentIndexChanged(QString)), this, SLOT(setAlgorithm(QString)));
+    layout = new QHBoxLayout(this);
+    label = new QLabel("Algorithm:", this);
+    comboBox = new QComboBox(this);
+    comboBox->setToolTip("Algorithm");
+    layout->addWidget(label);
+    layout->addWidget(comboBox, 1);
+    setLayout(layout);
+    connect(comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setAlgorithm(QString)));
 }
 
 /*** PUBLIC SLOTS ***/
@@ -23,10 +29,10 @@ bool br::Algorithm::addAlgorithm(const QString &algorithm, const QString &displa
         return false;
 
     if (displayName.isEmpty()) {
-        addItem(algorithm);
+        comboBox->addItem(algorithm);
     } else {
         displayNames.insert(displayName, algorithm);
-        addItem(displayName);
+        comboBox->addItem(displayName);
     }
     return true;
 }

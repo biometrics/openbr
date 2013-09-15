@@ -1,7 +1,9 @@
 #ifndef BR_ALGORITHM_H
 #define BR_ALGORITHM_H
 
+#include <QBoxLayout>
 #include <QComboBox>
+#include <QLabel>
 #include <QString>
 #include <QWidget>
 #include <openbr/openbr_export.h>
@@ -9,9 +11,12 @@
 namespace br
 {
 
-class BR_EXPORT Algorithm : public QComboBox
+class BR_EXPORT Algorithm : public QWidget
 {
     Q_OBJECT
+    QHBoxLayout *layout;
+    QLabel *label;
+    QComboBox *comboBox;
     QHash<QString, QString> displayNames;
 
 public:

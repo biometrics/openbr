@@ -6,6 +6,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <openbr/openbr_plugin.h>
+#include <openbr/gui/algorithm.h>
 #include <openbr/gui/tail.h>
 #include <openbr/gui/templateviewer.h>
 
@@ -20,12 +21,16 @@ public:
         : QMainWindow(parent)
     {
         QGridLayout *gridLayout = new QGridLayout();
+        Algorithm *algorithm = new Algorithm();
+        algorithm->addAlgorithm("FaceRecognition", "Face Recognition");
+        algorithm->addAlgorithm("PP5", "PittPatt");
         TemplateViewer *target = new TemplateViewer();
         TemplateViewer *query = new TemplateViewer();
         Tail *tail = new Tail();
-        gridLayout->addWidget(query, 0, 0, 1, 1);
-        gridLayout->addWidget(target, 0, 1, 1, 1);
-        gridLayout->addWidget(tail, 1, 0, 1, 2);
+        gridLayout->addWidget(algorithm, 0, 0, 1, 2);
+        gridLayout->addWidget(query, 1, 0, 1, 1);
+        gridLayout->addWidget(target, 1, 1, 1, 1);
+        gridLayout->addWidget(tail, 2, 0, 1, 2);
 
         QMenuBar *menuBar = new QMenuBar();
         QMenu *helpMenu = new QMenu("Help");
@@ -43,6 +48,11 @@ public:
         setWindowTitle("OpenBR");
         setCentralWidget(new QWidget(this));
         centralWidget()->setLayout(gridLayout);
+
+        connect(target, SIGNAL(newInput(File)), tail, SLOT(setTargetGallery(File)));
+        connect(query, SIGNAL(newInput(File)), tail, SLOT(setQueryGallery(File)));
+        connect(tail, SIGNAL(newTargetFile(File)), target, SLOT(setFile(File)));
+        connect(tail, SIGNAL(newQueryFile(File)), query, SLOT(setFile(File)));
     }
 
 private slots:
