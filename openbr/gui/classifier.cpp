@@ -18,7 +18,6 @@ Classifier::Classifier(QWidget *parent)
 void Classifier::setAlgorithm(const QString &algorithm)
 {
     this->algorithm = algorithm;
-    _classify(File()); // Trigger algorithm initialization
 }
 
 /*** PUBLIC SLOTS ***/

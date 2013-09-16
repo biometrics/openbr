@@ -112,7 +112,10 @@ struct AlgorithmCore
     FileList enroll(File input, File gallery = File())
     {
         FileList fileList;
-        if (gallery.isNull()) gallery = getMemoryGallery(input);
+        if (gallery.fileName().isEmpty()) {
+            if (input.fileName().isEmpty()) return FileList();
+            else                            gallery = getMemoryGallery(input);
+        }
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) qFatal("Null gallery!");

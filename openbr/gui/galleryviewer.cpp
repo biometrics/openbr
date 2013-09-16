@@ -2,11 +2,12 @@
 
 using namespace br;
 
+/**** GALLERY_VIEWER ****/
+/*** PUBLIC ***/
 GalleryViewer::GalleryViewer(QWidget *parent)
     : QMainWindow(parent)
 {
     addToolBar(Qt::TopToolBarArea, &gGallery);
-    addToolBar(Qt::BottomToolBarArea, &tmTemplateMetadata);
     setCentralWidget(&tvgTemplateViewerGrid);
     setWindowFlags(Qt::Widget);
 

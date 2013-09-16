@@ -63,7 +63,7 @@ void Tail::compare()
     if (targetGallery.isNull() || queryGallery.isNull()) {
         if (!targetGallery.isNull()) targetFiles = TemplateList::fromGallery(targetGallery).files();
         if (!queryGallery.isNull()) queryFiles = TemplateList::fromGallery(queryGallery).files();
-        setMaximum(std::max(targetFiles.size(), queryFiles.size()));
+        setMaximum(std::max(targetFiles.size(), queryFiles.size()) - 1);
     } else {
         Compare(targetGallery.flat(), queryGallery.flat(), "buffer.tail[atMost=5000,threshold=0.8]");
         QStringList lines = QString(Globals->buffer).split('\n');

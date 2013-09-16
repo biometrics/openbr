@@ -26,12 +26,19 @@ public:
         TemplateViewer *query = new TemplateViewer();
         TemplateMetadata *targetMetadata = new TemplateMetadata();
         TemplateMetadata *queryMetadata = new TemplateMetadata();
+        targetMetadata->addClassifier("GenderClassification");
+        targetMetadata->addClassifier("AgeRegression");
+        queryMetadata->addClassifier("GenderClassification");
+        queryMetadata->addClassifier("AgeRegression");
         Tail *tail = new Tail();
         gridLayout->addWidget(target, 0, 1, 1, 1);
         gridLayout->addWidget(query, 0, 0, 1, 1);
+        gridLayout->setRowStretch(0, 1);
         gridLayout->addWidget(targetMetadata, 1, 1, 1, 1);
         gridLayout->addWidget(queryMetadata, 1, 0, 1, 1);
+        gridLayout->setRowStretch(1, 0);
         gridLayout->addWidget(tail, 2, 0, 1, 2);
+        gridLayout->setRowStretch(2, 0);
 
         QMenuBar *menuBar = new QMenuBar();
         Algorithm *algorithm = new Algorithm();
