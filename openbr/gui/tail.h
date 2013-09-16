@@ -13,9 +13,8 @@ namespace br
 class BR_EXPORT Tail : public QSlider
 {
     Q_OBJECT
-    int count;
-    File target, query;
-    FileList targets, queries;
+    File targetGallery, queryGallery;
+    FileList targetFiles, queryFiles;
     QList<float> scores;
 
 public:
@@ -25,10 +24,6 @@ public slots:
     void setIndex(int index);
     void setTargetGallery(const File &gallery);
     void setQueryGallery(const File &gallery);
-    void setTargetGalleryFiles(const FileList &files);
-    void setQueryGalleryFiles(const FileList &files);
-    void setCount(int count);
-    void setThreshold(float score);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -38,18 +33,15 @@ private:
     void compare();
 
 private slots:
-    void import(QString tailFile = "");
     void first();
     void previous();
     void next();
     void last();
-    void selected(QPointF point);
 
 signals:
     void newTargetFile(File file);
-    void newTargetFiles(FileList files);
     void newQueryFile(File file);
-    void newQueryFiles(FileList files);
+    void newScore(float score);
 };
 
 } // namespace br

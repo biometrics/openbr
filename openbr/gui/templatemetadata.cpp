@@ -3,8 +3,10 @@
 
 #include "templatemetadata.h"
 
+using namespace br;
+
 /*** PUBLIC ***/
-br::TemplateMetadata::TemplateMetadata(QWidget *parent)
+TemplateMetadata::TemplateMetadata(QWidget *parent)
     : QToolBar("Template Metadata", parent)
 {
     lFile.setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -15,7 +17,7 @@ br::TemplateMetadata::TemplateMetadata(QWidget *parent)
     addWidget(&lQuality);
 }
 
-void br::TemplateMetadata::addClassifier(const QString &classifier_, const QString algorithm)
+void TemplateMetadata::addClassifier(const QString &classifier_, const QString algorithm)
 {
     QSharedPointer<Classifier> classifier(new Classifier());
     classifier->setAlgorithm(classifier_);
@@ -23,8 +25,8 @@ void br::TemplateMetadata::addClassifier(const QString &classifier_, const QStri
     conditionalClassifiers.append(ConditionalClassifier(algorithm, classifier, action));
 }
 
-/**** PRIVATE SLOTS ****/
-void br::TemplateMetadata::setFile(const br::File &file)
+/*** PUBLIC SLOTS ***/
+void TemplateMetadata::setFile(const File &file)
 {
     if (file.isNull()) lFile.clear();
     else               lFile.setText("<b>File:</b> " + file.fileName());
@@ -33,7 +35,7 @@ void br::TemplateMetadata::setFile(const br::File &file)
         if (classifier.action->isVisible()) classifier.classifier->classify(file);
 }
 
-void br::TemplateMetadata::setAlgorithm(const QString &algorithm)
+void TemplateMetadata::setAlgorithm(const QString &algorithm)
 {
     foreach (const ConditionalClassifier &classifier, conditionalClassifiers) {
         classifier.classifier->clear();

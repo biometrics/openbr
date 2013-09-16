@@ -26,7 +26,7 @@ TemplateViewer::TemplateViewer(QWidget *parent)
     setAcceptDrops(true);
     setMouseTracking(true);
     setDefaultText("<b>Drag Photo or Folder Here</b>\n");
-    format = "Registered";
+    format = "Photo";
     editable = true;
     setFile(File());
     update();

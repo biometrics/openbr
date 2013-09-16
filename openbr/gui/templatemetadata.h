@@ -37,7 +37,7 @@ public:
     void addClassifier(const QString &classifier, const QString algorithm = "");
 
 public slots:
-    void setFile(const br::File &file);
+    void setFile(const File &file);
     void setAlgorithm(const QString &algorithm);
 };
 

@@ -68,11 +68,13 @@ void br::ImageViewer::updatePixmap(QImage image, bool async)
 
     QMutexLocker locker(&mutex);
     if (image.isNull() || size().isNull()) {
-        QLabel::setPixmap(QPixmap());
-        QLabel::setText(defaultText);
+        setPixmap(QPixmap());
+        setText(defaultText);
+        setFrameShape(QLabel::StyledPanel);
     } else {
-		QLabel::clear();
-        QLabel::setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
+        clear();
+        setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
+        setFrameShape(QLabel::NoFrame);
     }
 }
 
