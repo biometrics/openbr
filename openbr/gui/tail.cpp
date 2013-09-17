@@ -80,7 +80,7 @@ void Tail::compare()
         setVisible(slider->maximum() > 1);
         setIndex(0);
     } else {
-        compareWatcher.setFuture(QtConcurrent::run(Compare, targetGallery.flat(), queryGallery.flat(), QString("buffer.tail[atMost=5000,threshold=0.8]")));
+        compareWatcher.setFuture(QtConcurrent::run(Compare, targetGallery.flat(), queryGallery.flat(), QString("buffer.tail[atMost=1000]")));
     }
 }
 

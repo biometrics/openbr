@@ -671,6 +671,12 @@ public:
     BR_PROPERTY(QByteArray, buffer, QByteArray())
 
     /*!
+     * \brief Enable/disable score normalization.
+     */
+    Q_PROPERTY(bool scoreNormalization READ get_scoreNormalization WRITE set_scoreNormalization RESET reset_scoreNormalization)
+    BR_PROPERTY(bool, scoreNormalization, true)
+
+    /*!
      * \brief Perform k-fold cross validation.
      */
     Q_PROPERTY(int crossValidate READ get_crossValidate WRITE set_crossValidate RESET reset_crossValidate)

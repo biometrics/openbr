@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
     Context::initialize(argc, argv);
+    Globals->scoreNormalization = false;
 
     MainWindow mainWindow;
     mainWindow.show();
