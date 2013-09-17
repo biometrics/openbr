@@ -20,7 +20,7 @@ Tail::Tail(QWidget *parent)
     layout->addWidget(rhs);
     setFocusPolicy(Qt::StrongFocus);
     setVisible(false);
-    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(setIndex(int)));
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(setIndex(int)));
     connect(&compareWatcher, SIGNAL(finished()), this, SLOT(compareDone()));
 }
 
