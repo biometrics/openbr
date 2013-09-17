@@ -17,6 +17,7 @@ Tail::Tail(QWidget *parent)
     layout->addWidget(lhs);
     layout->addWidget(slider, 1);
     layout->addWidget(rhs);
+    setFocusPolicy(Qt::StrongFocus);
     setVisible(false);
     connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(setIndex(int)));
     connect(&compareWatcher, SIGNAL(finished()), this, SLOT(compareDone()));
@@ -85,22 +86,22 @@ void Tail::compare()
 
 void Tail::first()
 {
-    setIndex(scores.size()-1);
+    setIndex(0);
 }
 
 void Tail::previous()
 {
-    setIndex(slider->value()+1);
+    setIndex(slider->value()-1);
 }
 
 void Tail::next()
 {
-    setIndex(slider->value()-1);
+    setIndex(slider->value()+1);
 }
 
 void Tail::last()
 {
-    setIndex(0);
+    setIndex(scores.size()-1);
 }
 
 void Tail::compareDone()
