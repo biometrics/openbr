@@ -1,7 +1,10 @@
 #ifndef BR_TAIL_H
 #define BR_TAIL_H
 
+#include <QBoxLayout>
+#include <QFutureWatcher>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QSlider>
 #include <QString>
 #include <QWheelEvent>
@@ -10,12 +13,16 @@
 namespace br
 {
 
-class BR_EXPORT Tail : public QSlider
+class BR_EXPORT Tail : public QWidget
 {
     Q_OBJECT
+    QHBoxLayout *layout;
+    QSlider *slider;
+    QLabel *lhs, *rhs;
     File targetGallery, queryGallery;
     FileList targetFiles, queryFiles;
     QList<float> scores;
+    QFutureWatcher<void> compareWatcher;
 
 public:
     explicit Tail(QWidget *parent = 0);
@@ -37,6 +44,7 @@ private slots:
     void previous();
     void next();
     void last();
+    void compareDone();
 
 signals:
     void newTargetFile(File file);

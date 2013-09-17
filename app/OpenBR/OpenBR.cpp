@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <openbr/openbr_plugin.h>
 #include <openbr/gui/algorithm.h>
+#include <openbr/gui/progress.h>
 #include <openbr/gui/tail.h>
 #include <openbr/gui/templatemetadata.h>
 #include <openbr/gui/templateviewer.h>
@@ -22,15 +23,17 @@ public:
         : QMainWindow(parent)
     {
         QGridLayout *gridLayout = new QGridLayout();
-        TemplateViewer *target = new TemplateViewer();
-        TemplateViewer *query = new TemplateViewer();
-        TemplateMetadata *targetMetadata = new TemplateMetadata();
-        TemplateMetadata *queryMetadata = new TemplateMetadata();
+        TemplateViewer *target = new TemplateViewer(this);
+        TemplateViewer *query = new TemplateViewer(this);
+        target->setEditable(false);
+        query->setEditable(false);
+        TemplateMetadata *targetMetadata = new TemplateMetadata(this);
+        TemplateMetadata *queryMetadata = new TemplateMetadata(this);
         targetMetadata->addClassifier("GenderClassification");
         targetMetadata->addClassifier("AgeRegression");
         queryMetadata->addClassifier("GenderClassification");
         queryMetadata->addClassifier("AgeRegression");
-        Tail *tail = new Tail();
+        Tail *tail = new Tail(this);
         gridLayout->addWidget(target, 0, 1, 1, 1);
         gridLayout->addWidget(query, 0, 0, 1, 1);
         gridLayout->setRowStretch(0, 1);
@@ -60,6 +63,7 @@ public:
         setWindowTitle("OpenBR");
         setCentralWidget(new QWidget(this));
         centralWidget()->setLayout(gridLayout);
+        setStatusBar(new Progress(this));
 
         connect(target, SIGNAL(newInput(File)), tail, SLOT(setTargetGallery(File)));
         connect(query, SIGNAL(newInput(File)), tail, SLOT(setQueryGallery(File)));

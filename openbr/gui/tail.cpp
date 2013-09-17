@@ -1,3 +1,5 @@
+#include <QtConcurrentRun>
+
 #include "tail.h"
 
 using namespace br;
@@ -5,18 +7,26 @@ using namespace br;
 /**** TAIL ****/
 /*** PUBLIC ***/
 Tail::Tail(QWidget *parent)
-    : QSlider(parent)
+    : QWidget(parent)
 {
-    setOrientation(Qt::Horizontal);
+    layout = new QHBoxLayout(this);
+    slider = new QSlider(this);
+    slider->setOrientation(Qt::Horizontal);
+    lhs = new QLabel(this);
+    rhs = new QLabel(this);
+    layout->addWidget(lhs);
+    layout->addWidget(slider, 1);
+    layout->addWidget(rhs);
     setVisible(false);
-    connect(this, SIGNAL(sliderMoved(int)), this, SLOT(setIndex(int)));
+    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(setIndex(int)));
+    connect(&compareWatcher, SIGNAL(finished()), this, SLOT(compareDone()));
 }
 
 /*** PUBLIC SLOTS ***/
 void Tail::setIndex(int index)
 {
-    index = std::min(std::max(minimum(), index), maximum());
-    QSlider::setValue(index);
+    index = std::min(std::max(slider->minimum(), index), slider->maximum());
+    slider->setValue(index);
     emit newTargetFile((index >= 0) && (index < targetFiles.size()) ? targetFiles[index] : File());
     emit newQueryFile((index >= 0) && (index < queryFiles.size()) ? queryFiles[index] : File());
     emit newScore((index >= 0) && (index < scores.size()) ? scores[index] : std::numeric_limits<float>::quiet_NaN());
@@ -63,26 +73,14 @@ void Tail::compare()
     if (targetGallery.isNull() || queryGallery.isNull()) {
         if (!targetGallery.isNull()) targetFiles = TemplateList::fromGallery(targetGallery).files();
         if (!queryGallery.isNull()) queryFiles = TemplateList::fromGallery(queryGallery).files();
-        setMaximum(std::max(targetFiles.size(), queryFiles.size()) - 1);
+        slider->setMaximum(std::max(targetFiles.size(), queryFiles.size()) - 1);
+        lhs->setText("First Image");
+        rhs->setText("Last Image");
+        setVisible(slider->maximum() > 1);
+        setIndex(0);
     } else {
-        Compare(targetGallery.flat(), queryGallery.flat(), "buffer.tail[atMost=5000,threshold=0.8]");
-        QStringList lines = QString(Globals->buffer).split('\n');
-        lines.takeFirst(); // Remove header
-
-        foreach (const QString &line, lines) {
-            const QStringList words = Object::parse(line);
-            if (words.size() != 3) qFatal("Invalid tail file.");
-            bool ok;
-            float score = words[0].toFloat(&ok); assert(ok);
-            targetFiles.append(words[1]);
-            queryFiles.append(words[2]);
-            scores.append(score);
-        }
-        setMaximum(scores.size()-1);
+        compareWatcher.setFuture(QtConcurrent::run(Compare, targetGallery.flat(), queryGallery.flat(), QString("buffer.tail[atMost=5000,threshold=0.8]")));
     }
-
-    setVisible(maximum() > 1);
-    setIndex(0);
 }
 
 void Tail::first()
@@ -92,16 +90,38 @@ void Tail::first()
 
 void Tail::previous()
 {
-    setIndex(value()+1);
+    setIndex(slider->value()+1);
 }
 
 void Tail::next()
 {
-    setIndex(value()-1);
+    setIndex(slider->value()-1);
 }
 
 void Tail::last()
 {
+    setIndex(0);
+}
+
+void Tail::compareDone()
+{
+    QStringList lines = QString(Globals->buffer).split('\n');
+    lines.takeFirst(); // Remove header
+
+    foreach (const QString &line, lines) {
+        const QStringList words = Object::parse(line);
+        if (words.size() != 3) qFatal("Invalid tail file.");
+        bool ok;
+        float score = words[0].toFloat(&ok); assert(ok);
+        targetFiles.append(words[1]);
+        queryFiles.append(words[2]);
+        scores.append(score);
+    }
+    slider->setMaximum(scores.size()-1);
+    lhs->setText("Best Match");
+    rhs->setText("Worst Match");
+
+    setVisible(slider->maximum() > 1);
     setIndex(0);
 }
 

@@ -31,8 +31,8 @@ void TemplateMetadata::addClassifier(const QString &classifier_, const QString a
 void TemplateMetadata::setFile(const File &file)
 {
     if (file.isNull()) lFile->clear();
-    else               lFile->setText("<b>File:</b> " + file.fileName());
-    lQuality->setText(QString("<b>Quality:</b> %1").arg(file.get<bool>("FTE", false) ? "Low" : "High"));
+    else               lFile->setText("File: <b>" + file.fileName() + "</b>");
+    lQuality->setText(QString("Quality: <b>%1</b>").arg(file.get<bool>("FTE", false) ? "Low" : "High"));
     foreach (const ConditionalClassifier &classifier, conditionalClassifiers)
         if (classifier.classifier->isVisible()) classifier.classifier->classify(file);
 }
