@@ -63,7 +63,7 @@ public:
         menuBar->addMenu(algorithm);
         menuBar->addMenu(helpMenu);
 
-        setGeometry(0, 0, 800, 600);
+        setGeometry(100, 100, 700, 500);
         setMenuBar(menuBar);
         setWindowIcon(QIcon(":/openbr.png"));
         setWindowTitle("OpenBR");
