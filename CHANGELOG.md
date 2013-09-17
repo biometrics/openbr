@@ -1,5 +1,8 @@
-0.4.0 - 9/17/13
+0.5.0 - ??/??/??
 ================
+
+0.4.0 - 9/17/13
+===============
 * Added simple GUI frontend
 * Added -evalLandmarking and -plotLandmarking for evaluating and plotting landmarking accuracy (#9)
 * Added -evalDetection and -plotDetection for evaluating and plotting object detection accuracy (#9)
