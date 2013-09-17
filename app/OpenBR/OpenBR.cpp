@@ -44,6 +44,11 @@ public:
         gridLayout->setRowStretch(2, 0);
 
         QMenuBar *menuBar = new QMenuBar();
+        QMenu *file = new QMenu("File");
+        QAction *clear = new QAction("Clear", this);
+        clear->setShortcut(QKeySequence("Ctrl+C"));
+        connect(clear, SIGNAL(triggered()), tail, SLOT(clear()));
+        file->addAction(clear);
         Algorithm *algorithm = new Algorithm();
         algorithm->addAlgorithm("FaceRecognition", "Face Recognition");
         algorithm->addAlgorithm("PP5", "PittPatt");
@@ -54,6 +59,7 @@ public:
         helpMenu->addAction(contactAction);
         connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
         connect(contactAction, SIGNAL(triggered()), this, SLOT(contact()));
+        menuBar->addMenu(file);
         menuBar->addMenu(algorithm);
         menuBar->addMenu(helpMenu);
 

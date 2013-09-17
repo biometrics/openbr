@@ -28,6 +28,7 @@ public:
     explicit Tail(QWidget *parent = 0);
 
 public slots:
+    void clear();
     void setIndex(int index);
     void setTargetGallery(const File &gallery);
     void setQueryGallery(const File &gallery);

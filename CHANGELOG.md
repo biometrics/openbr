@@ -1,5 +1,6 @@
 0.4.0 - ??/??/??
 ================
+* Added simple GUI frontend
 * Added -evalLandmarking and -plotLandmarking for evaluating and plotting landmarking accuracy (#9)
 * Added -evalDetection and -plotDetection for evaluating and plotting object detection accuracy (#9)
 * Deprecated Transform::backProject

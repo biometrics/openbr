@@ -1,5 +1,5 @@
 #include <openbr/openbr.h>
-#include <QDebug>
+
 #include "progress.h"
 
 /**** PROGRESS ****/
@@ -7,6 +7,7 @@
 br::Progress::Progress(QWidget *parent)
     : QStatusBar(parent)
 {
+    setContentsMargins(0, 0, 0, 0);
     pbProgress.setVisible(false);
     pbProgress.setMaximum(100);
     pbProgress.setMinimum(0);

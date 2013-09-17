@@ -10,6 +10,7 @@ Tail::Tail(QWidget *parent)
     : QWidget(parent)
 {
     layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     slider = new QSlider(this);
     slider->setOrientation(Qt::Horizontal);
     lhs = new QLabel(this);
@@ -24,6 +25,18 @@ Tail::Tail(QWidget *parent)
 }
 
 /*** PUBLIC SLOTS ***/
+void Tail::clear()
+{
+    targetGallery = File();
+    queryGallery = File();
+    targetFiles.clear();
+    queryFiles.clear();
+    scores.clear();
+    slider->setMaximum(0);
+    setIndex(0);
+    setVisible(false);
+}
+
 void Tail::setIndex(int index)
 {
     index = std::min(std::max(slider->minimum(), index), slider->maximum());
