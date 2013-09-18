@@ -57,6 +57,7 @@ fi
 if [ ! -d ../data/KTH/vid ]; then
   echo "Downloading KTH..."
   mkdir ../data/KTH/vid
+  mkdir ../data/KTH/sigset
   for vidclass in {'boxing','handclapping','handwaving','jogging','running','walking'}; do
     if hash curl 2>/dev/null; then
       curl -OL http://www.nada.kth.se/cvap/actions/${vidclass}.zip
@@ -69,6 +70,8 @@ if [ ! -d ../data/KTH/vid ]; then
   done
   # this file is corrupted
   rm -f ../data/KTH/vid/boxing/person01_boxing_d4_uncomp.avi
+  ./writeKTHSigset.sh 1 16 > ../data/KTH/sigset/train_16ppl.xml
+  ./writeKTHSigset.sh 17 25 > ../data/KTH/sigset/test_9ppl.xml
 fi
 
 # LFW
