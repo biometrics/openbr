@@ -45,7 +45,7 @@
  * \page introduction Introduction
  * \brief A high-level technical overview of OpenBR.
  *
- * We strongly encourage users new to OpenBR to read our <a href="www.openbiometrics.org/publications/klontz2013open.pdf"><b>publication</b></a> for an introduction to the core concepts.
+ * We strongly encourage users new to OpenBR to read our <a href="http://www.openbiometrics.org/publications/klontz2013open.pdf"><b>publication</b></a> for an introduction to the core concepts.
  * Researchers incorporating OpenBR into their own work are kindly requested to cite this paper.
  */
 
