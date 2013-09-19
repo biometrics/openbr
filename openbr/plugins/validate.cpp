@@ -100,8 +100,15 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.file.getBool("Train", true)) dst = src;
-        else transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
+        if (src.file.getBool("Train", false)) dst = src;
+        else {
+            // If we want to duplicate templates but use the same training data
+            // for all partitions (i.e. transforms.size() == 1), we need to
+            // restrict the partition
+            int partition = src.file.get<int>("Partition", 0);
+            partition = (partition >= transforms.size()) ? 0 : partition;
+            transforms[partition]->project(src, dst);
+        }
     }
 
     void store(QDataStream &stream) const
@@ -140,9 +147,6 @@ class CrossValidateDistance : public Distance
         const int partitionB = b.file.get<int>(key, 0);
         return (partitionA != partitionB) ? -std::numeric_limits<float>::max() : 0;
     }
-
-public:
-    CrossValidateDistance() : Distance(false) {}
 };
 
 BR_REGISTER(Distance, CrossValidateDistance)
