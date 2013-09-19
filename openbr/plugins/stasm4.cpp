@@ -5,7 +5,6 @@
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
 #include <QString>
-#include <Eigen/SVD>
 
 using namespace std;
 using namespace cv;
@@ -77,7 +76,7 @@ class StasmTransform : public UntrainableTransform
 
         StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
 
-        int foundface;
+        int foundFace = 0;
         int nLandmarks = stasm_NLANDMARKS;
         float landmarks[2 * stasm_NLANDMARKS];
 
@@ -109,13 +108,14 @@ class StasmTransform : public UntrainableTransform
                     else if (i == 39)  /*Stasm Left Eye*/ { eyes[2*i] = leftEye.x(); eyes[2*i+1] = leftEye.y(); }
                     else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
                 }
-            } else qFatal("Unable to interpret pinned eyes.");
+                stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
 
-            stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
+                // The ASM in Stasm is guaranteed to converge in this case
+                foundFace = 1;
+            }
+        }
 
-            // The ASM in Stasm is guaranteed to converge in this case
-            foundface = 1;
-        } stasm_search_single(&foundface, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
 
         if (stasm3Format) {
             nLandmarks = 76;
@@ -130,8 +130,8 @@ class StasmTransform : public UntrainableTransform
             dst.file.clearRects();
         }
 
-        if (!foundface) {
-            qWarning("No face found in %s", qPrintable(src.file.fileName()));
+        if (!foundFace) {
+            qWarning("No face found in %s.", qPrintable(src.file.fileName()));
         } else {
             for (int i = 0; i < nLandmarks; i++) {
                 QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
