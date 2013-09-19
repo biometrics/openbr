@@ -268,7 +268,7 @@ class rrOutput : public MatrixOutput
 
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            files.append(queryFiles[i]);
+            if (simple) files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
