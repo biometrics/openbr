@@ -384,7 +384,7 @@ class evalOutput : public MatrixOutput
 
                 double mean, stddev;
                 Common::MeanStdDev(TARs, &mean, &stddev);
-                qDebug("TAR @ FAR = 0.001: %.3f +/- %.3f", mean, stddev);
+                qDebug("TAR @ FAR = 0.01: %.3f +/- %.3f", mean, stddev);
             }
         }
     }
