@@ -233,6 +233,40 @@ class MetadataDistance : public Distance
 
 BR_REGISTER(Distance, MetadataDistance)
 
+/*!
+ * \ingroup distances
+ * \brief Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
+ * \author Scott Klum \cite sklum
+ */
+class RejectDistance : public Distance
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    BR_PROPERTY(QStringList, keys, QStringList())
+    Q_PROPERTY(bool rejectIfContains READ get_rejectIfContains WRITE set_rejectIfContains RESET reset_rejectIfContains STORED false)
+    BR_PROPERTY(bool, rejectIfContains, false)
+
+    float compare(const Template &a, const Template &b) const
+    {
+        (void) b;
+        bool keep = true;
+
+        foreach (const QString &key, keys) {
+            if ((rejectIfContains && a.file.contains(key)) ||
+                (!rejectIfContains && !a.file.contains(key)))
+                keep = false;
+
+            if (!keep) return -std::numeric_limits<float>::max();
+        }
+
+        return 0;
+    }
+};
+
+
+BR_REGISTER(Distance, RejectDistance)
+
 } // namespace br
 
 #include "validate.moc"
