@@ -1,3 +1,5 @@
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "openbr_internal.h"
 
 using namespace cv;
@@ -17,10 +19,25 @@ namespace br
 class EBIFTransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_PROPERTY(int N READ get_N WRITE set_N RESET reset_N STORED false) // scales
+    Q_PROPERTY(int M READ get_M WRITE set_M RESET reset_M STORED false) // orientations
+    BR_PROPERTY(int, N, 6)
+    BR_PROPERTY(int, M, 9)
 
     void project(const Template &src, Template &dst) const
     {
-        (void) src;
+        // Compute the image pyramid
+        QList<Mat> scales;
+        float scaleFactor = 1;
+        for (int n=0; n<N; n++) {
+            Mat scale;
+            const int width = src.m().cols/scaleFactor;
+            const int height = src.m().rows/scaleFactor;
+            resize(src, scale, Size(width, height));
+            scales.append(scale);
+            scaleFactor /= sqrt(2.f);
+        }
+
         (void) dst;
     }
 };
