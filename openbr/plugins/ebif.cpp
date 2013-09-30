@@ -24,10 +24,26 @@ class EBIFTransform : public UntrainableTransform
     BR_PROPERTY(int, N, 6)
     BR_PROPERTY(int, M, 9)
 
+    Transform *gaborJet;
+
+    void init()
+    {
+        QStringList thetas; // Orientations between 0 and pi
+        for (int m=0; m<M; m++)
+            thetas.append(QString::number(CV_PI*m/M));
+        gaborJet = make(QString("GaborJet([%1],[%2],[%3],[%4],[%5])").arg(
+            QString::number(5), // lambda = 5 (just one wavelength)
+            thetas.join(','), // M orientations between 0 and pi
+            QString::number(0), // psi = 0 (no offset)
+            QString::number(3), // sigma = 3 (just one width)
+            QString::number(1) // gamma = 1 (no skew)
+            ));
+    }
+
     void project(const Template &src, Template &dst) const
     {
         // Compute the image pyramid
-        QList<Mat> scales;
+        Template scales;
         float scaleFactor = 1;
         for (int n=0; n<N; n++) {
             Mat scale;
@@ -37,6 +53,9 @@ class EBIFTransform : public UntrainableTransform
             scales.append(scale);
             scaleFactor /= sqrt(2.f);
         }
+
+        // Perform gabor wavelet convolution on all scales
+        scales >> *gaborJet;
 
         (void) dst;
     }
