@@ -100,6 +100,10 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
+        // Remember, the partition should never be -1
+        // since it is assumed that the allPartitions
+        // flag is only used during comparison
+        // (i.e. only used when making a mask)
         if (src.file.getBool("Train", false)) dst = src;
         else {
             // If we want to duplicate templates but use the same training data
