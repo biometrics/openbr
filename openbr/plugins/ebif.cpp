@@ -31,7 +31,7 @@ class EBIFTransform : public UntrainableTransform
         QStringList thetas; // Orientations between 0 and pi
         for (int m=0; m<M; m++)
             thetas.append(QString::number(CV_PI*m/M));
-        gaborJet = make(QString("GaborJet([%1],[%2],[%3],[%4],[%5])").arg(
+        gaborJet = make(QString("GaborJet([%1],[%2],[%3],[%4],[%5])+Abs").arg(
             QString::number(5), // lambda = 5 (just one wavelength)
             thetas.join(','), // M orientations between 0 and pi
             QString::number(0), // psi = 0 (no offset)
@@ -47,8 +47,8 @@ class EBIFTransform : public UntrainableTransform
         float scaleFactor = 1;
         for (int n=0; n<N; n++) {
             Mat scale;
-            const int width = src.m().cols/scaleFactor;
-            const int height = src.m().rows/scaleFactor;
+            const int width = src.m().cols / scaleFactor;
+            const int height = src.m().rows / scaleFactor;
             resize(src, scale, Size(width, height));
             scales.append(scale);
             scaleFactor /= sqrt(2.f);
