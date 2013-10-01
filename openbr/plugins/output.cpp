@@ -268,7 +268,7 @@ class rrOutput : public MatrixOutput
 
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            files.append(queryFiles[i]);
+            if (simple) files.append(queryFiles[i]);
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
@@ -384,7 +384,7 @@ class evalOutput : public MatrixOutput
 
                 double mean, stddev;
                 Common::MeanStdDev(TARs, &mean, &stddev);
-                qDebug("TAR @ FAR = 0.001: %.3f +/- %.3f", mean, stddev);
+                qDebug("TAR @ FAR = 0.01: %.3f +/- %.3f", mean, stddev);
             }
         }
     }

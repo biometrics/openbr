@@ -145,7 +145,7 @@ BR_REGISTER(Distance, DefaultDistance)
  * \author Josh Klontz \cite jklontz
  *
  * The templates are compared using each br::Distance in order.
- * If the result of the comparison with any given distance is -INT_MAX then this result is returned early.
+ * If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
  * Otherwise the returned result is the value of comparing the templates using the last br::Distance.
  */
 class PipeDistance : public Distance

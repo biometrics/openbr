@@ -223,7 +223,7 @@ struct AlgorithmCore
             if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%%1)");
             partitionSizes = output.getList<int>("split");
             for (int i=0; i<partitionSizes.size(); i++) {
-                File splitOutputFile = output.fileName().arg(i);
+                File splitOutputFile = output.name.arg(i);
                 outputFiles.append(splitOutputFile);
             }
         }
