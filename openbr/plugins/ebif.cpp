@@ -47,9 +47,10 @@ class EBIFTransform : public UntrainableTransform
         float scaleFactor = 1;
         for (int n=0; n<N; n++) {
             Mat scale;
-            const int width = src.m().cols / scaleFactor;
-            const int height = src.m().rows / scaleFactor;
+            const int width = src.m().cols * scaleFactor;
+            const int height = src.m().rows * scaleFactor;
             resize(src, scale, Size(width, height));
+            scale.convertTo(scale, CV_32F);
             scales.append(scale);
             scaleFactor /= sqrt(2.f);
         }
@@ -75,9 +76,9 @@ class EBIFTransform : public UntrainableTransform
                 const float val = features[m][i];
                 squaredSum += val * val;
             }
-            const float norm = sqrt(squaredSum + 0.001 /* Avoid division by zero */);
+            const float norm = 1/sqrt(squaredSum + 0.001 /* Avoid division by zero */);
             for (int m=0; m<M; m++)
-                features[m][i] /= norm;
+                features[m][i] *= norm;
         }
 
         dst = OpenCVUtils::toMat(features);
@@ -99,7 +100,7 @@ class EBIFTransform : public UntrainableTransform
 
                 // Bottom values
                 for (int k=0; k<4; k++) {
-                    const float *data = bottom.ptr<float>(i+k, j);
+                    const float *data = bottom.ptr<float>(4*i/3+k, 4*j/3);
                     for (int l=0; l<4; l++)
                         vals.append(data[l]);
                 }
