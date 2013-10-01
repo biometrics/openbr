@@ -5,7 +5,6 @@ if [ ! -f btas2013.sh ]; then
   exit
 fi
 
-rm -rf results
 mkdir results
 
 # Train and evaluate Fisherfaces
@@ -25,4 +24,4 @@ br -makeMask ../data/PCSO/sigset/PCSO_2x1k_test.xml . PCSO.mask
 br -eval Fisherfaces.mtx PCSO.mask results/Fisherfaces.csv
 br -eval Klarefaces.mtx PCSO.mask results/Klarefaces.csv
 br -eval KlarefacesEBIF.mtx PCSO.mask results/KlarefacesEBIF.csv
-br -plot results/* results.pdf
+br -plot results/* plots.pdf
