@@ -81,7 +81,15 @@ class EBIFTransform : public UntrainableTransform
                 features[m][i] *= norm;
         }
 
-        dst = OpenCVUtils::toMat(features);
+        // Group features by location (not done in paper)
+        for (int i=0; i<features.first().size(); i+=2) {
+            QList<float> localFeatures; localFeatures.reserve(2*M);
+            for (int m=0; m<M; m++) {
+                localFeatures.append(features[m][i]); // mean
+                localFeatures.append(features[m][i+1]); // standard deviation
+            }
+            dst += OpenCVUtils::toMat(localFeatures);
+        }
     }
 
     QList<float> pool(const Mat &bottom, const Mat &top) const
