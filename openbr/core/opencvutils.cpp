@@ -119,6 +119,14 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
     return dst;
 }
 
+Mat OpenCVUtils::toMat(const QList<QList<float> > &srcs, int rows)
+{
+    QList<float> flat;
+    foreach (const QList<float> &src, srcs)
+        flat.append(src);
+    return toMat(flat, rows);
+}
+
 Mat OpenCVUtils::toMat(const QList<int> &src, int rows)
 {
     if (rows == -1) rows = src.size();
