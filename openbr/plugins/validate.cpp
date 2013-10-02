@@ -253,16 +253,13 @@ class RejectDistance : public Distance
 
     float compare(const Template &a, const Template &b) const
     {
+        // We don't look at the query
         (void) b;
-        bool keep = true;
 
-        foreach (const QString &key, keys) {
+        foreach (const QString &key, keys)
             if ((rejectIfContains && a.file.contains(key)) ||
                 (!rejectIfContains && !a.file.contains(key)))
-                keep = false;
-
-            if (!keep) return -std::numeric_limits<float>::max();
-        }
+                return -std::numeric_limits<float>::max();
 
         return 0;
     }
