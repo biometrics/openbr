@@ -22,7 +22,7 @@
 #include "qtutils.h"
 
 using namespace cv;
-
+using namespace std;
 
 int OpenCVUtils::getFourcc()
 {
@@ -33,9 +33,9 @@ int OpenCVUtils::getFourcc()
         QString recovered_string = recovered_variant.toString();
         if (recovered_string.length() == 4) {
             fourcc = CV_FOURCC(recovered_string[0].toLatin1(),
-                                recovered_string[1].toLatin1(),
-                                recovered_string[2].toLatin1(),
-                                recovered_string[3].toLatin1());
+                               recovered_string[1].toLatin1(),
+                               recovered_string[2].toLatin1(),
+                               recovered_string[3].toLatin1());
         }
         else if (recovered_string.compare("-1")) fourcc = -1;
     }
