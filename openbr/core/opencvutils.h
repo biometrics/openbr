@@ -35,6 +35,7 @@ namespace OpenCVUtils
 
     // To image
     cv::Mat toMat(const QList<float> &src, int rows = -1);
+    cv::Mat toMat(const QList< QList<float> > &srcs, int rows = -1);
     cv::Mat toMat(const QList<int> &src, int rows = -1);
 
     cv::Mat toMat(const QList<cv::Mat> &src);      // Data organized one matrix per row

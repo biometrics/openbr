@@ -1,6 +1,7 @@
 #ifndef BR_TEMPLATEMETADATA_H
 #define BR_TEMPLATEMETADATA_H
 
+#include <QBoxLayout>
 #include <QLabel>
 #include <QList>
 #include <QPair>
@@ -14,21 +15,20 @@
 namespace br
 {
 
-class BR_EXPORT TemplateMetadata : public QToolBar
+class BR_EXPORT TemplateMetadata : public QWidget
 {
     Q_OBJECT
-    QLabel lFile, lQuality;
-    QWidget wOffset, wSpacer;
+    QHBoxLayout *layout;
+    QLabel *lFile, *lQuality;
 
     struct ConditionalClassifier
     {
         QString algorithm;
         QSharedPointer<Classifier> classifier;
-        QAction *action;
 
-        ConditionalClassifier() : action(NULL) {}
-        ConditionalClassifier(const QString &algorithm_, const QSharedPointer<Classifier> &classifier_, QAction *action_)
-            : algorithm(algorithm_), classifier(classifier_), action(action_) {}
+        ConditionalClassifier() {}
+        ConditionalClassifier(const QString &algorithm_, const QSharedPointer<Classifier> &classifier_)
+            : algorithm(algorithm_), classifier(classifier_) {}
     };
     QList<ConditionalClassifier> conditionalClassifiers;
 
@@ -37,8 +37,9 @@ public:
     void addClassifier(const QString &classifier, const QString algorithm = "");
 
 public slots:
-    void setFile(const br::File &file);
+    void setFile(const File &file);
     void setAlgorithm(const QString &algorithm);
+    void showQuality(bool visible);
 };
 
 } // namespace br

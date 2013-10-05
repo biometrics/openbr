@@ -16,10 +16,10 @@
 namespace br
 {
 
-class BR_EXPORT TemplateViewer : public br::ImageViewer
+class BR_EXPORT TemplateViewer : public ImageViewer
 {
     Q_OBJECT
-    br::File file;
+    File file;
     QPointF mousePoint;
     QString format;
 
@@ -31,7 +31,7 @@ public:
     explicit TemplateViewer(QWidget *parent = 0);
 
 public slots:
-    void setFile(const br::File &file);
+    void setFile(const File &file);
     void setEditable(bool enabled);
     void setMousePoint(const QPointF &mousePoint);
     void setFormat(const QString &format);
@@ -50,10 +50,10 @@ protected slots:
     void paintEvent(QPaintEvent *event);
 
 signals:
-    void newInput(br::File input);
+    void newInput(File input);
     void newInput(QImage input);
     void newMousePoint(QPointF mousePoint);
-    void selectedInput(br::File input);
+    void selectedInput(File input);
 };
 
 }

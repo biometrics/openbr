@@ -74,9 +74,7 @@ class CrossValidateTransform : public MetaTransform
                     // Remove template that was repeated to make the testOnly template
                     if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
                         removed.append(subjectIndices[i%subjectIndices.size()]);
-                    }
-                    // For the time being, we don't support addition training data added to every fold in the case of leaveOneImageOut
-                    else if (partitionsBuffer[j] == i) {
+                    } else if (partitionsBuffer[j] == i) {
                         removed.append(j);
                     }
 
@@ -88,10 +86,6 @@ class CrossValidateTransform : public MetaTransform
                     } else {
                         j--;
                     }
-                } else if (partitions[j] == -1) {
-                    // Keep data for training, but modify the partition so we project into the correct space
-                    partitionedData[j].file.set("Partition",i);
-                    j--;
                 } else if (partitions[j] == i) {
                     // Remove data, it's designated for testing
                     partitionedData.removeAt(j);
@@ -106,7 +100,19 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        transforms[src.file.get<int>("Partition", 0)]->project(src, dst);
+        // Remember, the partition should never be -1
+        // since it is assumed that the allPartitions
+        // flag is only used during comparison
+        // (i.e. only used when making a mask)
+        if (src.file.getBool("Train", false)) dst = src;
+        else {
+            // If we want to duplicate templates but use the same training data
+            // for all partitions (i.e. transforms.size() == 1), we need to
+            // restrict the partition
+            int partition = src.file.get<int>("Partition", 0);
+            partition = (partition >= transforms.size()) ? 0 : partition;
+            transforms[partition]->project(src, dst);
+        }
     }
 
     void store(QDataStream &stream) const
@@ -248,6 +254,37 @@ class MetadataDistance : public Distance
 
 
 BR_REGISTER(Distance, MetadataDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
+ * \author Scott Klum \cite sklum
+ */
+class RejectDistance : public Distance
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    BR_PROPERTY(QStringList, keys, QStringList())
+    Q_PROPERTY(bool rejectIfContains READ get_rejectIfContains WRITE set_rejectIfContains RESET reset_rejectIfContains STORED false)
+    BR_PROPERTY(bool, rejectIfContains, false)
+
+    float compare(const Template &a, const Template &b) const
+    {
+        // We don't look at the query
+        (void) b;
+
+        foreach (const QString &key, keys)
+            if ((rejectIfContains && a.file.contains(key)) ||
+                (!rejectIfContains && !a.file.contains(key)))
+                return -std::numeric_limits<float>::max();
+
+        return 0;
+    }
+};
+
+
+BR_REGISTER(Distance, RejectDistance)
 
 } // namespace br
 

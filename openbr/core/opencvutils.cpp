@@ -22,7 +22,7 @@
 #include "qtutils.h"
 
 using namespace cv;
-
+using namespace std;
 
 int OpenCVUtils::getFourcc()
 {
@@ -33,9 +33,9 @@ int OpenCVUtils::getFourcc()
         QString recovered_string = recovered_variant.toString();
         if (recovered_string.length() == 4) {
             fourcc = CV_FOURCC(recovered_string[0].toLatin1(),
-                                recovered_string[1].toLatin1(),
-                                recovered_string[2].toLatin1(),
-                                recovered_string[3].toLatin1());
+                               recovered_string[1].toLatin1(),
+                               recovered_string[2].toLatin1(),
+                               recovered_string[3].toLatin1());
         }
         else if (recovered_string.compare("-1")) fourcc = -1;
     }
@@ -117,6 +117,14 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
     for (int i=0; i<src.size(); i++)
         dst.at<float>(i/columns,i%columns) = src[i];
     return dst;
+}
+
+Mat OpenCVUtils::toMat(const QList<QList<float> > &srcs, int rows)
+{
+    QList<float> flat;
+    foreach (const QList<float> &src, srcs)
+        flat.append(src);
+    return toMat(flat, rows);
 }
 
 Mat OpenCVUtils::toMat(const QList<int> &src, int rows)

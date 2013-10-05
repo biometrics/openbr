@@ -41,6 +41,9 @@ struct AlgorithmCore
 
     void train(const File &input, const QString &model)
     {
+        qDebug("Training on %s%s", qPrintable(input.flat()),
+               model.isEmpty() ? "" : qPrintable(" to " + model));
+
         TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
@@ -111,8 +114,14 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        qDebug("Enrolling %s%s", qPrintable(input.flat()),
+               gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
+
         FileList fileList;
-        if (gallery.isNull()) gallery = getMemoryGallery(input);
+        if (gallery.name.isEmpty()) {
+            if (input.name.isEmpty()) return FileList();
+            else                      gallery = getMemoryGallery(input);
+        }
 
         QScopedPointer<Gallery> g(Gallery::make(gallery));
         if (g.isNull()) qFatal("Null gallery!");
@@ -196,6 +205,10 @@ struct AlgorithmCore
 
     void compare(File targetGallery, File queryGallery, File output)
     {
+        qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
+               qPrintable(queryGallery.flat()),
+               output.isNull() ? "" : qPrintable(" to " + output.flat()));
+
         if (output.exists() && output.get<bool>("cache", false)) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
@@ -210,7 +223,7 @@ struct AlgorithmCore
             if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%%1)");
             partitionSizes = output.getList<int>("split");
             for (int i=0; i<partitionSizes.size(); i++) {
-                File splitOutputFile = output.fileName().arg(i);
+                File splitOutputFile = output.name.arg(i);
                 outputFiles.append(splitOutputFile);
             }
         }
@@ -350,23 +363,16 @@ bool br::IsClassifier(const QString &algorithm)
 
 void br::Train(const File &input, const File &model)
 {
-    qDebug("Training on %s%s", qPrintable(input.flat()),
-                               model.isNull() ? "" : qPrintable(" to " + model.flat()));
     AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
 FileList br::Enroll(const File &input, const File &gallery)
 {
-    qDebug("Enrolling %s%s", qPrintable(input.flat()),
-                             gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
 {
-    qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
-                                    qPrintable(queryGallery.flat()),
-                                    output.isNull() ? "" : qPrintable(" to " + output.flat()));
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 

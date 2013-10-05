@@ -187,7 +187,6 @@ BR_EXPORT void br_finalize();
  * \brief Perform score level fusion on similarity matrices.
  * \param num_input_simmats Size of \em input_simmats.
  * \param input_simmats Array of \ref simmat. All simmats must have the same dimensions.
- * \param mask \ref mask used to indicate which, if any, values to ignore.
  * \param normalization Valid options are:
  *          - \c None - No score normalization.
  *          - \c MinMax - Scores normalized to [0,1].

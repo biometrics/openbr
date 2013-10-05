@@ -18,7 +18,6 @@ Classifier::Classifier(QWidget *parent)
 void Classifier::setAlgorithm(const QString &algorithm)
 {
     this->algorithm = algorithm;
-    _classify(File()); // Trigger algorithm initialization
 }
 
 /*** PUBLIC SLOTS ***/
@@ -31,7 +30,7 @@ void Classifier::classify(const File &file)
 void Classifier::setClassification(const QString &key, const QString &value)
 {
     if (key.isEmpty()) clear();
-    else               setText(QString("<b>%1: </b>%2").arg(key, value));
+    else               setText(QString("%1: <b>%2</b>").arg(key, value));
 }
 
 /*** PRIVATE ***/
@@ -39,22 +38,14 @@ void Classifier::_classify(File file)
 {
     QString key, value;
     foreach (const File &f, Enroll(file.flat(), File("[algorithm=" + algorithm + "]"))) {
+        if      (algorithm == "GenderClassification") key = "Gender";
+        else if (algorithm == "AgeRegression")        key = "Age";
+        else                                          key = algorithm;
 
-        if (algorithm == "GenderClassification") {
-            key = "Gender";
-        } else if (algorithm == "AgeRegression") {
-            key = "Age";
-        } else {
-            key = algorithm;
-        }
+        if (!f.contains(key)) continue;
 
-        if (!f.contains(key))
-            continue;
-
-        if (algorithm == "AgeRegression")
-            value = QString::number(int(f.get<float>(key)+0.5)) + " Years";
-        else
-            value = f.get<QString>(key);
+        if (algorithm == "AgeRegression") value = QString::number(int(f.get<float>(key)+0.5)) + " Years";
+        else                              value = f.get<QString>(key);
 
         break;
     }

@@ -3,42 +3,51 @@
 
 #include "templatemetadata.h"
 
+using namespace br;
+
 /*** PUBLIC ***/
-br::TemplateMetadata::TemplateMetadata(QWidget *parent)
-    : QToolBar("Template Metadata", parent)
+TemplateMetadata::TemplateMetadata(QWidget *parent)
+    : QWidget(parent)
 {
-    lFile.setTextInteractionFlags(Qt::TextSelectableByMouse);
-    wSpacer.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    addWidget(&wOffset);
-    addWidget(&lFile);
-    addWidget(&wSpacer);
-    addWidget(&lQuality);
+    layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    lFile = new QLabel(this);
+    lFile->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    lQuality = new QLabel(this);
+    layout->addWidget(lFile);
+    layout->addWidget(lQuality);
+    showQuality(false);
 }
 
-void br::TemplateMetadata::addClassifier(const QString &classifier_, const QString algorithm)
+void TemplateMetadata::addClassifier(const QString &classifier_, const QString algorithm)
 {
     QSharedPointer<Classifier> classifier(new Classifier());
     classifier->setAlgorithm(classifier_);
-    QAction *action = addWidget(classifier.data());
-    conditionalClassifiers.append(ConditionalClassifier(algorithm, classifier, action));
+    layout->addWidget(classifier.data());
+    conditionalClassifiers.append(ConditionalClassifier(algorithm, classifier));
 }
 
-/**** PRIVATE SLOTS ****/
-void br::TemplateMetadata::setFile(const br::File &file)
+/*** PUBLIC SLOTS ***/
+void TemplateMetadata::setFile(const File &file)
 {
-    if (file.isNull()) lFile.clear();
-    else               lFile.setText("<b>File:</b> " + file.fileName());
-    lQuality.setText(QString("<b>Quality:</b> %1").arg(file.get<bool>("FTE", false) ? "Low" : "High"));
+    if (file.isNull()) lFile->clear();
+    else               lFile->setText("File: <b>" + file.fileName() + "</b>");
+    lQuality->setText(QString("Quality: <b>%1</b>").arg(file.get<bool>("FTE", false) ? "Low" : "High"));
     foreach (const ConditionalClassifier &classifier, conditionalClassifiers)
-        if (classifier.action->isVisible()) classifier.classifier->classify(file);
+        if (classifier.classifier->isVisible()) classifier.classifier->classify(file);
 }
 
-void br::TemplateMetadata::setAlgorithm(const QString &algorithm)
+void TemplateMetadata::setAlgorithm(const QString &algorithm)
 {
     foreach (const ConditionalClassifier &classifier, conditionalClassifiers) {
         classifier.classifier->clear();
-        classifier.action->setVisible(classifier.algorithm.isEmpty() || classifier.algorithm == algorithm);
+        classifier.classifier->setVisible(classifier.algorithm.isEmpty() || classifier.algorithm == algorithm);
     }
+}
+
+void TemplateMetadata::showQuality(bool visible)
+{
+    lQuality->setVisible(visible);
 }
 
 #include "moc_templatemetadata.cpp"
