@@ -9,16 +9,6 @@
 
 #define CACHE 1   // define to 0 if your compiler doesn't support hash_map
                   // Stasm runs faster if 1
-#if CACHE
-  // define hash_map,  current implementations are compiler dependent (2013)
-  #ifdef _MSC_VER // microsoft
-    #include <hash_map>
-    using namespace stdext;
-  #else          // assume gcc
-    #include <ext/hash_map>
-    using namespace __gnu_cxx;
-  #endif
-#endif
 
 namespace stasm
 {
