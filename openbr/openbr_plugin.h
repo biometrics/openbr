@@ -457,6 +457,7 @@ struct TemplateList : public QList<Template>
             while (index < t.size()) {
                 for (int i=0; i<partitionSizes.size(); i++) {
                     Template newTemplate;
+                    newTemplate.file = t.file;
                     for (int j=0; j<partitionSizes[i]; j++) {
                         newTemplate.append(t[index]);
                         index++;
