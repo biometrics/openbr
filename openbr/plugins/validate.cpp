@@ -275,8 +275,7 @@ class RejectDistance : public Distance
         (void) b;
 
         foreach (const QString &key, keys)
-            if ((rejectIfContains && a.file.contains(key)) ||
-                (!rejectIfContains && !a.file.contains(key)))
+            if ((rejectIfContains && a.file.contains(key)) || (!rejectIfContains && !a.file.contains(key)))
                 return -std::numeric_limits<float>::max();
 
         return 0;
