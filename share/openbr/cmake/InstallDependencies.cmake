@@ -55,12 +55,15 @@ endfunction()
 # Qt Plugins
 function(install_qt_imageformats)
   if(${BR_INSTALL_DEPENDENCIES})
-    install(FILES ${QT_QGIF_PLUGIN_RELEASE}
-                  ${QT_QICO_PLUGIN_RELEASE}
-                  ${QT_QJPEG_PLUGIN_RELEASE}
-                  ${QT_QMNG_PLUGIN_RELEASE}
-                  ${QT_QSVG_PLUGIN_RELEASE}
-                  ${QT_QTIFF_PLUGIN_RELEASE}
+    set(IMAGE_FORMATS_DIR "${_qt5Core_install_prefix}/plugins/imageformats/")
+    install(FILES ${IMAGE_FORMATS_DIR}/qgif.dll
+                  ${IMAGE_FORMATS_DIR}/qico.dll
+                  ${IMAGE_FORMATS_DIR}/qjpeg.dll
+                  ${IMAGE_FORMATS_DIR}/qmng.dll
+                  ${IMAGE_FORMATS_DIR}/qsvg.dll
+                  ${IMAGE_FORMATS_DIR}/qtga.dll
+				  ${IMAGE_FORMATS_DIR}/qtiff.dll
+				  ${IMAGE_FORMATS_DIR}/qwbmp.dll
             DESTINATION bin/imageformats)
   endif()
 endfunction()
