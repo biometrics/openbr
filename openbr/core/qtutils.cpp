@@ -399,13 +399,26 @@ void showFile(const QString &file)
 
 QString toString(const QVariant &variant)
 {
-    if (variant.canConvert(QVariant::String)) return variant.toString();
-    else if(variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
+    if (QString(variant.typeName()) == "QVariantList") return toString(qvariant_cast<QVariantList>(variant));
+    else if (variant.canConvert(QVariant::String)) return variant.toString();
+    else if (variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
                                                                                                QString::number(qvariant_cast<QPointF>(variant).y()));
     else if (variant.canConvert(QVariant::RectF)) return QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(variant).x()),
                                                                                                          QString::number(qvariant_cast<QRectF>(variant).y()),
                                                                                                          QString::number(qvariant_cast<QRectF>(variant).width()),
                                                                                                          QString::number(qvariant_cast<QRectF>(variant).height()));
+    return QString();
+}
+
+QString toString(const QVariantList &variantList)
+{
+    QStringList variants;
+
+    foreach(const QVariant &variant, variantList)
+        variants.append(toString(variant));
+
+    if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
+
     return QString();
 }
 

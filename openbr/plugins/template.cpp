@@ -9,7 +9,7 @@ namespace br
  * \brief Retains only the values for the keys listed, to reduce template size
  * \author Scott Klum \cite sklum
  */
-class RetainMetadataTransform : public UntrainableTransform
+class KeepMetadataTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
@@ -24,9 +24,56 @@ class RetainMetadataTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, RetainMetadataTransform)
+BR_REGISTER(Transform, KeepMetadataTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Restricts the metadata available within a file
+ * \author Scott Klum \cite sklum
+ */
+class RestrictMetadataTransform : public MetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    BR_PROPERTY(QString, description, "Identity")
+    Q_PROPERTY(QStringList pointSets READ get_pointSets WRITE set_pointSets RESET reset_pointSets STORED false)
+    BR_PROPERTY(QStringList, pointSets, QStringList())
+    Q_PROPERTY(QStringList rectSets READ get_rectSets WRITE set_rectSets RESET reset_rectSets STORED false)
+    BR_PROPERTY(QStringList, rectSets, QStringList())
 
+    br::Transform* transform;
+
+    void init()
+    {
+        transform = make(description);
+    }
+
+    void train(const QList<TemplateList> &data)
+    {
+        // Update data to only include metadata from the given set
+        transform->train(data);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        Template tmp = src;
+
+        // Change this to clear only one if list isn't empty
+        tmp.file.clearPoints(); tmp.file.clearRects();
+
+        foreach(const QString& set, pointSets) tmp.file.appendPoints(src.getList<QPointF>(set));
+        foreach(const QString& set, rectSets) tmp.file.appendRects(src.getList<QRectF>(set));
+
+        // Put a template through some transforms with the metadata restriction
+        transform->project(tmp, dst);
+
+        // Keep original points/rects
+        dst.file.appendPoints(src.file.points());
+        dst.file.appendRects(src.file.rects());
+    }
+};
+
+BR_REGISTER(Transform, RestrictMetadataTransform)
 
 /*!
  * \ingroup transforms

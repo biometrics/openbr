@@ -204,9 +204,11 @@ class DelaunayTransform : public UntrainableTransform
             if (inside) validTriangles.append(QList<Point>()<< pt[0] << pt[1] << pt[2]);
         }
 
-        dst.m() = src.m().clone();
+        dst.file = src.file;
 
         if (draw) {
+            dst.m() = src.m().clone();
+
             foreach(const QList<Point>& triangle, validTriangles) {
                 line(dst.m(), triangle[0], triangle[1], Scalar(0,0,0), 1);
                 line(dst.m(), triangle[1], triangle[2], Scalar(0,0,0), 1);
@@ -230,8 +232,6 @@ class DelaunayTransform : public UntrainableTransform
             dst.m() = Mat::zeros(src.m().rows,src.m().cols,src.m().type());
 
             QList<Point2f> mappedPoints;
-
-            dst.file = src.file;
 
             for (int i = 0; i < validTriangles.size(); i++) {
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
