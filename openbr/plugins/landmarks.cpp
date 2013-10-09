@@ -109,20 +109,18 @@ class ProcrustesTransform : public Transform
 
         dst = src;
 
+        // Store procrustes stats in the order:
+        // R(0,0), R(1,0), R(1,1), R(0,1), mean_x, mean_y, norm
+        QList<float> procrustesStats;
+        procrustesStats << R(0,0) << R(1,0) << R(1,1) << R(0,1) << mean[0] << mean[1] << norm;
+        dst.file.set("ProcrustesStats",QtUtils::toVariantList(procrustesStats));
+
         if (warp) {
             Eigen::MatrixXf dstMat = srcMat*R;
             for (int i = 0; i < dstMat.rows(); i++) {
                 dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
             }
         }
-
-        dst.file.set("Procrustes_0_0", R(0,0));
-        dst.file.set("Procrustes_1_0", R(1,0));
-        dst.file.set("Procrustes_1_1", R(1,1));
-        dst.file.set("Procrustes_0_1", R(0,1));
-        dst.file.set("Procrustes_mean_0", mean[0]);
-        dst.file.set("Procrustes_mean_1", mean[1]);
-        dst.file.set("Procrustes_norm", norm);
     }
 
     void store(QDataStream &stream) const
@@ -203,37 +201,38 @@ class DelaunayTransform : public UntrainableTransform
             if (valid) validTriangles.append(vertices);
         }
 
-        dst.file.set("DelaunayTriangles", QtUtils::toVariantList(validTriangles));
-
         if (warp) {
             dst.m() = Mat::zeros(rows,cols,src.m().type());
 
+            QList<float> procrustesStats = src.file.getList<float>("ProcrustesStats");
+
             Eigen::MatrixXf R(2,2);
-            R(0,0) = src.file.get<float>("Procrustes_0_0");
-            R(1,0) = src.file.get<float>("Procrustes_1_0");
-            R(1,1) = src.file.get<float>("Procrustes_1_1");
-            R(0,1) = src.file.get<float>("Procrustes_0_1");
+            R(0,0) = procrustesStats.at(0);
+            R(1,0) = procrustesStats.at(1);
+            R(1,1) = procrustesStats.at(2);
+            R(0,1) = procrustesStats.at(3);
 
             cv::Scalar mean(2);
-            mean[0] = src.file.get<float>("Procrustes_mean_0");
-            mean[1] = src.file.get<float>("Procrustes_mean_1");
+            mean[0] = procrustesStats.at(4);
+            mean[1] = procrustesStats.at(5);
 
-            float norm = src.file.get<float>("Procrustes_norm");
+            float norm = procrustesStats.at(6);
 
             QList<Point2f> mappedPoints;
 
-            for (int i = 0; i < validTriangles.size(); i++) {
-                Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
+            for (int i = 0; i < validTriangles.size(); i+=3) {
+                // Matrix to store original (pre-transformed) triangle vertices
+                Eigen::MatrixXf srcMat(3, 2);
 
                 for (int j = 0; j < 3; j++) {
-                    srcMat(j,0) = (validTriangles[i][j].x()-mean[0])/norm;
-                    srcMat(j,1) = (validTriangles[i][j].y()-mean[1])/norm;
+                    srcMat(j,0) = (validTriangles[i+j].x()-mean[0])/norm;
+                    srcMat(j,1) = (validTriangles[i+j].y()-mean[1])/norm;
                 }
 
                 Eigen::MatrixXf dstMat = srcMat*R;
 
                 Point2f srcPoints[3];
-                for (int j = 0; j < 3; j++) srcPoints[j] = OpenCVUtils::toPoint(validTriangles[i][j]);
+                for (int j = 0; j < 3; j++) srcPoints[j] = OpenCVUtils::toPoint(validTriangles[i+j]);
 
                 Point2f dstPoints[3];
                 for (int j = 0; j < 3; j++) {
@@ -272,7 +271,9 @@ class DelaunayTransform : public UntrainableTransform
             // Overwrite any rects
             Rect boundingBox = boundingRect(mappedPoints.toVector().toStdVector());
             dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
-        }
+        } else dst = src;
+
+        dst.file.set("DelaunayTriangles", QtUtils::toVariantList(validTriangles));
     }
 };
 
@@ -289,15 +290,16 @@ class DrawDelaunayTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-                                         /*
+        QList<Point2f> validTriangles = OpenCVUtils::toPoints(src.file.getList<QPointF>("DelaunayTriangles"));
+
         // Clone the matrix do draw on it
         dst.m() = src.m().clone();
 
-        foreach(const QList<Point>& triangle, validTriangles) {
-            line(dst.m(), triangle[0], triangle[1], Scalar(0,0,0), 1);
-            line(dst.m(), triangle[1], triangle[2], Scalar(0,0,0), 1);
-            line(dst.m(), triangle[2], triangle[0], Scalar(0,0,0), 1);
-        }*/
+        for (int i = 0; i < validTriangles.size(); i+=3) {
+            line(dst.m(), validTriangles[i], validTriangles[i+1], Scalar(0,0,0), 1);
+            line(dst.m(), validTriangles[i+1], validTriangles[i+2], Scalar(0,0,0), 1);
+            line(dst.m(), validTriangles[i+2], validTriangles[i], Scalar(0,0,0), 1);
+        }
     }
 };
 
