@@ -150,24 +150,22 @@ class DelaunayTransform : public UntrainableTransform
 
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
-    Q_PROPERTY(bool draw READ get_draw WRITE set_draw RESET reset_draw STORED false)
     BR_PROPERTY(float, scaleFactor, 1)
     BR_PROPERTY(bool, warp, true)
-    BR_PROPERTY(bool, draw, false)
 
     void project(const Template &src, Template &dst) const
     {
-        Subdiv2D subdiv(Rect(0,0,src.m().cols,src.m().rows));
-
         QList<QPointF> points = src.file.points();
         QList<QRectF> rects = src.file.rects();
 
         if (points.empty() || rects.empty()) {
             dst = src;
-            dst.file.clearRects();
             qWarning("Delauney triangulation failed because points or rects are empty.");
             return;
         }
+
+        int cols = src.m().cols;
+        int rows = src.m().rows;
 
         // Assume rect appended last was bounding box
         points.append(rects.last().topLeft());
@@ -175,8 +173,11 @@ class DelaunayTransform : public UntrainableTransform
         points.append(rects.last().bottomLeft());
         points.append(rects.last().bottomRight());
 
+        Subdiv2D subdiv(Rect(0,0,cols,rows));
+        // Make sure points are valid for Subdiv2D
+        // TODO: Modify points to make them valid
         for (int i = 0; i < points.size(); i++) {
-            if (points[i].x() < 0 || points[i].y() < 0 || points[i].y() >= src.m().rows || points[i].x() >= src.m().cols) {
+            if (points[i].x() < 0 || points[i].y() < 0 || points[i].y() >= rows || points[i].x() >= cols) {
                 dst = src;
                 qWarning("Delauney triangulation failed because points lie on boundary.");
                 return;
@@ -187,34 +188,26 @@ class DelaunayTransform : public UntrainableTransform
         vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
 
-        QList< QList<Point> > validTriangles;
+        QList< QList<QPointF> > validTriangles;
 
-        for (size_t i = 0; i < triangleList.size(); ++i) {
+        for (int i = 0; i < triangleList.size(); i++) {
+            QList<QPointF> vertices;
 
-            vector<Point> pt(3);
-            pt[0] = Point(cvRound(triangleList[i][0]), cvRound(triangleList[i][1]));
-            pt[1] = Point(cvRound(triangleList[i][2]), cvRound(triangleList[i][3]));
-            pt[2] = Point(cvRound(triangleList[i][4]), cvRound(triangleList[i][5]));
+            vertices.append(QPointF(triangleList[i][0],triangleList[i][1]));
+            vertices.append(QPointF(triangleList[i][2],triangleList[i][3]));
+            vertices.append(QPointF(triangleList[i][4],triangleList[i][5]));
 
             bool inside = true;
-            for (int j = 0; j < 3; j++) {
-                if (pt[j].x > src.m().cols || pt[j].y > src.m().rows || pt[j].x < 0 || pt[j].y < 0) inside = false;
-            }
+            for (int j = 0; j < 3; j++) if (vertices[j].x() > cols || vertices[j].y() > rows || vertices[j].x() < 0 || vertices[j].y() < 0) inside = false;
 
-            if (inside) validTriangles.append(QList<Point>()<< pt[0] << pt[1] << pt[2]);
+            if (inside) validTriangles.append(vertices);
         }
 
-        dst.m() = src.m().clone();
-
-        if (draw) {
-            foreach(const QList<Point>& triangle, validTriangles) {
-                line(dst.m(), triangle[0], triangle[1], Scalar(0,0,0), 1);
-                line(dst.m(), triangle[1], triangle[2], Scalar(0,0,0), 1);
-                line(dst.m(), triangle[2], triangle[0], Scalar(0,0,0), 1);
-            }
-        }
+        dst.file.set("DelaunayTriangles", validTriangles);
 
         if (warp) {
+            dst.m() = Mat::zeros(rows,cols,src.m().type());
+
             Eigen::MatrixXf R(2,2);
             R(0,0) = src.file.get<float>("Procrustes_0_0");
             R(1,0) = src.file.get<float>("Procrustes_1_0");
@@ -227,38 +220,34 @@ class DelaunayTransform : public UntrainableTransform
 
             float norm = src.file.get<float>("Procrustes_norm");
 
-            dst.m() = Mat::zeros(src.m().rows,src.m().cols,src.m().type());
-
             QList<Point2f> mappedPoints;
-
-            dst.file = src.file;
 
             for (int i = 0; i < validTriangles.size(); i++) {
                 Eigen::MatrixXf srcMat(validTriangles[i].size(), 2);
 
                 for (int j = 0; j < 3; j++) {
-                    srcMat(j,0) = (validTriangles[i][j].x-mean[0])/norm;
-                    srcMat(j,1) = (validTriangles[i][j].y-mean[1])/norm;
+                    srcMat(j,0) = (validTriangles[i][j].x()-mean[0])/norm;
+                    srcMat(j,1) = (validTriangles[i][j].y()-mean[1])/norm;
                 }
 
                 Eigen::MatrixXf dstMat = srcMat*R;
 
                 Point2f srcPoints[3];
-                for (int j = 0; j < 3; j++) srcPoints[j] = validTriangles[i][j];
+                for (int j = 0; j < 3; j++) srcPoints[j] = OpenCVUtils::toPoint(validTriangles[i][j]);
 
                 Point2f dstPoints[3];
                 for (int j = 0; j < 3; j++) {
                     // Scale and shift destination points
-                    Point2f warpedPoint = Point2f(dstMat(j,0)*scaleFactor+src.m().cols/2,dstMat(j,1)*scaleFactor+src.m().rows/2);
+                    Point2f warpedPoint = Point2f(dstMat(j,0)*scaleFactor+cols/2,dstMat(j,1)*scaleFactor+rows/2);
                     dstPoints[j] = warpedPoint;
                     mappedPoints.append(warpedPoint);
                 }
 
-                Mat buffer(src.m().rows,src.m().cols,src.m().type());
+                Mat buffer(rows,cols,src.m().type());
 
-                warpAffine(src.m(), buffer, getAffineTransform(srcPoints, dstPoints), Size(src.m().cols,src.m().rows));
+                warpAffine(src.m(), buffer, getAffineTransform(srcPoints, dstPoints), Size(cols,rows));
 
-                Mat mask = Mat::zeros(src.m().rows, src.m().cols, CV_8UC1);
+                Mat mask = Mat::zeros(rows, cols, CV_8UC1);
                 Point maskPoints[1][3];
                 maskPoints[0][0] = dstPoints[0];
                 maskPoints[0][1] = dstPoints[1];
@@ -267,7 +256,7 @@ class DelaunayTransform : public UntrainableTransform
 
                 fillConvexPoly(mask, ppt, 3, Scalar(255,255,255), 8);
 
-                Mat output(src.m().rows,src.m().cols,src.m().type());
+                Mat output(rows,cols,src.m().type());
 
                 if (i > 0) {
                     Mat overlap;
@@ -288,6 +277,31 @@ class DelaunayTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, DelaunayTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Creates a Delaunay triangulation based on a set of points
+ * \author Scott Klum \cite sklum
+ */
+class DrawDelaunayTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+                                         /*
+        // Clone the matrix do draw on it
+        dst.m() = src.m().clone();
+
+        foreach(const QList<Point>& triangle, validTriangles) {
+            line(dst.m(), triangle[0], triangle[1], Scalar(0,0,0), 1);
+            line(dst.m(), triangle[1], triangle[2], Scalar(0,0,0), 1);
+            line(dst.m(), triangle[2], triangle[0], Scalar(0,0,0), 1);
+        }*/
+    }
+};
+
+BR_REGISTER(Transform, DrawDelaunayTransform)
 
 } // namespace br
 
