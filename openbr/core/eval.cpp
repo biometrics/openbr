@@ -175,9 +175,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
-            // Restrict the extreme ends of the curve
-            if ((truePositives >= 10) && (falsePositives < impostorCount/2))
-                operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
+            operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
             previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
         }
