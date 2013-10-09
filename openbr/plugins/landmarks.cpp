@@ -203,7 +203,7 @@ class DelaunayTransform : public UntrainableTransform
             if (valid) validTriangles.append(vertices);
         }
 
-        dst.file.set("DelaunayTriangles", validTriangles);
+        dst.file.set("DelaunayTriangles", QtUtils::toVariantList(validTriangles));
 
         if (warp) {
             dst.m() = Mat::zeros(rows,cols,src.m().type());
