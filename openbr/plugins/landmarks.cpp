@@ -188,19 +188,19 @@ class DelaunayTransform : public UntrainableTransform
         vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
 
-        QList< QList<QPointF> > validTriangles;
+        QList<QPointF> validTriangles;
 
-        for (int i = 0; i < triangleList.size(); i++) {
+        for (size_t i = 0; i < triangleList.size(); i++) {
+            // Check the triangle to make sure it's falls within the matrix
+            bool valid = true;
+
             QList<QPointF> vertices;
-
             vertices.append(QPointF(triangleList[i][0],triangleList[i][1]));
             vertices.append(QPointF(triangleList[i][2],triangleList[i][3]));
             vertices.append(QPointF(triangleList[i][4],triangleList[i][5]));
+            for (int j = 0; j < 3; j++) if (vertices[j].x() > cols || vertices[j].y() > rows || vertices[j].x() < 0 || vertices[j].y() < 0) valid = false;
 
-            bool inside = true;
-            for (int j = 0; j < 3; j++) if (vertices[j].x() > cols || vertices[j].y() > rows || vertices[j].x() < 0 || vertices[j].y() < 0) inside = false;
-
-            if (inside) validTriangles.append(vertices);
+            if (valid) validTriangles.append(vertices);
         }
 
         dst.file.set("DelaunayTriangles", validTriangles);
