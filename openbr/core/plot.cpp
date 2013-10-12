@@ -220,7 +220,9 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     const bool minimalist = destination.getBool("minimalist");
     const QString title = destination.get<QString>("title", QString());
-    const QString legendPosition = QtUtils::toString(destination.get<QPointF>("legendPosition",QPointF()));
+    const QPointF legendPoint = destination.get<QPointF>("legendPosition",QPointF());
+    const QString legendPosition = legendPoint.isNull() ? "'right'" : "c" + QtUtils::toString(legendPoint);
+    qDebug() << legendPosition;
 
     RPlot p(files, destination);
 
@@ -252,7 +254,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (minimalist ? "" : " + scale_x_log10(labels=c(1,5,10,50,100), breaks=c(1,5,10,50,100)) + annotation_logticks(sides=\"b\")") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + theme_minimal() + theme(legend.position=c%1) + theme(legend.background = element_rect(fill = 'white')) + theme(panel.grid.major = element_line(colour = \"gray\")) + theme(panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\")) + scale_y_continuous(labels=percent)\n\n").arg(legendPosition)));
+                            QString(" + theme_minimal() + theme(legend.position=%1) + theme(legend.background = element_rect(fill = 'white')) + theme(panel.grid.major = element_line(colour = \"gray\")) + theme(panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\")) + scale_y_continuous(labels=percent)\n\n").arg(legendPosition)));
 
     p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
