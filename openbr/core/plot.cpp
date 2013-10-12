@@ -222,7 +222,6 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     const QString title = destination.get<QString>("title", QString());
     const QPointF legendPoint = destination.get<QPointF>("legendPosition",QPointF());
     const QString legendPosition = legendPoint.isNull() ? "'right'" : "c" + QtUtils::toString(legendPoint);
-    qDebug() << legendPosition;
 
     RPlot p(files, destination);
 
