@@ -42,8 +42,10 @@ private:
         if (transform->trainable) {
             TemplateList full;
             foreach (const Template &tmpl, data) {
-                foreach (const Rect &rect, OpenCVUtils::toRects(tmpl.file.rects())) {
-                    Template pos(tmpl.file, Mat(tmpl, rect));
+                QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
+                QList<Rect> negRects;
+                foreach (const Rect &posRect, posRects) {
+                    Template pos(tmpl.file, Mat(tmpl, posRect));
                     full += pos;
 
                     // add random negative samples
@@ -57,9 +59,11 @@ private:
                             int maxSize = std::min(maxWidth, maxHeight);
                             int size = (maxSize <= minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
                             Rect negRect(x, y, size, size);
-                            Rect intersect = negRect & rect;
-                            if (intersect.area() > maxOverlap*rect.area())
+                            // the negative samples cannot overlap the positive at all
+                            // but they may overlap with other negatives
+                            if (overlaps(posRects, negRect, 0) || overlaps(negRects, negRect, maxOverlap))
                                 continue;
+                            negRects.append(negRect);
                             Template neg(tmpl.file, Mat(tmpl, negRect));
                             neg.file.set("Label", QString("neg"));
                             full += neg;
@@ -70,6 +74,16 @@ private:
             }
             transform->train(full);
         }
+    }
+
+    bool overlaps(QList<Rect> posRects, Rect negRect, double overlap)
+    {
+        foreach (const Rect posRect, posRects) {
+            Rect intersect = negRect & posRect;
+            if (intersect.area() > overlap*posRect.area())
+                return true;
+        }
+        return false;
     }
 
     void project(const Template &src, Template &dst) const
