@@ -411,10 +411,65 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
 QString getDetectKey(const TemplateList &templates)
 {
     const File &f = templates.first().file;
-    foreach (const QString &key, f.localKeys())
+    foreach (const QString &key, f.localKeys()) {
+        // first check for single detections
         if (!f.get<QRectF>(key, QRectF()).isNull())
             return key;
+    }
+    // and then multiple
+    if (!f.rects().empty())
+        return "Rects";
     return "";
+}
+
+bool detectKeyIsList(QString key, const TemplateList &templates)
+{
+    return templates.first().file.get<QRectF>(key, QRectF()).isNull();
+}
+
+// return a list of detections whether the template holds
+// multiple detections or a single detection
+QList<Detection> getDetections(QString key, const Template &t, bool isList, bool isTruth)
+{
+    File f = t.file;
+    QList<Detection> dets;
+    if (isList) {
+        // TODO: handle Confidence for multiple detections in a template
+        foreach (const QRectF &rect, f.rects())
+            dets.append(Detection(rect));
+    } else {
+        if (isTruth) {
+            dets.append(Detection(f.get<QRectF>(key)));
+        } else {
+            dets.append(Detection(f.get<QRectF>(key), f.get<float>("Confidence", -1)));
+        }
+    }
+    return dets;
+}
+
+QMap<QString, Detections> getDetections(const TemplateList &predicted, const TemplateList &truth)
+{
+    // Figure out which metadata field contains a bounding box
+    QString truthDetectKey = getDetectKey(truth);
+    if (truthDetectKey.isEmpty()) qFatal("No suitable ground truth metadata key found.");
+    QString predictedDetectKey = getDetectKey(predicted);
+    if (predictedDetectKey.isEmpty()) qFatal("No suitable predicted metadata key found.");
+    qDebug("Using metadata key: %s%s",
+           qPrintable(predictedDetectKey),
+           qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
+
+    QMap<QString, Detections> allDetections;
+    bool predKeyIsList = detectKeyIsList(predictedDetectKey, predicted);
+    bool truthKeyIsList = detectKeyIsList(truthDetectKey, truth);
+    foreach (const Template &t, predicted) {
+        QList<Detection> dets = getDetections(predictedDetectKey, t, predKeyIsList, false);
+        allDetections[t.file.baseName()].predicted.append(dets);
+    }
+    foreach (const Template &t, truth) {
+        QList<Detection> dets = getDetections(truthDetectKey, t, truthKeyIsList, true);
+        allDetections[t.file.baseName()].truth.append(dets);
+    }
+    return allDetections;
 }
 
 float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
@@ -423,23 +478,8 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
     const TemplateList truth(TemplateList::fromGallery(truthGallery));
 
-    // Figure out which metadata field contains a bounding box
-    QString truthDetectKey = getDetectKey(truth);
-    if (truthDetectKey.isEmpty()) qFatal("No suitable ground truth metadata key found.");
-    QString predictedDetectKey = truthDetectKey;
-    if (predicted.first().file.get<QRectF>(predictedDetectKey, QRectF()).isNull())
-        predictedDetectKey = getDetectKey(predicted);
-    if (predictedDetectKey.isEmpty()) qFatal("No suitable predicted metadata key found.");
-
-    qDebug("Using metadata key: %s%s",
-           qPrintable(predictedDetectKey),
-           qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
-
-    QMap<QString, Detections> allDetections; // Organized by file, QMap used to preserve order
-    foreach (const Template &t, predicted)
-        allDetections[t.file.baseName()].predicted.append(Detection(t.file.get<QRectF>(predictedDetectKey), t.file.get<float>("Confidence", -1)));
-    foreach (const Template &t, truth)
-        allDetections[t.file.baseName()].truth.append(Detection(t.file.get<QRectF>(truthDetectKey)));
+    // Organized by file, QMap used to preserve order
+    QMap<QString, Detections> allDetections = getDetections(predicted, truth);
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     foreach (Detections detections, allDetections.values()) {
