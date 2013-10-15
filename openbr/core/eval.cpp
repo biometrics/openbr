@@ -434,9 +434,16 @@ QList<Detection> getDetections(QString key, const Template &t, bool isList, bool
     File f = t.file;
     QList<Detection> dets;
     if (isList) {
-        // TODO: handle Confidence for multiple detections in a template
-        foreach (const QRectF &rect, f.rects())
-            dets.append(Detection(rect));
+        QList<QRectF> rects = f.rects();
+        QList<float> confidences = QtUtils::toFloats(f.get<QStringList>("Confidences", QStringList()));
+        if (!isTruth && rects.size() != confidences.size())
+            qFatal("You don't have enough confidence. I mean, your detections don't have confidence measures.");
+        for (int i=0; i<rects.size(); i++) {
+            if (isTruth)
+                dets.append(Detection(rects.at(i)));
+            else
+                dets.append(Detection(rects.at(i), confidences.at(i)));
+        }
     } else {
         if (isTruth) {
             dets.append(Detection(f.get<QRectF>(key)));
