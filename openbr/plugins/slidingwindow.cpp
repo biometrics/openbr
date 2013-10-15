@@ -24,6 +24,7 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
     Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
+    Q_PROPERTY(double aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED true)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(double, scaleFactor, 0.75)
@@ -32,6 +33,7 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(bool, negSamples, true)
     BR_PROPERTY(int, negToPosRatio, 1)
     BR_PROPERTY(double, maxOverlap, 0)
+    BR_PROPERTY(double, aspectRatio, 1)
 
 public:
     SlidingWindowTransform() : Transform(false, true) {}
@@ -40,6 +42,8 @@ private:
     void train(const TemplateList &data)
     {
         if (transform->trainable) {
+            double tempRatio = 0;
+            int ratioCnt = 0;
             TemplateList full;
             foreach (const Template &tmpl, data) {
                 QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
@@ -47,6 +51,10 @@ private:
                 foreach (const Rect &posRect, posRects) {
                     Template pos(tmpl.file, Mat(tmpl, posRect));
                     full += pos;
+
+                    //learn aspect ratio
+                    tempRatio += ((double)posRect.width / (double)posRect.height);
+                    ratioCnt += 1;
 
                     // add random negative samples
                     if (negSamples) {
@@ -73,6 +81,7 @@ private:
                 }
             }
             transform->train(full);
+            aspectRatio = tempRatio / (double)ratioCnt;
         }
     }
 
@@ -95,9 +104,10 @@ private:
         dst.file.clearRects();
         int rows = src.m().rows, cols = src.m().cols;
         for (double size=std::min(rows, cols); size>=minSize; size*=scaleFactor) {
-            for (double y=0; y+size<rows; y+=(size*stepSize)) {
+            double h = size / aspectRatio;
+            for (double y=0; y+h<rows; y+=(size*stepSize)) {
                 for (double x=0; x+size<cols; x+=(size*stepSize)) {
-                    Rect window(x, y, size, size);
+                    Rect window(x, y, size, h);
                     Template windowMat(src.file, Mat(src.m(), window));
                     Template detect;
                     transform->project(windowMat, detect);
