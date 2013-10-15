@@ -56,38 +56,6 @@ class RectRegionsTransform : public UntrainableTransform
 
 /*!
  * \ingroup transforms
- * \brief Subdivide matrix into a fixed number of rectangular subregions.
- * \author Brendan Klare \cite bklare
- */
-class FixedRegionsTransform : public UntrainableTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(int nHorizontal READ get_nHorizontal WRITE set_nHorizontal RESET reset_nHorizontal STORED false)
-    Q_PROPERTY(int nVertical READ get_nVertical WRITE set_nVertical RESET reset_nVertical STORED false)
-    Q_PROPERTY(float widthScaleStep READ get_widthScaleStep WRITE set_widthScaleStep RESET reset_widthScaleStep STORED false)
-    Q_PROPERTY(float heightScaleStep READ get_heightScaleStep WRITE set_heightScaleStep RESET reset_heightScaleStep STORED false)
-    BR_PROPERTY(int, nHorizontal, 5)
-    BR_PROPERTY(int, nVertical, 5)
-    BR_PROPERTY(float, widthScaleStep, .5)
-    BR_PROPERTY(float, heightScaleStep, .5)
-
-    void project(const Template &src, Template &dst) const
-    {
-        const int widthStep = this->widthStep == -1 ? width : this->widthStep;
-        const int heightStep = this->heightStep == -1 ? height : this->heightStep;
-        const Mat &m = src;
-        const int xMax = m.cols - width;
-        const int yMax = m.rows - height;
-        for (int x=0; x <= xMax; x += widthStep)
-            for (int y=0; y <= yMax; y += heightStep)
-                dst += m(Rect(x, y, width, height));
-    }
-};
-
-BR_REGISTER(Transform, RectRegionsTransform)
-
-/*!
- * \ingroup transforms
  * \brief Turns each row into its own matrix.
  * \author Josh Klontz \cite jklontz
  */
