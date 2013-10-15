@@ -1,6 +1,8 @@
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/common.h"
+#include "openbr/core/qtutils.h"
+#include <opencv2/objdetect/objdetect.hpp>
 
 using namespace cv;
 
@@ -117,8 +119,12 @@ private:
                     Template detect;
                     transform->project(windowMat, detect);
                     // the result will be in the Label
-                    if (detect.file.get<QString>(QString("Label")) == "pos") {
+                    if (detect.file.get<QString>("Label") == "pos") {
                         dst.file.appendRect(OpenCVUtils::fromRect(window));
+                        float confidence = detect.file.get<float>("Dist");
+                        QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
+                        confidences.append(confidence);
+                        dst.file.setList<float>("Confidences", confidences);
                         if (takeLargestScale) return;
                     }
                 }
@@ -128,6 +134,36 @@ private:
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Detects objects with OpenCV's built-in HOG detection.
+ * \author Austin Blanton \cite imaus10
+ */
+class HOGDetectTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    HOGDescriptor hog;
+
+    void init()
+    {
+        hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        std::vector<Rect> objLocs;
+        QList<Rect> rects;
+        hog.detectMultiScale(src, objLocs);
+        foreach (const Rect &obj, objLocs)
+            rects.append(obj);
+        dst.file.setRects(rects);
+    }
+};
+
+BR_REGISTER(Transform, HOGDetectTransform)
 
 } // namespace br
 
