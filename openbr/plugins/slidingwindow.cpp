@@ -49,6 +49,11 @@ private:
                 QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
                 QList<Rect> negRects;
                 foreach (const Rect &posRect, posRects) {
+                    if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
+                        continue;
+                    }
+
+                    QString buffer;
                     Template pos(tmpl.file, Mat(tmpl, posRect));
                     full += pos;
 
