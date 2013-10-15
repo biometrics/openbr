@@ -262,6 +262,19 @@ struct BR_EXPORT File
         return list;
     }
 
+    /*!< \brief Specialization for list type. Returns a list of type T for the key, returning \em defaultValue if the key does not exist or can't be converted. */
+    template <typename T>
+    QList<T> getList(const QString &key, const QList<T> defaultValue) const
+    {
+        if (!contains(key)) return defaultValue;
+        QList<T> list;
+        foreach (const QVariant &item, m_metadata[key].toList()) {
+            if (item.canConvert<T>()) list.append(item.value<T>());
+            else return defaultValue;
+        }
+        return list;
+    }
+
     /*!< \brief Returns the value for the specified key for every file in the list. */
     template<class U>
     static QList<QVariant> values(const QList<U> &fileList, const QString &key)
