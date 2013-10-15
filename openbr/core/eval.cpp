@@ -435,9 +435,11 @@ QList<Detection> getDetections(QString key, const Template &t, bool isList, bool
     QList<Detection> dets;
     if (isList) {
         QList<QRectF> rects = f.rects();
-        QList<float> confidences = QtUtils::toFloats(f.get<QStringList>("Confidences", QStringList()));
+        QList<float> confidences;
+        if (f.contains("Confidences"))
+            confidences = f.getList<float>("Confidences");
         if (!isTruth && rects.size() != confidences.size())
-            qFatal("You don't have enough confidence. I mean, your detections don't have confidence measures.");
+            qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
         for (int i=0; i<rects.size(); i++) {
             if (isTruth)
                 dets.append(Detection(rects.at(i)));

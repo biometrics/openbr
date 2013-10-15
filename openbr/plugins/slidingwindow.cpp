@@ -116,7 +116,9 @@ private:
                     if (detect.file.get<QString>("Label") == "pos") {
                         dst.file.appendRect(OpenCVUtils::fromRect(window));
                         float confidence = detect.file.get<float>("Dist");
-                        QList<float> confidences = dst.file.get<QList<float> >("Confidences", QList<float>());
+                        QList<float> confidences;
+                        if (dst.file.contains("Confidences"))
+                            confidences = dst.file.getList<float>("Confidences");
                         confidences.append(confidence);
                         dst.file.set("Confidences", QtUtils::toVariantList(confidences));
                         if (takeLargestScale) return;
