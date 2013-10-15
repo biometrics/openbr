@@ -1,6 +1,7 @@
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/common.h"
+#include "openbr/core/qtutils.h"
 
 using namespace cv;
 
@@ -102,8 +103,12 @@ private:
                     Template detect;
                     transform->project(windowMat, detect);
                     // the result will be in the Label
-                    if (detect.file.get<QString>(QString("Label")) == "pos") {
+                    if (detect.file.get<QString>("Label") == "pos") {
                         dst.file.appendRect(OpenCVUtils::fromRect(window));
+                        float confidence = detect.file.get<float>("Dist");
+                        QList<float> confidences = dst.file.get<QList<float> >("Confidences", QList<float>());
+                        confidences.append(confidence);
+                        dst.file.set("Confidences", QtUtils::toVariantList(confidences));
                         if (takeLargestScale) return;
                     }
                 }
