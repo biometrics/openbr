@@ -42,6 +42,7 @@
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
 #include <openbr/core/qtutils.h>
+#include <openbr/core/opencvutils.h>
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
@@ -314,9 +315,12 @@ struct BR_EXPORT File
     QList<QRectF> namedRects() const; /*!< \brief Returns rects convertible from metadata values. */
     QList<QRectF> rects() const; /*!< \brief Returns the file's rects list. */
     void appendRect(const QRectF &rect); /*!< \brief Adds a rect to the file's rect list. */
+    void appendRect(const cv::Rect &rect) { appendRect(OpenCVUtils::fromRect(rect)); } /*!< \brief Adds a rect to the file's rect list. */
     void appendRects(const QList<QRectF> &rects); /*!< \brief Adds rects to the file's rect list. */
+    void appendRects(const QList<cv::Rect> &rects) { appendRects(OpenCVUtils::fromRects(rects)); } /*!< \brief Adds rects to the file's rect list. */
     inline void clearRects() { m_metadata["Rects"] = QList<QVariant>(); } /*!< \brief Clears the file's rect list. */
     inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
+    inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
     QMap<QString,QVariant> m_metadata;
