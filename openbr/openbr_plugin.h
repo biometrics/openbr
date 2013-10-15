@@ -41,6 +41,7 @@
 #include <QVector>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
+#include <openbr/core/qtutils.h>
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
@@ -215,6 +216,14 @@ struct BR_EXPORT File
     static QVariant parse(const QString &value); /*!< \brief Try to convert the QString to a QPointF or QRectF if possible. */
     inline void set(const QString &key, const QVariant &value) { m_metadata.insert(key, value); } /*!< \brief Insert or overwrite the metadata key with the specified value. */
     void set(const QString &key, const QString &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
+
+    /*!< \brief Specialization for list type. Insert or overwrite the metadata key with the specified value. */
+    template <typename T>
+    void setList(const QString &key, const QList<T> &value)
+    {
+        set(key, QtUtils::toVariantList(value));
+    }
+
     inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
 
     /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */

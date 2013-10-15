@@ -120,7 +120,7 @@ private:
                         if (dst.file.contains("Confidences"))
                             confidences = dst.file.getList<float>("Confidences");
                         confidences.append(confidence);
-                        dst.file.set("Confidences", QtUtils::toVariantList(confidences));
+                        dst.file.setList<float>("Confidences", confidences);
                         if (takeLargestScale) return;
                     }
                 }
