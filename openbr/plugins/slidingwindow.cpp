@@ -66,7 +66,7 @@ private:
 
                     Mat scaledImg;
                     resize(Mat(tmpl, posRect), scaledImg, Size(windowWidth,round(windowWidth / aspectRatio)));
-                    Template pos(tmpl.file, Mat(tmpl, posRect));
+                    Template pos(tmpl.file, scaledImg);
                     full += pos;
 
                     // add random negative samples
