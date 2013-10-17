@@ -8,6 +8,9 @@
 
 using namespace cv;
 
+// Because MSVC doesn't provide a round() function in math.h
+static int round(float x) { return (floor(x + 0.5)); }
+
 namespace br
 {
 
