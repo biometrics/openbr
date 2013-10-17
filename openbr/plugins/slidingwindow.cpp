@@ -104,7 +104,7 @@ private:
                                 continue;
                             negRects.append(negRect);
                             Template neg(tmpl.file, Mat(tmpl, negRect));
-                            neg.file.set("Label", QString("neg"));
+                            neg.file.set("Label", QString("0"));
                             full += neg;
                             sample++;
                         }
