@@ -31,7 +31,7 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
     Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
-    Q_PROPERTY(double aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED true)
+    Q_PROPERTY(float aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED true)
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, minSize, 8)
@@ -41,7 +41,7 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(bool, negSamples, true)
     BR_PROPERTY(int, negToPosRatio, 1)
     BR_PROPERTY(double, maxOverlap, 0)
-    BR_PROPERTY(double, aspectRatio, 1)
+    BR_PROPERTY(float, aspectRatio, 1)
     BR_PROPERTY(int, windowWidth, 24)
 
 public:
@@ -54,18 +54,33 @@ private:
             double tempRatio = 0;
             int ratioCnt = 0;
             TemplateList full;
+
+            //First find avg aspect ratio
             foreach (const Template &tmpl, data) {
                 QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
-                QList<Rect> negRects;
                 foreach (const Rect &posRect, posRects) {
                     if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
                         continue;
                     }
-
-                    //learn aspect ratio
-                    double aspectRatio = (double)posRect.width / (double)posRect.height;
-                    tempRatio += aspectRatio;
+                    tempRatio += (float)posRect.width / (float)posRect.height;
                     ratioCnt += 1;
+                }
+            }
+            aspectRatio = tempRatio / (double)ratioCnt;
+
+            foreach (const Template &tmpl, data) {
+                QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
+                QList<Rect> negRects;
+                foreach (Rect posRect, posRects) {
+
+                    //Adjust for training samples that have different aspect ratios
+                    int diff = posRect.width - (int)((float) posRect.height * aspectRatio);
+                    posRect.x += diff / 2;
+                    posRect.width += diff;
+
+                    if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
+                        continue;
+                    }
 
                     Mat scaledImg;
                     resize(Mat(tmpl, posRect), scaledImg, Size(windowWidth,round(windowWidth / aspectRatio)));
@@ -97,7 +112,6 @@ private:
                 }
             }
             transform->train(full);
-            aspectRatio = tempRatio / (double)ratioCnt;
         }
     }
 
@@ -133,6 +147,7 @@ private:
 
             for (double y = 0; y + windowHeight < scaleImg.rows; y += stepSize) {
                 for (double x = 0; x + windowWidth < scaleImg.cols; x += stepSize) {
+qDebug() << "x=" << x << "\ty=" << y;
                     Rect window(x, y, windowWidth, windowHeight);
                     Template windowMat(src.file, Mat(scaleImg, window));
                     Template detect;
