@@ -41,6 +41,8 @@
 #include <QVector>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
+#include <openbr/core/qtutils.h>
+#include <openbr/core/opencvutils.h>
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
@@ -215,6 +217,14 @@ struct BR_EXPORT File
     static QVariant parse(const QString &value); /*!< \brief Try to convert the QString to a QPointF or QRectF if possible. */
     inline void set(const QString &key, const QVariant &value) { m_metadata.insert(key, value); } /*!< \brief Insert or overwrite the metadata key with the specified value. */
     void set(const QString &key, const QString &value); /*!< \brief Insert or overwrite the metadata key with the specified value. */
+
+    /*!< \brief Specialization for list type. Insert or overwrite the metadata key with the specified value. */
+    template <typename T>
+    void setList(const QString &key, const QList<T> &value)
+    {
+        set(key, QtUtils::toVariantList(value));
+    }
+
     inline void remove(const QString &key) { m_metadata.remove(key); } /*!< \brief Remove the metadata key. */
 
     /*!< \brief Returns a value for the key, throwing an error if the key does not exist. */
@@ -249,6 +259,19 @@ struct BR_EXPORT File
         foreach (const QVariant &item, m_metadata[key].toList()) {
             if (item.canConvert<T>()) list.append(item.value<T>());
             else qFatal("Failed to convert value for key %s.", qPrintable(key));
+        }
+        return list;
+    }
+
+    /*!< \brief Specialization for list type. Returns a list of type T for the key, returning \em defaultValue if the key does not exist or can't be converted. */
+    template <typename T>
+    QList<T> getList(const QString &key, const QList<T> defaultValue) const
+    {
+        if (!contains(key)) return defaultValue;
+        QList<T> list;
+        foreach (const QVariant &item, m_metadata[key].toList()) {
+            if (item.canConvert<T>()) list.append(item.value<T>());
+            else return defaultValue;
         }
         return list;
     }
@@ -292,9 +315,12 @@ struct BR_EXPORT File
     QList<QRectF> namedRects() const; /*!< \brief Returns rects convertible from metadata values. */
     QList<QRectF> rects() const; /*!< \brief Returns the file's rects list. */
     void appendRect(const QRectF &rect); /*!< \brief Adds a rect to the file's rect list. */
+    void appendRect(const cv::Rect &rect) { appendRect(OpenCVUtils::fromRect(rect)); } /*!< \brief Adds a rect to the file's rect list. */
     void appendRects(const QList<QRectF> &rects); /*!< \brief Adds rects to the file's rect list. */
+    void appendRects(const QList<cv::Rect> &rects) { appendRects(OpenCVUtils::fromRects(rects)); } /*!< \brief Adds rects to the file's rect list. */
     inline void clearRects() { m_metadata["Rects"] = QList<QVariant>(); } /*!< \brief Clears the file's rect list. */
     inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
+    inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
     QMap<QString,QVariant> m_metadata;

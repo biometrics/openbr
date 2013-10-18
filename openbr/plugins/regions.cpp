@@ -53,7 +53,6 @@ class RectRegionsTransform : public UntrainableTransform
                 dst += m(Rect(x, y, width, height));
     }
 };
-
 BR_REGISTER(Transform, RectRegionsTransform)
 
 /*!

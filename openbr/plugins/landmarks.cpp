@@ -113,7 +113,7 @@ class ProcrustesTransform : public Transform
         // R(0,0), R(1,0), R(1,1), R(0,1), mean_x, mean_y, norm
         QList<float> procrustesStats;
         procrustesStats << R(0,0) << R(1,0) << R(1,1) << R(0,1) << mean[0] << mean[1] << norm;
-        dst.file.set("ProcrustesStats",QtUtils::toVariantList(procrustesStats));
+        dst.file.setList<float>("ProcrustesStats",procrustesStats);
 
         if (warp) {
             Eigen::MatrixXf dstMat = srcMat*R;
@@ -273,7 +273,7 @@ class DelaunayTransform : public UntrainableTransform
             dst.file.setRects(QList<QRectF>() << OpenCVUtils::fromRect(boundingBox));
         } else dst = src;
 
-        dst.file.set("DelaunayTriangles", QtUtils::toVariantList(validTriangles));
+        dst.file.setList<QPointF>("DelaunayTriangles", validTriangles);
     }
 };
 
