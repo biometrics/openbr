@@ -104,7 +104,7 @@ private:
                                 continue;
                             negRects.append(negRect);
                             Template neg(tmpl.file, Mat(tmpl, negRect));
-                            neg.file.set("Label", QString("0"));
+                            neg.file.set("Label", QString("neg"));
                             full += neg;
                             sample++;
                         }
@@ -147,19 +147,20 @@ private:
 
             for (double y = 0; y + windowHeight < scaleImg.rows; y += stepSize) {
                 for (double x = 0; x + windowWidth < scaleImg.cols; x += stepSize) {
-qDebug() << "x=" << x << "\ty=" << y;
                     Rect window(x, y, windowWidth, windowHeight);
                     Template windowMat(src.file, Mat(scaleImg, window));
                     Template detect;
                     transform->project(windowMat, detect);
+                    float conf = detect.file.get<float>("conf");
+
                     // the result will be in the Label
-                    if (detect.file.get<QString>("Label") == "pos") {
+                    if (conf > 0) {
                         dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
-                        float confidence = detect.file.get<float>("Dist");
                         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
-                        confidences.append(confidence);
+                        confidences.append(conf);
                         dst.file.setList<float>("Confidences", confidences);
-                        if (takeLargestScale) return;
+                        if (takeLargestScale)
+                            return;
                     }
                 }
             }
