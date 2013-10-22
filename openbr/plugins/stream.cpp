@@ -468,6 +468,7 @@ public:
         current_matrix_idx = 0;
 
         data_ok = current_matrix_idx < basis.size();
+        qDebug("concrete open res is %d %d %d", data_ok, current_matrix_idx, basis.size());
         return data_ok;
     }
 
@@ -488,7 +489,9 @@ private:
         if (!data_ok)
             return false;
 
+
         output.data.append(basis[current_matrix_idx]);
+        output.data.last().file = basis.file;
         current_matrix_idx++;
 
         output.sequenceNumber = next_sequence_number;
@@ -503,6 +506,52 @@ private:
     int current_matrix_idx;
 
     // is current_matrix_idx in bounds?
+    bool data_ok;
+};
+
+class SingleDataSource : public DataSource
+{
+public:
+    SingleDataSource(int maxFrames) : DataSource(maxFrames)
+    {
+        data_ok = false;
+    }
+
+    // To "open" it we just set appropriate indices, we assume that if this
+    // is an image, it is already loaded into memory.
+    bool concreteOpen(Template &input)
+    {
+        basis = input;
+//        basis.file.name = (Globals->path.isEmpty() ? "" : Globals->path + "/") + basis.file.name;
+
+        data_ok =true;
+        return data_ok;
+    }
+
+    bool isOpen() {
+        return data_ok;
+    }
+
+    void close()
+    {
+        data_ok = false;
+        basis.clear();
+    }
+
+private:
+    bool getNext(FrameData & output)
+    {
+        if (!data_ok)
+            return false;
+
+        output.data.append(basis);
+        data_ok = false;
+        return true;
+    }
+
+    Template basis;
+
+    // Have we sent our template yet?
     bool data_ok;
 };
 
@@ -1153,14 +1202,20 @@ public:
 
         bool open_res = false;
 
+        if (mode == DirectStreamTransform::DistributeFrames)
+        {
+            actualSource = new SingleDataSource(0);
+            open_res = actualSource->concreteOpen(input);
+        }
         // Input has no matrices? Its probably a video that hasn't been loaded yet
-        if (mode == DirectStreamTransform::StreamVideo || mode ~= DirectStreamTransform::DistributeFrames && input.empty()) {
+        else if (mode == DirectStreamTransform::StreamVideo || (mode == DirectStreamTransform::Auto && input.empty()) ) {
             actualSource = new VideoDataSource(0);
             open_res = actualSource->concreteOpen(input);
         }
         // If the input is not empty, we assume it is a set of frames already
         // in memory.
         else {
+            qDebug("in template open");
             actualSource = new TemplateDataSource(0);
             open_res = actualSource->concreteOpen(input);
         }
@@ -1194,8 +1249,8 @@ protected:
             // Override the sequence number set by actualSource
             output.data.last().file.set("FrameNumber", output.sequenceNumber);
             next_sequence_number++;
-            if (output.data.last().last().empty())
-                qDebug("broken matrix");
+//            if (output.data.last().last().empty())
+//                qDebug("broken matrix");
             return true;
         }
 
@@ -1223,8 +1278,8 @@ protected:
         output.sequenceNumber = next_sequence_number++;
         output.data.last().file.set("FrameNumber", output.sequenceNumber);
 
-        if (output.data.last().last().empty())
-            qDebug("broken matrix");
+//        if (output.data.last().last().empty())
+//            qDebug("broken matrix");
 
         return res;
     }
