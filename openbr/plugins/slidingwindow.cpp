@@ -8,29 +8,11 @@
 
 using namespace cv;
 
-namespace br
-{
-
 // Because MSVC doesn't provide a round() function in math.h
 static int round(float x) { return (floor(x + 0.5)); }
-// Find avg aspect ratio
-static float getAspectRatio(const TemplateList &data)
-{
-    double tempRatio = 0;
-    int ratioCnt = 0;
 
-    foreach (const Template &tmpl, data) {
-        QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
-        foreach (const Rect &posRect, posRects) {
-            if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
-                continue;
-            }
-            tempRatio += (float)posRect.width / (float)posRect.height;
-            ratioCnt += 1;
-        }
-    }
-    return tempRatio / (double)ratioCnt;
-}
+namespace br
+{
 
 /*!
  * \ingroup transforms
@@ -64,10 +46,20 @@ private:
 
     void train(const TemplateList &data)
     {
-        // only calculate if the work hasn't been done
-        aspectRatio = data.first().file.get<float>("aspectRatio", -1);
-        if (aspectRatio == -1)
-            aspectRatio = getAspectRatio(data);
+        // Find avg aspect ratio
+        double tempRatio = 0;
+        int ratioCnt = 0;
+        foreach (const Template &tmpl, data) {
+            QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
+            foreach (const Rect &posRect, posRects) {
+                if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
+                    continue;
+                }
+                tempRatio += (float)posRect.width / (float)posRect.height;
+                ratioCnt += 1;
+            }
+        }
+        aspectRatio = tempRatio / (double)ratioCnt;
 
         if (transform->trainable) {
             TemplateList full;
@@ -176,11 +168,9 @@ class BuildScalesTransform : public Transform
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     Q_PROPERTY(double scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(bool takeLargestScale READ get_takeLargestScale WRITE set_takeLargestScale RESET reset_takeLargestScale STORED false)
-    Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(double, scaleFactor, 0.75)
     BR_PROPERTY(bool, takeLargestScale, true)
-    BR_PROPERTY(int, windowWidth, 24)
 
 public:
     BuildScalesTransform() : Transform(false, true) {}
@@ -188,12 +178,8 @@ private:
 
     void train(const TemplateList &data)
     {
-        aspectRatio = getAspectRatio(data);
-        // have to make a copy b/c data is const
-        TemplateList cp = data;
-        cp.first().file.set("aspectRatio", aspectRatio);
         if (transform->trainable)
-            transform->train(cp);
+            transform->train(data);
     }
 
     void project(const Template &src, Template &dst) const
@@ -204,13 +190,7 @@ private:
 
         int rows = src.m().rows;
         int cols = src.m().cols;
-        int windowHeight = (int) round((float) windowWidth / aspectRatio);
-        float startScale;
-        if ((cols / rows) > aspectRatio)
-            startScale = round((float) rows / (float) windowHeight);
-        else
-            startScale = round((float) cols / (float) windowWidth);
-        for (float scale = startScale; scale >= 1.0; scale -= (1.0 - scaleFactor)) {
+        for (float scale = 1.0; scale >= 1.0; scale -= (1.0 - scaleFactor)) {
             Template scaleImg(src.file, Mat());
             scaleImg.file.set("scale", scale);
             resize(src, scaleImg, Size(round(cols / scale), round(rows / scale)));
@@ -219,8 +199,6 @@ private:
                 return;
         }
     }
-
-    float aspectRatio;
 };
 
 BR_REGISTER(Transform, BuildScalesTransform)
