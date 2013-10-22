@@ -234,12 +234,22 @@ void File::appendRect(const QRectF &rect)
     m_metadata["Rects"] = newRects;
 }
 
+void File::appendRect(const Rect &rect)
+{
+    appendRect(OpenCVUtils::fromRect(rect));
+}
+
 void File::appendRects(const QList<QRectF> &rects)
 {
     QList<QVariant> newRects = m_metadata["Rects"].toList();
     foreach (const QRectF &rect, rects)
         newRects.append(rect);
     m_metadata["Rects"] = newRects;
+}
+
+void File::appendRects(const QList<Rect> &rects)
+{
+    appendRects(OpenCVUtils::fromRects(rects));
 }
 
 /* File - private methods */
