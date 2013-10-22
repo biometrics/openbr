@@ -19,6 +19,7 @@
 #include "bee.h"
 #include "common.h"
 #include "qtutils.h"
+#include "../plugins/openbr_internal.h"
 
 using namespace br;
 
@@ -45,6 +46,7 @@ struct AlgorithmCore
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
         TemplateList data(TemplateList::fromGallery(input));
+
 
         // set the Train bool metadata, in case a Transform's project
         // needs to know if it's called during train or enroll
@@ -123,65 +125,24 @@ struct AlgorithmCore
             else                      gallery = getMemoryGallery(input);
         }
 
-        QScopedPointer<Gallery> g(Gallery::make(gallery));
-        if (g.isNull()) qFatal("Null gallery!");
+        TemplateList i(TemplateList::fromGallery(input));
 
-        do {
-            fileList.clear();
+        QString shellDescription = "DirectStream([Identity,ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard],readMode=DistributeFrames)";
+        qDebug("built shell string %s", qPrintable(shellDescription));
+        // Make a stream with a placeholder first transform, and our progress counter/gallery output.
+        QScopedPointer<Transform> enrollJob(Transform::make(shellDescription, NULL));
 
-            if (gallery.contains("read") || gallery.contains("cache"))
-                fileList = g->files();
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(enrollJob.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
 
-            if (!fileList.isEmpty() && gallery.contains("cache"))
-                return fileList;
+        downcast->transforms[0] = this->transform.data();
+        downcast->init();
 
-            const TemplateList i(TemplateList::fromGallery(input));
-            if (i.isEmpty()) return fileList; // Nothing to enroll
 
-            if (transform.isNull()) qFatal("Null transform.");
-            const int blocks = Globals->blocks(i.size());
-            Globals->currentStep = 0;
-            Globals->totalSteps = i.size();
-            Globals->startTime.start();
+        downcast->projectUpdate(i,i);
 
-            const bool noDuplicates = gallery.contains("noDuplicates");
-            QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
-            const int subBlockSize = 4*std::max(1, Globals->parallelism);
-            const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
-            int totalCount = 0, failureCount = 0;
-            double totalBytes = 0;
-            for (int block=0; block<blocks; block++) {
-                for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
-                    TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
-                    if (data.isEmpty()) break;
-                    if (noDuplicates)
-                        for (int i=data.size()-1; i>=0; i--)
-                            if (fileNames.contains(data[i].file.name))
-                                data.removeAt(i);
-                    const int numFiles = data.size();
-
-                    data >> *transform;
-
-                    g->writeBlock(data);
-                    const FileList newFiles = data.files();
-                    fileList.append(newFiles);
-
-                    totalCount += newFiles.size();
-                    failureCount += newFiles.failures();
-                    totalBytes += data.bytes<double>();
-                    Globals->currentStep += numFiles;
-                    Globals->printStatus();
-                }
-            }
-
-            const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
-            if (!Globals->quiet && (Globals->totalSteps > 1))
-                fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
-                        speed, totalBytes/totalCount, failureCount, totalCount);
-            Globals->totalSteps = 0;
-        } while (input.getBool("infinite"));
-
-        return fileList;
+        return i.files();
     }
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
@@ -306,8 +267,6 @@ private:
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
         //! [Parsing the algorithm description]
 
-        if (description.getBool("distribute", true))
-            words[0] = "DistributeTemplate(" + words[0] + ")";
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
