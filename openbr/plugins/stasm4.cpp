@@ -132,6 +132,7 @@ class StasmTransform : public UntrainableTransform
 
         if (!foundFace) {
             qWarning("No face found in %s.", qPrintable(src.file.fileName()));
+            dst.file.set("FTE",true);
         } else {
             for (int i = 0; i < nLandmarks; i++) {
                 QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
