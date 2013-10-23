@@ -302,11 +302,13 @@ class LDATransform : public Transform
     Q_PROPERTY(int directLDA READ get_directLDA WRITE set_directLDA RESET reset_directLDA STORED false)
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(bool isBinary READ get_isBinary WRITE set_isBinary RESET reset_isBinary STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
     BR_PROPERTY(float, directDrop, 0.1)
     BR_PROPERTY(QString, inputVariable, "Label")
+    BR_PROPERTY(bool, isBinary, false)
 
     int dimsOut;
     Eigen::VectorXf mean;
@@ -316,7 +318,6 @@ class LDATransform : public Transform
     {
         // creates "Label"
         TemplateList trainingSet = TemplateList::relabel(_trainingSet, inputVariable);
-
         int instances = trainingSet.size();
 
         // Perform PCA dimensionality reduction
@@ -450,6 +451,34 @@ class LDATransform : public Transform
         // Compute final projection matrix
         projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();
         dimsOut = dim2;
+
+        if (isBinary) {
+            assert(dimsOut == 1);
+            TemplateList projected;
+            float posVal = 0;
+            float negVal = 0;
+            for (int i = 0; i < trainingSet.size(); i++) {
+                Template t;
+                project(trainingSet[i],t);
+                //Note: the positive class is assumed to be 0 b/c it will
+                // typically be the first gallery template in the TemplateList structure
+                if (classes[i] == 0)
+                    posVal += t.m().at<float>(0,0);
+                else if (classes[i] == 1)
+                    negVal += t.m().at<float>(0,0);
+                else
+                    qFatal("Binary mode only supports two class problems.");
+            }
+            posVal /= classCounts[0];
+            negVal /= classCounts[1];
+
+            if (posVal < negVal) {
+                //Ensure positive value is supposed to be > 0 after projection
+                Eigen::MatrixXf invert = Eigen::MatrixXf::Ones(dimsIn,1);
+                invert *= -1;
+                projection = invert.transpose() * projection;
+            }
+        }
     }
 
     void project(const Template &src, Template &dst) const
@@ -462,6 +491,10 @@ class LDATransform : public Transform
 
         // Do projection
         outMap = projection.transpose() * (inMap - mean);
+
+        if (isBinary) {
+            dst.file.set("conf",dst.m().at<float>(0,0));
+        }
     }
 
     void store(QDataStream &stream) const
