@@ -399,7 +399,7 @@ void showFile(const QString &file)
 
 QString toString(const QVariant &variant)
 {
-    if (QString(variant.typeName()) == "QVariantList") return toString(qvariant_cast<QVariantList>(variant));
+    if (variant.canConvert(QVariant::List)) return toString(qvariant_cast<QVariantList>(variant));
     else if (variant.canConvert(QVariant::String)) return variant.toString();
     else if (variant.canConvert(QVariant::PointF)) {
         QPointF point = qvariant_cast<QPointF>(variant);
