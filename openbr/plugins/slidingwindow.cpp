@@ -50,7 +50,7 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(int, stepSize, 1)
-    BR_PROPERTY(bool, takeFirst, true)
+    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(bool, negSamples, true)
     BR_PROPERTY(int, negToPosRatio, 1)
     BR_PROPERTY(double, maxOverlap, 0)
@@ -177,7 +177,7 @@ class BuildScalesTransform : public Transform
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(double, scaleFactor, 0.75)
-    BR_PROPERTY(bool, takeLargestScale, true)
+    BR_PROPERTY(bool, takeLargestScale, false)
     BR_PROPERTY(int, windowWidth, 24)
 
 public:
