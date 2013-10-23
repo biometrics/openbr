@@ -75,6 +75,16 @@ namespace QtUtils
     QString toString(const QVariant &variant);
     QString toString(const QVariantList &variantList);
 
+    template <typename T>
+    QVariantList toVariantList(const QList<T> &list)
+    {
+        QVariantList variantList;
+        foreach (const T &item, list)
+            variantList << item;
+
+        return variantList;
+    }
+
     /**** Point Utilities ****/
     float euclideanLength(const QPointF &point);
 }

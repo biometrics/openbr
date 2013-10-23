@@ -401,12 +401,17 @@ QString toString(const QVariant &variant)
 {
     if (QString(variant.typeName()) == "QVariantList") return toString(qvariant_cast<QVariantList>(variant));
     else if (variant.canConvert(QVariant::String)) return variant.toString();
-    else if (variant.canConvert(QVariant::PointF)) return QString("(%1,%2)").arg(QString::number(qvariant_cast<QPointF>(variant).x()),
-                                                                                               QString::number(qvariant_cast<QPointF>(variant).y()));
-    else if (variant.canConvert(QVariant::RectF)) return QString("(%1,%2,%3,%4)").arg(QString::number(qvariant_cast<QRectF>(variant).x()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).y()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).width()),
-                                                                                                         QString::number(qvariant_cast<QRectF>(variant).height()));
+    else if (variant.canConvert(QVariant::PointF)) {
+        QPointF point = qvariant_cast<QPointF>(variant);
+        return QString("(%1,%2)").arg(QString::number(point.x()),QString::number(point.y()));
+    } else if (variant.canConvert(QVariant::RectF)) {
+        QRectF rect = qvariant_cast<QRectF>(variant);
+        return QString("(%1,%2,%3,%4)").arg(QString::number(rect.x()),
+                                            QString::number(rect.y()),
+                                            QString::number(rect.width()),
+                                            QString::number(rect.height()));
+    }
+
     return QString();
 }
 
