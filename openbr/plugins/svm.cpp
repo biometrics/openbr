@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+Confidence* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright 2012 The MITRE Corporation                                      *
  *                                                                           *
  * Licensed under the Apache License, Version 2.0 (the "License");           *
@@ -157,7 +157,7 @@ private:
         dst = src;
         float prediction = svm.predict(src.m().reshape(1, 1), returnDFVal);
         if (returnDFVal) {
-            dst.file.set("conf", prediction);
+            dst.file.set("Confidence", prediction);
             // positive values ==> first class
             // negative values ==> second class
             prediction = prediction > 0 ? 0 : 1;

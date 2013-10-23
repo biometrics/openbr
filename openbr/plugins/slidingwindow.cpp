@@ -143,7 +143,7 @@ private:
                 Template windowMat(src.file, Mat(src, window));
                 Template detect;
                 transform->project(windowMat, detect);
-                float conf = detect.file.get<float>("conf");
+                float conf = detect.file.get<float>("Confidence");
 
                 // the result will be in the Label
                 if (conf > 0) {
