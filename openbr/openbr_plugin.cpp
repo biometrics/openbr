@@ -845,10 +845,7 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        int h = s / (60*60);
-        int m = (s - h*60*60) / 60;
-        s = (s - h*60*60 - m*60);
-        fprintf(stderr, "%05.2f%%  REMAINING=%02d:%02d:%02d  COUNT=%g  \r", 100 * p, h, m, s, totalSteps);
+        fprintf(stderr, "%05.2f%%  REMAINING=%s  COUNT=%g  \r", 100 * p, QtUtils::toTime(s/1000.0f).toStdString().c_str(), totalSteps);
     }
 }
 

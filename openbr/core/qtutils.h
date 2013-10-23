@@ -65,6 +65,7 @@ namespace QtUtils
     QPointF toPoint(const QString &string, bool *ok = NULL);
     QRectF toRect(const QString &string, bool *ok = NULL);
     QStringList naturalSort(const QStringList &strings);
+    QString toTime(int s);
 
     /**** Process Utilities ****/
     bool runRScript(const QString &file);

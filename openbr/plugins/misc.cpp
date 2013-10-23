@@ -19,6 +19,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/qtutils.h"
 
 using namespace cv;
 
@@ -579,12 +580,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
             // seconds remaining
             int s = float(remaining) / speed;
 
-            int h = s / (60*60);
-            int m = (s - h*60*60) / 60;
-            s = (s - h*60*60 - m*60);
-
-            // hours:minutes:seconds
-            fprintf(stderr, "%05.2f%%  REMAINING=%02d:%02d:%02d  COUNT=%g  \r", p, h, m, s, float(calls));
+            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), float(calls));
 
             timer.start();
             set_calls = 0;
@@ -603,11 +599,13 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
     }
+
     void init()
     {
         calls = 0;
         set_calls = 0;
         timer.start();
+        Globals->startTime.start();
     }
 
 public:

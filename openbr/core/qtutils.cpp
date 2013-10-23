@@ -429,6 +429,17 @@ QString toString(const QVariant &variant)
     return QString();
 }
 
+QString toTime(int s)
+{
+    int h = s / (60*60);
+    int m = (s - h*60*60) / 60;
+    s = (s - h*60*60 - m*60);
+
+    const QChar fillChar = QLatin1Char('0');
+
+    return QString("%1:%2:%3").arg(h,2,10,fillChar).arg(m,2,10,fillChar).arg(s,2,10,fillChar);
+}
+
 float euclideanLength(const QPointF &point)
 {
     return sqrt(pow(point.x(), 2) + pow(point.y(), 2));
