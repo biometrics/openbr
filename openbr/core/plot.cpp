@@ -222,9 +222,12 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     const QString title = destination.get<QString>("title", QString());
     const QString thickness = QString::number(destination.get<float>("thickness", 1));
-    const QString yLimit = QString::number(destination.get<float>("yLimit",1));
+    const QString textSize = QString::number(destination.get<float>("textSize",12));
+
     const QPointF legendPoint = destination.get<QPointF>("legendPosition",QPointF());
     const QString legendPosition = legendPoint.isNull() ? "'right'" : "c" + QtUtils::toString(legendPoint);
+    const QPointF yLimitPoint = destination.get<QPointF>("yLimits",QPointF());
+    const QString yLimits = yLimitPoint.isNull() ? QString() : "c" + QtUtils::toString(yLimitPoint);
 
     RPlot p(files, destination);
 
@@ -256,7 +259,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (minimalist ? "" : " + scale_x_log10(labels=c(1,5,10,50,100), breaks=c(1,5,10,50,100)) + annotation_logticks(sides=\"b\")") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + theme_minimal() + theme(legend.title = element_text(size = 16)) + theme(plot.title = element_text(size = 16)) + theme(axis.text = element_text(size = 16)) + theme(axis.title.x = element_text(size = 16)) + theme(axis.title.y = element_text(size = 16)) + theme(legend.position=%1) + theme(legend.background = element_rect(fill = 'white')) + theme(panel.grid.major = element_line(colour = \"gray\")) + theme(panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\")) + theme(legend.text = element_text(size = 16)) + scale_y_continuous(labels=percent, limits=c(0, %2))\n\n").arg(legendPosition,yLimit)));
+                            (yLimits.isEmpty() ? QString(" + scale_y_continuous(labels=percent)") : QString(" + scale_y_continuous(labels=percent, limits=%3)").arg(yLimits)) +
+                            QString(" + theme_minimal() + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1), legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))\n\n").arg(textSize,legendPosition)));
 
     p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
