@@ -11,8 +11,6 @@ using namespace cv;
 namespace br
 {
 
-// Because MSVC doesn't provide a round() function in math.h
-static int round(float x) { return (floor(x + 0.5)); }
 // Find avg aspect ratio
 static float getAspectRatio(const TemplateList &data)
 {
@@ -87,7 +85,7 @@ private:
                     }
 
                     Mat scaledImg;
-                    resize(Mat(tmpl, posRect), scaledImg, Size(windowWidth,round(windowWidth / aspectRatio)));
+                    resize(Mat(tmpl, posRect), scaledImg, Size(windowWidth,qRound(windowWidth / aspectRatio)));
                     Template pos(tmpl.file, scaledImg);
                     full += pos;
 
@@ -136,7 +134,7 @@ private:
         if (src.file.getBool("Train", false)) return;
 
         dst.file.clearRects();
-        int windowHeight = (int) round((float) windowWidth / aspectRatio);
+        int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
         int scale = src.file.get<float>("scale", 1);
 
         for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
@@ -204,16 +202,16 @@ private:
 
         int rows = src.m().rows;
         int cols = src.m().cols;
-        int windowHeight = (int) round((float) windowWidth / aspectRatio);
+        int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
         float startScale;
         if ((cols / rows) > aspectRatio)
-            startScale = round((float) rows / (float) windowHeight);
+            startScale = qRound((float) rows / (float) windowHeight);
         else
-            startScale = round((float) cols / (float) windowWidth);
+            startScale = qRound((float) cols / (float) windowWidth);
         for (float scale = startScale; scale >= 1.0; scale -= (1.0 - scaleFactor)) {
             Template scaleImg(src.file, Mat());
             scaleImg.file.set("scale", scale);
-            resize(src, scaleImg, Size(round(cols / scale), round(rows / scale)));
+            resize(src, scaleImg, Size(qRound(cols / scale), qRound(rows / scale)));
             transform->project(scaleImg, dst);
             if (takeLargestScale && !dst.file.rects().empty())
                 return;
