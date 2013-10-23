@@ -399,33 +399,31 @@ void showFile(const QString &file)
 
 QString toString(const QVariant &variant)
 {
-    if (variant.canConvert(QVariant::String))
-        return variant.toString();
-    else if(variant.canConvert(QVariant::PointF)) {
-        QPointF pt = qvariant_cast<QPointF>(variant);
-        return QString("(%1,%2)").arg(QString::number(pt.x()),
-                                      QString::number(pt.y()));
-    }
-    else if (variant.canConvert(QVariant::RectF)) {
+    if (variant.canConvert(QVariant::List)) return toString(qvariant_cast<QVariantList>(variant));
+    else if (variant.canConvert(QVariant::String)) return variant.toString();
+    else if (variant.canConvert(QVariant::PointF)) {
+        QPointF point = qvariant_cast<QPointF>(variant);
+        return QString("(%1,%2)").arg(QString::number(point.x()),QString::number(point.y()));
+    } else if (variant.canConvert(QVariant::RectF)) {
         QRectF rect = qvariant_cast<QRectF>(variant);
         return QString("(%1,%2,%3,%4)").arg(QString::number(rect.x()),
                                             QString::number(rect.y()),
                                             QString::number(rect.width()),
                                             QString::number(rect.height()));
     }
-    else if (variant.canConvert(QVariant::List)) {
-        QString ret = QString("[");
-        bool first = true;
-        foreach (const QVariant &i, variant.toList()) {
-            if (!first)
-                ret += ",";
-            else
-                first = false;
-            ret += toString(i);
-        }
-        ret += "]";
-        return ret;
-    }
+
+    return QString();
+}
+
+QString toString(const QVariantList &variantList)
+{
+    QStringList variants;
+
+    foreach(const QVariant &variant, variantList)
+        variants.append(toString(variant));
+
+    if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
+
     return QString();
 }
 
