@@ -176,8 +176,8 @@ struct AlgorithmCore
 
             const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
             if (!Globals->quiet && (Globals->totalSteps > 1))
-                fprintf(stderr, "\rSPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
-                        speed, totalBytes/totalCount, failureCount, totalCount);
+                fprintf(stderr, "\rTIME ELAPSED (MINS) %f SPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
+                        Globals->startTime.elapsed()/1000./60.,speed, totalBytes/totalCount, failureCount, totalCount);
             Globals->totalSteps = 0;
         } while (input.getBool("infinite"));
 
