@@ -74,6 +74,7 @@ namespace QtUtils
 
     /**** Variant Utilities ****/
     QString toString(const QVariant &variant);
+    QString toString(const QVariantList &variantList);
 
     template <typename T>
     QVariantList toVariantList(const QList<T> &list)

@@ -240,6 +240,18 @@ protected:
     CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
+class EnrollmentWorker;
+
+// Implemented in plugins/process.cpp
+struct WorkerProcess
+{
+    QString transform;
+    QString baseName;
+    EnrollmentWorker * processInterface;
+
+    void mainLoop();
+};
+
 }
 
 #endif // OPENBR_INTERNAL_H

@@ -17,6 +17,7 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFutureSynchronizer>
+#include <QLocalSocket>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QProcess>
@@ -58,16 +59,7 @@ QString File::flat() const
     foreach (const QString &key, keys) {
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
-        else {
-            if (QString(value.typeName()) == "QVariantList") {
-                QStringList variants;
-                foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
-                    variants.append(QtUtils::toString(variant));
-                }
-                if (!variants.isEmpty()) values.append(key + "=[" + variants.join(", ") + "]");
-            }
-            else values.append(key + "=" + QtUtils::toString(value));
-        }
+        else values.append(key + "=" + QtUtils::toString(value));
     }
 
     QString flat = name;
@@ -942,6 +934,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     qRegisterMetaType< QList<float> >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
+    qRegisterMetaType< QAbstractSocket::SocketState> ();
+
 
     Globals = new Context();
     Globals->init(File());

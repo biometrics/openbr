@@ -132,13 +132,16 @@ class StasmTransform : public UntrainableTransform
 
         if (!foundFace) {
             qWarning("No face found in %s.", qPrintable(src.file.fileName()));
+            dst.file.set("FTE",true);
         } else {
+            QList<QPointF> points;
             for (int i = 0; i < nLandmarks; i++) {
                 QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
-                dst.file.appendPoint(point);
-                if (i == 38) dst.file.set("StasmRightEye",point);
-                else if (i == 39) dst.file.set("StasmLeftEye", point);
+                points.append(point);
             }
+            dst.file.set("StasmRightEye", points[38]);
+            dst.file.set("StasmLeftEye", points[39]);
+            dst.file.appendPoints(points);
         }
     }
 };

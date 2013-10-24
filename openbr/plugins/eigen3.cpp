@@ -493,7 +493,7 @@ class LDATransform : public Transform
         outMap = projection.transpose() * (inMap - mean);
 
         if (isBinary) {
-            dst.file.set("conf",dst.m().at<float>(0,0));
+            dst.file.set("Confidence",dst.m().at<float>(0,0));
         }
     }
 

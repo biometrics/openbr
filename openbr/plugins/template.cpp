@@ -9,7 +9,7 @@ namespace br
  * \brief Retains only the values for the keys listed, to reduce template size
  * \author Scott Klum \cite sklum
  */
-class RetainTransform : public UntrainableTransform
+class KeepMetadataTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
@@ -24,7 +24,7 @@ class RetainTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, RetainTransform)
+BR_REGISTER(Transform, KeepMetadataTransform)
 
 /*!
  * \ingroup transforms
