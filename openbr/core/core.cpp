@@ -139,7 +139,6 @@ struct AlgorithmCore
         downcast->transforms[0] = this->transform.data();
         downcast->init();
 
-
         downcast->projectUpdate(i,i);
 
         return i.files();
