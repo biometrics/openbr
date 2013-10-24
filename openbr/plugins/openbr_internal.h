@@ -240,6 +240,20 @@ protected:
     CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
+class EnrollmentWorker;
+
+class WorkerProcess
+{
+public:
+
+    QString transform;
+    QString baseName;
+    EnrollmentWorker * processInterface;
+
+    void mainLoop();
+};
+
+
 }
 
 #endif // OPENBR_INTERNAL_H

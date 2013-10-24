@@ -17,6 +17,7 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFutureSynchronizer>
+#include <QLocalSocket>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QProcess>
@@ -945,6 +946,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     qRegisterMetaType< QList<float> >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
+    qRegisterMetaType< QAbstractSocket::SocketState> ();
+
 
     Globals = new Context();
     Globals->init(File());

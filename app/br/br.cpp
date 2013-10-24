@@ -171,7 +171,11 @@ public:
                 check(parc == 1, "Incorrect parameter count for 'daemon'.");
                 daemon = true;
                 daemon_pipe = parv[0];
-            } else if (!strcmp(fun, "exit")) {
+            } else if (!strcmp(fun,"slave")) {
+                check(parc == 1, "Incorrect parameter count for 'slave'");
+                slaveProcess(parv[0]);
+            }
+            else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;
             } else if (!strcmp(fun, "getHeader")) {
