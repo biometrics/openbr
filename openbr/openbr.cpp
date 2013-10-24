@@ -281,7 +281,7 @@ const char *br_version()
     return version.data();
 }
 
-void slaveProcess(const char * baseName)
+void br_slave_process(const char * baseName)
 {
     WorkerProcess worker;
     worker.transform = Globals->algorithm;
