@@ -52,7 +52,7 @@ public:
 
         forever
         {
-            while (receiver->bytesAvailable() < sizeof(signal)) {
+            while (receiver->bytesAvailable() < qint64(sizeof(signal))) {
                 receiver->waitForReadyRead(-1);
             }
             receiver->read((char *) &signal, sizeof(signal));
@@ -64,7 +64,7 @@ public:
             }
 
             qint64 inBufferSize;
-            while (receiver->bytesAvailable() < sizeof(inBufferSize)) {
+            while (receiver->bytesAvailable() < qint64(sizeof(inBufferSize))) {
                 receiver->waitForReadyRead(-1);
             }
             receiver->read((char *) &inBufferSize, sizeof(inBufferSize));
