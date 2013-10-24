@@ -104,8 +104,6 @@ public:
             }
         }
     }
-
-
 };
 
 void WorkerProcess::mainLoop()
@@ -254,12 +252,6 @@ public:
 
 BR_REGISTER(Transform, ProcessWrapperTransform)
 
-
 }
 
-
 #include "process.moc"
-
-
-
-

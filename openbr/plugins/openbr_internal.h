@@ -242,17 +242,15 @@ protected:
 
 class EnrollmentWorker;
 
-class WorkerProcess
+// Implemented in plugins/process.cpp
+struct WorkerProcess
 {
-public:
-
     QString transform;
     QString baseName;
     EnrollmentWorker * processInterface;
 
     void mainLoop();
 };
-
 
 }
 
