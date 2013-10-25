@@ -105,4 +105,4 @@ int main(int argc, char *argv[])
     return result;
 }
 
-#include "OpenBR.moc"
+#include "br-gui.moc"

@@ -1,5 +1,0 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-add_executable(OpenBR WIN32 OpenBR.cpp ${BR_RESOURCES})
-qt5_use_modules(OpenBR ${QT_DEPENDENCIES})
-target_link_libraries(OpenBR openbr ${BR_THIRDPARTY_LIBS})
-install(TARGETS OpenBR RUNTIME DESTINATION bin)
