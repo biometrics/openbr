@@ -30,6 +30,8 @@ public:
         // signals for our sever
         connect(&server, SIGNAL(newConnection()), this, SLOT(receivedConnection() ));
         connect(this, SIGNAL(pulseStartServer(QString)), this, SLOT(startServerInternal(QString)), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(pulseOutboundConnect(QString)), this, SLOT(startConnectInternal(QString) ), Qt::BlockingQueuedConnection);
+
 
         // internals, cause work to be done by the main thread because reasons.
         connect(this, SIGNAL(pulseSignal()), this, SLOT(sendSignalInternal()), Qt::BlockingQueuedConnection);
@@ -85,11 +87,13 @@ public slots:
     // informative.
     void outboundConnectionError(QLocalSocket::LocalSocketError socketError)
     {
+        (void) socketError;
         //qDebug() << key << " outbound socket error " << socketError;
     }
 
     void outboundStateChanged(QLocalSocket::LocalSocketState socketState)
     {
+        (void) socketState;
         //qDebug() << key << " outbound socket state changed to " << socketState;
     }
 
@@ -101,11 +105,13 @@ public slots:
 
     void inboundConnectionError(QLocalSocket::LocalSocketError socketError)
     {
+        (void) socketError;
         //qDebug() << key << " inbound socket error " << socketError;
     }
 
     void inboundStateChanged(QLocalSocket::LocalSocketState socketState)
     {
+        (void) socketState;
         //qDebug() << key << " inbound socket state changed to " << socketState;
     }
 
@@ -132,7 +138,7 @@ public slots:
 
     void readSignalInternal()
     {
-        while (inbound->bytesAvailable() < sizeof(readSignal) ) {
+        while (inbound->bytesAvailable() < qint64(sizeof(readSignal)) ) {
             bool size_ready = inbound->waitForReadyRead(-1);
             if (!size_ready)
             {
@@ -237,6 +243,13 @@ public slots:
         server.close();
     }
 
+
+    void startConnectInternal(QString remoteName)
+    {
+        outbound.connectToServer(remoteName);
+    }
+
+
 signals:
     void pulseStartServer(QString serverName);
     void pulseSignal();
@@ -244,6 +257,7 @@ signals:
     void pulseReadSerialized();
     void pulseSendSerialized();
     void pulseShutdown();
+    void pulseOutboundConnect(QString serverName);
 
 
 public:
@@ -280,11 +294,12 @@ public:
 
     void connectToRemote(const QString & remoteName)
     {
-        outbound.connectToServer(remoteName);
+        emit pulseOutboundConnect(remoteName);
 
         QMutexLocker locker(&outboundLock);
         while (outbound.state() != QLocalSocket::ConnectedState) {
             outboundWait.wait(&outboundLock,30*1000);
+
         }
     }
 
@@ -404,6 +419,7 @@ void shutUp(QtMsgType type, const QMessageLogContext &context, const QString &ms
     // Please tell me more about how you want every single god damn thing to be created from and used by exactly one thread.
     // It does not matter, so shut up already.
     // p.s. I hope you die.
+    (void) type; (void) context; (void) msg;
 }
 
 
