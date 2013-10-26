@@ -21,11 +21,13 @@ class CommunicationManager : public QObject
 {
     Q_OBJECT
 public:
+    QThread * basis;
     CommunicationManager()
     {
-        moveToThread(QCoreApplication::instance()->thread());
-        server.moveToThread(QCoreApplication::instance()->thread() );
-        outbound.moveToThread(QCoreApplication::instance()->thread() );
+        basis = new QThread;
+        moveToThread(basis);
+        server.moveToThread(basis);
+        outbound.moveToThread(basis);
 
         // signals for our sever
         connect(&server, SIGNAL(newConnection()), this, SLOT(receivedConnection() ));
@@ -48,6 +50,14 @@ public:
         connect(&outbound, SIGNAL(stateChanged(QLocalSocket::LocalSocketState)), this, SLOT(outboundStateChanged(QLocalSocket::LocalSocketState) ) );
 
         inbound = NULL;
+        basis->start();
+    }
+
+    ~CommunicationManager()
+    {
+        basis->quit();
+        basis->wait();
+        delete basis;
     }
 
     enum SignalType
@@ -287,7 +297,7 @@ public:
             bool res = receivedWait.wait(&receivedLock,30*1000);
             if (!res)
             {
-                qDebug() << key << " " << QThread::currentThread() << " waiting timed out, server thread is " << server.thread() << " application thread " << QCoreApplication::instance()->thread();
+                qDebug() << key << " " << QThread::currentThread() << " waiting timed out, server thread is " << server.thread() << " base thread " << basis;
             }
         }
     }
