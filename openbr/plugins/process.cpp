@@ -25,11 +25,13 @@ public:
     CommunicationManager()
     {
         basis = new QThread;
+        basis->moveToThread(QCoreApplication::instance()->thread());
         moveToThread(basis);
         server.moveToThread(basis);
         outbound.moveToThread(basis);
 
         // signals for our sever
+        connect(this, SIGNAL(pulseEndThread()), basis, SLOT(quit() ));
         connect(&server, SIGNAL(newConnection()), this, SLOT(receivedConnection() ));
         connect(this, SIGNAL(pulseStartServer(QString)), this, SLOT(startServerInternal(QString)), Qt::BlockingQueuedConnection);
         connect(this, SIGNAL(pulseOutboundConnect(QString)), this, SLOT(startConnectInternal(QString) ), Qt::BlockingQueuedConnection);
@@ -55,6 +57,12 @@ public:
 
     ~CommunicationManager()
     {
+
+    }
+
+    void shutDownThread()
+    {
+        emit pulseEndThread();
         basis->quit();
         basis->wait();
         delete basis;
@@ -268,6 +276,7 @@ signals:
     void pulseSendSerialized();
     void pulseShutdown();
     void pulseOutboundConnect(QString serverName);
+    void pulseEndThread();
 
 
 public:
@@ -375,6 +384,8 @@ public:
     ~EnrollmentWorker()
     {
         delete transform;
+
+        comm->shutDownThread();
         delete comm;
     }
 
@@ -423,15 +434,49 @@ void WorkerProcess::mainLoop()
     delete processInterface;
 }
 
-void shutUp(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+class ProcessInterface : public QObject
 {
-    // Qt you have no idea how much I don't care about you.
-    // Please tell me more about how you want every single god damn thing to be created from and used by exactly one thread.
-    // It does not matter, so shut up already.
-    // p.s. I hope you die.
-    (void) type; (void) context; (void) msg;
-}
+    Q_OBJECT
+public:
+    ProcessInterface()
+    {
+        this->moveToThread(QCoreApplication::instance()->thread());
+        workerProcess.moveToThread(QCoreApplication::instance()->thread());
+        connect(this, SIGNAL(pulseEnd()), this, SLOT(endProcessInternal()), Qt::BlockingQueuedConnection);
+        connect(this, SIGNAL(pulseStart(QStringList)), this, SLOT(startProcessInternal(QStringList)), Qt::BlockingQueuedConnection);
+    }
+    QProcess workerProcess;
+    void endProcess()
+    {
+        if (QThread::currentThread() != QCoreApplication::instance()->thread())
+            emit pulseEnd();
+        else
+            endProcessInternal();
+    }
+    void startProcess(QStringList arguments)
+    {
+        if (QThread::currentThread() != QCoreApplication::instance()->thread() )
+            emit pulseStart(arguments);
+        else
+            startProcessInternal(arguments);
+    }
+signals:
+    void pulseEnd();
+    void pulseStart(QStringList);
 
+protected slots:
+    void endProcessInternal()
+    {
+        workerProcess.waitForFinished(-1);
+    }
+
+    void startProcessInternal(QStringList arguments)
+    {
+        workerProcess.setProcessChannelMode(QProcess::ForwardedChannels);
+        workerProcess.start("br", arguments);
+        workerProcess.waitForStarted(-1);
+    }
+};
 
 /*!
  * \ingroup transforms
@@ -447,7 +492,7 @@ class ProcessWrapperTransform : public TimeVaryingTransform
 
     QString baseKey;
 
-    QProcess * workerProcess;
+    ProcessInterface workerProcess;
     CommunicationManager * comm;
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
@@ -490,8 +535,10 @@ class ProcessWrapperTransform : public TimeVaryingTransform
         argumentList.append("0");
         argumentList.append("-algorithm");
         argumentList.append(transform);
-        argumentList.append("-path");
-        argumentList.append(Globals->path);
+        if (!Globals->path.isEmpty()) {
+            argumentList.append("-path");
+            argumentList.append(Globals->path);
+        }
         argumentList.append("-parallelism");
         argumentList.append(QString::number(0));
         argumentList.append("-slave");
@@ -500,12 +547,7 @@ class ProcessWrapperTransform : public TimeVaryingTransform
         comm->key = "master_"+baseKey.mid(1,5);
 
         comm->startServer(baseKey+"_master");
-
-        workerProcess = new QProcess();
-        workerProcess->setProcessChannelMode(QProcess::ForwardedChannels);
-        workerProcess->start("br", argumentList);
-        workerProcess->waitForStarted(-1);
-
+        workerProcess.startProcess(argumentList);
         comm->waitForInbound();
         comm->connectToRemote(baseKey+"_worker");
     }
@@ -520,16 +562,11 @@ class ProcessWrapperTransform : public TimeVaryingTransform
         if (this->processActive) {
             comm->sendSignal(CommunicationManager::SHOULD_END);
 
-            // I don't even want to talk about it.
-            qInstallMessageHandler(shutUp);
-            workerProcess->waitForFinished(-1);
-            delete workerProcess;
-            qInstallMessageHandler(0);
-
+            workerProcess.endProcess();
             processActive = false;
-            comm->inbound->abort();
-            comm->outbound.abort();
-            comm->server.close();
+            comm->shutdown();
+            comm->shutDownThread();
+
             delete comm;
         }
     }
