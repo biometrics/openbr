@@ -283,8 +283,9 @@ const char *br_version()
 
 void br_slave_process(const char * baseName)
 {
-    WorkerProcess worker;
-    worker.transform = Globals->algorithm;
-    worker.baseName = baseName;
-    worker.mainLoop();
+    WorkerProcess * worker = new WorkerProcess;
+    worker->transform = Globals->algorithm;
+    worker->baseName = baseName;
+    worker->mainLoop();
+    delete worker;
 }
