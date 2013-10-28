@@ -47,6 +47,7 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
     Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
+    Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(int, stepSize, 1)
@@ -55,10 +56,12 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(int, negToPosRatio, 1)
     BR_PROPERTY(double, maxOverlap, 0)
     BR_PROPERTY(int, windowWidth, 24)
+    BR_PROPERTY(float, threshold, 0)
 
 public:
     SlidingWindowTransform() : Transform(false, true) {}
 private:
+    int windowHeight;
 
     void train(const TemplateList &data)
     {
@@ -66,6 +69,7 @@ private:
         aspectRatio = data.first().file.get<float>("aspectRatio", -1);
         if (aspectRatio == -1)
             aspectRatio = getAspectRatio(data);
+        windowHeight = (int) qRound((float) windowWidth / aspectRatio);
 
         if (transform->trainable) {
             TemplateList full;
@@ -96,16 +100,27 @@ private:
                         while (sample < negToPosRatio) {
                             int x = Common::RandSample(1, m.cols)[0];
                             int y = Common::RandSample(1, m.rows)[0];
-                            int maxWidth = m.cols - x, maxHeight = m.rows - y;
-                            int maxSize = std::min(maxWidth, maxHeight);
-                            int size = (maxSize <= minSize ? maxSize : Common::RandSample(1, maxSize, minSize)[0]);
-                            Rect negRect(x, y, size, size);
+                            int maxWidth = m.cols - x;
+                            int maxHeight = m.rows - y;
+                            if (maxWidth <= minSize || maxHeight <= minSize)
+                                continue;
+                            int height;
+                            int width;
+                            if (aspectRatio > (float) maxWidth / (float) maxHeight) {
+                                width = Common::RandSample(1,maxWidth,minSize)[0];
+                                height = (int) qRound(width / aspectRatio);
+                            } else {
+                                height = Common::RandSample(1,maxHeight,minSize)[0];
+                                width = (int) qRound(height * aspectRatio);
+                            }
+                            Rect negRect(x, y, width, height);
                             // the negative samples cannot overlap the positive at all
                             // but they may overlap with other negatives
                             if (overlaps(posRects, negRect, 0) || overlaps(negRects, negRect, maxOverlap))
                                 continue;
                             negRects.append(negRect);
-                            Template neg(tmpl.file, Mat(tmpl, negRect));
+                            Template neg(tmpl.file, Mat());
+                            resize(Mat(tmpl, negRect), neg, Size(windowWidth, windowHeight));
                             neg.file.set("Label", QString("neg"));
                             full += neg;
                             sample++;
@@ -134,19 +149,18 @@ private:
         if (src.file.getBool("Train", false)) return;
 
         dst.file.clearRects();
-        int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
         int scale = src.file.get<float>("scale", 1);
-
+        Template windowTemplate(src.file, src);
         for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
             for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
-                Rect window(x, y, windowWidth, windowHeight);
-                Template windowMat(src.file, Mat(src, window));
+                Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
+                windowTemplate.replace(0,windowMat);
                 Template detect;
-                transform->project(windowMat, detect);
-                float conf = detect.file.get<float>("Confidence");
+                transform->project(windowTemplate, detect);
+                float conf = detect.m().at<float>(0);
 
                 // the result will be in the Label
-                if (conf > 0) {
+                if (conf > threshold) {
                     dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
                     QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
                     confidences.append(conf);
