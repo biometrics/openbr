@@ -229,8 +229,6 @@ bool Plot(const QStringList &files, const File &destination, bool show)
         cmcOpts.set(words[0],words[1]);
     }
 
-    qDebug() << cmcOpts.flat();
-
     RPlot p(files, destination);
 
     p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
