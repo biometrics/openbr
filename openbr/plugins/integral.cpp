@@ -212,6 +212,9 @@ class RecursiveIntegralSamplerTransform : public Transform
 
     void train(const TemplateList &src)
     {
+        if (src.first().m().depth() != CV_32S)
+            qFatal("Expected CV_32S depth!");
+
         if (subTransform != NULL) {
             TemplateList subSrc; subSrc.reserve(src.size());
             foreach (const Template &t, src)
@@ -287,13 +290,19 @@ private:
     void project(const Template &src, Template &dst) const
     {
         Mat dx, dy, magnitude, angle;
-        Sobel(src, dx, CV_32F, 1, 0);
-        Sobel(src, dy, CV_32F, 0, 1);
+        Sobel(src, dx, CV_32F, 1, 0, CV_SCHARR);
+        Sobel(src, dy, CV_32F, 0, 1, CV_SCHARR);
         cartToPolar(dx, dy, magnitude, angle, true);
-        if ((channel == Magnitude) || (channel == MagnitudeAndAngle))
-            dst.append(magnitude);
+        vector<Mat> mv;
+        if ((channel == Magnitude) || (channel == MagnitudeAndAngle)) {
+            const float theoreticalMaxMagnitude = sqrt(2*pow(float(2*(3+10+3)*255), 2.f));
+            mv.push_back(magnitude / theoreticalMaxMagnitude);
+        }
         if ((channel == Angle) || (channel == MagnitudeAndAngle))
-            dst.append(angle);
+            mv.push_back(angle);
+        Mat result;
+        merge(mv, result);
+        dst.append(result);
     }
 };
 
