@@ -31,7 +31,6 @@ namespace br
  * Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
  * \author Josh Klontz \cite jklontz
  */
-static int SCNT = 1;
 class LBPTransform : public UntrainableTransform
 {
     Q_OBJECT
