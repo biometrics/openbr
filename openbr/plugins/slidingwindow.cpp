@@ -75,6 +75,7 @@ private:
         dst.file.clearRects();
         float scale = src.file.get<float>("scale", 1);
         Template windowTemplate(src.file, src);
+        QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
         for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
             for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
                 Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
@@ -86,14 +87,13 @@ private:
                 // the result will be in the Label
                 if (conf > threshold) {
                     dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
-                    QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
                     confidences.append(conf);
-                    dst.file.setList<float>("Confidences", confidences);
                     if (takeFirst)
                         return;
                 }
             }
         }
+        dst.file.setList<float>("Confidences", confidences);
     }
 };
 
@@ -114,6 +114,7 @@ class BuildScalesTransform : public Transform
     Q_PROPERTY(int negToPosRatio READ get_negToPosRatio WRITE set_negToPosRatio RESET reset_negToPosRatio STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
+    Q_PROPERTY(float minScale READ get_minScale WRITE set_minScale RESET reset_minScale STORED false)
     Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(double, scaleFactor, 0.75)
@@ -122,6 +123,7 @@ class BuildScalesTransform : public Transform
     BR_PROPERTY(int, negToPosRatio, 1)
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(double, maxOverlap, 0)
+    BR_PROPERTY(float, minScale, 1.0)
     BR_PROPERTY(bool, negSamples, true)
 
 public:
@@ -131,14 +133,13 @@ private:
 
     void train(const TemplateList &_data)
     {
-        TemplateList data = _data;  // have to make a copy b/c data is const
+        TemplateList data(_data);  // have to make a copy b/c data is const
         aspectRatio = getAspectRatio(data);
         data.first().file.set("aspectRatio", aspectRatio);
         windowHeight = (int) qRound((float) windowWidth / aspectRatio);
 
         if (transform->trainable) {
             TemplateList full;
-
             foreach (const Template &tmpl, data) {
                 QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
                 QList<Rect> negRects;
@@ -222,7 +223,7 @@ private:
             startScale = qRound((float) rows / (float) windowHeight);
         else
             startScale = qRound((float) cols / (float) windowWidth);
-        for (float scale = startScale; scale >= 1.0; scale -= (1.0 - scaleFactor)) {
+        for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
             Template scaleImg(src.file, Mat());
             scaleImg.file.set("scale", scale);
             resize(src, scaleImg, Size(qRound(cols / scale), qRound(rows / scale)));
