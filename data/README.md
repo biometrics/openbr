@@ -7,6 +7,7 @@
 * [FERET](FERET/README.md)
 * [FRGC](FRGC/README.md)
 * [HFB](HFB/README.md)
+* __[INRIA Person](INRIAPerson/README.md)__
 * __[KTH](KTH/README.md)__
 * __[LFW](LFW/LFW.md)__
 * __[MEDS](MEDS/README.md)__

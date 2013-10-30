@@ -22,6 +22,7 @@
 #include "core/fuse.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
+#include "plugins/openbr_internal.h"
 
 using namespace br;
 
@@ -278,4 +279,13 @@ const char *br_version()
 {
     static QByteArray version = Context::version().toLocal8Bit();
     return version.data();
+}
+
+void br_slave_process(const char * baseName)
+{
+    WorkerProcess * worker = new WorkerProcess;
+    worker->transform = Globals->algorithm;
+    worker->baseName = baseName;
+    worker->mainLoop();
+    delete worker;
 }

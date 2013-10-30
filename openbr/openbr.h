@@ -408,6 +408,12 @@ BR_EXPORT void br_train_n(int num_inputs, const char *inputs[], const char *mode
  */
 BR_EXPORT const char *br_version();
 
+
+/*!
+  * \brief For internal use via ProcessWrapperTransform
+  */
+BR_EXPORT void br_slave_process(const char * baseKey);
+
 /*! @}*/
 
 #ifdef __cplusplus

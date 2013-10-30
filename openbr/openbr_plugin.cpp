@@ -17,6 +17,7 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFutureSynchronizer>
+#include <QLocalSocket>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QProcess>
@@ -41,6 +42,8 @@
 using namespace br;
 using namespace cv;
 
+Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
+
 // Some globals used to transfer data to Context::messageHandler so that
 // we can restart the process if we try and fail to create a QApplication.
 static bool creating_qapp = false;
@@ -58,16 +61,7 @@ QString File::flat() const
     foreach (const QString &key, keys) {
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
-        else {
-            if (QString(value.typeName()) == "QVariantList") {
-                QStringList variants;
-                foreach(const QVariant &variant, qvariant_cast<QVariantList>(value)) {
-                    variants.append(QtUtils::toString(variant));
-                }
-                if (!variants.isEmpty()) values.append(key + "=[" + variants.join(", ") + "]");
-            }
-            else values.append(key + "=" + QtUtils::toString(value));
-        }
+        else values.append(key + "=" + QtUtils::toString(value));
     }
 
     QString flat = name;
@@ -945,6 +939,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     qRegisterMetaType< QList<float> >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
+    qRegisterMetaType< QAbstractSocket::SocketState> ();
+    qRegisterMetaType< QLocalSocket::LocalSocketState> ();
 
     Globals = new Context();
     Globals->init(File());

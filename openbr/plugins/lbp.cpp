@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <limits>
 #include "openbr_internal.h"
 
@@ -30,6 +31,7 @@ namespace br
  * Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
  * \author Josh Klontz \cite jklontz
  */
+static int SCNT = 1;
 class LBPTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -98,7 +100,6 @@ class LBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat m; src.m().convertTo(m, CV_32F); assert(m.isContinuous() && (m.channels() == 1));
-
         Mat n(m.rows, m.cols, CV_8UC1);
         n = null; // Initialize to NULL LBP pattern
 

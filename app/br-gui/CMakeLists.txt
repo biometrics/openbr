@@ -1,0 +1,5 @@
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_executable(br-gui WIN32 br-gui.cpp ${BR_RESOURCES})
+qt5_use_modules(br-gui ${QT_DEPENDENCIES})
+target_link_libraries(br-gui openbr ${BR_THIRDPARTY_LIBS})
+install(TARGETS br-gui RUNTIME DESTINATION bin)

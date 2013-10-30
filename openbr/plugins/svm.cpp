@@ -157,7 +157,7 @@ private:
         dst = src;
         float prediction = svm.predict(src.m().reshape(1, 1), returnDFVal);
         if (returnDFVal) {
-            dst.file.set("conf", prediction);
+            dst.file.set("Confidence", prediction);
             // positive values ==> first class
             // negative values ==> second class
             prediction = prediction > 0 ? 0 : 1;
