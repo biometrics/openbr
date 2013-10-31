@@ -477,7 +477,9 @@ class LoadStoreTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(QString, fileName, QString())
 
     Transform *transform;
     QString baseName;
@@ -490,6 +492,7 @@ private:
     {
         if (transform != NULL) return;
         baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
+        baseName += fileName;
         if (!tryLoad()) transform = make(description);
         else            trainable = false;
     }
