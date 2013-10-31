@@ -499,7 +499,6 @@ private:
 
     void train(const TemplateList &data)
     {
-        // Store which partition we're in, load will take care of it before init?
         if (QFileInfo(getFileName()).exists())
             return;
 
