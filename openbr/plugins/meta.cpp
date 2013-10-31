@@ -477,7 +477,9 @@ class LoadStoreTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(QString, fileName, QString())
 
     Transform *transform;
     QString baseName;
@@ -490,12 +492,23 @@ private:
     {
         if (transform != NULL) return;
         baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
+        baseName += fileName;
         if (!tryLoad()) transform = make(description);
         else            trainable = false;
     }
 
     void train(const TemplateList &data)
     {
+        // Append the partitions we're using for training
+        if (Globals->crossValidate > 1) {
+            QList<int> partitions = data.files().crossValidationPartitions();
+            qSort(partitions);
+            QList<int>::iterator it = std::unique(partitions.begin(),partitions.end());
+            partitions.erase(it, partitions.end());
+            foreach(const int partition, partitions) baseName += QString::number(partition);
+        }
+
+        // Store which partition we're in, load will take care of it before init?
         if (QFileInfo(getFileName()).exists())
             return;
 
@@ -521,6 +534,7 @@ private:
 
     QString getFileName() const
     {
+        qDebug() << baseName;
         if (QFileInfo(baseName).exists()) return baseName;
         const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
         return QFileInfo(file).exists() ? file : QString();
