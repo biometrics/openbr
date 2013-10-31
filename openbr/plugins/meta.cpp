@@ -499,15 +499,6 @@ private:
 
     void train(const TemplateList &data)
     {
-        // Append the partitions we're using for training
-        if (Globals->crossValidate > 1) {
-            QList<int> partitions = data.files().crossValidationPartitions();
-            qSort(partitions);
-            QList<int>::iterator it = std::unique(partitions.begin(),partitions.end());
-            partitions.erase(it, partitions.end());
-            foreach(const int partition, partitions) baseName += QString::number(partition);
-        }
-
         // Store which partition we're in, load will take care of it before init?
         if (QFileInfo(getFileName()).exists())
             return;
@@ -534,7 +525,6 @@ private:
 
     QString getFileName() const
     {
-        qDebug() << baseName;
         if (QFileInfo(baseName).exists()) return baseName;
         const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
         return QFileInfo(file).exists() ? file : QString();
