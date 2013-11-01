@@ -395,6 +395,9 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
 
+        if (targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+            qFatal("Similarity matrix and file size mismatch.");
+
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
 
