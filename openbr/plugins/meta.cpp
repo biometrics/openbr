@@ -491,8 +491,8 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
-        baseName += fileName;
+        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
+        else baseName = fileName;
         if (!tryLoad()) transform = make(description);
         else            trainable = false;
     }
