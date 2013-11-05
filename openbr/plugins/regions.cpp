@@ -303,14 +303,14 @@ class RectFromPointsTransform : public UntrainableTransform
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     Q_PROPERTY(double padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
     Q_PROPERTY(double aspectRatio READ get_aspectRatio WRITE set_aspectRatio RESET reset_aspectRatio STORED false)
-    Q_PROPERTY(bool crop READ get_crop WRITE set_crop RESET reset_crop STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
     BR_PROPERTY(double, padding, 0)
     BR_PROPERTY(double, aspectRatio, 1.0)
-    BR_PROPERTY(bool, crop, true)
 
     void project(const Template &src, Template &dst) const
     {
+        dst = src;
+
         if (src.file.points().isEmpty()) {
             qWarning("No landmarks");
             dst = src;
@@ -343,16 +343,11 @@ class RectFromPointsTransform : public UntrainableTransform
         double deltaHeight = width/aspectRatio - height;
         height += deltaHeight;                                       
 
-        dst.file.setPoints(points);
-
         const int x = std::max(0.0, minX - deltaWidth/2.0);
         const int y = std::max(0.0, minY - deltaHeight/2.0);
 
-        if (crop) dst.m() = src.m()(Rect(x, y, std::min((double)src.m().cols-x, width), std::min((double)src.m().rows-y, height)));
-        else {
-            dst.file.appendRect(QRectF(x, y, std::min((double)src.m().cols-x, width), std::min((double)src.m().rows-y, height)));
-            dst.m() = src.m();
-        }
+        dst.file.setPoints(points);
+        dst.file.appendRect(QRectF(x, y, std::min((double)src.m().cols-x, width), std::min((double)src.m().rows-y, height)));
     }
 };
 
