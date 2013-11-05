@@ -206,6 +206,7 @@ BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
  * \see br_finalize
  */
 BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "");
+BR_EXPORT void br_initialize_default();
 
 /*!
  * \brief Wraps br::IsClassifier()
@@ -413,6 +414,22 @@ BR_EXPORT const char *br_version();
   * \brief For internal use via ProcessWrapperTransform
   */
 BR_EXPORT void br_slave_process(const char * baseKey);
+
+// to avoid having to include unwanted headers
+// this will be this header's conception of a template
+// any functions that need a Template pointer
+// will take this typedef and cast it
+// (and then we'll cross our fingers)
+typedef void* br_template;
+/*!
+  * \brief Load an image from a string buffer.
+  *   Easy way to pass an image in memory from another programming language to openbr.
+  */
+BR_EXPORT br_template br_load_img(const char *data);
+BR_EXPORT const unsigned char* br_unload_img(br_template tmpl);
+BR_EXPORT int br_img_rows(br_template tmpl);
+BR_EXPORT int br_img_cols(br_template tmpl);
+BR_EXPORT void br_enroll_template(br_template tmpl);
 
 /*! @}*/
 
