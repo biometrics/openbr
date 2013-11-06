@@ -160,7 +160,7 @@ struct AlgorithmCore
                                 data.removeAt(i);
                     const int numFiles = data.size();
 
-                    enroll(data);
+                    data >> *transform;
 
                     g->writeBlock(data);
                     const FileList newFiles = data.files();
@@ -184,9 +184,10 @@ struct AlgorithmCore
         return fileList;
     }
 
-    void enroll(TemplateList &data)
+    void enroll(Template &data)
     {
-        data >> *transform;
+        if (transform.isNull()) qFatal("Null transform.");
+        data = (data >> *transform);
     }
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
@@ -376,12 +377,9 @@ FileList br::Enroll(const File &input, const File &gallery)
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
-void br::Enroll(const Template &tmpl)
+void br::Enroll(Template &tmpl)
 {
-    QList<Template> tmpls;
-    tmpls.append(tmpl);
-    TemplateList tl(tmpls);
-    AlgorithmManager::getAlgorithm(tmpl.file.get<QString>("algorithm"))->enroll(tl);
+    AlgorithmManager::getAlgorithm(tmpl.file.get<QString>("algorithm"))->enroll(tmpl);
 }
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)

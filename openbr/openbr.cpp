@@ -308,26 +308,26 @@ br_template br_load_img(const char *data)
     return (br_template)tmpl;
 }
 
-const unsigned char *br_unload_img(br_template tmpl)
+unsigned char *br_unload_img(br_template tmpl)
 {
-    Template *t = (Template*)tmpl;
+    Template *t = reinterpret_cast<Template*>(tmpl);
     return t->m().data;
 }
 
 int br_img_rows(br_template tmpl)
 {
-    Template *t = (Template*)tmpl;
+    Template *t = reinterpret_cast<Template*>(tmpl);
     return t->m().rows;
 }
 
 int br_img_cols(br_template tmpl)
 {
-    Template *t = (Template*)tmpl;
+    Template *t = reinterpret_cast<Template*>(tmpl);
     return t->m().cols;
 }
 
 void br_enroll_template(br_template tmpl)
 {
-    Template *t = (Template*)tmpl;
+    Template *t = reinterpret_cast<Template*>(tmpl);
     Enroll(*t);
 }

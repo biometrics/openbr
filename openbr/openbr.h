@@ -426,7 +426,7 @@ typedef void* br_template;
   *   Easy way to pass an image in memory from another programming language to openbr.
   */
 BR_EXPORT br_template br_load_img(const char *data);
-BR_EXPORT const unsigned char* br_unload_img(br_template tmpl);
+BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
 BR_EXPORT int br_img_rows(br_template tmpl);
 BR_EXPORT int br_img_cols(br_template tmpl);
 BR_EXPORT void br_enroll_template(br_template tmpl);
