@@ -299,11 +299,10 @@ void br_slave_process(const char * baseName)
     delete worker;
 }
 
-br_template br_load_img(const char *data)
+br_template br_load_img(const char *data, int len)
 {
-    int size = strlen(data);
-    std::vector<char> buf(data, data+size);
-    cv::Mat img = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_ANYDEPTH);
+    std::vector<char> buf(data, data+len);
+    cv::Mat img = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
     Template *tmpl = new Template(img);
     return (br_template)tmpl;
 }
