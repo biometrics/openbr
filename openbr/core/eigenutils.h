@@ -21,6 +21,8 @@
 #include <Eigen/Core>
 #include <assert.h>
 
+void writeEigen(Eigen::MatrixXf X, QString filename);
+
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 inline QDataStream &operator<<(QDataStream &stream, const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat)
 {
