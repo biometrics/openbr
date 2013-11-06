@@ -325,6 +325,12 @@ int br_img_cols(br_template tmpl)
     return t->m().cols;
 }
 
+int br_img_channels(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().channels();
+}
+
 void br_enroll_template(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);

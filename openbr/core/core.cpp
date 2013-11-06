@@ -187,7 +187,7 @@ struct AlgorithmCore
     void enroll(Template &data)
     {
         if (transform.isNull()) qFatal("Null transform.");
-        data = (data >> *transform);
+        data >> *transform;
     }
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
