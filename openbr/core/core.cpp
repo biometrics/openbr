@@ -184,6 +184,12 @@ struct AlgorithmCore
         return fileList;
     }
 
+    void enroll(Template &data)
+    {
+        if (transform.isNull()) qFatal("Null transform.");
+        data >> *transform;
+    }
+
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
         if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
@@ -369,6 +375,11 @@ void br::Train(const File &input, const File &model)
 FileList br::Enroll(const File &input, const File &gallery)
 {
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
+}
+
+void br::Enroll(Template &tmpl)
+{
+    AlgorithmManager::getAlgorithm(tmpl.file.get<QString>("algorithm"))->enroll(tmpl);
 }
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
