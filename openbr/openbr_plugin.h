@@ -1321,7 +1321,7 @@ BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
  * \brief High-level function for enrolling templates.
  * \see br_enroll
  */
-BR_EXPORT void Enroll(Template &tmpl);
+BR_EXPORT void Enroll(TemplateList &tmpl);
 
 /*!
  * \brief High-level function for comparing galleries.

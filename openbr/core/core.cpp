@@ -184,7 +184,7 @@ struct AlgorithmCore
         return fileList;
     }
 
-    void enroll(Template &data)
+    void enroll(TemplateList &data)
     {
         if (transform.isNull()) qFatal("Null transform.");
         data >> *transform;
@@ -377,9 +377,10 @@ FileList br::Enroll(const File &input, const File &gallery)
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
-void br::Enroll(Template &tmpl)
+void br::Enroll(TemplateList &tl)
 {
-    AlgorithmManager::getAlgorithm(tmpl.file.get<QString>("algorithm"))->enroll(tmpl);
+    QString alg = tl.first().file.get<QString>("algorithm");
+    AlgorithmManager::getAlgorithm(alg)->enroll(tl);
 }
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)

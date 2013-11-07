@@ -331,8 +331,17 @@ int br_img_channels(br_template tmpl)
     return t->m().channels();
 }
 
-void br_enroll_template(br_template tmpl)
+br_template_list br_enroll_template(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
-    Enroll(*t);
+    TemplateList *tl = new TemplateList();
+    tl->append(*t);
+    Enroll(*tl);
+    return (br_template_list)tl;
+}
+
+br_template br_get_template(br_template_list tl, int index)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    return (br_template)&realTL->at(index);
 }

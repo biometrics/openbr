@@ -420,10 +420,11 @@ BR_EXPORT const char *br_version();
 BR_EXPORT void br_slave_process(const char * baseKey);
 
 // to avoid having to include unwanted headers
-// this will be this header's conception of a template
+// this will be this header's conception of a Template
 // any functions that need a Template pointer
 // will take this typedef and cast it
 typedef void* br_template;
+typedef void* br_template_list;
 /*!
   * \brief Load an image from a string buffer.
   *   Easy way to pass an image in memory from another programming language to openbr.
@@ -450,9 +451,10 @@ BR_EXPORT int br_img_cols(br_template tmpl);
   */
 BR_EXPORT int br_img_channels(br_template tmpl);
 /*!
-  * \brief Enroll a br::Template from the C API!
+  * \brief Enroll a br::Template from the C API! Returns a br::TemplateList
   */
-BR_EXPORT void br_enroll_template(br_template tmpl);
+BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
+BR_EXPORT br_template br_get_template(br_template_list tl, int index);
 
 /*! @}*/
 
