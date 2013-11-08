@@ -465,6 +465,11 @@ BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
   * \param index The index of the br::Template.
   */
 BR_EXPORT br_template br_get_template(br_template_list tl, int index);
+/*!
+  * \brief Get the number of br::Templates in a br::TemplateList.
+  * \param tl Pointer to a br::TemplateList
+  */
+BR_EXPORT int br_num_templates(br_template_list tl);
 
 /*! @}*/
 

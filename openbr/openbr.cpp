@@ -345,3 +345,9 @@ br_template br_get_template(br_template_list tl, int index)
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
     return (br_template)&realTL->at(index);
 }
+
+int br_num_templates(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    return realTL->size();
+}
