@@ -1013,21 +1013,20 @@ QMutex DirectStreamTransform::poolsAccess;
 
 BR_REGISTER(Transform, DirectStreamTransform)
 
-;
-
-class StreamTransform : public TimeVaryingTransform
+class StreamTransform : public WrapperTransform
 {
     Q_OBJECT
 
 public:
-    StreamTransform() : TimeVaryingTransform(false)
+    StreamTransform() : WrapperTransform(false)
     {
     }
 
-    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
-    BR_PROPERTY(br::Transform *, transform, NULL)
+    Q_PROPERTY(br::DirectStreamTransform::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
+
     BR_PROPERTY(int, activeFrames, 100)
+    BR_PROPERTY(br::DirectStreamTransform::StreamModes, readMode, br::DirectStreamTransform::Auto)
 
     bool timeVarying() const { return true; }
 
@@ -1068,6 +1067,7 @@ public:
         basis.setParent(this->parent());
         basis.transforms.clear();
         basis.activeFrames = this->activeFrames;
+        basis.readMode = this->readMode;
 
         // We need at least a CompositeTransform * to acess transform's children.
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (transform);
@@ -1468,6 +1468,7 @@ void DirectStreamTransform::init()
 
     // Are our children time varying or not? This decides whether
     // we run them in single threaded or multi threaded stages
+    stage_variance.clear();
     stage_variance.reserve(transforms.size());
     foreach (const br::Transform *transform, transforms) {
         stage_variance.append(transform->timeVarying());

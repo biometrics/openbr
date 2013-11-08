@@ -131,18 +131,33 @@ struct AlgorithmCore
 
         TemplateList i(TemplateList::fromGallery(input));
 
-        QString shellDescription = "DirectStream([Identity,ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard],readMode=DistributeFrames)";
+        // Trust me, this makes complete sense.
+        // We're just going to make a pipe with a placeholder first transform
+        QString pipeDesc = "Identity+ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard";
+        QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 
-        // Make a stream with a placeholder first transform, and our progress counter/gallery output.
-        QScopedPointer<Transform> enrollJob(Transform::make(shellDescription, NULL));
-
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(enrollJob.data());
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
 
+        // replace that placeholder with the current algorithm
         downcast->transforms[0] = this->transform.data();
+
+        // call init on the pipe to collapse the algorithm (if its top level is a pipe)
         downcast->init();
-        downcast->projectUpdate(i,i);
+
+        // Next, we make a Stream (with placeholder transform)
+        QString streamDesc = "Stream(Identity, readMode=DistributeFrames)";
+        QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
+        WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
+
+        // replace that placeholder with the pipe we built
+        wrapper->transform = downcast;
+
+        // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
+        wrapper->init();
+
+        wrapper->projectUpdate(i,i);
 
         return i.files();
     }
