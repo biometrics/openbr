@@ -45,8 +45,13 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        TemplateList data(TemplateList::fromGallery(input));
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity])", NULL));
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+        downcast->transforms[0] = this->transform.data();
 
+        TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
         // needs to know if it's called during train or enroll
@@ -58,7 +63,7 @@ struct AlgorithmCore
 
         QTime time; time.start();
         qDebug("Training Enrollment");
-        transform->train(data);
+        downcast->train(data);
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
@@ -119,7 +124,6 @@ struct AlgorithmCore
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
-        FileList fileList;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
@@ -128,7 +132,7 @@ struct AlgorithmCore
         TemplateList i(TemplateList::fromGallery(input));
 
         QString shellDescription = "DirectStream([Identity,ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard],readMode=DistributeFrames)";
-        qDebug("built shell string %s", qPrintable(shellDescription));
+
         // Make a stream with a placeholder first transform, and our progress counter/gallery output.
         QScopedPointer<Transform> enrollJob(Transform::make(shellDescription, NULL));
 
