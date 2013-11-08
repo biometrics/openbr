@@ -121,6 +121,8 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        FileList files;
+
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
@@ -128,12 +130,29 @@ struct AlgorithmCore
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
         }
+        TemplateList data(TemplateList::fromGallery(input));
 
-        TemplateList i(TemplateList::fromGallery(input));
+        if (gallery.contains("append"))
+        {
+            // Remove any templates which are already in the gallery
+            QScopedPointer<Gallery> g(Gallery::make(gallery));
+            files = g->files();
+            QStringList names = files.names();
+            for (int i = data.size() - 1; i>=0; i--) {
+                if (names.contains(data[i].file.name))
+                {
+                    data.removeAt(i);
+                }
+            }
+        }
+
+        if (data.empty())
+            return files;
+
 
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
-        QString pipeDesc = "Identity+ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard";
+        QString pipeDesc = "Identity+ProgressCounter("+QString::number(data.length())+")+GalleryOutput("+gallery.flat()+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
@@ -157,9 +176,10 @@ struct AlgorithmCore
         // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
         wrapper->init();
 
-        wrapper->projectUpdate(i,i);
+        wrapper->projectUpdate(data,data);
 
-        return i.files();
+        files.append(data.files());
+        return files;
     }
 
     void enroll(TemplateList &data)

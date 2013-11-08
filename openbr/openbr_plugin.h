@@ -1060,6 +1060,7 @@ public:
     void writeBlock(const TemplateList &templates); /*!< \brief Serialize a template list. */
     virtual void write(const Template &t) = 0; /*!< \brief Serialize a template. */
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
+    void init();
 
 private:
     QSharedPointer<Gallery> next;

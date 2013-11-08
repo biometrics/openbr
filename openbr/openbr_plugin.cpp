@@ -1153,6 +1153,17 @@ Gallery *Gallery::make(const File &file)
     return gallery;
 }
 
+// Default init -- if the file contains "append", read the existing
+// data and immediately write it
+void Gallery::init()
+{
+    if (file.exists() && file.contains("append"))
+    {
+        TemplateList data = this->read();
+        this->writeBlock(data);
+    }
+}
+
 /* Transform - public methods */
 Transform::Transform(bool _independent, bool _trainable)
 {

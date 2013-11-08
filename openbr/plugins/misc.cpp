@@ -520,8 +520,6 @@ class EventTransform : public UntrainableMetaTransform
 BR_REGISTER(Transform, EventTransform)
 
 
-//ProgressCounter+Output
-
 class GalleryOutputTransform : public TimeVaryingTransform
 {
     Q_OBJECT
