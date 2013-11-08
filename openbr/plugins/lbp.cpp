@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <limits>
 #include "openbr_internal.h"
 
@@ -98,7 +99,6 @@ class LBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat m; src.m().convertTo(m, CV_32F); assert(m.isContinuous() && (m.channels() == 1));
-
         Mat n(m.rows, m.cols, CV_8UC1);
         n = null; // Initialize to NULL LBP pattern
 

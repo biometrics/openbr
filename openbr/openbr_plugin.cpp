@@ -42,6 +42,8 @@
 using namespace br;
 using namespace cv;
 
+Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
+
 // Some globals used to transfer data to Context::messageHandler so that
 // we can restart the process if we try and fail to create a QApplication.
 static bool creating_qapp = false;
@@ -935,7 +937,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
     qRegisterMetaType< QAbstractSocket::SocketState> ();
-
+    qRegisterMetaType< QLocalSocket::LocalSocketState> ();
 
     Globals = new Context();
     Globals->init(File());

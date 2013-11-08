@@ -1,0 +1,2226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biometric-signature-set>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001501.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(453,0,453,453)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001504.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001511.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,322,322,322)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001512.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(810,405,405,405)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001514.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(523,261,261,261)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001520.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,227,227,227)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001521.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(103,361,51,51)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001522.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,720,720)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001531.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,294,294)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001533.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,279,279)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001544.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,579,579)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001545.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(506,0,506,506)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001546.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,268,268)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001549.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,335,335)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001555.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,230,230,230)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001566.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(251,125,125,125)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001573.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(240,240,240,240)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001574.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(155,311,155,155)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001590.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,402,402,402)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001593.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001602.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,544,544)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001604.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,470,470)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001607.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,342,342)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001631.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,318,318)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001633.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(287,0,287,287)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001634.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,363,363)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001638.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(540,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001639.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(800,0,400,400)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001641.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(589,0,294,294)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001653.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(609,0,304,304)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001654.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,682,682)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001658.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,513,513)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001659.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(640,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001660.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(527,0,527,527)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001661.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,675,675)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001664.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,571,571)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001670.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,442,442)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001676.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,720,720)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001682.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,396,396)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001683.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,501,501)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001684.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001688.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001704.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(540,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001706.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,720,720)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001715.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,690,690)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001716.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,448,224,224)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001718.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,556,278,278)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001719.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(483,0,483,483)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001722.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,405,405,405)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001723.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001724.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,384,384)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop001725.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(84,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000001.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,368,368)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000002.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,249,249)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000003.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000004.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000005.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000006.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(360,360,51,51)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000007.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,284,284,284)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000008.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,403,403)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000009.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000012.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,432,432)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000013.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,486,486)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000015.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,526,526)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000016.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(393,0,393,393)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000017.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000018.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,370,370)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000019.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000020.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,447,447)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000021.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,470,470)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000023.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(353,0,353,353)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000024.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(607,0,303,303)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000025.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(303,303,303,303)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000026.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,280,280)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000027.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,540,540)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/crop_000604.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,268,268)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_007.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_008.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_009.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_010.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_011.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_012.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_013.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_014.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_015.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_026.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_028.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_029.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_030.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,405,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_032.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_033.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_034.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_036.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_037.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_038.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_039.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_040.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_051.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_052.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_053.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_055.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_056.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_058.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_059.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_062.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_063.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_064.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_065.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_070.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(341,0,113,113)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_071.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_073.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(216,0,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_075.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(96,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_076.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_085.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_087.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,227,113,113)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_088.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(151,303,151,151)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_089.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_090.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_092.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_093.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_094.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_095.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(303,151,151,151)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_096.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_098.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_099.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_100.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(320,256,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_104.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_105.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_107.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_115.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_118.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(113,227,113,113)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_120.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_122.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_127.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_132.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,36,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_134.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_135.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_136.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_137.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_138.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_159.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_161.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_164.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_186.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_188.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_189.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_190.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_191.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_193.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_194.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_198.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(320,192,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_200.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_204.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_206.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_207.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_210.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_212.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_216.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(341,170,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_217.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_218.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,256,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_222.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_230.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(427,341,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_236.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_246.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_247.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(341,0,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_248.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_249.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_250.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_251.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,151,151)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_255.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_263.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_265.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_272.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_280.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_282.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,256,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_290.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_293.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_303.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_306.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_314.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_315.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_316.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(513,0,27,27)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_317.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_318.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_323.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_325.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_335.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(96,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_336.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_337.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_347.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(216,0,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_350.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_004.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_006.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_012.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_014.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_027.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(455,303,151,151)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_028.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_029.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_035.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_038.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_042.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_043.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_044.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_045.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_046.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_047.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_048.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_049.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_050.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_051.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_052.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_053.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_054.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_055.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_056.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_057.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_058.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_059.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_060.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_061.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_062.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_063.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_064.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_065.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_066.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_067.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_069.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_070.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_071.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_072.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_073.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_076.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(341,113,113,113)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_077.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_079.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(468,108,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_080.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_081.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_082.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_083.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_084.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_085.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_086.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_087.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_088.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(144,216,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_089.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_090.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_091.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_092.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_093.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_094.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_095.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(384,384,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_096.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_097.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_098.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_099.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_100.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_101.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_102.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_103.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_104.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_105.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_106.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_107.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_108.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_109.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_110.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,64,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_111.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_112.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_113.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_114.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_126.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_133.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_136.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_140.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_141.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_149.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_153.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_159.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_160.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_161.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_162.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_163.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_164.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(504,288,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_165.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_177.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(324,0,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_181.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_188.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_189.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(341,341,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="pos">
+		<presentation file-name="Test/pos/person_and_bike_190.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(512,85,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001147.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(75,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001148.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(172,0,57,57)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001149.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(67,0,33,33)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001150.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001153.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001154.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001155.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001156.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001157.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001158.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001159.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(224,32,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001160.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001161.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001162.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001163.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001165.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(216,24,24,24)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001166.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001167.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001168.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001169.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001170.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001171.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001172.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001173.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001176.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(75,151,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001177.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001178.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(134,0,134,134)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001179.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001180.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,99,99)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001181.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(56,0,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001192.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001193.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(101,0,101,101)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001194.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001202.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001203.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,85,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001204.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001205.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001207.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001208.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001209.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(113,56,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001210.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001211.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(96,32,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001212.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001214.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001215.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001216.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001217.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001218.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001219.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001220.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001221.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001222.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001223.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001224.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001225.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001226.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001227.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,135,135)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001228.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001231.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001232.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001233.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(75,75,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001234.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001236.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001240.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,101,101)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001241.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001242.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001243.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001247.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001249.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001250.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001251.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001253.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001254.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001255.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001256.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001257.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001258.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001259.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001260.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001262.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001263.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001265.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001269.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001270.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001271.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001272.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001273.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001279.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001280.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001292.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001293.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001294.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001301.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001304.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001305.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001307.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001308.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001309.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001319.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001324.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001325.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001326.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001327.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,85,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001328.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001329.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001330.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001331.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001332.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001335.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001337.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001338.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001342.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001343.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001344.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001348.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001349.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001350.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001352.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(213,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001353.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001354.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001355.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001356.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001358.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001361.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001362.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001369.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001370.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001371.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001372.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001373.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,101,101)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001374.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(160,32,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001375.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001376.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001377.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(101,0,101,101)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001378.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001379.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,85,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001380.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001381.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001382.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001383.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001385.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(72,48,24,24)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001386.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001387.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(96,96,24,24)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001388.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(96,32,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001389.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(72,0,18,18)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001390.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(113,56,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001391.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(56,56,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001392.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001393.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,32,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001394.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001395.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001396.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,42,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001401.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001402.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001405.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001406.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001407.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001408.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(151,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001409.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001410.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001411.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001412.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(256,128,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001413.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001414.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(64,0,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001415.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(151,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001416.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001417.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001418.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(144,24,24,24)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001419.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001420.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001421.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001422.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,0,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001425.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001427.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001431.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001432.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001433.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,56,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001434.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001435.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001436.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001437.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001438.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(75,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001439.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(128,0,42,42)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001440.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001441.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001442.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001443.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001444.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001445.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001447.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001448.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(64,0,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001449.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(192,0,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001450.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001452.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001453.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,180,180)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001454.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001455.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(291,0,291,291)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001456.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(227,0,56,56)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001457.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(144,0,18,18)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/00001459.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(151,0,75,75)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/01-03f.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-01-03_17h26m13s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-01-04_17h01m28s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-01-24_16h17m48s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(512,205,102,102)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-03-12_11h12m05s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,324,324)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-03-12_11h55m08s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-03-12_14h48m42s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(86,129,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-03-12_17h50m02s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(307,153,76,76)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-11_11h51m15s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-11_13h54m18s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-11_14h01m45s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-11_14h09m24s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-25_12h04m32s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-04-25_14h40m04s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(410,205,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-08_10h26m52s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(48,97,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-10_16h22m42s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(345,302,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-10_18h03m03s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(288,0,57,57)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-10_18h36m17s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(389,356,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-11_18h44m38s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-11_21h37m10s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-12_18h05m32s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(307,76,76,76)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-14_13h25m18s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(419,0,18,18)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-14_19h36m25s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,243,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-14_19h43m31s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_10h02m38s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(364,0,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_11h23m43s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(288,115,57,57)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_11h41m51s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,410,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_11h43m48s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(102,102,102,102)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_13h58m11s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_15h52m20s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-16_19h11m16s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,136,136)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-30_10h50m43s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(345,0,86,86)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-30_12h07m51s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-05-30_14h08m24s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(243,0,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-06-28_00h53m14s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,324,324)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_09h14m47s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,288,288)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_09h22m45s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_11h10m42s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_11h50m53s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(182,0,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_13h56m23s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_13h59m38s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_14h00m20s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-06_14h59m24s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,136,136)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-07_04h31m36s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(86,0,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-07_04h40m20s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,129,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-07_07h46m43s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,182,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-08_05h01m32s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-08_23h18m59s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,324,324)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-08_23h27m44s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-08_23h55m07s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,324,324)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_01h05m35s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_17h00m44s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_18h11m16s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,324,324)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_18h17m15s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_19h08m37s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_20h02m53s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_21h27m05s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(364,182,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_21h52m21s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_22h25m11s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(345,57,57,57)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-09_22h30m55s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,243,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-10_02h54m18s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-18_13h21m58s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-18_15h56m59s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-25_11h25m12s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(432,86,86,86)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-07-25_12h26m41s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-07_14h38m48s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,182,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-16_10h13m11s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-16_14h33m40s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(230,0,115,115)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-16_17h46m53s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-16_18h14m05s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-17_09h50m11s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-17_11h27m30s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(48,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-17_13h34m32s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-17_14h29m45s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-17_16h17m58s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-18_10h43m07s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(194,389,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-18_16h06m52s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,273,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-18_17h59m51s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-18_18h54m20s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,273,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_12h59m58s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_13h22m04s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_13h22m54s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_13h30m48s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_15h28m28s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_16h29m34s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-19_18h18m18s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-20_11h04m42s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,153,153)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-20_11h41m04s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-20_12h05m11s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-20_12h37m02s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-21_10h06m43s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(437,48,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-21_10h49m39s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-21_10h59m45s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,273,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-21_14h09m14s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-21_16h59m25s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_09h43m19s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(216,0,216,216)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_09h49m40s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_12h05m47s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_12h10m27s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_12h18m46s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_12h24m05s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_14h41m59s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_17h02m31s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,115,115,115)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_18h12m03s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(182,145,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-22_19h18m30s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,205,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-23_12h31m12s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(72,0,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-23_12h33m21s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-23_12h38m23s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(259,64,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-23_12h42m36s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,410,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-23_15h35m56s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_12h44m04s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_14h17m59s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_16h28m39s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,273,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_17h11m07s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_19h56m52s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_21h00m12s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,410,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-24_21h44m09s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-25_14h16m32s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(410,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-25_14h24m19s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,273,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-08-25_18h20m04s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-04_15h14m39s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-13_14h38m33s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_15h09m49s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(518,129,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_15h28m13s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(86,172,43,43)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_15h57m02s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(182,182,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_16h16m49s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_16h58m08s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,182,182,182)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-18_17h24m23s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(243,0,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-19_10h19m52s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(421,162,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-19_11h58m56s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,194,32,32)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-19_14h57m48s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(243,0,243,243)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-19_16h05m31s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-24_14h37m43s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-24_14h42m22s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-09-24_14h48m16s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-10-02_10h26m23s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,364,364)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-10-02_10h52m13s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(82,164,27,27)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-07_18h37m53s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,205,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-07_19h02m42s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(172,0,86,86)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-09_10h30m38s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(273,0,273,273)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-09_10h43m56s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-09_11h24m12s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,288,288)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-17_14h54m39s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-18_01h51m47s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-18_13h35m07s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/D2004-11-18_18h11m57s.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(205,205,205,205)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_003.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_006.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_009.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_012.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_015.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_018.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_021.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_024.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_027.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/bike_030.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00009.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,255,255)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00179.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00182.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00197.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00208.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,216,216,216)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/dsc00232.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(192,256,64,64)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_003.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_006.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_009.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_012.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_015.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_018.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_021.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_024.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_027.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_030.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_033.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_036.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_039.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_042.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_045.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_048.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_051.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_054.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(113,0,113,113)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_057.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_060.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_063.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_066.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_069.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_072.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_075.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_078.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_081.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_084.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_087.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_090.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_093.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_096.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_099.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,270,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_102.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_105.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_108.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_111.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_114.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_117.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_120.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_123.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_126.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_129.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_132.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_135.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_138.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_141.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_144.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(85,0,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_148.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(252,0,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_151.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_154.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(202,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_157.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_160.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_163.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_167.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_170.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_173.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_176.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(512,170,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_179.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_182.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_185.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_188.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_191.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(170,0,85,85)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_194.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_197.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_200.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_203.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_206.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(192,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_209.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_212.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_215.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_218.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(144,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_221.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_224.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(480,0,48,48)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_227.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_230.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_233.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_236.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_239.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(513,162,27,27)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_242.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_245.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_248.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(270,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_251.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_254.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_257.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(468,36,36,36)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_260.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(405,202,202,202)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_263.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_266.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_270.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,360,360)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/no_person__no_bike_273.png" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(0,0,270,270)]"/>
+	</biometric-signature>
+	<biometric-signature name="neg">
+		<presentation file-name="Test/neg/prefecture.jpg" FTO="false" Gallery="/data/storage/PATTREC/data/INRIAPerson/sigset/test.xml" Rects="[(364,0,91,91)]"/>
+	</biometric-signature>
+</biometric-signature-set>
