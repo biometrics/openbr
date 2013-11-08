@@ -436,24 +436,34 @@ BR_EXPORT br_template br_load_img(const char *data, int len);
 /*!
   * \brief Unload an image to a string buffer.
   *   Easy way to pass an image from openbr to another programming language.
+  * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
 /*!
   * \brief Get the number of rows in an image.
+  * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT int br_img_rows(br_template tmpl);
 /*!
   * \brief Get the number of columns in an image.
+  * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT int br_img_cols(br_template tmpl);
 /*!
   * \brief Get the number of channels in an image.
+  * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT int br_img_channels(br_template tmpl);
 /*!
-  * \brief Enroll a br::Template from the C API! Returns a br::TemplateList
+  * \brief Enroll a br::Template from the C API! Returns a pointer to a br::TemplateList
+  * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
+/*!
+  * \brief Get a pointer to a br::Template at a specified index.
+  * \param tl Pointer to a br::TemplateList.
+  * \param index The index of the br::Template.
+  */
 BR_EXPORT br_template br_get_template(br_template_list tl, int index);
 
 /*! @}*/
