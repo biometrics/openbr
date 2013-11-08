@@ -5,8 +5,10 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <Eigen/Dense>
 
 using namespace cv;
+using namespace Eigen;
 
 namespace br
 {
@@ -130,6 +132,7 @@ public:
     BuildScalesTransform() : Transform(false, true) {}
 private:
     int windowHeight;
+    float aspectRatio;
 
     void train(const TemplateList &_data)
     {
@@ -232,8 +235,6 @@ private:
                 return;
         }
     }
-
-    float aspectRatio;
 };
 
 BR_REGISTER(Transform, BuildScalesTransform)
@@ -267,6 +268,130 @@ class HOGDetectTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, HOGDetectTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Consolidate redundant/overlapping detections.
+ * \author Brendan Klare \cite bklare
+ */
+class ConsolidateDetectionsTransform : public Transform
+{
+    Q_OBJECT
+
+public:
+    ConsolidateDetectionsTransform() : Transform(false, false) {}
+private:
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (!dst.file.contains("Confidences"))
+            return;
+
+        //Compute overlap between rectangles and create discrete Laplacian matrix
+        QList<Rect> rects = OpenCVUtils::toRects(src.file.rects());
+        int n = rects.size();
+        MatrixXf laplace(n,n);
+        for (int i = 0; i < n; i++) {
+            laplace(i,i) = 0;
+        }
+        for (int i = 0; i < n; i++){
+            for (int j = i + 1; j < n; j++) {
+                float overlap = (float)((rects[i] & rects[j]).area()) / (float)max(rects[i].area(), rects[j].area());
+                if (overlap > 0.5) {
+                    laplace(i,j) = -1.0;
+                    laplace(j,i) = -1.0;
+                    laplace(i,i) = laplace(i,i) + 1.0;
+                    laplace(j,j) = laplace(j,j) + 1.0;
+                } else {
+                    laplace(i,j) = 0;
+                    laplace(j,i) = 0;
+                }
+            }
+        }
+
+        // Compute eigendecomposition
+        SelfAdjointEigenSolver<Eigen::MatrixXf> eSolver(laplace);
+        MatrixXf allEVals = eSolver.eigenvalues();
+        MatrixXf allEVecs = eSolver.eigenvectors();
+
+        //Keep eigenvectors with zero eigenvalues
+        int nRegions = 0;
+        for (int i = 0; i < n; i++) {
+            if (fabs(allEVals(i)) < 1e-4) {
+                nRegions++;
+            }
+        }
+        MatrixXf regionVecs(n, nRegions);
+        for (int i = 0, cnt = 0; i < n; i++) {
+            if (fabs(allEVals(i)) < 1e-4)
+                regionVecs.col(cnt++) = allEVecs.col(i);
+        }
+
+        //Determine membership for each consolidated location
+        // and compute average of regions. This is determined by
+        // finding which eigenvector has the highest magnitude for
+        // each input dimension. Each input dimension corresponds to
+        // one of the input rect region. Thus, each eigenvector represents
+        // a set of overlaping regions.
+        float midX[nRegions];
+        float midY[nRegions];
+        float avgWidth[nRegions];
+        float avgHeight[nRegions];
+        float confs[nRegions];
+        int cnts[nRegions];
+        int mx;
+        int mxIdx;
+        for (int i = 0 ; i < nRegions; i++) {
+            midX[i] = 0;
+            midY[i] = 0;
+            avgWidth[i] = 0;
+            avgHeight[i] = 0;
+            confs[i] = 0;
+            cnts[i] = 0;
+        }
+
+        QList<float> confidences = dst.file.getList<float>("Confidences");
+        for (int i = 0; i < n; i++) {
+            mx = 0.0;
+            mxIdx = -1;
+
+            for (int j = 0; j < nRegions; j++) {
+                if (fabs(regionVecs(i,j)) > mx) {
+                    mx = fabs(regionVecs(i,j));
+                    mxIdx = j;
+                }
+            }
+
+            Rect curRect = rects[i];
+            midX[mxIdx] += ((float)curRect.x + (float)curRect.width  / 2.0);
+            midY[mxIdx] += ((float)curRect.y + (float)curRect.height / 2.0);
+            avgWidth[mxIdx]  += (float) curRect.width;
+            avgHeight[mxIdx] += (float) curRect.height;
+            confs[mxIdx] += confidences[i];
+            cnts[mxIdx]++;
+        }
+
+        QList<Rect> consolidatedRects;
+        QList<float> consolidatedConfidences;
+        for (int i = 0; i < nRegions; i++) {
+            float cntF = (float) cnts[i];
+            if (cntF > 0) {
+                int x = qRound((midX[i] / cntF) - (avgWidth[i] / cntF) / 2.0);
+                int y = qRound((midY[i] / cntF) - (avgHeight[i] / cntF) / 2.0);
+                int w = qRound(avgWidth[i] / cntF);
+                int h = qRound(avgHeight[i] / cntF);
+                consolidatedRects.append(Rect(x,y,w,h));
+                consolidatedConfidences.append(confs[i] / cntF);
+            }
+        }
+
+        dst.file.setRects(consolidatedRects);
+        dst.file.setList<float>("Confidences", consolidatedConfidences);
+    }
+};
+
+BR_REGISTER(Transform, ConsolidateDetectionsTransform)
 
 } // namespace br
 

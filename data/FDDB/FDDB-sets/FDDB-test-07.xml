@@ -1,0 +1,1637 @@
+<biometric-signature-set>
+	<biometric-signature name="img00001">
+		<presentation Label="pos" file-name="2002/08/22/big/img_141.jpg">
+			<data:bbox height="79.44" width="79.44" x="178.64" y="47.298"/>
+			<data:bbox height="48.6142" width="48.6142" x="19.7084" y="226.774"/>
+			<data:bbox height="33.0724" width="33.0724" x="98.2877" y="68.2807"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/22/big/img_303.jpg">
+			<data:bbox height="155.879694" width="155.879694" x="51.095927" y="61.781091"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/09/big/img_393.jpg">
+			<data:bbox height="124.24763" width="124.24763" x="196.754214" y="38.67112"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_963.jpg">
+			<data:bbox height="129.16459" width="129.16459" x="130.350247" y="94.119286"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/02/big/img_1215.jpg">
+			<data:bbox height="163.3041" width="163.3041" x="81.318719" y="54.310612"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/19/big/img_674.jpg">
+			<data:bbox height="60.279494" width="60.279494" x="95.728389" y="26.952472"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/12/big/img_690.jpg">
+			<data:bbox height="156.483118" width="156.483118" x="50.795354" y="165.585334"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_637.jpg">
+			<data:bbox height="120.1294" width="120.1294" x="62.3892" y="80.0278"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_841.jpg">
+			<data:bbox height="115.2654" width="115.2654" x="317.2056" y="42.7704"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/24/big/img_71.jpg">
+			<data:bbox height="93.654908" width="93.654908" x="92.353582" y="36.172456"/>
+			<data:bbox height="59.98113" width="59.98113" x="415.101938" y="76.395399"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/25/big/img_596.jpg">
+			<data:bbox height="153.71508" width="153.71508" x="31.75056" y="26.226694"/>
+			<data:bbox height="157.187074" width="157.187074" x="176.7329" y="200.366445"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/24/big/img_864.jpg">
+			<data:bbox height="89.195548" width="89.195548" x="7.470002" y="112.477877"/>
+			<data:bbox height="88.50744" width="88.50744" x="153.505564" y="42.904031"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/18/big/img_293.jpg">
+			<data:bbox height="66.789" width="66.789" x="85.0196" y="84.3435"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_657.jpg">
+			<data:bbox height="101.6218" width="101.6218" x="141.2478" y="46.879"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/15/big/img_411.jpg">
+			<data:bbox height="81.688" width="81.688" x="88.9123" y="29.3327"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_348.jpg">
+			<data:bbox height="107.5166" width="107.5166" x="162.960453" y="58.9719"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3157.jpg">
+			<data:bbox height="90.437322" width="90.437322" x="162.428904" y="48.885036"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/20/big/img_663.jpg">
+			<data:bbox height="75.701068" width="75.701068" x="34.294457" y="18.779777"/>
+			<data:bbox height="125.218722" width="125.218722" x="140.344639" y="57.01551"/>
+			<data:bbox height="56.93285" width="56.93285" x="4.291204" y="239.276192"/>
+			<data:bbox height="69.471862" width="69.471862" x="302.664863" y="14.81785"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2003/01/13/big/img_654.jpg">
+			<data:bbox height="245.044334" width="245.044334" x="22.042133" y="87.053233"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_433.jpg">
+			<data:bbox height="58.9362" width="58.9362" x="230.725" y="65.1273"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/30/big/img_18200.jpg">
+			<data:bbox height="57.009022" width="57.009022" x="5.361436" y="57.271255"/>
+			<data:bbox height="50.128906" width="50.128906" x="18.469694" y="235.199133"/>
+			<data:bbox height="48.766518" width="48.766518" x="123.821286" y="149.43871"/>
+			<data:bbox height="83.4542" width="83.4542" x="186.5386" y="121.5192"/>
+			<data:bbox height="49.687162" width="49.687162" x="264.481173" y="132.107752"/>
+			<data:bbox height="54.963712" width="54.963712" x="376.078174" y="47.431517"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2002/08/12/big/img_226.jpg">
+			<data:bbox height="83.4798" width="83.4798" x="112.5153" y="47.776"/>
+			<data:bbox height="59.851526" width="59.851526" x="172.944534" y="93.963343"/>
+			<data:bbox height="89.190274" width="89.190274" x="334.119356" y="50.811194"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2003/01/16/big/img_491.jpg">
+			<data:bbox height="94.023202" width="94.023202" x="257.849743" y="41.988399"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_666.jpg">
+			<data:bbox height="99.34099" width="99.34099" x="54.760812" y="93.393124"/>
+			<data:bbox height="98.187642" width="98.187642" x="295.124737" y="109.533998"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/19/big/img_576.jpg">
+			<data:bbox height="103.137882" width="103.137882" x="191.142473" y="131.922803"/>
+			<data:bbox height="39.187064" width="39.187064" x="110.224649" y="43.861013"/>
+			<data:bbox height="104.188908" width="104.188908" x="24.013464" y="164.126155"/>
+			<data:bbox height="90.58384" width="90.58384" x="-7.089997" y="60.044618"/>
+			<data:bbox height="27.429878" width="27.429878" x="326.828457" y="199.652985"/>
+			<data:bbox height="33.32445" width="33.32445" x="169.013831" y="160.16876"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2003/01/15/big/img_776.jpg">
+			<data:bbox height="209.4192" width="209.4192" x="79.547602" y="64.6413"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_899.jpg">
+			<data:bbox height="64.6318" width="64.6318" x="118.4088" y="30.1791"/>
+			<data:bbox height="60.9788" width="60.9788" x="274.8526" y="39.6503"/>
+			<data:bbox height="17.5968" width="17.5968" x="20.7064" y="121.7486"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/19/big/img_397.jpg">
+			<data:bbox height="193.51064" width="193.51064" x="48.105189" y="97.449256"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/14/big/img_44.jpg">
+			<data:bbox height="141.151668" width="141.151668" x="40.271207" y="132.005543"/>
+			<data:bbox height="176.715076" width="176.715076" x="189.788095" y="68.870462"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/15/big/img_762.jpg">
+			<data:bbox height="127.3298" width="127.3298" x="61.0167" y="215.7001"/>
+			<data:bbox height="118.8456" width="118.8456" x="164.1075" y="199.8277"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/02/big/img_982.jpg">
+			<data:bbox height="130.605782" width="130.605782" x="113.492019" y="78.107288"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15234.jpg">
+			<data:bbox height="88.3294" width="88.3294" x="127.4319" y="50.7035"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/17/big/img_556.jpg">
+			<data:bbox height="89.0096" width="89.0096" x="126.1191" y="163.1622"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_410.jpg">
+			<data:bbox height="107.0496" width="107.0496" x="138.2311" y="44.849"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_386.jpg">
+			<data:bbox height="71.3718" width="71.3718" x="93.7849" y="47.1476"/>
+			<data:bbox height="35.215" width="35.215" x="187.8232" y="104.1452"/>
+			<data:bbox height="69.099998" width="69.099998" x="326.383301" y="39.097801"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/19/big/img_690.jpg">
+			<data:bbox height="210.118276" width="210.118276" x="26.439023" y="112.050886"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3052.jpg">
+			<data:bbox height="75.1382" width="75.1382" x="56.2259" y="119.6553"/>
+			<data:bbox height="94.128" width="94.128" x="142.010363" y="67.4236"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/14/big/img_219.jpg">
+			<data:bbox height="155.055538" width="155.055538" x="39.904831" y="104.992031"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_273.jpg">
+			<data:bbox height="201.157" width="201.157" x="68.8984" y="76.7925"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/15/big/img_752.jpg">
+			<data:bbox height="102.212" width="102.212" x="122.2219" y="95.0375"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_184.jpg">
+			<data:bbox height="93.565956" width="93.565956" x="169.179061" y="302.996938"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/31/big/img_743.jpg">
+			<data:bbox height="120.831482" width="120.831482" x="78.654125" y="79.94933"/>
+			<data:bbox height="109.339364" width="109.339364" x="200.739439" y="97.936299"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/23/big/img_338.jpg">
+			<data:bbox height="165.38415" width="165.38415" x="57.277836" y="62.983433"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_1055.jpg">
+			<data:bbox height="101.31201" width="101.31201" x="85.237714" y="68.170418"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3405.jpg">
+			<data:bbox height="99.495" width="99.495" x="32.9281" y="88.5956"/>
+			<data:bbox height="64.3944" width="64.3944" x="129.9025" y="57.7171"/>
+			<data:bbox height="59.4824" width="59.4824" x="232.857981" y="90.741326"/>
+			<data:bbox height="84.864252" width="84.864252" x="334.484374" y="34.538174"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2003/01/15/big/img_17.jpg">
+			<data:bbox height="105.2384" width="105.2384" x="121.8215" y="64.0768"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/03/big/img_141.jpg">
+			<data:bbox height="93.114338" width="93.114338" x="144.561673" y="129.05104"/>
+			<data:bbox height="43.258274" width="43.258274" x="96.290916" y="53.173006"/>
+			<data:bbox height="48.19804" width="48.19804" x="210.402968" y="81.629608"/>
+			<data:bbox height="56.195084" width="56.195084" x="57.426439" y="176.070507"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/14/big/img_549.jpg">
+			<data:bbox height="101.3076" width="101.3076" x="161.1169" y="127.2923"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/27/big/img_1034.jpg">
+			<data:bbox height="137.19302" width="137.19302" x="182.937211" y="70.605149"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/31/big/img_932.jpg">
+			<data:bbox height="139.07136" width="139.07136" x="41.950506" y="48.258522"/>
+			<data:bbox height="132.958402" width="132.958402" x="274.389763" y="56.795101"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/30/big/img_18487.jpg">
+			<data:bbox height="212.8824" width="212.8824" x="72.0429" y="92.0225"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15814.jpg">
+			<data:bbox height="75.4618" width="75.4618" x="-12.311" y="106.7568"/>
+			<data:bbox height="84.616" width="84.616" x="115.695" y="149.5297"/>
+			<data:bbox height="66.6994" width="66.6994" x="115.021" y="65.7681"/>
+			<data:bbox height="61.0782" width="61.0782" x="289.2304" y="36.5195"/>
+			<data:bbox height="54.6706" width="54.6706" x="339.4726" y="132.9944"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00006">
+		<presentation Label="pos" file-name="2002/08/01/big/img_2086.jpg">
+			<data:bbox height="131.690846" width="131.690846" x="124.743826" y="69.288716"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/01/big/img_16535.jpg">
+			<data:bbox height="85.2634" width="85.2634" x="114.5239" y="33.9204"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/22/big/img_500.jpg">
+			<data:bbox height="120.549814" width="120.549814" x="330.035119" y="149.146926"/>
+			<data:bbox height="57.556804" width="57.556804" x="70.493732" y="82.5361"/>
+			<data:bbox height="57.021358" width="57.021358" x="106.275074" y="125.656803"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2003/01/13/big/img_400.jpg">
+			<data:bbox height="72.0" width="72.0" x="117.826477" y="33.673065"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/25/big/img_607.jpg">
+			<data:bbox height="144.0" width="144.0" x="159.1465" y="72.949075"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/30/big/img_18384.jpg">
+			<data:bbox height="163.8508" width="163.8508" x="86.617502" y="40.3572"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_951.jpg">
+			<data:bbox height="92.6496" width="92.6496" x="130.7741" y="50.7533"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/13/big/img_1150.jpg">
+			<data:bbox height="90.1422" width="90.1422" x="127.9481" y="50.052"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_1022.jpg">
+			<data:bbox height="89.88245" width="89.88245" x="73.490138" y="50.592366"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/10/big/img_428.jpg">
+			<data:bbox height="246.312252" width="246.312252" x="17.18795" y="69.161321"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/28/big/img_19242.jpg">
+			<data:bbox height="49.902614" width="49.902614" x="4.948693" y="84.68993"/>
+			<data:bbox height="67.381396" width="67.381396" x="96.386261" y="33.121002"/>
+			<data:bbox height="69.889656" width="69.889656" x="171.985787" y="94.00737"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3098.jpg">
+			<data:bbox height="56.402" width="56.402" x="85.5979" y="37.6766"/>
+			<data:bbox height="61.7754" width="61.7754" x="299.1533" y="73.1291"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/23/big/img_400.jpg">
+			<data:bbox height="66.091246" width="66.091246" x="107.767292" y="30.589966"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/26/big/img_365.jpg">
+			<data:bbox height="80.3902" width="80.3902" x="77.145132" y="37.95026"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/20/big/img_318.jpg">
+			<data:bbox height="115.759426" width="115.759426" x="95.979353" y="62.598743"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/13/big/img_740.jpg">
+			<data:bbox height="236.5084" width="236.5084" x="30.631016" y="77.745383"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_37.jpg">
+			<data:bbox height="139.0346" width="139.0346" x="107.3086" y="50.8872"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/26/big/img_274.jpg">
+			<data:bbox height="27.2948" width="27.2948" x="61.2829" y="32.3213"/>
+			<data:bbox height="33.9278" width="33.9278" x="173.534855" y="62.125726"/>
+			<data:bbox height="25.1302" width="25.1302" x="214.572154" y="14.578037"/>
+			<data:bbox height="79.3322" width="79.3322" x="317.365598" y="82.494915"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/02/big/img_205.jpg">
+			<data:bbox height="303.826946" width="303.826946" x="20.448954" y="67.776508"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_695.jpg">
+			<data:bbox height="73.6026" width="73.6026" x="125.9617" y="32.4985"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/06/big/img_2289.jpg">
+			<data:bbox height="81.370318" width="81.370318" x="254.762072" y="28.800509"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/20/big/img_794.jpg">
+			<data:bbox height="172.955" width="172.955" x="73.0321" y="89.0283"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/18/big/img_438.jpg">
+			<data:bbox height="144.665" width="144.665" x="104.2225" y="76.1213"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/07/big/img_1380.jpg">
+			<data:bbox height="220.589866" width="220.589866" x="49.673644" y="101.393408"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/02/big/img_737.jpg">
+			<data:bbox height="99.773694" width="99.773694" x="112.353225" y="57.414643"/>
+			<data:bbox height="82.051972" width="82.051972" x="179.67699" y="41.656731"/>
+			<data:bbox height="88.794126" width="88.794126" x="287.666026" y="66.937993"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/07/big/img_1651.jpg">
+			<data:bbox height="144.692606" width="144.692606" x="35.923984" y="83.715292"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/15/big/img_1238.jpg">
+			<data:bbox height="148.598" width="148.598" x="3.5045" y="155.9936"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1681.jpg">
+			<data:bbox height="69.10614" width="69.10614" x="137.574626" y="44.168489"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/06/big/img_3017.jpg">
+			<data:bbox height="171.19895" width="171.19895" x="37.768771" y="93.503695"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/23/big/img_706.jpg">
+			<data:bbox height="89.99545" width="89.99545" x="180.68422" y="34.044788"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/31/big/img_392.jpg">
+			<data:bbox height="112.95924" width="112.95924" x="61.449533" y="133.784569"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/09/big/img_539.jpg">
+			<data:bbox height="69.53465" width="69.53465" x="80.635741" y="44.55781"/>
+			<data:bbox height="72.462008" width="72.462008" x="261.650651" y="48.547396"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/29/big/img_835.jpg">
+			<data:bbox height="154.924422" width="154.924422" x="108.708685" y="40.968166"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/26/big/img_723.jpg">
+			<data:bbox height="121.5622" width="121.5622" x="54.547185" y="60.060267"/>
+			<data:bbox height="117.5368" width="117.5368" x="225.0066" y="115.2226"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/28/big/img_19235.jpg">
+			<data:bbox height="58.6686" width="58.6686" x="36.6791" y="102.4708"/>
+			<data:bbox height="78.4108" width="78.4108" x="166.1065" y="57.1986"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/16/big/img_353.jpg">
+			<data:bbox height="71.778" width="71.778" x="175.3622" y="95.5118"/>
+			<data:bbox height="35.9706" width="35.9706" x="87.3107" y="24.1374"/>
+			<data:bbox height="34.0" width="34.0" x="160.6923" y="26.5385"/>
+			<data:bbox height="35.27" width="35.27" x="287.6753" y="28.365"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/10/big/img_150.jpg">
+			<data:bbox height="79.8408" width="79.8408" x="92.4814" y="27.991311"/>
+			<data:bbox height="91.559896" width="91.559896" x="176.606952" y="154.339088"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/29/big/img_19025.jpg">
+			<data:bbox height="140.4538" width="140.4538" x="75.3395" y="37.8118"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_310.jpg">
+			<data:bbox height="39.1742" width="39.1742" x="29.8002" y="71.8515"/>
+			<data:bbox height="47.5186" width="47.5186" x="96.9132" y="60.297"/>
+			<data:bbox height="60.5462" width="60.5462" x="316.6873" y="39.4963"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/10/big/img_823.jpg">
+			<data:bbox height="58.519534" width="58.519534" x="123.559321" y="102.315502"/>
+			<data:bbox height="91.62339" width="91.62339" x="-4.092778" y="-5.79879"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/26/big/img_981.jpg">
+			<data:bbox height="83.850708" width="83.850708" x="108.023989" y="44.025097"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/11/big/img_288.jpg">
+			<data:bbox height="92.634962" width="92.634962" x="104.754095" y="33.923744"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/19/big/img_534.jpg">
+			<data:bbox height="150.640168" width="150.640168" x="102.118601" y="102.04054"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_300.jpg">
+			<data:bbox height="60.6718" width="60.6718" x="10.4928" y="11.0518"/>
+			<data:bbox height="66.2266" width="66.2266" x="44.663184" y="76.9817"/>
+			<data:bbox height="92.8378" width="92.8378" x="147.4445" y="100.1185"/>
+			<data:bbox height="74.4558" width="74.4558" x="370.1581" y="-16.2712"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/07/31/big/img_49.jpg">
+			<data:bbox height="183.047532" width="183.047532" x="150.671759" y="71.510791"/>
+			<data:bbox height="172.527064" width="172.527064" x="258.315209" y="139.074357"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/30/big/img_469.jpg">
+			<data:bbox height="195.358942" width="195.358942" x="36.905313" y="74.71559"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/28/big/img_19197.jpg">
+			<data:bbox height="96.0" width="96.0" x="114.504279" y="40.1071"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/25/big/img_205.jpg">
+			<data:bbox height="78.181122" width="78.181122" x="82.68157" y="55.933919"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/10/big/img_390.jpg">
+			<data:bbox height="89.269" width="89.269" x="182.3229" y="59.318952"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/23/big/img_291.jpg">
+			<data:bbox height="92.008716" width="92.008716" x="141.558505" y="35.556526"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/26/big/img_230.jpg">
+			<data:bbox height="203.2204" width="203.2204" x="118.3297" y="93.749594"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/18/big/img_76.jpg">
+			<data:bbox height="120.3388" width="120.3388" x="60.9988" y="70.5192"/>
+			<data:bbox height="126.352" width="126.352" x="217.7741" y="248.6295"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/23/big/img_409.jpg">
+			<data:bbox height="98.047822" width="98.047822" x="65.702217" y="84.759404"/>
+			<data:bbox height="81.300346" width="81.300346" x="288.04624" y="47.140931"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/14/big/img_1053.jpg">
+			<data:bbox height="62.384168" width="62.384168" x="160.763196" y="153.862467"/>
+			<data:bbox height="250.343502" width="250.343502" x="-49.577534" y="-36.049303"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/14/big/img_291.jpg">
+			<data:bbox height="132.0" width="132.0" x="61.616495" y="104.528586"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/10/big/img_503.jpg">
+			<data:bbox height="83.28524" width="83.28524" x="156.095942" y="74.023749"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/27/big/img_19928.jpg">
+			<data:bbox height="81.3412" width="81.3412" x="43.2241" y="78.0034"/>
+			<data:bbox height="72.97823" width="72.97823" x="204.615868" y="35.011985"/>
+			<data:bbox height="77.443688" width="77.443688" x="327.841247" y="112.466729"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/03/big/img_563.jpg">
+			<data:bbox height="72.931758" width="72.931758" x="1.269818" y="57.243085"/>
+			<data:bbox height="84.876994" width="84.876994" x="46.122938" y="169.509339"/>
+			<data:bbox height="78.738656" width="78.738656" x="113.342497" y="94.897362"/>
+			<data:bbox height="95.389286" width="95.389286" x="154.90801" y="48.268971"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/17/big/img_250.jpg">
+			<data:bbox height="112.4762" width="112.4762" x="199.9004" y="124.8814"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/06/big/img_2381.jpg">
+			<data:bbox height="128.27903" width="128.27903" x="178.042589" y="137.867346"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/17/big/img_948.jpg">
+			<data:bbox height="147.3374" width="147.3374" x="69.6996" y="112.132"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/06/big/img_2710.jpg">
+			<data:bbox height="81.98046" width="81.98046" x="72.966358" y="50.955575"/>
+			<data:bbox height="92.699312" width="92.699312" x="143.630864" y="76.812733"/>
+			<data:bbox height="74.511324" width="74.511324" x="305.010935" y="19.938688"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/22/big/img_696.jpg">
+			<data:bbox height="83.839468" width="83.839468" x="118.103519" y="46.810728"/>
+			<data:bbox height="169.88769" width="169.88769" x="127.245896" y="191.962738"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/31/big/img_670.jpg">
+			<data:bbox height="280.337916" width="280.337916" x="71.046717" y="59.769517"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/12/big/img_594.jpg">
+			<data:bbox height="98.014362" width="98.014362" x="120.462298" y="82.428186"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_624.jpg">
+			<data:bbox height="64.449442" width="64.449442" x="87.847671" y="30.976875"/>
+			<data:bbox height="66.07823" width="66.07823" x="329.402181" y="57.99647"/>
+			<data:bbox height="20.0" width="20.0" x="54.0" y="200.0"/>
+			<data:bbox height="28.0" width="28.0" x="146.0" y="205.0"/>
+			<data:bbox height="76.111698" width="76.111698" x="269.244151" y="143.644151"/>
+			<data:bbox height="24.0" width="24.0" x="365.0" y="180.0"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2003/01/17/big/img_934.jpg">
+			<data:bbox height="167.4172" width="167.4172" x="120.0973" y="93.3573"/>
+			<data:bbox height="176.875" width="176.875" x="212.9127" y="67.9819"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/03/big/img_584.jpg">
+			<data:bbox height="89.197956" width="89.197956" x="145.412573" y="41.468916"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/22/big/img_1003.jpg">
+			<data:bbox height="97.8922" width="97.8922" x="31.2724" y="53.5397"/>
+			<data:bbox height="104.4052" width="104.4052" x="182.7709" y="53.8677"/>
+			<data:bbox height="84.2376" width="84.2376" x="315.5345" y="65.2314"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3396.jpg">
+			<data:bbox height="91.61784" width="91.61784" x="142.660861" y="38.544673"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/13/big/img_570.jpg">
+			<data:bbox height="98.85821" width="98.85821" x="151.379195" y="100.424986"/>
+			<data:bbox height="86.0" width="86.0" x="324.1601" y="48.1304"/>
+			<data:bbox height="108.0" width="108.0" x="287.470692" y="196.503082"/>
+			<data:bbox height="66.0" width="66.0" x="85.4862" y="118.8199"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/02/big/img_219.jpg">
+			<data:bbox height="207.27525" width="207.27525" x="61.450982" y="99.767438"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15774.jpg">
+			<data:bbox height="107.3946" width="107.3946" x="90.2696" y="48.0905"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_818.jpg">
+			<data:bbox height="182.62" width="182.62" x="94.7364" y="115.5065"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/23/big/img_402.jpg">
+			<data:bbox height="102.665224" width="102.665224" x="93.184541" y="69.529375"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_552.jpg">
+			<data:bbox height="130.1794" width="130.1794" x="79.3017" y="42.6653"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_71.jpg">
+			<data:bbox height="56.257268" width="56.257268" x="95.229665" y="51.983967"/>
+			<data:bbox height="52.64341" width="52.64341" x="1.048996" y="222.396026"/>
+			<data:bbox height="47.388" width="47.388" x="308.133878" y="31.704151"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3592.jpg">
+			<data:bbox height="68.72154" width="68.72154" x="156.936201" y="88.235516"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_80.jpg">
+			<data:bbox height="89.3752" width="89.3752" x="102.6899" y="135.7239"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/27/big/img_672.jpg">
+			<data:bbox height="292.97322" width="292.97322" x="38.730937" y="74.761393"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/13/big/img_470.jpg">
+			<data:bbox height="72.0" width="72.0" x="98.841075" y="45.9717"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_702.jpg">
+			<data:bbox height="78.4942" width="78.4942" x="65.4014" y="62.5486"/>
+			<data:bbox height="70.4732" width="70.4732" x="220.0786" y="69.2511"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/09/01/big/img_16130.jpg">
+			<data:bbox height="94.276" width="94.276" x="119.8416" y="37.9298"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_240.jpg">
+			<data:bbox height="94.721724" width="94.721724" x="93.096948" y="46.397665"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/01/big/img_16338.jpg">
+			<data:bbox height="131.1524" width="131.1524" x="77.7695" y="64.407"/>
+			<data:bbox height="131.3312" width="131.3312" x="162.6704" y="184.2617"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/26/big/img_312.jpg">
+			<data:bbox height="115.550662" width="115.550662" x="182.273966" y="56.278827"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_538.jpg">
+			<data:bbox height="65.6306" width="65.6306" x="148.0562" y="112.0455"/>
+			<data:bbox height="93.317" width="93.317" x="201.3277" y="34.7083"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/20/big/img_695.jpg">
+			<data:bbox height="113.356444" width="113.356444" x="160.677801" y="60.603447"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/30/big/img_18098.jpg">
+			<data:bbox height="59.54204" width="59.54204" x="-23.702178" y="196.891294"/>
+			<data:bbox height="98.3036" width="98.3036" x="276.9839" y="66.485"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/25/big/img_259.jpg">
+			<data:bbox height="102.785792" width="102.785792" x="40.47743" y="139.347933"/>
+			<data:bbox height="94.01014" width="94.01014" x="121.788245" y="72.429938"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/16/big/img_1042.jpg">
+			<data:bbox height="112.049" width="112.049" x="123.2231" y="57.5507"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/09/big/img_837.jpg">
+			<data:bbox height="70.603768" width="70.603768" x="78.893061" y="55.227197"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/31/big/img_17760.jpg">
+			<data:bbox height="132.0" width="132.0" x="152.3239" y="153.3387"/>
+			<data:bbox height="55.024188" width="55.024188" x="-0.8587" y="63.463679"/>
+			<data:bbox height="50.612042" width="50.612042" x="131.359783" y="21.592323"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/31/big/img_14.jpg">
+			<data:bbox height="138.242676" width="138.242676" x="42.102362" y="49.252998"/>
+			<data:bbox height="133.274896" width="133.274896" x="275.917288" y="55.716306"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/09/big/img_361.jpg">
+			<data:bbox height="61.68229" width="61.68229" x="137.515266" y="26.614303"/>
+			<data:bbox height="72.600962" width="72.600962" x="248.51037" y="67.967478"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/16/big/img_107.jpg">
+			<data:bbox height="170.6462" width="170.6462" x="95.2309" y="77.6242"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/14/big/img_124.jpg">
+			<data:bbox height="120.4166" width="120.4166" x="81.2836" y="68.9057"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/19/big/img_463.jpg">
+			<data:bbox height="104.153394" width="104.153394" x="131.000504" y="81.910579"/>
+			<data:bbox height="64.657982" width="64.657982" x="5.87822" y="26.41204"/>
+			<data:bbox height="62.566496" width="62.566496" x="240.256393" y="18.618836"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2003/01/15/big/img_275.jpg">
+			<data:bbox height="99.6092" width="99.6092" x="120.4369" y="62.8295"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/25/big/img_1151.jpg">
+			<data:bbox height="175.77836" width="175.77836" x="212.311299" y="39.999793"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_1501.jpg">
+			<data:bbox height="105.783914" width="105.783914" x="109.049227" y="214.938171"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/27/big/img_19889.jpg">
+			<data:bbox height="158.0" width="158.0" x="94.6484" y="69.4773"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/29/big/img_18603.jpg">
+			<data:bbox height="259.534" width="259.534" x="82.1741" y="-60.9175"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/17/big/img_601.jpg">
+			<data:bbox height="183.4562" width="183.4562" x="57.7903" y="71.2812"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/25/big/img_355.jpg">
+			<data:bbox height="71.419338" width="71.419338" x="174.188473" y="37.852514"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_297.jpg">
+			<data:bbox height="68.756604" width="68.756604" x="51.510422" y="105.947725"/>
+			<data:bbox height="89.554382" width="89.554382" x="222.386387" y="41.083115"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/20/big/img_290.jpg">
+			<data:bbox height="38.520276" width="38.520276" x="18.866705" y="99.915378"/>
+			<data:bbox height="84.829912" width="84.829912" x="96.911926" y="135.669844"/>
+			<data:bbox height="102.1488" width="102.1488" x="238.4607" y="31.3341"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/07/31/big/img_195.jpg">
+			<data:bbox height="76.0562" width="76.0562" x="165.6623" y="29.5751"/>
+			<data:bbox height="65.7974" width="65.7974" x="18.664" y="152.9431"/>
+			<data:bbox height="58.9326" width="58.9326" x="225.8374" y="123.9352"/>
+			<data:bbox height="67.7564" width="67.7564" x="364.5009" y="136.835"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2003/01/01/big/img_336.jpg">
+			<data:bbox height="96.0" width="96.0" x="107.9624" y="43.048"/>
+			<data:bbox height="76.768098" width="76.768098" x="275.733457" y="50.868151"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/18/big/img_369.jpg">
+			<data:bbox height="65.7744" width="65.7744" x="142.6572" y="204.2297"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/25/big/img_621.jpg">
+			<data:bbox height="78.300142" width="78.300142" x="3.59866" y="101.80662"/>
+			<data:bbox height="77.8786" width="77.8786" x="75.7714" y="143.644583"/>
+			<data:bbox height="123.986284" width="123.986284" x="136.045129" y="44.117113"/>
+			<data:bbox height="57.996546" width="57.996546" x="280.05904" y="43.091547"/>
+			<data:bbox height="72.013292" width="72.013292" x="333.565332" y="34.794739"/>
+			<data:bbox height="89.751732" width="89.751732" x="404.124134" y="87.838209"/>
+			<data:bbox height="50.065526" width="50.065526" x="250.987784" y="17.522031"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00008">
+		<presentation Label="pos" file-name="2002/08/11/big/img_508.jpg">
+			<data:bbox height="129.806832" width="129.806832" x="46.242079" y="51.950285"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_458.jpg">
+			<data:bbox height="92.5808" width="92.5808" x="156.099547" y="72.613"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/15/big/img_795.jpg">
+			<data:bbox height="215.903" width="215.903" x="34.2767" y="76.8943"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/12/big/img_498.jpg">
+			<data:bbox height="68.566702" width="68.566702" x="91.333789" y="63.917627"/>
+			<data:bbox height="59.1998" width="59.1998" x="152.9105" y="19.6176"/>
+			<data:bbox height="60.671044" width="60.671044" x="188.903583" y="73.630178"/>
+			<data:bbox height="51.477362" width="51.477362" x="275.36058" y="84.26164"/>
+			<data:bbox height="71.346788" width="71.346788" x="308.072813" y="82.172018"/>
+			<data:bbox height="53.482352" width="53.482352" x="401.938517" y="122.897904"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1734.jpg">
+			<data:bbox height="86.464676" width="86.464676" x="194.00441" y="85.151654"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/02/big/img_246.jpg">
+			<data:bbox height="146.254034" width="146.254034" x="92.930215" y="101.305916"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_565.jpg">
+			<data:bbox height="153.284" width="153.284" x="103.5782" y="57.9519"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/11/big/img_475.jpg">
+			<data:bbox height="96.035848" width="96.035848" x="110.851849" y="35.357551"/>
+			<data:bbox height="19.9318" width="19.9318" x="83.0179" y="279.7819"/>
+			<data:bbox height="18.7002" width="18.7002" x="115.93" y="270.895"/>
+			<data:bbox height="17.4686" width="17.4686" x="148.8815" y="266.6634"/>
+			<data:bbox height="19.9712" width="19.9712" x="178.5422" y="268.8555"/>
+			<data:bbox height="16.2764" width="16.2764" x="111.6787" y="323.4085"/>
+			<data:bbox height="19.1238" width="19.1238" x="139.3591" y="318.5216"/>
+			<data:bbox height="18.7396" width="18.7396" x="165.4237" y="319.9453"/>
+			<data:bbox height="18.7002" width="18.7002" x="190.2567" y="328.64"/>
+			<data:bbox height="19.5476" width="19.5476" x="206.818659" y="349.2217"/>
+			<data:bbox height="16.7002" width="16.7002" x="209.2424" y="280.1661"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00012">
+		<presentation Label="pos" file-name="2002/08/22/big/img_408.jpg">
+			<data:bbox height="30.571388" width="30.571388" x="-3.514143" y="25.794765"/>
+			<data:bbox height="25.544648" width="25.544648" x="25.383926" y="22.121426"/>
+			<data:bbox height="37.61719" width="37.61719" x="49.095635" y="75.37626"/>
+			<data:bbox height="39.287664" width="39.287664" x="5.014148" y="142.382226"/>
+			<data:bbox height="40.352578" width="40.352578" x="67.153553" y="135.77659"/>
+			<data:bbox height="72.522184" width="72.522184" x="88.775285" y="188.426361"/>
+			<data:bbox height="32.558628" width="32.558628" x="61.792114" y="29.844746"/>
+			<data:bbox height="28.061078" width="28.061078" x="103.05309" y="27.293304"/>
+			<data:bbox height="37.334052" width="37.334052" x="85.575398" y="86.779254"/>
+			<data:bbox height="37.604074" width="37.604074" x="132.69015" y="84.87765"/>
+			<data:bbox height="33.302408" width="33.302408" x="175.151826" y="108.193913"/>
+			<data:bbox height="37.73227" width="37.73227" x="210.623362" y="101.086376"/>
+			<data:bbox height="27.828244" width="27.828244" x="151.393934" y="41.920001"/>
+			<data:bbox height="23.830732" width="23.830732" x="129.02581" y="13.872869"/>
+			<data:bbox height="19.294744" width="19.294744" x="83.138342" y="-4.851454"/>
+			<data:bbox height="28.900666" width="28.900666" x="166.438555" y="37.327444"/>
+			<data:bbox height="20.961004" width="20.961004" x="163.144498" y="12.769498"/>
+			<data:bbox height="25.761386" width="25.761386" x="230.773153" y="34.19623"/>
+			<data:bbox height="30.655458" width="30.655458" x="246.374973" y="58.158757"/>
+			<data:bbox height="26.943692" width="26.943692" x="301.987456" y="110.083386"/>
+			<data:bbox height="19.186084" width="19.186084" x="235.772342" y="6.253111"/>
+			<data:bbox height="25.079636" width="25.079636" x="300.484375" y="15.161794"/>
+			<data:bbox height="26.764348" width="26.764348" x="351.31675" y="36.176965"/>
+			<data:bbox height="37.715994" width="37.715994" x="382.232912" y="88.908236"/>
+			<data:bbox height="37.930188" width="37.930188" x="415.397543" y="54.793147"/>
+			<data:bbox height="24.742866" width="24.742866" x="386.946748" y="39.037658"/>
+			<data:bbox height="17.874154" width="17.874154" x="337.018805" y="5.10704"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00028">
+		<presentation Label="pos" file-name="2002/07/28/big/img_78.jpg">
+			<data:bbox height="94.620412" width="94.620412" x="171.41353" y="92.598309"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/21/big/img_81.jpg">
+			<data:bbox height="124.958086" width="124.958086" x="128.560103" y="71.09877"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_697.jpg">
+			<data:bbox height="128.6156" width="128.6156" x="89.8044" y="76.3041"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/14/big/img_661.jpg">
+			<data:bbox height="198.9962" width="198.9962" x="55.1342" y="79.3207"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/15/big/img_507.jpg">
+			<data:bbox height="70.9286" width="70.9286" x="126.5733" y="252.9627"/>
+			<data:bbox height="120.5816" width="120.5816" x="2.2002" y="40.5808"/>
+			<data:bbox height="102.7792" width="102.7792" x="119.2361" y="122.0799"/>
+			<data:bbox height="101.8492" width="101.8492" x="201.6759" y="204.6885"/>
+			<data:bbox height="96.0" width="96.0" x="347.0" y="212.0"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00006">
+		<presentation Label="pos" file-name="2002/08/19/big/img_55.jpg">
+			<data:bbox height="78.471004" width="78.471004" x="131.177031" y="25.937217"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/22/big/img_152.jpg">
+			<data:bbox height="114.0" width="114.0" x="98.0" y="60.0"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_470.jpg">
+			<data:bbox height="74.8458" width="74.8458" x="106.4358" y="85.7968"/>
+			<data:bbox height="80.7572" width="80.7572" x="266.7216" y="92.6311"/>
+			<data:bbox height="72.9668" width="72.9668" x="-22.3973" y="139.2172"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/03/big/img_379.jpg">
+			<data:bbox height="73.75092" width="73.75092" x="65.384712" y="189.808616"/>
+			<data:bbox height="24.4136" width="24.4136" x="-6.158175" y="101.7784"/>
+			<data:bbox height="68.626864" width="68.626864" x="229.279794" y="165.210712"/>
+			<data:bbox height="66.199724" width="66.199724" x="370.325147" y="185.498609"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/22/big/img_506.jpg">
+			<data:bbox height="74.636174" width="74.636174" x="57.87283" y="189.491648"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_966.jpg">
+			<data:bbox height="94.8714" width="94.8714" x="53.4094" y="21.8367"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/18/big/img_698.jpg">
+			<data:bbox height="78.3184" width="78.3184" x="57.9632" y="63.3843"/>
+			<data:bbox height="76.4316" width="76.4316" x="167.5082" y="96.2429"/>
+			<data:bbox height="68.788" width="68.788" x="298.7814" y="30.4512"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/24/big/img_528.jpg">
+			<data:bbox height="80.24" width="80.24" x="63.470871" y="88.724023"/>
+			<data:bbox height="17.750482" width="17.750482" x="188.740384" y="161.424759"/>
+			<data:bbox height="42.808558" width="42.808558" x="259.91461" y="8.335057"/>
+			<data:bbox height="15.236682" width="15.236682" x="199.196473" y="70.029807"/>
+			<data:bbox height="29.221622" width="29.221622" x="396.191879" y="141.02596"/>
+			<data:bbox height="12.572212" width="12.572212" x="337.284141" y="202.379183"/>
+			<data:bbox height="10.149788" width="10.149788" x="347.948774" y="7.132206"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00008">
+		<presentation Label="pos" file-name="2002/08/23/big/img_10.jpg">
+			<data:bbox height="76.661442" width="76.661442" x="107.44062" y="106.233455"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1655.jpg">
+			<data:bbox height="74.611962" width="74.611962" x="24.873308" y="43.840948"/>
+			<data:bbox height="75.75022" width="75.75022" x="143.391886" y="39.168881"/>
+			<data:bbox height="65.361006" width="65.361006" x="253.168992" y="45.672941"/>
+			<data:bbox height="79.19785" width="79.19785" x="341.824411" y="35.755516"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/22/big/img_953.jpg">
+			<data:bbox height="61.709544" width="61.709544" x="121.51188" y="39.383839"/>
+			<data:bbox height="72.535378" width="72.535378" x="290.468737" y="32.804778"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/19/big/img_630.jpg">
+			<data:bbox height="118.746262" width="118.746262" x="118.523519" y="135.867812"/>
+			<data:bbox height="133.999432" width="133.999432" x="228.961151" y="159.927029"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/22/big/img_889.jpg">
+			<data:bbox height="82.22532" width="82.22532" x="82.400628" y="32.730753"/>
+			<data:bbox height="70.49305" width="70.49305" x="268.515736" y="37.793146"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/16/big/img_351.jpg">
+			<data:bbox height="110.7636" width="110.7636" x="216.7776" y="52.5482"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_83.jpg">
+			<data:bbox height="181.5548" width="181.5548" x="97.1941" y="93.5845"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/19/big/img_805.jpg">
+			<data:bbox height="75.526426" width="75.526426" x="61.646784" y="34.276358"/>
+			<data:bbox height="49.22143" width="49.22143" x="180.446241" y="30.145873"/>
+			<data:bbox height="66.099562" width="66.099562" x="279.00285" y="47.605369"/>
+			<data:bbox height="44.191512" width="44.191512" x="-11.781352" y="75.627235"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/14/big/img_704.jpg">
+			<data:bbox height="78.5942" width="78.5942" x="-5.6537" y="99.8828"/>
+			<data:bbox height="102.454" width="102.454" x="215.1917" y="82.3109"/>
+			<data:bbox height="48.8294" width="48.8294" x="295.0191" y="5.5491"/>
+			<data:bbox height="80.7388" width="80.7388" x="381.6081" y="94.9677"/>
+			<data:bbox height="56.145" width="56.145" x="358.5137" y="45.7421"/>
+			<data:bbox height="73.75" width="73.75" x="382.7252" y="24.8553"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2002/07/19/big/img_389.jpg">
+			<data:bbox height="61.434446" width="61.434446" x="162.118286" y="48.387216"/>
+			<data:bbox height="40.707858" width="40.707858" x="316.144314" y="69.308249"/>
+			<data:bbox height="19.155512" width="19.155512" x="14.750298" y="99.404144"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/31/big/img_17765.jpg">
+			<data:bbox height="74.0" width="74.0" x="84.5004" y="104.4203"/>
+			<data:bbox height="80.0" width="80.0" x="170.2267" y="65.4716"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/29/big/img_606.jpg">
+			<data:bbox height="71.768288" width="71.768288" x="170.44305" y="96.258882"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/17/big/img_939.jpg">
+			<data:bbox height="118.4856" width="118.4856" x="176.7394" y="93.2234"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15081.jpg">
+			<data:bbox height="87.2332" width="87.2332" x="108.6029" y="54.8625"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_181.jpg">
+			<data:bbox height="100.264044" width="100.264044" x="158.932952" y="50.691078"/>
+			<data:bbox height="34.896" width="34.896" x="330.194857" y="217.2425"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/29/big/img_1321.jpg">
+			<data:bbox height="74.526234" width="74.526234" x="113.400162" y="121.906122"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/21/big/img_497.jpg">
+			<data:bbox height="56.000006" width="56.000006" x="26.219028" y="105.388856"/>
+			<data:bbox height="63.026604" width="63.026604" x="118.291361" y="103.469086"/>
+			<data:bbox height="63.264798" width="63.264798" x="184.300436" y="161.596457"/>
+			<data:bbox height="66.503524" width="66.503524" x="213.657773" y="33.327706"/>
+			<data:bbox height="52.656926" width="52.656926" x="287.548979" y="72.865157"/>
+			<data:bbox height="33.760496" width="33.760496" x="189.311301" y="57.494397"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00007">
+		<presentation Label="pos" file-name="2002/07/20/big/img_539.jpg">
+			<data:bbox height="70.22257" width="70.22257" x="130.127864" y="246.734569"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/24/big/img_119.jpg">
+			<data:bbox height="81.90736" width="81.90736" x="136.173809" y="40.96141"/>
+			<data:bbox height="75.606776" width="75.606776" x="285.166315" y="75.123117"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1281.jpg">
+			<data:bbox height="90.818982" width="90.818982" x="185.286025" y="77.905388"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/26/big/img_207.jpg">
+			<data:bbox height="77.830764" width="77.830764" x="270.905984" y="160.517347"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/26/big/img_432.jpg">
+			<data:bbox height="110.52633" width="110.52633" x="163.770312" y="58.373435"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/27/big/img_1006.jpg">
+			<data:bbox height="162.745174" width="162.745174" x="62.867084" y="129.876199"/>
+			<data:bbox height="112.474194" width="112.474194" x="214.137065" y="128.926662"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3087.jpg">
+			<data:bbox height="79.3476" width="79.3476" x="35.6358" y="60.717"/>
+			<data:bbox height="82.786" width="82.786" x="178.5024" y="42.5764"/>
+			<data:bbox height="86.6238" width="86.6238" x="324.3917" y="51.2469"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/14/big/img_252.jpg">
+			<data:bbox height="185.2572" width="185.2572" x="59.7676" y="86.8938"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/14/big/img_798.jpg">
+			<data:bbox height="109.0864" width="109.0864" x="188.2355" y="59.2263"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/24/big/img_538.jpg">
+			<data:bbox height="80.930242" width="80.930242" x="134.002901" y="38.30819"/>
+			<data:bbox height="73.932242" width="73.932242" x="266.556401" y="41.182903"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15507.jpg">
+			<data:bbox height="135.078" width="135.078" x="60.4975" y="81.0542"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_901.jpg">
+			<data:bbox height="77.539018" width="77.539018" x="189.513576" y="67.4808"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_557.jpg">
+			<data:bbox height="121.8738" width="121.8738" x="132.7846" y="67.210799"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/07/big/img_1819.jpg">
+			<data:bbox height="59.545572" width="59.545572" x="141.57735" y="93.672145"/>
+			<data:bbox height="74.523796" width="74.523796" x="284.382617" y="34.442841"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/04/big/img_470.jpg">
+			<data:bbox height="62.109388" width="62.109388" x="169.196283" y="145.017432"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1504.jpg">
+			<data:bbox height="86.953578" width="86.953578" x="87.019281" y="91.124973"/>
+			<data:bbox height="78.42411" width="78.42411" x="183.193329" y="53.671904"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/16/big/img_1070.jpg">
+			<data:bbox height="106.2878" width="106.2878" x="104.386" y="53.6624"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_372.jpg">
+			<data:bbox height="97.4582" width="97.4582" x="153.9953" y="48.3942"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/23/big/img_416.jpg">
+			<data:bbox height="136.411622" width="136.411622" x="286.988902" y="60.135977"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/30/big/img_18208.jpg">
+			<data:bbox height="69.7" width="69.7" x="126.801" y="37.4864"/>
+			<data:bbox height="32.160984" width="32.160984" x="55.333768" y="292.073808"/>
+			<data:bbox height="32.288552" width="32.288552" x="-5.471291" y="242.755424"/>
+			<data:bbox height="26.68628" width="26.68628" x="88.862703" y="83.17476"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/08/01/big/img_2043.jpg">
+			<data:bbox height="137.587232" width="137.587232" x="171.317847" y="60.087078"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/22/big/img_385.jpg">
+			<data:bbox height="105.777028" width="105.777028" x="100.9011" y="82.079709"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/22/big/img_466.jpg">
+			<data:bbox height="129.030796" width="129.030796" x="70.373115" y="77.018385"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/21/big/img_869.jpg">
+			<data:bbox height="141.2244" width="141.2244" x="190.4596" y="223.4743"/>
+			<data:bbox height="102.0558" width="102.0558" x="198.7203" y="25.8959"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/28/big/img_19429.jpg">
+			<data:bbox height="215.6394" width="215.6394" x="153.235945" y="56.3085"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/02/big/img_770.jpg">
+			<data:bbox height="84.050264" width="84.050264" x="92.630627" y="94.375373"/>
+			<data:bbox height="89.212008" width="89.212008" x="183.443858" y="29.163548"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/23/big/img_433.jpg">
+			<data:bbox height="98.943848" width="98.943848" x="125.065126" y="30.654258"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/14/big/img_13.jpg">
+			<data:bbox height="83.707148" width="83.707148" x="46.251096" y="46.913227"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/27/big/img_953.jpg">
+			<data:bbox height="68.091048" width="68.091048" x="89.800088" y="16.629866"/>
+			<data:bbox height="64.507168" width="64.507168" x="283.17008" y="26.187891"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/09/02/big/img_15728.jpg">
+			<data:bbox height="185.5602" width="185.5602" x="237.9405" y="51.7531"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/01/big/img_1361.jpg">
+			<data:bbox height="102.350144" width="102.350144" x="72.879575" y="38.142607"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/29/big/img_18897.jpg">
+			<data:bbox height="112.4838" width="112.4838" x="71.2493" y="53.9743"/>
+			<data:bbox height="26.116226" width="26.116226" x="256.766521" y="54.75817"/>
+			<data:bbox height="16.17797" width="16.17797" x="195.244348" y="56.523809"/>
+			<data:bbox height="29.40486" width="29.40486" x="163.933492" y="57.651938"/>
+			<data:bbox height="24.357986" width="24.357986" x="292.892668" y="45.143507"/>
+			<data:bbox height="37.633496" width="37.633496" x="358.68261" y="59.089542"/>
+			<data:bbox height="25.045414" width="25.045414" x="388.558452" y="50.396133"/>
+			<data:bbox height="20.743278" width="20.743278" x="420.763382" y="69.999661"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00009">
+		<presentation Label="pos" file-name="2002/08/26/big/img_534.jpg">
+			<data:bbox height="119.7664" width="119.7664" x="103.185" y="49.1104"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/11/big/img_121.jpg">
+			<data:bbox height="75.611274" width="75.611274" x="115.775737" y="240.542301"/>
+			<data:bbox height="50.33017" width="50.33017" x="51.555543" y="227.504108"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/26/big/img_20130.jpg">
+			<data:bbox height="65.804578" width="65.804578" x="120.158011" y="44.161547"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/31/big/img_363.jpg">
+			<data:bbox height="183.678696" width="183.678696" x="61.776781" y="87.853894"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/13/big/img_978.jpg">
+			<data:bbox height="117.535942" width="117.535942" x="155.363885" y="45.778999"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/25/big/img_835.jpg">
+			<data:bbox height="120.437346" width="120.437346" x="90.406662" y="61.953335"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/02/big/img_906.jpg">
+			<data:bbox height="85.864114" width="85.864114" x="45.785478" y="166.170362"/>
+			<data:bbox height="71.048522" width="71.048522" x="161.865948" y="180.459888"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/14/big/img_548.jpg">
+			<data:bbox height="91.7074" width="91.7074" x="180.6013" y="94.2304"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/30/big/img_80.jpg">
+			<data:bbox height="138.509176" width="138.509176" x="98.146991" y="111.943898"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/26/big/img_982.jpg">
+			<data:bbox height="92.711296" width="92.711296" x="150.775649" y="37.210255"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_99.jpg">
+			<data:bbox height="87.4368" width="87.4368" x="122.2903" y="37.4302"/>
+			<data:bbox height="76.3846" width="76.3846" x="239.2196" y="89.8465"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/19/big/img_362.jpg">
+			<data:bbox height="91.862454" width="91.862454" x="24.315595" y="42.946183"/>
+			<data:bbox height="88.247002" width="88.247002" x="32.448662" y="242.264321"/>
+			<data:bbox height="72.969842" width="72.969842" x="185.711193" y="50.779611"/>
+			<data:bbox height="83.093886" width="83.093886" x="328.698528" y="48.955143"/>
+			<data:bbox height="89.548328" width="89.548328" x="240.091386" y="231.811126"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00006">
+		<presentation Label="pos" file-name="2002/08/24/big/img_376.jpg">
+			<data:bbox height="151.317478" width="151.317478" x="58.13895" y="57.075395"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/07/big/img_1264.jpg">
+			<data:bbox height="69.91323" width="69.91323" x="127.792809" y="39.668837"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/27/big/img_938.jpg">
+			<data:bbox height="69.10271" width="69.10271" x="111.664518" y="174.553072"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/17/big/img_535.jpg">
+			<data:bbox height="83.4324" width="83.4324" x="125.9405" y="32.8309"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/26/big/img_457.jpg">
+			<data:bbox height="191.41053" width="191.41053" x="68.123723" y="96.055727"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/08/big/img_848.jpg">
+			<data:bbox height="43.49374" width="43.49374" x="98.774869" y="49.485014"/>
+			<data:bbox height="75.862944" width="75.862944" x="156.829526" y="21.902707"/>
+			<data:bbox height="60.168652" width="60.168652" x="291.161388" y="28.218531"/>
+			<data:bbox height="38.161028" width="38.161028" x="404.275089" y="83.54233"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2003/01/15/big/img_859.jpg">
+			<data:bbox height="163.3362" width="163.3362" x="60.9602" y="109.918"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/15/big/img_622.jpg">
+			<data:bbox height="124.452" width="124.452" x="36.9104" y="63.8274"/>
+			<data:bbox height="130.882" width="130.882" x="234.2844" y="69.3833"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/30/big/img_403.jpg">
+			<data:bbox height="168.457448" width="168.457448" x="127.016915" y="47.186961"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_217.jpg">
+			<data:bbox height="206.081942" width="206.081942" x="44.394129" y="91.136339"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/26/big/img_891.jpg">
+			<data:bbox height="63.96858" width="63.96858" x="172.368045" y="191.116787"/>
+			<data:bbox height="66.087482" width="66.087482" x="58.956814" y="226.962925"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/24/big/img_70.jpg">
+			<data:bbox height="130.263132" width="130.263132" x="-30.261418" y="41.040451"/>
+			<data:bbox height="103.270926" width="103.270926" x="189.471717" y="172.811907"/>
+			<data:bbox height="118.496622" width="118.496622" x="226.396777" y="40.514582"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/25/big/img_619.jpg">
+			<data:bbox height="25.9796" width="25.9796" x="51.095864" y="42.872088"/>
+			<data:bbox height="76.47" width="76.47" x="189.496595" y="58.5107"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/05/big/img_3375.jpg">
+			<data:bbox height="257.841712" width="257.841712" x="69.143784" y="98.577047"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/01/big/img_2160.jpg">
+			<data:bbox height="99.550634" width="99.550634" x="141.702653" y="71.066524"/>
+			<data:bbox height="25.682076" width="25.682076" x="105.260122" y="237.683008"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/06/big/img_2227.jpg">
+			<data:bbox height="71.7496" width="71.7496" x="103.6673" y="38.8668"/>
+			<data:bbox height="60.4956" width="60.4956" x="253.6523" y="73.3466"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/14/big/img_117.jpg">
+			<data:bbox height="109.94385" width="109.94385" x="99.867665" y="56.405879"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/14/big/img_227.jpg">
+			<data:bbox height="165.928" width="165.928" x="71.6766" y="77.1576"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/13/big/img_565.jpg">
+			<data:bbox height="82.74675" width="82.74675" x="136.096848" y="49.095581"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/19/big/img_625.jpg">
+			<data:bbox height="66.485892" width="66.485892" x="86.839888" y="34.626378"/>
+			<data:bbox height="77.121648" width="77.121648" x="46.593815" y="178.23299"/>
+			<data:bbox height="177.253104" width="177.253104" x="168.660218" y="71.008747"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00004">
+		<presentation Label="pos" file-name="2002/08/03/big/img_812.jpg">
+			<data:bbox height="67.462008" width="67.462008" x="66.910784" y="19.12806"/>
+			<data:bbox height="70.75232" width="70.75232" x="297.356769" y="32.889127"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/07/24/big/img_41.jpg">
+			<data:bbox height="72.040704" width="72.040704" x="45.715638" y="49.926007"/>
+			<data:bbox height="64.798864" width="64.798864" x="184.296877" y="47.926935"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/16/big/img_235.jpg">
+			<data:bbox height="63.6664" width="63.6664" x="62.3725" y="54.1727"/>
+			<data:bbox height="63.24143" width="63.24143" x="127.439385" y="83.827085"/>
+			<data:bbox height="66.3888" width="66.3888" x="189.898393" y="114.6806"/>
+			<data:bbox height="63.6668" width="63.6668" x="366.7987" y="86.1888"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00005">
+		<presentation Label="pos" file-name="2002/07/29/big/img_759.jpg">
+			<data:bbox height="185.394874" width="185.394874" x="135.454222" y="30.03949"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/21/big/img_433.jpg">
+			<data:bbox height="111.323838" width="111.323838" x="162.740497" y="78.148454"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/29/big/img_190.jpg">
+			<data:bbox height="150.311308" width="150.311308" x="71.737572" y="82.013948"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/16/big/img_435.jpg">
+			<data:bbox height="159.0084" width="159.0084" x="106.114" y="64.9114"/>
+			<data:bbox height="34.9008" width="34.9008" x="286.648" y="150.4798"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2003/01/13/big/img_708.jpg">
+			<data:bbox height="70.885904" width="70.885904" x="49.567608" y="19.194748"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/07/30/big/img_57.jpg">
+			<data:bbox height="84.58825" width="84.58825" x="125.285124" y="51.609988"/>
+			<data:bbox height="90.063276" width="90.063276" x="180.535773" y="128.820985"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00003">
+		<presentation Label="pos" file-name="2002/08/22/big/img_162.jpg">
+			<data:bbox height="75.2898" width="75.2898" x="207.3222" y="68.8678"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/01/big/img_558.jpg">
+			<data:bbox height="110.0" width="110.0" x="278.019067" y="57.760544"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2003/01/15/big/img_604.jpg">
+			<data:bbox height="120.9636" width="120.9636" x="55.4512" y="142.247"/>
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="img00002">
+		<presentation Label="pos" file-name="2002/08/16/big/img_935.jpg">
+			<data:bbox height="94.003" width="94.003" x="108.0079" y="50.7629"/>
+		</presentation>
+	</biometric-signature>
+</biometric-signature-set>
+

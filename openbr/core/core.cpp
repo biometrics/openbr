@@ -184,6 +184,12 @@ struct AlgorithmCore
         return fileList;
     }
 
+    void enroll(TemplateList &data)
+    {
+        if (transform.isNull()) qFatal("Null transform.");
+        data >> *transform;
+    }
+
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
         if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
@@ -371,6 +377,12 @@ FileList br::Enroll(const File &input, const File &gallery)
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
+void br::Enroll(TemplateList &tl)
+{
+    QString alg = tl.first().file.get<QString>("algorithm");
+    AlgorithmManager::getAlgorithm(alg)->enroll(tl);
+}
+
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
 {
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
@@ -394,6 +406,9 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
+
+        if (targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+            qFatal("Similarity matrix and file size mismatch.");
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
