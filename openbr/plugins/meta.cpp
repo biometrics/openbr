@@ -274,6 +274,11 @@ class ContractTransform : public UntrainableMetaTransform
         foreach (const Template & t, src) {
             out.merge(t);
         }
+        out.file.clearRects();
+        foreach (const Template & t, src) {
+            if (!t.file.rects().empty())
+                out.file.appendRects(t.file.rects());
+        }
         dst.clear();
         dst.append(out);
     }
