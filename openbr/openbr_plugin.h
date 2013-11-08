@@ -856,7 +856,7 @@ struct Factory
             else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
         }
         T *object = registry->value(name)->_make();
-        object->init(file);
+        static_cast<Object*>(object)->init(file);
         return object;
     }
     //! [Factory make]
