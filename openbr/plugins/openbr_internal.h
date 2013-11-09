@@ -154,6 +154,53 @@ protected:
     }
 };
 
+/*!
+ * \brief Interface for transforms that act as decorators of another transform
+ */
+class BR_EXPORT WrapperTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    WrapperTransform(bool independent = true) : TimeVaryingTransform(independent)
+    {
+    }
+
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
+    BR_PROPERTY(br::Transform *, transform, NULL)
+
+    bool timeVarying() const { return transform->timeVarying(); }
+
+    void project(const Template &src, Template &dst) const
+    {
+        transform->project(src,dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        transform->projectUpdate(src,dst);
+    }
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        transform->projectUpdate(src,dst);
+    }
+
+    void train(const QList<TemplateList> & data)
+    {
+        transform->train(data);
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        transform->finalize(output);
+    }
+
+    void init()
+    {
+        if (transform)
+            this->trainable = transform->trainable;
+    }
+
+};
 
 /*!
  * \brief A MetaTransform that aggregates some sub-transforms
@@ -238,6 +285,18 @@ protected:
     virtual void _project(const TemplateList & src, TemplateList & dst) const = 0;
 
     CompositeTransform() : TimeVaryingTransform(false) {}
+};
+
+class EnrollmentWorker;
+
+// Implemented in plugins/process.cpp
+struct WorkerProcess
+{
+    QString transform;
+    QString baseName;
+    EnrollmentWorker * processInterface;
+
+    void mainLoop();
 };
 
 }

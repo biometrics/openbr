@@ -206,6 +206,11 @@ BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
  * \see br_finalize
  */
 BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "");
+/*!
+ * \brief Wraps br::Context::initialize() with default arguments.
+ * \see br_finalize
+ */
+BR_EXPORT void br_initialize_default();
 
 /*!
  * \brief Wraps br::IsClassifier()
@@ -407,6 +412,49 @@ BR_EXPORT void br_train_n(int num_inputs, const char *inputs[], const char *mode
  * \see br_about br_scratch_path
  */
 BR_EXPORT const char *br_version();
+
+
+/*!
+  * \brief For internal use via ProcessWrapperTransform
+  */
+BR_EXPORT void br_slave_process(const char * baseKey);
+
+// to avoid having to include unwanted headers
+// this will be this header's conception of a Template
+// any functions that need a Template pointer
+// will take this typedef and cast it
+typedef void* br_template;
+typedef void* br_template_list;
+/*!
+  * \brief Load an image from a string buffer.
+  *   Easy way to pass an image in memory from another programming language to openbr.
+  * \param data The image buffer.
+  * \param len The length of the buffer.
+  * \see br_unload_img
+  */
+BR_EXPORT br_template br_load_img(const char *data, int len);
+/*!
+  * \brief Unload an image to a string buffer.
+  *   Easy way to pass an image from openbr to another programming language.
+  */
+BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
+/*!
+  * \brief Get the number of rows in an image.
+  */
+BR_EXPORT int br_img_rows(br_template tmpl);
+/*!
+  * \brief Get the number of columns in an image.
+  */
+BR_EXPORT int br_img_cols(br_template tmpl);
+/*!
+  * \brief Get the number of channels in an image.
+  */
+BR_EXPORT int br_img_channels(br_template tmpl);
+/*!
+  * \brief Enroll a br::Template from the C API! Returns a br::TemplateList
+  */
+BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
+BR_EXPORT br_template br_get_template(br_template_list tl, int index);
 
 /*! @}*/
 

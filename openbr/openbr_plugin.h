@@ -856,7 +856,7 @@ struct Factory
             else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
         }
         T *object = registry->value(name)->_make();
-        object->init(file);
+        static_cast<Object*>(object)->init(file);
         return object;
     }
     //! [Factory make]
@@ -1060,6 +1060,7 @@ public:
     void writeBlock(const TemplateList &templates); /*!< \brief Serialize a template list. */
     virtual void write(const Template &t) = 0; /*!< \brief Serialize a template. */
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
+    void init();
 
 private:
     QSharedPointer<Gallery> next;
@@ -1317,6 +1318,11 @@ BR_EXPORT void Train(const File &input, const File &model);
  * \see br_enroll
  */
 BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
+/*!
+ * \brief High-level function for enrolling templates.
+ * \see br_enroll
+ */
+BR_EXPORT void Enroll(TemplateList &tmpl);
 
 /*!
  * \brief High-level function for comparing galleries.

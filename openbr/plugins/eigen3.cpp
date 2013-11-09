@@ -491,10 +491,6 @@ class LDATransform : public Transform
 
         // Do projection
         outMap = projection.transpose() * (inMap - mean);
-
-        if (isBinary) {
-            dst.file.set("conf",dst.m().at<float>(0,0));
-        }
     }
 
     void store(QDataStream &stream) const

@@ -1,0 +1,3103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biometric-signature-set>
+	<biometric-signature name="crop001501">
+		<presentation Label="pos" file-name="Test/pos/crop001501.png">
+			<data:bbox height="143" width="49" x="250" y="151" />
+			<data:bbox height="112" width="59" x="215" y="354" />
+			<data:bbox height="113" width="39" x="568" y="320" />
+			<data:bbox height="141" width="52" x="829" y="180" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001504">
+		<presentation Label="pos" file-name="Test/pos/crop001504.png">
+			<data:bbox height="176" width="66" x="258" y="281" />
+			<data:bbox height="178" width="61" x="339" y="281" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001511">
+		<presentation Label="pos" file-name="Test/pos/crop001511.png">
+			<data:bbox height="500" width="151" x="304" y="261" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001512">
+		<presentation Label="pos" file-name="Test/pos/crop001512.png">
+			<data:bbox height="400" width="157" x="519" y="276" />
+			<data:bbox height="336" width="140" x="310" y="261" />
+			<data:bbox height="492" width="141" x="853" y="277" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001514">
+		<presentation Label="pos" file-name="Test/pos/crop001514.png">
+			<data:bbox height="383" width="100" x="367" y="246" />
+			<data:bbox height="245" width="90" x="291" y="234" />
+			<data:bbox height="387" width="130" x="533" y="258" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001520">
+		<presentation Label="pos" file-name="Test/pos/crop001520.png">
+			<data:bbox height="543" width="167" x="486" y="222" />
+			<data:bbox height="478" width="133" x="292" y="251" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001521">
+		<presentation Label="pos" file-name="Test/pos/crop001521.png">
+			<data:bbox height="242" width="62" x="194" y="176" />
+			<data:bbox height="193" width="52" x="262" y="182" />
+			<data:bbox height="187" width="61" x="372" y="181" />
+			<data:bbox height="185" width="56" x="419" y="159" />
+			<data:bbox height="212" width="66" x="492" y="170" />
+			<data:bbox height="203" width="55" x="550" y="181" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001522">
+		<presentation Label="pos" file-name="Test/pos/crop001522.png">
+			<data:bbox height="578" width="171" x="559" y="217" />
+			<data:bbox height="198" width="47" x="928" y="175" />
+			<data:bbox height="157" width="42" x="978" y="181" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001531">
+		<presentation Label="pos" file-name="Test/pos/crop001531.png">
+			<data:bbox height="316" width="121" x="233" y="220" />
+			<data:bbox height="187" width="71" x="24" y="233" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001533">
+		<presentation Label="pos" file-name="Test/pos/crop001533.png">
+			<data:bbox height="320" width="92" x="755" y="325" />
+			<data:bbox height="198" width="69" x="638" y="340" />
+			<data:bbox height="195" width="69" x="405" y="343" />
+			<data:bbox height="212" width="72" x="213" y="342" />
+			<data:bbox height="161" width="51" x="964" y="339" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001544">
+		<presentation Label="pos" file-name="Test/pos/crop001544.png">
+			<data:bbox height="514" width="150" x="385" y="262" />
+			<data:bbox height="572" width="152" x="229" y="221" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001545">
+		<presentation Label="pos" file-name="Test/pos/crop001545.png">
+			<data:bbox height="476" width="130" x="425" y="225" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001546">
+		<presentation Label="pos" file-name="Test/pos/crop001546.png">
+			<data:bbox height="445" width="84" x="546" y="202" />
+			<data:bbox height="444" width="133" x="414" y="213" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001549">
+		<presentation Label="pos" file-name="Test/pos/crop001549.png">
+			<data:bbox height="334" width="95" x="533" y="248" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001555">
+		<presentation Label="pos" file-name="Test/pos/crop001555.png">
+			<data:bbox height="215" width="65" x="305" y="350" />
+			<data:bbox height="211" width="72" x="155" y="173" />
+			<data:bbox height="224" width="84" x="451" y="355" />
+			<data:bbox height="176" width="67" x="747" y="357" />
+			<data:bbox height="131" width="49" x="527" y="62" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001566">
+		<presentation Label="pos" file-name="Test/pos/crop001566.png">
+			<data:bbox height="303" width="121" x="105" y="131" />
+			<data:bbox height="146" width="69" x="233" y="292" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001573">
+		<presentation Label="pos" file-name="Test/pos/crop001573.png">
+			<data:bbox height="285" width="68" x="238" y="277" />
+			<data:bbox height="269" width="86" x="321" y="292" />
+			<data:bbox height="301" width="83" x="589" y="259" />
+			<data:bbox height="291" width="110" x="791" y="271" />
+			<data:bbox height="271" width="77" x="510" y="267" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001574">
+		<presentation Label="pos" file-name="Test/pos/crop001574.png">
+			<data:bbox height="275" width="93" x="203" y="212" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001590">
+		<presentation Label="pos" file-name="Test/pos/crop001590.png">
+			<data:bbox height="764" width="242" x="708" y="142" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001593">
+		<presentation Label="pos" file-name="Test/pos/crop001593.png">
+			<data:bbox height="186" width="52" x="326" y="241" />
+			<data:bbox height="213" width="51" x="406" y="218" />
+			<data:bbox height="223" width="68" x="488" y="223" />
+			<data:bbox height="182" width="57" x="246" y="241" />
+			<data:bbox height="208" width="66" x="624" y="229" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001602">
+		<presentation Label="pos" file-name="Test/pos/crop001602.png">
+			<data:bbox height="544" width="156" x="294" y="334" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001604">
+		<presentation Label="pos" file-name="Test/pos/crop001604.png">
+			<data:bbox height="322" width="95" x="317" y="205" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001607">
+		<presentation Label="pos" file-name="Test/pos/crop001607.png">
+			<data:bbox height="338" width="92" x="302" y="163" />
+			<data:bbox height="357" width="81" x="200" y="150" />
+			<data:bbox height="247" width="57" x="414" y="148" />
+			<data:bbox height="274" width="72" x="501" y="123" />
+			<data:bbox height="240" width="49" x="570" y="146" />
+			<data:bbox height="262" width="58" x="632" y="131" />
+			<data:bbox height="254" width="52" x="695" y="145" />
+			<data:bbox height="260" width="51" x="746" y="142" />
+			<data:bbox height="275" width="90" x="797" y="131" />
+			<data:bbox height="168" width="66" x="997" y="243" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001631">
+		<presentation Label="pos" file-name="Test/pos/crop001631.png">
+			<data:bbox height="207" width="69" x="283" y="264" />
+			<data:bbox height="204" width="60" x="196" y="273" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001633">
+		<presentation Label="pos" file-name="Test/pos/crop001633.png">
+			<data:bbox height="279" width="88" x="807" y="381" />
+			<data:bbox height="277" width="113" x="334" y="315" />
+			<data:bbox height="284" width="80" x="905" y="297" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001634">
+		<presentation Label="pos" file-name="Test/pos/crop001634.png">
+			<data:bbox height="288" width="99" x="220" y="171" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001638">
+		<presentation Label="pos" file-name="Test/pos/crop001638.png">
+			<data:bbox height="502" width="143" x="609" y="287" />
+			<data:bbox height="472" width="152" x="439" y="318" />
+			<data:bbox height="429" width="92" x="810" y="275" />
+			<data:bbox height="172" width="56" x="761" y="293" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001639">
+		<presentation Label="pos" file-name="Test/pos/crop001639.png">
+			<data:bbox height="540" width="161" x="549" y="177" />
+			<data:bbox height="553" width="193" x="91" y="219" />
+			<data:bbox height="592" width="200" x="759" y="199" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001641">
+		<presentation Label="pos" file-name="Test/pos/crop001641.png">
+			<data:bbox height="503" width="112" x="601" y="228" />
+			<data:bbox height="533" width="95" x="538" y="185" />
+			<data:bbox height="466" width="157" x="275" y="224" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001653">
+		<presentation Label="pos" file-name="Test/pos/crop001653.png">
+			<data:bbox height="295" width="105" x="331" y="202" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001654">
+		<presentation Label="pos" file-name="Test/pos/crop001654.png">
+			<data:bbox height="474" width="157" x="304" y="222" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001658">
+		<presentation Label="pos" file-name="Test/pos/crop001658.png">
+			<data:bbox height="189" width="60" x="374" y="189" />
+			<data:bbox height="200" width="62" x="304" y="185" />
+			<data:bbox height="187" width="59" x="234" y="192" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001659">
+		<presentation Label="pos" file-name="Test/pos/crop001659.png">
+			<data:bbox height="240" width="75" x="636" y="228" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001660">
+		<presentation Label="pos" file-name="Test/pos/crop001660.png">
+			<data:bbox height="359" width="113" x="305" y="312" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001661">
+		<presentation Label="pos" file-name="Test/pos/crop001661.png">
+			<data:bbox height="345" width="100" x="426" y="239" />
+			<data:bbox height="353" width="208" x="278" y="240" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001664">
+		<presentation Label="pos" file-name="Test/pos/crop001664.png">
+			<data:bbox height="125" width="52" x="671" y="323" />
+			<data:bbox height="125" width="46" x="637" y="324" />
+			<data:bbox height="160" width="59" x="271" y="312" />
+			<data:bbox height="166" width="63" x="229" y="313" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001670">
+		<presentation Label="pos" file-name="Test/pos/crop001670.png">
+			<data:bbox height="339" width="136" x="769" y="232" />
+			<data:bbox height="303" width="96" x="580" y="252" />
+			<data:bbox height="299" width="104" x="417" y="251" />
+			<data:bbox height="302" width="115" x="178" y="238" />
+			<data:bbox height="321" width="130" x="292" y="226" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001676">
+		<presentation Label="pos" file-name="Test/pos/crop001676.png">
+			<data:bbox height="399" width="119" x="612" y="376" />
+			<data:bbox height="339" width="116" x="787" y="429" />
+			<data:bbox height="276" width="144" x="419" y="413" />
+			<data:bbox height="371" width="141" x="244" y="396" />
+			<data:bbox height="355" width="113" x="210" y="202" />
+			<data:bbox height="302" width="91" x="949" y="477" />
+			<data:bbox height="255" width="79" x="883" y="556" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001682">
+		<presentation Label="pos" file-name="Test/pos/crop001682.png">
+			<data:bbox height="296" width="84" x="203" y="174" />
+			<data:bbox height="270" width="100" x="283" y="194" />
+			<data:bbox height="298" width="102" x="553" y="164" />
+			<data:bbox height="233" width="72" x="696" y="167" />
+			<data:bbox height="257" width="93" x="779" y="169" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001683">
+		<presentation Label="pos" file-name="Test/pos/crop001683.png">
+			<data:bbox height="337" width="100" x="216" y="170" />
+			<data:bbox height="325" width="101" x="350" y="150" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001684">
+		<presentation Label="pos" file-name="Test/pos/crop001684.png">
+			<data:bbox height="134" width="62" x="244" y="98" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001688">
+		<presentation Label="pos" file-name="Test/pos/crop001688.png">
+			<data:bbox height="721" width="169" x="598" y="177" />
+			<data:bbox height="229" width="62" x="966" y="294" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001704">
+		<presentation Label="pos" file-name="Test/pos/crop001704.png">
+			<data:bbox height="517" width="157" x="444" y="277" />
+			<data:bbox height="470" width="126" x="102" y="315" />
+			<data:bbox height="141" width="44" x="800" y="78" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001706">
+		<presentation Label="pos" file-name="Test/pos/crop001706.png">
+			<data:bbox height="788" width="221" x="740" y="105" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001715">
+		<presentation Label="pos" file-name="Test/pos/crop001715.png">
+			<data:bbox height="388" width="116" x="393" y="259" />
+			<data:bbox height="460" width="112" x="476" y="212" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001716">
+		<presentation Label="pos" file-name="Test/pos/crop001716.png">
+			<data:bbox height="300" width="84" x="222" y="257" />
+			<data:bbox height="302" width="111" x="46" y="240" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001718">
+		<presentation Label="pos" file-name="Test/pos/crop001718.png">
+			<data:bbox height="211" width="90" x="503" y="359" />
+			<data:bbox height="300" width="100" x="617" y="381" />
+			<data:bbox height="289" width="89" x="829" y="399" />
+			<data:bbox height="187" width="69" x="913" y="388" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001719">
+		<presentation Label="pos" file-name="Test/pos/crop001719.png">
+			<data:bbox height="362" width="98" x="360" y="379" />
+			<data:bbox height="374" width="91" x="454" y="368" />
+			<data:bbox height="312" width="96" x="753" y="424" />
+			<data:bbox height="302" width="105" x="855" y="444" />
+			<data:bbox height="295" width="99" x="946" y="451" />
+			<data:bbox height="99" width="31" x="148" y="422" />
+			<data:bbox height="98" width="40" x="166" y="419" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001722">
+		<presentation Label="pos" file-name="Test/pos/crop001722.png">
+			<data:bbox height="522" width="150" x="244" y="280" />
+			<data:bbox height="494" width="133" x="134" y="345" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001723">
+		<presentation Label="pos" file-name="Test/pos/crop001723.png">
+			<data:bbox height="249" width="80" x="373" y="181" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001724">
+		<presentation Label="pos" file-name="Test/pos/crop001724.png">
+			<data:bbox height="186" width="61" x="215" y="152" />
+			<data:bbox height="282" width="74" x="80" y="156" />
+			<data:bbox height="72" width="26" x="156" y="69" />
+			<data:bbox height="63" width="28" x="127" y="70" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001725">
+		<presentation Label="pos" file-name="Test/pos/crop001725.png">
+			<data:bbox height="187" width="53" x="201" y="207" />
+			<data:bbox height="171" width="46" x="173" y="211" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000001">
+		<presentation Label="pos" file-name="Test/pos/crop_000001.png">
+			<data:bbox height="580" width="198" x="142" y="66" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000002">
+		<presentation Label="pos" file-name="Test/pos/crop_000002.png">
+			<data:bbox height="389" width="104" x="110" y="80" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000003">
+		<presentation Label="pos" file-name="Test/pos/crop_000003.png">
+			<data:bbox height="403" width="118" x="316" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000004">
+		<presentation Label="pos" file-name="Test/pos/crop_000004.png">
+			<data:bbox height="294" width="98" x="141" y="53" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000005">
+		<presentation Label="pos" file-name="Test/pos/crop_000005.png">
+			<data:bbox height="249" width="89" x="171" y="72" />
+			<data:bbox height="260" width="120" x="35" y="60" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000006">
+		<presentation Label="pos" file-name="Test/pos/crop_000006.png">
+			<data:bbox height="535" width="245" x="145" y="91" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000007">
+		<presentation Label="pos" file-name="Test/pos/crop_000007.png">
+			<data:bbox height="468" width="212" x="530" y="113" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000008">
+		<presentation Label="pos" file-name="Test/pos/crop_000008.png">
+			<data:bbox height="641" width="146" x="475" y="68" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000009">
+		<presentation Label="pos" file-name="Test/pos/crop_000009.png">
+			<data:bbox height="587" width="175" x="303" y="68" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000012">
+		<presentation Label="pos" file-name="Test/pos/crop_000012.png">
+			<data:bbox height="483" width="222" x="151" y="143" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000013">
+		<presentation Label="pos" file-name="Test/pos/crop_000013.png">
+			<data:bbox height="508" width="169" x="194" y="118" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000015">
+		<presentation Label="pos" file-name="Test/pos/crop_000015.png">
+			<data:bbox height="543" width="289" x="190" y="104" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000016">
+		<presentation Label="pos" file-name="Test/pos/crop_000016.png">
+			<data:bbox height="579" width="174" x="581" y="83" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000017">
+		<presentation Label="pos" file-name="Test/pos/crop_000017.png">
+			<data:bbox height="655" width="171" x="513" y="63" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000018">
+		<presentation Label="pos" file-name="Test/pos/crop_000018.png">
+			<data:bbox height="538" width="206" x="254" y="64" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000019">
+		<presentation Label="pos" file-name="Test/pos/crop_000019.png">
+			<data:bbox height="585" width="211" x="413" y="82" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000020">
+		<presentation Label="pos" file-name="Test/pos/crop_000020.png">
+			<data:bbox height="434" width="125" x="261" y="71" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000021">
+		<presentation Label="pos" file-name="Test/pos/crop_000021.png">
+			<data:bbox height="484" width="180" x="289" y="49" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000023">
+		<presentation Label="pos" file-name="Test/pos/crop_000023.png">
+			<data:bbox height="485" width="181" x="467" y="80" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000024">
+		<presentation Label="pos" file-name="Test/pos/crop_000024.png">
+			<data:bbox height="505" width="162" x="184" y="111" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000025">
+		<presentation Label="pos" file-name="Test/pos/crop_000025.png">
+			<data:bbox height="588" width="236" x="294" y="75" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000026">
+		<presentation Label="pos" file-name="Test/pos/crop_000026.png">
+			<data:bbox height="226" width="104" x="135" y="274" />
+			<data:bbox height="295" width="135" x="332" y="151" />
+			<data:bbox height="339" width="98" x="512" y="168" />
+			<data:bbox height="438" width="127" x="709" y="93" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000027">
+		<presentation Label="pos" file-name="Test/pos/crop_000027.png">
+			<data:bbox height="626" width="207" x="429" y="40" />
+			<data:bbox height="561" width="154" x="65" y="41" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop_000604">
+		<presentation Label="pos" file-name="Test/pos/crop_000604.png">
+			<data:bbox height="241" width="69" x="155" y="65" />
+			<data:bbox height="242" width="86" x="288" y="44" />
+			<data:bbox height="251" width="77" x="79" y="56" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_007">
+		<presentation Label="pos" file-name="Test/pos/person_007.png">
+			<data:bbox height="373" width="105" x="139" y="107" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_008">
+		<presentation Label="pos" file-name="Test/pos/person_008.png">
+			<data:bbox height="455" width="158" x="166" y="114" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_009">
+		<presentation Label="pos" file-name="Test/pos/person_009.png">
+			<data:bbox height="524" width="149" x="173" y="74" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_010">
+		<presentation Label="pos" file-name="Test/pos/person_010.png">
+			<data:bbox height="415" width="92" x="212" y="151" />
+			<data:bbox height="85" width="42" x="40" y="241" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_011">
+		<presentation Label="pos" file-name="Test/pos/person_011.png">
+			<data:bbox height="348" width="143" x="162" y="155" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_012">
+		<presentation Label="pos" file-name="Test/pos/person_012.png">
+			<data:bbox height="273" width="68" x="212" y="198" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_013">
+		<presentation Label="pos" file-name="Test/pos/person_013.png">
+			<data:bbox height="306" width="140" x="190" y="218" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_014">
+		<presentation Label="pos" file-name="Test/pos/person_014.png">
+			<data:bbox height="454" width="165" x="159" y="115" />
+			<data:bbox height="112" width="39" x="36" y="109" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_015">
+		<presentation Label="pos" file-name="Test/pos/person_015.png">
+			<data:bbox height="207" width="84" x="200" y="191" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_026">
+		<presentation Label="pos" file-name="Test/pos/person_026.png">
+			<data:bbox height="584" width="178" x="158" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_028">
+		<presentation Label="pos" file-name="Test/pos/person_028.png">
+			<data:bbox height="567" width="178" x="144" y="68" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_029">
+		<presentation Label="pos" file-name="Test/pos/person_029.png">
+			<data:bbox height="517" width="173" x="80" y="85" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_030">
+		<presentation Label="pos" file-name="Test/pos/person_030.png">
+			<data:bbox height="579" width="161" x="116" y="54" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_032">
+		<presentation Label="pos" file-name="Test/pos/person_032.png">
+			<data:bbox height="577" width="180" x="152" y="54" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_033">
+		<presentation Label="pos" file-name="Test/pos/person_033.png">
+			<data:bbox height="516" width="170" x="142" y="119" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_034">
+		<presentation Label="pos" file-name="Test/pos/person_034.png">
+			<data:bbox height="577" width="174" x="116" y="53" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_036">
+		<presentation Label="pos" file-name="Test/pos/person_036.png">
+			<data:bbox height="503" width="180" x="191" y="83" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_037">
+		<presentation Label="pos" file-name="Test/pos/person_037.png">
+			<data:bbox height="310" width="91" x="230" y="229" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_038">
+		<presentation Label="pos" file-name="Test/pos/person_038.png">
+			<data:bbox height="334" width="129" x="217" y="200" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_039">
+		<presentation Label="pos" file-name="Test/pos/person_039.png">
+			<data:bbox height="181" width="74" x="196" y="232" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_040">
+		<presentation Label="pos" file-name="Test/pos/person_040.png">
+			<data:bbox height="338" width="137" x="172" y="152" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_051">
+		<presentation Label="pos" file-name="Test/pos/person_051.png">
+			<data:bbox height="332" width="123" x="282" y="104" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_052">
+		<presentation Label="pos" file-name="Test/pos/person_052.png">
+			<data:bbox height="324" width="70" x="293" y="114" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_053">
+		<presentation Label="pos" file-name="Test/pos/person_053.png">
+			<data:bbox height="305" width="107" x="291" y="121" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_055">
+		<presentation Label="pos" file-name="Test/pos/person_055.png">
+			<data:bbox height="326" width="116" x="273" y="144" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_056">
+		<presentation Label="pos" file-name="Test/pos/person_056.png">
+			<data:bbox height="358" width="118" x="297" y="76" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_058">
+		<presentation Label="pos" file-name="Test/pos/person_058.png">
+			<data:bbox height="248" width="79" x="319" y="132" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_059">
+		<presentation Label="pos" file-name="Test/pos/person_059.png">
+			<data:bbox height="284" width="91" x="305" y="127" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_062">
+		<presentation Label="pos" file-name="Test/pos/person_062.png">
+			<data:bbox height="274" width="120" x="387" y="154" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_063">
+		<presentation Label="pos" file-name="Test/pos/person_063.png">
+			<data:bbox height="241" width="92" x="313" y="173" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_064">
+		<presentation Label="pos" file-name="Test/pos/person_064.png">
+			<data:bbox height="340" width="105" x="252" y="131" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_065">
+		<presentation Label="pos" file-name="Test/pos/person_065.png">
+			<data:bbox height="331" width="91" x="261" y="125" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_070">
+		<presentation Label="pos" file-name="Test/pos/person_070.png">
+			<data:bbox height="275" width="96" x="217" y="138" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_071">
+		<presentation Label="pos" file-name="Test/pos/person_071.png">
+			<data:bbox height="358" width="117" x="197" y="71" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_073">
+		<presentation Label="pos" file-name="Test/pos/person_073.png">
+			<data:bbox height="222" width="123" x="287" y="201" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_075">
+		<presentation Label="pos" file-name="Test/pos/person_075.png">
+			<data:bbox height="172" width="75" x="262" y="183" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_076">
+		<presentation Label="pos" file-name="Test/pos/person_076.png">
+			<data:bbox height="304" width="122" x="264" y="133" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_085">
+		<presentation Label="pos" file-name="Test/pos/person_085.png">
+			<data:bbox height="402" width="141" x="233" y="157" />
+			<data:bbox height="322" width="89" x="139" y="176" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_087">
+		<presentation Label="pos" file-name="Test/pos/person_087.png">
+			<data:bbox height="364" width="113" x="226" y="187" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_088">
+		<presentation Label="pos" file-name="Test/pos/person_088.png">
+			<data:bbox height="423" width="139" x="157" y="128" />
+			<data:bbox height="189" width="56" x="352" y="138" />
+			<data:bbox height="183" width="60" x="310" y="135" />
+			<data:bbox height="170" width="52" x="402" y="147" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_089">
+		<presentation Label="pos" file-name="Test/pos/person_089.png">
+			<data:bbox height="315" width="123" x="181" y="169" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_090">
+		<presentation Label="pos" file-name="Test/pos/person_090.png">
+			<data:bbox height="364" width="97" x="225" y="164" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_092">
+		<presentation Label="pos" file-name="Test/pos/person_092.png">
+			<data:bbox height="411" width="135" x="192" y="123" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_093">
+		<presentation Label="pos" file-name="Test/pos/person_093.png">
+			<data:bbox height="392" width="134" x="254" y="138" />
+			<data:bbox height="383" width="124" x="102" y="136" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_094">
+		<presentation Label="pos" file-name="Test/pos/person_094.png">
+			<data:bbox height="440" width="163" x="173" y="127" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_095">
+		<presentation Label="pos" file-name="Test/pos/person_095.png">
+			<data:bbox height="480" width="183" x="150" y="98" />
+			<data:bbox height="178" width="71" x="336" y="123" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_096">
+		<presentation Label="pos" file-name="Test/pos/person_096.png">
+			<data:bbox height="223" width="75" x="370" y="43" />
+			<data:bbox height="187" width="45" x="339" y="67" />
+			<data:bbox height="439" width="149" x="192" y="97" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_098">
+		<presentation Label="pos" file-name="Test/pos/person_098.png">
+			<data:bbox height="438" width="164" x="287" y="98" />
+			<data:bbox height="379" width="112" x="41" y="127" />
+			<data:bbox height="366" width="112" x="127" y="145" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_099">
+		<presentation Label="pos" file-name="Test/pos/person_099.png">
+			<data:bbox height="430" width="140" x="194" y="128" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_100">
+		<presentation Label="pos" file-name="Test/pos/person_100.png">
+			<data:bbox height="252" width="105" x="141" y="222" />
+			<data:bbox height="244" width="77" x="323" y="225" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_104">
+		<presentation Label="pos" file-name="Test/pos/person_104.png">
+			<data:bbox height="316" width="123" x="153" y="198" />
+			<data:bbox height="297" width="110" x="277" y="208" />
+			<data:bbox height="81" width="37" x="270" y="179" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_105">
+		<presentation Label="pos" file-name="Test/pos/person_105.png">
+			<data:bbox height="378" width="140" x="216" y="125" />
+			<data:bbox height="367" width="122" x="113" y="124" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_107">
+		<presentation Label="pos" file-name="Test/pos/person_107.png">
+			<data:bbox height="497" width="184" x="220" y="107" />
+			<data:bbox height="400" width="149" x="58" y="198" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_115">
+		<presentation Label="pos" file-name="Test/pos/person_115.png">
+			<data:bbox height="424" width="107" x="266" y="133" />
+			<data:bbox height="499" width="136" x="42" y="79" />
+			<data:bbox height="423" width="103" x="150" y="103" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_118">
+		<presentation Label="pos" file-name="Test/pos/person_118.png">
+			<data:bbox height="182" width="68" x="184" y="208" />
+			<data:bbox height="172" width="58" x="133" y="216" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_120">
+		<presentation Label="pos" file-name="Test/pos/person_120.png">
+			<data:bbox height="276" width="113" x="242" y="163" />
+			<data:bbox height="283" width="119" x="154" y="180" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_122">
+		<presentation Label="pos" file-name="Test/pos/person_122.png">
+			<data:bbox height="238" width="76" x="207" y="224" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_127">
+		<presentation Label="pos" file-name="Test/pos/person_127.png">
+			<data:bbox height="324" width="118" x="333" y="78" />
+			<data:bbox height="289" width="92" x="242" y="113" />
+			<data:bbox height="79" width="30" x="125" y="86" />
+			<data:bbox height="73" width="27" x="94" y="87" />
+			<data:bbox height="74" width="26" x="150" y="91" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_132">
+		<presentation Label="pos" file-name="Test/pos/person_132.png">
+			<data:bbox height="145" width="53" x="380" y="182" />
+			<data:bbox height="153" width="57" x="455" y="177" />
+			<data:bbox height="150" width="56" x="286" y="182" />
+			<data:bbox height="143" width="49" x="234" y="181" />
+			<data:bbox height="147" width="57" x="196" y="182" />
+			<data:bbox height="129" width="56" x="98" y="207" />
+			<data:bbox height="125" width="36" x="271" y="196" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_134">
+		<presentation Label="pos" file-name="Test/pos/person_134.png">
+			<data:bbox height="320" width="126" x="219" y="124" />
+			<data:bbox height="332" width="120" x="327" y="107" />
+			<data:bbox height="110" width="38" x="485" y="91" />
+			<data:bbox height="105" width="41" x="416" y="89" />
+			<data:bbox height="69" width="23" x="140" y="102" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_135">
+		<presentation Label="pos" file-name="Test/pos/person_135.png">
+			<data:bbox height="252" width="70" x="319" y="141" />
+			<data:bbox height="239" width="64" x="257" y="157" />
+			<data:bbox height="254" width="90" x="172" y="142" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_136">
+		<presentation Label="pos" file-name="Test/pos/person_136.png">
+			<data:bbox height="254" width="79" x="322" y="130" />
+			<data:bbox height="253" width="96" x="219" y="142" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_137">
+		<presentation Label="pos" file-name="Test/pos/person_137.png">
+			<data:bbox height="216" width="60" x="305" y="85" />
+			<data:bbox height="212" width="75" x="209" y="92" />
+			<data:bbox height="203" width="63" x="152" y="100" />
+			<data:bbox height="222" width="80" x="108" y="65" />
+			<data:bbox height="169" width="49" x="380" y="124" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_138">
+		<presentation Label="pos" file-name="Test/pos/person_138.png">
+			<data:bbox height="301" width="128" x="175" y="72" />
+			<data:bbox height="305" width="97" x="338" y="63" />
+			<data:bbox height="327" width="77" x="487" y="45" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_159">
+		<presentation Label="pos" file-name="Test/pos/person_159.png">
+			<data:bbox height="149" width="55" x="203" y="185" />
+			<data:bbox height="140" width="49" x="262" y="181" />
+			<data:bbox height="190" width="74" x="303" y="156" />
+			<data:bbox height="162" width="63" x="369" y="179" />
+			<data:bbox height="151" width="66" x="445" y="169" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_161">
+		<presentation Label="pos" file-name="Test/pos/person_161.png">
+			<data:bbox height="336" width="116" x="271" y="103" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_164">
+		<presentation Label="pos" file-name="Test/pos/person_164.png">
+			<data:bbox height="242" width="93" x="247" y="148" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_186">
+		<presentation Label="pos" file-name="Test/pos/person_186.png">
+			<data:bbox height="217" width="87" x="247" y="172" />
+			<data:bbox height="222" width="77" x="337" y="162" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_188">
+		<presentation Label="pos" file-name="Test/pos/person_188.png">
+			<data:bbox height="171" width="66" x="262" y="170" />
+			<data:bbox height="161" width="60" x="208" y="179" />
+			<data:bbox height="174" width="52" x="352" y="182" />
+			<data:bbox height="184" width="61" x="413" y="188" />
+			<data:bbox height="144" width="48" x="461" y="218" />
+			<data:bbox height="85" width="38" x="2" y="194" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_189">
+		<presentation Label="pos" file-name="Test/pos/person_189.png">
+			<data:bbox height="308" width="115" x="260" y="121" />
+			<data:bbox height="279" width="81" x="353" y="132" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_190">
+		<presentation Label="pos" file-name="Test/pos/person_190.png">
+			<data:bbox height="222" width="75" x="259" y="145" />
+			<data:bbox height="236" width="90" x="121" y="126" />
+			<data:bbox height="278" width="125" x="348" y="140" />
+			<data:bbox height="243" width="98" x="427" y="123" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_191">
+		<presentation Label="pos" file-name="Test/pos/person_191.png">
+			<data:bbox height="215" width="70" x="402" y="172" />
+			<data:bbox height="187" width="71" x="475" y="179" />
+			<data:bbox height="179" width="63" x="328" y="184" />
+			<data:bbox height="123" width="45" x="219" y="173" />
+			<data:bbox height="117" width="36" x="184" y="181" />
+			<data:bbox height="92" width="42" x="263" y="201" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_193">
+		<presentation Label="pos" file-name="Test/pos/person_193.png">
+			<data:bbox height="280" width="99" x="176" y="147" />
+			<data:bbox height="224" width="89" x="322" y="158" />
+			<data:bbox height="121" width="51" x="560" y="160" />
+			<data:bbox height="107" width="53" x="424" y="188" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_194">
+		<presentation Label="pos" file-name="Test/pos/person_194.png">
+			<data:bbox height="171" width="67" x="258" y="187" />
+			<data:bbox height="177" width="59" x="349" y="176" />
+			<data:bbox height="163" width="62" x="398" y="175" />
+			<data:bbox height="158" width="44" x="312" y="197" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_198">
+		<presentation Label="pos" file-name="Test/pos/person_198.png">
+			<data:bbox height="364" width="122" x="183" y="82" />
+			<data:bbox height="328" width="111" x="318" y="103" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_200">
+		<presentation Label="pos" file-name="Test/pos/person_200.png">
+			<data:bbox height="133" width="38" x="75" y="218" />
+			<data:bbox height="143" width="43" x="102" y="195" />
+			<data:bbox height="146" width="39" x="171" y="196" />
+			<data:bbox height="143" width="41" x="189" y="201" />
+			<data:bbox height="148" width="46" x="221" y="203" />
+			<data:bbox height="158" width="52" x="247" y="197" />
+			<data:bbox height="157" width="47" x="303" y="197" />
+			<data:bbox height="141" width="54" x="360" y="210" />
+			<data:bbox height="156" width="51" x="414" y="195" />
+			<data:bbox height="139" width="47" x="445" y="206" />
+			<data:bbox height="131" width="44" x="329" y="212" />
+			<data:bbox height="132" width="47" x="477" y="218" />
+			<data:bbox height="97" width="45" x="512" y="195" />
+			<data:bbox height="97" width="46" x="556" y="198" />
+			<data:bbox height="111" width="40" x="597" y="196" />
+			<data:bbox height="133" width="35" x="140" y="197" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_204">
+		<presentation Label="pos" file-name="Test/pos/person_204.png">
+			<data:bbox height="248" width="92" x="89" y="70" />
+			<data:bbox height="233" width="89" x="235" y="160" />
+			<data:bbox height="309" width="143" x="321" y="98" />
+			<data:bbox height="186" width="63" x="503" y="95" />
+			<data:bbox height="112" width="42" x="447" y="103" />
+			<data:bbox height="275" width="77" x="559" y="121" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_206">
+		<presentation Label="pos" file-name="Test/pos/person_206.png">
+			<data:bbox height="271" width="90" x="307" y="178" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_207">
+		<presentation Label="pos" file-name="Test/pos/person_207.png">
+			<data:bbox height="156" width="56" x="305" y="168" />
+			<data:bbox height="143" width="50" x="185" y="173" />
+			<data:bbox height="106" width="44" x="279" y="227" />
+			<data:bbox height="112" width="54" x="246" y="186" />
+			<data:bbox height="230" width="65" x="417" y="181" />
+			<data:bbox height="150" width="47" x="98" y="181" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_210">
+		<presentation Label="pos" file-name="Test/pos/person_210.png">
+			<data:bbox height="243" width="77" x="256" y="155" />
+			<data:bbox height="252" width="77" x="331" y="142" />
+			<data:bbox height="120" width="51" x="473" y="139" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_212">
+		<presentation Label="pos" file-name="Test/pos/person_212.png">
+			<data:bbox height="190" width="64" x="302" y="166" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_216">
+		<presentation Label="pos" file-name="Test/pos/person_216.png">
+			<data:bbox height="332" width="81" x="352" y="126" />
+			<data:bbox height="252" width="93" x="214" y="137" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_217">
+		<presentation Label="pos" file-name="Test/pos/person_217.png">
+			<data:bbox height="231" width="90" x="238" y="214" />
+			<data:bbox height="202" width="60" x="52" y="192" />
+			<data:bbox height="183" width="60" x="157" y="195" />
+			<data:bbox height="207" width="77" x="432" y="182" />
+			<data:bbox height="198" width="55" x="371" y="194" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_218">
+		<presentation Label="pos" file-name="Test/pos/person_218.png">
+			<data:bbox height="372" width="126" x="217" y="103" />
+			<data:bbox height="260" width="83" x="333" y="134" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_222">
+		<presentation Label="pos" file-name="Test/pos/person_222.png">
+			<data:bbox height="367" width="95" x="170" y="84" />
+			<data:bbox height="372" width="101" x="402" y="69" />
+			<data:bbox height="203" width="71" x="324" y="80" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_230">
+		<presentation Label="pos" file-name="Test/pos/person_230.png">
+			<data:bbox height="322" width="112" x="412" y="127" />
+			<data:bbox height="316" width="124" x="251" y="124" />
+			<data:bbox height="187" width="73" x="146" y="135" />
+			<data:bbox height="85" width="27" x="115" y="153" />
+			<data:bbox height="94" width="31" x="228" y="140" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_236">
+		<presentation Label="pos" file-name="Test/pos/person_236.png">
+			<data:bbox height="268" width="84" x="312" y="138" />
+			<data:bbox height="168" width="58" x="206" y="153" />
+			<data:bbox height="171" width="64" x="93" y="141" />
+			<data:bbox height="137" width="51" x="146" y="184" />
+			<data:bbox height="181" width="53" x="442" y="156" />
+			<data:bbox height="188" width="42" x="482" y="170" />
+			<data:bbox height="210" width="77" x="530" y="153" />
+			<data:bbox height="112" width="44" x="98" y="208" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_246">
+		<presentation Label="pos" file-name="Test/pos/person_246.png">
+			<data:bbox height="369" width="127" x="277" y="89" />
+			<data:bbox height="417" width="103" x="193" y="26" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_247">
+		<presentation Label="pos" file-name="Test/pos/person_247.png">
+			<data:bbox height="242" width="58" x="258" y="144" />
+			<data:bbox height="222" width="79" x="317" y="153" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_248">
+		<presentation Label="pos" file-name="Test/pos/person_248.png">
+			<data:bbox height="305" width="124" x="256" y="128" />
+			<data:bbox height="258" width="115" x="370" y="174" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_249">
+		<presentation Label="pos" file-name="Test/pos/person_249.png">
+			<data:bbox height="240" width="76" x="216" y="182" />
+			<data:bbox height="241" width="74" x="282" y="178" />
+			<data:bbox height="245" width="74" x="414" y="169" />
+			<data:bbox height="247" width="70" x="468" y="168" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_250">
+		<presentation Label="pos" file-name="Test/pos/person_250.png">
+			<data:bbox height="358" width="123" x="221" y="102" />
+			<data:bbox height="308" width="96" x="369" y="100" />
+			<data:bbox height="308" width="84" x="125" y="98" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_251">
+		<presentation Label="pos" file-name="Test/pos/person_251.png">
+			<data:bbox height="370" width="146" x="323" y="78" />
+			<data:bbox height="357" width="125" x="206" y="77" />
+			<data:bbox height="179" width="51" x="473" y="91" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_255">
+		<presentation Label="pos" file-name="Test/pos/person_255.png">
+			<data:bbox height="240" width="90" x="215" y="149" />
+			<data:bbox height="226" width="73" x="406" y="158" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_263">
+		<presentation Label="pos" file-name="Test/pos/person_263.png">
+			<data:bbox height="317" width="97" x="284" y="134" />
+			<data:bbox height="332" width="111" x="172" y="127" />
+			<data:bbox height="293" width="103" x="63" y="129" />
+			<data:bbox height="154" width="52" x="8" y="188" />
+			<data:bbox height="245" width="83" x="345" y="159" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_265">
+		<presentation Label="pos" file-name="Test/pos/person_265.png">
+			<data:bbox height="315" width="98" x="70" y="76" />
+			<data:bbox height="204" width="78" x="301" y="189" />
+			<data:bbox height="226" width="79" x="390" y="168" />
+			<data:bbox height="216" width="75" x="490" y="178" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_272">
+		<presentation Label="pos" file-name="Test/pos/person_272.png">
+			<data:bbox height="405" width="129" x="41" y="66" />
+			<data:bbox height="413" width="93" x="182" y="59" />
+			<data:bbox height="419" width="142" x="298" y="49" />
+			<data:bbox height="398" width="109" x="441" y="41" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_280">
+		<presentation Label="pos" file-name="Test/pos/person_280.png">
+			<data:bbox height="242" width="112" x="245" y="162" />
+			<data:bbox height="189" width="66" x="334" y="145" />
+			<data:bbox height="146" width="47" x="457" y="158" />
+			<data:bbox height="151" width="50" x="498" y="151" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_282">
+		<presentation Label="pos" file-name="Test/pos/person_282.png">
+			<data:bbox height="286" width="97" x="253" y="136" />
+			<data:bbox height="93" width="49" x="82" y="139" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_290">
+		<presentation Label="pos" file-name="Test/pos/person_290.png">
+			<data:bbox height="286" width="134" x="293" y="152" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_293">
+		<presentation Label="pos" file-name="Test/pos/person_293.png">
+			<data:bbox height="300" width="110" x="257" y="103" />
+			<data:bbox height="147" width="57" x="171" y="112" />
+			<data:bbox height="142" width="53" x="114" y="118" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_303">
+		<presentation Label="pos" file-name="Test/pos/person_303.png">
+			<data:bbox height="297" width="99" x="371" y="134" />
+			<data:bbox height="330" width="109" x="244" y="146" />
+			<data:bbox height="241" width="79" x="144" y="149" />
+			<data:bbox height="161" width="48" x="476" y="121" />
+			<data:bbox height="219" width="63" x="202" y="127" />
+			<data:bbox height="217" width="67" x="112" y="114" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_306">
+		<presentation Label="pos" file-name="Test/pos/person_306.png">
+			<data:bbox height="281" width="104" x="254" y="147" />
+			<data:bbox height="321" width="97" x="155" y="136" />
+			<data:bbox height="91" width="32" x="424" y="165" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_314">
+		<presentation Label="pos" file-name="Test/pos/person_314.png">
+			<data:bbox height="267" width="66" x="183" y="128" />
+			<data:bbox height="332" width="109" x="480" y="111" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_315">
+		<presentation Label="pos" file-name="Test/pos/person_315.png">
+			<data:bbox height="190" width="76" x="335" y="204" />
+			<data:bbox height="142" width="51" x="473" y="188" />
+			<data:bbox height="147" width="59" x="518" y="186" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_316">
+		<presentation Label="pos" file-name="Test/pos/person_316.png">
+			<data:bbox height="282" width="99" x="323" y="193" />
+			<data:bbox height="246" width="71" x="279" y="210" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_317">
+		<presentation Label="pos" file-name="Test/pos/person_317.png">
+			<data:bbox height="238" width="80" x="324" y="147" />
+			<data:bbox height="235" width="106" x="190" y="160" />
+			<data:bbox height="79" width="35" x="180" y="137" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_318">
+		<presentation Label="pos" file-name="Test/pos/person_318.png">
+			<data:bbox height="259" width="87" x="212" y="109" />
+			<data:bbox height="227" width="65" x="304" y="124" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_323">
+		<presentation Label="pos" file-name="Test/pos/person_323.png">
+			<data:bbox height="312" width="133" x="251" y="107" />
+			<data:bbox height="340" width="130" x="130" y="77" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_325">
+		<presentation Label="pos" file-name="Test/pos/person_325.png">
+			<data:bbox height="280" width="114" x="218" y="120" />
+			<data:bbox height="271" width="109" x="126" y="117" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_335">
+		<presentation Label="pos" file-name="Test/pos/person_335.png">
+			<data:bbox height="220" width="96" x="263" y="158" />
+			<data:bbox height="114" width="30" x="233" y="159" />
+			<data:bbox height="130" width="55" x="172" y="144" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_336">
+		<presentation Label="pos" file-name="Test/pos/person_336.png">
+			<data:bbox height="272" width="93" x="367" y="104" />
+			<data:bbox height="248" width="102" x="280" y="128" />
+			<data:bbox height="96" width="31" x="121" y="126" />
+			<data:bbox height="75" width="30" x="74" y="133" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_337">
+		<presentation Label="pos" file-name="Test/pos/person_337.png">
+			<data:bbox height="216" width="74" x="312" y="181" />
+			<data:bbox height="209" width="58" x="186" y="145" />
+			<data:bbox height="177" width="61" x="73" y="138" />
+			<data:bbox height="147" width="45" x="143" y="165" />
+			<data:bbox height="199" width="90" x="253" y="154" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_347">
+		<presentation Label="pos" file-name="Test/pos/person_347.png">
+			<data:bbox height="280" width="107" x="254" y="118" />
+			<data:bbox height="203" width="93" x="423" y="162" />
+			<data:bbox height="78" width="25" x="360" y="141" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_350">
+		<presentation Label="pos" file-name="Test/pos/person_350.png">
+			<data:bbox height="392" width="96" x="144" y="77" />
+			<data:bbox height="394" width="106" x="40" y="79" />
+			<data:bbox height="368" width="122" x="275" y="95" />
+			<data:bbox height="326" width="71" x="510" y="113" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_004">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_004.png">
+			<data:bbox height="617" width="211" x="126" y="19" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_006">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_006.png">
+			<data:bbox height="343" width="133" x="198" y="61" />
+			<data:bbox height="106" width="44" x="88" y="49" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_012">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_012.png">
+			<data:bbox height="346" width="91" x="213" y="83" />
+			<data:bbox height="350" width="106" x="344" y="81" />
+			<data:bbox height="156" width="62" x="5" y="71" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_014">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_014.png">
+			<data:bbox height="302" width="137" x="301" y="73" />
+			<data:bbox height="87" width="33" x="545" y="98" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_027">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_027.png">
+			<data:bbox height="189" width="81" x="299" y="136" />
+			<data:bbox height="207" width="70" x="238" y="119" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_028">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_028.png">
+			<data:bbox height="120" width="47" x="474" y="117" />
+			<data:bbox height="101" width="30" x="443" y="126" />
+			<data:bbox height="285" width="105" x="253" y="135" />
+			<data:bbox height="66" width="31" x="332" y="123" />
+			<data:bbox height="60" width="23" x="378" y="116" />
+			<data:bbox height="61" width="28" x="394" y="112" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_029">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_029.png">
+			<data:bbox height="145" width="39" x="571" y="120" />
+			<data:bbox height="315" width="100" x="204" y="153" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_035">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_035.png">
+			<data:bbox height="275" width="76" x="172" y="142" />
+			<data:bbox height="279" width="80" x="264" y="131" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_038">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_038.png">
+			<data:bbox height="199" width="69" x="307" y="131" />
+			<data:bbox height="151" width="72" x="70" y="125" />
+			<data:bbox height="342" width="171" x="449" y="118" />
+			<data:bbox height="163" width="54" x="273" y="126" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_042">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_042.png">
+			<data:bbox height="351" width="119" x="299" y="46" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_043">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_043.png">
+			<data:bbox height="349" width="101" x="311" y="39" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_044">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_044.png">
+			<data:bbox height="304" width="125" x="278" y="71" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_045">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_045.png">
+			<data:bbox height="423" width="171" x="180" y="35" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_046">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_046.png">
+			<data:bbox height="325" width="152" x="202" y="44" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_047">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_047.png">
+			<data:bbox height="348" width="100" x="292" y="56" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_048">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_048.png">
+			<data:bbox height="349" width="116" x="212" y="47" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_049">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_049.png">
+			<data:bbox height="359" width="121" x="297" y="36" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_050">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_050.png">
+			<data:bbox height="435" width="193" x="253" y="34" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_051">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_051.png">
+			<data:bbox height="337" width="132" x="267" y="80" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_052">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_052.png">
+			<data:bbox height="414" width="144" x="265" y="29" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_053">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_053.png">
+			<data:bbox height="429" width="117" x="249" y="20" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_054">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_054.png">
+			<data:bbox height="371" width="163" x="208" y="54" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_055">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_055.png">
+			<data:bbox height="331" width="123" x="223" y="65" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_056">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_056.png">
+			<data:bbox height="353" width="142" x="291" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_057">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_057.png">
+			<data:bbox height="350" width="118" x="243" y="47" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_058">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_058.png">
+			<data:bbox height="353" width="93" x="182" y="49" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_059">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_059.png">
+			<data:bbox height="351" width="99" x="259" y="52" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_060">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_060.png">
+			<data:bbox height="374" width="137" x="244" y="33" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_061">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_061.png">
+			<data:bbox height="396" width="149" x="280" y="45" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_062">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_062.png">
+			<data:bbox height="388" width="131" x="271" y="40" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_063">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_063.png">
+			<data:bbox height="391" width="190" x="242" y="44" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_064">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_064.png">
+			<data:bbox height="369" width="212" x="210" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_065">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_065.png">
+			<data:bbox height="282" width="118" x="205" y="36" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_066">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_066.png">
+			<data:bbox height="357" width="112" x="242" y="40" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_067">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_067.png">
+			<data:bbox height="321" width="151" x="230" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_069">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_069.png">
+			<data:bbox height="415" width="115" x="289" y="38" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_070">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_070.png">
+			<data:bbox height="359" width="107" x="238" y="53" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_071">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_071.png">
+			<data:bbox height="424" width="129" x="262" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_072">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_072.png">
+			<data:bbox height="368" width="110" x="384" y="46" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_073">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_073.png">
+			<data:bbox height="396" width="100" x="233" y="47" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_076">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_076.png">
+			<data:bbox height="345" width="92" x="319" y="40" />
+			<data:bbox height="229" width="75" x="144" y="25" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_077">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_077.png">
+			<data:bbox height="317" width="89" x="376" y="25" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_079">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_079.png">
+			<data:bbox height="398" width="122" x="287" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_080">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_080.png">
+			<data:bbox height="434" width="140" x="378" y="41" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_081">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_081.png">
+			<data:bbox height="429" width="141" x="280" y="40" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_082">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_082.png">
+			<data:bbox height="387" width="135" x="299" y="31" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_083">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_083.png">
+			<data:bbox height="424" width="157" x="237" y="33" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_084">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_084.png">
+			<data:bbox height="424" width="144" x="285" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_085">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_085.png">
+			<data:bbox height="406" width="164" x="266" y="70" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_086">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_086.png">
+			<data:bbox height="385" width="154" x="278" y="56" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_087">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_087.png">
+			<data:bbox height="411" width="160" x="269" y="21" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_088">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_088.png">
+			<data:bbox height="396" width="142" x="301" y="53" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_089">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_089.png">
+			<data:bbox height="341" width="152" x="208" y="50" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_090">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_090.png">
+			<data:bbox height="353" width="92" x="137" y="57" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_091">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_091.png">
+			<data:bbox height="350" width="202" x="164" y="35" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_092">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_092.png">
+			<data:bbox height="327" width="178" x="229" y="35" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_093">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_093.png">
+			<data:bbox height="335" width="127" x="245" y="42" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_094">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_094.png">
+			<data:bbox height="343" width="136" x="237" y="51" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_095">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_095.png">
+			<data:bbox height="348" width="136" x="179" y="52" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_096">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_096.png">
+			<data:bbox height="347" width="134" x="201" y="41" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_097">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_097.png">
+			<data:bbox height="456" width="174" x="285" y="19" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_098">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_098.png">
+			<data:bbox height="412" width="215" x="195" y="12" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_099">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_099.png">
+			<data:bbox height="408" width="202" x="209" y="9" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_100">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_100.png">
+			<data:bbox height="364" width="172" x="223" y="10" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_101">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_101.png">
+			<data:bbox height="332" width="184" x="203" y="49" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_102">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_102.png">
+			<data:bbox height="380" width="122" x="236" y="35" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_103">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_103.png">
+			<data:bbox height="340" width="169" x="275" y="31" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_104">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_104.png">
+			<data:bbox height="383" width="216" x="264" y="60" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_105">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_105.png">
+			<data:bbox height="342" width="176" x="240" y="43" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_106">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_106.png">
+			<data:bbox height="351" width="177" x="239" y="47" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_107">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_107.png">
+			<data:bbox height="410" width="203" x="209" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_108">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_108.png">
+			<data:bbox height="366" width="217" x="189" y="5" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_109">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_109.png">
+			<data:bbox height="341" width="185" x="187" y="38" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_110">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_110.png">
+			<data:bbox height="383" width="135" x="272" y="2" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_111">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_111.png">
+			<data:bbox height="366" width="267" x="200" y="16" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_112">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_112.png">
+			<data:bbox height="370" width="191" x="190" y="0" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_113">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_113.png">
+			<data:bbox height="393" width="174" x="180" y="1" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_114">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_114.png">
+			<data:bbox height="406" width="159" x="235" y="46" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_126">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_126.png">
+			<data:bbox height="267" width="99" x="274" y="139" />
+			<data:bbox height="272" width="99" x="355" y="140" />
+			<data:bbox height="158" width="69" x="106" y="134" />
+			<data:bbox height="82" width="30" x="528" y="149" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_133">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_133.png">
+			<data:bbox height="284" width="100" x="255" y="118" />
+			<data:bbox height="264" width="79" x="351" y="141" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_136">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_136.png">
+			<data:bbox height="215" width="73" x="382" y="153" />
+			<data:bbox height="220" width="67" x="326" y="159" />
+			<data:bbox height="189" width="75" x="202" y="170" />
+			<data:bbox height="194" width="75" x="111" y="165" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_140">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_140.png">
+			<data:bbox height="236" width="89" x="250" y="146" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_141">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_141.png">
+			<data:bbox height="375" width="113" x="221" y="52" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_149">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_149.png">
+			<data:bbox height="270" width="100" x="204" y="176" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_153">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_153.png">
+			<data:bbox height="271" width="80" x="386" y="145" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_159">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_159.png">
+			<data:bbox height="391" width="142" x="258" y="61" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_160">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_160.png">
+			<data:bbox height="430" width="159" x="264" y="39" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_161">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_161.png">
+			<data:bbox height="369" width="150" x="233" y="49" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_162">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_162.png">
+			<data:bbox height="376" width="159" x="230" y="55" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_163">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_163.png">
+			<data:bbox height="408" width="152" x="163" y="35" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_164">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_164.png">
+			<data:bbox height="407" width="175" x="215" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_165">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_165.png">
+			<data:bbox height="327" width="153" x="230" y="37" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_177">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_177.png">
+			<data:bbox height="469" width="220" x="69" y="128" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_181">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_181.png">
+			<data:bbox height="225" width="77" x="250" y="180" />
+			<data:bbox height="212" width="91" x="317" y="184" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_188">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_188.png">
+			<data:bbox height="181" width="72" x="336" y="184" />
+			<data:bbox height="90" width="39" x="288" y="188" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_189">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_189.png">
+			<data:bbox height="380" width="161" x="224" y="90" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="person_and_bike_190">
+		<presentation Label="pos" file-name="Test/pos/person_and_bike_190.png">
+			<data:bbox height="226" width="97" x="211" y="144" />
+			<data:bbox height="257" width="107" x="283" y="127" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="00001147">
+		<presentation Label="neg" file-name="Test/neg/00001147.png" />
+	</biometric-signature>
+	<biometric-signature name="00001148">
+		<presentation Label="neg" file-name="Test/neg/00001148.png" />
+	</biometric-signature>
+	<biometric-signature name="00001149">
+		<presentation Label="neg" file-name="Test/neg/00001149.png" />
+	</biometric-signature>
+	<biometric-signature name="00001150">
+		<presentation Label="neg" file-name="Test/neg/00001150.png" />
+	</biometric-signature>
+	<biometric-signature name="00001153">
+		<presentation Label="neg" file-name="Test/neg/00001153.png" />
+	</biometric-signature>
+	<biometric-signature name="00001154">
+		<presentation Label="neg" file-name="Test/neg/00001154.png" />
+	</biometric-signature>
+	<biometric-signature name="00001155">
+		<presentation Label="neg" file-name="Test/neg/00001155.png" />
+	</biometric-signature>
+	<biometric-signature name="00001156">
+		<presentation Label="neg" file-name="Test/neg/00001156.png" />
+	</biometric-signature>
+	<biometric-signature name="00001157">
+		<presentation Label="neg" file-name="Test/neg/00001157.png" />
+	</biometric-signature>
+	<biometric-signature name="00001158">
+		<presentation Label="neg" file-name="Test/neg/00001158.png" />
+	</biometric-signature>
+	<biometric-signature name="00001159">
+		<presentation Label="neg" file-name="Test/neg/00001159.png" />
+	</biometric-signature>
+	<biometric-signature name="00001160">
+		<presentation Label="neg" file-name="Test/neg/00001160.png" />
+	</biometric-signature>
+	<biometric-signature name="00001161">
+		<presentation Label="neg" file-name="Test/neg/00001161.png" />
+	</biometric-signature>
+	<biometric-signature name="00001162">
+		<presentation Label="neg" file-name="Test/neg/00001162.png" />
+	</biometric-signature>
+	<biometric-signature name="00001163">
+		<presentation Label="neg" file-name="Test/neg/00001163.png" />
+	</biometric-signature>
+	<biometric-signature name="00001165">
+		<presentation Label="neg" file-name="Test/neg/00001165.png" />
+	</biometric-signature>
+	<biometric-signature name="00001166">
+		<presentation Label="neg" file-name="Test/neg/00001166.png" />
+	</biometric-signature>
+	<biometric-signature name="00001167">
+		<presentation Label="neg" file-name="Test/neg/00001167.png" />
+	</biometric-signature>
+	<biometric-signature name="00001168">
+		<presentation Label="neg" file-name="Test/neg/00001168.png" />
+	</biometric-signature>
+	<biometric-signature name="00001169">
+		<presentation Label="neg" file-name="Test/neg/00001169.png" />
+	</biometric-signature>
+	<biometric-signature name="00001170">
+		<presentation Label="neg" file-name="Test/neg/00001170.png" />
+	</biometric-signature>
+	<biometric-signature name="00001171">
+		<presentation Label="neg" file-name="Test/neg/00001171.png" />
+	</biometric-signature>
+	<biometric-signature name="00001172">
+		<presentation Label="neg" file-name="Test/neg/00001172.png" />
+	</biometric-signature>
+	<biometric-signature name="00001173">
+		<presentation Label="neg" file-name="Test/neg/00001173.png" />
+	</biometric-signature>
+	<biometric-signature name="00001176">
+		<presentation Label="neg" file-name="Test/neg/00001176.png" />
+	</biometric-signature>
+	<biometric-signature name="00001177">
+		<presentation Label="neg" file-name="Test/neg/00001177.png" />
+	</biometric-signature>
+	<biometric-signature name="00001178">
+		<presentation Label="neg" file-name="Test/neg/00001178.png" />
+	</biometric-signature>
+	<biometric-signature name="00001179">
+		<presentation Label="neg" file-name="Test/neg/00001179.png" />
+	</biometric-signature>
+	<biometric-signature name="00001180">
+		<presentation Label="neg" file-name="Test/neg/00001180.png" />
+	</biometric-signature>
+	<biometric-signature name="00001181">
+		<presentation Label="neg" file-name="Test/neg/00001181.png" />
+	</biometric-signature>
+	<biometric-signature name="00001192">
+		<presentation Label="neg" file-name="Test/neg/00001192.png" />
+	</biometric-signature>
+	<biometric-signature name="00001193">
+		<presentation Label="neg" file-name="Test/neg/00001193.png" />
+	</biometric-signature>
+	<biometric-signature name="00001194">
+		<presentation Label="neg" file-name="Test/neg/00001194.png" />
+	</biometric-signature>
+	<biometric-signature name="00001202">
+		<presentation Label="neg" file-name="Test/neg/00001202.png" />
+	</biometric-signature>
+	<biometric-signature name="00001203">
+		<presentation Label="neg" file-name="Test/neg/00001203.png" />
+	</biometric-signature>
+	<biometric-signature name="00001204">
+		<presentation Label="neg" file-name="Test/neg/00001204.png" />
+	</biometric-signature>
+	<biometric-signature name="00001205">
+		<presentation Label="neg" file-name="Test/neg/00001205.png" />
+	</biometric-signature>
+	<biometric-signature name="00001207">
+		<presentation Label="neg" file-name="Test/neg/00001207.png" />
+	</biometric-signature>
+	<biometric-signature name="00001208">
+		<presentation Label="neg" file-name="Test/neg/00001208.png" />
+	</biometric-signature>
+	<biometric-signature name="00001209">
+		<presentation Label="neg" file-name="Test/neg/00001209.png" />
+	</biometric-signature>
+	<biometric-signature name="00001210">
+		<presentation Label="neg" file-name="Test/neg/00001210.png" />
+	</biometric-signature>
+	<biometric-signature name="00001211">
+		<presentation Label="neg" file-name="Test/neg/00001211.png" />
+	</biometric-signature>
+	<biometric-signature name="00001212">
+		<presentation Label="neg" file-name="Test/neg/00001212.png" />
+	</biometric-signature>
+	<biometric-signature name="00001214">
+		<presentation Label="neg" file-name="Test/neg/00001214.png" />
+	</biometric-signature>
+	<biometric-signature name="00001215">
+		<presentation Label="neg" file-name="Test/neg/00001215.png" />
+	</biometric-signature>
+	<biometric-signature name="00001216">
+		<presentation Label="neg" file-name="Test/neg/00001216.png" />
+	</biometric-signature>
+	<biometric-signature name="00001217">
+		<presentation Label="neg" file-name="Test/neg/00001217.png" />
+	</biometric-signature>
+	<biometric-signature name="00001218">
+		<presentation Label="neg" file-name="Test/neg/00001218.png" />
+	</biometric-signature>
+	<biometric-signature name="00001219">
+		<presentation Label="neg" file-name="Test/neg/00001219.png" />
+	</biometric-signature>
+	<biometric-signature name="00001220">
+		<presentation Label="neg" file-name="Test/neg/00001220.png" />
+	</biometric-signature>
+	<biometric-signature name="00001221">
+		<presentation Label="neg" file-name="Test/neg/00001221.png" />
+	</biometric-signature>
+	<biometric-signature name="00001222">
+		<presentation Label="neg" file-name="Test/neg/00001222.png" />
+	</biometric-signature>
+	<biometric-signature name="00001223">
+		<presentation Label="neg" file-name="Test/neg/00001223.png" />
+	</biometric-signature>
+	<biometric-signature name="00001224">
+		<presentation Label="neg" file-name="Test/neg/00001224.png" />
+	</biometric-signature>
+	<biometric-signature name="00001225">
+		<presentation Label="neg" file-name="Test/neg/00001225.png" />
+	</biometric-signature>
+	<biometric-signature name="00001226">
+		<presentation Label="neg" file-name="Test/neg/00001226.png" />
+	</biometric-signature>
+	<biometric-signature name="00001227">
+		<presentation Label="neg" file-name="Test/neg/00001227.png" />
+	</biometric-signature>
+	<biometric-signature name="00001228">
+		<presentation Label="neg" file-name="Test/neg/00001228.png" />
+	</biometric-signature>
+	<biometric-signature name="00001231">
+		<presentation Label="neg" file-name="Test/neg/00001231.png" />
+	</biometric-signature>
+	<biometric-signature name="00001232">
+		<presentation Label="neg" file-name="Test/neg/00001232.png" />
+	</biometric-signature>
+	<biometric-signature name="00001233">
+		<presentation Label="neg" file-name="Test/neg/00001233.png" />
+	</biometric-signature>
+	<biometric-signature name="00001234">
+		<presentation Label="neg" file-name="Test/neg/00001234.png" />
+	</biometric-signature>
+	<biometric-signature name="00001236">
+		<presentation Label="neg" file-name="Test/neg/00001236.png" />
+	</biometric-signature>
+	<biometric-signature name="00001240">
+		<presentation Label="neg" file-name="Test/neg/00001240.png" />
+	</biometric-signature>
+	<biometric-signature name="00001241">
+		<presentation Label="neg" file-name="Test/neg/00001241.png" />
+	</biometric-signature>
+	<biometric-signature name="00001242">
+		<presentation Label="neg" file-name="Test/neg/00001242.png" />
+	</biometric-signature>
+	<biometric-signature name="00001243">
+		<presentation Label="neg" file-name="Test/neg/00001243.png" />
+	</biometric-signature>
+	<biometric-signature name="00001247">
+		<presentation Label="neg" file-name="Test/neg/00001247.png" />
+	</biometric-signature>
+	<biometric-signature name="00001249">
+		<presentation Label="neg" file-name="Test/neg/00001249.png" />
+	</biometric-signature>
+	<biometric-signature name="00001250">
+		<presentation Label="neg" file-name="Test/neg/00001250.png" />
+	</biometric-signature>
+	<biometric-signature name="00001251">
+		<presentation Label="neg" file-name="Test/neg/00001251.png" />
+	</biometric-signature>
+	<biometric-signature name="00001253">
+		<presentation Label="neg" file-name="Test/neg/00001253.png" />
+	</biometric-signature>
+	<biometric-signature name="00001254">
+		<presentation Label="neg" file-name="Test/neg/00001254.png" />
+	</biometric-signature>
+	<biometric-signature name="00001255">
+		<presentation Label="neg" file-name="Test/neg/00001255.png" />
+	</biometric-signature>
+	<biometric-signature name="00001256">
+		<presentation Label="neg" file-name="Test/neg/00001256.png" />
+	</biometric-signature>
+	<biometric-signature name="00001257">
+		<presentation Label="neg" file-name="Test/neg/00001257.png" />
+	</biometric-signature>
+	<biometric-signature name="00001258">
+		<presentation Label="neg" file-name="Test/neg/00001258.png" />
+	</biometric-signature>
+	<biometric-signature name="00001259">
+		<presentation Label="neg" file-name="Test/neg/00001259.png" />
+	</biometric-signature>
+	<biometric-signature name="00001260">
+		<presentation Label="neg" file-name="Test/neg/00001260.png" />
+	</biometric-signature>
+	<biometric-signature name="00001262">
+		<presentation Label="neg" file-name="Test/neg/00001262.png" />
+	</biometric-signature>
+	<biometric-signature name="00001263">
+		<presentation Label="neg" file-name="Test/neg/00001263.png" />
+	</biometric-signature>
+	<biometric-signature name="00001265">
+		<presentation Label="neg" file-name="Test/neg/00001265.png" />
+	</biometric-signature>
+	<biometric-signature name="00001269">
+		<presentation Label="neg" file-name="Test/neg/00001269.png" />
+	</biometric-signature>
+	<biometric-signature name="00001270">
+		<presentation Label="neg" file-name="Test/neg/00001270.png" />
+	</biometric-signature>
+	<biometric-signature name="00001271">
+		<presentation Label="neg" file-name="Test/neg/00001271.png" />
+	</biometric-signature>
+	<biometric-signature name="00001272">
+		<presentation Label="neg" file-name="Test/neg/00001272.png" />
+	</biometric-signature>
+	<biometric-signature name="00001273">
+		<presentation Label="neg" file-name="Test/neg/00001273.png" />
+	</biometric-signature>
+	<biometric-signature name="00001279">
+		<presentation Label="neg" file-name="Test/neg/00001279.png" />
+	</biometric-signature>
+	<biometric-signature name="00001280">
+		<presentation Label="neg" file-name="Test/neg/00001280.png" />
+	</biometric-signature>
+	<biometric-signature name="00001292">
+		<presentation Label="neg" file-name="Test/neg/00001292.png" />
+	</biometric-signature>
+	<biometric-signature name="00001293">
+		<presentation Label="neg" file-name="Test/neg/00001293.png" />
+	</biometric-signature>
+	<biometric-signature name="00001294">
+		<presentation Label="neg" file-name="Test/neg/00001294.png" />
+	</biometric-signature>
+	<biometric-signature name="00001301">
+		<presentation Label="neg" file-name="Test/neg/00001301.png" />
+	</biometric-signature>
+	<biometric-signature name="00001304">
+		<presentation Label="neg" file-name="Test/neg/00001304.png" />
+	</biometric-signature>
+	<biometric-signature name="00001305">
+		<presentation Label="neg" file-name="Test/neg/00001305.png" />
+	</biometric-signature>
+	<biometric-signature name="00001307">
+		<presentation Label="neg" file-name="Test/neg/00001307.png" />
+	</biometric-signature>
+	<biometric-signature name="00001308">
+		<presentation Label="neg" file-name="Test/neg/00001308.png" />
+	</biometric-signature>
+	<biometric-signature name="00001309">
+		<presentation Label="neg" file-name="Test/neg/00001309.png" />
+	</biometric-signature>
+	<biometric-signature name="00001319">
+		<presentation Label="neg" file-name="Test/neg/00001319.png" />
+	</biometric-signature>
+	<biometric-signature name="00001324">
+		<presentation Label="neg" file-name="Test/neg/00001324.png" />
+	</biometric-signature>
+	<biometric-signature name="00001325">
+		<presentation Label="neg" file-name="Test/neg/00001325.png" />
+	</biometric-signature>
+	<biometric-signature name="00001326">
+		<presentation Label="neg" file-name="Test/neg/00001326.png" />
+	</biometric-signature>
+	<biometric-signature name="00001327">
+		<presentation Label="neg" file-name="Test/neg/00001327.png" />
+	</biometric-signature>
+	<biometric-signature name="00001328">
+		<presentation Label="neg" file-name="Test/neg/00001328.png" />
+	</biometric-signature>
+	<biometric-signature name="00001329">
+		<presentation Label="neg" file-name="Test/neg/00001329.png" />
+	</biometric-signature>
+	<biometric-signature name="00001330">
+		<presentation Label="neg" file-name="Test/neg/00001330.png" />
+	</biometric-signature>
+	<biometric-signature name="00001331">
+		<presentation Label="neg" file-name="Test/neg/00001331.png" />
+	</biometric-signature>
+	<biometric-signature name="00001332">
+		<presentation Label="neg" file-name="Test/neg/00001332.png" />
+	</biometric-signature>
+	<biometric-signature name="00001335">
+		<presentation Label="neg" file-name="Test/neg/00001335.png" />
+	</biometric-signature>
+	<biometric-signature name="00001337">
+		<presentation Label="neg" file-name="Test/neg/00001337.png" />
+	</biometric-signature>
+	<biometric-signature name="00001338">
+		<presentation Label="neg" file-name="Test/neg/00001338.png" />
+	</biometric-signature>
+	<biometric-signature name="00001342">
+		<presentation Label="neg" file-name="Test/neg/00001342.png" />
+	</biometric-signature>
+	<biometric-signature name="00001343">
+		<presentation Label="neg" file-name="Test/neg/00001343.png" />
+	</biometric-signature>
+	<biometric-signature name="00001344">
+		<presentation Label="neg" file-name="Test/neg/00001344.png" />
+	</biometric-signature>
+	<biometric-signature name="00001348">
+		<presentation Label="neg" file-name="Test/neg/00001348.png" />
+	</biometric-signature>
+	<biometric-signature name="00001349">
+		<presentation Label="neg" file-name="Test/neg/00001349.png" />
+	</biometric-signature>
+	<biometric-signature name="00001350">
+		<presentation Label="neg" file-name="Test/neg/00001350.png" />
+	</biometric-signature>
+	<biometric-signature name="00001352">
+		<presentation Label="neg" file-name="Test/neg/00001352.png" />
+	</biometric-signature>
+	<biometric-signature name="00001353">
+		<presentation Label="neg" file-name="Test/neg/00001353.png" />
+	</biometric-signature>
+	<biometric-signature name="00001354">
+		<presentation Label="neg" file-name="Test/neg/00001354.png" />
+	</biometric-signature>
+	<biometric-signature name="00001355">
+		<presentation Label="neg" file-name="Test/neg/00001355.png" />
+	</biometric-signature>
+	<biometric-signature name="00001356">
+		<presentation Label="neg" file-name="Test/neg/00001356.png" />
+	</biometric-signature>
+	<biometric-signature name="00001358">
+		<presentation Label="neg" file-name="Test/neg/00001358.png" />
+	</biometric-signature>
+	<biometric-signature name="00001361">
+		<presentation Label="neg" file-name="Test/neg/00001361.png" />
+	</biometric-signature>
+	<biometric-signature name="00001362">
+		<presentation Label="neg" file-name="Test/neg/00001362.png" />
+	</biometric-signature>
+	<biometric-signature name="00001369">
+		<presentation Label="neg" file-name="Test/neg/00001369.png" />
+	</biometric-signature>
+	<biometric-signature name="00001370">
+		<presentation Label="neg" file-name="Test/neg/00001370.png" />
+	</biometric-signature>
+	<biometric-signature name="00001371">
+		<presentation Label="neg" file-name="Test/neg/00001371.png" />
+	</biometric-signature>
+	<biometric-signature name="00001372">
+		<presentation Label="neg" file-name="Test/neg/00001372.png" />
+	</biometric-signature>
+	<biometric-signature name="00001373">
+		<presentation Label="neg" file-name="Test/neg/00001373.png" />
+	</biometric-signature>
+	<biometric-signature name="00001374">
+		<presentation Label="neg" file-name="Test/neg/00001374.png" />
+	</biometric-signature>
+	<biometric-signature name="00001375">
+		<presentation Label="neg" file-name="Test/neg/00001375.png" />
+	</biometric-signature>
+	<biometric-signature name="00001376">
+		<presentation Label="neg" file-name="Test/neg/00001376.png" />
+	</biometric-signature>
+	<biometric-signature name="00001377">
+		<presentation Label="neg" file-name="Test/neg/00001377.png" />
+	</biometric-signature>
+	<biometric-signature name="00001378">
+		<presentation Label="neg" file-name="Test/neg/00001378.png" />
+	</biometric-signature>
+	<biometric-signature name="00001379">
+		<presentation Label="neg" file-name="Test/neg/00001379.png" />
+	</biometric-signature>
+	<biometric-signature name="00001380">
+		<presentation Label="neg" file-name="Test/neg/00001380.png" />
+	</biometric-signature>
+	<biometric-signature name="00001381">
+		<presentation Label="neg" file-name="Test/neg/00001381.png" />
+	</biometric-signature>
+	<biometric-signature name="00001382">
+		<presentation Label="neg" file-name="Test/neg/00001382.png" />
+	</biometric-signature>
+	<biometric-signature name="00001383">
+		<presentation Label="neg" file-name="Test/neg/00001383.png" />
+	</biometric-signature>
+	<biometric-signature name="00001385">
+		<presentation Label="neg" file-name="Test/neg/00001385.png" />
+	</biometric-signature>
+	<biometric-signature name="00001386">
+		<presentation Label="neg" file-name="Test/neg/00001386.png" />
+	</biometric-signature>
+	<biometric-signature name="00001387">
+		<presentation Label="neg" file-name="Test/neg/00001387.png" />
+	</biometric-signature>
+	<biometric-signature name="00001388">
+		<presentation Label="neg" file-name="Test/neg/00001388.png" />
+	</biometric-signature>
+	<biometric-signature name="00001389">
+		<presentation Label="neg" file-name="Test/neg/00001389.png" />
+	</biometric-signature>
+	<biometric-signature name="00001390">
+		<presentation Label="neg" file-name="Test/neg/00001390.png" />
+	</biometric-signature>
+	<biometric-signature name="00001391">
+		<presentation Label="neg" file-name="Test/neg/00001391.png" />
+	</biometric-signature>
+	<biometric-signature name="00001392">
+		<presentation Label="neg" file-name="Test/neg/00001392.png" />
+	</biometric-signature>
+	<biometric-signature name="00001393">
+		<presentation Label="neg" file-name="Test/neg/00001393.png" />
+	</biometric-signature>
+	<biometric-signature name="00001394">
+		<presentation Label="neg" file-name="Test/neg/00001394.png" />
+	</biometric-signature>
+	<biometric-signature name="00001395">
+		<presentation Label="neg" file-name="Test/neg/00001395.png" />
+	</biometric-signature>
+	<biometric-signature name="00001396">
+		<presentation Label="neg" file-name="Test/neg/00001396.png" />
+	</biometric-signature>
+	<biometric-signature name="00001401">
+		<presentation Label="neg" file-name="Test/neg/00001401.png" />
+	</biometric-signature>
+	<biometric-signature name="00001402">
+		<presentation Label="neg" file-name="Test/neg/00001402.png" />
+	</biometric-signature>
+	<biometric-signature name="00001405">
+		<presentation Label="neg" file-name="Test/neg/00001405.png" />
+	</biometric-signature>
+	<biometric-signature name="00001406">
+		<presentation Label="neg" file-name="Test/neg/00001406.png" />
+	</biometric-signature>
+	<biometric-signature name="00001407">
+		<presentation Label="neg" file-name="Test/neg/00001407.png" />
+	</biometric-signature>
+	<biometric-signature name="00001408">
+		<presentation Label="neg" file-name="Test/neg/00001408.png" />
+	</biometric-signature>
+	<biometric-signature name="00001409">
+		<presentation Label="neg" file-name="Test/neg/00001409.png" />
+	</biometric-signature>
+	<biometric-signature name="00001410">
+		<presentation Label="neg" file-name="Test/neg/00001410.png" />
+	</biometric-signature>
+	<biometric-signature name="00001411">
+		<presentation Label="neg" file-name="Test/neg/00001411.png" />
+	</biometric-signature>
+	<biometric-signature name="00001412">
+		<presentation Label="neg" file-name="Test/neg/00001412.png" />
+	</biometric-signature>
+	<biometric-signature name="00001413">
+		<presentation Label="neg" file-name="Test/neg/00001413.png" />
+	</biometric-signature>
+	<biometric-signature name="00001414">
+		<presentation Label="neg" file-name="Test/neg/00001414.png" />
+	</biometric-signature>
+	<biometric-signature name="00001415">
+		<presentation Label="neg" file-name="Test/neg/00001415.png" />
+	</biometric-signature>
+	<biometric-signature name="00001416">
+		<presentation Label="neg" file-name="Test/neg/00001416.png" />
+	</biometric-signature>
+	<biometric-signature name="00001417">
+		<presentation Label="neg" file-name="Test/neg/00001417.png" />
+	</biometric-signature>
+	<biometric-signature name="00001418">
+		<presentation Label="neg" file-name="Test/neg/00001418.png" />
+	</biometric-signature>
+	<biometric-signature name="00001419">
+		<presentation Label="neg" file-name="Test/neg/00001419.png" />
+	</biometric-signature>
+	<biometric-signature name="00001420">
+		<presentation Label="neg" file-name="Test/neg/00001420.png" />
+	</biometric-signature>
+	<biometric-signature name="00001421">
+		<presentation Label="neg" file-name="Test/neg/00001421.png" />
+	</biometric-signature>
+	<biometric-signature name="00001422">
+		<presentation Label="neg" file-name="Test/neg/00001422.png" />
+	</biometric-signature>
+	<biometric-signature name="00001425">
+		<presentation Label="neg" file-name="Test/neg/00001425.png" />
+	</biometric-signature>
+	<biometric-signature name="00001427">
+		<presentation Label="neg" file-name="Test/neg/00001427.png" />
+	</biometric-signature>
+	<biometric-signature name="00001431">
+		<presentation Label="neg" file-name="Test/neg/00001431.png" />
+	</biometric-signature>
+	<biometric-signature name="00001432">
+		<presentation Label="neg" file-name="Test/neg/00001432.png" />
+	</biometric-signature>
+	<biometric-signature name="00001433">
+		<presentation Label="neg" file-name="Test/neg/00001433.png" />
+	</biometric-signature>
+	<biometric-signature name="00001434">
+		<presentation Label="neg" file-name="Test/neg/00001434.png" />
+	</biometric-signature>
+	<biometric-signature name="00001435">
+		<presentation Label="neg" file-name="Test/neg/00001435.png" />
+	</biometric-signature>
+	<biometric-signature name="00001436">
+		<presentation Label="neg" file-name="Test/neg/00001436.png" />
+	</biometric-signature>
+	<biometric-signature name="00001437">
+		<presentation Label="neg" file-name="Test/neg/00001437.png" />
+	</biometric-signature>
+	<biometric-signature name="00001438">
+		<presentation Label="neg" file-name="Test/neg/00001438.png" />
+	</biometric-signature>
+	<biometric-signature name="00001439">
+		<presentation Label="neg" file-name="Test/neg/00001439.png" />
+	</biometric-signature>
+	<biometric-signature name="00001440">
+		<presentation Label="neg" file-name="Test/neg/00001440.png" />
+	</biometric-signature>
+	<biometric-signature name="00001441">
+		<presentation Label="neg" file-name="Test/neg/00001441.png" />
+	</biometric-signature>
+	<biometric-signature name="00001442">
+		<presentation Label="neg" file-name="Test/neg/00001442.png" />
+	</biometric-signature>
+	<biometric-signature name="00001443">
+		<presentation Label="neg" file-name="Test/neg/00001443.png" />
+	</biometric-signature>
+	<biometric-signature name="00001444">
+		<presentation Label="neg" file-name="Test/neg/00001444.png" />
+	</biometric-signature>
+	<biometric-signature name="00001445">
+		<presentation Label="neg" file-name="Test/neg/00001445.png" />
+	</biometric-signature>
+	<biometric-signature name="00001447">
+		<presentation Label="neg" file-name="Test/neg/00001447.png" />
+	</biometric-signature>
+	<biometric-signature name="00001448">
+		<presentation Label="neg" file-name="Test/neg/00001448.png" />
+	</biometric-signature>
+	<biometric-signature name="00001449">
+		<presentation Label="neg" file-name="Test/neg/00001449.png" />
+	</biometric-signature>
+	<biometric-signature name="00001450">
+		<presentation Label="neg" file-name="Test/neg/00001450.png" />
+	</biometric-signature>
+	<biometric-signature name="00001452">
+		<presentation Label="neg" file-name="Test/neg/00001452.png" />
+	</biometric-signature>
+	<biometric-signature name="00001453">
+		<presentation Label="neg" file-name="Test/neg/00001453.png" />
+	</biometric-signature>
+	<biometric-signature name="00001454">
+		<presentation Label="neg" file-name="Test/neg/00001454.png" />
+	</biometric-signature>
+	<biometric-signature name="00001455">
+		<presentation Label="neg" file-name="Test/neg/00001455.png" />
+	</biometric-signature>
+	<biometric-signature name="00001456">
+		<presentation Label="neg" file-name="Test/neg/00001456.png" />
+	</biometric-signature>
+	<biometric-signature name="00001457">
+		<presentation Label="neg" file-name="Test/neg/00001457.png" />
+	</biometric-signature>
+	<biometric-signature name="00001459">
+		<presentation Label="neg" file-name="Test/neg/00001459.png" />
+	</biometric-signature>
+	<biometric-signature name="01-03f">
+		<presentation Label="neg" file-name="Test/neg/01-03f.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-01-03_17h26m13s">
+		<presentation Label="neg" file-name="Test/neg/D2004-01-03_17h26m13s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-01-04_17h01m28s">
+		<presentation Label="neg" file-name="Test/neg/D2004-01-04_17h01m28s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-01-24_16h17m48s">
+		<presentation Label="neg" file-name="Test/neg/D2004-01-24_16h17m48s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-03-12_11h12m05s">
+		<presentation Label="neg" file-name="Test/neg/D2004-03-12_11h12m05s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-03-12_11h55m08s">
+		<presentation Label="neg" file-name="Test/neg/D2004-03-12_11h55m08s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-03-12_14h48m42s">
+		<presentation Label="neg" file-name="Test/neg/D2004-03-12_14h48m42s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-03-12_17h50m02s">
+		<presentation Label="neg" file-name="Test/neg/D2004-03-12_17h50m02s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-11_11h51m15s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-11_11h51m15s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-11_13h54m18s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-11_13h54m18s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-11_14h01m45s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-11_14h01m45s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-11_14h09m24s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-11_14h09m24s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-25_12h04m32s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-25_12h04m32s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-04-25_14h40m04s">
+		<presentation Label="neg" file-name="Test/neg/D2004-04-25_14h40m04s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-08_10h26m52s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-08_10h26m52s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-10_16h22m42s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-10_16h22m42s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-10_18h03m03s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-10_18h03m03s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-10_18h36m17s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-10_18h36m17s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-11_18h44m38s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-11_18h44m38s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-11_21h37m10s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-11_21h37m10s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-12_18h05m32s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-12_18h05m32s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-14_13h25m18s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-14_13h25m18s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-14_19h36m25s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-14_19h36m25s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-14_19h43m31s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-14_19h43m31s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_10h02m38s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_10h02m38s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_11h23m43s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_11h23m43s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_11h41m51s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_11h41m51s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_11h43m48s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_11h43m48s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_13h58m11s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_13h58m11s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_15h52m20s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_15h52m20s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-16_19h11m16s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-16_19h11m16s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-30_10h50m43s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-30_10h50m43s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-30_12h07m51s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-30_12h07m51s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-05-30_14h08m24s">
+		<presentation Label="neg" file-name="Test/neg/D2004-05-30_14h08m24s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-06-28_00h53m14s">
+		<presentation Label="neg" file-name="Test/neg/D2004-06-28_00h53m14s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_09h14m47s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_09h14m47s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_09h22m45s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_09h22m45s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_11h10m42s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_11h10m42s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_11h50m53s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_11h50m53s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_13h56m23s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_13h56m23s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_13h59m38s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_13h59m38s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_14h00m20s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_14h00m20s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-06_14h59m24s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-06_14h59m24s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-07_04h31m36s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-07_04h31m36s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-07_04h40m20s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-07_04h40m20s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-07_07h46m43s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-07_07h46m43s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-08_05h01m32s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-08_05h01m32s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-08_23h18m59s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-08_23h18m59s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-08_23h27m44s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-08_23h27m44s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-08_23h55m07s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-08_23h55m07s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_01h05m35s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_01h05m35s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_17h00m44s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_17h00m44s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_18h11m16s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_18h11m16s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_18h17m15s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_18h17m15s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_19h08m37s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_19h08m37s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_20h02m53s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_20h02m53s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_21h27m05s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_21h27m05s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_21h52m21s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_21h52m21s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_22h25m11s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_22h25m11s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-09_22h30m55s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-09_22h30m55s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-10_02h54m18s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-10_02h54m18s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-18_13h21m58s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-18_13h21m58s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-18_15h56m59s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-18_15h56m59s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-25_11h25m12s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-25_11h25m12s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-07-25_12h26m41s">
+		<presentation Label="neg" file-name="Test/neg/D2004-07-25_12h26m41s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-07_14h38m48s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-07_14h38m48s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-16_10h13m11s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-16_10h13m11s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-16_14h33m40s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-16_14h33m40s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-16_17h46m53s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-16_17h46m53s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-16_18h14m05s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-16_18h14m05s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-17_09h50m11s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-17_09h50m11s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-17_11h27m30s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-17_11h27m30s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-17_13h34m32s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-17_13h34m32s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-17_14h29m45s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-17_14h29m45s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-17_16h17m58s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-17_16h17m58s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-18_10h43m07s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-18_10h43m07s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-18_16h06m52s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-18_16h06m52s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-18_17h59m51s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-18_17h59m51s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-18_18h54m20s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-18_18h54m20s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_12h59m58s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_12h59m58s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_13h22m04s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_13h22m04s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_13h22m54s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_13h22m54s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_13h30m48s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_13h30m48s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_15h28m28s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_15h28m28s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_16h29m34s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_16h29m34s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-19_18h18m18s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-19_18h18m18s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-20_11h04m42s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-20_11h04m42s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-20_11h41m04s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-20_11h41m04s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-20_12h05m11s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-20_12h05m11s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-20_12h37m02s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-20_12h37m02s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-21_10h06m43s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-21_10h06m43s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-21_10h49m39s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-21_10h49m39s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-21_10h59m45s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-21_10h59m45s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-21_14h09m14s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-21_14h09m14s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-21_16h59m25s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-21_16h59m25s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_09h43m19s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_09h43m19s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_09h49m40s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_09h49m40s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_12h05m47s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_12h05m47s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_12h10m27s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_12h10m27s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_12h18m46s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_12h18m46s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_12h24m05s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_12h24m05s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_14h41m59s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_14h41m59s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_17h02m31s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_17h02m31s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_18h12m03s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_18h12m03s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-22_19h18m30s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-22_19h18m30s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-23_12h31m12s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-23_12h31m12s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-23_12h33m21s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-23_12h33m21s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-23_12h38m23s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-23_12h38m23s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-23_12h42m36s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-23_12h42m36s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-23_15h35m56s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-23_15h35m56s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_12h44m04s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_12h44m04s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_14h17m59s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_14h17m59s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_16h28m39s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_16h28m39s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_17h11m07s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_17h11m07s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_19h56m52s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_19h56m52s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_21h00m12s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_21h00m12s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-24_21h44m09s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-24_21h44m09s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-25_14h16m32s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-25_14h16m32s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-25_14h24m19s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-25_14h24m19s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-08-25_18h20m04s">
+		<presentation Label="neg" file-name="Test/neg/D2004-08-25_18h20m04s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-04_15h14m39s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-04_15h14m39s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-13_14h38m33s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-13_14h38m33s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_15h09m49s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_15h09m49s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_15h28m13s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_15h28m13s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_15h57m02s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_15h57m02s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_16h16m49s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_16h16m49s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_16h58m08s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_16h58m08s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-18_17h24m23s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-18_17h24m23s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-19_10h19m52s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-19_10h19m52s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-19_11h58m56s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-19_11h58m56s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-19_14h57m48s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-19_14h57m48s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-19_16h05m31s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-19_16h05m31s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-24_14h37m43s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-24_14h37m43s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-24_14h42m22s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-24_14h42m22s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-09-24_14h48m16s">
+		<presentation Label="neg" file-name="Test/neg/D2004-09-24_14h48m16s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-10-02_10h26m23s">
+		<presentation Label="neg" file-name="Test/neg/D2004-10-02_10h26m23s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-10-02_10h52m13s">
+		<presentation Label="neg" file-name="Test/neg/D2004-10-02_10h52m13s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-07_18h37m53s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-07_18h37m53s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-07_19h02m42s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-07_19h02m42s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-09_10h30m38s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-09_10h30m38s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-09_10h43m56s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-09_10h43m56s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-09_11h24m12s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-09_11h24m12s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-17_14h54m39s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-17_14h54m39s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-18_01h51m47s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-18_01h51m47s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-18_13h35m07s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-18_13h35m07s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="D2004-11-18_18h11m57s">
+		<presentation Label="neg" file-name="Test/neg/D2004-11-18_18h11m57s.jpg" />
+	</biometric-signature>
+	<biometric-signature name="bike_003">
+		<presentation Label="neg" file-name="Test/neg/bike_003.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_006">
+		<presentation Label="neg" file-name="Test/neg/bike_006.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_009">
+		<presentation Label="neg" file-name="Test/neg/bike_009.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_012">
+		<presentation Label="neg" file-name="Test/neg/bike_012.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_015">
+		<presentation Label="neg" file-name="Test/neg/bike_015.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_018">
+		<presentation Label="neg" file-name="Test/neg/bike_018.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_021">
+		<presentation Label="neg" file-name="Test/neg/bike_021.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_024">
+		<presentation Label="neg" file-name="Test/neg/bike_024.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_027">
+		<presentation Label="neg" file-name="Test/neg/bike_027.png" />
+	</biometric-signature>
+	<biometric-signature name="bike_030">
+		<presentation Label="neg" file-name="Test/neg/bike_030.png" />
+	</biometric-signature>
+	<biometric-signature name="dsc00009">
+		<presentation Label="neg" file-name="Test/neg/dsc00009.jpg" />
+	</biometric-signature>
+	<biometric-signature name="dsc00179">
+		<presentation Label="neg" file-name="Test/neg/dsc00179.jpg" />
+	</biometric-signature>
+	<biometric-signature name="dsc00182">
+		<presentation Label="neg" file-name="Test/neg/dsc00182.jpg" />
+	</biometric-signature>
+	<biometric-signature name="dsc00197">
+		<presentation Label="neg" file-name="Test/neg/dsc00197.jpg" />
+	</biometric-signature>
+	<biometric-signature name="dsc00208">
+		<presentation Label="neg" file-name="Test/neg/dsc00208.jpg" />
+	</biometric-signature>
+	<biometric-signature name="dsc00232">
+		<presentation Label="neg" file-name="Test/neg/dsc00232.jpg" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_003">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_003.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_006">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_006.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_009">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_009.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_012">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_012.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_015">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_015.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_018">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_018.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_021">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_021.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_024">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_024.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_027">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_027.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_030">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_030.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_033">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_033.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_036">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_036.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_039">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_039.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_042">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_042.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_045">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_045.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_048">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_048.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_051">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_051.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_054">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_054.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_057">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_057.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_060">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_060.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_063">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_063.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_066">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_066.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_069">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_069.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_072">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_072.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_075">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_075.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_078">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_078.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_081">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_081.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_084">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_084.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_087">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_087.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_090">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_090.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_093">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_093.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_096">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_096.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_099">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_099.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_102">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_102.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_105">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_105.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_108">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_108.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_111">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_111.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_114">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_114.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_117">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_117.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_120">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_120.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_123">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_123.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_126">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_126.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_129">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_129.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_132">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_132.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_135">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_135.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_138">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_138.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_141">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_141.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_144">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_144.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_148">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_148.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_151">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_151.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_154">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_154.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_157">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_157.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_160">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_160.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_163">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_163.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_167">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_167.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_170">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_170.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_173">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_173.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_176">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_176.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_179">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_179.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_182">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_182.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_185">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_185.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_188">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_188.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_191">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_191.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_194">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_194.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_197">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_197.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_200">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_200.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_203">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_203.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_206">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_206.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_209">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_209.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_212">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_212.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_215">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_215.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_218">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_218.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_221">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_221.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_224">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_224.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_227">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_227.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_230">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_230.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_233">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_233.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_236">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_236.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_239">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_239.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_242">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_242.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_245">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_245.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_248">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_248.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_251">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_251.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_254">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_254.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_257">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_257.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_260">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_260.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_263">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_263.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_266">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_266.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_270">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_270.png" />
+	</biometric-signature>
+	<biometric-signature name="no_person__no_bike_273">
+		<presentation Label="neg" file-name="Test/neg/no_person__no_bike_273.png" />
+	</biometric-signature>
+	<biometric-signature name="prefecture">
+		<presentation Label="neg" file-name="Test/neg/prefecture.jpg" />
+	</biometric-signature>
+</biometric-signature-set>

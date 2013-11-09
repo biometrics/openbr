@@ -45,8 +45,13 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        TemplateList data(TemplateList::fromGallery(input));
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity])", NULL));
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+        downcast->transforms[0] = this->transform.data();
 
+        TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
         // needs to know if it's called during train or enroll
@@ -58,7 +63,7 @@ struct AlgorithmCore
 
         QTime time; time.start();
         qDebug("Training Enrollment");
-        transform->train(data);
+        downcast->train(data);
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
@@ -116,32 +121,71 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        FileList files;
+
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
-        FileList fileList;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
         }
+        TemplateList data(TemplateList::fromGallery(input));
 
-        TemplateList i(TemplateList::fromGallery(input));
+        if (gallery.contains("append"))
+        {
+            // Remove any templates which are already in the gallery
+            QScopedPointer<Gallery> g(Gallery::make(gallery));
+            files = g->files();
+            QStringList names = files.names();
+            for (int i = data.size() - 1; i>=0; i--) {
+                if (names.contains(data[i].file.name))
+                {
+                    data.removeAt(i);
+                }
+            }
+        }
 
-        QString shellDescription = "DirectStream([Identity,ProgressCounter("+QString::number(i.length())+")+GalleryOutput("+gallery.flat()+")+Discard],readMode=DistributeFrames)";
-        qDebug("built shell string %s", qPrintable(shellDescription));
-        // Make a stream with a placeholder first transform, and our progress counter/gallery output.
-        QScopedPointer<Transform> enrollJob(Transform::make(shellDescription, NULL));
+        if (data.empty())
+            return files;
 
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(enrollJob.data());
+
+        // Trust me, this makes complete sense.
+        // We're just going to make a pipe with a placeholder first transform
+        QString pipeDesc = "Identity+ProgressCounter("+QString::number(data.length())+")+GalleryOutput("+gallery.flat()+")+Discard";
+        QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
+
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
 
+        // replace that placeholder with the current algorithm
         downcast->transforms[0] = this->transform.data();
+
+        // call init on the pipe to collapse the algorithm (if its top level is a pipe)
         downcast->init();
 
-        downcast->projectUpdate(i,i);
+        // Next, we make a Stream (with placeholder transform)
+        QString streamDesc = "Stream(Identity, readMode=DistributeFrames)";
+        QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
+        WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
 
-        return i.files();
+        // replace that placeholder with the pipe we built
+        wrapper->transform = downcast;
+
+        // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
+        wrapper->init();
+
+        wrapper->projectUpdate(data,data);
+
+        files.append(data.files());
+        return files;
+    }
+
+    void enroll(TemplateList &data)
+    {
+        if (transform.isNull()) qFatal("Null transform.");
+        data >> *transform;
     }
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
@@ -329,6 +373,12 @@ FileList br::Enroll(const File &input, const File &gallery)
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
+void br::Enroll(TemplateList &tl)
+{
+    QString alg = tl.first().file.get<QString>("algorithm");
+    AlgorithmManager::getAlgorithm(alg)->enroll(tl);
+}
+
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
 {
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
@@ -352,6 +402,9 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
+
+        if (targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+            qFatal("Similarity matrix and file size mismatch.");
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);

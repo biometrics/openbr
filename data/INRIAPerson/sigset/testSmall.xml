@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biometric-signature-set>
+	<biometric-signature name="crop001501">
+		<presentation Label="pos" file-name="Test/pos/crop001501.png">
+			<data:bbox height="143" width="49" x="250" y="151" />
+			<data:bbox height="112" width="59" x="215" y="354" />
+			<data:bbox height="113" width="39" x="568" y="320" />
+			<data:bbox height="141" width="52" x="829" y="180" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001504">
+		<presentation Label="pos" file-name="Test/pos/crop001504.png">
+			<data:bbox height="176" width="66" x="258" y="281" />
+			<data:bbox height="178" width="61" x="339" y="281" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001511">
+		<presentation Label="pos" file-name="Test/pos/crop001511.png">
+			<data:bbox height="500" width="151" x="304" y="261" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001512">
+		<presentation Label="pos" file-name="Test/pos/crop001512.png">
+			<data:bbox height="400" width="157" x="519" y="276" />
+			<data:bbox height="336" width="140" x="310" y="261" />
+			<data:bbox height="492" width="141" x="853" y="277" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001514">
+		<presentation Label="pos" file-name="Test/pos/crop001514.png">
+			<data:bbox height="383" width="100" x="367" y="246" />
+			<data:bbox height="245" width="90" x="291" y="234" />
+			<data:bbox height="387" width="130" x="533" y="258" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001520">
+		<presentation Label="pos" file-name="Test/pos/crop001520.png">
+			<data:bbox height="543" width="167" x="486" y="222" />
+			<data:bbox height="478" width="133" x="292" y="251" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001521">
+		<presentation Label="pos" file-name="Test/pos/crop001521.png">
+			<data:bbox height="242" width="62" x="194" y="176" />
+			<data:bbox height="193" width="52" x="262" y="182" />
+			<data:bbox height="187" width="61" x="372" y="181" />
+			<data:bbox height="185" width="56" x="419" y="159" />
+			<data:bbox height="212" width="66" x="492" y="170" />
+			<data:bbox height="203" width="55" x="550" y="181" />
+		</presentation>
+	</biometric-signature>
+	<biometric-signature name="crop001522">
+		<presentation Label="pos" file-name="Test/pos/crop001522.png">
+			<data:bbox height="578" width="171" x="559" y="217" />
+			<data:bbox height="198" width="47" x="928" y="175" />
+			<data:bbox height="157" width="42" x="978" y="181" />
+		</presentation>
+	</biometric-signature>
+</biometric-signature-set>

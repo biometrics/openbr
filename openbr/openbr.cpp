@@ -22,6 +22,8 @@
 #include "core/fuse.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
+#include "plugins/openbr_internal.h"
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace br;
 
@@ -111,6 +113,14 @@ void br_fuse(int num_input_simmats, const char *input_simmats[],
 void br_initialize(int &argc, char *argv[], const char *sdk_path)
 {
     Context::initialize(argc, argv, sdk_path);
+}
+
+void br_initialize_default()
+{
+    int argc = 1;
+    char app[] = "br";
+    char *argv[1] = {app};
+    Context::initialize(argc, argv, "");
 }
 
 bool br_is_classifier(const char *algorithm)
@@ -278,4 +288,60 @@ const char *br_version()
 {
     static QByteArray version = Context::version().toLocal8Bit();
     return version.data();
+}
+
+void br_slave_process(const char * baseName)
+{
+    WorkerProcess * worker = new WorkerProcess;
+    worker->transform = Globals->algorithm;
+    worker->baseName = baseName;
+    worker->mainLoop();
+    delete worker;
+}
+
+br_template br_load_img(const char *data, int len)
+{
+    std::vector<char> buf(data, data+len);
+    cv::Mat img = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
+    Template *tmpl = new Template(img);
+    return (br_template)tmpl;
+}
+
+unsigned char *br_unload_img(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().data;
+}
+
+int br_img_rows(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().rows;
+}
+
+int br_img_cols(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().cols;
+}
+
+int br_img_channels(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().channels();
+}
+
+br_template_list br_enroll_template(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    TemplateList *tl = new TemplateList();
+    tl->append(*t);
+    Enroll(*tl);
+    return (br_template_list)tl;
+}
+
+br_template br_get_template(br_template_list tl, int index)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    return (br_template)&realTL->at(index);
 }

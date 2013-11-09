@@ -17,6 +17,7 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFutureSynchronizer>
+#include <QLocalSocket>
 #include <QMetaProperty>
 #include <QPointF>
 #include <QProcess>
@@ -40,6 +41,8 @@
 
 using namespace br;
 using namespace cv;
+
+Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
 
 // Some globals used to transfer data to Context::messageHandler so that
 // we can restart the process if we try and fail to create a QApplication.
@@ -933,6 +936,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     qRegisterMetaType< QList<float> >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
+    qRegisterMetaType< QAbstractSocket::SocketState> ();
+    qRegisterMetaType< QLocalSocket::LocalSocketState> ();
 
     Globals = new Context();
     Globals->init(File());
@@ -1146,6 +1151,17 @@ Gallery *Gallery::make(const File &file)
         gallery->next = QSharedPointer<Gallery>(next);
     }
     return gallery;
+}
+
+// Default init -- if the file contains "append", read the existing
+// data and immediately write it
+void Gallery::init()
+{
+    if (file.exists() && file.contains("append"))
+    {
+        TemplateList data = this->read();
+        this->writeBlock(data);
+    }
 }
 
 /* Transform - public methods */

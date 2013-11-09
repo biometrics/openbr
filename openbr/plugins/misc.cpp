@@ -520,8 +520,6 @@ class EventTransform : public UntrainableMetaTransform
 BR_REGISTER(Transform, EventTransform)
 
 
-//ProgressCounter+Output
-
 class GalleryOutputTransform : public TimeVaryingTransform
 {
     Q_OBJECT
@@ -598,11 +596,13 @@ class ProgressCounterTransform : public TimeVaryingTransform
     void finalize(TemplateList & data)
     {
         (void) data;
+        float p = 100 * float(calls) / totalTemplates;
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), float(calls));
     }
 
     void init()
     {
-        calls = 0;
+        calls = -1;
         set_calls = 0;
         timer.start();
         Globals->startTime.start();

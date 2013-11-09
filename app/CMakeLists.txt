@@ -5,4 +5,4 @@ add_subdirectory(br)
 add_subdirectory(examples)
 
 # Build OpenBR GUI application
-add_subdirectory(OpenBR)
+add_subdirectory(br-gui)
