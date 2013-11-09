@@ -51,6 +51,8 @@ struct AlgorithmCore
             qFatal("downcast failed?");
         downcast->transforms[0] = this->transform.data();
 
+        downcast->init();
+
         TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
