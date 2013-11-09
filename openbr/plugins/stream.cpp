@@ -448,6 +448,8 @@ public:
         // we will return the first frame on the lookAhead buffer
         FrameData * rVal = lookAhead.first();
         lookAhead.pop_front();
+        if (rVal->data.empty())
+            qDebug("returning empty frame from look ahead!");
 
         // If this is the last frame, say so
         if (rVal->sequenceNumber == final_frame) {
@@ -675,6 +677,7 @@ public:
         if (input == NULL) {
             qFatal("null input to multi-thread stage");
         }
+
         input->data >> *transform;
 
         should_continue = nextStage->tryAcquireNextStage(input);
@@ -1062,6 +1065,8 @@ public:
         {
             TemplateList output_set;
             transforms[i]->finalize(output_set);
+            if (output_set.empty())
+                continue;
 
             for (int j=i+1; j < transforms.size();j++)
             {

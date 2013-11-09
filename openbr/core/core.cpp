@@ -151,10 +151,9 @@ struct AlgorithmCore
         if (data.empty())
             return files;
 
-
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
-        QString pipeDesc = "Identity+ProgressCounter("+QString::number(data.length())+")+GalleryOutput("+gallery.flat()+")+Discard";
+        QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());

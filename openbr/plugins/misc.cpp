@@ -602,7 +602,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
 
     void init()
     {
-        calls = -1;
+        calls = 0;
         set_calls = 0;
         timer.start();
         Globals->startTime.start();
