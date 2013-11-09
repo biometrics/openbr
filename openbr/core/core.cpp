@@ -139,9 +139,9 @@ struct AlgorithmCore
             // Remove any templates which are already in the gallery
             QScopedPointer<Gallery> g(Gallery::make(gallery));
             files = g->files();
-            QStringList names = files.names();
+            QSet<QString> nameSet = QSet<QString>::fromList(files.names());
             for (int i = data.size() - 1; i>=0; i--) {
-                if (names.contains(data[i].file.name))
+                if (nameSet.contains(data[i].file.name))
                 {
                     data.removeAt(i);
                 }
