@@ -19,6 +19,7 @@
 #include "bee.h"
 #include "common.h"
 #include "qtutils.h"
+#include "../plugins/openbr_internal.h"
 
 using namespace br;
 
@@ -44,6 +45,14 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity])", NULL));
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+        downcast->transforms[0] = this->transform.data();
+
+        downcast->init();
+
         TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
@@ -56,7 +65,7 @@ struct AlgorithmCore
 
         QTime time; time.start();
         qDebug("Training Enrollment");
-        transform->train(data);
+        downcast->train(data);
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
@@ -114,74 +123,64 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        FileList files;
+
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
-        FileList fileList;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
         }
+        TemplateList data(TemplateList::fromGallery(input));
 
-        QScopedPointer<Gallery> g(Gallery::make(gallery));
-        if (g.isNull()) qFatal("Null gallery!");
-
-        do {
-            fileList.clear();
-
-            if (gallery.contains("read") || gallery.contains("cache"))
-                fileList = g->files();
-
-            if (!fileList.isEmpty() && gallery.contains("cache"))
-                return fileList;
-
-            const TemplateList i(TemplateList::fromGallery(input));
-            if (i.isEmpty()) return fileList; // Nothing to enroll
-
-            if (transform.isNull()) qFatal("Null transform.");
-            const int blocks = Globals->blocks(i.size());
-            Globals->currentStep = 0;
-            Globals->totalSteps = i.size();
-            Globals->startTime.start();
-
-            const bool noDuplicates = gallery.contains("noDuplicates");
-            QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
-            const int subBlockSize = 4*std::max(1, Globals->parallelism);
-            const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
-            int totalCount = 0, failureCount = 0;
-            double totalBytes = 0;
-            for (int block=0; block<blocks; block++) {
-                for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
-                    TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
-                    if (data.isEmpty()) break;
-                    if (noDuplicates)
-                        for (int i=data.size()-1; i>=0; i--)
-                            if (fileNames.contains(data[i].file.name))
-                                data.removeAt(i);
-                    const int numFiles = data.size();
-
-                    data >> *transform;
-
-                    g->writeBlock(data);
-                    const FileList newFiles = data.files();
-                    fileList.append(newFiles);
-
-                    totalCount += newFiles.size();
-                    failureCount += newFiles.failures();
-                    totalBytes += data.bytes<double>();
-                    Globals->currentStep += numFiles;
-                    Globals->printStatus();
+        if (gallery.contains("append"))
+        {
+            // Remove any templates which are already in the gallery
+            QScopedPointer<Gallery> g(Gallery::make(gallery));
+            files = g->files();
+            QSet<QString> nameSet = QSet<QString>::fromList(files.names());
+            for (int i = data.size() - 1; i>=0; i--) {
+                if (nameSet.contains(data[i].file.name))
+                {
+                    data.removeAt(i);
                 }
             }
+        }
 
-            const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
-            if (!Globals->quiet && (Globals->totalSteps > 1))
-                fprintf(stderr, "\rTIME ELAPSED (MINS) %f SPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
-                        Globals->startTime.elapsed()/1000./60.,speed, totalBytes/totalCount, failureCount, totalCount);
-            Globals->totalSteps = 0;
-        } while (input.getBool("infinite"));
+        if (data.empty())
+            return files;
 
-        return fileList;
+        // Trust me, this makes complete sense.
+        // We're just going to make a pipe with a placeholder first transform
+        QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+        QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
+
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+
+        // replace that placeholder with the current algorithm
+        downcast->transforms[0] = this->transform.data();
+
+        // call init on the pipe to collapse the algorithm (if its top level is a pipe)
+        downcast->init();
+
+        // Next, we make a Stream (with placeholder transform)
+        QString streamDesc = "Stream(Identity, readMode=DistributeFrames)";
+        QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
+        WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
+
+        // replace that placeholder with the pipe we built
+        wrapper->transform = downcast;
+
+        // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
+        wrapper->init();
+
+        wrapper->projectUpdate(data,data);
+
+        files.append(data.files());
+        return files;
     }
 
     void enroll(TemplateList &data)
@@ -312,8 +311,6 @@ private:
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
         //! [Parsing the algorithm description]
 
-        if (description.getBool("distribute", true))
-            words[0] = "DistributeTemplate(" + words[0] + ")";
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
