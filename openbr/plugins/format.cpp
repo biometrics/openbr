@@ -729,7 +729,7 @@ BR_REGISTER(Format, xmlFormat)
 /*!
  * \ingroup formats
  * \brief Reads in scores or ground truth from a text table.
- * \author Josh Klontz
+ * \author Josh Klontz \cite jklontz
  *
  * Example of the format:
  * \code
@@ -777,6 +777,53 @@ class scoresFormat : public Format
 };
 
 BR_REGISTER(Format, scoresFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads FBI EBTS transactions.
+ * \author Scott Klum \cite sklum
+ *
+ */
+class ebtsFormat : public Format
+{
+    Q_OBJECT
+;
+
+    struct Element
+    {
+        // It is always best to cast integers to a Qt integer type, such as qint16 or quint32, when reading and writing.
+        // This ensures that you always know exactly what size integers you are reading and writing, no matter what the
+        // underlying platform and architecture the application happens to be running on.
+        // http://qt-project.org/doc/qt-4.8/datastreamformat.html
+        quint32 type, bytes;
+        QByteArray data;
+        Element() : type(0), bytes(0) {}
+        Element(QDataStream &stream)
+            : type(0), bytes(0)
+        {
+            // Read first 4 bytes into type (32 bit integer),
+            // specifying the type of data used
+            if (stream.readRawData((char*)&type, 120) != 120)
+                qFatal("Unexpected end of file.")
+        }
+    };
+
+    Template read() const
+    {
+
+                              QByteArray byteArray;
+                              QtUtils::readFile(file, byteArray);
+                              QDataStream f(byteArray);
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("Writing EBTS files is not supported.");
+    }
+};
+
+BR_REGISTER(Format, ebtsFormat)
 
 } // namespace br
 
