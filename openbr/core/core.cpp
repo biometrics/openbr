@@ -61,9 +61,10 @@ struct AlgorithmCore
             data[i].file.set("Train", true);
 
         if (transform.isNull()) qFatal("Null transform.");
-        qDebug("%d training files", data.size());
+        qDebug("%d Training Files", data.size());
 
-        QTime time; time.start();
+        Globals->startTime.start();
+
         qDebug("Training Enrollment");
         downcast->train(data);
 
@@ -80,7 +81,7 @@ struct AlgorithmCore
             store(model);
         }
 
-        qDebug("Training Time (sec): %d", time.elapsed()/1000);
+        qDebug("Training Time (sec): %d", Globals->startTime.elapsed()/1000);
     }
 
     void store(const QString &model) const
