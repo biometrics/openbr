@@ -42,15 +42,15 @@ class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
-    Q_PROPERTY(int stepSize READ get_stepSize WRITE set_stepSize RESET reset_stepSize STORED false)
-    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
+    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
+    Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
-    BR_PROPERTY(int, stepSize, 1)
-    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(int, windowWidth, 24)
+    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(float, threshold, 0)
+    BR_PROPERTY(float, stepFraction, 0.25)
 
 private:
     int windowHeight;
@@ -76,8 +76,8 @@ private:
         float scale = src.file.get<float>("scale", 1);
         Template windowTemplate(src.file, src);
         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
-        for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
-            for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
+        for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
+            for (float x = 0; x + windowWidth < src.m().cols; x += windowWidth*stepFraction) {
                 Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
                 windowTemplate.replace(0,windowMat);
                 Template detect;
@@ -86,7 +86,7 @@ private:
 
                 // the result will be in the Label
                 if (conf > threshold) {
-                    dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
+                    dst.file.appendRect(QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
                     confidences.append(conf);
                     if (takeFirst)
                         return;
