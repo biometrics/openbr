@@ -476,7 +476,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
 // indexes some property, assigns an integer id to each unique value of propName
 // stores the index values in "Label" of the output template list
-TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propName)
+TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers)
 {
     const QList<QString> originalLabels = File::get<QString>(tl, propName);
     QHash<QString,int> labelTable;
@@ -485,8 +485,8 @@ TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propNa
             int value; bool ok;
             value = label.toInt(&ok);
             // If the label is already an integer value we don't want to change it.
-            if (ok) labelTable.insert(label, value);
-            else    labelTable.insert(label, labelTable.size());
+            if (ok && preserveIntegers) labelTable.insert(label, value);
+            else                        labelTable.insert(label, labelTable.size());
         }
 
     TemplateList result = tl;
