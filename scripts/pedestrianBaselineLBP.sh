@@ -18,7 +18,10 @@ ALG="Open+Cvt(Gray)+Rename(neg,0)+BuildScales(Blur(2)+LBP(1,2)+SlidingWindow(His
 br -useGui 0 \
    -algorithm "${ALG}" \
    -path $INRIA_PATH/img \
-   -train $INRIA_PATH/sigset/train.xml pedModel \
+   -train $INRIA_PATH/sigset/train.xml pedModel
+
+br -algorithm pedModel \
+   -path $INRIA_PATH/img \
    -enroll $INRIA_PATH/sigset/testSmall.xml pedResults.xml
 
 br -parallelism 0 -algorithm Open+Draw+Show -path $INRIA_PATH/img -enroll pedResults.xml

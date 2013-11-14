@@ -38,7 +38,7 @@ static float getAspectRatio(const TemplateList &data)
  *        Discards negative detections.
  * \author Austin Blanton \cite imaus10
  */
-class SlidingWindowTransform : public Transform
+class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -52,8 +52,6 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(int, windowWidth, 24)
     BR_PROPERTY(float, threshold, 0)
 
-public:
-    SlidingWindowTransform() : Transform(false, true) {}
 private:
     int windowHeight;
 
@@ -62,7 +60,7 @@ private:
         float aspectRatio = data.first().file.get<float>("aspectRatio", -1);
         if (aspectRatio == -1)
             aspectRatio = getAspectRatio(data);
-        windowHeight = (int) qRound((float) windowWidth / aspectRatio);
+        windowHeight = qRound(windowWidth / aspectRatio);
         if (transform->trainable) {
             transform->train(data);
         }
@@ -96,6 +94,18 @@ private:
             }
         }
         dst.file.setList<float>("Confidences", confidences);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << windowHeight;
+    }
+
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> windowHeight;
     }
 };
 
@@ -230,6 +240,17 @@ private:
                 return;
         }
     }
+
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << aspectRatio << windowHeight;
+    }
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> aspectRatio >> windowHeight;
+    }
 };
 
 BR_REGISTER(Transform, BuildScalesTransform)
@@ -310,6 +331,8 @@ private:
         //Compute overlap between rectangles and create discrete Laplacian matrix
         QList<Rect> rects = OpenCVUtils::toRects(src.file.rects());
         int n = rects.size();
+        if (n == 0)
+            return;
         MatrixXf laplace(n,n);
         for (int i = 0; i < n; i++) {
             laplace(i,i) = 0;
