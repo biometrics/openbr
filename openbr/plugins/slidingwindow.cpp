@@ -101,7 +101,7 @@ private:
 
 BR_REGISTER(Transform, SlidingWindowTransform)
 
-static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize, const float maxOverlap, const int negToPosRatio)
+static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 0, const float maxOverlap = 0.5, const int negToPosRatio = 1)
 {
     TemplateList result;
     foreach (const Template &tmpl, data) {
@@ -233,6 +233,30 @@ private:
 };
 
 BR_REGISTER(Transform, BuildScalesTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Sample detection bounding boxes from integral images
+ * \author Josh Klontz \cite jklontz
+ */
+class IntegralDetector : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform)
+    BR_PROPERTY(br::Transform*, transform, make("Identity"))
+
+    void train(const TemplateList &data)
+    {
+        transform->train(cropTrainingSamples(data, getAspectRatio(data)));
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+    }
+};
+
+BR_REGISTER(Transform, IntegralDetector)
 
 /*!
  * \ingroup transforms

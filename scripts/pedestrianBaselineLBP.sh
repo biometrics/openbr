@@ -12,6 +12,9 @@ fi
 
 ALG="Open+Cvt(Gray)+Rename(neg,0)+BuildScales(Blur(2)+LBP(1,2)+SlidingWindow(Hist(59)+Cat+LDA(isBinary=true),windowWidth=10,takeLargestScale=false,threshold=2),windowWidth=10,takeLargestScale=false,minScale=4)+ConsolidateDetections+Discard"
 
+# Josh's new algorithm in progress
+# ALG2="Open+Cvt(Gray)+Gradient+Bin(0,360,9,true)+Merge+Integral+IntegralDetector"
+
 br -useGui 0 \
    -algorithm "${ALG}" \
    -path $INRIA_PATH/img \
