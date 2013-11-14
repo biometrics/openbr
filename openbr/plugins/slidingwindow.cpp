@@ -38,7 +38,7 @@ static float getAspectRatio(const TemplateList &data)
  *        Discards negative detections.
  * \author Austin Blanton \cite imaus10
  */
-class SlidingWindowTransform : public MetaTransform
+class SlidingWindowTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -93,6 +93,14 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
+        float scale = src.file.get<float>("scale", 1);
+        projectHelp(src, dst, windowWidth, windowHeight, scale);
+    }
+
+ protected:
+     void projectHelp(const Template &src, Template &dst, int windowWidth, int windowHeight, float scale = 1) const
+     {
+
         dst = src;
         if (skipProject) {
             dst = src;
@@ -100,11 +108,10 @@ private:
         }
 
         dst.file.clearRects();
-        float scale = src.file.get<float>("scale", 1);
         Template windowTemplate(src.file, src);
         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
-        for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
-            for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
+        for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
+            for (float x = 0; x + windowWidth < src.m().cols; x += windowWidth*stepFraction) {
                 Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
                 windowTemplate.replace(0,windowMat);
                 Template detect;
@@ -113,7 +120,7 @@ private:
 
                 // the result will be in the Label
                 if (conf > threshold) {
-                    dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
+                    dst.file.appendRect(QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
                     confidences.append(conf);
                     if (takeFirst)
                         return;
@@ -136,7 +143,8 @@ class IntegralSlidingWindowTransform : public SlidingWindowTransform
 {
     Q_OBJECT
 
-    void project(const TemplateList &src, TemplateList &dst) const
+ private:
+    void project(const Template &src, Template &dst) const
     {
         // TODO: call SlidingWindowTransform::project on multiple scales
         SlidingWindowTransform::projectHelp(src, dst, 24, 24);
@@ -212,7 +220,7 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
  * \brief .
  * \author Austin Blanton \cite imaus10
  */
-class BuildScalesTransform : public MetaTransform
+class BuildScalesTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -485,6 +493,36 @@ private:
 };
 
 BR_REGISTER(Transform, ConsolidateDetectionsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief For each rectangle bounding box in TemplateList, a new
+ *      template is created.
+ * \author Brendan Klare \cite bklare
+ */
+class RectsToTemplatesTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+private:
+    void project(const Template &src, Template &dst) const
+    {
+        Template tOut(src.file);
+        QList<float> confidences = src.file.getList<float>("Confidences");
+        QList<QRectF> rects = src.file.rects();
+        for (int i = 0; i < rects.size(); i++) {
+            Mat m(src, OpenCVUtils::toRect(rects[i]));
+            Template t(src.file, m);
+            t.file.set("Confidence", confidences[i]);
+            t.file.clearRects();
+            tOut << t;
+        }
+        dst = tOut;
+    }
+};
+
+BR_REGISTER(Transform, RectsToTemplatesTransform)
+
 
 } // namespace br
 
