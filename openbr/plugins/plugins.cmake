@@ -5,6 +5,8 @@
 # BR_THIRDPARTY_LIBS        - Additional libaries needed by a plugin
 
 # Also look for CMake modules in the thirdparty plugins folder(s)
+set(BR_THIRDPARTY_PLUGINS_DIR CACHE PATH "")
+mark_as_advanced(BR_THIRDPARTY_PLUGINS_DIR)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${BR_THIRDPARTY_PLUGINS_DIR})
 
 foreach(DIR ${BR_THIRDPARTY_PLUGINS_DIR})
