@@ -178,6 +178,8 @@ struct AlgorithmCore
         // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
         wrapper->init();
 
+        Globals->startTime.start();
+
         wrapper->projectUpdate(data,data);
 
         files.append(data.files());

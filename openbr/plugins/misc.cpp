@@ -605,7 +605,6 @@ class ProgressCounterTransform : public TimeVaryingTransform
         calls = 0;
         set_calls = 0;
         timer.start();
-        Globals->startTime.start();
     }
 
 public:
