@@ -14,4 +14,4 @@ br -useGui 0 \
    -train $INRIA_PATH/sigset/train.xml pedModel \
    -enroll $INRIA_PATH/sigset/testSmall.xml pedResults.xml
 
-br -parallelism 0 -algorithm Open+Draw+Show -path /Users/m29389/Data/INRIAPerson/img/ -enroll pedResults.xml
+br -parallelism 0 -algorithm Open+Draw+Show -path $INRIA_PATH/img -enroll pedResults.xml
