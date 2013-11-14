@@ -81,7 +81,7 @@ struct AlgorithmCore
             store(model);
         }
 
-        qDebug("Training Time (sec): %d", Globals->startTime.elapsed()/1000);
+        qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed())));
     }
 
     void store(const QString &model) const
@@ -154,6 +154,7 @@ struct AlgorithmCore
 
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
+        Globals->totalSteps = data.length();
         QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 

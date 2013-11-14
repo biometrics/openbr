@@ -1,4 +1,5 @@
 #include <openbr/openbr.h>
+#include <QDebug>
 
 #include "progress.h"
 
@@ -19,7 +20,7 @@ br::Progress::Progress(QWidget *parent)
     addPermanentWidget(&pbProgress);
     addPermanentWidget(&lTimeRemaining);
     connect(&timer, SIGNAL(timeout()), this, SLOT(checkProgress()));
-    timer.start(1000);
+    timer.start(5000);
 }
 
 /*** PRIVATE SLOTS ***/
@@ -33,19 +34,8 @@ void br::Progress::checkProgress()
         pbProgress.setValue(progress);
         if (progress > 100) pbProgress.setMaximum(0);
         else                pbProgress.setMaximum(100);
-
-        int s = br_time_remaining();
-        if (s >= 0) {
-            int h = s / (60*60);
-            int m = (s - h*60*60) / 60;
-            s = (s - h*60*60 - m*60);
-            lTimeRemaining.setText(QString("%1:%2:%3").arg(h, 2, 10, QLatin1Char('0')).arg(m, 2, 10, QLatin1Char('0')).arg(s, 2, 10, QLatin1Char('0')));
-        } else {
-            lTimeRemaining.clear();
-        }
     } else {
         clearMessage();
-        lTimeRemaining.clear();
     }
 
     pbProgress.setVisible(visible);
