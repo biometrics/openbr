@@ -688,12 +688,6 @@ public:
     BR_PROPERTY(Filters, filters, Filters())
 
     /*!
-     * \brief If \c true a template will be skipped over if its file name already exists in the gallery.
-     */
-    Q_PROPERTY(bool noDuplicates READ get_noDuplicates WRITE set_noDuplicates RESET reset_noDuplicates)
-    BR_PROPERTY(bool, noDuplicates, false)
-
-    /*!
      * \brief File output is redirected here if the file's basename is 'buffer', clearing previous contents.
      */
     Q_PROPERTY(QByteArray buffer READ get_buffer WRITE set_buffer RESET reset_buffer)

@@ -61,9 +61,10 @@ struct AlgorithmCore
             data[i].file.set("Train", true);
 
         if (transform.isNull()) qFatal("Null transform.");
-        qDebug("%d training files", data.size());
+        qDebug("%d Training Files", data.size());
 
-        QTime time; time.start();
+        Globals->startTime.start();
+
         qDebug("Training Enrollment");
         downcast->train(data);
 
@@ -80,7 +81,7 @@ struct AlgorithmCore
             store(model);
         }
 
-        qDebug("Training Time (sec): %d", time.elapsed()/1000);
+        qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
     }
 
     void store(const QString &model) const
@@ -153,6 +154,7 @@ struct AlgorithmCore
 
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
+        Globals->totalSteps = data.length();
         QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 
@@ -176,6 +178,8 @@ struct AlgorithmCore
 
         // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
         wrapper->init();
+
+        Globals->startTime.start();
 
         wrapper->projectUpdate(data,data);
 
