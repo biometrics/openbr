@@ -38,7 +38,7 @@ static float getAspectRatio(const TemplateList &data)
  *        Discards negative detections.
  * \author Austin Blanton \cite imaus10
  */
-class SlidingWindowTransform : public Transform
+class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -52,8 +52,6 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(int, windowWidth, 24)
     BR_PROPERTY(float, threshold, 0)
 
-public:
-    SlidingWindowTransform() : Transform(false, true) {}
 private:
     int windowHeight;
 
@@ -62,7 +60,7 @@ private:
         float aspectRatio = data.first().file.get<float>("aspectRatio", -1);
         if (aspectRatio == -1)
             aspectRatio = getAspectRatio(data);
-        windowHeight = (int) qRound((float) windowWidth / aspectRatio);
+        windowHeight = qRound(windowWidth / aspectRatio);
         if (transform->trainable) {
             transform->train(data);
         }
@@ -97,16 +95,89 @@ private:
         }
         dst.file.setList<float>("Confidences", confidences);
     }
+
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << windowHeight;
+    }
+
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> windowHeight;
+    }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
+
+static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 0, const float maxOverlap = 0.5, const int negToPosRatio = 1)
+{
+    TemplateList result;
+    foreach (const Template &tmpl, data) {
+        QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
+        QList<Rect> negRects;
+        for (int i=0; i<posRects.size(); i++) {
+            Rect &posRect = posRects[i];
+
+            // Adjust for training samples that have different aspect ratios
+            const int diff = posRect.width - int(posRect.height * aspectRatio);
+            posRect.x += diff / 2;
+            posRect.width += diff;
+
+            // Ignore samples larger than the image
+            if ((posRect.x + posRect.width >= tmpl.m().cols) ||
+                (posRect.y + posRect.height >= tmpl.m().rows) ||
+                (posRect.x < 0) ||
+                (posRect.y < 0))
+                continue;
+
+            result += Template(tmpl.file, Mat(tmpl, posRect));
+
+            // Add random negative samples
+            Mat m = tmpl.m();
+            int sample = 0;
+            while (sample < negToPosRatio) {
+                const int x = rand() % m.cols;
+                const int y = rand() % m.rows;
+                const int maxWidth = m.cols - x;
+                const int maxHeight = m.rows - y;
+                if (maxWidth <= minSize || maxHeight <= minSize)
+                    continue;
+
+                int height;
+                int width;
+                if (aspectRatio > (float) maxWidth / (float) maxHeight) {
+                    width = rand() % (maxWidth - minSize) + minSize;
+                    height = qRound(width / aspectRatio);
+                } else {
+                    height = rand() % (maxHeight - minSize) + minSize;
+                    width = qRound(height * aspectRatio);
+                }
+                Rect negRect(x, y, width, height);
+
+                // The negative samples cannot overlap the positive samples at
+                // all, but they may partially overlap with other negatives.
+                if (OpenCVUtils::overlaps(posRects, negRect, 0) ||
+                    OpenCVUtils::overlaps(negRects, negRect, maxOverlap))
+                    continue;
+
+                result += Template(tmpl.file, Mat(tmpl, negRect));
+                result.last().file.set("Label", QString("neg"));
+                sample++;
+            }
+        }
+    }
+
+    return result;
+}
 
 /*!
  * \ingroup transforms
  * \brief .
  * \author Austin Blanton \cite imaus10
  */
-class BuildScalesTransform : public Transform
+class BuildScalesTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
@@ -117,7 +188,6 @@ class BuildScalesTransform : public Transform
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(double maxOverlap READ get_maxOverlap WRITE set_maxOverlap RESET reset_maxOverlap STORED false)
     Q_PROPERTY(float minScale READ get_minScale WRITE set_minScale RESET reset_minScale STORED false)
-    Q_PROPERTY(bool negSamples READ get_negSamples WRITE set_negSamples RESET reset_negSamples STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(double, scaleFactor, 0.75)
     BR_PROPERTY(bool, takeLargestScale, false)
@@ -126,91 +196,26 @@ class BuildScalesTransform : public Transform
     BR_PROPERTY(int, minSize, 8)
     BR_PROPERTY(double, maxOverlap, 0)
     BR_PROPERTY(float, minScale, 1.0)
-    BR_PROPERTY(bool, negSamples, true)
 
-public:
-    BuildScalesTransform() : Transform(false, true) {}
 private:
-    int windowHeight;
     float aspectRatio;
+    int windowHeight;
 
-    void train(const TemplateList &_data)
+    void train(const TemplateList &data)
     {
-        TemplateList data(_data);  // have to make a copy b/c data is const
         aspectRatio = getAspectRatio(data);
-        data.first().file.set("aspectRatio", aspectRatio);
-        windowHeight = (int) qRound((float) windowWidth / aspectRatio);
-
+        windowHeight = qRound(windowWidth / aspectRatio);
         if (transform->trainable) {
             TemplateList full;
-            foreach (const Template &tmpl, data) {
-                QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
-                QList<Rect> negRects;
-                foreach (Rect posRect, posRects) {
-
-                    //Adjust for training samples that have different aspect ratios
-                    int diff = posRect.width - (int)((float) posRect.height * aspectRatio);
-                    posRect.x += diff / 2;
-                    posRect.width += diff;
-
-                    if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
-                        continue;
-                    }
-
-                    Mat scaledImg;
-                    resize(Mat(tmpl, posRect), scaledImg, Size(windowWidth,qRound(windowWidth / aspectRatio)));
-                    Template pos(tmpl.file, scaledImg);
-                    full += pos;
-
-                    // add random negative samples
-                    if (negSamples) {
-                        Mat m = tmpl.m();
-                        int sample = 0;
-                        while (sample < negToPosRatio) {
-                            int x = Common::RandSample(1, m.cols)[0];
-                            int y = Common::RandSample(1, m.rows)[0];
-                            int maxWidth = m.cols - x;
-                            int maxHeight = m.rows - y;
-                            if (maxWidth <= minSize || maxHeight <= minSize)
-                                continue;
-                            int height;
-                            int width;
-                            if (aspectRatio > (float) maxWidth / (float) maxHeight) {
-                                width = Common::RandSample(1,maxWidth,minSize)[0];
-                                height = (int) qRound(width / aspectRatio);
-                            } else {
-                                height = Common::RandSample(1,maxHeight,minSize)[0];
-                                width = (int) qRound(height * aspectRatio);
-                            }
-                            Rect negRect(x, y, width, height);
-                            // the negative samples cannot overlap the positive at all
-                            // but they may overlap with other negatives
-                            if (overlaps(posRects, negRect, 0) || overlaps(negRects, negRect, maxOverlap))
-                                continue;
-                            negRects.append(negRect);
-                            Template neg(tmpl.file, Mat());
-                            resize(Mat(tmpl, negRect), neg, Size(windowWidth, windowHeight));
-                            neg.file.set("Label", QString("neg"));
-                            full += neg;
-                            sample++;
-                        }
-                    }
-                }
+            foreach (const Template &roi, cropTrainingSamples(data, aspectRatio, minSize, maxOverlap, negToPosRatio)) {
+                Mat resized;
+                resize(roi, resized, Size(windowWidth, windowHeight));
+                full += Template(roi.file, resized);
             }
+            full.first().file.set("aspectRatio", aspectRatio);
             transform->train(full);
         }
     }
-
-    bool overlaps(QList<Rect> posRects, Rect negRect, double overlap)
-    {
-        foreach (const Rect posRect, posRects) {
-            Rect intersect = negRect & posRect;
-            if (intersect.area() > overlap*posRect.area())
-                return true;
-        }
-        return false;
-    }
-
 
     void project(const Template &src, Template &dst) const
     {
@@ -235,9 +240,44 @@ private:
                 return;
         }
     }
+
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << aspectRatio << windowHeight;
+    }
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> aspectRatio >> windowHeight;
+    }
 };
 
 BR_REGISTER(Transform, BuildScalesTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Sample detection bounding boxes from integral images
+ * \author Josh Klontz \cite jklontz
+ */
+class IntegralDetector : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform)
+    BR_PROPERTY(br::Transform*, transform, make("Identity"))
+
+    void train(const TemplateList &data)
+    {
+        transform->train(cropTrainingSamples(data, getAspectRatio(data)));
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+    }
+};
+
+BR_REGISTER(Transform, IntegralDetector)
 
 /*!
  * \ingroup transforms
@@ -291,6 +331,8 @@ private:
         //Compute overlap between rectangles and create discrete Laplacian matrix
         QList<Rect> rects = OpenCVUtils::toRects(src.file.rects());
         int n = rects.size();
+        if (n == 0)
+            return;
         MatrixXf laplace(n,n);
         for (int i = 0; i < n; i++) {
             laplace(i,i) = 0;

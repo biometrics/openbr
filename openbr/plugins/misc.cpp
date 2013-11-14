@@ -14,10 +14,12 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QElapsedTimer>
 #include <QRegularExpression>
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/qtutils.h"
 
 using namespace cv;
 
@@ -516,6 +518,106 @@ class EventTransform : public UntrainableMetaTransform
     }
 };
 BR_REGISTER(Transform, EventTransform)
+
+
+class GalleryOutputTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString outputString READ get_outputString WRITE set_outputString RESET reset_outputString STORED false)
+    BR_PROPERTY(QString, outputString, "")
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (src.empty())
+            return;
+        dst = src;
+        writer->writeBlock(dst);
+    }
+
+    void train(const TemplateList& data)
+    {
+        (void) data;
+    }
+    ;
+    void init()
+    {
+        writer = QSharedPointer<Gallery>(Gallery::make(outputString));
+    }
+
+    QSharedPointer<Gallery> writer;
+public:
+    GalleryOutputTransform() : TimeVaryingTransform(false,false) {}
+};
+
+BR_REGISTER(Transform, GalleryOutputTransform)
+
+class ProgressCounterTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int totalTemplates READ get_totalTemplates WRITE set_totalTemplates RESET reset_totalTemplates STORED false)
+    BR_PROPERTY(int, totalTemplates, 1)
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        dst = src;
+        qint64 elapsed = timer.elapsed();
+        calls++;
+        set_calls++;
+        // updated every 10 seconds
+        if (elapsed > 5 * 1000) {
+            float f_elapsed = elapsed / 1000.0f;
+            // remaining calls (according to our input variable)
+            int remaining = totalTemplates - calls;
+            // calls / second
+            float speed = set_calls / f_elapsed;
+
+            float p = 100 * float(calls) / totalTemplates;
+
+            // seconds remaining
+            int s = float(remaining) / speed;
+
+            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), float(calls));
+
+            timer.start();
+            set_calls = 0;
+        }
+
+
+        return;
+    }
+
+    void train(const TemplateList& data)
+    {
+        (void) data;
+    }
+
+    void finalize(TemplateList & data)
+    {
+        (void) data;
+        float p = 100 * float(calls) / totalTemplates;
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), float(calls));
+    }
+
+    void init()
+    {
+        calls = 0;
+        set_calls = 0;
+        timer.start();
+        Globals->startTime.start();
+    }
+
+public:
+    ProgressCounterTransform() : TimeVaryingTransform(false,false) {}
+    bool initialized;
+    QElapsedTimer timer;
+    qint64 calls;
+    qint64 set_calls;
+
+};
+
+BR_REGISTER(Transform, ProgressCounterTransform)
 
 }
 
