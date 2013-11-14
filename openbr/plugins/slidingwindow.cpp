@@ -78,13 +78,19 @@ private:
         stream >> windowHeight;
     }
 
-protected: // Let IntegralSlidingWindowTransform access this
     void project(const Template &src, Template &dst) const
     {
         (void)src;(void)dst;qFatal("don't do that");
     }
 
     void project(const TemplateList &src, TemplateList &dst) const
+    {
+        float scale = src.first().file.get<float>("scale", 1);
+        projectHelp(src, dst, windowWidth, windowHeight, scale);
+    }
+
+protected:
+    void projectHelp(const TemplateList &src, TemplateList &dst, int windowWidth, int windowHeight, float scale = 1) const
     {
         // no need to slide a window over ground truth data
         if (src.first().file.getBool("Train", false)) {
@@ -93,9 +99,8 @@ protected: // Let IntegralSlidingWindowTransform access this
         }
 
         foreach (const Template &t, src) {
-            float scale = t.file.get<float>("scale", 1);
-            for (double y = 0; y + windowHeight < t.m().rows; y += stepSize) {
-                for (double x = 0; x + windowWidth < t.m().cols; x += stepSize) {
+            for (float y = 0; y + windowHeight < t.m().rows; y += windowHeight*stepFraction) {
+                for (float x = 0; x + windowWidth < t.m().cols; x += windowWidth*stepFraction) {
                     Mat windowMat(t.m(), Rect(x, y, windowWidth, windowHeight));
                     Template detect;
                     transform->project(Template(t.file, windowMat), detect);
@@ -103,7 +108,7 @@ protected: // Let IntegralSlidingWindowTransform access this
                     // the result will be the only value in the Mat
                     float conf = detect.m().at<float>(0);
                     if (conf > threshold) {
-                        detect.file.set("Detection", QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
+                        detect.file.set("Detection", QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
                         detect.file.set("Confidence", conf);
                         dst.append(detect);
                         if (takeFirst)
@@ -127,10 +132,10 @@ class IntegralSlidingWindowTransform : public SlidingWindowTransform
 {
     Q_OBJECT
 
-    void project(const Template &src, Template &dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         // TODO: call SlidingWindowTransform::project on multiple scales
-        SlidingWindowTransform::project(src, dst);
+        SlidingWindowTransform::projectHelp(src, dst, 24, 24);
     }
 };
 
