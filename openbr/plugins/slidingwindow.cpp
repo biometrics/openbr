@@ -270,6 +270,7 @@ class Detector : public Transform
     {
         const float aspectRatio = getAspectRatio(data);
         TemplateList cropped = cropTrainingSamples(data, aspectRatio);
+        qDebug("Detector using: %d training samples.", cropped.size());
         cropped.first().file.set("aspectRatio", aspectRatio);
         transform->train(cropped);
     }

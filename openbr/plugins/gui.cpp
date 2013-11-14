@@ -447,7 +447,8 @@ public:
             }
             emit this->changeTitle(newTitle);
 
-            foreach(const cv::Mat & m, t) {
+            foreach (const cv::Mat &m, t) {
+                if (!m.data) continue;
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
