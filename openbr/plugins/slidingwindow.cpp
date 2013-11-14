@@ -78,15 +78,20 @@ private:
         stream >> windowHeight;
     }
 
-protected: // Let IntegralSlidingWindowTransform access this
     void project(const Template &src, Template &dst) const
+    {
+        float scale = src.file.get<float>("scale", 1);
+        projectHelp(src, dst, windowWidth, windowHeight, scale);
+    }
+
+protected: // Let IntegralSlidingWindowTransform access this
+    void projectHelp(const Template &src, Template &dst, int windowWidth, int windowHeight, float scale = 1) const
     {
         dst = src;
         // no need to slide a window over ground truth data
         if (src.file.getBool("Train", false)) return;
 
         dst.file.clearRects();
-        float scale = src.file.get<float>("scale", 1);
         Template windowTemplate(src.file, src);
         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
         for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
@@ -125,7 +130,7 @@ class IntegralSlidingWindowTransform : public SlidingWindowTransform
     void project(const Template &src, Template &dst) const
     {
         // TODO: call SlidingWindowTransform::project on multiple scales
-        SlidingWindowTransform::project(src, dst);
+        SlidingWindowTransform::projectHelp(src, dst, 24, 24);
     }
 };
 
