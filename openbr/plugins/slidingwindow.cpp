@@ -66,6 +66,19 @@ private:
         }
     }
 
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << windowHeight;
+    }
+
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> windowHeight;
+    }
+
+protected: // Let IntegralSlidingWindowTransform access this
     void project(const Template &src, Template &dst) const
     {
         dst = src;
@@ -95,21 +108,28 @@ private:
         }
         dst.file.setList<float>("Confidences", confidences);
     }
-
-    void store(QDataStream &stream) const
-    {
-        transform->store(stream);
-        stream << windowHeight;
-    }
-
-    void load(QDataStream &stream)
-    {
-        transform->load(stream);
-        stream >> windowHeight;
-    }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Overloads SlidingWindowTransform for integral images that should be
+ *        sampled at multiple scales.
+ * \author Josh Klontz \cite jklontz
+ */
+class IntegralSlidingWindowTransform : public SlidingWindowTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        // TODO: call SlidingWindowTransform::project on multiple scales
+        SlidingWindowTransform::project(src, dst);
+    }
+};
+
+BR_REGISTER(Transform, IntegralSlidingWindowTransform)
 
 static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 32, const float maxOverlap = 0.5, const int negToPosRatio = 1)
 {
