@@ -42,15 +42,15 @@ class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
-    Q_PROPERTY(int stepSize READ get_stepSize WRITE set_stepSize RESET reset_stepSize STORED false)
-    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
+    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
+    Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
-    BR_PROPERTY(int, stepSize, 1)
-    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(int, windowWidth, 24)
+    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(float, threshold, 0)
+    BR_PROPERTY(float, stepFraction, 0.25)
 
 private:
     int windowHeight;
@@ -66,6 +66,19 @@ private:
         }
     }
 
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+        stream << windowHeight;
+    }
+
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
+        stream >> windowHeight;
+    }
+
+protected: // Let IntegralSlidingWindowTransform access this
     void project(const Template &src, Template &dst) const
     {
         (void)src;(void)dst;qFatal("don't do that");
@@ -100,21 +113,28 @@ private:
             }
         }
     }
-
-    void store(QDataStream &stream) const
-    {
-        transform->store(stream);
-        stream << windowHeight;
-    }
-
-    void load(QDataStream &stream)
-    {
-        transform->load(stream);
-        stream >> windowHeight;
-    }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Overloads SlidingWindowTransform for integral images that should be
+ *        sampled at multiple scales.
+ * \author Josh Klontz \cite jklontz
+ */
+class IntegralSlidingWindowTransform : public SlidingWindowTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        // TODO: call SlidingWindowTransform::project on multiple scales
+        SlidingWindowTransform::project(src, dst);
+    }
+};
+
+BR_REGISTER(Transform, IntegralSlidingWindowTransform)
 
 static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 32, const float maxOverlap = 0.5, const int negToPosRatio = 1)
 {
