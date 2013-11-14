@@ -300,6 +300,16 @@ QList<QRectF> OpenCVUtils::fromRects(const QList<Rect> &cvRects)
     return qRects;
 }
 
+bool OpenCVUtils::overlaps(const QList<Rect> &posRects, const Rect &negRect, double overlap)
+{
+    foreach (const Rect &posRect, posRects) {
+        Rect intersect = negRect & posRect;
+        if (intersect.area() > overlap*posRect.area())
+            return true;
+    }
+    return false;
+}
+
 QDataStream &operator<<(QDataStream &stream, const Mat &m)
 {
     // Write header

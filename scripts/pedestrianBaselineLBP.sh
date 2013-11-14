@@ -1,10 +1,14 @@
 #!/bin/bash
 
-#Right now this is just a simple proof of concept. No quanititative eval is performed
+# Right now this is just a simple proof of concept. No quantitative eval is performed
 # but instead the qualitative results are displayed.
 
-#Make sure you set your data path. This will likely by your openbr/data directory.
-INRIA_PATH=$DATA/INRIAPerson
+# Make sure you set your data path. This will likely by your openbr/data directory.
+if [ -z "$DATA" ]; then
+    INRIA_PATH=../data/INRIAPerson
+else
+    INRIA_PATH=$DATA/INRIAPerson
+fi
 
 ALG="Open+Cvt(Gray)+Rename(neg,0)+BuildScales(Blur(2)+LBP(1,2)+SlidingWindow(Hist(59)+Cat+LDA(isBinary=true),windowWidth=10,takeLargestScale=false,threshold=2),windowWidth=10,takeLargestScale=false,minScale=4)+ConsolidateDetections+Discard"
 
