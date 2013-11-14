@@ -111,7 +111,7 @@ private:
 
 BR_REGISTER(Transform, SlidingWindowTransform)
 
-static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 0, const float maxOverlap = 0.5, const int negToPosRatio = 1)
+static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 32, const float maxOverlap = 0.5, const int negToPosRatio = 1)
 {
     TemplateList result;
     foreach (const Template &tmpl, data) {
@@ -121,8 +121,8 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
             Rect &posRect = posRects[i];
 
             // Adjust for training samples that have different aspect ratios
-            const int diff = posRect.width - int(posRect.height * aspectRatio);
-            posRect.x += diff / 2;
+            const int diff = int(posRect.height * aspectRatio) - posRect.width;
+            posRect.x -= diff / 2;
             posRect.width += diff;
 
             // Ignore samples larger than the image
