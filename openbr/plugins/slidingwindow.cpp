@@ -257,10 +257,10 @@ BR_REGISTER(Transform, BuildScalesTransform)
 
 /*!
  * \ingroup transforms
- * \brief Sample detection bounding boxes from integral images
+ * \brief Sample detection bounding boxes from without resizing
  * \author Josh Klontz \cite jklontz
  */
-class IntegralDetector : public Transform
+class Detector : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform)
@@ -268,7 +268,10 @@ class IntegralDetector : public Transform
 
     void train(const TemplateList &data)
     {
-        transform->train(cropTrainingSamples(data, getAspectRatio(data)));
+        const float aspectRatio = getAspectRatio(data);
+        TemplateList cropped = cropTrainingSamples(data, aspectRatio);
+        cropped.first().file.set("aspectRatio", aspectRatio);
+        transform->train(cropped);
     }
 
     void project(const Template &src, Template &dst) const
@@ -277,7 +280,7 @@ class IntegralDetector : public Transform
     }
 };
 
-BR_REGISTER(Transform, IntegralDetector)
+BR_REGISTER(Transform, Detector)
 
 /*!
  * \ingroup transforms
