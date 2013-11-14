@@ -510,6 +510,30 @@ BR_REGISTER(Transform, ShowTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Show the training data
+ * \author Josh Klontz \cite jklontz
+ */
+class ShowTrainingTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform *show READ get_show WRITE set_show RESET reset_show STORED false)
+    BR_PROPERTY(br::Transform*, show, make("Show"))
+
+    void train(const TemplateList &data)
+    {
+        TemplateList dst;
+        show->project(data, dst);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+    }
+};
+BR_REGISTER(Transform, ShowTrainingTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Manual selection of landmark locations
  * \author Scott Klum \cite sklum
  */
