@@ -213,10 +213,10 @@ private:
 
         switch (operation) {
           case Mean:
-            return std::accumulate(distances.begin(),distances.end(),0)/(float)distances.size();
+            return std::accumulate(distances.begin(),distances.end(),0.0)/(float)distances.size();
             break;
           case Sum:
-            return std::accumulate(distances.begin(),distances.end(),0);
+            return std::accumulate(distances.begin(),distances.end(),0.0);
             break;
           case Min:
             return *std::min_element(distances.begin(),distances.end());
