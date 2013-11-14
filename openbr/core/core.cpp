@@ -81,7 +81,7 @@ struct AlgorithmCore
             store(model);
         }
 
-        qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed())));
+        qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
     }
 
     void store(const QString &model) const
