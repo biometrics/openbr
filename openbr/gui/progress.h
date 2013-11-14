@@ -16,7 +16,6 @@ class BR_EXPORT Progress : public QStatusBar
     Q_OBJECT
     QWidget wSpacer;
     QProgressBar pbProgress;
-    QLabel lTimeRemaining;
     QTimer timer;
 
 public:

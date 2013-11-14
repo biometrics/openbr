@@ -18,7 +18,6 @@ br::Progress::Progress(QWidget *parent)
 
     addWidget(&wSpacer, 1);
     addPermanentWidget(&pbProgress);
-    addPermanentWidget(&lTimeRemaining);
     connect(&timer, SIGNAL(timeout()), this, SLOT(checkProgress()));
     timer.start(5000);
 }
