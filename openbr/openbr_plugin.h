@@ -438,7 +438,7 @@ struct TemplateList : public QList<Template>
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
-    BR_EXPORT static TemplateList relabel(const TemplateList & tl, const QString & propName);
+    BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
     QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;

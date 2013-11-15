@@ -363,7 +363,7 @@ public:
         return this->templates.size();
     }
 
-    bool open(TemplateList & input, br::Idiocy::StreamModes _mode)
+    bool open(const TemplateList & input, br::Idiocy::StreamModes _mode)
     {
         // Set up variables specific to us
         current_template_idx = 0;
@@ -1030,8 +1030,10 @@ public:
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
         dst = src;
+        if (src.empty())
+            return;
 
-        bool res = readStage->dataSource.open(dst,readMode);
+        bool res = readStage->dataSource.open(src,readMode);
         if (!res) {
             qDebug("stream failed to open %s", qPrintable(dst[0].file.name));
             return;
@@ -1082,6 +1084,8 @@ public:
         // with anything output via the calls to finalize.
         //dst = collectionStage->getOutput();
 
+        // dst is set to all output received by the final stage, along
+        // with anything output via the calls to finalize.
         foreach(const TemplateList & list, collector->sets) {
             dst.append(list);
         }

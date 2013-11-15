@@ -42,15 +42,15 @@ class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
-    Q_PROPERTY(int stepSize READ get_stepSize WRITE set_stepSize RESET reset_stepSize STORED false)
-    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
+    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
+    Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
-    BR_PROPERTY(int, stepSize, 1)
-    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(int, windowWidth, 24)
+    BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(float, threshold, 0)
+    BR_PROPERTY(float, stepFraction, 0.25)
 
 private:
     int windowHeight;
@@ -66,36 +66,6 @@ private:
         }
     }
 
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-        // no need to slide a window over ground truth data
-        if (src.file.getBool("Train", false)) return;
-
-        dst.file.clearRects();
-        float scale = src.file.get<float>("scale", 1);
-        Template windowTemplate(src.file, src);
-        QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
-        for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
-            for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
-                Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
-                windowTemplate.replace(0,windowMat);
-                Template detect;
-                transform->project(windowTemplate, detect);
-                float conf = detect.m().at<float>(0);
-
-                // the result will be in the Label
-                if (conf > threshold) {
-                    dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
-                    confidences.append(conf);
-                    if (takeFirst)
-                        return;
-                }
-            }
-        }
-        dst.file.setList<float>("Confidences", confidences);
-    }
-
     void store(QDataStream &stream) const
     {
         transform->store(stream);
@@ -107,11 +77,71 @@ private:
         transform->load(stream);
         stream >> windowHeight;
     }
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void)src;(void)dst;qFatal("don't do that");
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        float scale = src.first().file.get<float>("scale", 1);
+        projectHelp(src, dst, windowWidth, windowHeight, scale);
+    }
+
+protected:
+    void projectHelp(const TemplateList &src, TemplateList &dst, int windowWidth, int windowHeight, float scale = 1) const
+    {
+        // no need to slide a window over ground truth data
+        if (src.first().file.getBool("Train", false)) {
+            dst = src;
+            return;
+        }
+
+        foreach (const Template &t, src) {
+            for (float y = 0; y + windowHeight < t.m().rows; y += windowHeight*stepFraction) {
+                for (float x = 0; x + windowWidth < t.m().cols; x += windowWidth*stepFraction) {
+                    Mat windowMat(t.m(), Rect(x, y, windowWidth, windowHeight));
+                    Template detect;
+                    transform->project(Template(t.file, windowMat), detect);
+
+                    // the result will be the only value in the Mat
+                    float conf = detect.m().at<float>(0);
+                    if (conf > threshold) {
+                        detect.file.set("Detection", QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
+                        detect.file.set("Confidence", conf);
+                        dst.append(detect);
+                        if (takeFirst)
+                            return;
+                    }
+                }
+            }
+        }
+    }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
 
-static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 0, const float maxOverlap = 0.5, const int negToPosRatio = 1)
+/*!
+ * \ingroup transforms
+ * \brief Overloads SlidingWindowTransform for integral images that should be
+ *        sampled at multiple scales.
+ * \author Josh Klontz \cite jklontz
+ */
+class IntegralSlidingWindowTransform : public SlidingWindowTransform
+{
+    Q_OBJECT
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        // TODO: call SlidingWindowTransform::project on multiple scales
+        SlidingWindowTransform::projectHelp(src, dst, 24, 24);
+    }
+};
+
+BR_REGISTER(Transform, IntegralSlidingWindowTransform)
+
+static TemplateList cropTrainingSamples(const TemplateList &data, const float aspectRatio, const int minSize = 32, const float maxOverlap = 0.5, const int negToPosRatio = 1)
 {
     TemplateList result;
     foreach (const Template &tmpl, data) {
@@ -121,8 +151,8 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
             Rect &posRect = posRects[i];
 
             // Adjust for training samples that have different aspect ratios
-            const int diff = posRect.width - int(posRect.height * aspectRatio);
-            posRect.x += diff / 2;
+            const int diff = int(posRect.height * aspectRatio) - posRect.width;
+            posRect.x -= diff / 2;
             posRect.width += diff;
 
             // Ignore samples larger than the image
@@ -174,7 +204,7 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
 
 /*!
  * \ingroup transforms
- * \brief .
+ * \brief Pass along images at different scales.
  * \author Austin Blanton \cite imaus10
  */
 class BuildScalesTransform : public MetaTransform
@@ -219,25 +249,38 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        dst = src;
-        // do not scale images during training
-        if (src.file.getBool("Train", false)) return;
+        (void)src;(void)dst;qFatal("please don't");
+    }
 
-        int rows = src.m().rows;
-        int cols = src.m().cols;
-        int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
-        float startScale;
-        if ((cols / rows) > aspectRatio)
-            startScale = qRound((float) rows / (float) windowHeight);
-        else
-            startScale = qRound((float) cols / (float) windowWidth);
-        for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
-            Template scaleImg(src.file, Mat());
-            scaleImg.file.set("scale", scale);
-            resize(src, scaleImg, Size(qRound(cols / scale), qRound(rows / scale)));
-            transform->project(scaleImg, dst);
-            if (takeLargestScale && !dst.file.rects().empty())
-                return;
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        // do not scale images during training
+        if (src.first().file.getBool("Train", false)) {
+            dst = src;
+            return;
+        }
+
+        foreach(const Template &t, src) {
+            int rows = t.m().rows;
+            int cols = t.m().cols;
+            int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
+            float startScale;
+            if ((cols / rows) > aspectRatio)
+                startScale = qRound((float) rows / (float) windowHeight);
+            else
+                startScale = qRound((float) cols / (float) windowWidth);
+            for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
+                Template scaleImg(t.file, Mat());
+                scaleImg.file.set("scale", scale);
+                resize(t.m(), scaleImg.m(), Size(qRound(cols / scale), qRound(rows / scale)));
+                TemplateList results;
+                TemplateList input;
+                input.append(scaleImg);
+                transform->project(input, results);
+                dst.append(results);
+                if (takeLargestScale && !dst.empty())
+                    return;
+            }
         }
     }
 
@@ -270,6 +313,7 @@ class Detector : public Transform
     {
         const float aspectRatio = getAspectRatio(data);
         TemplateList cropped = cropTrainingSamples(data, aspectRatio);
+        qDebug("Detector using: %d training samples.", cropped.size());
         cropped.first().file.set("aspectRatio", aspectRatio);
         transform->train(cropped);
     }
@@ -327,12 +371,19 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        dst = src;
-        if (!dst.file.contains("Confidences"))
-            return;
+        (void)src;(void)dst;qFatal("nope");
+    }
 
-        //Compute overlap between rectangles and create discrete Laplacian matrix
-        QList<Rect> rects = OpenCVUtils::toRects(src.file.rects());
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        QList<Rect> rects;
+        QList<float> confidences;
+        foreach (const Template &t, src) {
+            rects.append(OpenCVUtils::toRect(t.file.get<QRectF>("Detection")));
+            confidences.append(t.file.get<float>("Confidence"));
+        }
+
+        // Compute overlap between rectangles and create discrete Laplacian matrix
         int n = rects.size();
         if (n == 0)
             return;
@@ -379,12 +430,12 @@ private:
         // each input dimension. Each input dimension corresponds to
         // one of the input rect region. Thus, each eigenvector represents
         // a set of overlaping regions.
-        float midX[nRegions];
-        float midY[nRegions];
-        float avgWidth[nRegions];
-        float avgHeight[nRegions];
-        float confs[nRegions];
-        int cnts[nRegions];
+        float  * midX = new float[nRegions];
+        float * midY = new float[nRegions];
+        float * avgWidth = new float[nRegions];
+        float *avgHeight = new float[nRegions];
+        float *confs = new float[nRegions];
+        int *cnts = new int[nRegions];
         int mx;
         int mxIdx;
         for (int i = 0 ; i < nRegions; i++) {
@@ -396,7 +447,6 @@ private:
             cnts[i] = 0;
         }
 
-        QList<float> confidences = dst.file.getList<float>("Confidences");
         for (int i = 0; i < n; i++) {
             mx = 0.0;
             mxIdx = -1;
@@ -431,8 +481,20 @@ private:
             }
         }
 
-        dst.file.setRects(consolidatedRects);
-        dst.file.setList<float>("Confidences", consolidatedConfidences);
+        for (int i=0; i<consolidatedRects.size(); i++) {
+            Template t(src.first().file);
+            t.file.set("Detection", OpenCVUtils::fromRect(consolidatedRects.at(i)));
+            t.file.set("Confidence", consolidatedConfidences.at(i));
+            dst.append(t);
+        }
+
+        delete [] midX;
+        delete [] midY;
+        delete [] avgWidth;
+        delete [] avgHeight;
+        delete [] confs;
+        delete [] cnts;
+
     }
 };
 
