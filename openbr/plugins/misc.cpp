@@ -565,8 +565,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
         qint64 elapsed = timer.elapsed();
         calls++;
         set_calls++;
-
-        // Updated every 5 seconds
+        // updated every 10 seconds
         if (elapsed > 5 * 1000) {
             float f_elapsed = elapsed / 1000.0f;
             // remaining calls (according to our input variable)
@@ -579,11 +578,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
             // seconds remaining
             int s = float(remaining) / speed;
 
-            // Output some timing information
-            qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)), qPrintable(QtUtils::toTime(s)), float(calls));
-
-            // Set globals
-            Globals->currentStep = calls;
+            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), float(calls));
 
             timer.start();
             set_calls = 0;

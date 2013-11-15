@@ -1075,9 +1075,13 @@ public:
             final_output.append(output_set);
         }
 
+        // Clear dst, since we set it to src so that the datasource could open it
+        dst.clear();
+
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
         //dst = collectionStage->getOutput();
+
         foreach(const TemplateList & list, collector->sets) {
             dst.append(list);
         }
