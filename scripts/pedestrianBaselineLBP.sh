@@ -16,7 +16,7 @@ else
     INRIA_PATH=$DATA/INRIAPerson
 fi
 
-ALG="Open+Cvt(Gray)+BuildScales(Blur(2)+LBP(1,2)+SlidingWindow(Hist(59)+Cat+LDA(isBinary=true),windowWidth=10,takeLargestScale=false,threshold=2),windowWidth=10,takeLargestScale=false,minScale=4)+Discard"
+ALG="Open+Cvt(Gray)+BuildScales(Blur(2)+LBP(1,2)+SlidingWindow(Hist(59)+Cat+LDA(isBinary=true),windowWidth=10,takeLargestScale=false,threshold=2),windowWidth=10,takeLargestScale=false,minScale=4)+ConsolidateDetections+Discard"
 
 # Josh's new algorithm (in progress)
 # ALG="Open+Cvt(Gray)+Detector(Gradient+Bin(0,360,9,true)+Merge+Integral+IntegralSlidingWindow(RecursiveIntegralSampler(2,2,0,PCA(0.95))+Cat+LDA(0.95,isBinary=true)))"
