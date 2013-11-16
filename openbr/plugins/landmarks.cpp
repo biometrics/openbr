@@ -83,7 +83,7 @@ class ProcrustesTransform : public Transform
 
         if (points.empty() || rects.empty()) {
             dst = src;
-            qWarning("Procrustes alignment failed because points or rects are empty.");
+            if (Globals->verbose) qWarning("Procrustes alignment failed because points or rects are empty.");
             return;
         }
 
@@ -158,7 +158,7 @@ class DelaunayTransform : public UntrainableTransform
 
         if (points.empty() || rects.empty()) {
             dst = src;
-            qWarning("Delauney triangulation failed because points or rects are empty.");
+            if (Globals->verbose) qWarning("Delauney triangulation failed because points or rects are empty.");
             return;
         }
 
@@ -177,7 +177,7 @@ class DelaunayTransform : public UntrainableTransform
         for (int i = 0; i < points.size(); i++) {
             if (points[i].x() < 0 || points[i].y() < 0 || points[i].y() >= rows || points[i].x() >= cols) {
                 dst = src;
-                qWarning("Delauney triangulation failed because points lie on boundary.");
+                if (Globals->verbose) qWarning("Delauney triangulation failed because points lie on boundary.");
                 return;
             }
             subdiv.insert(OpenCVUtils::toPoint(points[i]));

@@ -62,7 +62,7 @@ class ROITransform : public UntrainableTransform
     {
         if (src.file.rects().empty()) {
             dst = src;
-            qWarning("No rects present in file.");
+            if (Globals->verbose) qWarning("No rects present in file.");
         }
         else
             foreach (const QRectF &rect, src.file.rects())

@@ -132,7 +132,7 @@ class StasmTransform : public UntrainableTransform
         }
 
         if (!foundFace) {
-            qWarning("No face found in %s.", qPrintable(src.file.fileName()));
+            if (Globals->verbose) qWarning("No face found in %s.", qPrintable(src.file.fileName()));
             dst.file.set("FTE",true);
         } else {
             QList<QPointF> points;

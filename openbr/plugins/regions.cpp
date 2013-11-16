@@ -312,7 +312,7 @@ class RectFromPointsTransform : public UntrainableTransform
         dst = src;
 
         if (src.file.points().isEmpty()) {
-            qWarning("No landmarks");
+            if (Globals->verbose) qWarning("No landmarks");
             dst = src;
             return;
         }
