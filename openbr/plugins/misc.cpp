@@ -288,54 +288,6 @@ BR_REGISTER(Transform, RenameFirstTransform)
 
 /*!
  * \ingroup transforms
- * \brief Name a point
- * \author Scott Klum \cite sklum
- */
-class LabelTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QList<int> points READ get_points WRITE set_points RESET reset_points STORED false)
-    Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
-    BR_PROPERTY(QList<int>, points, QList<int>())
-    BR_PROPERTY(QStringList, names, QStringList())
-
-    void project(const Template &src, Template &dst) const
-    {
-        if (points.size() != names.size()) qFatal("Point/name size mismatch");
-
-        dst = src;
-
-        for (int i=0; i<points.size(); i++)
-            dst.file.set(names[i], points[i]);
-    }
-};
-
-BR_REGISTER(Transform, LabelTransform)
-
-/*!
- * \ingroup transforms
- * \brief Remove a name from a point
- * \author Scott Klum \cite sklum
- */
-class AnonymizeTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
-    BR_PROPERTY(QStringList, names, QStringList())
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        foreach (const QString &name, names)
-            if (src.file.contains(name)) dst.file.appendPoint(src.file.get<QPointF>(name));
-    }
-};
-
-BR_REGISTER(Transform, AnonymizeTransform)
-
-/*!
- * \ingroup transforms
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
