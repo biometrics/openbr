@@ -110,6 +110,7 @@ protected:
                     if (conf > threshold) {
                         detect.file.set("Detection", QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
                         detect.file.set("Confidence", conf);
+                        detect.file.clearRects();
                         dst.append(detect);
                         if (takeFirst)
                             return;
