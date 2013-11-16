@@ -78,7 +78,7 @@ class NamePointsTransform : public UntrainableMetaTransform
     }
 };
 
-BR_REGISTER(Transform, LabelTransform)
+BR_REGISTER(Transform, NamePointsTransform)
 
 /*!
  * \ingroup transforms
