@@ -53,6 +53,11 @@ void br_compare(const char *target_gallery, const char *query_gallery, const cha
     Compare(File(target_gallery), File(query_gallery), File(output));
 }
 
+void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output)
+{
+    PairwiseCompare(File(target_gallery), File(query_gallery), File(output));
+}
+
 void br_convert(const char *file_type, const char *input_file, const char *output_file)
 {
     Convert(File(file_type), File(input_file), File(output_file));
@@ -131,6 +136,11 @@ bool br_is_classifier(const char *algorithm)
 void br_make_mask(const char *target_input, const char *query_input, const char *mask)
 {
     BEE::makeMask(target_input, query_input, mask);
+}
+
+void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask)
+{
+    BEE::makePairwiseMask(target_input, query_input, mask);
 }
 
 const char *br_most_recent_message()

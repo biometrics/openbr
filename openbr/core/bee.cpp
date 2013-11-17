@@ -195,7 +195,8 @@ Mat readMatrix(const br::File &matrix, QString *targetSigset = NULL, QString *qu
     // Get matrix data
     qint64 bytesExpected = (qint64)rows*(qint64)cols*(qint64)sizeof(T);
     Mat m(rows, cols, OpenCVType<T,1>::make());
-    if (file.read((char*)m.data, bytesExpected) != bytesExpected)
+    qint64 read = file.read((char*)m.data, bytesExpected);
+    if (read != bytesExpected)
         qFatal("Invalid matrix size.");
     file.close();
 
@@ -287,6 +288,55 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
             writeMask(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }
     }
+}
+
+void BEE::makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask)
+{
+    FileList targets = TemplateList::fromGallery(targetInput).files();
+    FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
+    int partitions = targets.first().get<int>("crossValidate");
+    if (partitions == 0) writeMask(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
+    else {
+        if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
+        for (int i=0; i<partitions; i++) {
+            writeMask(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+        }
+    }
+}
+
+cv::Mat BEE::makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition)
+{
+    // Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
+    // doing string comparisons (but that isn't implemented yet for FileList) -cao
+    QList<QString> targetLabels = File::get<QString>(targets, "Label", "-1");
+    QList<QString> queryLabels = File::get<QString>(queries, "Label", "-1");
+
+    QList<int> targetPartitions = targets.crossValidationPartitions();
+    QList<int> queryPartitions = queries.crossValidationPartitions();
+
+    Mat mask(queries.size(), 1, CV_8UC1);
+    for (int i=0; i<queries.size(); i++) {
+        const QString &fileA = queries[i];
+        const QString labelA = queryLabels[i];
+        const int partitionA = queryPartitions[i];
+
+        const QString &fileB = targets[i];
+        const QString labelB = targetLabels[i];
+        const int partitionB = targetPartitions[i];
+
+        Mask_t val;
+        if      (fileA == fileB)           val = DontCare;
+        else if (labelA == "-1")           val = DontCare;
+        else if (labelB == "-1")           val = DontCare;
+        else if (partitionA != partition)  val = DontCare;
+        else if (partitionB == -1)         val = NonMatch;
+        else if (partitionB != partition)  val = DontCare;
+        else if (labelA == labelB)         val = Match;
+        else                               val = NonMatch;
+        mask.at<Mask_t>(i,0) = val;
+    }
+
+    return mask;
 }
 
 cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)

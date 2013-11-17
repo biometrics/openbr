@@ -49,6 +49,8 @@ namespace BEE
     // Mask
     void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
     cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
+    void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask);
+    cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
     void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 

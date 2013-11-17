@@ -99,8 +99,12 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         File maskFile(mask);
         maskFile.set("rows", scores.rows);
         maskFile.set("columns", scores.cols);
-        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
-        truth = format->read();
+        if (mask.endsWith(".mtx"))
+            truth = BEE::readMask(mask);
+        else {
+            QScopedPointer<Format> format(Factory<Format>::make(maskFile));
+            truth = format->read();
+        }
     }
 
     return Evaluate(scores, truth, csv);
