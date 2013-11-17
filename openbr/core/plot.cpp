@@ -229,15 +229,28 @@ bool Plot(const QStringList &files, const File &destination, bool show)
         cmcOpts.set(words[0],words[1]);
     }
 
+    File rocOpts;
+    const QStringList rocOptions = destination.get<QStringList>("rocOptions", QStringList());
+    foreach (const QString& option, rocOptions) {
+        QStringList words = QtUtils::parse(option, '=');
+        QtUtils::checkArgsSize(words[0],words,1,2);
+        rocOpts.set(words[0],words[1]);
+    }
+
+
     RPlot p(files, destination);
 
-    p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
+    p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET%1, main=\"%2\"").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"", rocOpts.get<QString>("title",QString())) +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_continuous(labels=percent) + annotation_logticks(sides=\"b\")\n\n")));
+                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format()))") +
+                            (rocOpts.contains("yLimits") ? QString(" + scale_y_continuous(labels=percent, limits=%3)").arg("c"+QtUtils::toString(rocOpts.get<QPointF>("yLimits",QPointF()))) : QString(" + scale_y_continuous(labels=percent)")) +
+                            QString(" + annotation_logticks(sides=\"b\")") +
+                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
+                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))\n\n").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'right'")));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET%1").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
