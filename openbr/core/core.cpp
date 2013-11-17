@@ -235,15 +235,21 @@ struct AlgorithmCore
         TemplateList targets = t->read();
 
         // Use a single file for one of the dimensions so that the output makes the right size file
-        FileList dummyQuery;
-        dummyQuery.append(targets[0]);
-        QScopedPointer<Output> realOutput(Output::make(output, targetFiles, dummyQuery));
+        FileList dummyTarget;
+        dummyTarget.append(targets[0]);
+        QScopedPointer<Output> realOutput(Output::make(output, dummyTarget, queryFiles));
 
+        // Some outputs assume Globals->blockSize is a real thing, of course we have no interest in it.
+        int old_block_size = Globals->blockSize;
+        Globals->blockSize = INT_MAX;
+        realOutput->setBlock(0,0);
         for (int i=0; i < queries.length(); i++)
         {
             float res = distance->compare(queries[i], targets[i]);
             realOutput->setRelative(res, 0,i);
         }
+
+        Globals->blockSize = old_block_size;
     }
 
     void compare(File targetGallery, File queryGallery, File output)

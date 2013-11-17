@@ -285,7 +285,7 @@ class mtxFormat : public Format
 
     void write(const Template &t) const
     {
-        BEE::writeSimmat(t, file);
+        BEE::writeMat(t, file);
     }
 };
 
@@ -307,7 +307,7 @@ class maskFormat : public Format
 
     void write(const Template &t) const
     {
-        BEE::writeMask(t, file);
+        BEE::writeMat(t, file);
     }
 };
 
@@ -418,9 +418,7 @@ class matFormat : public Format
                 }
 
                 if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty()) {
-                    Mat transposed;
-                    transpose(Mat(rows, columns, matrixType, matrixData.data()), transposed);
-                    t.append(transposed);
+                    t.append(Mat(rows, columns, matrixType, matrixData.data()));
                 }
             }
         }

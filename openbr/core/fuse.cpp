@@ -160,5 +160,5 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
 
     } while (partition < crossValidate);
 
-    BEE::writeSimmat(buffer, outputSimmat);
+    BEE::writeMat(buffer, outputSimmat);
 }

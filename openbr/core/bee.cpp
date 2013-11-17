@@ -180,16 +180,17 @@ Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySi
     return result;
 }
 
-template <typename T>
-void writeMatrix(const Mat &m, const QString &matrix, const QString &targetSigset, const QString &querySigset)
+void BEE::writeMat(const Mat &m, const QString &matrix, const QString &targetSigset, const QString &querySigset)
 {
-    if (m.type() != OpenCVType<T,1>::make()) qFatal("Invalid matrix type.");
+    bool isMask = false;
+    if (m.type() == OpenCVType<BEE::Mask_t,1>::make())
+        isMask = true;
+    else if (m.type() != OpenCVType<BEE::Simmat_t,1>::make())
+        qFatal("Invalid matrix type, .mtx files can only contain single channel float or uchar matrices.");
 
-    int elemSize = sizeof(T);
-    QString matrixType;
-    if      (elemSize == 1) matrixType = "B";
-    else if (elemSize == 4) matrixType = "F";
-    else                    qFatal("Invalid element size.");
+    int elemSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
+
+    QString matrixType = isMask ? "B" : "F";
 
     char buff[4];
     QFile file(matrix);
@@ -215,16 +216,6 @@ void writeMatrix(const Mat &m, const QString &matrix, const QString &targetSigse
     file.close();
 }
 
-void BEE::writeSimmat(const Mat &m, const QString &simmat, const QString &targetSigset, const QString &querySigset)
-{
-    writeMatrix<Simmat_t>(m, simmat, targetSigset, querySigset);
-}
-
-void BEE::writeMask(const Mat &m, const QString &mask, const QString &targetSigset, const QString &querySigset)
-{
-    writeMatrix<Mask_t>(m, mask, targetSigset, querySigset);
-}
-
 void BEE::readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset)
 {
     qDebug("Reading %s header.", qPrintable(matrix));
@@ -235,8 +226,7 @@ void BEE::writeMatrixHeader(const QString &matrix, const QString &targetSigset, 
 {
     qDebug("Writing %s header to %s %s.", qPrintable(matrix), qPrintable(targetSigset), qPrintable(querySigset));
 
-    if (matrix.endsWith("mask")) writeMatrix<  Mask_t>(readMat(matrix), matrix, targetSigset, querySigset);
-    else                         writeMatrix<Simmat_t>(readMat(matrix), matrix, targetSigset, querySigset);
+    writeMat(readMat(matrix), matrix, targetSigset, querySigset);
 }
 
 void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
@@ -245,11 +235,11 @@ void BEE::makeMask(const QString &targetInput, const QString &queryInput, const 
     FileList targets = TemplateList::fromGallery(targetInput).files();
     FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) writeMask(makeMask(targets, queries), mask, targetInput, queryInput);
+    if (partitions == 0) writeMat(makeMask(targets, queries), mask, targetInput, queryInput);
     else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMask(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMat(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
@@ -259,11 +249,11 @@ void BEE::makePairwiseMask(const QString &targetInput, const QString &queryInput
     FileList targets = TemplateList::fromGallery(targetInput).files();
     FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) writeMask(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
+    if (partitions == 0) writeMat(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
     else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMask(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMat(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
@@ -387,5 +377,5 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
         }
     }
 
-    writeMask(combinedMask, outputMask, "Combined_Targets", "Combined_Queries");
+    writeMat(combinedMask, outputMask, "Combined_Targets", "Combined_Queries");
 }
