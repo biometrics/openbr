@@ -99,7 +99,7 @@ Neighborhood getNeighborhood(const QStringList &simmats)
         int currentRows = -1;
         int columnOffset = 0;
         for (int j=0; j<numGalleries; j++) {
-            cv::Mat m = BEE::readSimmat(simmats[i*numGalleries+j]);
+            cv::Mat m = BEE::readMat(simmats[i*numGalleries+j]);
             if (j==0) {
                 currentRows = m.rows;
                 allNeighbors.resize(currentRows);

@@ -81,7 +81,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QString target, query;
     Mat scores;
     if (simmat.endsWith(".mtx")) {
-        scores = BEE::readSimmat(simmat, &target, &query);
+        scores = BEE::readMat(simmat, &target, &query);
     } else {
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();
@@ -99,12 +99,8 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         File maskFile(mask);
         maskFile.set("rows", scores.rows);
         maskFile.set("columns", scores.cols);
-        if (mask.endsWith(".mtx"))
-            truth = BEE::readMask(mask);
-        else {
-            QScopedPointer<Format> format(Factory<Format>::make(maskFile));
-            truth = format->read();
-        }
+        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
+        truth = format->read();
     }
 
     return Evaluate(scores, truth, csv);

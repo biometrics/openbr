@@ -443,7 +443,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         while (!done) after->writeBlock(before->readBlock(&done));
     } else if (fileType == "Output") {
         QString target, query;
-        cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
+        cv::Mat m = BEE::readMat(inputFile, &target, &query);
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
 

@@ -39,8 +39,7 @@ namespace BEE
     void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
 
     // Matrix
-    cv::Mat readSimmat(const br::File &simmat, QString *targetSigset = NULL, QString *querySigset = NULL);
-    cv::Mat readMask(const br::File &mask);
+    cv::Mat readMat(const br::File & mat, QString * targetSigset = NULL, QString * querySigset = NULL);
     void writeSimmat(const cv::Mat &m, const QString &simmat, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
     void writeMask(const cv::Mat &m, const QString &mask, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
     void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset);

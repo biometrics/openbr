@@ -280,7 +280,7 @@ class mtxFormat : public Format
 
     Template read() const
     {
-        return BEE::readSimmat(file);
+        return BEE::readMat(file);
     }
 
     void write(const Template &t) const
@@ -302,7 +302,7 @@ class maskFormat : public Format
 
     Template read() const
     {
-        return BEE::readMask(file);
+        return BEE::readMat(file);
     }
 
     void write(const Template &t) const
