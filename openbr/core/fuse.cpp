@@ -82,7 +82,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
     QString target, query, previousTarget, previousQuery;
     QList<Mat> originalMatrices;
     foreach (const QString &simmat, inputSimmats) {
-        originalMatrices.append(BEE::readSimmat(simmat,&target,&query));
+        originalMatrices.append(BEE::readMat(simmat,&target,&query));
         // Make we're fusing score matrices for the same set of targets and querys
         if (!previousTarget.isEmpty() && !previousQuery.isEmpty() && (previousTarget != target || previousQuery != query))
             qFatal("Target or query files are not the same across fused matrices.");
@@ -160,5 +160,5 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
 
     } while (partition < crossValidate);
 
-    BEE::writeSimmat(buffer, outputSimmat);
+    BEE::writeMat(buffer, outputSimmat);
 }

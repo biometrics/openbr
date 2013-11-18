@@ -1325,6 +1325,12 @@ BR_EXPORT void Enroll(TemplateList &tmpl);
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
 
 /*!
+ * \brief High-level function for doing a series of pairwise comparisons.
+ * \see br_pairwise_compare
+ */
+BR_EXPORT void PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output);
+
+/*!
  * \brief Change file formats.
  * \param fileType One of \c Format, \c Gallery, or \c Output.
  * \param inputFile The source file to convert from.

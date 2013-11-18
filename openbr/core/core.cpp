@@ -213,6 +213,45 @@ struct AlgorithmCore
         }
     }
 
+    void pairwiseCompare(File targetGallery, File queryGallery, File output)
+    {
+        qDebug("Pairwise comparing %s and %s%s", qPrintable(targetGallery.flat()),
+               qPrintable(queryGallery.flat()),
+               output.isNull() ? "" : qPrintable(" to " + output.flat()));
+
+        if (distance.isNull()) qFatal("Null distance.");
+
+        if (queryGallery == ".") queryGallery = targetGallery;
+
+        QScopedPointer<Gallery> t, q;
+        FileList targetFiles, queryFiles;
+        retrieveOrEnroll(targetGallery, t, targetFiles);
+        retrieveOrEnroll(queryGallery, q, queryFiles);
+
+        if (t->files().length() != q->files().length() )
+            qFatal("Dimension mismatch in pairwise compare");
+
+        TemplateList queries = q->read();
+        TemplateList targets = t->read();
+
+        // Use a single file for one of the dimensions so that the output makes the right size file
+        FileList dummyTarget;
+        dummyTarget.append(targets[0]);
+        QScopedPointer<Output> realOutput(Output::make(output, dummyTarget, queryFiles));
+
+        // Some outputs assume Globals->blockSize is a real thing, of course we have no interest in it.
+        int old_block_size = Globals->blockSize;
+        Globals->blockSize = INT_MAX;
+        realOutput->setBlock(0,0);
+        for (int i=0; i < queries.length(); i++)
+        {
+            float res = distance->compare(queries[i], targets[i]);
+            realOutput->setRelative(res, 0,i);
+        }
+
+        Globals->blockSize = old_block_size;
+    }
+
     void compare(File targetGallery, File queryGallery, File output)
     {
         qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
@@ -390,6 +429,11 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
+void br::PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output)
+{
+    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->pairwiseCompare(targetGallery, queryGallery, output);
+}
+
 void br::Convert(const File &fileType, const File &inputFile, const File &outputFile)
 {
     qDebug("Converting %s %s to %s", qPrintable(fileType.flat()), qPrintable(inputFile.flat()), qPrintable(outputFile.flat()));
@@ -405,7 +449,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         while (!done) after->writeBlock(before->readBlock(&done));
     } else if (fileType == "Output") {
         QString target, query;
-        cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
+        cv::Mat m = BEE::readMat(inputFile, &target, &query);
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
 

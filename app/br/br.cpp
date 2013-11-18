@@ -94,6 +94,9 @@ public:
             } else if (!strcmp(fun, "compare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'compare'.");
                 br_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
+            } else if (!strcmp(fun, "pairwiseCompare")) {
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
+                br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "eval")) {
                 check((parc >= 1) && (parc <= 3), "Incorrect parameter count for 'eval'.");
                 if (parc == 1) {
@@ -119,6 +122,9 @@ public:
             } else if (!strcmp(fun, "makeMask")) {
                 check(parc == 3, "Incorrect parameter count for 'makeMask'.");
                 br_make_mask(parv[0], parv[1], parv[2]);
+            } else if (!strcmp(fun, "makePairwiseMask")) {
+                check(parc == 3, "Incorrect parameter count for 'makePairwiseMask'.");
+                br_make_pairwise_mask(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "combineMasks")) {
                 check(parc >= 4, "Insufficient parameter count for 'combineMasks'.");
                 br_combine_masks(parc-2, parv, parv[parc-2], parv[parc-1]);

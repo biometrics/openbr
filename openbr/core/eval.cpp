@@ -81,7 +81,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QString target, query;
     Mat scores;
     if (simmat.endsWith(".mtx")) {
-        scores = BEE::readSimmat(simmat, &target, &query);
+        scores = BEE::readMat(simmat, &target, &query);
     } else {
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();

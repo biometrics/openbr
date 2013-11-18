@@ -102,6 +102,8 @@ BR_EXPORT void br_combine_masks(int num_input_masks, const char *input_masks[], 
  */
 BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
+BR_EXPORT void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
+
 /*!
  * \brief Wraps br::Convert()
  */
@@ -225,6 +227,15 @@ BR_EXPORT bool br_is_classifier(const char *algorithm);
  * \see br_combine_masks
  */
 BR_EXPORT void br_make_mask(const char *target_input, const char *query_input, const char *mask);
+
+/*!
+ * \brief Constructs a \ref mask from target and query inputs considering the target and input sets to be definint pairwise comparisons
+ * \param target_input The target br::Input.
+ * \param query_input The query br::Input.
+ * \param mask The file to contain the resulting \ref mask.
+ * \see br_combine_masks
+ */
+BR_EXPORT void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask);
 
 /*!
  * \brief Returns the most recent line sent to stderr.
