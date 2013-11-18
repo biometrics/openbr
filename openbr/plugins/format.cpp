@@ -419,7 +419,7 @@ class matFormat : public Format
 
                 if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty()) {
                     Mat transposed;
-                    transpose(Mat(rows, columns, matrixType, matrixData.data()), transposed);
+                    transpose(Mat(columns, rows, matrixType, matrixData.data()), transposed);
                     t.append(transposed);
                 }
             }
