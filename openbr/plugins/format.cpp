@@ -296,19 +296,9 @@ BR_REGISTER(Format, mtxFormat)
  * \brief Reads a NIST BEE mask matrix.
  * \author Josh Klontz \cite jklontz
  */
-class maskFormat : public Format
+class maskFormat : public mtxFormat
 {
     Q_OBJECT
-
-    Template read() const
-    {
-        return BEE::readMat(file);
-    }
-
-    void write(const Template &t) const
-    {
-        BEE::writeMat(t, file);
-    }
 };
 
 BR_REGISTER(Format, maskFormat)
