@@ -8,6 +8,7 @@ set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxy
 mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
 mark_as_advanced(JANUS_BUILD_DOCS)
 add_subdirectory(janus)
+include_directories(janus/include)
 install(DIRECTORY janus/include DESTINATION .)
 
 # Collect source files
