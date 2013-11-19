@@ -2,6 +2,14 @@
 configure_file(${BR_SHARE_DIR}/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+# Janus API
+set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
+set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
+mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
+mark_as_advanced(JANUS_BUILD_DOCS)
+add_subdirectory(janus)
+install(DIRECTORY janus/include DESTINATION .)
+
 # Collect source files
 aux_source_directory(. SRC)
 aux_source_directory(core BR_CORE)
