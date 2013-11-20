@@ -90,7 +90,7 @@ $ br -help
 
 /*!
  * \page windows_msvc Windows 7 - Visual Studio Express Edition 2012 - x64
- * -# <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop">Download Visual Studio 2012 Express Edition for Windows Desktop</a> and install.
+ * -# <a href="http://www.microsoft.com/en-us/download/details.aspx?id=34673">Download Visual Studio 2012 Express Edition for Windows Desktop</a> and install.
  *  -# Consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a> if you need a program to mount ISO images.
  *  -# You will have to register with Microsoft after installation, but it's free.
  *  -# Grab any available <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio Updates</a>.
