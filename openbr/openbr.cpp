@@ -341,6 +341,12 @@ int br_img_channels(br_template tmpl)
     return t->m().channels();
 }
 
+void br_set_filename(br_template tmpl, const char *filename)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    t->file.name = filename;
+}
+
 br_template_list br_enroll_template(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
@@ -360,4 +366,31 @@ int br_num_templates(br_template_list tl)
 {
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
     return realTL->size();
+}
+
+br_gallery br_make_gallery(const char *gallery)
+{
+    Gallery *gal = Gallery::make(File(gallery));
+    return (br_gallery)gal;
+}
+
+br_template_list br_load_from_gallery(br_gallery gallery)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    TemplateList *tl = static_cast<TemplateList*>(malloc(sizeof(TemplateList)));
+    *tl = gal->read();
+    return (br_template_list)tl;
+}
+
+void br_add_to_gallery(br_gallery gallery, br_template_list tl)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    gal->writeBlock(*realTL);
+}
+
+void br_close_gallery(br_gallery gallery)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    delete gal;
 }

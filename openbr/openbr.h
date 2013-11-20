@@ -436,6 +436,7 @@ BR_EXPORT void br_slave_process(const char * baseKey);
 // will take this typedef and cast it
 typedef void* br_template;
 typedef void* br_template_list;
+typedef void* br_gallery;
 /*!
   * \brief Load an image from a string buffer.
   *   Easy way to pass an image in memory from another programming language to openbr.
@@ -466,6 +467,10 @@ BR_EXPORT int br_img_cols(br_template tmpl);
   */
 BR_EXPORT int br_img_channels(br_template tmpl);
 /*!
+  * \brief Set the filename for a template.
+  */
+BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);
+/*!
   * \brief Enroll a br::Template from the C API! Returns a pointer to a br::TemplateList
   * \param tmpl Pointer to a br::Template.
   */
@@ -481,6 +486,23 @@ BR_EXPORT br_template br_get_template(br_template_list tl, int index);
   * \param tl Pointer to a br::TemplateList
   */
 BR_EXPORT int br_num_templates(br_template_list tl);
+/*!
+  * \brief Initialize a br::Gallery.
+  * \param gallery String location of gallery on disk.
+  */
+BR_EXPORT br_gallery br_make_gallery(const char *gallery);
+/*!
+  * \brief Read br::TemplateList from br::Gallery.
+  */
+BR_EXPORT br_template_list br_load_from_gallery(br_gallery gallery);
+/*!
+  * \brief Write a br::TemplateList to the br::Gallery on disk.
+  */
+BR_EXPORT void br_add_to_gallery(br_gallery gallery, br_template_list tl);
+/*!
+  * \brief Close the br::Gallery.
+  */
+BR_EXPORT void br_close_gallery(br_gallery gallery);
 
 /*! @}*/
 
