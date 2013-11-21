@@ -1007,14 +1007,24 @@ public:
 
     void project(const Template &src, Template &dst) const
     {
-        (void) src; (void) dst;
-        qFatal("nope");
+        TemplateList in;
+        in.append(src);
+        TemplateList out;
+        CompositeTransform::project(in,out);
+        dst = out.first();
+        if (out.size() > 1)
+            qDebug("Returning first output template only");
     }
 
     void projectUpdate(const Template &src, Template &dst)
     {
-        (void) src; (void) dst;
-        qFatal("whatever");
+        TemplateList in;
+        in.append(src);
+        TemplateList out;
+        projectUpdate(in,out);
+        dst = out.first();
+        if (out.size() > 1)
+            qDebug("Returning first output template only");
     }
 
 

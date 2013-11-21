@@ -1105,7 +1105,7 @@ public:
 
     virtual ~Transform() {}
     static Transform *make(QString str, QObject *parent); /*!< \brief Make a transform from a string. */
-    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's transform. */
+    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm, bool preprocess=true); /*!< \brief Retrieve an algorithm's transform. If preprocess is true, attaches a stream transform as the root of the algorithm*/
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
 
@@ -1124,6 +1124,7 @@ public:
 
     /*!< \brief Apply the transform to a single template. Typically used by independent transforms */
     virtual void project(const Template &src, Template &dst) const = 0;
+
     /*!< \brief Apply the transform, taking the full template list as input.
      * A TemplateList is what is typically passed from transform to transform. Transforms that just
      * need to operatoe on a single template at a time (and want to output exactly 1 template) can implement

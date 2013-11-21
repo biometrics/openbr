@@ -490,9 +490,18 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
     }
 }
 
-QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm)
+QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)
 {
-    return AlgorithmManager::getAlgorithm(algorithm)->transform;
+    if (!preprocess)
+        return AlgorithmManager::getAlgorithm(algorithm)->transform;
+    else {
+        QSharedPointer<Transform> orig_tform = AlgorithmManager::getAlgorithm(algorithm)->transform;
+        QSharedPointer<Transform> newRoot = QSharedPointer<Transform>(Transform::make("Stream(Identity)", NULL));
+        WrapperTransform * downcast = dynamic_cast<WrapperTransform *> (newRoot.data());
+        downcast->transform = orig_tform.data();
+        downcast->init();
+        return newRoot;
+    }
 }
 
 QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorithm)
