@@ -57,10 +57,16 @@ BR_REGISTER(Transform, CropTransform)
 class ROITransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
+    BR_PROPERTY(QString, propName, "")
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.file.rects().empty()) {
+        if (!propName.isEmpty()) {
+            QRectF rect = src.file.get<QRectF>(propName);
+            dst += src.m()(OpenCVUtils::toRect(rect));
+        }
+        else if (src.file.rects().empty()) {
             dst = src;
             if (Globals->verbose) qWarning("No rects present in file.");
         }
