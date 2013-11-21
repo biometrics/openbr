@@ -453,14 +453,23 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
 
-        if (targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+        if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+            && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
             qFatal("Similarity matrix and file size mismatch.");
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
 
-        for (int i=0; i<queryFiles.size(); i++)
-            for (int j=0; j<targetFiles.size(); j++)
+        if (targetFiles.size() != m.cols)
+        {
+            MatrixOutput   * mOut = dynamic_cast<MatrixOutput *>(o.data());
+            if (mOut)
+                mOut->data.create(queryFiles.size(), 1, CV_32FC1);
+        }
+
+        o->setBlock(0,0);
+        for (int i=0; i < m.rows; i++)
+            for (int j=0; j < m.cols; j++)
                 o->setRelative(m.at<float>(i,j), i, j);
     } else {
         qFatal("Unrecognized file type %s.", qPrintable(fileType.flat()));

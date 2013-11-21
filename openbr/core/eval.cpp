@@ -65,9 +65,26 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
+// Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
+// scores with the size of the target and query lists
+static cv::Mat constructMatchingMask(const cv::Mat & scores, const FileList & target, const FileList & query, int partition=0)
+{
+    // If the dimensions of the score matrix match the sizes of the target and query lists, construct a normal mask matrix
+    if (target.size() == scores.cols && query.size() == scores.rows)
+        return BEE::makeMask(target, query, partition);
+    // If this looks like a pairwise comparison (1 column score matrix, equal length target and query sets), construct a
+    // mask for that
+    else if (scores.cols == 1 && target.size() == query.size()) {
+        return BEE::makePairwiseMask(target, query, partition);
+    }
+    // otherwise, we fail
+    else
+        qFatal("Unable to construct mask for %d by %d score matrix from %d element query set, and %d element target set ", scores.rows, scores.cols, query.length(), target.length());
+}
+
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, BEE::makeMask(target, query, partition), csv);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv);
 }
 
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
@@ -93,8 +110,9 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         // Use the galleries specified in the similarity matrix
         if (target.isEmpty()) qFatal("Unspecified target gallery.");
         if (query.isEmpty()) qFatal("Unspecified query gallery.");
-        truth = BEE::makeMask(TemplateList::fromGallery(target).files(),
-                              TemplateList::fromGallery(query).files());
+
+        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
+                                              TemplateList::fromGallery(query).files());
     } else {
         File maskFile(mask);
         maskFile.set("rows", scores.rows);
