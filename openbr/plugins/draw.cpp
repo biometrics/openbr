@@ -336,8 +336,7 @@ class AdjacentOverlayTransform : public Transform
 
     void init()
     {
-        opener = br::Transform::fromAlgorithm("Cache(Open)");
-
+        opener = QSharedPointer<br::Transform>(br::Transform::make("Cache(Open)", NULL));
     }
 
 };
