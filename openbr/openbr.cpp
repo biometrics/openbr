@@ -356,6 +356,12 @@ br_template_list br_enroll_template(br_template tmpl)
     return (br_template_list)tl;
 }
 
+void br_enroll_template_list(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    Enroll(*realTL);
+}
+
 br_template br_get_template(br_template_list tl, int index)
 {
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);

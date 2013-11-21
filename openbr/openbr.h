@@ -476,6 +476,11 @@ BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);
   */
 BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
 /*!
+  * \brief Enroll a br::TemplateList from the C API!
+  * \param tmpl Pointer to a br::TemplateList.
+  */
+BR_EXPORT void br_enroll_template_list(br_template_list tl);
+/*!
   * \brief Get a pointer to a br::Template at a specified index.
   * \param tl Pointer to a br::TemplateList.
   * \param index The index of the br::Template.
