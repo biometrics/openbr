@@ -3,11 +3,6 @@ configure_file(${BR_SHARE_DIR}/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Janus API
-set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
-set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
-mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
-mark_as_advanced(JANUS_BUILD_DOCS)
-add_subdirectory(janus)
 include_directories(janus/include)
 install(DIRECTORY janus/include DESTINATION .)
 
@@ -33,6 +28,14 @@ set_target_properties(openbr PROPERTIES
                              LINK_INTERFACE_LIBRARIES "")
 target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
+
+# Janus implementation
+set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
+set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
+mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
+mark_as_advanced(JANUS_BUILD_DOCS)
+set(JANUS_TEST_IMPLEMENTATION openbr)
+add_subdirectory(janus)
 
 # Install
 install(TARGETS openbr
