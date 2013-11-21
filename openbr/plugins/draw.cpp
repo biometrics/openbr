@@ -56,7 +56,7 @@ class DrawTransform : public UntrainableTransform
             for (int i=0; i<pointsList.size(); i++) {
                 const Point2f &point = pointsList[i];
                 circle(dst, point, 3, color, -1);
-                if (verbose) putText(dst, QString::number(i).toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
+                if (verbose) putText(dst, QString("%1,(%2,%3)").arg(QString::number(i),QString::number(point.x),QString::number(point.y)).toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
             }
         }
         if (rects) {
