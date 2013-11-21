@@ -248,8 +248,8 @@ class ExpandTransform : public UntrainableMetaTransform
 
     virtual void project(const Template & src, Template & dst) const
     {
-        qFatal("this has gone bad");
-        (void) src; (void) dst;
+        dst = src;
+        qDebug("Called Expand project(Template,Template), nothing will happen");
     }
 };
 
