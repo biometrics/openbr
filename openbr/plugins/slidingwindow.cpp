@@ -380,8 +380,10 @@ private:
         QList<Rect> rects;
         QList<float> confidences;
         foreach (const Template &t, src) {
-            rects.append(OpenCVUtils::toRect(t.file.get<QRectF>("Detection")));
-            confidences.append(t.file.get<float>("Confidence"));
+            if (t.file.contains("Detection")) {
+                rects.append(OpenCVUtils::toRect(t.file.get<QRectF>("Detection")));
+                confidences.append(t.file.get<float>("Confidence"));
+            }
         }
 
         // Compute overlap between rectangles and create discrete Laplacian matrix
