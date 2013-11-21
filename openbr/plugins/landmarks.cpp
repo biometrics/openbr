@@ -305,6 +305,113 @@ class DrawDelaunayTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, DrawDelaunayTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Read landmarks from a file and associate them with the correct templates.
+ * \author Scott Klum \cite sklum
+ *
+ * Example of the format:
+ * \code
+ * image_001.jpg:146.000000,190.000000,227.000000,186.000000,202.000000,256.000000
+ * image_002.jpg:75.000000,235.000000,140.000000,225.000000,91.000000,300.000000
+ * image_003.jpg:158.000000,186.000000,246.000000,188.000000,208.000000,233.000000
+ * \endcode
+ */
+class ReadLandmarksTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString file READ get_file WRITE set_file RESET reset_file STORED false)
+    Q_PROPERTY(QString imageDelimiter READ get_imageDelimiter WRITE set_imageDelimiter RESET reset_imageDelimiter STORED false)
+    Q_PROPERTY(QString landmarkDelimiter READ get_landmarkDelimiter WRITE set_landmarkDelimiter RESET reset_landmarkDelimiter STORED false)
+    BR_PROPERTY(QString, file, QString())
+    BR_PROPERTY(QString, imageDelimiter, ":")
+    BR_PROPERTY(QString, landmarkDelimiter, ",")
+
+    QHash<QString, QList<QPointF> > landmarks;
+
+    void init()
+    {
+        QFile f(file);
+        if (!f.open(QFile::ReadOnly | QFile::Text))
+            qFatal("Failed to open %s for reading.", qPrintable(f.fileName()));
+
+        while (!f.atEnd()) {
+            const QStringList words = QString(f.readLine()).split(imageDelimiter);
+            const QStringList lm = words[1].split(landmarkDelimiter);
+
+            QList<QPointF> points;
+            bool ok;
+            for (int i=0; i<lm.size(); i+=2)
+                points.append(QPointF(lm[i].toFloat(&ok),lm[i+1].toFloat(&ok)));
+            if (!ok) qFatal("Failed to read landmark.");
+
+            landmarks.insert(words[0],points);
+        }
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        dst.file.appendPoints(landmarks[dst.file.fileName()]);
+    }
+};
+
+BR_REGISTER(Transform, ReadLandmarksTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Name a point
+ * \author Scott Klum \cite sklum
+ */
+class NamePointsTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
+    Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
+    BR_PROPERTY(QList<int>, indices, QList<int>())
+    BR_PROPERTY(QStringList, names, QStringList())
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (indices.size() != names.size()) qFatal("Point/name size mismatch");
+
+        dst = src;
+
+        QList<QPointF> points = src.file.points();
+
+        for (int i=0; i<indices.size(); i++) {
+            if (indices[i] < points.size()) dst.file.set(names[i], points[indices[i]]);
+            else qFatal("Idex out of range.");
+        }
+    }
+};
+
+BR_REGISTER(Transform, NamePointsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Remove a name from a point
+ * \author Scott Klum \cite sklum
+ */
+class AnonymizePointsTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
+    BR_PROPERTY(QStringList, names, QStringList())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        foreach (const QString &name, names)
+            if (src.file.contains(name)) dst.file.appendPoint(src.file.get<QPointF>(name));
+    }
+};
+
+BR_REGISTER(Transform, AnonymizePointsTransform)
+
 } // namespace br
 
 #include "landmarks.moc"
