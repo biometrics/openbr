@@ -305,6 +305,54 @@ class DrawDelaunayTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, DrawDelaunayTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Creates a Delaunay triangulation based on a set of points
+ * \author Scott Klum \cite sklum
+ */
+class ReadLandmarksTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString file READ get_file WRITE set_file RESET reset_file STORED false)
+    Q_PROPERTY(QString imageDelimiter READ get_imageDelimiter WRITE set_imageDelimiter RESET reset_imageDelimiter STORED false)
+    Q_PROPERTY(QString landmarkDelimiter READ get_landmarkDelimiter WRITE set_landmarkDelimiter RESET reset_landmarkDelimiter STORED false)
+    BR_PROPERTY(QString, file, QString())
+    BR_PROPERTY(QString, imageDelimiter, ":")
+    BR_PROPERTY(QString, landmarkDelimiter, ",")
+
+    QHash<QString, QList<QPointF> > landmarks;
+
+    void init()
+    {
+        QFile f(file);
+        if (!f.open(QFile::ReadOnly | QFile::Text))
+            qFatal("Failed to open %s for reading.", qPrintable(f.fileName()));
+
+        while (!f.atEnd()) {
+            const QStringList words = QString(f.readLine()).split(imageDelimiter);
+            const QStringList lm = words[1].split(landmarkDelimiter);
+
+            QList<QPointF> points;
+            bool ok;
+            for (int i=0; i<lm.size(); i+=2)
+                points.append(QPointF(lm[i].toFloat(&ok),lm[i+1].toFloat(&ok)));
+            if (!ok) qFatal("Failed to read landmark.");
+
+            landmarks.insert(words[0],points);
+        }
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        dst.file.appendPoints(landmarks[dst.file.fileName()]);
+    }
+};
+
+BR_REGISTER(Transform, ReadLandmarksTransform)
+
 } // namespace br
 
 #include "landmarks.moc"
