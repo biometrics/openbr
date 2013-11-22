@@ -467,6 +467,10 @@ BR_EXPORT int br_img_cols(br_template tmpl);
   */
 BR_EXPORT int br_img_channels(br_template tmpl);
 /*!
+  * \brief Returns if the image is empty.
+  */
+BR_EXPORT bool br_img_is_empty(br_template tmpl);
+/*!
   * \brief Set the filename for a template.
   */
 BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);

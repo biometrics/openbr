@@ -341,6 +341,12 @@ int br_img_channels(br_template tmpl)
     return t->m().channels();
 }
 
+bool br_img_is_empty(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().empty();
+}
+
 void br_set_filename(br_template tmpl, const char *filename)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
