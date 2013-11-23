@@ -332,6 +332,9 @@ class ReadLandmarksTransform : public UntrainableTransform
 
     void init()
     {
+        if (file.isEmpty())
+            return;
+
         QFile f(file);
         if (!f.open(QFile::ReadOnly | QFile::Text))
             qFatal("Failed to open %s for reading.", qPrintable(f.fileName()));
