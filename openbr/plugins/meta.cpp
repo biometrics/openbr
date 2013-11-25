@@ -614,13 +614,20 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * smartCopy()
+    Transform * smartCopy(bool & newTransform)
     {
-        if (!transform->timeVarying())
+        if (!transform->timeVarying()) {
+            newTransform = false;
             return this;
+        }
+        newTransform = true;
 
         DistributeTemplateTransform * output = new DistributeTemplateTransform;
-        output->transform = transform->smartCopy();
+        bool newChild = false;
+        output->transform = transform->smartCopy(newChild);
+        if (newChild)
+            output->transform->setParent(output);
+
         return output;
     }
 

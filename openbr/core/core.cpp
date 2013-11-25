@@ -70,7 +70,7 @@ struct AlgorithmCore
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
-            data >> *transform;
+            data >> *downcast;
 
             qDebug("Training Comparison");
             distance->train(data);

@@ -1092,10 +1092,6 @@ public:
 
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
-        //dst = collectionStage->getOutput();
-
-        // dst is set to all output received by the final stage, along
-        // with anything output via the calls to finalize.
         foreach(const TemplateList & list, collector->sets) {
             dst.append(list);
         }
@@ -1378,10 +1374,10 @@ public:
         basis.init();
     }
 
-    Transform * smartCopy()
+    Transform * smartCopy(bool & newTransform)
     {
         // We just want the DirectStream to begin with, so just return a copy of that.
-        DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy();
+        DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy(newTransform);
         res->activeFrames = this->activeFrames;
         return res;
     }
