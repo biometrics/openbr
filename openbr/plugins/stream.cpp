@@ -1007,14 +1007,24 @@ public:
 
     void project(const Template &src, Template &dst) const
     {
-        (void) src; (void) dst;
-        qFatal("nope");
+        TemplateList in;
+        in.append(src);
+        TemplateList out;
+        CompositeTransform::project(in,out);
+        dst = out.first();
+        if (out.size() > 1)
+            qDebug("Returning first output template only");
     }
 
     void projectUpdate(const Template &src, Template &dst)
     {
-        (void) src; (void) dst;
-        qFatal("whatever");
+        TemplateList in;
+        in.append(src);
+        TemplateList out;
+        projectUpdate(in,out);
+        dst = out.first();
+        if (out.size() > 1)
+            qDebug("Returning first output template only");
     }
 
 
@@ -1079,10 +1089,6 @@ public:
 
         // Clear dst, since we set it to src so that the datasource could open it
         dst.clear();
-
-        // dst is set to all output received by the final stage, along
-        // with anything output via the calls to finalize.
-        //dst = collectionStage->getOutput();
 
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
@@ -1368,10 +1374,10 @@ public:
         basis.init();
     }
 
-    Transform * smartCopy()
+    Transform * smartCopy(bool & newTransform)
     {
         // We just want the DirectStream to begin with, so just return a copy of that.
-        DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy();
+        DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy(newTransform);
         res->activeFrames = this->activeFrames;
         return res;
     }

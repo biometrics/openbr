@@ -341,6 +341,12 @@ int br_img_channels(br_template tmpl)
     return t->m().channels();
 }
 
+bool br_img_is_empty(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().empty();
+}
+
 void br_set_filename(br_template tmpl, const char *filename)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
@@ -354,6 +360,12 @@ br_template_list br_enroll_template(br_template tmpl)
     tl->append(*t);
     Enroll(*tl);
     return (br_template_list)tl;
+}
+
+void br_enroll_template_list(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    Enroll(*realTL);
 }
 
 br_template br_get_template(br_template_list tl, int index)

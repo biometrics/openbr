@@ -1184,10 +1184,6 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
-    { // Check for use of '!' as shorthand for Expand
-        str.replace("!","+Expand+");
-    }
-
     //! [Make a pipe]
     { // Check for use of '+' as shorthand for Pipe(...)
         QStringList words = parse(str, '+');
