@@ -6,7 +6,7 @@
 #include "openbr_plugin.h"
 
 // Use the provided default implementation of some functions
-#include "janus/src/janus.c"
+#include "janus/src/janus.cpp"
 
 janus_error janus_initialize(const char *sdk_path, const char *model_file)
 {
