@@ -97,8 +97,11 @@ class StasmTransform : public UntrainableTransform
             }
 
             if (!ok) {
-                rightEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(0), QString()),&ok);
-                leftEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(1), QString()),&ok);
+                // This will throw a fatal if the keys are not present, which is basically the behavior we want
+                rightEye = src.file.get<QPointF>(pinEyes.at(0), QPointF());
+                leftEye = src.file.get<QPointF>(pinEyes.at(1), QPointF());
+
+                ok = true;
             }
 
             float eyes[2 * stasm_NLANDMARKS];
@@ -109,6 +112,7 @@ class StasmTransform : public UntrainableTransform
                     else if (i == 39)  /*Stasm Left Eye*/ { eyes[2*i] = leftEye.x(); eyes[2*i+1] = leftEye.y(); }
                     else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
                 }
+                qDebug() << rightEye << leftEye;
                 stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
 
                 // The ASM in Stasm is guaranteed to converge in this case
