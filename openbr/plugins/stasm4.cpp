@@ -112,7 +112,6 @@ class StasmTransform : public UntrainableTransform
                     else if (i == 39)  /*Stasm Left Eye*/ { eyes[2*i] = leftEye.x(); eyes[2*i+1] = leftEye.y(); }
                     else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
                 }
-                qDebug() << rightEye << leftEye;
                 stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
 
                 // The ASM in Stasm is guaranteed to converge in this case
