@@ -164,6 +164,7 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
                 continue;
 
             result += Template(tmpl.file, Mat(tmpl, posRect));
+            result.last().file.set("Label", QString("pos"));
 
             // Add random negative samples
             Mat m = tmpl.m();

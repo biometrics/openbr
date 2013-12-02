@@ -394,6 +394,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
+            // A 50% overlap is considered a true positive
             if (detection.overlap >= 0.5) TP++;
             else                          FP++;
         } else {
@@ -507,11 +508,13 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     QMap<QString, Detections> allDetections = getDetections(predicted, truth);
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
-    foreach (Detections detections, allDetections.values()) {
+    foreach (Detections detections, allDetections.values()) { // For every file
+        // Try to associate ground truth detections with predicted detections
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
-            const Detection truth = detections.truth.takeFirst();
+            const Detection truth = detections.truth.takeFirst(); // Take removes the detection
             int bestIndex = -1;
             float bestOverlap = -std::numeric_limits<float>::max();
+            // Find the nearest predicted detection to this ground truth detection
             for (int i=0; i<detections.predicted.size(); i++) {
                 const float overlap = truth.overlap(detections.predicted[i]);
                 if (overlap > bestOverlap) {
@@ -519,6 +522,9 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
                     bestIndex = i;
                 }
             }
+            // Removing the detection prevents us from considering it twice.
+            // We don't want to associate two ground truth detections with the
+            // same prediction, over vice versa.
             const Detection predicted = detections.predicted.takeAt(bestIndex);
             resolvedDetections.append(ResolvedDetection(predicted.confidence, bestOverlap));
         }

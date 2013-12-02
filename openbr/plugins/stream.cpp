@@ -477,11 +477,15 @@ public:
         if (frameNumber == final_frame) {
             // We just received the last frame, better pulse
             allReturned = true;
-            lastReturned.wakeAll();
             rval = true;
         }
 
         return rval;
+    }
+
+    void wake()
+    {
+        lastReturned.wakeAll();
     }
 
     bool waitLast()
@@ -627,9 +631,9 @@ public:
     }
     virtual ~ProcessingStage() {}
 
-    virtual FrameData* run(FrameData * input, bool & should_continue)=0;
+    virtual FrameData* run(FrameData * input, bool & should_continue, bool & final)=0;
 
-    virtual bool tryAcquireNextStage(FrameData *& input)=0;
+    virtual bool tryAcquireNextStage(FrameData *& input, bool & final)=0;
 
     int stage_id;
 
@@ -648,23 +652,6 @@ protected:
 
 };
 
-void BasicLoop::run()
-{
-    int current_idx = start_idx;
-    FrameData * target_item = startItem;
-    bool should_continue = true;
-    forever
-    {
-        target_item = stages->at(current_idx)->run(target_item, should_continue);
-        if (!should_continue) {
-            break;
-        }
-        current_idx++;
-        current_idx = current_idx % stages->size();
-    }
-    this->reportFinished();
-}
-
 class MultiThreadStage : public ProcessingStage
 {
 public:
@@ -672,7 +659,7 @@ public:
 
     // Not much to worry about here, we will project the input
     // and try to continue to the next stage.
-    FrameData * run(FrameData * input, bool & should_continue)
+    FrameData * run(FrameData * input, bool & should_continue, bool & final)
     {
         if (input == NULL) {
             qFatal("null input to multi-thread stage");
@@ -680,16 +667,17 @@ public:
 
         input->data >> *transform;
 
-        should_continue = nextStage->tryAcquireNextStage(input);
+        should_continue = nextStage->tryAcquireNextStage(input, final);
 
         return input;
     }
 
     // Called from a different thread than run. Nothing to worry about
     // we offer no restrictions on when loops may enter this stage.
-    virtual bool tryAcquireNextStage(FrameData *& input)
+    virtual bool tryAcquireNextStage(FrameData *& input, bool & final)
     {
         (void) input;
+        final = false;
         return true;
     }
 
@@ -744,7 +732,7 @@ public:
     QReadWriteLock statusLock;
     Status currentStatus;
 
-    FrameData * run(FrameData * input, bool & should_continue)
+    FrameData * run(FrameData * input, bool & should_continue, bool & final)
     {
         if (input == NULL)
             qFatal("NULL input to stage %d", this->stage_id);
@@ -758,7 +746,10 @@ public:
         // Project the input we got
         transform->projectUpdate(input->data);
 
-        should_continue = nextStage->tryAcquireNextStage(input);
+        should_continue = nextStage->tryAcquireNextStage(input,final);
+
+        if (final)
+            return input;
 
         // Is there anything on our input buffer? If so we should start a thread with that.
         QWriteLocker lock(&statusLock);
@@ -792,8 +783,9 @@ public:
 
 
     // Calledfrom a different thread than run.
-    bool tryAcquireNextStage(FrameData *& input)
+    bool tryAcquireNextStage(FrameData *& input, bool & final)
     {
+        final = false;
         inputBuffer->addItem(input);
 
         QReadLocker lock(&statusLock);
@@ -865,13 +857,13 @@ public:
         SingleThreadStage::reset();
     }
 
-    FrameData * run(FrameData * input, bool & should_continue)
+    FrameData * run(FrameData * input, bool & should_continue, bool & final)
     {
         if (input == NULL)
             qFatal("NULL frame in input stage");
 
         // Can we enter the next stage?
-        should_continue = nextStage->tryAcquireNextStage(input);
+        should_continue = nextStage->tryAcquireNextStage(input, final);
 
         // Try to get a frame from the datasource, we keep working on
         // the frame we have, but we will queue another job for the next
@@ -893,14 +885,14 @@ public:
     }
 
     // The last stage, trying to access the first stage
-    bool tryAcquireNextStage(FrameData *& input)
+    bool tryAcquireNextStage(FrameData *& input, bool & final)
     {
         // Return the frame, was it the last one?
-        bool was_last = dataSource.returnFrame(input);
+        final = dataSource.returnFrame(input);
         input = NULL;
 
         // OK we won't continue.
-        if (was_last) {
+        if (final) {
             return false;
         }
 
@@ -942,6 +934,29 @@ public:
         qDebug("Read stage %d, status starting? %d, next frame %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->dataSource.size());
     }
 };
+
+void BasicLoop::run()
+{
+    int current_idx = start_idx;
+    FrameData * target_item = startItem;
+    bool should_continue = true;
+    bool the_end = false;
+    forever
+    {
+        target_item = stages->at(current_idx)->run(target_item, should_continue, the_end);
+        if (!should_continue) {
+            break;
+        }
+        current_idx++;
+        current_idx = current_idx % stages->size();
+    }
+    if (the_end) {
+        dynamic_cast<ReadStage *> (stages->at(0))->dataSource.wake();
+    }
+
+    this->reportFinished();
+
+}
 
 class DirectStreamTransform : public CompositeTransform
 {
