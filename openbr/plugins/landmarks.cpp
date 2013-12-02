@@ -386,7 +386,7 @@ class NamePointsTransform : public UntrainableMetaTransform
 
         for (int i=0; i<indices.size(); i++) {
             if (indices[i] < points.size()) dst.file.set(names[i], points[indices[i]]);
-            else qFatal("Idex out of range.");
+            else qFatal("Index out of range.");
         }
     }
 };
