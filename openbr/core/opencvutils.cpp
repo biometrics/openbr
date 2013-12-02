@@ -117,6 +117,7 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
     if (rows*columns != src.size()) qFatal("Invalid matrix size.");
     Mat dst(rows, columns, CV_32FC1);
     for (int i=0; i<src.size(); i++)
+// TODO: If we have a valid row with zero columns, then division by zero
         dst.at<float>(i/columns,i%columns) = src[i];
     return dst;
 }
@@ -136,6 +137,7 @@ Mat OpenCVUtils::toMat(const QList<int> &src, int rows)
     if (rows*columns != src.size()) qFatal("Invalid matrix size.");
     Mat dst(rows, columns, CV_32FC1);
     for (int i=0; i<src.size(); i++)
+// TODO: If we have a valid row with zero columns, then division by zero
         dst.at<float>(i/columns,i%columns) = src[i];
     return dst;
 }

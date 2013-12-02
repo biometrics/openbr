@@ -532,7 +532,7 @@ protected:
                 if (!frameSource)
                     frameSource = new VideoReader();
             }
-
+// TODO: Did I introduce this error, seems framesource is null
             open_res = frameSource->open(this->templates[current_template_idx]);
             if (!open_res)
             {
@@ -1080,6 +1080,7 @@ public:
         // Wait for the stream to process the last frame available from
         // the data source.
         bool wait_res = false;
+// TODO: wait_res is a dead variable
         wait_res = readStage->dataSource.waitLast();
 
         // Now that there are no more incoming frames, call finalize
@@ -1217,6 +1218,7 @@ public:
     {
         // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
+// TODO: Are we releasing memory which is already freed?
             delete processingStages[i];
         }
         processingStages.clear();
