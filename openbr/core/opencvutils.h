@@ -22,6 +22,7 @@
 #include <QString>
 #include <QStringList>
 #include <opencv2/core/core.hpp>
+#include <assert.h>
 
 namespace OpenCVUtils
 {

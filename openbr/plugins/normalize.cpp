@@ -132,7 +132,7 @@ private:
         const QList<int> labels = data.indexProperty(inputVariable);
         const int dims = m.cols;
 
-        vector<Mat> mv, av, bv;
+        std::vector<Mat> mv, av, bv;
         split(m, mv);
         for (size_t c = 0; c < mv.size(); c++) {
             av.push_back(Mat(1, dims, CV_64FC1));

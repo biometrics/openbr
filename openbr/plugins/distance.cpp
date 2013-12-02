@@ -18,6 +18,7 @@
 #include <QtConcurrentRun>
 #include <numeric>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
 #include "openbr/core/distance_sse.h"

@@ -20,6 +20,7 @@
 #include <QtXml>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 #include "openbr_internal.h"
 
 #include "openbr/core/bee.h"

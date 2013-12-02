@@ -3,7 +3,7 @@
 #include <QThreadPool>
 #include <QSemaphore>
 #include <QMap>
-#include <opencv/highgui.h>
+#include <opencv2/highgui/highgui.hpp>
 #include <QtConcurrent>
 #include "openbr_internal.h"
 

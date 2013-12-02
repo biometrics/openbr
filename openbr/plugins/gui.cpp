@@ -12,6 +12,7 @@
 #include <QLineEdit>
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
 using namespace cv;

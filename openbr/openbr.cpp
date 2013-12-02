@@ -24,6 +24,7 @@
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 
 using namespace br;
 
@@ -351,17 +352,6 @@ void br_set_filename(br_template tmpl, const char *filename)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
     t->file.name = filename;
-}
-
-const char* br_get_metadata_string(br_template tmpl, const char *key)
-{
-    Template *t = reinterpret_cast<Template*>(tmpl);
-    // need an object outside of this scope
-    // so the char pointer is valid
-    static QByteArray result;
-    QVariant qvar = t->file.value(key);
-    result = QtUtils::toString(qvar).toUtf8();
-    return result.data();
 }
 
 br_template_list br_enroll_template(br_template tmpl)
