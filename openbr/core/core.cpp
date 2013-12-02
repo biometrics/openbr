@@ -45,7 +45,7 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity])", NULL));
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity],readMode=DistributeFrames)", NULL));
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
@@ -70,7 +70,7 @@ struct AlgorithmCore
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
-            data >> *downcast;
+            downcast->projectUpdate(data,data);
 
             qDebug("Training Comparison");
             distance->train(data);
