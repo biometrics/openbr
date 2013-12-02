@@ -19,10 +19,15 @@ set(PACKAGE_YEAR 2013)
 
 if(${CMAKE_VERSION} VERSION_EQUAL 2.8.11)
   cmake_policy(SET CMP0020 OLD)
-  cmake_policy(SET CMP0022 OLD)
 endif()
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
   cmake_policy(SET CMP0020 OLD)
+endif()
+
+if(${CMAKE_VERSION} VERSION_EQUAL 2.8.12)
+  cmake_policy(SET CMP0022 OLD)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.12)
   cmake_policy(SET CMP0022 OLD)
 endif()
 
