@@ -1,6 +1,8 @@
 #ifndef OPENBR_INTERNAL_H
 #define OPENBR_INTERNAL_H
 
+#include <QMetaProperty>
+
 #include "openbr/openbr_plugin.h"
 #include "openbr/core/resource.h"
 
@@ -260,9 +262,27 @@ public:
         newTransform = true;
 
         QString name = metaObject()->className();
+
         name.replace("Transform","");
-        name += "([])";
+        name += "([";
+        name += "],";
+
+        QStringList parameters;
+
+        // Skip name and transforms (handled below)
+        for (int i = 2; i < metaObject()->propertyCount();i++) {
+            QMetaProperty property = metaObject()->property(i);
+            parameters.append(property.read(this).toString());
+        }
+
+        name += parameters.join(",");
+
+        name += ")";
+
         name.replace("br::","");
+
+        qDebug() << name;
+
         CompositeTransform * output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
 
         if (output == NULL)
