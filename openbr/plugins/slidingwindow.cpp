@@ -68,7 +68,7 @@ private:
             TemplateList dataOut = data;
             if (ignoreBorder > 0) {
                 for (int i = 0; i < dataOut.size(); i++) {
-                    Template t = dataOut.at(i);
+                    Template t = dataOut[i];
                     Mat m = t.m();
                     dataOut.replace(i,Template(t.file, Mat(m,Rect(ignoreBorder,ignoreBorder,m.cols - ignoreBorder * 2, m.rows - ignoreBorder * 2))));
                 }
