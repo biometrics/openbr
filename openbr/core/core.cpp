@@ -46,6 +46,7 @@ struct AlgorithmCore
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
         QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity], readMode=DistributeFrames)", NULL));
+
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
