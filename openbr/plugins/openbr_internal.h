@@ -266,15 +266,7 @@ public:
         name.replace("Transform","");
         name += "([],";
 
-        QStringList parameters;
-
-        // Skip name and transforms (handled below)
-        for (int i = 2; i < metaObject()->propertyCount();i++) {
-            QMetaProperty property = metaObject()->property(i);
-            parameters.append(property.read(this).toString());
-        }
-
-        name += parameters.join(",");
+        name += this->arguments().join(",");
 
         name += ")";
         name.replace("br::","");

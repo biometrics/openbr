@@ -550,20 +550,18 @@ QStringList Object::parameters() const
 
     for (int i = firstAvailablePropertyIdx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
     }
+
     return parameters;
 }
 
 QStringList Object::arguments() const
 {
     QStringList arguments;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
-        QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
+    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
         arguments.append(argument(i));
-    }
+
     return arguments;
 }
 
