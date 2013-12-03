@@ -262,9 +262,13 @@ public:
         QString name = metaObject()->className();
 
         name.replace("Transform","");
-        name += "([],";
+        name += "([]";
 
-        name += this->arguments().join(",");
+        QStringList arguments = this->arguments();
+        if (!arguments.isEmpty()) {
+            name += ",";
+            name += this->arguments().join(",");
+        }
 
         name += ")";
         name.replace("br::","");
