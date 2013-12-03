@@ -1,8 +1,6 @@
 #ifndef OPENBR_INTERNAL_H
 #define OPENBR_INTERNAL_H
 
-#include <QMetaProperty>
-
 #include "openbr/openbr_plugin.h"
 #include "openbr/core/resource.h"
 

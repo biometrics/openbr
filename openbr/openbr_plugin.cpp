@@ -705,7 +705,7 @@ void Object::setProperty(const QString &name, QVariant value)
 
     if (metaObject()->property(index).isEnumType()) {
         // This is necessary because setProperty can only set enums
-        // using its integer value if the QVariant is of type int (or uint)
+        // using their integer value if the QVariant is of type int (or uint)
         bool ok;
         int v = value.toInt(&ok);
         if (ok)
