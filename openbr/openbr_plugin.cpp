@@ -703,7 +703,14 @@ void Object::setProperty(const QString &name, QVariant value)
     int index = metaObject()->indexOfProperty(qPrintable(name));
     if (index != -1) type = metaObject()->property(index).typeName();
 
-    if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
+    if (metaObject()->property(index).isEnumType()) {
+        // This is necessary because setProperty can only set enums
+        // using its integer value if the QVariant is of type int (or uint)
+        bool ok;
+        int v = value.toInt(&ok);
+        if (ok)
+            value = v;
+    } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
         QVariantList elements;
         if (value.canConvert<QVariantList>()) {
             elements = value.value<QVariantList>();
@@ -761,13 +768,6 @@ void Object::setProperty(const QString &name, QVariant value)
         if      (value.isNull())   value = true;
         else if (value == "false") value = false;
         else if (value == "true")  value = true;
-    } else if (type.startsWith("br::") /* Pray to science it's safe to assume these are enums */) {
-        bool ok;
-        int enumIndex = value.toInt(&ok);
-        if (ok) {
-            QMetaEnum metaEnum = metaObject()->enumerator(metaObject()->indexOfEnumerator(type.toStdString().c_str()));
-            value = metaEnum.value(enumIndex);
-        }
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())

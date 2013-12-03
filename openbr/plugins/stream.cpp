@@ -1058,7 +1058,7 @@ public:
         if (src.empty())
             return;
 
-        bool res = readStage->dataSource.open(src,br::Idiocy::DistributeFrames);
+        bool res = readStage->dataSource.open(src,readMode);
         if (!res) {
             qDebug("stream failed to open %s", qPrintable(dst[0].file.name));
             return;
