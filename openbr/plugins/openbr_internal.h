@@ -264,8 +264,7 @@ public:
         QString name = metaObject()->className();
 
         name.replace("Transform","");
-        name += "([";
-        name += "],";
+        name += "([],";
 
         QStringList parameters;
 
@@ -278,10 +277,7 @@ public:
         name += parameters.join(",");
 
         name += ")";
-
         name.replace("br::","");
-
-        qDebug() << name;
 
         CompositeTransform * output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
 

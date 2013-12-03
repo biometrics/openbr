@@ -179,9 +179,6 @@ class MatchProbabilityDistance : public Distance
             }
         }
 
-        qDebug() << "Genuines:" << genuineScores;
-        qDebug() << "Impostors:" << impostorScores;
-
         mp = MP(genuineScores, impostorScores);
     }
 

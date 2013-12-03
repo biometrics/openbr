@@ -253,8 +253,6 @@ public:
 
     bool getNextTemplate(Template & output)
     {
-        qDebug() << "Next as video";
-
         if (!isOpen()) {
             qDebug("video source is not open");
             return false;
@@ -1060,8 +1058,6 @@ public:
         if (src.empty())
             return;
 
-        qDebug() << "Reading with mode:" << readMode;
-
         bool res = readStage->dataSource.open(src,br::Idiocy::DistributeFrames);
         if (!res) {
             qDebug("stream failed to open %s", qPrintable(dst[0].file.name));
@@ -1210,8 +1206,6 @@ public:
         // And the collection stage points to the read stage, because this is
         // a ring buffer.
         collectionStage->nextStage = readStage;
-
-        qDebug() << "Init Readmode:" << readMode;
     }
 
     DirectStreamTransform()
@@ -1329,7 +1323,6 @@ public:
         basis.activeFrames = this->activeFrames;
         basis.readMode = this->readMode;
 
-                                   qDebug() << basis.readMode;
         // We need at least a CompositeTransform * to acess transform's children.
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (transform);
 

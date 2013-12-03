@@ -763,11 +763,18 @@ void Object::setProperty(const QString &name, QVariant value)
         if      (value.isNull())   value = true;
         else if (value == "false") value = false;
         else if (value == "true")  value = true;
+    } else if (type.startsWith("br::") /* Pray to science it's safe to assume these are enums */) {
+        bool ok;
+        int enumIndex = value.toInt(&ok);
+        if (ok) {
+            QMetaEnum metaEnum = metaObject()->enumerator(metaObject()->indexOfEnumerator(type.toStdString().c_str()));
+            value = metaEnum.value(enumIndex);
+        }
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
-        qFatal("Failed to set %s::%s to: %s",
-               metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
+        qFatal("Failed to set %s %s::%s to: %s",
+               qPrintable(type), metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
 }
 
 QStringList Object::parse(const QString &string, char split)
