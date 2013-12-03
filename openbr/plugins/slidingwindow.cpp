@@ -46,11 +46,13 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
     Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
+    Q_PROPERTY(int ignoreBorder READ get_ignoreBorder WRITE set_ignoreBorder RESET reset_ignoreBorder STORED false)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, windowWidth, 24)
     BR_PROPERTY(bool, takeFirst, false)
     BR_PROPERTY(float, threshold, 0)
     BR_PROPERTY(float, stepFraction, 0.25)
+    BR_PROPERTY(int, ignoreBorder, 0)
 
 private:
     int windowHeight;
@@ -61,8 +63,17 @@ private:
         if (aspectRatio == -1)
             aspectRatio = getAspectRatio(data);
         windowHeight = qRound(windowWidth / aspectRatio);
+
         if (transform->trainable) {
-            transform->train(data);
+            TemplateList dataOut = data;
+            if (ignoreBorder > 0) {
+                for (int i = 0; i < dataOut.size(); i++) {
+                    Template t = dataOut.at(i);
+                    Mat m = t.m();
+                    dataOut.replace(i,Template(t.file, Mat(m,Rect(ignoreBorder,ignoreBorder,m.cols - ignoreBorder * 2, m.rows - ignoreBorder * 2))));
+                }
+            }
+            transform->train(dataOut);
         }
     }
 
@@ -101,7 +112,7 @@ protected:
         foreach (const Template &t, src) {
             for (float y = 0; y + windowHeight < t.m().rows; y += windowHeight*stepFraction) {
                 for (float x = 0; x + windowWidth < t.m().cols; x += windowWidth*stepFraction) {
-                    Mat windowMat(t.m(), Rect(x, y, windowWidth, windowHeight));
+                    Mat windowMat(t.m(), Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder * 2, windowHeight - ignoreBorder * 2));
                     Template detect;
                     transform->project(Template(t.file, windowMat), detect);
 
