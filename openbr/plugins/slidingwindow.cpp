@@ -64,17 +64,16 @@ private:
             aspectRatio = getAspectRatio(data);
         windowHeight = qRound(windowWidth / aspectRatio);
 
-        if (ignoreBorder > 0) {
-            foreach (Template t , data) {
-                if (t.file.get<QString>("Label") == "pos") {
+        if (transform->trainable) {
+            TemplateList dataOut = data;
+            if (ignoreBorder > 0) {
+                for (int i = 0; i < dataOut.size(); i++) {
+                    Template t = dataOut.at(i);
                     Mat m = t.m();
-                    t = Mat(m,Rect(ignoreBorder,ignoreBorder,m.cols - ignoreBorder, m.rows - ignoreBorder));
+                    dataOut.replace(i,Template(t.file, Mat(m,Rect(ignoreBorder,ignoreBorder,m.cols - ignoreBorder * 2, m.rows - ignoreBorder * 2))));
                 }
             }
-        }
-
-        if (transform->trainable) {
-            transform->train(data);
+            transform->train(dataOut);
         }
     }
 
@@ -113,7 +112,7 @@ protected:
         foreach (const Template &t, src) {
             for (float y = 0; y + windowHeight < t.m().rows; y += windowHeight*stepFraction) {
                 for (float x = 0; x + windowWidth < t.m().cols; x += windowWidth*stepFraction) {
-                    Mat windowMat(t.m(), Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder, windowHeight - ignoreBorder));
+                    Mat windowMat(t.m(), Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder * 2, windowHeight - ignoreBorder * 2));
                     Template detect;
                     transform->project(Template(t.file, windowMat), detect);
 
