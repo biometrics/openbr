@@ -50,6 +50,42 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RemoveTemplatesTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Filters a gallery based on the value of a metadata field.
+ * \author Brendan Klare \cite bklare
+ */
+class FilterOnMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString attributeName READ get_attributeName WRITE set_attributeName RESET reset_attributeName STORED false)
+    Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
+    Q_PROPERTY(bool isGreaterThan READ get_isGreaterThan WRITE set_isGreaterThan RESET reset_isGreaterThan STORED false)
+    BR_PROPERTY(QString, attributeName, "Confidence")
+    BR_PROPERTY(float, threshold, 0)
+    BR_PROPERTY(bool, isGreaterThan, true)
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        QList<Template> filtered;
+        foreach (Template t, src) {
+            if (!t.file.contains(attributeName))
+                continue;
+            bool pass = t.file.get<float>(attributeName) > threshold;
+            if (isGreaterThan ? pass : !pass)
+                filtered.append(t);
+        }
+        dst = TemplateList(filtered);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void) src; (void) dst; qFatal("shouldn't be here");
+    }
+};
+
+BR_REGISTER(Transform, FilterOnMetadataTransform)
+
 } // namespace br
 
 #include "template.moc"
