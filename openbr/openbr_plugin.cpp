@@ -550,20 +550,18 @@ QStringList Object::parameters() const
 
     for (int i = firstAvailablePropertyIdx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
     }
+
     return parameters;
 }
 
 QStringList Object::arguments() const
 {
     QStringList arguments;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
-        QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
+    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
         arguments.append(argument(i));
-    }
+
     return arguments;
 }
 
@@ -705,7 +703,14 @@ void Object::setProperty(const QString &name, QVariant value)
     int index = metaObject()->indexOfProperty(qPrintable(name));
     if (index != -1) type = metaObject()->property(index).typeName();
 
-    if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
+    if (metaObject()->property(index).isEnumType()) {
+        // This is necessary because setProperty can only set enums
+        // using their integer value if the QVariant is of type int (or uint)
+        bool ok;
+        int v = value.toInt(&ok);
+        if (ok)
+            value = v;
+    } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
         QVariantList elements;
         if (value.canConvert<QVariantList>()) {
             elements = value.value<QVariantList>();
@@ -766,8 +771,8 @@ void Object::setProperty(const QString &name, QVariant value)
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
-        qFatal("Failed to set %s::%s to: %s",
-               metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
+        qFatal("Failed to set %s %s::%s to: %s",
+               qPrintable(type), metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
 }
 
 QStringList Object::parse(const QString &string, char split)
