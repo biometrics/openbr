@@ -372,7 +372,7 @@ class FaceFromEyesTransform : public UntrainableTransform
     BR_PROPERTY(double, widthPadding, 0.7)
     BR_PROPERTY(double, verticalLocation, 0.25)
     BR_PROPERTY(int, leftEyeIdx, 0)
-    BR_PROPERTY(int, rightEyeIdx, 0)
+    BR_PROPERTY(int, rightEyeIdx, 1)
 
     void project(const Template &src, Template &dst) const
     {
@@ -384,8 +384,8 @@ class FaceFromEyesTransform : public UntrainableTransform
             return;
         }
 
-        QPointF eyeL = src.file.points()[0];
-        QPointF eyeR = src.file.points()[1];
+        QPointF eyeL = src.file.points()[leftEyeIdx];
+        QPointF eyeR = src.file.points()[rightEyeIdx];
         QPointF eyeCenter((eyeL.x() + eyeR.x()) / 2, (eyeL.y() + eyeR.y()) / 2);
         float ipd = sqrt(pow(eyeL.x() - eyeR.x(), 2) + pow(eyeL.y() - eyeR.y(), 2));
         float width = ipd + 2 * widthPadding * ipd;
