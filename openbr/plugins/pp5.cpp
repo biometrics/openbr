@@ -158,7 +158,7 @@ struct PP5Context
                                               face_attributes.position.y - face_attributes.dimensions.height/2,
                                               face_attributes.dimensions.width,
                                               face_attributes.dimensions.height));
-        metadata.insert("PP5_Face_Confidence", face_attributes.confidence);
+        metadata.insert("Confidence", face_attributes.confidence);
         metadata.insert("PP5_Face_Roll", face_attributes.rotation.roll);
         metadata.insert("PP5_Face_Pitch", face_attributes.rotation.pitch);
         metadata.insert("PP5_Face_Yaw", face_attributes.rotation.yaw);
