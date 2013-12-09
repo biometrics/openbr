@@ -233,9 +233,9 @@ struct BR_EXPORT File
     template <typename T>
     T get(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QVariant variant = value(key);
-        if (!variant.canConvert<T>()) qFatal("Can't convert: %s", qPrintable(key));
+        if (!variant.canConvert<T>()) qFatal("Can't convert: %s in: %s", qPrintable(key), qPrintable(flat()));
         return variant.value<T>();
     }
 
@@ -256,11 +256,11 @@ struct BR_EXPORT File
     template <typename T>
     QList<T> getList(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QList<T> list;
         foreach (const QVariant &item, m_metadata[key].toList()) {
             if (item.canConvert<T>()) list.append(item.value<T>());
-            else qFatal("Failed to convert value for key %s.", qPrintable(key));
+            else qFatal("Failed to convert value for key %s in: %s", qPrintable(key), qPrintable(flat()));
         }
         return list;
     }
