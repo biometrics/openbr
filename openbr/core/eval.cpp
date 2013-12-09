@@ -387,7 +387,7 @@ struct DetectionOperatingPoint
         : Recall(TP/totalPositives), FalsePositives(FP), Precision(TP/(TP+FP)) {}
 };
 
-static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalPositives, bool discrete)
+static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, bool discrete)
 {
     QList<DetectionOperatingPoint> points;
     float TP = 0, FP = 0, prevFP = -1;
@@ -403,7 +403,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
             if (FP > prevFP || (i == detections.size()-1)) {
-                points.append(DetectionOperatingPoint(TP, FP, totalPositives));
+                points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections));
                 prevFP = FP;
             }
         }
@@ -507,7 +507,10 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     QMap<QString, Detections> allDetections = getDetections(predicted, truth);
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
+    int totalTrueDetections = 0;
     foreach (Detections detections, allDetections.values()) { // For every file
+        totalTrueDetections += detections.truth.size();
+
         // Try to associate ground truth detections with predicted detections
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
             const Detection truth = detections.truth.takeFirst(); // Take removes the detection
@@ -538,8 +541,8 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 
     QStringList lines;
     lines.append("Plot, X, Y");
-    lines.append(computeDetectionResults(resolvedDetections, truth.size(), true));
-    lines.append(computeDetectionResults(resolvedDetections, truth.size(), false));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, true));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, false));
 
     float averageOverlap;
     { // Overlap Density
