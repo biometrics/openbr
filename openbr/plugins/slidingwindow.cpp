@@ -56,9 +56,11 @@ class SlidingWindowTransform : public MetaTransform
 
 private:
     int windowHeight;
+    bool skipProject;
 
     void train(const TemplateList &data)
     {
+        skipProject = true;
         float aspectRatio = data.first().file.get<float>("aspectRatio", -1);
         if (aspectRatio == -1)
             aspectRatio = getAspectRatio(data);
@@ -104,7 +106,7 @@ protected:
     void projectHelp(const TemplateList &src, TemplateList &dst, int windowWidth, int windowHeight, float scale = 1) const
     {
         // no need to slide a window over ground truth data
-        if (src.first().file.getBool("Train", false)) {
+        if (skipProject) {
             dst = src;
             return;
         }
@@ -243,9 +245,11 @@ class BuildScalesTransform : public MetaTransform
 private:
     float aspectRatio;
     int windowHeight;
+    bool skipProject;
 
     void train(const TemplateList &data)
     {
+        skipProject = true;
         aspectRatio = getAspectRatio(data);
         windowHeight = qRound(windowWidth / aspectRatio);
         if (transform->trainable) {
@@ -268,7 +272,7 @@ private:
     void project(const TemplateList &src, TemplateList &dst) const
     {
         // do not scale images during training
-        if (src.first().file.getBool("Train", false)) {
+        if (skipProject) {
             dst = src;
             return;
         }
