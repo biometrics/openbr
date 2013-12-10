@@ -94,8 +94,10 @@ private:
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        // no need to slide a window over ground truth data
-        if (src.file.getBool("Train", false)) return;
+        if (skipProject) {
+            dst = src;
+            return;
+        }
 
         dst.file.clearRects();
         float scale = src.file.get<float>("scale", 1);
@@ -255,7 +257,10 @@ private:
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        // do not scale images during training
+        if (skipProject) {
+            dst = src;
+            return;
+        }
         if (src.file.getBool("Train", false)) return;
 
         int rows = src.m().rows;
