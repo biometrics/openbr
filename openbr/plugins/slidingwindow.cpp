@@ -93,44 +93,32 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        (void)src;(void)dst;qFatal("don't do that");
-    }
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        float scale = src.first().file.get<float>("scale", 1);
-        projectHelp(src, dst, windowWidth, windowHeight, scale);
-    }
-
-protected:
-    void projectHelp(const TemplateList &src, TemplateList &dst, int windowWidth, int windowHeight, float scale = 1) const
-    {
+        dst = src;
         // no need to slide a window over ground truth data
-        if (skipProject) {
-            dst = src;
-            return;
-        }
+        if (src.file.getBool("Train", false)) return;
 
-        foreach (const Template &t, src) {
-            for (float y = 0; y + windowHeight < t.m().rows; y += windowHeight*stepFraction) {
-                for (float x = 0; x + windowWidth < t.m().cols; x += windowWidth*stepFraction) {
-                    Mat windowMat(t.m(), Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder * 2, windowHeight - ignoreBorder * 2));
-                    Template detect;
-                    transform->project(Template(t.file, windowMat), detect);
+        dst.file.clearRects();
+        float scale = src.file.get<float>("scale", 1);
+        Template windowTemplate(src.file, src);
+        QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
+        for (double y = 0; y + windowHeight < src.m().rows; y += stepSize) {
+            for (double x = 0; x + windowWidth < src.m().cols; x += stepSize) {
+                Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
+                windowTemplate.replace(0,windowMat);
+                Template detect;
+                transform->project(windowTemplate, detect);
+                float conf = detect.m().at<float>(0);
 
-                    // the result will be the only value in the Mat
-                    float conf = detect.m().at<float>(0);
-                    if (conf > threshold) {
-                        detect.file.set("Detection", QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
-                        detect.file.set("Confidence", conf);
-                        detect.file.clearRects();
-                        dst.append(detect);
-                        if (takeFirst)
-                            return;
-                    }
+                // the result will be in the Label
+                if (conf > threshold) {
+                    dst.file.appendRect(QRectF((float) x * scale, (float) y * scale, (float) windowWidth * scale, (float) windowHeight * scale));
+                    confidences.append(conf);
+                    if (takeFirst)
+                        return;
                 }
             }
         }
+        dst.file.setList<float>("Confidences", confidences);
     }
 };
 
@@ -219,7 +207,7 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
 
 /*!
  * \ingroup transforms
- * \brief Pass along images at different scales.
+ * \brief .
  * \author Austin Blanton \cite imaus10
  */
 class BuildScalesTransform : public MetaTransform
@@ -266,38 +254,25 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        (void)src;(void)dst;qFatal("please don't");
-    }
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
+        dst = src;
         // do not scale images during training
-        if (skipProject) {
-            dst = src;
-            return;
-        }
+        if (src.file.getBool("Train", false)) return;
 
-        foreach(const Template &t, src) {
-            int rows = t.m().rows;
-            int cols = t.m().cols;
-            int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
-            float startScale;
-            if ((cols / rows) > aspectRatio)
-                startScale = qRound((float) rows / (float) windowHeight);
-            else
-                startScale = qRound((float) cols / (float) windowWidth);
-            for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
-                Template scaleImg(t.file, Mat());
-                scaleImg.file.set("scale", scale);
-                resize(t.m(), scaleImg.m(), Size(qRound(cols / scale), qRound(rows / scale)));
-                TemplateList results;
-                TemplateList input;
-                input.append(scaleImg);
-                transform->project(input, results);
-                dst.append(results);
-                if (takeLargestScale && !dst.empty())
-                    return;
-            }
+        int rows = src.m().rows;
+        int cols = src.m().cols;
+        int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
+        float startScale;
+        if ((cols / rows) > aspectRatio)
+            startScale = qRound((float) rows / (float) windowHeight);
+        else
+            startScale = qRound((float) cols / (float) windowWidth);
+        for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
+            Template scaleImg(src.file, Mat());
+            scaleImg.file.set("scale", scale);
+            resize(src, scaleImg, Size(qRound(cols / scale), qRound(rows / scale)));
+            transform->project(scaleImg, dst);
+            if (takeLargestScale && !dst.file.rects().empty())
+                return;
         }
     }
 
@@ -388,21 +363,12 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        (void)src;(void)dst;qFatal("nope");
-    }
+        dst = src;
+        if (!dst.file.contains("Confidences"))
+            return;
 
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        QList<Rect> rects;
-        QList<float> confidences;
-        foreach (const Template &t, src) {
-            if (t.file.contains("Detection")) {
-                rects.append(OpenCVUtils::toRect(t.file.get<QRectF>("Detection")));
-                confidences.append(t.file.get<float>("Confidence"));
-            }
-        }
-
-        // Compute overlap between rectangles and create discrete Laplacian matrix
+        //Compute overlap between rectangles and create discrete Laplacian matrix
+        QList<Rect> rects = OpenCVUtils::toRects(src.file.rects());
         int n = rects.size();
         if (n == 0)
             return;
@@ -466,6 +432,7 @@ private:
             cnts[i] = 0;
         }
 
+        QList<float> confidences = dst.file.getList<float>("Confidences");
         for (int i = 0; i < n; i++) {
             mx = 0.0;
             mxIdx = -1;
@@ -500,13 +467,6 @@ private:
             }
         }
 
-        for (int i=0; i<consolidatedRects.size(); i++) {
-            Template t(src.first().file);
-            t.file.set("Detection", OpenCVUtils::fromRect(consolidatedRects.at(i)));
-            t.file.set("Confidence", consolidatedConfidences.at(i));
-            dst.append(t);
-        }
-
         delete [] midX;
         delete [] midY;
         delete [] avgWidth;
@@ -514,6 +474,8 @@ private:
         delete [] confs;
         delete [] cnts;
 
+        dst.file.setRects(consolidatedRects);
+        dst.file.setList<float>("Confidences", consolidatedConfidences);
     }
 };
 
