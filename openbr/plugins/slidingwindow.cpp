@@ -495,7 +495,7 @@ BR_REGISTER(Transform, ConsolidateDetectionsTransform)
 
 /*!
  * \ingroup transforms
- * \brief For each rectangle bounding box in TemplateList, a new
+ * \brief For each rectangle bounding box in src, a new
  *      template is created.
  * \author Brendan Klare \cite bklare
  */
