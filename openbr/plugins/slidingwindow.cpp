@@ -46,7 +46,7 @@ class SlidingWindowTransform : public Transform
     Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
     Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
-    Q_PROPERTY(int ignoreBorder READ get_ignoreBorder WRITE set_ignoreBorder RESET reset_ignoreBorder STORED false)
+    Q_PROPERTY(int ignoreBorder READ get_ignoreBorder WRITE set_ignoreBorder RESET reset_ignoreBorder STORED true)
     BR_PROPERTY(br::Transform *, transform, NULL)
     BR_PROPERTY(int, windowWidth, 24)
     BR_PROPERTY(bool, takeFirst, false)
@@ -112,7 +112,7 @@ private:
         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
         for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
             for (float x = 0; x + windowWidth < src.m().cols; x += windowWidth*stepFraction) {
-                Mat windowMat(src, Rect(x, y, windowWidth, windowHeight));
+                Mat windowMat(src, Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder * 2, windowHeight - ignoreBorder * 2));
                 windowTemplate.replace(0,windowMat);
                 Template detect;
                 transform->project(windowTemplate, detect);
@@ -269,7 +269,6 @@ private:
             dst = src;
             return;
         }
-        if (src.file.getBool("Train", false)) return;
 
         int rows = src.m().rows;
         int cols = src.m().cols;
