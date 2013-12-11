@@ -107,7 +107,6 @@ private:
             return;
         }
 
-        dst.file.clearRects();
         Template windowTemplate(src.file, src);
         QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
         for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
@@ -273,13 +272,15 @@ private:
         int rows = src.m().rows;
         int cols = src.m().cols;
         int windowHeight = (int) qRound((float) windowWidth / aspectRatio);
+
         float startScale;
         if ((cols / rows) > aspectRatio)
             startScale = qRound((float) rows / (float) windowHeight);
         else
             startScale = qRound((float) cols / (float) windowWidth);
+
         for (float scale = startScale; scale >= minScale; scale -= (1.0 - scaleFactor)) {
-            Template scaleImg(src.file, Mat());
+            Template scaleImg(dst.file, Mat());
             scaleImg.file.set("scale", scale);
             resize(src, scaleImg, Size(qRound(cols / scale), qRound(rows / scale)));
             transform->project(scaleImg, dst);
