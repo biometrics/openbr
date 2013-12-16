@@ -85,6 +85,9 @@ BR_REGISTER(Gallery, arffGallery)
 /*!
  * \ingroup galleries
  * \brief A binary gallery.
+ *
+ * Designed to be a literal translation of templates to disk.
+ * Compatible with TemplateList::fromBuffer.
  * \author Josh Klontz \cite jklontz
  */
 class galGallery : public Gallery

@@ -437,6 +437,9 @@ struct TemplateList : public QList<Template>
     TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
+    /*!< \brief Create a template list from a memory buffer of individual templates. Compatible with '.gal' galleries. */
+    BR_EXPORT static TemplateList fromBuffer(const QByteArray &buffer);
+
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 

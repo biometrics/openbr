@@ -476,6 +476,18 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     return templates;
 }
 
+TemplateList TemplateList::fromBuffer(const QByteArray &buffer)
+{
+    TemplateList templateList;
+    QDataStream stream(buffer);
+    while (!stream.atEnd()) {
+        Template t;
+        stream >> t;
+        templateList.append(t);
+    }
+    return templateList;
+}
+
 // indexes some property, assigns an integer id to each unique value of propName
 // stores the index values in "Label" of the output template list
 TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers)
