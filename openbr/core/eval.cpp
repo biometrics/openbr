@@ -464,11 +464,10 @@ QList<Detection> getDetections(QString key, const Template &t, bool isList, bool
                 dets.append(Detection(rects.at(i), confidences.at(i)));
         }
     } else {
-        if (isTruth) {
+        if (isTruth)
             dets.append(Detection(f.get<QRectF>(key)));
-        } else {
+        else
             dets.append(Detection(f.get<QRectF>(key), f.get<float>("Confidence", -1)));
-        }
     }
     return dets;
 }
