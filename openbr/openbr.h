@@ -452,6 +452,14 @@ BR_EXPORT br_template br_load_img(const char *data, int len);
   */
 BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
 /*!
+  * \brief Free a br::Template's memory.
+  */
+BR_EXPORT void br_free_template(br_template tmpl);
+/*!
+  * \brief Free a br::TemplateList's memory.
+  */
+BR_EXPORT void br_free_template_list(br_template_list tl);
+/*!
   * \brief Get the number of rows in an image.
   * \param tmpl Pointer to a br::Template.
   */

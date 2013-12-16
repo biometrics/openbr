@@ -323,6 +323,18 @@ unsigned char *br_unload_img(br_template tmpl)
     return t->m().data;
 }
 
+void br_free_template(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    delete t;
+}
+
+void br_free_template_list(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    delete realTL;
+}
+
 int br_img_rows(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
