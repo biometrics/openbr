@@ -37,7 +37,7 @@ for lfpwType in ['train','test']:
     if not os.path.exists('sigset'):
         os.mkdir('sigset')
     out = open('sigset/%s.xml' % lfpwType,'w')
-    print >> out, xmlRoot.toprettyxml()
+    out.write(xmlRoot.toprettyxml())
     out.close()
 
 
