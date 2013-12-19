@@ -112,3 +112,14 @@ janus_error janus_verify(const janus_template a, const janus_template b, float *
     *similarity = a_templates * b_templates / dist;
     return JANUS_SUCCESS;
 }
+
+struct janus_incomplete_gallery_type
+{
+    QList< QPair<janus_template, janus_template_id> > templates;
+};
+
+janus_error janus_initialize_gallery(janus_incomplete_gallery *incomplete_gallery)
+{
+    *incomplete_gallery = new janus_incomplete_gallery_type();
+    return JANUS_SUCCESS;
+}
