@@ -99,12 +99,12 @@ class galGallery : public Gallery
     void init()
     {
         gallery.setFileName(file);
-        if (file.get<bool>("remove", false))
+        if (file.get<bool>("remove"))
             gallery.remove();
         QtUtils::touchDir(gallery);
         QFile::OpenMode mode = QFile::ReadWrite;
 
-        if (file.contains("append"))
+        if (file.get<bool>("append"))
             mode |= QFile::Append;
 
         if (!gallery.open(mode))

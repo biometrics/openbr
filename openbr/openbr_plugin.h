@@ -239,6 +239,13 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
+    /*!< \brief Specialization for boolean type. */
+    template <bool>
+    bool get(const QString &key) const
+    {
+        return getBool(key);
+    }
+
     /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
     template <typename T>
     T get(const QString &key, const T &defaultValue) const
@@ -247,6 +254,13 @@ struct BR_EXPORT File
         QVariant variant = value(key);
         if (!variant.canConvert<T>()) return defaultValue;
         return variant.value<T>();
+    }
+
+    /*!< \brief Specialization for boolean type. */
+    template <bool>
+    bool get(const QString &key, const bool &defaultValue) const
+    {
+        return getBool(key, defaultValue);
     }
 
     /*!< \brief Specialization for boolean type. */
