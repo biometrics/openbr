@@ -2,7 +2,7 @@ language: cpp
 compiler: gcc
 before_install:
         - sudo apt-get update -qq
-        - sudo apt-get install -qq cmake qt5-default qt5-image-formats-plugins libopencv-dev
+        - sudo apt-get install -qq cmake libqt4-dev libopencv-dev
 
 before_script:
         - mkdir build
