@@ -430,6 +430,13 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
+void br::CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output)
+{
+    QString alg = output->file.get<QString>("algorithm");
+    QSharedPointer<Distance> dist = Distance::fromAlgorithm(alg);
+    dist->compare(target, query, output);
+}
+
 void br::PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output)
 {
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->pairwiseCompare(targetGallery, queryGallery, output);

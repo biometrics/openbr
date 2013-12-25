@@ -323,6 +323,14 @@ unsigned char *br_unload_img(br_template tmpl)
     return t->m().data;
 }
 
+br_template_list br_template_list_from_buffer(const char *buf, int len)
+{
+    QByteArray arr(buf, len);
+    TemplateList *tl = new TemplateList();
+    *tl = TemplateList::fromBuffer(arr);
+    return (br_template_list)tl;
+}
+
 void br_free_template(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
@@ -333,6 +341,12 @@ void br_free_template_list(br_template_list tl)
 {
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
     delete realTL;
+}
+
+void br_free_output(br_matrix_output output)
+{
+    MatrixOutput *matOut = reinterpret_cast<MatrixOutput*>(output);
+    delete matOut;
 }
 
 int br_img_rows(br_template tmpl)
@@ -357,6 +371,12 @@ bool br_img_is_empty(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
     return t->m().empty();
+}
+
+const char* br_get_filename(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->file.name.toStdString().c_str();
 }
 
 void br_set_filename(br_template tmpl, const char *filename)
@@ -389,6 +409,21 @@ void br_enroll_template_list(br_template_list tl)
 {
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
     Enroll(*realTL);
+}
+
+br_matrix_output br_compare_template_lists(br_template_list target, br_template_list query)
+{
+    TemplateList *targetTL = reinterpret_cast<TemplateList*>(target);
+    TemplateList *queryTL = reinterpret_cast<TemplateList*>(query);
+    MatrixOutput *output = MatrixOutput::make(targetTL->files(), queryTL->files());
+    CompareTemplateLists(*targetTL, *queryTL, output);
+    return (br_matrix_output)output;
+}
+
+float br_get_matrix_output_at(br_matrix_output output, int row, int col)
+{
+    MatrixOutput *matOut = reinterpret_cast<MatrixOutput*>(output);
+    return matOut->data.at<float>(row, col);
 }
 
 br_template br_get_template(br_template_list tl, int index)

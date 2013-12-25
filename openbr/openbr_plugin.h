@@ -1343,6 +1343,11 @@ BR_EXPORT void Enroll(TemplateList &tmpl);
  * \see br_compare
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
+/*!
+ * \brief High-level function for comparing templates.
+ */
+BR_EXPORT void CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output);
+
 
 /*!
  * \brief High-level function for doing a series of pairwise comparisons.
