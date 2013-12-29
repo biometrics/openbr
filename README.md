@@ -12,6 +12,6 @@ To optionally check out a particular [tagged release](https://github.com/biometr
 
 **[Build Instructions](http://openbiometrics.org/doxygen/latest/installation.html)**
 
-[![Build Status](https://travis-ci.org/biometrics/openbr.png)](https://travis-ci.org/biometrics/openbr)
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/biometrics/openbr/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
