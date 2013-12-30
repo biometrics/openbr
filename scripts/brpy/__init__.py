@@ -1,4 +1,5 @@
 from ctypes import *
+import os
 
 def _string_args(n):
 	s  = []
@@ -11,16 +12,23 @@ def _var_string_args(n):
 	s.extend(_string_args(n))
 	return s
 
-def init_brpy(br_loc='/usr/local/lib/libopenbr.dylib'):
+def init_brpy(br_loc='/usr/local/lib'):
     """Takes the ctypes lib object for br and initializes all function inputs and outputs"""
-    br = cdll.LoadLibrary(br_loc)
-    plot_args = _var_string_args(1) + [c_bool]
+    br_loc += '/libopenbr.%s'
+    if os.path.exists(br_loc % 'dylib'):
+        br = cdll.LoadLibrary(br_loc % 'dylib')
+    elif os.path.exists(br_loc % 'so'):
+        br = cdll.LoadLibrary(br_loc % 'so')
+    else:
+        raise ValueError('Neither .so nor .dylib libopenbr found in %s' % br_loc)
 
+    plot_args = _var_string_args(1) + [c_bool]
     br.br_about.restype = c_char_p
     br.br_cat.argtypes = _var_string_args(1)
     br.br_cluster.argtypes = [c_int, POINTER(c_char_p), c_float, c_char_p]
     br.br_combine_masks.argtypes = _var_string_args(2)
     br.br_compare.argtypes = _string_args(3)
+    br.br_compare_n.argtypes = [c_int, POINTER(c_char_p)] + _string_args(2)
     br.br_pairwise_compare.argtypes = _string_args(3)
     br.br_convert.argtypes = _string_args(3)
     br.br_enroll.argtypes = _string_args(2)
