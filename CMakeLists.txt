@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
+set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
 set(CMAKE_AUTOMOC ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "OpenBiometrics")
@@ -137,6 +138,9 @@ endif()
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
+# install C API Python wrapper
+execute_process(COMMAND python -c "import site, sys; sys.stdout.write(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SITE_DIR)
+install(DIRECTORY ${BR_SCRIPTS_DIR}/brpy DESTINATION ${PYTHON_SITE_DIR})
 
 # Package
 set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")

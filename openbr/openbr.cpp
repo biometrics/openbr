@@ -53,6 +53,12 @@ void br_compare(const char *target_gallery, const char *query_gallery, const cha
     Compare(File(target_gallery), File(query_gallery), File(output));
 }
 
+void br_compare_n(int num_targets, const char *target_galleries[], const char *query_gallery, const char *output)
+{
+    if (num_targets > 1) Compare(QtUtils::toStringList(num_targets, target_galleries).join(";")+"(separator=;)", File(query_gallery), File(output));
+    else                 Compare(File(target_galleries[0]), File(query_gallery), File(output));
+}
+
 void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output)
 {
     PairwiseCompare(File(target_gallery), File(query_gallery), File(output));
@@ -447,7 +453,7 @@ br_gallery br_make_gallery(const char *gallery)
 br_template_list br_load_from_gallery(br_gallery gallery)
 {
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
-    TemplateList *tl = static_cast<TemplateList*>(malloc(sizeof(TemplateList)));
+    TemplateList *tl = new TemplateList();
     *tl = gal->read();
     return (br_template_list)tl;
 }
