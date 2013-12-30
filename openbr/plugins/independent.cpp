@@ -156,8 +156,8 @@ class IndependentTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<templatesList.size(); i++)
-	  futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
-	futures.waitForFinished();
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], &templatesList[i]));
+        futures.waitForFinished();
     }
 
     void project(const Template &src, Template &dst) const
