@@ -102,6 +102,12 @@ BR_EXPORT void br_combine_masks(int num_input_masks, const char *input_masks[], 
  */
 BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
+/*!
+ * \brief Convenience function for comparing to multiple targets.
+ * \see br_compare
+ */
+BR_EXPORT void br_compare_n(int num_targets, const char *target_galleries[], const char *query_gallery, const char *output);
+
 BR_EXPORT void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
 /*!
