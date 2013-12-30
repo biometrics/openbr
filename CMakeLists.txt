@@ -118,7 +118,7 @@ if(BUILD_TESTING)
 endif()
 
 # Build the SDK
-include_directories(.)
+include_directories(BEFORE .) # Find the local headers first
 add_subdirectory(openbr)
 
 # Build applications
