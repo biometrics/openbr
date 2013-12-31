@@ -208,8 +208,13 @@ private:
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         QList<float> distances;
-        for (int i = 0; i < a.size(); i++)
-            distances.append(distance->compare(a[i],b[i]));
+        for (int i = 0; i < a.size(); i++) {
+            Template ai = a.file;
+            ai.m() = a[i].clone();
+            Template bi = b.file;
+            bi.m() = b[i].clone();
+            distances.append(distance->compare(ai,bi));
+        }
 
         switch (operation) {
           case Mean:
@@ -227,6 +232,16 @@ private:
           default:
             qFatal("Invalid operation.");
         }
+    }
+
+    void store(QDataStream &stream) const
+    {
+        distance->store(stream);
+    }
+
+    void load(QDataStream &stream)
+    {
+        distance->load(stream);
     }
 };
 
