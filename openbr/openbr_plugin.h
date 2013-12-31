@@ -239,13 +239,6 @@ struct BR_EXPORT File
         return variant.value<T>();
     }
 
-    /*!< \brief Specialization for boolean type. */
-    template <bool>
-    bool get(const QString &key) const
-    {
-        return getBool(key);
-    }
-
     /*!< \brief Returns a value for the key, returning \em defaultValue if the key does not exist or can't be converted. */
     template <typename T>
     T get(const QString &key, const T &defaultValue) const
@@ -254,13 +247,6 @@ struct BR_EXPORT File
         QVariant variant = value(key);
         if (!variant.canConvert<T>()) return defaultValue;
         return variant.value<T>();
-    }
-
-    /*!< \brief Specialization for boolean type. */
-    template <bool>
-    bool get(const QString &key, const bool &defaultValue) const
-    {
-        return getBool(key, defaultValue);
     }
 
     /*!< \brief Specialization for boolean type. */
@@ -345,6 +331,20 @@ private:
 
     void init(const QString &file);
 };
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key, const bool &defaultValue) const
+{
+    return getBool(key, defaultValue);
+}
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key) const
+{
+    return getBool(key);
+}
 
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const File &file); /*!< \brief Serializes the file to a stream. */
