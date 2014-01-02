@@ -138,9 +138,14 @@ endif()
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
-# install C API Python wrapper
-execute_process(COMMAND python -c "import site, sys; sys.stdout.write(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SITE_DIR)
-install(DIRECTORY ${BR_SCRIPTS_DIR}/brpy DESTINATION ${PYTHON_SITE_DIR})
+
+# install brpy
+option(BR_INSTALL_BRPY "Install brpy, the Python wrapper to the C API (requires Python)")
+if(${BR_INSTALL_BRPY})
+  find_package(PythonInterp REQUIRED)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site, sys; sys.stdout.write(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SITE_DIR)
+  install(DIRECTORY ${BR_SCRIPTS_DIR}/brpy DESTINATION ${PYTHON_SITE_DIR})
+endif()
 
 # Package
 set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")
