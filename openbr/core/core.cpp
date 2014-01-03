@@ -463,7 +463,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
         if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
             && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
-            qFatal("Similarity matrix and file size mismatch.");
+            qFatal("Similarity matrix (%d, %d) and header (%d, %d) size mismatch.", m.rows, m.cols, queryFiles.size(), targetFiles.size());
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);

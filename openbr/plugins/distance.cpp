@@ -187,47 +187,61 @@ class OperationDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
+    Q_PROPERTY(QList<int> split READ get_split WRITE set_split RESET reset_split STORED false)
+
+    QList<br::Distance*> distances;
 
 public:
     /*!< */
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    BR_PROPERTY(QString, description, "IdenticalDistance")
     BR_PROPERTY(Operation, operation, Mean)
+    BR_PROPERTY(QList<int>, split, QList<int>())
 
     void train(const TemplateList &src)
     {
-        distance->train(src);
+        // Default is to train on each matrix
+        if (split.isEmpty()) for (int i=0; i<src.at(0).size(); i++) split.append(1);
+
+        QList<TemplateList> partitionedSrc = src.partition(split);
+
+        while (distances.size() < partitionedSrc.size())
+            distances.append(make(description));
+
+        // Train on each of the partitions
+        for (int i=0; i<distances.size(); i++)
+            distances[i]->train(partitionedSrc[i]);
     }
 
     float compare(const Template &a, const Template &b) const
     {
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
-        QList<float> distances;
-        for (int i = 0; i < a.size(); i++) {
+        QList<float> scores;
+        for (int i=0; i<distances.size(); i++) {
             Template ai = a.file;
-            ai.m() = a[i].clone();
+            ai.m() = a[i];
             Template bi = b.file;
-            bi.m() = b[i].clone();
-            distances.append(distance->compare(ai,bi));
+            bi.m() = b[i];
+            scores.append(distances[i]->compare(ai,bi));
         }
 
         switch (operation) {
           case Mean:
-            return std::accumulate(distances.begin(),distances.end(),0.0)/(float)distances.size();
+            return std::accumulate(scores.begin(),scores.end(),0.0)/(float)scores.size();
             break;
           case Sum:
-            return std::accumulate(distances.begin(),distances.end(),0.0);
+            return std::accumulate(scores.begin(),scores.end(),0.0);
             break;
           case Min:
-            return *std::min_element(distances.begin(),distances.end());
+            return *std::min_element(scores.begin(),scores.end());
             break;
           case Max:
-            return *std::max_element(distances.begin(),distances.end());
+            return *std::max_element(scores.begin(),scores.end());
             break;
           default:
             qFatal("Invalid operation.");
@@ -236,12 +250,19 @@ private:
 
     void store(QDataStream &stream) const
     {
-        distance->store(stream);
+        stream << distances.size();
+        foreach (Distance *distance, distances)
+            distance->store(stream);
     }
 
     void load(QDataStream &stream)
     {
-        distance->load(stream);
+        int numDistances;
+        stream >> numDistances;
+        while (distances.size() < numDistances)
+            distances.append(make(description));
+        foreach (Distance *distance, distances)
+            distance->load(stream);
     }
 };
 

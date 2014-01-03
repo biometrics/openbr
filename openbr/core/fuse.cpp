@@ -30,6 +30,9 @@ using namespace cv;
 
 static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
 {
+    if (matrix.rows != mask.rows && matrix.cols != mask.cols)
+        qFatal("Similarity matrix (%d, %d) and mask (%d, %d) size mismatch.", matrix.rows, matrix.cols, mask.rows, mask.cols);
+
     if (method == "None") return;
 
     QList<float> vals; vals.reserve(matrix.rows*matrix.cols);

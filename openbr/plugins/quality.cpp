@@ -179,12 +179,7 @@ class MatchProbabilityDistance : public Distance
             }
         }
 
-        qDebug() << "Genuines: " << genuineScores.mid(0,5);
-        qDebug() << "Impostors: " << impostorScores.mid(0,5);
-
         mp = MP(genuineScores, impostorScores);
-
-        qDebug() << mp(-0.881882,true);
     }
 
     float compare(const Template &target, const Template &query) const
@@ -192,7 +187,6 @@ class MatchProbabilityDistance : public Distance
         const float rawScore = distance->compare(target, query);
         if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
         if (!Globals->scoreNormalization) return -log(rawScore+1);
-        qDebug() << mp(rawScore, gaussian) << rawScore;
         return mp(rawScore, gaussian);
     }
 
