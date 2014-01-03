@@ -179,11 +179,11 @@ BR_REGISTER(Distance, PipeDistance)
 
 /*!
  * \ingroup distances
- * \brief Computes an operation on distances across multiple matrices of compared templates
+ * \brief Fuses similarity scores across multiple matrices of compared templates
  * \author Scott Klum \cite sklum
  * \note Operation: Mean, sum, min, max are supported.
  */
-class OperationDistance : public Distance
+class FuseDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
@@ -222,13 +222,8 @@ private:
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         QList<float> scores;
-        for (int i=0; i<distances.size(); i++) {
-            Template ai = a.file;
-            ai.m() = a[i];
-            Template bi = b.file;
-            bi.m() = b[i];
-            scores.append(distances[i]->compare(ai,bi));
-        }
+        for (int i=0; i<distances.size(); i++)
+            scores.append(distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
 
         switch (operation) {
           case Mean:
@@ -266,7 +261,7 @@ private:
     }
 };
 
-BR_REGISTER(Distance, OperationDistance)
+BR_REGISTER(Distance, FuseDistance)
 
 /*!
  * \ingroup distances
