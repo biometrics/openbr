@@ -774,36 +774,91 @@ BR_REGISTER(Format, scoresFormat)
  * \author Scott Klum \cite sklum
  *
  */
+#include <QTextStream>
+#include <QChar>
 class ebtsFormat : public Format
 {
     Q_OBJECT
-;
 
-    struct Element
+    QByteArray textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
     {
-        // It is always best to cast integers to a Qt integer type, such as qint16 or quint32, when reading and writing.
-        // This ensures that you always know exactly what size integers you are reading and writing, no matter what the
-        // underlying platform and architecture the application happens to be running on.
-        // http://qt-project.org/doc/qt-4.8/datastreamformat.html
-        quint32 type, bytes;
-        QByteArray data;
-        Element() : type(0), bytes(0) {}
-        Element(QDataStream &stream)
-            : type(0), bytes(0)
-        {
-            // Read first 4 bytes into type (32 bit integer),
-            // specifying the type of data used
-            if (stream.readRawData((char*)&type, 120) != 120)
-                qFatal("Unexpected end of file.")
-        }
-    };
+        // Find the field, skip the number bytes, and account for the semicolon
+        int fieldPosition = byteArray.indexOf(fieldNumber, from) + fieldNumber.size() + 1;
+        int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
+
+        return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
+    }
+;
+QString fieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
+{
+    QString fullField = fieldNumber + ".001:";
+
+    // Find the field, skip the number bytes, and account for the semicolon
+    int fieldPosition = byteArray.indexOf(fullField, from);
+
+    int sepPosition = byteArray.indexOf(QChar(0x1C),fieldPosition);
+
+    return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
+}
 
     Template read() const
     {
+        QByteArray byteArray;
+        QtUtils::readFile(file, byteArray);
 
-                              QByteArray byteArray;
-                              QtUtils::readFile(file, byteArray);
-                              QDataStream f(byteArray);
+        Template t;
+
+        Mat m;
+
+        qDebug() << fieldValue(byteArray, "1");
+        qDebug() << fieldValue(byteArray, "2");
+
+
+        // Demographics
+        {
+            QString name = textFieldValue(byteArray, "2.018");
+            QStringList names = name.split(',');
+            t.file.set("FIRSTNAME", names.at(1));
+            t.file.set("LASTNAME", names.at(0));
+            t.file.set("DOB", textFieldValue(byteArray, "2.022").toInt());
+            t.file.set("GENDER", textFieldValue(byteArray, "2.024"));
+            t.file.set("RACE", textFieldValue(byteArray, "2.025"));
+        }
+
+        // Mugshot (first in file used)
+        // Todo: Check for face designation
+        {
+            const QString imageRecord = "10.001:";
+            const QString imageDataRecord = "10.999:";
+
+            int fieldPosition = byteArray.indexOf(imageRecord);
+
+            if (fieldPosition != -1) {
+                int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
+                int dataPosition = byteArray.indexOf(imageDataRecord,sepPosition);
+
+                int recordBytes = byteArray.mid(fieldPosition,sepPosition-fieldPosition).toInt();
+                int headerBytes = byteArray.mid(fieldPosition,dataPosition-fieldPosition).size() + imageDataRecord.size();
+
+                QByteArray data = byteArray.mid(dataPosition+imageRecord.size(),recordBytes-headerBytes);
+
+                m = imdecode(Mat(3, data.size(), CV_8UC3, data.data()), CV_LOAD_IMAGE_COLOR);
+                if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
+
+                t.m() = m;
+            } else qWarning("ebtsFormat::cannot find image data within file.");
+
+        }
+
+        if (t.file.contains("DOB")) {
+            const QDate dob = QDate::fromString(t.file.get<QString>("DOB"), "yyyyMMdd");
+            const QDate current = QDate::currentDate();
+            int age = current.year() - dob.year();
+            if (current.month() < dob.month()) age--;
+            t.file.set("Age", age);
+        }
+
+        return t;
     }
 
     void write(const Template &t) const
