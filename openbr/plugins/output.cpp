@@ -371,7 +371,7 @@ class evalOutput : public MatrixOutput
         if (data.data) {
             const QString csv = QString(file.name).replace(".eval", ".csv");
             if ((Globals->crossValidate == 0) || (!crossValidate)) {
-                Evaluate(data, BEE::makeMask(targetFiles, queryFiles), csv);
+                Evaluate(data,targetFiles, queryFiles, csv);
             } else {
                 QFutureSynchronizer<float> futures;
                 for (int i=0; i<Globals->crossValidate; i++)

@@ -102,3 +102,21 @@ if [ ! -d ../data/MEDS/img ]; then
   mv data/*/*.jpg ../data/MEDS/img
   rm -r data NIST_SD32_MEDS-II_face.zip
 fi
+
+#LFPW
+if [ ! -d ../data/lfpw/trainset ]; then
+  echo "Downloading LFPW..."
+  if hash curl 2>/dev/null; then
+    curl -OL http://ibug.doc.ic.ac.uk/media/uploads/competitions/lfpw.zip
+  else
+    wget  http://ibug.doc.ic.ac.uk/media/uploads/competitions/lfpw.zip
+  fi
+  
+  unzip lfpw.zip
+  mv lfpw ../data
+  cd ../data/lfpw
+  python ../../scripts/lfpwToSigset.py
+  cd ../../scripts
+  rm lfpw.zip
+fi
+

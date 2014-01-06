@@ -280,12 +280,12 @@ class mtxFormat : public Format
 
     Template read() const
     {
-        return BEE::readSimmat(file);
+        return BEE::readMat(file);
     }
 
     void write(const Template &t) const
     {
-        BEE::writeSimmat(t, file);
+        BEE::writeMat(t, file);
     }
 };
 
@@ -296,19 +296,9 @@ BR_REGISTER(Format, mtxFormat)
  * \brief Reads a NIST BEE mask matrix.
  * \author Josh Klontz \cite jklontz
  */
-class maskFormat : public Format
+class maskFormat : public mtxFormat
 {
     Q_OBJECT
-
-    Template read() const
-    {
-        return BEE::readMask(file);
-    }
-
-    void write(const Template &t) const
-    {
-        BEE::writeMask(t, file);
-    }
 };
 
 BR_REGISTER(Format, maskFormat)
@@ -419,7 +409,7 @@ class matFormat : public Format
 
                 if ((rows > 0) && (columns > 0) && (matrixType != 0) && !matrixData.isEmpty()) {
                     Mat transposed;
-                    transpose(Mat(rows, columns, matrixType, matrixData.data()), transposed);
+                    transpose(Mat(columns, rows, matrixType, matrixData.data()), transposed);
                     t.append(transposed);
                 }
             }

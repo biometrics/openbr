@@ -50,6 +50,26 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, RemoveTemplatesTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Removes a metadata field from all templates
+ * \author Brendan Klare \cite bklare
+ */
+class RemoveMetadataTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString attributeName READ get_attributeName WRITE set_attributeName RESET reset_attributeName STORED false)
+    BR_PROPERTY(QString, attributeName, "None")
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (dst.file.contains(attributeName))
+            dst.file.remove(attributeName);
+    }
+};
+BR_REGISTER(Transform, RemoveMetadataTransform)
+
 } // namespace br
 
 #include "template.moc"

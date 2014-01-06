@@ -248,8 +248,8 @@ class ExpandTransform : public UntrainableMetaTransform
 
     virtual void project(const Template & src, Template & dst) const
     {
-        qFatal("this has gone bad");
-        (void) src; (void) dst;
+        dst = src;
+        qDebug("Called Expand project(Template,Template), nothing will happen");
     }
 };
 
@@ -614,13 +614,20 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * smartCopy()
+    Transform * smartCopy(bool & newTransform)
     {
-        if (!transform->timeVarying())
+        if (!transform->timeVarying()) {
+            newTransform = false;
             return this;
+        }
+        newTransform = true;
 
         DistributeTemplateTransform * output = new DistributeTemplateTransform;
-        output->transform = transform->smartCopy();
+        bool newChild = false;
+        output->transform = transform->smartCopy(newChild);
+        if (newChild)
+            output->transform->setParent(output);
+
         return output;
     }
 

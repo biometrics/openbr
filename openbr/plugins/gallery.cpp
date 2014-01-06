@@ -73,6 +73,11 @@ class arffGallery : public Gallery
         arffFile.write(qPrintable(OpenCVUtils::matrixToStringList(t).join(',')));
         arffFile.write(qPrintable(",'" + t.file.get<QString>("Label") + "'\n"));
     }
+
+    void init()
+    {
+        //
+    }
 };
 
 BR_REGISTER(Gallery, arffGallery)
@@ -80,6 +85,9 @@ BR_REGISTER(Gallery, arffGallery)
 /*!
  * \ingroup galleries
  * \brief A binary gallery.
+ *
+ * Designed to be a literal translation of templates to disk.
+ * Compatible with TemplateList::fromBuffer.
  * \author Josh Klontz \cite jklontz
  */
 class galGallery : public Gallery
@@ -91,10 +99,15 @@ class galGallery : public Gallery
     void init()
     {
         gallery.setFileName(file);
-        if (file.get<bool>("remove", false))
+        if (file.get<bool>("remove"))
             gallery.remove();
         QtUtils::touchDir(gallery);
-        if (!gallery.open(QFile::ReadWrite | QFile::Append))
+        QFile::OpenMode mode = QFile::ReadWrite;
+
+        if (file.get<bool>("append"))
+            mode |= QFile::Append;
+
+        if (!gallery.open(mode))
             qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
         stream.setDevice(&gallery);
     }
@@ -579,6 +592,11 @@ class templateGallery : public Gallery
         (void) t;
         qFatal("No supported.");
     }
+
+    void init()
+    {
+        //
+    }
 };
 
 BR_REGISTER(Gallery, templateGallery)
@@ -737,6 +755,11 @@ class dbGallery : public Gallery
         (void) t;
         qFatal("Not supported.");
     }
+
+    void init()
+    {
+        //
+    }
 };
 
 BR_REGISTER(Gallery, dbGallery)
@@ -789,6 +812,11 @@ class googleGallery : public Gallery
     {
         (void) t;
         qFatal("Not supported.");
+    }
+
+    void init()
+    {
+        //
     }
 };
 
@@ -883,6 +911,11 @@ class FDDBGallery : public Gallery
         (void) t;
         qFatal("Not implemented.");
     }
+
+    void init()
+    {
+        //
+    }
 };
 
 BR_REGISTER(Gallery, FDDBGallery)
@@ -926,6 +959,11 @@ class landmarksGallery : public Gallery
     {
         (void) t;
         qFatal("Not implemented.");
+    }
+
+    void init()
+    {
+        //
     }
 };
 

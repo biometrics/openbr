@@ -39,16 +39,16 @@ namespace BEE
     void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
 
     // Matrix
-    cv::Mat readSimmat(const br::File &simmat, QString *targetSigset = NULL, QString *querySigset = NULL);
-    cv::Mat readMask(const br::File &mask);
-    void writeSimmat(const cv::Mat &m, const QString &simmat, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
-    void writeMask(const cv::Mat &m, const QString &mask, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
+    cv::Mat readMat(const br::File & mat, QString * targetSigset = NULL, QString * querySigset = NULL);
+    void writeMat(const cv::Mat &m, const QString &simmat, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
     void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset);
     void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset);
 
     // Mask
     void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
     cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
+    void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask);
+    cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
     void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 

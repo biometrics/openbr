@@ -139,8 +139,9 @@ public:
      *\brief For transforms that don't do any training, this default implementation
      * which creates a new copy of the Transform from its description string is sufficient.
      */
-    virtual Transform * smartCopy()
+    virtual Transform * smartCopy(bool & newTransform)
     {
+        newTransform = true;
         return this->clone();
     }
 
@@ -154,6 +155,53 @@ protected:
     }
 };
 
+/*!
+ * \brief Interface for transforms that act as decorators of another transform
+ */
+class BR_EXPORT WrapperTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    WrapperTransform(bool independent = true) : TimeVaryingTransform(independent)
+    {
+    }
+
+    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
+    BR_PROPERTY(br::Transform *, transform, NULL)
+
+    bool timeVarying() const { return transform->timeVarying(); }
+
+    void project(const Template &src, Template &dst) const
+    {
+        transform->project(src,dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        transform->projectUpdate(src,dst);
+    }
+    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    {
+        transform->projectUpdate(src,dst);
+    }
+
+    void train(const QList<TemplateList> & data)
+    {
+        transform->train(data);
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        transform->finalize(output);
+    }
+
+    void init()
+    {
+        if (transform)
+            this->trainable = transform->trainable;
+    }
+
+};
 
 /*!
  * \brief A MetaTransform that aggregates some sub-transforms
@@ -203,15 +251,28 @@ public:
      * it creates a new copy of its own class, and gives that copy the child transforms
      * returned by calling smartCopy on this transforms children
      */
-    Transform * smartCopy()
+    Transform * smartCopy(bool & newTransform)
     {
-        if (!timeVarying())
+        if (!timeVarying()) {
+            newTransform = false;
             return this;
+        }
+        newTransform = true;
 
         QString name = metaObject()->className();
+
         name.replace("Transform","");
-        name += "([])";
+        name += "([]";
+
+        QStringList arguments = this->arguments();
+        if (!arguments.isEmpty()) {
+            name += ",";
+            name += this->arguments().join(",");
+        }
+
+        name += ")";
         name.replace("br::","");
+
         CompositeTransform * output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
 
         if (output == NULL)
@@ -219,8 +280,9 @@ public:
 
         foreach(Transform* t, transforms )
         {
-            Transform * maybe_copy = t->smartCopy();
-            if (maybe_copy->parent() == NULL)
+            bool newItem = false;
+            Transform * maybe_copy = t->smartCopy(newItem);
+            if (newItem)
                 maybe_copy->setParent(output);
             output->transforms.append(maybe_copy);
         }

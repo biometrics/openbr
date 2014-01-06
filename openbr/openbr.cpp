@@ -53,6 +53,17 @@ void br_compare(const char *target_gallery, const char *query_gallery, const cha
     Compare(File(target_gallery), File(query_gallery), File(output));
 }
 
+void br_compare_n(int num_targets, const char *target_galleries[], const char *query_gallery, const char *output)
+{
+    if (num_targets > 1) Compare(QtUtils::toStringList(num_targets, target_galleries).join(";")+"(separator=;)", File(query_gallery), File(output));
+    else                 Compare(File(target_galleries[0]), File(query_gallery), File(output));
+}
+
+void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output)
+{
+    PairwiseCompare(File(target_gallery), File(query_gallery), File(output));
+}
+
 void br_convert(const char *file_type, const char *input_file, const char *output_file)
 {
     Convert(File(file_type), File(input_file), File(output_file));
@@ -131,6 +142,11 @@ bool br_is_classifier(const char *algorithm)
 void br_make_mask(const char *target_input, const char *query_input, const char *mask)
 {
     BEE::makeMask(target_input, query_input, mask);
+}
+
+void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask)
+{
+    BEE::makePairwiseMask(target_input, query_input, mask);
 }
 
 const char *br_most_recent_message()
@@ -313,6 +329,32 @@ unsigned char *br_unload_img(br_template tmpl)
     return t->m().data;
 }
 
+br_template_list br_template_list_from_buffer(const char *buf, int len)
+{
+    QByteArray arr(buf, len);
+    TemplateList *tl = new TemplateList();
+    *tl = TemplateList::fromBuffer(arr);
+    return (br_template_list)tl;
+}
+
+void br_free_template(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    delete t;
+}
+
+void br_free_template_list(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    delete realTL;
+}
+
+void br_free_output(br_matrix_output output)
+{
+    MatrixOutput *matOut = reinterpret_cast<MatrixOutput*>(output);
+    delete matOut;
+}
+
 int br_img_rows(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
@@ -331,6 +373,35 @@ int br_img_channels(br_template tmpl)
     return t->m().channels();
 }
 
+bool br_img_is_empty(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->m().empty();
+}
+
+const char* br_get_filename(br_template tmpl)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    return t->file.name.toStdString().c_str();
+}
+
+void br_set_filename(br_template tmpl, const char *filename)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    t->file.name = filename;
+}
+
+const char* br_get_metadata_string(br_template tmpl, const char *key)
+{
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    // need an object outside of this scope
+    // so the char pointer is valid
+    static QByteArray result;
+    QVariant qvar = t->file.value(key);
+    result = QtUtils::toString(qvar).toUtf8();
+    return result.data();
+}
+
 br_template_list br_enroll_template(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
@@ -338,6 +409,27 @@ br_template_list br_enroll_template(br_template tmpl)
     tl->append(*t);
     Enroll(*tl);
     return (br_template_list)tl;
+}
+
+void br_enroll_template_list(br_template_list tl)
+{
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    Enroll(*realTL);
+}
+
+br_matrix_output br_compare_template_lists(br_template_list target, br_template_list query)
+{
+    TemplateList *targetTL = reinterpret_cast<TemplateList*>(target);
+    TemplateList *queryTL = reinterpret_cast<TemplateList*>(query);
+    MatrixOutput *output = MatrixOutput::make(targetTL->files(), queryTL->files());
+    CompareTemplateLists(*targetTL, *queryTL, output);
+    return (br_matrix_output)output;
+}
+
+float br_get_matrix_output_at(br_matrix_output output, int row, int col)
+{
+    MatrixOutput *matOut = reinterpret_cast<MatrixOutput*>(output);
+    return matOut->data.at<float>(row, col);
 }
 
 br_template br_get_template(br_template_list tl, int index)
@@ -350,4 +442,31 @@ int br_num_templates(br_template_list tl)
 {
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
     return realTL->size();
+}
+
+br_gallery br_make_gallery(const char *gallery)
+{
+    Gallery *gal = Gallery::make(File(gallery));
+    return (br_gallery)gal;
+}
+
+br_template_list br_load_from_gallery(br_gallery gallery)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    TemplateList *tl = new TemplateList();
+    *tl = gal->read();
+    return (br_template_list)tl;
+}
+
+void br_add_to_gallery(br_gallery gallery, br_template_list tl)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);
+    gal->writeBlock(*realTL);
+}
+
+void br_close_gallery(br_gallery gallery)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    delete gal;
 }

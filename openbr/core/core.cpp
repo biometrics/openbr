@@ -19,6 +19,7 @@
 #include "bee.h"
 #include "common.h"
 #include "qtutils.h"
+#include "../plugins/openbr_internal.h"
 
 using namespace br;
 
@@ -44,6 +45,15 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity], readMode=DistributeFrames)", NULL));
+
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+        downcast->transforms[0] = this->transform.data();
+
+        downcast->init();
+
         TemplateList data(TemplateList::fromGallery(input));
 
         // set the Train bool metadata, in case a Transform's project
@@ -52,15 +62,16 @@ struct AlgorithmCore
             data[i].file.set("Train", true);
 
         if (transform.isNull()) qFatal("Null transform.");
-        qDebug("%d training files", data.size());
+        qDebug("%d Training Files", data.size());
 
-        QTime time; time.start();
+        Globals->startTime.start();
+
         qDebug("Training Enrollment");
-        transform->train(data);
+        downcast->train(data);
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
-            data >> *transform;
+            downcast->projectUpdate(data,data);
 
             qDebug("Training Comparison");
             distance->train(data);
@@ -71,7 +82,7 @@ struct AlgorithmCore
             store(model);
         }
 
-        qDebug("Training Time (sec): %d", time.elapsed()/1000);
+        qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
     }
 
     void store(const QString &model) const
@@ -114,74 +125,68 @@ struct AlgorithmCore
 
     FileList enroll(File input, File gallery = File())
     {
+        FileList files;
+
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
-        FileList fileList;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
         }
+        TemplateList data(TemplateList::fromGallery(input));
 
-        QScopedPointer<Gallery> g(Gallery::make(gallery));
-        if (g.isNull()) qFatal("Null gallery!");
-
-        do {
-            fileList.clear();
-
-            if (gallery.contains("read") || gallery.contains("cache"))
-                fileList = g->files();
-
-            if (!fileList.isEmpty() && gallery.contains("cache"))
-                return fileList;
-
-            const TemplateList i(TemplateList::fromGallery(input));
-            if (i.isEmpty()) return fileList; // Nothing to enroll
-
-            if (transform.isNull()) qFatal("Null transform.");
-            const int blocks = Globals->blocks(i.size());
-            Globals->currentStep = 0;
-            Globals->totalSteps = i.size();
-            Globals->startTime.start();
-
-            const bool noDuplicates = gallery.contains("noDuplicates");
-            QStringList fileNames = noDuplicates ? fileList.names() : QStringList();
-            const int subBlockSize = 4*std::max(1, Globals->parallelism);
-            const int numSubBlocks = ceil(1.0*Globals->blockSize/subBlockSize);
-            int totalCount = 0, failureCount = 0;
-            double totalBytes = 0;
-            for (int block=0; block<blocks; block++) {
-                for (int subBlock = 0; subBlock<numSubBlocks; subBlock++) {
-                    TemplateList data = i.mid(block*Globals->blockSize + subBlock*subBlockSize, subBlockSize);
-                    if (data.isEmpty()) break;
-                    if (noDuplicates)
-                        for (int i=data.size()-1; i>=0; i--)
-                            if (fileNames.contains(data[i].file.name))
-                                data.removeAt(i);
-                    const int numFiles = data.size();
-
-                    data >> *transform;
-
-                    g->writeBlock(data);
-                    const FileList newFiles = data.files();
-                    fileList.append(newFiles);
-
-                    totalCount += newFiles.size();
-                    failureCount += newFiles.failures();
-                    totalBytes += data.bytes<double>();
-                    Globals->currentStep += numFiles;
-                    Globals->printStatus();
+        if (gallery.contains("append"))
+        {
+            // Remove any templates which are already in the gallery
+            QScopedPointer<Gallery> g(Gallery::make(gallery));
+            files = g->files();
+            QSet<QString> nameSet = QSet<QString>::fromList(files.names());
+            for (int i = data.size() - 1; i>=0; i--) {
+                if (nameSet.contains(data[i].file.name))
+                {
+                    data.removeAt(i);
                 }
             }
+        }
 
-            const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
-            if (!Globals->quiet && (Globals->totalSteps > 1))
-                fprintf(stderr, "\rTIME ELAPSED (MINS) %f SPEED=%.1e  SIZE=%.4g  FAILURES=%d/%d  \n",
-                        Globals->startTime.elapsed()/1000./60.,speed, totalBytes/totalCount, failureCount, totalCount);
-            Globals->totalSteps = 0;
-        } while (input.getBool("infinite"));
+        if (data.empty())
+            return files;
 
-        return fileList;
+        // Trust me, this makes complete sense.
+        // We're just going to make a pipe with a placeholder first transform
+        Globals->totalSteps = data.length();
+        QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+        QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
+
+        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
+        if (downcast == NULL)
+            qFatal("downcast failed?");
+
+        // replace that placeholder with the current algorithm
+        downcast->transforms[0] = this->transform.data();
+
+        // call init on the pipe to collapse the algorithm (if its top level is a pipe)
+        downcast->init();
+
+        // Next, we make a Stream (with placeholder transform)
+        QString streamDesc = "Stream(Identity, readMode=DistributeFrames)";
+        QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
+        WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
+
+        // replace that placeholder with the pipe we built
+        wrapper->transform = downcast;
+
+        // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
+        wrapper->init();
+
+        Globals->startTime.start();
+
+        wrapper->projectUpdate(data,data);
+
+        files.append(data.files());
+
+        return files;
     }
 
     void enroll(TemplateList &data)
@@ -207,6 +212,45 @@ struct AlgorithmCore
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
         }
+    }
+
+    void pairwiseCompare(File targetGallery, File queryGallery, File output)
+    {
+        qDebug("Pairwise comparing %s and %s%s", qPrintable(targetGallery.flat()),
+               qPrintable(queryGallery.flat()),
+               output.isNull() ? "" : qPrintable(" to " + output.flat()));
+
+        if (distance.isNull()) qFatal("Null distance.");
+
+        if (queryGallery == ".") queryGallery = targetGallery;
+
+        QScopedPointer<Gallery> t, q;
+        FileList targetFiles, queryFiles;
+        retrieveOrEnroll(targetGallery, t, targetFiles);
+        retrieveOrEnroll(queryGallery, q, queryFiles);
+
+        if (t->files().length() != q->files().length() )
+            qFatal("Dimension mismatch in pairwise compare");
+
+        TemplateList queries = q->read();
+        TemplateList targets = t->read();
+
+        // Use a single file for one of the dimensions so that the output makes the right size file
+        FileList dummyTarget;
+        dummyTarget.append(targets[0]);
+        QScopedPointer<Output> realOutput(Output::make(output, dummyTarget, queryFiles));
+
+        // Some outputs assume Globals->blockSize is a real thing, of course we have no interest in it.
+        int old_block_size = Globals->blockSize;
+        Globals->blockSize = INT_MAX;
+        realOutput->setBlock(0,0);
+        for (int i=0; i < queries.length(); i++)
+        {
+            float res = distance->compare(queries[i], targets[i]);
+            realOutput->setRelative(res, 0,i);
+        }
+
+        Globals->blockSize = old_block_size;
     }
 
     void compare(File targetGallery, File queryGallery, File output)
@@ -312,8 +356,6 @@ private:
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
         //! [Parsing the algorithm description]
 
-        if (description.getBool("distribute", true))
-            words[0] = "DistributeTemplate(" + words[0] + ")";
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
@@ -388,6 +430,18 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
+void br::CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output)
+{
+    QString alg = output->file.get<QString>("algorithm");
+    QSharedPointer<Distance> dist = Distance::fromAlgorithm(alg);
+    dist->compare(target, query, output);
+}
+
+void br::PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output)
+{
+    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->pairwiseCompare(targetGallery, queryGallery, output);
+}
+
 void br::Convert(const File &fileType, const File &inputFile, const File &outputFile)
 {
     qDebug("Converting %s %s to %s", qPrintable(fileType.flat()), qPrintable(inputFile.flat()), qPrintable(outputFile.flat()));
@@ -403,18 +457,27 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
         while (!done) after->writeBlock(before->readBlock(&done));
     } else if (fileType == "Output") {
         QString target, query;
-        cv::Mat m = BEE::readSimmat(inputFile, &target, &query);
+        cv::Mat m = BEE::readMat(inputFile, &target, &query);
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
 
-        if (targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+        if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
+            && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
             qFatal("Similarity matrix and file size mismatch.");
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
 
-        for (int i=0; i<queryFiles.size(); i++)
-            for (int j=0; j<targetFiles.size(); j++)
+        if (targetFiles.size() != m.cols)
+        {
+            MatrixOutput   * mOut = dynamic_cast<MatrixOutput *>(o.data());
+            if (mOut)
+                mOut->data.create(queryFiles.size(), 1, CV_32FC1);
+        }
+
+        o->setBlock(0,0);
+        for (int i=0; i < m.rows; i++)
+            for (int j=0; j < m.cols; j++)
                 o->setRelative(m.at<float>(i,j), i, j);
     } else {
         qFatal("Unrecognized file type %s.", qPrintable(fileType.flat()));
@@ -435,9 +498,18 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
     }
 }
 
-QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm)
+QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)
 {
-    return AlgorithmManager::getAlgorithm(algorithm)->transform;
+    if (!preprocess)
+        return AlgorithmManager::getAlgorithm(algorithm)->transform;
+    else {
+        QSharedPointer<Transform> orig_tform = AlgorithmManager::getAlgorithm(algorithm)->transform;
+        QSharedPointer<Transform> newRoot = QSharedPointer<Transform>(Transform::make("Stream(Identity)", NULL));
+        WrapperTransform * downcast = dynamic_cast<WrapperTransform *> (newRoot.data());
+        downcast->transform = orig_tform.data();
+        downcast->init();
+        return newRoot;
+    }
 }
 
 QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorithm)

@@ -173,7 +173,7 @@ class MatchProbabilityDistance : public Distance
             for (int j=0; j<i; j++) {
                 const float score = matrixOutput.data()->data.at<float>(i, j);
                 if (score == -std::numeric_limits<float>::max()) continue;
-                if (crossModality) if(src[i].file.get<QString>("MODALITY") == src[j].file.get<QString>("MODALITY")) continue;
+                if (crossModality && src[i].file.get<QString>("MODALITY") == src[j].file.get<QString>("MODALITY")) continue;
                 if (labels[i] == labels[j]) genuineScores.append(score);
                 else                        impostorScores.append(score);
             }

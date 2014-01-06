@@ -233,9 +233,9 @@ struct BR_EXPORT File
     template <typename T>
     T get(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QVariant variant = value(key);
-        if (!variant.canConvert<T>()) qFatal("Can't convert: %s", qPrintable(key));
+        if (!variant.canConvert<T>()) qFatal("Can't convert: %s in: %s", qPrintable(key), qPrintable(flat()));
         return variant.value<T>();
     }
 
@@ -256,11 +256,11 @@ struct BR_EXPORT File
     template <typename T>
     QList<T> getList(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QList<T> list;
         foreach (const QVariant &item, m_metadata[key].toList()) {
             if (item.canConvert<T>()) list.append(item.value<T>());
-            else qFatal("Failed to convert value for key %s.", qPrintable(key));
+            else qFatal("Failed to convert value for key %s in: %s", qPrintable(key), qPrintable(flat()));
         }
         return list;
     }
@@ -331,6 +331,20 @@ private:
 
     void init(const QString &file);
 };
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key, const bool &defaultValue) const
+{
+    return getBool(key, defaultValue);
+}
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key) const
+{
+    return getBool(key);
+}
 
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const File &file); /*!< \brief Serializes the file to a stream. */
@@ -437,8 +451,11 @@ struct TemplateList : public QList<Template>
     TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
+    /*!< \brief Create a template list from a memory buffer of individual templates. Compatible with '.gal' galleries. */
+    BR_EXPORT static TemplateList fromBuffer(const QByteArray &buffer);
+
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
-    BR_EXPORT static TemplateList relabel(const TemplateList & tl, const QString & propName);
+    BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
     QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
@@ -686,12 +703,6 @@ public:
      */
     Q_PROPERTY(Filters filters READ get_filters WRITE set_filters RESET reset_filters)
     BR_PROPERTY(Filters, filters, Filters())
-
-    /*!
-     * \brief If \c true a template will be skipped over if its file name already exists in the gallery.
-     */
-    Q_PROPERTY(bool noDuplicates READ get_noDuplicates WRITE set_noDuplicates RESET reset_noDuplicates)
-    BR_PROPERTY(bool, noDuplicates, false)
 
     /*!
      * \brief File output is redirected here if the file's basename is 'buffer', clearing previous contents.
@@ -1060,6 +1071,7 @@ public:
     void writeBlock(const TemplateList &templates); /*!< \brief Serialize a template list. */
     virtual void write(const Template &t) = 0; /*!< \brief Serialize a template. */
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
+    void init();
 
 private:
     QSharedPointer<Gallery> next;
@@ -1110,7 +1122,7 @@ public:
 
     virtual ~Transform() {}
     static Transform *make(QString str, QObject *parent); /*!< \brief Make a transform from a string. */
-    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's transform. */
+    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm, bool preprocess=true); /*!< \brief Retrieve an algorithm's transform. If preprocess is true, attaches a stream transform as the root of the algorithm*/
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
 
@@ -1129,6 +1141,7 @@ public:
 
     /*!< \brief Apply the transform to a single template. Typically used by independent transforms */
     virtual void project(const Template &src, Template &dst) const = 0;
+
     /*!< \brief Apply the transform, taking the full template list as input.
      * A TemplateList is what is typically passed from transform to transform. Transforms that just
      * need to operatoe on a single template at a time (and want to output exactly 1 template) can implement
@@ -1213,7 +1226,9 @@ public:
      * and copy enough of their state that projectUpdate can safely be called on the original
      * instance, and the copy concurrently.
      */
-    virtual Transform * smartCopy() { return this;}
+    virtual Transform * smartCopy(bool & newTransform) { newTransform=false; return this;}
+
+    virtual Transform * smartCopy() {bool junk; return smartCopy(junk);}
 
     /*!
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
@@ -1328,6 +1343,17 @@ BR_EXPORT void Enroll(TemplateList &tmpl);
  * \see br_compare
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
+/*!
+ * \brief High-level function for comparing templates.
+ */
+BR_EXPORT void CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output);
+
+
+/*!
+ * \brief High-level function for doing a series of pairwise comparisons.
+ * \see br_pairwise_compare
+ */
+BR_EXPORT void PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output);
 
 /*!
  * \brief Change file formats.

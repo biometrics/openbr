@@ -85,7 +85,7 @@ class StasmTransform : public UntrainableTransform
             // Two use cases are accounted for:
             // 1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
             // 2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
-            // Note that for case 2, if Affine_0 and Affine_1 are not present (indicating no normalization has taken place), we default to stasm_search_single.
+            // If both cases fail, we default to stasm_search_single.
 
             bool ok = false;
             QPointF rightEye;
@@ -97,8 +97,12 @@ class StasmTransform : public UntrainableTransform
             }
 
             if (!ok) {
-                rightEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(0), QString()),&ok);
-                leftEye = QtUtils::toPoint(src.file.get<QString>(pinEyes.at(1), QString()),&ok);
+                if (src.file.contains(pinEyes.at(0)) && src.file.contains(pinEyes.at(1)))
+                {
+                    rightEye = src.file.get<QPointF>(pinEyes.at(0), QPointF());
+                    leftEye = src.file.get<QPointF>(pinEyes.at(1), QPointF());
+                    ok = true;
+                }
             }
 
             float eyes[2 * stasm_NLANDMARKS];
@@ -132,7 +136,7 @@ class StasmTransform : public UntrainableTransform
         }
 
         if (!foundFace) {
-            qWarning("No face found in %s.", qPrintable(src.file.fileName()));
+            if (Globals->verbose) qWarning("No face found in %s.", qPrintable(src.file.fileName()));
             dst.file.set("FTE",true);
         } else {
             QList<QPointF> points;

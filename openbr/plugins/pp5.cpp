@@ -45,7 +45,7 @@ class PP5Initializer : public Initializer
     void initialize() const
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
-        Globals->abbreviations.insert("PP5","Open!PP5Enroll:PP5Compare");
+        Globals->abbreviations.insert("PP5","Open+Expand+PP5Enroll:PP5Compare");
         Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
         Globals->abbreviations.insert("PP5CropFace", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)+Affine(128,128,0.25,0.35)+Cvt(Gray)");
     }
@@ -158,7 +158,7 @@ struct PP5Context
                                               face_attributes.position.y - face_attributes.dimensions.height/2,
                                               face_attributes.dimensions.width,
                                               face_attributes.dimensions.height));
-        metadata.insert("PP5_Face_Confidence", face_attributes.confidence);
+        metadata.insert("Confidence", face_attributes.confidence);
         metadata.insert("PP5_Face_Roll", face_attributes.rotation.roll);
         metadata.insert("PP5_Face_Pitch", face_attributes.rotation.pitch);
         metadata.insert("PP5_Face_Yaw", face_attributes.rotation.yaw);

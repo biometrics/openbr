@@ -228,7 +228,7 @@ void File::appendRect(const QRectF &rect)
     m_metadata["Rects"] = newRects;
 }
 
-void File::appendRect(const Rect &rect)
+void File::appendRect(const cv::Rect &rect)
 {
     appendRect(OpenCVUtils::fromRect(rect));
 }
@@ -241,7 +241,7 @@ void File::appendRects(const QList<QRectF> &rects)
     m_metadata["Rects"] = newRects;
 }
 
-void File::appendRects(const QList<Rect> &rects)
+void File::appendRects(const QList<cv::Rect> &rects)
 {
     appendRects(OpenCVUtils::fromRects(rects));
 }
@@ -452,10 +452,12 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         // of target images to every partition
                         newTemplates[i].file.set("Partition", -1);
                     } else {
-                        // Direct use of "Label" is not general -cao
-                        const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
-                        // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                        newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+                        if (!newTemplates[i].file.contains(("Partition"))) {
+                            // Direct use of "Label" is not general -cao
+                            const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
+                            // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                            newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+                        }
                     }
                 }
             }
@@ -474,15 +476,32 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
     return templates;
 }
 
+TemplateList TemplateList::fromBuffer(const QByteArray &buffer)
+{
+    TemplateList templateList;
+    QDataStream stream(buffer);
+    while (!stream.atEnd()) {
+        Template t;
+        stream >> t;
+        templateList.append(t);
+    }
+    return templateList;
+}
+
 // indexes some property, assigns an integer id to each unique value of propName
 // stores the index values in "Label" of the output template list
-TemplateList TemplateList::relabel(const TemplateList &tl, const QString & propName)
+TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers)
 {
     const QList<QString> originalLabels = File::get<QString>(tl, propName);
     QHash<QString,int> labelTable;
-    foreach (const QString & label, originalLabels)
-        if (!labelTable.contains(label))
-            labelTable.insert(label, labelTable.size());
+    foreach (const QString &label, originalLabels)
+        if (!labelTable.contains(label)) {
+            int value; bool ok;
+            value = label.toInt(&ok);
+            // If the label is already an integer value we don't want to change it.
+            if (ok && preserveIntegers) labelTable.insert(label, value);
+            else                        labelTable.insert(label, labelTable.size());
+        }
 
     TemplateList result = tl;
     for (int i=0; i<result.size(); i++)
@@ -543,20 +562,18 @@ QStringList Object::parameters() const
 
     for (int i = firstAvailablePropertyIdx; i < metaObject()->propertyCount();i++) {
         QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
         parameters.append(QString("%1 %2 = %3").arg(property.typeName(), property.name(), property.read(this).toString()));
     }
+
     return parameters;
 }
 
 QStringList Object::arguments() const
 {
     QStringList arguments;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++) {
-        QMetaProperty property = metaObject()->property(i);
-        if (property.isStored(this)) continue;
+    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
         arguments.append(argument(i));
-    }
+
     return arguments;
 }
 
@@ -698,7 +715,14 @@ void Object::setProperty(const QString &name, QVariant value)
     int index = metaObject()->indexOfProperty(qPrintable(name));
     if (index != -1) type = metaObject()->property(index).typeName();
 
-    if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
+    if (metaObject()->property(index).isEnumType()) {
+        // This is necessary because setProperty can only set enums
+        // using their integer value if the QVariant is of type int (or uint)
+        bool ok;
+        int v = value.toInt(&ok);
+        if (ok)
+            value = v;
+    } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
         QVariantList elements;
         if (value.canConvert<QVariantList>()) {
             elements = value.value<QVariantList>();
@@ -759,8 +783,8 @@ void Object::setProperty(const QString &name, QVariant value)
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
-        qFatal("Failed to set %s::%s to: %s",
-               metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
+        qFatal("Failed to set %s %s::%s to: %s",
+               qPrintable(type), metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
 }
 
 QStringList Object::parse(const QString &string, char split)
@@ -839,10 +863,7 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        int h = s / (60*60);
-        int m = (s - h*60*60) / 60;
-        s = (s - h*60*60 - m*60);
-        fprintf(stderr, "%05.2f%%  REMAINING=%02d:%02d:%02d  COUNT=%g  \r", 100 * p, h, m, s, totalSteps);
+        fprintf(stderr, "%05.2f%%  REMAINING=%s  COUNT=%g  \r", 100 * p, QtUtils::toTime(s/1000.0f).toStdString().c_str(), totalSteps);
     }
 }
 
@@ -1156,6 +1177,17 @@ Gallery *Gallery::make(const File &file)
     return gallery;
 }
 
+// Default init -- if the file contains "append", read the existing
+// data and immediately write it
+void Gallery::init()
+{
+    if (file.exists() && file.contains("append"))
+    {
+        TemplateList data = this->read();
+        this->writeBlock(data);
+    }
+}
+
 /* Transform - public methods */
 Transform::Transform(bool _independent, bool _trainable)
 {
@@ -1168,10 +1200,6 @@ Transform *Transform::make(QString str, QObject *parent)
     // Check for custom transforms
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
-
-    { // Check for use of '!' as shorthand for Expand
-        str.replace("!","+Expand+");
-    }
 
     //! [Make a pipe]
     { // Check for use of '+' as shorthand for Pipe(...)

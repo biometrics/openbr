@@ -16,6 +16,7 @@
 
 #include <QFutureSynchronizer>
 #include <QtConcurrentRun>
+#include <numeric>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "openbr_internal.h"
 
@@ -178,14 +179,24 @@ BR_REGISTER(Distance, PipeDistance)
 
 /*!
  * \ingroup distances
- * \brief Average distance of multiple matrices
+ * \brief Computes an operation on distances across multiple matrices of compared templates
  * \author Scott Klum \cite sklum
+ * \note Operation: Mean, sum, min, max are supported.
  */
-class AverageDistance : public Distance
+class OperationDistance : public Distance
 {
     Q_OBJECT
+    Q_ENUMS(Operation)
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
+
+public:
+    /*!< */
+    enum Operation {Mean, Sum, Max, Min};
+
+private:
     BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
+    BR_PROPERTY(Operation, operation, Mean)
 
     void train(const TemplateList &src)
     {
@@ -196,16 +207,30 @@ class AverageDistance : public Distance
     {
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
-        float score = 0;
-        for (int i = 0; i < a.size(); i++) {
-            score += distance->compare(a[i],b[i]);
-        }
+        QList<float> distances;
+        for (int i = 0; i < a.size(); i++)
+            distances.append(distance->compare(a[i],b[i]));
 
-        return score/(float)a.size();
+        switch (operation) {
+          case Mean:
+            return std::accumulate(distances.begin(),distances.end(),0.0)/(float)distances.size();
+            break;
+          case Sum:
+            return std::accumulate(distances.begin(),distances.end(),0.0);
+            break;
+          case Min:
+            return *std::min_element(distances.begin(),distances.end());
+            break;
+          case Max:
+            return *std::max_element(distances.begin(),distances.end());
+            break;
+          default:
+            qFatal("Invalid operation.");
+        }
     }
 };
 
-BR_REGISTER(Distance, AverageDistance)
+BR_REGISTER(Distance, OperationDistance)
 
 /*!
  * \ingroup distances

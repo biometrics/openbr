@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
+set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
 set(CMAKE_AUTOMOC ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "OpenBiometrics")
@@ -22,6 +23,13 @@ if(${CMAKE_VERSION} VERSION_EQUAL 2.8.11)
 endif()
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
   cmake_policy(SET CMP0020 OLD)
+endif()
+
+if(${CMAKE_VERSION} VERSION_EQUAL 2.8.12)
+  cmake_policy(SET CMP0022 OLD)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.12)
+  cmake_policy(SET CMP0022 OLD)
 endif()
 
 if(${CMAKE_SIZEOF_VOID_P} MATCHES 8)
@@ -110,7 +118,7 @@ if(BUILD_TESTING)
 endif()
 
 # Build the SDK
-include_directories(.)
+include_directories(BEFORE .) # Find the local headers first
 add_subdirectory(openbr)
 
 # Build applications
@@ -130,6 +138,14 @@ endif()
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
+
+# install brpy
+option(BR_INSTALL_BRPY "Install brpy, the Python wrapper to the C API (requires Python)")
+if(${BR_INSTALL_BRPY})
+  find_package(PythonInterp REQUIRED)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site, sys; sys.stdout.write(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SITE_DIR)
+  install(DIRECTORY ${BR_SCRIPTS_DIR}/brpy DESTINATION ${PYTHON_SITE_DIR})
+endif()
 
 # Package
 set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")

@@ -103,6 +103,14 @@ BR_EXPORT void br_combine_masks(int num_input_masks, const char *input_masks[], 
 BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
 /*!
+ * \brief Convenience function for comparing to multiple targets.
+ * \see br_compare
+ */
+BR_EXPORT void br_compare_n(int num_targets, const char *target_galleries[], const char *query_gallery, const char *output);
+
+BR_EXPORT void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
+
+/*!
  * \brief Wraps br::Convert()
  */
 BR_EXPORT void br_convert(const char *file_type, const char *input_file, const char *output_file);
@@ -225,6 +233,15 @@ BR_EXPORT bool br_is_classifier(const char *algorithm);
  * \see br_combine_masks
  */
 BR_EXPORT void br_make_mask(const char *target_input, const char *query_input, const char *mask);
+
+/*!
+ * \brief Constructs a \ref mask from target and query inputs considering the target and input sets to be definint pairwise comparisons
+ * \param target_input The target br::Input.
+ * \param query_input The query br::Input.
+ * \param mask The file to contain the resulting \ref mask.
+ * \see br_combine_masks
+ */
+BR_EXPORT void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask);
 
 /*!
  * \brief Returns the most recent line sent to stderr.
@@ -425,6 +442,8 @@ BR_EXPORT void br_slave_process(const char * baseKey);
 // will take this typedef and cast it
 typedef void* br_template;
 typedef void* br_template_list;
+typedef void* br_gallery;
+typedef void* br_matrix_output;
 /*!
   * \brief Load an image from a string buffer.
   *   Easy way to pass an image in memory from another programming language to openbr.
@@ -439,6 +458,24 @@ BR_EXPORT br_template br_load_img(const char *data, int len);
   * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
+/*!
+  * \brief Deserialize a br::TemplateList from a buffer.
+  *        Can be the buffer for a .gal file,
+  *        since they are just a TemplateList serialized to disk.
+  */
+BR_EXPORT br_template_list br_template_list_from_buffer(const char *buf, int len);
+/*!
+  * \brief Free a br::Template's memory.
+  */
+BR_EXPORT void br_free_template(br_template tmpl);
+/*!
+  * \brief Free a br::TemplateList's memory.
+  */
+BR_EXPORT void br_free_template_list(br_template_list tl);
+/*!
+  * \brief Free a br::Output's memory.
+  */
+BR_EXPORT void br_free_output(br_matrix_output output);
 /*!
   * \brief Get the number of rows in an image.
   * \param tmpl Pointer to a br::Template.
@@ -455,10 +492,40 @@ BR_EXPORT int br_img_cols(br_template tmpl);
   */
 BR_EXPORT int br_img_channels(br_template tmpl);
 /*!
+  * \brief Returns if the image is empty.
+  */
+BR_EXPORT bool br_img_is_empty(br_template tmpl);
+/*!
+  * \brief Get the filename for a br::Template
+  */
+BR_EXPORT const char* br_get_filename(br_template tmpl);
+/*!
+  * \brief Set the filename for a br::Template.
+  */
+BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);
+/*!
+  * \brief Get metadata as a string for the given key in the given template.
+  */
+BR_EXPORT const char* br_get_metadata_string(br_template, const char *key);
+/*!
   * \brief Enroll a br::Template from the C API! Returns a pointer to a br::TemplateList
   * \param tmpl Pointer to a br::Template.
   */
 BR_EXPORT br_template_list br_enroll_template(br_template tmpl);
+/*!
+  * \brief Enroll a br::TemplateList from the C API!
+  * \param tmpl Pointer to a br::TemplateList.
+  */
+BR_EXPORT void br_enroll_template_list(br_template_list tl);
+/*!
+  * \brief Compare br::TemplateLists from the C API!
+  * \return Pointer to a br::MatrixOutput.
+  */
+BR_EXPORT br_matrix_output br_compare_template_lists(br_template_list target, br_template_list query);
+/*!
+  * \brief Get a value in the br::MatrixOutput.
+  */
+BR_EXPORT float br_get_matrix_output_at(br_matrix_output output, int row, int col);
 /*!
   * \brief Get a pointer to a br::Template at a specified index.
   * \param tl Pointer to a br::TemplateList.
@@ -470,6 +537,23 @@ BR_EXPORT br_template br_get_template(br_template_list tl, int index);
   * \param tl Pointer to a br::TemplateList
   */
 BR_EXPORT int br_num_templates(br_template_list tl);
+/*!
+  * \brief Initialize a br::Gallery.
+  * \param gallery String location of gallery on disk.
+  */
+BR_EXPORT br_gallery br_make_gallery(const char *gallery);
+/*!
+  * \brief Read br::TemplateList from br::Gallery.
+  */
+BR_EXPORT br_template_list br_load_from_gallery(br_gallery gallery);
+/*!
+  * \brief Write a br::TemplateList to the br::Gallery on disk.
+  */
+BR_EXPORT void br_add_to_gallery(br_gallery gallery, br_template_list tl);
+/*!
+  * \brief Close the br::Gallery.
+  */
+BR_EXPORT void br_close_gallery(br_gallery gallery);
 
 /*! @}*/
 

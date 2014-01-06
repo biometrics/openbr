@@ -65,9 +65,26 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
+// Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
+// scores with the size of the target and query lists
+static cv::Mat constructMatchingMask(const cv::Mat & scores, const FileList & target, const FileList & query, int partition=0)
+{
+    // If the dimensions of the score matrix match the sizes of the target and query lists, construct a normal mask matrix
+    if (target.size() == scores.cols && query.size() == scores.rows)
+        return BEE::makeMask(target, query, partition);
+    // If this looks like a pairwise comparison (1 column score matrix, equal length target and query sets), construct a
+    // mask for that
+    else if (scores.cols == 1 && target.size() == query.size()) {
+        return BEE::makePairwiseMask(target, query, partition);
+    }
+    // otherwise, we fail
+    else
+        qFatal("Unable to construct mask for %d by %d score matrix from %d element query set, and %d element target set ", scores.rows, scores.cols, query.length(), target.length());
+}
+
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, BEE::makeMask(target, query, partition), csv);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv);
 }
 
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
@@ -81,7 +98,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QString target, query;
     Mat scores;
     if (simmat.endsWith(".mtx")) {
-        scores = BEE::readSimmat(simmat, &target, &query);
+        scores = BEE::readMat(simmat, &target, &query);
     } else {
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();
@@ -93,8 +110,9 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         // Use the galleries specified in the similarity matrix
         if (target.isEmpty()) qFatal("Unspecified target gallery.");
         if (query.isEmpty()) qFatal("Unspecified query gallery.");
-        truth = BEE::makeMask(TemplateList::fromGallery(target).files(),
-                              TemplateList::fromGallery(query).files());
+
+        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
+                                              TemplateList::fromGallery(query).files());
     } else {
         File maskFile(mask);
         maskFile.set("rows", scores.rows);
@@ -369,13 +387,14 @@ struct DetectionOperatingPoint
         : Recall(TP/totalPositives), FalsePositives(FP), Precision(TP/(TP+FP)) {}
 };
 
-static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalPositives, bool discrete)
+static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, bool discrete)
 {
     QList<DetectionOperatingPoint> points;
     float TP = 0, FP = 0, prevFP = -1;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
+            // A 50% overlap is considered a true positive
             if (detection.overlap >= 0.5) TP++;
             else                          FP++;
         } else {
@@ -384,7 +403,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
             if (FP > prevFP || (i == detections.size()-1)) {
-                points.append(DetectionOperatingPoint(TP, FP, totalPositives));
+                points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections));
                 prevFP = FP;
             }
         }
@@ -445,11 +464,10 @@ QList<Detection> getDetections(QString key, const Template &t, bool isList, bool
                 dets.append(Detection(rects.at(i), confidences.at(i)));
         }
     } else {
-        if (isTruth) {
+        if (isTruth)
             dets.append(Detection(f.get<QRectF>(key)));
-        } else {
+        else
             dets.append(Detection(f.get<QRectF>(key), f.get<float>("Confidence", -1)));
-        }
     }
     return dets;
 }
@@ -489,11 +507,16 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     QMap<QString, Detections> allDetections = getDetections(predicted, truth);
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
-    foreach (Detections detections, allDetections.values()) {
+    int totalTrueDetections = 0;
+    foreach (Detections detections, allDetections.values()) { // For every file
+        totalTrueDetections += detections.truth.size();
+
+        // Try to associate ground truth detections with predicted detections
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
-            const Detection truth = detections.truth.takeFirst();
+            const Detection truth = detections.truth.takeFirst(); // Take removes the detection
             int bestIndex = -1;
             float bestOverlap = -std::numeric_limits<float>::max();
+            // Find the nearest predicted detection to this ground truth detection
             for (int i=0; i<detections.predicted.size(); i++) {
                 const float overlap = truth.overlap(detections.predicted[i]);
                 if (overlap > bestOverlap) {
@@ -501,6 +524,9 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
                     bestIndex = i;
                 }
             }
+            // Removing the detection prevents us from considering it twice.
+            // We don't want to associate two ground truth detections with the
+            // same prediction, over vice versa.
             const Detection predicted = detections.predicted.takeAt(bestIndex);
             resolvedDetections.append(ResolvedDetection(predicted.confidence, bestOverlap));
         }
@@ -515,8 +541,8 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 
     QStringList lines;
     lines.append("Plot, X, Y");
-    lines.append(computeDetectionResults(resolvedDetections, truth.size(), true));
-    lines.append(computeDetectionResults(resolvedDetections, truth.size(), false));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, true));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, false));
 
     float averageOverlap;
     { // Overlap Density

@@ -176,6 +176,10 @@ public:
         setFixedSize(200,200);
         QApplication::instance()->installEventFilter(this);
     }
+    ~DisplayWindow()
+    {
+        QApplication::instance()->removeEventFilter(this);
+    }
 
 public slots:
     void showImage(const QPixmap & input)
@@ -192,7 +196,6 @@ public slots:
             temp.setWidth(104);
         setFixedSize(temp);
     }
-
 
     bool eventFilter(QObject * obj, QEvent * event)
     {
@@ -420,7 +423,10 @@ public:
     ~ShowTransform()
     {
         delete displayBuffer;
-        delete window;
+        if (QThread::currentThread() == QCoreApplication::instance()->thread())
+            delete window;
+        else
+            emit destroyWindow();
     }
 
     void train(const TemplateList &data) { (void) data; }
@@ -447,7 +453,8 @@ public:
             }
             emit this->changeTitle(newTitle);
 
-            foreach(const cv::Mat & m, t) {
+            foreach (const cv::Mat &m, t) {
+                if (!m.data) continue;
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
@@ -493,6 +500,7 @@ public:
         connect(this, SIGNAL(updateImage(QPixmap)), window,SLOT(showImage(QPixmap)));
         connect(this, SIGNAL(changeTitle(QString)), window, SLOT(setWindowTitle(QString)));
         connect(this, SIGNAL(hideWindow()), window, SLOT(hide()));
+        connect(this, SIGNAL(destroyWindow()), window, SLOT(deleteLater()), Qt::BlockingQueuedConnection);
     }
 
 protected:
@@ -505,8 +513,33 @@ signals:
     void updateImage(const QPixmap & input);
     void changeTitle(const QString & input);
     void hideWindow();
+    void destroyWindow();
 };
 BR_REGISTER(Transform, ShowTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Show the training data
+ * \author Josh Klontz \cite jklontz
+ */
+class ShowTrainingTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform *show READ get_show WRITE set_show RESET reset_show STORED false)
+    BR_PROPERTY(br::Transform*, show, make("Show"))
+
+    void train(const TemplateList &data)
+    {
+        TemplateList dst;
+        show->project(data, dst);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+    }
+};
+BR_REGISTER(Transform, ShowTrainingTransform)
 
 /*!
  * \ingroup transforms
