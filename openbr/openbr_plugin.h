@@ -483,7 +483,7 @@ struct TemplateList : public QList<Template>
     }
 
     /*!
-     * \brief Returns a list of #br::TemplateList containing templates with a each TemplateList containing the number of matrices specified by \em partitionSizes.
+     * \brief Returns a list of #br::TemplateList with each #br::Template in a given #br::TemplateList containing the number of matrices specified by \em partitionSizes.
      */
     QList<TemplateList> partition(const QList<int> &partitionSizes) const
     {
