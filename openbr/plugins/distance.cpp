@@ -189,7 +189,6 @@ class FuseDistance : public Distance
     Q_ENUMS(Operation)
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
-    Q_PROPERTY(QList<int> split READ get_split WRITE set_split RESET reset_split STORED false)
 
     QList<br::Distance*> distances;
 
@@ -200,12 +199,12 @@ public:
 private:
     BR_PROPERTY(QString, description, "IdenticalDistance")
     BR_PROPERTY(Operation, operation, Mean)
-    BR_PROPERTY(QList<int>, split, QList<int>())
 
     void train(const TemplateList &src)
     {
-        // Default is to train on each matrix
-        if (split.isEmpty()) for (int i=0; i<src.at(0).size(); i++) split.append(1);
+        // Partition the templates by matrix
+        QList<int> split;
+        for (int i=0; i<src.at(0).size(); i++) split.append(1);
 
         QList<TemplateList> partitionedSrc = src.partition(split);
 
