@@ -56,11 +56,6 @@ struct AlgorithmCore
 
         TemplateList data(TemplateList::fromGallery(input));
 
-        // set the Train bool metadata, in case a Transform's project
-        // needs to know if it's called during train or enroll
-        for (int i=0; i<data.size(); i++)
-            data[i].file.set("Train", true);
-
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d Training Files", data.size());
 
@@ -463,7 +458,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
         if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
             && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
-            qFatal("Similarity matrix and file size mismatch.");
+            qFatal("Similarity matrix (%d, %d) and header (%d, %d) size mismatch.", m.rows, m.cols, queryFiles.size(), targetFiles.size());
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
