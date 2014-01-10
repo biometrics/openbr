@@ -5,7 +5,9 @@
 
 using namespace cv;
 
-/**** STATIC ****/
+namespace br
+{
+
 QImage toQImage(const Mat &mat)
 {
     // Convert to 8U depth
@@ -44,3 +46,5 @@ QImage toQImage(const Mat &mat)
 
     return QImage(mat8uc3.data, mat8uc3.cols, mat8uc3.rows, 3*mat8uc3.cols, QImage::Format_RGB888).copy();
 }
+
+} // namespace br

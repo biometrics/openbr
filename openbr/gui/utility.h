@@ -3,7 +3,13 @@
 
 #include <QImage>
 #include <opencv2/core/core.hpp>
+#include <openbr/openbr_export.h>
 
-QImage toQImage(const cv::Mat &mat);
+namespace br
+{
+
+BR_EXPORT QImage toQImage(const cv::Mat &mat);
+
+} // namespace br
 
 #endif // BR_UTILITY_H
