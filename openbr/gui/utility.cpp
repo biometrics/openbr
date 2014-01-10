@@ -1,14 +1,11 @@
-#include <QImage>
 #include <limits>
 #include <vector>
 #include <opencv2/imgproc/imgproc.hpp>
+#include "utility.h"
 
 using namespace cv;
 
-namespace br
-{
-
-QImage toQImage(const Mat &mat)
+QImage br::toQImage(const Mat &mat)
 {
     // Convert to 8U depth
     Mat mat8u;
@@ -46,5 +43,3 @@ QImage toQImage(const Mat &mat)
 
     return QImage(mat8uc3.data, mat8uc3.cols, mat8uc3.rows, 3*mat8uc3.cols, QImage::Format_RGB888).copy();
 }
-
-} // namespace br
