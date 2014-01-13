@@ -94,21 +94,24 @@ janus_error janus_finalize_template(janus_incomplete_template incomplete_templat
     return JANUS_SUCCESS;
 }
 
-janus_error janus_verify(const janus_template a, const janus_template b, float *similarity)
+janus_error janus_verify(const janus_template a, const size_t a_bytes, const janus_template b, const size_t b_bytes, double *similarity)
 {
-    size_t a_bytes, a_templates, b_bytes, b_templates;
-    a_bytes     = *(reinterpret_cast<size_t*>(a)+0);
+    (void) a_bytes;
+    (void) b_bytes;
+
+    size_t a_template_bytes, a_templates, b_template_bytes, b_templates;
+    a_template_bytes = *(reinterpret_cast<size_t*>(a)+0);
     a_templates = *(reinterpret_cast<size_t*>(a)+1);
-    b_bytes     = *(reinterpret_cast<size_t*>(b)+0);
+    b_template_bytes = *(reinterpret_cast<size_t*>(b)+0);
     b_templates = *(reinterpret_cast<size_t*>(b)+1);
-    if (a_bytes != b_bytes)
+    if (a_template_bytes != b_template_bytes)
         return JANUS_UNKNOWN_ERROR;
 
     float dist = 0;
     for (size_t i=0; i<a_templates; i++)
         for (size_t j=0; j<b_templates; j++)
-            dist += distance->compare(cv::Mat(1, a_bytes, CV_8UC1, a+2*sizeof(size_t)+i*a_bytes),
-                                      cv::Mat(1, b_bytes, CV_8UC1, b+2*sizeof(size_t)+i*b_bytes));
+            dist += distance->compare(cv::Mat(1, a_template_bytes, CV_8UC1, a+2*sizeof(size_t)+i*a_template_bytes),
+                                      cv::Mat(1, b_template_bytes, CV_8UC1, b+2*sizeof(size_t)+i*b_template_bytes));
     *similarity = a_templates * b_templates / dist;
     return JANUS_SUCCESS;
 }
