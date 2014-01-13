@@ -148,9 +148,11 @@ struct AlgorithmCore
         if (data.empty())
             return files;
 
+        // Store totalSteps for ProgressCounter
+        Globals->totalSteps = data.length();
+
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
-        Globals->totalSteps = data.length();
         QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 

@@ -514,28 +514,20 @@ class ProgressCounterTransform : public TimeVaryingTransform
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
+
         qint64 elapsed = timer.elapsed();
-        calls++;
-        set_calls++;
-        // updated every 10 seconds
-        if (elapsed > 5 * 1000) {
-            float f_elapsed = elapsed / 1000.0f;
-            // remaining calls (according to our input variable)
-            int remaining = totalTemplates - calls;
-            // calls / second
-            float speed = set_calls / f_elapsed;
 
-            float p = 100 * float(calls) / totalTemplates;
+        // updated every second
+        if (elapsed > 1000) {
+            float p = br_progress();
+            int s = br_time_remaining();
 
-            // seconds remaining
-            int s = float(remaining) / speed;
-
-            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), float(calls));
+            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
 
             timer.start();
-            set_calls = 0;
         }
 
+        Globals->currentStep++;
 
         return;
     }
@@ -548,24 +540,18 @@ class ProgressCounterTransform : public TimeVaryingTransform
     void finalize(TemplateList & data)
     {
         (void) data;
-        float p = 100 * float(calls) / totalTemplates;
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), float(calls));
+        float p = br_progress();
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
     }
 
     void init()
     {
-        calls = 0;
-        set_calls = 0;
         timer.start();
     }
 
 public:
     ProgressCounterTransform() : TimeVaryingTransform(false,false) {}
-    bool initialized;
     QElapsedTimer timer;
-    qint64 calls;
-    qint64 set_calls;
-
 };
 
 BR_REGISTER(Transform, ProgressCounterTransform)
