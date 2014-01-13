@@ -221,8 +221,9 @@ private:
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         QList<float> scores;
-        for (int i=0; i<distances.size(); i++)
+        for (int i=0; i<distances.size(); i++) {
             scores.append(distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+        }
 
         switch (operation) {
           case Mean:

@@ -24,6 +24,23 @@ namespace br
 {
 
 /*!
+ * \ingroup initializers
+ * \brief Initialize Stasm
+ * \author Scott Klum \cite sklum
+ */
+class EigenInitializer : public Initializer
+{
+    Q_OBJECT
+
+    void initialize() const
+    {
+        Eigen::initParallel();
+    }
+};
+
+BR_REGISTER(Initializer, EigenInitializer)
+
+/*!
  * \ingroup transforms
  * \brief Projects input into learned Principal Component Analysis subspace.
  * \author Brendan Klare \cite bklare
