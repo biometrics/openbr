@@ -80,7 +80,7 @@ janus_error janus_finalize_template(janus_incomplete_template incomplete_templat
             templateBytes = currentTemplateBytes;
         if (templateBytes != currentTemplateBytes)
             return JANUS_UNKNOWN_ERROR;
-        if (*bytes + templateBytes > JANUS_MAX_TEMPLATE_SIZE)
+        if (*bytes + templateBytes > janus_max_template_size())
             break;
         memcpy(pos, m.data, templateBytes);
         *bytes += templateBytes;
@@ -124,5 +124,19 @@ struct janus_incomplete_gallery_type
 janus_error janus_initialize_gallery(janus_incomplete_gallery *incomplete_gallery)
 {
     *incomplete_gallery = new janus_incomplete_gallery_type();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_add_template(const janus_template template_, const size_t bytes, const janus_template_id template_id, janus_incomplete_gallery incomplete_gallery)
+{
+    (void) bytes;
+    incomplete_gallery->templates.append(QPair<janus_template, janus_template_id>(template_, template_id));
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_finalize_gallery(janus_incomplete_gallery incomplete_gallery, const char *gallery_file)
+{
+    (void) incomplete_gallery;
+    (void) gallery_file;
     return JANUS_SUCCESS;
 }
