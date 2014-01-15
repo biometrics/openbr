@@ -189,6 +189,7 @@ class FuseDistance : public Distance
     Q_ENUMS(Operation)
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
+    Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
 
     QList<br::Distance*> distances;
 
@@ -199,6 +200,7 @@ public:
 private:
     BR_PROPERTY(QString, description, "IdenticalDistance")
     BR_PROPERTY(Operation, operation, Mean)
+    BR_PROPERTY(QList<float>, weights, QList<float>())
 
     void train(const TemplateList &src)
     {
@@ -221,8 +223,11 @@ private:
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
 
         QList<float> scores;
-        for (int i=0; i<distances.size(); i++)
-            scores.append(distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+        for (int i=0; i<distances.size(); i++) {
+            float weight;
+            weights.isEmpty() ? weight = 1. : weight = weights[i];
+            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+        }
 
         switch (operation) {
           case Mean:
