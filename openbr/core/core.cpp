@@ -148,7 +148,8 @@ struct AlgorithmCore
         if (data.empty())
             return files;
 
-        // Store totalSteps for ProgressCounter
+        // Store steps for ProgressCounter
+        Globals->currentStep = 0;
         Globals->totalSteps = data.length();
 
         // Trust me, this makes complete sense.
