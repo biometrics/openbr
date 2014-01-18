@@ -496,6 +496,27 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
     }
 }
 
+void br::Deduplicate(const QString &inputGallery, const QString &outputGallery, const QString &threshold)
+{
+    // Use algorithm core retrieval or enroll look at pairwise compare
+    TemplateList input = TemplateList::fromGallery(inputGallery);
+    QSharedPointer<MatrixOutput> output = QSharedPointer<MatrixOutput>(MatrixOutput::make(input.files(),input.files()));
+
+    File blank;
+    QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm(blank.get<QString>("algorithm"));
+
+    distance->compare(TemplateList::fromGallery(inputGallery), TemplateList::fromGallery(inputGallery), output.data());
+
+    QStringList duplicates;
+
+    for (int i=0; i<output->data.rows; i++)
+        for (int j=0; j<i; j++)
+            if (output->data.at<float>(i,j) > threshold.toFloat())
+                duplicates.append(QString::number(i) + " and " + QString::number(j) + " with a score of " + QString::number(output->data.at<float>(i,j)));
+
+    qDebug() << duplicates;
+}
+
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)
 {
     if (!preprocess)

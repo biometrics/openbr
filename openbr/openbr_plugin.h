@@ -1371,6 +1371,8 @@ BR_EXPORT void Convert(const File &fileType, const File &inputFile, const File &
  */
 BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGallery);
 
+BR_EXPORT void Deduplicate(const QString &inputGallery, const QString &outputGallery, const QString &threshold);
+
 /*! @}*/
 
 } // namespace br
