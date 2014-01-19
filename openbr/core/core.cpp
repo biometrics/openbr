@@ -251,6 +251,50 @@ struct AlgorithmCore
         Globals->blockSize = old_block_size;
     }
 
+    void deduplicate(const QString &inputGallery, const QString &outputGallery, const float threshold)
+    {
+        /*qDebug("Deduplicating %s to %s%s", qPrintable(inputGallery.flat()),
+               qPrintable(outputGallery.flat()),
+               output.isNull() ? "" : qPrintable(" to " + output.flat()));*/
+
+        Globals->blockSize = INT_MAX;
+
+        if (distance.isNull()) qFatal("Null distance.");
+
+        QScopedPointer<Gallery> i;
+        FileList inputFiles;
+        retrieveOrEnroll(inputGallery, i, inputFiles);
+
+        TemplateList t = i->read();
+
+        QList<int> duplicates;
+
+        for (int i=0; i<t.size(); i++) {
+            fprintf(stderr, "%05.2f%% duplicates considered.\r", (float)i/(float)t.size()*100.);
+            for (int j=0; j<i; j++) {
+                float score = distance->compare(t[i], t[j]);
+                if (score >= threshold) {
+                    duplicates.append(i);
+                    break;
+                }
+            }
+        }
+
+        qDebug("\n%d duplicates removed.", duplicates.size());
+
+        std::sort(duplicates.begin(), duplicates.end(),std::greater<float>());
+
+        foreach(int index, duplicates)
+            qDebug() << t.at(index).file.baseName();
+
+        for (int i=duplicates.size()-1; i>=0; i--)
+            t.removeAt(duplicates[i]);
+
+        QScopedPointer<Gallery> o(Gallery::make(outputGallery));
+
+        o->writeBlock(t);
+    }
+
     void compare(File targetGallery, File queryGallery, File output)
     {
         qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
@@ -498,23 +542,8 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
 
 void br::Deduplicate(const QString &inputGallery, const QString &outputGallery, const QString &threshold)
 {
-    // Use algorithm core retrieval or enroll look at pairwise compare
-    TemplateList input = TemplateList::fromGallery(inputGallery);
-    QSharedPointer<MatrixOutput> output = QSharedPointer<MatrixOutput>(MatrixOutput::make(input.files(),input.files()));
-
-    File blank;
-    QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm(blank.get<QString>("algorithm"));
-
-    distance->compare(TemplateList::fromGallery(inputGallery), TemplateList::fromGallery(inputGallery), output.data());
-
-    QStringList duplicates;
-
-    for (int i=0; i<output->data.rows; i++)
-        for (int j=0; j<i; j++)
-            if (output->data.at<float>(i,j) > threshold.toFloat())
-                duplicates.append(QString::number(i) + " and " + QString::number(j) + " with a score of " + QString::number(output->data.at<float>(i,j)));
-
-    qDebug() << duplicates;
+    File output;
+    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->deduplicate(inputGallery, outputGallery, threshold.toFloat());
 }
 
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)
