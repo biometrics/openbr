@@ -522,7 +522,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
             float p = br_progress();
             int s = br_time_remaining();
 
-            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100., QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
+            fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100., QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
 
             timer.start();
         }
@@ -541,7 +541,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100., QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
     }
 
     void init()
