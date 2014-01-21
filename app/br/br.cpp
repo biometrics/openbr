@@ -159,6 +159,7 @@ public:
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "deduplicate")) {
+                check(parc == 3, "Incorrect parameter count for 'deduplicate'.");
                 br_deduplicate(parv[0], parv[1], parv[2]);
             }
 

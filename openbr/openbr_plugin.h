@@ -1371,7 +1371,13 @@ BR_EXPORT void Convert(const File &fileType, const File &inputFile, const File &
  */
 BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGallery);
 
-BR_EXPORT void Deduplicate(const QString &inputGallery, const QString &outputGallery, const QString &threshold);
+/*!
+ * \brief Deduplicate a gallery.
+ * \param inputGalleries Gallery to deduplicate.
+ * \param outputGallery Gallery to store the deduplicated result.
+ * \param threshold Match score threshold to determine duplicates.
+ */
+BR_EXPORT void Deduplicate(const File &inputGallery, const File &outputGallery, const QString &threshold);
 
 /*! @}*/
 

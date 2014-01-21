@@ -120,7 +120,6 @@ class galGallery : public Gallery
         TemplateList templates;
         while ((templates.size() < Globals->blockSize) && !stream.atEnd()) {
             Template m;
-            qDebug() << templates.size();
             stream >> m;
             templates.append(m);
         }
