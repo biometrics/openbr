@@ -257,7 +257,7 @@ struct AlgorithmCore
                qPrintable(outputGallery.flat()),
                output.isNull() ? "" : qPrintable(" to " + output.flat()));*/
 
-        Globals->blockSize = INT_MAX;
+        //Globals->blockSize = INT_MAX;
 
         if (distance.isNull()) qFatal("Null distance.");
 
@@ -265,10 +265,11 @@ struct AlgorithmCore
         FileList inputFiles;
         retrieveOrEnroll(inputGallery, i, inputFiles);
 
-        TemplateList t = i->read();
+        //TemplateList t = i->read();
 
         QList<int> duplicates;
 
+        /*
         for (int i=0; i<t.size(); i++) {
             fprintf(stderr, "%05.2f%% duplicates considered.\r", (float)i/(float)t.size()*100.);
             for (int j=0; j<i; j++) {
@@ -276,6 +277,38 @@ struct AlgorithmCore
                 if (score >= threshold) {
                     duplicates.append(i);
                     break;
+                }
+            }
+        }*/
+
+        int queryBlock = -1;
+        bool queryDone = false;
+        while (!queryDone) {
+            queryBlock++;
+            TemplateList queries = i->readBlock(&queryDone);
+
+            QList<TemplateList> queryPartitions;
+            if (!partitionSizes.empty()) queryPartitions = queries.partition(partitionSizes);
+            else queryPartitions.append(queries);
+
+            for (int i=0; i<queryPartitions.size(); i++) {
+                int targetBlock = -1;
+                bool targetDone = false;
+                while (!targetDone) {
+                    targetBlock++;
+
+                    TemplateList targets = t->readBlock(&targetDone);
+
+                    QList<TemplateList> targetPartitions;
+                    if (!partitionSizes.empty()) targetPartitions = targets.partition(partitionSizes);
+                    else targetPartitions.append(targets);
+
+                    outputs[i]->setBlock(queryBlock, targetBlock);
+
+                    distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
+
+                    Globals->currentStep += double(targets.size()) * double(queries.size());
+                    Globals->printStatus();
                 }
             }
         }
