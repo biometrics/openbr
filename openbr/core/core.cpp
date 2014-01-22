@@ -272,22 +272,20 @@ struct AlgorithmCore
             for (int j=0; j<i; j++) {
                 float score = distance->compare(t[i], t[j]);
                 if (score >= threshold) {
-                    qDebug() << t[i].file.baseName() << t[j].file.baseName() << score << i;
                     duplicates.append(i);
+                    break;
                 }
             }
+            Globals->currentStep++;
+            Globals->printStatus();
         }
 
         std::sort(duplicates.begin(),duplicates.end(),std::greater<float>());
 
         qDebug("\n%d duplicates removed.", duplicates.size());
 
-        qDebug() << duplicates;
-
-        for (int i=0; i<duplicates.size(); i++) {
-            qDebug() << "Removing" << inputFiles.at(duplicates[i]);
+        for (int i=0; i<duplicates.size(); i++)
             inputFiles.removeAt(duplicates[i]);
-        }
 
         QScopedPointer<Gallery> o(Gallery::make(outputGallery));
 
