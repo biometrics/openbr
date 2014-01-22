@@ -332,6 +332,20 @@ private:
     void init(const QString &file);
 };
 
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key, const bool &defaultValue) const
+{
+    return getBool(key, defaultValue);
+}
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key) const
+{
+    return getBool(key);
+}
+
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const File &file); /*!< \brief Serializes the file to a stream. */
 BR_EXPORT QDataStream &operator>>(QDataStream &stream, File &file); /*!< \brief Deserializes the file from a stream. */
@@ -469,7 +483,7 @@ struct TemplateList : public QList<Template>
     }
 
     /*!
-     * \brief Returns a #br::TemplateList containing templates with one matrix at the specified index \em index.
+     * \brief Returns a list of #br::TemplateList with each #br::Template in a given #br::TemplateList containing the number of matrices specified by \em partitionSizes.
      */
     QList<TemplateList> partition(const QList<int> &partitionSizes) const
     {
@@ -1329,6 +1343,11 @@ BR_EXPORT void Enroll(TemplateList &tmpl);
  * \see br_compare
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
+/*!
+ * \brief High-level function for comparing templates.
+ */
+BR_EXPORT void CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output);
+
 
 /*!
  * \brief High-level function for doing a series of pairwise comparisons.
