@@ -300,6 +300,30 @@ QList<QRectF> OpenCVUtils::fromRects(const QList<Rect> &cvRects)
     return qRects;
 }
 
+float OpenCVUtils::overlap(const Rect &rect1, const Rect &rect2) {
+    float left = max(rect1.x, rect2.x);
+    float top = max(rect1.y, rect2.y);
+    float right = min(rect1.x + rect1.width, rect2.x + rect2.width);
+    float bottom = min(rect1.y + rect1.height, rect2.y + rect2.height);
+
+    float overlap = (right - left + 1) * (top - bottom + 1) / max(rect1.width * rect1.height, rect2.width * rect2.height);
+    if (overlap < 0)
+        return 0;
+    return overlap;
+}
+
+float OpenCVUtils::overlap(const QRectF &rect1, const QRectF &rect2) {
+    float left = max(rect1.x(), rect2.x());
+    float top = max(rect1.y(), rect2.y());
+    float right = min(rect1.x() + rect1.width(), rect2.x() + rect2.width());
+    float bottom = min(rect1.y() + rect1.height(), rect2.y() + rect2.height());
+
+    float overlap = (right - left + 1) * (top - bottom + 1) / max(rect1.width() * rect1.height(), rect2.width() * rect2.height());
+    if (overlap < 0)
+        return 0;
+    return overlap;
+}
+
 bool OpenCVUtils::overlaps(const QList<Rect> &posRects, const Rect &negRect, double overlap)
 {
     foreach (const Rect &posRect, posRects) {

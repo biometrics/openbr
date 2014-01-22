@@ -70,6 +70,45 @@ class RemoveMetadataTransform : public UntrainableTransform
 };
 BR_REGISTER(Transform, RemoveMetadataTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Retains only landmarks/points at the provided indices
+ * \author Brendan Klare \cite bklare
+ */
+class SelectPointsTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
+    BR_PROPERTY(QList<int>, indices, QList<int>())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        QList<QPointF> origPoints = src.file.points();
+        dst.file.clearPoints();
+        for (int i = 0; i < indices.size(); i++)
+            dst.file.appendPoint(origPoints[indices[i]]);
+    }
+};
+
+BR_REGISTER(Transform, SelectPointsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Does nothing.
+ */
+class NoneTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+    }
+};
+
+BR_REGISTER(Transform, NoneTransform)
+
 } // namespace br
 
 #include "template.moc"

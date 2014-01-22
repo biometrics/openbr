@@ -88,6 +88,8 @@ namespace OpenCVUtils
     QList<cv::Rect> toRects(const QList<QRectF> &qRects);
     QList<QRectF> fromRects(const QList<cv::Rect> &cvRects);
     bool overlaps(const QList<cv::Rect> &posRects, const cv::Rect &negRect, double overlap);
+    float overlap(const cv::Rect &rect1, const cv::Rect &rect2);
+    float overlap(const QRectF &rect1, const QRectF &rect2);
 
     int getFourcc();
 }

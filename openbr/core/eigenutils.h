@@ -24,6 +24,7 @@
 void writeEigen(Eigen::MatrixXf X, QString filename);
 void writeEigen(Eigen::MatrixXd X, QString filename);
 void writeEigen(Eigen::VectorXd X, QString filename);
+void writeEigen(Eigen::VectorXf X, QString filename);
 void printEigen(Eigen::MatrixXd X);
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
