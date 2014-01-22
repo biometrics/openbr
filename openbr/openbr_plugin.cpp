@@ -863,7 +863,7 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100., QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
+        fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
     }
 }
 
