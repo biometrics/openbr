@@ -302,8 +302,8 @@ class LDATransform : public Transform
     Q_PROPERTY(int directLDA READ get_directLDA WRITE set_directLDA RESET reset_directLDA STORED false)
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
-    Q_PROPERTY(bool isBinary READ get_isBinary WRITE set_isBinary RESET reset_isBinary STORED true)
-    Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED true)
+    Q_PROPERTY(bool isBinary READ get_isBinary WRITE set_isBinary RESET reset_isBinary STORED false)
+    Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
@@ -316,12 +316,6 @@ class LDATransform : public Transform
     Eigen::VectorXf mean;
     Eigen::MatrixXf projection;
     float stdDev;
-    bool trained;
-
-    void init()
-    {
-        trained = false;
-    }
 
     void train(const TemplateList &_trainingSet)
     {
@@ -461,9 +455,9 @@ class LDATransform : public Transform
         projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();
         dimsOut = dim2;
 
+        stdDev = 1; // default initialize
         if (isBinary) {
             assert(dimsOut == 1);
-            TemplateList projected;
             float posVal = 0;
             float negVal = 0;
             Eigen::MatrixXf results(trainingSet.size(),1);
@@ -493,8 +487,6 @@ class LDATransform : public Transform
             if (normalize)
                 stdDev = sqrt(results.array().square().sum() / trainingSet.size());
         }
-
-        trained = true;
     }
 
     void project(const Template &src, Template &dst) const
@@ -508,18 +500,22 @@ class LDATransform : public Transform
         // Do projection
         outMap = projection.transpose() * (inMap - mean);
 
-        if (normalize && isBinary && trained)
+        if (normalize && isBinary)
             dst.m().at<float>(0,0) = dst.m().at<float>(0,0) / stdDev;
     }
 
     void store(QDataStream &stream) const
     {
-        stream << pcaKeep << directLDA << directDrop << dimsOut << mean << projection << stdDev << normalize << isBinary << trained;
+        stream << pcaKeep << directLDA << directDrop << dimsOut << mean << projection;
+        if (normalize && isBinary)
+            stream << stdDev;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> pcaKeep >> directLDA >> directDrop >> dimsOut >> mean >> projection >> stdDev >> normalize >> isBinary >> trained;
+        stream >> pcaKeep >> directLDA >> directDrop >> dimsOut >> mean >> projection;
+        if (normalize && isBinary)
+            stream >> stdDev;
     }
 };
 
