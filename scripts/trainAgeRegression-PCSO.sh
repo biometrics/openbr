@@ -13,4 +13,4 @@ export ageAlg=AgeRegression
 
 export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
 
-$BR -useGui 0 -algorithm $ageAlg -path $PCSO_DIR/Images -train "$PCSO_DIR/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 17 AND AGE <= 68', subset=0:200]" ../share/openbr/models/algorithms/AgeRegression
+$BR -algorithm $ageAlg -path $PCSO_DIR/Images -train "$PCSO_DIR/PCSO.db[query='SELECT File,Age,PersonID FROM PCSO WHERE Age >= 17 AND AGE <= 68', subset=0:200]" ../share/openbr/models/algorithms/AgeRegression

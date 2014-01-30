@@ -4,7 +4,7 @@ if [ ! -f evalAgeRegression-PCSO.sh ]; then
   exit
 fi
 
-export BR="../build/app/br/br -useGui 0"
+export BR=../build/app/br/br
 export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
 export ageAlg=AgeRegression
 
