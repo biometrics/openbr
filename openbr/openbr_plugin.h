@@ -794,11 +794,12 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
+     * \param useGui Create a QApplication instead of a QCoreApplication.
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "");
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool useGui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.

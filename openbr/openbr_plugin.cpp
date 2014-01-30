@@ -895,15 +895,13 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 // We create our own when the user hasn't
 static QCoreApplication *application = NULL;
 
-void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
+void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useGui)
 {
     qInstallMessageHandler(messageHandler);
 
-#ifdef _WIN32
-    bool useGui = true;
-#else // not _WIN32
-    bool useGui = (getenv("DISPLAY") != NULL);
-#endif // _WIN32
+#ifndef _WIN32
+    useGui = useGui && (getenv("DISPLAY") != NULL);
+#endif // not _WIN32
 
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
