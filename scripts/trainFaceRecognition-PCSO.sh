@@ -14,7 +14,5 @@ export BR=../build/app/br/br
 
 export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
 
-
-
-$BR -useGui 0 -algorithm FaceRecognition -path "$PCSO_DIR/Images/" -train "$PCSO_DIR/PCSO.db[query='SELECT File,PersonID as Label,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
+$BR -algorithm FaceRecognition -path "$PCSO_DIR/Images/" -train "$PCSO_DIR/PCSO.db[query='SELECT File,PersonID as Label,PersonID FROM PCSO', subset=0:5:6000]" ../share/openbr/models/algorithms/FaceRecognition
 

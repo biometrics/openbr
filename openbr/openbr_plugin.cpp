@@ -44,12 +44,6 @@ using namespace cv;
 
 Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
 
-// Some globals used to transfer data to Context::messageHandler so that
-// we can restart the process if we try and fail to create a QApplication.
-static bool creating_qapp = false;
-static int * argc_ptr = NULL;
-static char ** argv_ptr = NULL;
-
 /* File - public methods */
 // Note that the convention for displaying metadata is as follows:
 // [] for lists in which argument order does not matter (e.g. [FTO=false, Index=0]),
@@ -901,19 +895,15 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 // We create our own when the user hasn't
 static QCoreApplication *application = NULL;
 
-void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_gui)
+void br::Context::initialize(int &argc, char *argv[], QString sdkPath)
 {
-    for (int i=0; i < argc; i ++)
-    {
-        if (strcmp("-useGui", argv[i]) == 0) {
-            const char * val = i+1 < argc ? argv[i+1] : "";
-            if (strcmp(val, "false") ==0 || strcmp(val, "0") == 0)
-                use_gui = false;
-            break;
-        }
-    }
-
     qInstallMessageHandler(messageHandler);
+
+#ifdef _WIN32
+    bool useGui = true;
+#else // not _WIN32
+    bool useGui = (getenv("DISPLAY") != NULL);
+#endif // _WIN32
 
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
@@ -921,22 +911,12 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
     // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
-        if (use_gui) {
-            // Set up variables to be used in the message handler if this fails.
-            // Just so you know, we
-            creating_qapp = true;
-            argc_ptr = &argc;
-            argv_ptr = argv;
-
-            application = new QApplication(argc, argv);
-            creating_qapp = false;
-        }
-        else {
-            application = new QCoreApplication(argc, argv);
-        }
-#else
+        if (useGui) application = new QApplication(argc, argv);
+        else        application = new QCoreApplication(argc, argv);
+#else // not BR_EMBEDDED
+        useGui = false;
         application = new QCoreApplication(argc, argv);
-#endif
+#endif // BR_EMBEDDED
     }
 
     QCoreApplication::setOrganizationName(COMPANY_NAME);
@@ -959,8 +939,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool use_
 
     Globals = new Context();
     Globals->init(File());
-    Globals->useGui = use_gui;
-
+    Globals->useGui = useGui;
 
     Common::seedRNG();
 
@@ -1028,26 +1007,6 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
     // statements are called from multiple threads. Unless we lock the whole thing...
     static QMutex generalLock;
     QMutexLocker locker(&generalLock);
-
-    // If we are trying to create a QApplication, and get a fatal, then restart the process
-    // with useGui set to 0.
-    if (creating_qapp && type == QtFatalMsg)
-    {
-        // re-launch process with useGui = 0
-        std::cout << "Failed to initialize gui, restarting with -useGui 0" << std::endl;
-        QStringList arguments;
-        arguments.append("-useGui");
-        arguments.append("0");
-        for (int i=1; i < *argc_ptr; i++)
-        {
-            arguments.append(argv_ptr[i]);
-        }
-        // QProcess::execute blocks until the other process completes.
-        QProcess::execute(argv_ptr[0], arguments);
-        // have to unlock this for some reason
-        locker.unlock();
-        std::exit(0);
-    }
 
     QString txt;
     if (type == QtDebugMsg) {

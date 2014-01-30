@@ -13,4 +13,4 @@ export genderAlg=GenderClassification
 
 export PCSO_DIR=/user/pripshare/Databases/FaceDatabases/PCSO/PCSO/
 
-$BR -useGui 0  -algorithm $genderAlg -path $PCSO_DIR/Images -train "$PCSO_DIR/PCSO.db[query='SELECT File,Gender,PersonID FROM PCSO', subset=0:8000]" ../share/openbr/models/algorithms/GenderClassification
+$BR -algorithm $genderAlg -path $PCSO_DIR/Images -train "$PCSO_DIR/PCSO.db[query='SELECT File,Gender,PersonID FROM PCSO', subset=0:8000]" ../share/openbr/models/algorithms/GenderClassification

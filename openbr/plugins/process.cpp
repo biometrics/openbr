@@ -531,8 +531,6 @@ class ProcessWrapperTransform : public TimeVaryingTransform
         baseKey = id.toString();
 
         QStringList argumentList;
-        argumentList.append("-useGui");
-        argumentList.append("0");
         argumentList.append("-algorithm");
         argumentList.append(transform);
         if (!Globals->path.isEmpty()) {
