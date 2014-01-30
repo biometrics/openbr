@@ -1027,8 +1027,13 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         Globals->logFile.flush();
     }
 
-    if (type == QtFatalMsg)
+    if (type == QtFatalMsg) {
+#ifdef _WIN32
+        QCoreApplication::quit(); // abort() hangs the console on Windows for some reason related to the event loop not being exited
+#else // not _WIN32
         abort(); // We abort so we can get a stack trace back to the code that triggered the message.
+#endif // _WIN32
+    }
 }
 
 Context *br::Globals = NULL;
