@@ -1079,8 +1079,7 @@ public:
 
         // Wait for the stream to process the last frame available from
         // the data source.
-        bool wait_res = false;
-        wait_res = readStage->dataSource.waitLast();
+        readStage->dataSource.waitLast();
 
         // Now that there are no more incoming frames, call finalize
         // on each transform in turn to collect any last templates
