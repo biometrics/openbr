@@ -74,4 +74,5 @@ QList<float> linspace(float start, float stop, int n) {
         spaced.append(curValue += delta);
     }
     spaced.append(stop);
+    return spaced;
 }
