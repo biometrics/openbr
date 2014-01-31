@@ -27,8 +27,7 @@ else
     TEST=testSmall.xml
 fi
 
-br -useGui 0 \
-   -algorithm "${ALG}" \
+br -algorithm "${ALG}" \
    -path $INRIA_PATH/img \
    -train $INRIA_PATH/sigset/train.xml pedModel \
    -enroll $INRIA_PATH/sigset/$TEST pedResults.xml
