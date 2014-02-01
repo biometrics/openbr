@@ -263,33 +263,42 @@ struct AlgorithmCore
 
         TemplateList t = i->read();
 
-        QList<int> duplicates;
+        Output *o = Output::make(QString("buffer.tail[selfSimilar,threshold=%1,atLeast=0]").arg(QString::number(threshold)),inputFiles,inputFiles);
 
-        Globals->totalSteps = inputFiles.size();
-        Globals->currentStep = 0;
+        // Compare to global tail output
+        distance->compare(t,t,o);
 
-        for (int i=0; i<t.size(); i++) {
-            for (int j=0; j<i; j++) {
-                float score = distance->compare(t[i], t[j]);
-                if (score >= threshold) {
-                    duplicates.append(i);
-                    break;
-                }
-            }
-            Globals->currentStep++;
-            Globals->printStatus();
-        }
+        delete o;
 
-        std::sort(duplicates.begin(),duplicates.end(),std::greater<float>());
+        QString buffer(Globals->buffer);
 
-        qDebug("\n%d duplicates removed.", duplicates.size());
+        QStringList tail = buffer.split("\n");
 
-        for (int i=0; i<duplicates.size(); i++)
-            inputFiles.removeAt(duplicates[i]);
+        // Remove header
+        tail.removeFirst();
 
-        QScopedPointer<Gallery> o(Gallery::make(outputGallery));
+        QStringList toRemove;
+        foreach(const QString &s, tail)
+            toRemove.append(s.split(',').at(1));
 
-        o->writeBlock(inputFiles);
+        QSet<QString> duplicates = QSet<QString>::fromList(toRemove);
+
+        QStringList fileNames = inputFiles.names();
+
+        QList<int> indices;
+        foreach(const QString &d, duplicates)
+            indices.append(fileNames.indexOf(d));
+
+        std::sort(indices.begin(),indices.end(),std::greater<float>());
+
+        qDebug("\n%d duplicates removed.", indices.size());
+
+        for (int i=0; i<indices.size(); i++)
+            inputFiles.removeAt(indices[i]);
+
+        QScopedPointer<Gallery> og(Gallery::make(outputGallery));
+
+        og->writeBlock(inputFiles);
     }
 
     void compare(File targetGallery, File queryGallery, File output)

@@ -471,7 +471,7 @@ void br_close_gallery(br_gallery gallery)
     delete gal;
 }
 
-void br_deduplicate(const char *inputGallery, const char *outputGallery, const char *threshold)
+void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold)
 {
-    br::Deduplicate(inputGallery, outputGallery, threshold);
+    br::Deduplicate(input_gallery, output_gallery, threshold);
 }
