@@ -1,17 +1,19 @@
+#include <fstream>
 #include <QReadWriteLock>
 #include <QWaitCondition>
 #include <QThreadPool>
 #include <QSemaphore>
 #include <QMap>
-#include <opencv/highgui.h>
+#include <QQueue>
 #include <QtConcurrent>
+#include <opencv/highgui.h>
 #include "openbr_internal.h"
-
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
 
 using namespace cv;
+using namespace std;
 
 namespace br
 {
@@ -203,6 +205,13 @@ public:
     virtual bool getNextTemplate(Template & output)=0;
 protected:
     Template basis;
+    string getAbsolutePath(QString filename)
+    {
+        // Yes, we should specify absolute path:
+        // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
+        QString fileName = (Globals->path.isEmpty() ? "" : Globals->path + "/") + filename;
+        return QFileInfo(fileName).absoluteFilePath().toStdString();
+    }
 };
 
 static QMutex openLock;
@@ -236,12 +245,9 @@ public:
                 qDebug("Video not open!");
             }
         } else {
-            // Yes, we should specify absolute path:
-            // http://stackoverflow.com/questions/9396459/loading-a-video-in-opencv-in-python
-            QString fileName = (Globals->path.isEmpty() ? "" : Globals->path + "/") + input.file.name;
             // On windows, this appears to not be thread-safe
             QMutexLocker lock(&openLock);
-            video.open(QFileInfo(fileName).absoluteFilePath().toStdString());
+            video.open(getAbsolutePath(input.file.name));
         }
 
         return video.isOpened();
@@ -319,6 +325,182 @@ protected:
     bool data_ok;
 };
 
+class SeqReader : public TemplateProcessor
+{
+public:
+    SeqReader() {}
+
+    bool open(Template &input)
+    {
+        basis = input;
+
+        seqFile.open(getAbsolutePath(input.file.name).c_str(), ios::in | ios::binary | ios::ate);
+        if (!isOpen()) return false;
+
+        int headSize = 1024;
+        // start at end of file to get full size
+        int fileSize = seqFile.tellg();
+        if (fileSize < headSize) {
+            qDebug("No header in seq file");
+            return false;
+        }
+
+        // first 4 bytes store 0xEDFE, next 24 store 'Norpix seq  '
+        char *firstFour = new char[4], *nextTwentyFour;
+        seqFile.seekg(0, ios::beg);
+        seqFile.read(firstFour, 4);
+        nextTwentyFour = readText(24);
+        if (firstFour[0] != (char)0xED || firstFour[1] != (char)0xFE || strncmp(nextTwentyFour, "Norpix seq", 10) != 0) {
+            qDebug("Invalid header in seq file");
+            return false;
+        }
+
+        // next 8 bytes for version (skipped below) and header size (1024), then 512 for descr
+        seqFile.seekg(4, ios::cur);
+        int hSize = readInt();
+        if (hSize != headSize) {
+            qDebug("Invalid header size");
+            return false;
+        }
+        char *desc = readText(512);
+        basis.file.set("Description", QString(desc));
+
+        width = readInt();
+        height = readInt();
+        // get # channels from bit depth
+        numChan = readInt()/8;
+        int imageBitDepthReal = readInt();
+        if (imageBitDepthReal != 8) {
+            qDebug("Invalid bit depth");
+            return false;
+        }
+        // the size of just the image part of a raw img
+        imgSizeBytes = readInt();
+
+        int imgFormatInt = readInt();
+        if (imgFormatInt == 100 || imgFormatInt == 200 || imgFormatInt == 101) {
+            imgFormat = "raw";
+        } else if (imgFormatInt == 102 || imgFormatInt == 201 || imgFormatInt == 103 ||
+                   imgFormatInt == 1 || imgFormatInt == 2) {
+            imgFormat = "compressed";
+        } else {
+            qFatal("unsupported image format");
+        }
+
+        numFrames = readInt();
+        // skip empty int
+        seqFile.seekg(4, ios::cur);
+        // the size of a full raw file, with extra crap after img data
+        trueImgSizeBytes = readInt();
+
+        // gather all the frame positions in an array
+        seekPos.reserve(numFrames);
+        // start at end of header
+        seekPos.append(headSize);
+        // extra 8 bytes at end of img
+        int extra = 8;
+        for (int i=1; i<numFrames; i++) {
+            int s;
+            // compressed images have different sizes
+            // the first byte at the beginning of the file
+            // says how big the current img is
+            if (imgFormat == "compressed") {
+                int lastPos = seekPos[i-1];
+                seqFile.seekg(lastPos, ios::beg);
+                int currSize = readInt();
+                s = lastPos + currSize + extra;
+
+                // but there might be 16 extra bytes instead of 8...
+                if (i == 1) {
+                    seqFile.seekg(s, ios::beg);
+                    char *zero = new char[1];
+                    seqFile.read(zero, 1);
+                    if (zero[0] == 0) {
+                        s += 8;
+                        extra += 8;
+                    }
+                }
+            }
+            // raw images are all the same size
+            else {
+                s = headSize + (i*trueImgSizeBytes);
+            }
+
+            seekPos.enqueue(s);
+        }
+
+        return true;
+    }
+
+    bool isOpen()
+    {
+        return seqFile.is_open();
+    }
+
+    void close()
+    {
+        seqFile.close();
+    }
+
+    bool getNextTemplate(Template &output)
+    {
+        if (!isOpen()) {
+            qDebug("Seq not open");
+            return false;
+        }
+        // if we've reached the last frame, we're done
+        if (seekPos.size() == 0) return false;
+
+        seqFile.seekg(seekPos.dequeue(), ios::beg);
+
+        Mat temp;
+        // let imdecode do all the work to decode the compressed img
+        if (imgFormat == "compressed") {
+            int imgSize = readInt() - 4;
+            vector<char> imgBuf(imgSize);
+            seqFile.read(&imgBuf[0], imgSize);
+            // flags < 0 means load image as-is (keep color info if available)
+            imdecode(imgBuf, -1, &temp);
+        }
+        // raw images can be loaded straight into a Mat
+        else {
+            char *imgBuf = new char[imgSizeBytes];
+            seqFile.read(imgBuf, imgSizeBytes);
+            int type = (numChan == 1 ? CV_8UC1 : CV_8UC3);
+            temp = Mat(height, width, type, imgBuf);
+        }
+
+        output.file = basis.file;
+        output.m() = temp;
+        return true;
+    }
+private:
+    int readInt()
+    {
+        int num;
+        seqFile.read((char*)&num, 4);
+        return num;
+    }
+
+    // apparently the text in seq files is 16 bit characters (UTF-16?)
+    // since we don't really need the last byte, snad since it gets interpreted as
+    // a terminating char, let's just grab the first byte for storage
+    char* readText(int bytes)
+    {
+        char *text = new char[bytes], *ret = new char[bytes/2];
+        seqFile.read(text, bytes);
+        for (int i=0; i<bytes; i+=2) {
+            ret[i/2] = text[i];
+        }
+        return ret;
+    }
+
+protected:
+    ifstream seqFile;
+    QQueue<int> seekPos;
+    int width, height, numChan, imgSizeBytes, trueImgSizeBytes, numFrames;
+    QString imgFormat;
+};
 
 // Interface for sequentially getting data from some data source.
 // Given a TemplateList, return single template frames sequentially by applying a TemplateProcessor
@@ -514,11 +696,16 @@ protected:
             if (frameSource)
                 frameSource->close();
 
+            Template curr = this->templates[current_template_idx];
             if (mode == br::Idiocy::Auto)
             {
                 delete frameSource;
-                if (this->templates[this->current_template_idx].empty())
-                    frameSource = new VideoReader();
+                if (curr.empty()) {
+                    if (curr.file.name.right(3) == "seq")
+                        frameSource = new SeqReader();
+                    else
+                        frameSource = new VideoReader();
+                }
                 else
                     frameSource = new DirectReturn();
             }
@@ -529,11 +716,15 @@ protected:
             }
             else if (mode == br::Idiocy::StreamVideo)
             {
-                if (!frameSource)
-                    frameSource = new VideoReader();
+                if (!frameSource) {
+                    if (curr.file.name.right(3) == "seq")
+                        frameSource = new SeqReader();
+                    else
+                        frameSource = new VideoReader();
+                }
             }
 
-            open_res = frameSource->open(this->templates[current_template_idx]);
+            open_res = frameSource->open(curr);
             if (!open_res)
             {
                 current_template_idx++;
