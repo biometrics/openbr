@@ -1,6 +1,7 @@
 ### Repository Specific ###
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
+3rdparty/cvmatio
 data/*/img
 data/*/vid
 data/PCSO/*
