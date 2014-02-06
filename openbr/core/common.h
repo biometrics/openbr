@@ -253,6 +253,11 @@ QList<int> RandSample(int n, const QList<T> &weights, bool unique = false)
 }
 
 /*!
+ * \brief See Matlab function linspace() for documentation.
+ */
+QList<float> linspace(float start, float stop, int n);
+
+/*!
  * \brief See Matlab function unique() for documentation.
  */
 template <typename T>

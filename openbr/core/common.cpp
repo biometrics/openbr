@@ -63,3 +63,16 @@ QList<int> Common::RandSample(int n, const QSet<int> &values, bool unique)
     }
     return samples;
 }
+
+QList<float> Common::linspace(float start, float stop, int n) {
+    float delta = (stop - start) / (n - 1);
+    float curValue = start;
+    QList<float> spaced;
+    spaced.reserve(n);
+    spaced.append(start);
+    for (int i = 1; i < (n - 1); i++) {
+        spaced.append(curValue += delta);
+    }
+    spaced.append(stop);
+    return spaced;
+}
