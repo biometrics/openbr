@@ -96,6 +96,11 @@ set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab da
 if(${BR_WITH_CVMATIO})
   find_package(cvmatio REQUIRED)
   add_definitions(-DCVMATIO)
+  add_subdirectory(${CVMATIO_DIR})
+  include_directories(${CVMATIO_DIR}/include)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CVMATIO_DIR}/src/MatlabIO.cpp)
+  link_directories(${CVMATIO_LIB_DIR})
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} cvmatio)
 endif()
 
 # Compiler flags
