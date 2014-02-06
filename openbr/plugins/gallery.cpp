@@ -976,7 +976,6 @@ BR_REGISTER(Gallery, landmarksGallery)
 
 #ifdef CVMATIO
 
-using namespace std;
 using namespace cv;
 
 class vbbGallery : public Gallery
@@ -1013,7 +1012,7 @@ class vbbGallery : public Gallery
         if (objLists[currFrame].typeEquals<Mat>()) {
             Template t(file);
             t.file.set("FrameNumber", currFrame);
-            rects.append(Template(file));
+            rects.append(t);
         } else {
             vector<vector<MatlabIOContainer> > bbs = objLists[currFrame].data<vector<vector<MatlabIOContainer> > >();
             for (unsigned int i=0; i<bbs.size(); i++) {
