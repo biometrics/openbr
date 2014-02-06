@@ -1006,30 +1006,23 @@ class vbbGallery : public Gallery
     TemplateList readBlock(bool *done)
     {
         *done = false;
-        TemplateList rects;
-        // if it's a Mat, there aren't any bounding boxes in that frame
-        // (i think that's the cvmatio default for an empty spot in a matlab array)
-        if (objLists[currFrame].typeEquals<Mat>()) {
-            Template t(file);
-            t.file.set("FrameNumber", currFrame);
-            rects.append(t);
-        } else {
+        Template rects(file);
+        if (objLists[currFrame].typeEquals<vector<vector<MatlabIOContainer> > >()) {
             vector<vector<MatlabIOContainer> > bbs = objLists[currFrame].data<vector<vector<MatlabIOContainer> > >();
             for (unsigned int i=0; i<bbs.size(); i++) {
                 vector<MatlabIOContainer> bb = bbs[i];
                 Mat pos = bb[1].data<Mat>();
-                Template t = Template(file);
-                double left = pos.at<float>(0,0);
-                double top = pos.at<float>(0,1);
-                double width = pos.at<float>(0,2);
-                double height = pos.at<float>(0,3);
-                t.file.appendRect(QRectF(left, top, width, height));
-                t.file.set("FrameNumber", currFrame);
-                rects.append(t);
+                double left = pos.at<double>(0,0);
+                double top = pos.at<double>(0,1);
+                double width = pos.at<double>(0,2);
+                double height = pos.at<double>(0,3);
+                rects.file.appendRect(QRectF(left, top, width, height));
             }
         }
+        TemplateList tl;
+        tl.append(rects);
         if (++currFrame == (int)objLists.size()) *done = true;
-        return rects;
+        return tl;
     }
 
     void write(const Template &t)
