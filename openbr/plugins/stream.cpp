@@ -429,6 +429,13 @@ public:
             seekPos.enqueue(s);
         }
 
+#ifdef CVMATIO
+        QString f = basis.file.name;
+        QString vbb = f.replace(f.lastIndexOf("."), 4, ".vbb");
+        vbb.replace(vbb.lastIndexOf("vid"), 3, "annotations");
+        annotations = TemplateList::fromGallery(File(vbb));
+#endif
+
         return true;
     }
 
@@ -471,7 +478,12 @@ public:
         }
 
         output.file = basis.file;
+        if (!annotations.empty()) {
+            output.file.setRects(annotations.first().file.rects());
+            annotations.removeFirst();
+        }
         output.m() = temp;
+
         return true;
     }
 private:
@@ -500,6 +512,7 @@ protected:
     QQueue<int> seekPos;
     int width, height, numChan, imgSizeBytes, trueImgSizeBytes, numFrames;
     QString imgFormat;
+    TemplateList annotations;
 };
 
 // Interface for sequentially getting data from some data source.
