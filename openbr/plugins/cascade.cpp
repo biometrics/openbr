@@ -90,7 +90,7 @@ class CascadeTransform : public UntrainableMetaTransform
                 std::vector<Rect> rects;
                 std::vector<int> rejectLevels;
                 std::vector<double> levelWeights;
-                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, 5, (enrollAll ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT) | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
+                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, 5, (enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT) | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
                 else         cascade->detectMultiScale(m, rects, 1.2, 5, enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
 
                 if (!enrollAll && rects.empty())
