@@ -285,7 +285,6 @@ void br::EvalClustering(const QString &csv, const QString &input)
 
     QHash<int, int> labelToIndex;
     int nClusters = 0;
-// TODO: I think this will break if labels.size() is zero
     for (int i=0; i<labels.size(); i++) {
         const float &label = labels[i];
         if (!labelToIndex.contains(label))

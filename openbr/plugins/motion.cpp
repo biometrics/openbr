@@ -63,7 +63,7 @@ class SubtractBackgroundTransform : public TimeVaryingTransform
     Q_OBJECT
 
     // TODO: This is broken.
-  //  BackgroundSubtractorMOG2 mog;
+    // BackgroundSubtractorMOG2 mog;
 
 public:
     SubtractBackgroundTransform() : TimeVaryingTransform(false, false) {}

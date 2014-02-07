@@ -41,6 +41,7 @@
 #include <QVector>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
+#include <assert.h>
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK

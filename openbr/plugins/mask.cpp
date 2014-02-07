@@ -165,10 +165,8 @@ class LargestConvexAreaTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         std::vector< std::vector<Point> > contours;
-        // TODO: Fix, src.clone is a br_template not opencv array
-        /*
-        findContours(src.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-         */
+        // TODO: Needs fixed, src.clone is a br_template and not opencv array, so this call makes no sense?
+        // findContours(src.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
         double maxArea = 0;
         foreach (const std::vector<Point> &contour, contours) {
             std::vector<Point> hull;

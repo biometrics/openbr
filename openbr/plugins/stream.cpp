@@ -737,13 +737,7 @@ protected:
                         frameSource = new VideoReader();
                 }
             }
-<<<<<<< HEAD
-// TODO: Did I introduce this error, seems framesource is null
-            open_res = frameSource->open(this->templates[current_template_idx]);
-=======
-
             open_res = frameSource->open(curr);
->>>>>>> upstream/master
             if (!open_res)
             {
                 current_template_idx++;
@@ -1289,13 +1283,7 @@ public:
 
         // Wait for the stream to process the last frame available from
         // the data source.
-<<<<<<< HEAD
-        bool wait_res = false;
-// TODO: wait_res is a dead variable
-        wait_res = readStage->dataSource.waitLast();
-=======
         readStage->dataSource.waitLast();
->>>>>>> upstream/master
 
         // Now that there are no more incoming frames, call finalize
         // on each transform in turn to collect any last templates
