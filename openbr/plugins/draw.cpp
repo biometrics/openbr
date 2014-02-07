@@ -41,10 +41,12 @@ class DrawTransform : public UntrainableTransform
     Q_PROPERTY(bool points READ get_points WRITE set_points RESET reset_points STORED false)
     Q_PROPERTY(bool rects READ get_rects WRITE set_rects RESET reset_rects STORED false)
     Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
+    Q_PROPERTY(int lineThickness READ get_lineThickness WRITE set_lineThickness RESET reset_lineThickness STORED false)
     BR_PROPERTY(bool, verbose, false)
     BR_PROPERTY(bool, points, true)
     BR_PROPERTY(bool, rects, true)
     BR_PROPERTY(bool, inPlace, false)
+    BR_PROPERTY(int, lineThickness, 1)
 
     void project(const Template &src, Template &dst) const
     {
@@ -62,7 +64,7 @@ class DrawTransform : public UntrainableTransform
         }
         if (rects) {
             foreach (const Rect &rect, OpenCVUtils::toRects(src.file.namedRects() + src.file.rects()))
-                rectangle(dst, rect, color);
+                rectangle(dst, rect, color, lineThickness);
         }
     }
 };

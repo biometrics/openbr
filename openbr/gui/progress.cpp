@@ -26,7 +26,7 @@ br::Progress::Progress(QWidget *parent)
 void br::Progress::checkProgress()
 {
     const int progress = 100 * br_progress();
-    const bool visible = progress >= 0;
+    const bool visible = progress >= 0 && progress < 100;
 
     if (visible) {
         showMessage(br_most_recent_message());

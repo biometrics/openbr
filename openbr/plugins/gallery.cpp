@@ -32,6 +32,11 @@
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
 
+#ifdef CVMATIO
+#include "MatlabIO.hpp"
+#include "MatlabIOContainer.hpp"
+#endif
+
 namespace br
 {
 
@@ -85,6 +90,9 @@ BR_REGISTER(Gallery, arffGallery)
 /*!
  * \ingroup galleries
  * \brief A binary gallery.
+ *
+ * Designed to be a literal translation of templates to disk.
+ * Compatible with TemplateList::fromBuffer.
  * \author Josh Klontz \cite jklontz
  */
 class galGallery : public Gallery
@@ -96,12 +104,12 @@ class galGallery : public Gallery
     void init()
     {
         gallery.setFileName(file);
-        if (file.get<bool>("remove", false))
+        if (file.get<bool>("remove"))
             gallery.remove();
         QtUtils::touchDir(gallery);
         QFile::OpenMode mode = QFile::ReadWrite;
 
-        if (file.contains("append"))
+        if (file.get<bool>("append"))
             mode |= QFile::Append;
 
         if (!gallery.open(mode))
@@ -965,6 +973,74 @@ class landmarksGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, landmarksGallery)
+
+#ifdef CVMATIO
+
+using namespace cv;
+
+class vbbGallery : public Gallery
+{
+    Q_OBJECT
+
+    void init()
+    {
+        MatlabIO matio;
+        QString filename = file.name;
+        bool ok = matio.open(filename.toStdString(), "r");
+        if (!ok) qFatal("Couldn't open the vbb file");
+
+        vector<MatlabIOContainer> variables;
+        variables = matio.read();
+        matio.close();
+
+        double vers = variables[1].data<Mat>().at<double>(0,0);
+        if (vers != 1.4) qFatal("This is an old vbb version, we don't mess with that.");
+
+        A = variables[0].data<vector<vector<MatlabIOContainer> > >().at(0);
+        objLists = A.at(1).data<vector<MatlabIOContainer> >();
+
+        // start at the first frame (duh!)
+        currFrame = 0;
+    }
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = false;
+        Template rects(file);
+        if (objLists[currFrame].typeEquals<vector<vector<MatlabIOContainer> > >()) {
+            vector<vector<MatlabIOContainer> > bbs = objLists[currFrame].data<vector<vector<MatlabIOContainer> > >();
+            for (unsigned int i=0; i<bbs.size(); i++) {
+                vector<MatlabIOContainer> bb = bbs[i];
+                Mat pos = bb[1].data<Mat>();
+                double left = pos.at<double>(0,0);
+                double top = pos.at<double>(0,1);
+                double width = pos.at<double>(0,2);
+                double height = pos.at<double>(0,3);
+                rects.file.appendRect(QRectF(left, top, width, height));
+            }
+        }
+        TemplateList tl;
+        tl.append(rects);
+        if (++currFrame == (int)objLists.size()) *done = true;
+        return tl;
+    }
+
+    void write(const Template &t)
+    {
+        (void)t; qFatal("Not implemented");
+    }
+
+private:
+    // this holds a bunch of stuff, maybe we'll use it all later
+    vector<MatlabIOContainer> A;
+    // this, a field in A, holds bounding boxes for each frame
+    vector<MatlabIOContainer> objLists;
+    int currFrame;
+};
+
+BR_REGISTER(Gallery, vbbGallery)
+
+#endif
 
 } // namespace br
 

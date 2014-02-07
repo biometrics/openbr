@@ -233,9 +233,9 @@ struct BR_EXPORT File
     template <typename T>
     T get(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QVariant variant = value(key);
-        if (!variant.canConvert<T>()) qFatal("Can't convert: %s", qPrintable(key));
+        if (!variant.canConvert<T>()) qFatal("Can't convert: %s in: %s", qPrintable(key), qPrintable(flat()));
         return variant.value<T>();
     }
 
@@ -256,11 +256,11 @@ struct BR_EXPORT File
     template <typename T>
     QList<T> getList(const QString &key) const
     {
-        if (!contains(key)) qFatal("Missing key: %s", qPrintable(key));
+        if (!contains(key)) qFatal("Missing key: %s in: %s", qPrintable(key), qPrintable(flat()));
         QList<T> list;
         foreach (const QVariant &item, m_metadata[key].toList()) {
             if (item.canConvert<T>()) list.append(item.value<T>());
-            else qFatal("Failed to convert value for key %s.", qPrintable(key));
+            else qFatal("Failed to convert value for key %s in: %s", qPrintable(key), qPrintable(flat()));
         }
         return list;
     }
@@ -331,6 +331,20 @@ private:
 
     void init(const QString &file);
 };
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key, const bool &defaultValue) const
+{
+    return getBool(key, defaultValue);
+}
+
+/*!< \brief Specialization for boolean type. */
+template <>
+inline bool File::get<bool>(const QString &key) const
+{
+    return getBool(key);
+}
 
 BR_EXPORT QDebug operator<<(QDebug dbg, const File &file); /*!< \brief Prints br::File::flat() to \c stderr. */
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const File &file); /*!< \brief Serializes the file to a stream. */
@@ -437,6 +451,9 @@ struct TemplateList : public QList<Template>
     TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
+    /*!< \brief Create a template list from a memory buffer of individual templates. Compatible with '.gal' galleries. */
+    BR_EXPORT static TemplateList fromBuffer(const QByteArray &buffer);
+
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
@@ -466,7 +483,7 @@ struct TemplateList : public QList<Template>
     }
 
     /*!
-     * \brief Returns a #br::TemplateList containing templates with one matrix at the specified index \em index.
+     * \brief Returns a list of #br::TemplateList with each #br::Template in a given #br::TemplateList containing the number of matrices specified by \em partitionSizes.
      */
     QList<TemplateList> partition(const QList<int> &partitionSizes) const
     {
@@ -777,12 +794,12 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
-     * \param use_gui Create a QApplication instead of a QCoreApplication.
+     * \param useGui Create a QApplication instead of a QCoreApplication.
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool use_gui = true);
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool useGui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.
@@ -1326,6 +1343,11 @@ BR_EXPORT void Enroll(TemplateList &tmpl);
  * \see br_compare
  */
 BR_EXPORT void Compare(const File &targetGallery, const File &queryGallery, const File &output);
+/*!
+ * \brief High-level function for comparing templates.
+ */
+BR_EXPORT void CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output);
+
 
 /*!
  * \brief High-level function for doing a series of pairwise comparisons.

@@ -303,16 +303,19 @@ class LDATransform : public Transform
     Q_PROPERTY(float directDrop READ get_directDrop WRITE set_directDrop RESET reset_directDrop STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(bool isBinary READ get_isBinary WRITE set_isBinary RESET reset_isBinary STORED false)
+    Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
     BR_PROPERTY(float, directDrop, 0.1)
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(bool, isBinary, false)
+    BR_PROPERTY(bool, normalize, true)
 
     int dimsOut;
     Eigen::VectorXf mean;
     Eigen::MatrixXf projection;
+    float stdDev;
 
     void train(const TemplateList &_trainingSet)
     {
@@ -452,11 +455,12 @@ class LDATransform : public Transform
         projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();
         dimsOut = dim2;
 
+        stdDev = 1; // default initialize
         if (isBinary) {
             assert(dimsOut == 1);
-            TemplateList projected;
             float posVal = 0;
             float negVal = 0;
+            Eigen::MatrixXf results(trainingSet.size(),1);
             for (int i = 0; i < trainingSet.size(); i++) {
                 Template t;
                 project(trainingSet[i],t);
@@ -468,6 +472,7 @@ class LDATransform : public Transform
                     negVal += t.m().at<float>(0,0);
                 else
                     qFatal("Binary mode only supports two class problems.");
+                results(i) = t.m().at<float>(0,0);  //used for normalization
             }
             posVal /= classCounts[0];
             negVal /= classCounts[1];
@@ -478,6 +483,9 @@ class LDATransform : public Transform
                 invert *= -1;
                 projection = invert.transpose() * projection;
             }
+
+            if (normalize)
+                stdDev = sqrt(results.array().square().sum() / trainingSet.size());
         }
     }
 
@@ -491,16 +499,23 @@ class LDATransform : public Transform
 
         // Do projection
         outMap = projection.transpose() * (inMap - mean);
+
+        if (normalize && isBinary)
+            dst.m().at<float>(0,0) = dst.m().at<float>(0,0) / stdDev;
     }
 
     void store(QDataStream &stream) const
     {
         stream << pcaKeep << directLDA << directDrop << dimsOut << mean << projection;
+        if (normalize && isBinary)
+            stream << stdDev;
     }
 
     void load(QDataStream &stream)
     {
         stream >> pcaKeep >> directLDA >> directDrop >> dimsOut >> mean >> projection;
+        if (normalize && isBinary)
+            stream >> stdDev;
     }
 };
 

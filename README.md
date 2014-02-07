@@ -13,4 +13,4 @@ To optionally check out a particular [tagged release](https://github.com/biometr
 **[Build Instructions](http://openbiometrics.org/doxygen/latest/installation.html)**
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mburge/openbr/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/biometrics/openbr/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

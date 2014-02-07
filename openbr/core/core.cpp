@@ -45,7 +45,8 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity])", NULL));
+        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream([Identity], readMode=DistributeFrames)", NULL));
+
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
@@ -54,11 +55,6 @@ struct AlgorithmCore
         downcast->init();
 
         TemplateList data(TemplateList::fromGallery(input));
-
-        // set the Train bool metadata, in case a Transform's project
-        // needs to know if it's called during train or enroll
-        for (int i=0; i<data.size(); i++)
-            data[i].file.set("Train", true);
 
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d Training Files", data.size());
@@ -70,7 +66,7 @@ struct AlgorithmCore
 
         if (!distance.isNull()) {
             qDebug("Projecting Enrollment");
-            data >> *downcast;
+            downcast->projectUpdate(data,data);
 
             qDebug("Training Comparison");
             distance->train(data);
@@ -152,9 +148,12 @@ struct AlgorithmCore
         if (data.empty())
             return files;
 
+        // Store steps for ProgressCounter
+        Globals->currentStep = 0;
+        Globals->totalSteps = data.length();
+
         // Trust me, this makes complete sense.
         // We're just going to make a pipe with a placeholder first transform
-        Globals->totalSteps = data.length();
         QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
         QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
 
@@ -429,6 +428,13 @@ void br::Compare(const File &targetGallery, const File &queryGallery, const File
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
+void br::CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output)
+{
+    QString alg = output->file.get<QString>("algorithm");
+    QSharedPointer<Distance> dist = Distance::fromAlgorithm(alg);
+    dist->compare(target, query, output);
+}
+
 void br::PairwiseCompare(const File &targetGallery, const File &queryGallery, const File &output)
 {
     AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->pairwiseCompare(targetGallery, queryGallery, output);
@@ -455,7 +461,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
         if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
             && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
-            qFatal("Similarity matrix and file size mismatch.");
+            qFatal("Similarity matrix (%d, %d) and header (%d, %d) size mismatch.", m.rows, m.cols, queryFiles.size(), targetFiles.size());
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);

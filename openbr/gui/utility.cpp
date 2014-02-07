@@ -1,14 +1,16 @@
-#include <QImage>
 #include <limits>
 #include <vector>
 #include <assert.h>
 #include <opencv2/imgproc/imgproc.hpp>
+<<<<<<< HEAD
 #include <opencv2/imgproc/imgproc_c.h>
+=======
+#include "utility.h"
+>>>>>>> upstream/master
 
 using namespace cv;
 
-/**** STATIC ****/
-QImage toQImage(const Mat &mat)
+QImage br::toQImage(const Mat &mat)
 {
     // Convert to 8U depth
     Mat mat8u;

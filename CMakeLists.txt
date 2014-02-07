@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
+set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+set(BR_THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 set(CMAKE_AUTOMOC ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "OpenBiometrics")
@@ -89,6 +91,18 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 # Find Alphanum
 find_package(Alphanum REQUIRED)
 
+# Find cvmatio (if using it)
+set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")
+if(${BR_WITH_CVMATIO})
+  find_package(cvmatio REQUIRED)
+  add_definitions(-DCVMATIO)
+  add_subdirectory(${CVMATIO_DIR})
+  include_directories(${CVMATIO_DIR}/include)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CVMATIO_DIR}/src/MatlabIO.cpp)
+  link_directories(${CVMATIO_LIB_DIR})
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} cvmatio)
+endif()
+
 # Compiler flags
 if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -fvisibility=hidden -fno-omit-frame-pointer")
@@ -117,7 +131,7 @@ if(BUILD_TESTING)
 endif()
 
 # Build the SDK
-include_directories(.)
+include_directories(BEFORE .) # Find the local headers first
 add_subdirectory(openbr)
 
 # Build applications
@@ -137,6 +151,14 @@ endif()
 install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
+
+# install brpy
+option(BR_INSTALL_BRPY "Install brpy, the Python wrapper to the C API (requires Python)")
+if(${BR_INSTALL_BRPY})
+  find_package(PythonInterp REQUIRED)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site, sys; sys.stdout.write(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SITE_DIR)
+  install(DIRECTORY ${BR_SCRIPTS_DIR}/brpy DESTINATION ${PYTHON_SITE_DIR})
+endif()
 
 # Package
 set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")
