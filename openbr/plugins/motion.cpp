@@ -62,7 +62,8 @@ class SubtractBackgroundTransform : public TimeVaryingTransform
 {
     Q_OBJECT
 
-    BackgroundSubtractorMOG2 mog;
+    // TODO: This is broken.
+  //  BackgroundSubtractorMOG2 mog;
 
 public:
     SubtractBackgroundTransform() : TimeVaryingTransform(false, false) {}
@@ -72,7 +73,8 @@ private:
     {
         dst = src;
         Mat mask;
-        mog(src, mask);
+        // TODO: broken
+        // mog(src, mask);
         erode(mask, mask, Mat());
         dilate(mask, mask, Mat());
         dst.file.set("Mask", QVariant::fromValue(mask));
@@ -86,7 +88,8 @@ private:
     void finalize(TemplateList &output)
     {
         (void) output;
-        mog = BackgroundSubtractorMOG2();
+        // TODO: Broken
+        // mog = BackgroundSubtractorMOG2();
     }
 };
 

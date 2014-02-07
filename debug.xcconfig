@@ -1,0 +1,10 @@
+//
+//  debug.xcconfig
+//  openbr
+//
+//  Created by user on 1/19/14.
+//
+//
+
+ARCHS = "$(ARCHS_STANDARD)";
+ONLY_ACTIVE_ARCH = YES;

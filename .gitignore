@@ -42,3 +42,11 @@ data/INRIAPerson/sigset
 data/KTH/sigset
 data/CaltechPedestrians/annotations
 
+
+CMakeCache.txt
+
+*.check_cache
+
+*.sublime-project
+
+*.sublime-workspace

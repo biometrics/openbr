@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
 using namespace cv;
@@ -164,7 +165,10 @@ class LargestConvexAreaTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         std::vector< std::vector<Point> > contours;
+        // TODO: Fix, src.clone is a br_template not opencv array
+        /*
         findContours(src.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+         */
         double maxArea = 0;
         foreach (const std::vector<Point> &contour, contours) {
             std::vector<Point> hull;

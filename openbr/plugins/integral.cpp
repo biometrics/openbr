@@ -1,4 +1,5 @@
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include <Eigen/Core>
 #include "openbr_internal.h"
 
@@ -293,7 +294,7 @@ private:
         Sobel(src, dx, CV_32F, 1, 0, CV_SCHARR);
         Sobel(src, dy, CV_32F, 0, 1, CV_SCHARR);
         cartToPolar(dx, dy, magnitude, angle, true);
-        vector<Mat> mv;
+        std::vector<Mat> mv;
         if ((channel == Magnitude) || (channel == MagnitudeAndAngle)) {
             const float theoreticalMaxMagnitude = sqrt(2*pow(float(2*(3+10+3)*255), 2.f));
             mv.push_back(magnitude / theoreticalMaxMagnitude);

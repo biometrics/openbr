@@ -15,7 +15,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include <openbr/openbr_plugin.h>
 
 #include "opencvutils.h"
@@ -115,6 +117,7 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
     if (rows*columns != src.size()) qFatal("Invalid matrix size.");
     Mat dst(rows, columns, CV_32FC1);
     for (int i=0; i<src.size(); i++)
+// TODO: If we have a valid row with zero columns, then division by zero
         dst.at<float>(i/columns,i%columns) = src[i];
     return dst;
 }
@@ -134,6 +137,7 @@ Mat OpenCVUtils::toMat(const QList<int> &src, int rows)
     if (rows*columns != src.size()) qFatal("Invalid matrix size.");
     Mat dst(rows, columns, CV_32FC1);
     for (int i=0; i<src.size(); i++)
+// TODO: If we have a valid row with zero columns, then division by zero
         dst.at<float>(i/columns,i%columns) = src[i];
     return dst;
 }

@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QtConcurrent>
 #include <opencv/highgui.h>
+#include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -736,7 +737,6 @@ protected:
                         frameSource = new VideoReader();
                 }
             }
-
             open_res = frameSource->open(curr);
             if (!open_res)
             {
@@ -1283,6 +1283,8 @@ public:
 
         // Wait for the stream to process the last frame available from
         // the data source.
+        bool wait_res = false;
+        wait_res = readStage->dataSource.waitLast();
         readStage->dataSource.waitLast();
 
         // Now that there are no more incoming frames, call finalize
@@ -1420,6 +1422,7 @@ public:
     {
         // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
+// TODO: Are we releasing memory which is already freed?
             delete processingStages[i];
         }
         processingStages.clear();
