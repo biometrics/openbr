@@ -2,11 +2,8 @@
 #include <vector>
 #include <assert.h>
 #include <opencv2/imgproc/imgproc.hpp>
-<<<<<<< HEAD
 #include <opencv2/imgproc/imgproc_c.h>
-=======
 #include "utility.h"
->>>>>>> upstream/master
 
 using namespace cv;
 
