@@ -528,7 +528,7 @@ class tailOutput : public Output
         } else {
             // General case
             for (int k=0; k<comparisons.size(); k++) {
-                if (comparisons[k].value < value) {
+                if (comparisons[k].value <= value) {
                     comparisons.insert(k, Comparison(queryFiles[i], targetFiles[j], value));
                     break;
                 }
@@ -539,6 +539,7 @@ class tailOutput : public Output
             comparisons.removeLast();
         while ((comparisons.size() > atLeast) && (comparisons.last().value < threshold))
             comparisons.removeLast();
+
         lastValue = comparisons.last().value;
         comparisonsLock.unlock();
     }

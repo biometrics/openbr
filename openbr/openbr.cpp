@@ -470,3 +470,8 @@ void br_close_gallery(br_gallery gallery)
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
     delete gal;
 }
+
+void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold)
+{
+    br::Deduplicate(input_gallery, output_gallery, threshold);
+}
