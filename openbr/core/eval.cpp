@@ -572,6 +572,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     const QStringList predictedNames = File::get<QString>(predicted, "name");
     const QStringList truthNames = File::get<QString>(truth, "name");
 
+    int skipped = 0;
     QList< QList<float> > pointErrors;
     for (int i=0; i<predicted.size(); i++) {
         const QString &predictedName = predictedNames[i];
@@ -579,7 +580,10 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         if (truthIndex == -1) qFatal("Could not identify ground truth for file: %s", qPrintable(predictedName));
         const QList<QPointF> predictedPoints = predicted[i].file.points();
         const QList<QPointF> truthPoints = truth[truthIndex].file.points();
-        if (predictedPoints.size() != truthPoints.size()) qFatal("Points size mismatch for file: %s", qPrintable(predictedName));
+        if (predictedPoints.size() != truthPoints.size()) {
+            skipped++;
+            continue;
+        }
         while (pointErrors.size() < predictedPoints.size())
             pointErrors.append(QList<float>());
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
@@ -588,6 +592,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         for (int j=0; j<predictedPoints.size(); j++)
             pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
     }
+    qDebug() << "Skipped " << skipped << " files do to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
     for (int i=0; i<pointErrors.size(); i++) {
@@ -604,6 +609,8 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         for (int j=0; j<keep; j++)
             lines.append(QString("Box,%1,%2").arg(QString::number(i), QString::number(pointError[j*(pointError.size()-1)/(keep-1)])));
     }
+
+    lines.append(QString("AvgError,0,%1").arg(averagePointError));
 
     QtUtils::writeFile(csv, lines);
     qDebug("Average Error: %.3f", averagePointError);
