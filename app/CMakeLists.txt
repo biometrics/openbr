@@ -5,4 +5,6 @@ add_subdirectory(br)
 add_subdirectory(examples)
 
 # Build OpenBR GUI application
-add_subdirectory(br-gui)
+if(NOT ${BR_EMBEDDED})
+	add_subdirectory(br-gui)
+endif()

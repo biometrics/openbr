@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/objdetect/objdetect.hpp>
+//#include <opencv2/objdetect/objdetect_c.h>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/resource.h"
@@ -86,11 +87,11 @@ class CascadeTransform : public UntrainableMetaTransform
 
             for (int i=0; i<t.size(); i++) {
                 const Mat &m = t[i];
-                vector<Rect> rects;
-                vector<int> rejectLevels;
-                vector<double> levelWeights;
-                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, 5, (enrollAll ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT) | CV_HAAR_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
-                else         cascade->detectMultiScale(m, rects, 1.2, 5, enrollAll ? 0 : CV_HAAR_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
+                std::vector<Rect> rects;
+                std::vector<int> rejectLevels;
+                std::vector<double> levelWeights;
+                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, 5, (enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT) | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
+                else         cascade->detectMultiScale(m, rects, 1.2, 5, enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
 
                 if (!enrollAll && rects.empty())
                     rects.push_back(Rect(0, 0, m.cols, m.rows));

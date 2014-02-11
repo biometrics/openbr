@@ -1,6 +1,8 @@
 #include <limits>
 #include <vector>
+#include <assert.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "utility.h"
 
 using namespace cv;

@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QtConcurrent>
 #include <opencv/highgui.h>
+#include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -736,7 +737,6 @@ protected:
                         frameSource = new VideoReader();
                 }
             }
-
             open_res = frameSource->open(curr);
             if (!open_res)
             {
@@ -1420,6 +1420,7 @@ public:
     {
         // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
+// TODO: Are we releasing memory which is already freed?
             delete processingStages[i];
         }
         processingStages.clear();
