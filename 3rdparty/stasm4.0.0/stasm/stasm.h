@@ -30,7 +30,7 @@ static const char* const STASM_VERSION = "4.0.0"
 #pragma warning(disable:4267)
 #endif
 
-#include <opencv/cv.h>
+#include "opencv/cv.h"
 
 #if _MSC_VER >= 1200
 #pragma warning(default:4996) // re-enable the warnings disabled above
