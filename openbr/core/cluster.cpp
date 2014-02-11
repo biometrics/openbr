@@ -21,6 +21,7 @@
 #include <QSet>
 #include <limits>
 #include <openbr/openbr_plugin.h>
+#include <assert.h>
 
 #include "openbr/core/bee.h"
 #include "openbr/core/cluster.h"

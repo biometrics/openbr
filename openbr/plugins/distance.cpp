@@ -18,6 +18,7 @@
 #include <QtConcurrentRun>
 #include <numeric>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
 #include "openbr/core/distance_sse.h"
@@ -61,6 +62,7 @@ private:
             (a.m().type() != b.m().type()))
                 return -std::numeric_limits<float>::max();
 
+// TODO: this max value is never returned based on the switch / default 
         float result = std::numeric_limits<float>::max();
         switch (metric) {
           case Correlation:

@@ -94,7 +94,7 @@ class BinTransform : public UntrainableTransform
         } else if (channels == 2) {
             // If there are two channels, the first is channel is assumed to be a weight vector
             // and the second channel contains the vectors we would like to bin.
-            vector<Mat> mv;
+            std::vector<Mat> mv;
             cv::split(src, mv);
             weights = mv[0];
             weights.convertTo(weights, CV_32F);

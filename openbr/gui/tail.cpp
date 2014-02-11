@@ -1,6 +1,7 @@
 #include <QtConcurrentRun>
 
 #include "tail.h"
+#include <assert.h>
 
 using namespace br;
 
