@@ -23,6 +23,7 @@ class OpticalFlowTransform : public UntrainableMetaTransform
     Q_PROPERTY(int poly_n READ get_poly_n WRITE set_poly_n RESET reset_poly_n STORED false)
     Q_PROPERTY(double poly_sigma READ get_poly_sigma WRITE set_poly_sigma RESET reset_poly_sigma STORED false)
     Q_PROPERTY(int flags READ get_flags WRITE set_flags RESET reset_flags STORED false)
+    Q_PROPERTY(bool useMagnitude READ get_useMagnitude WRITE set_useMagnitude RESET reset_useMagnitude STORED false)
     // these defaults are optimized for KTH
     BR_PROPERTY(double, pyr_scale, 0.1)
     BR_PROPERTY(int, levels, 1)
@@ -31,22 +32,27 @@ class OpticalFlowTransform : public UntrainableMetaTransform
     BR_PROPERTY(int, poly_n, 7)
     BR_PROPERTY(double, poly_sigma, 1.1)
     BR_PROPERTY(int, flags, 0)
+    BR_PROPERTY(bool, useMagnitude, true)
 
     void project(const Template &src, Template &dst) const
     {
         // get the two images put there by AggregateFrames
         if (src.size() != 2) qFatal("Optical Flow requires two images.");
-        Mat prevImg = src[0], nextImg = src[1], flow, flowOneCh;
+        Mat prevImg = src[0], nextImg = src[1], flow;
         if (src[0].channels() != 1) OpenCVUtils::cvtGray(src[0], prevImg);
         if (src[1].channels() != 1) OpenCVUtils::cvtGray(src[1], nextImg);
         calcOpticalFlowFarneback(prevImg, nextImg, flow, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags);
 
-        // the result is two channels
-        std::vector<Mat> channels(2);
-        split(flow, channels);
-        magnitude(channels[0], channels[1], flowOneCh);
-
-        dst += flowOneCh;
+        if (useMagnitude) {
+            // the result is two channels
+            Mat flowOneCh;
+            std::vector<Mat> channels(2);
+            split(flow, channels);
+            magnitude(channels[0], channels[1], flowOneCh);
+            dst += flowOneCh;
+        } else {
+            dst += flow;
+        }
         dst.file = src.file;
     }
 };
