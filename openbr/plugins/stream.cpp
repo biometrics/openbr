@@ -347,14 +347,18 @@ public:
         }
 
         // first 4 bytes store 0xEDFE, next 24 store 'Norpix seq  '
-        char *firstFour = new char[4], *nextTwentyFour;
+        char *firstFour = new char[4];
         seqFile.seekg(0, ios::beg);
         seqFile.read(firstFour, 4);
-        nextTwentyFour = readText(24);
+        char *nextTwentyFour = readText(24);
         if (firstFour[0] != (char)0xED || firstFour[1] != (char)0xFE || strncmp(nextTwentyFour, "Norpix seq", 10) != 0) {
             qDebug("Invalid header in seq file");
+            delete [] firstFour;
+            delete [] nextTwentyFour;
             return false;
         }
+        delete [] firstFour;
+        delete [] nextTwentyFour;
 
         // next 8 bytes for version (skipped below) and header size (1024), then 512 for descr
         seqFile.seekg(4, ios::cur);
@@ -420,6 +424,7 @@ public:
                         s += 8;
                         extra += 8;
                     }
+                    delete [] zero;
                 }
             }
             // raw images are all the same size
@@ -505,6 +510,7 @@ private:
         for (int i=0; i<bytes; i+=2) {
             ret[i/2] = text[i];
         }
+        delete [] text;
         return ret;
     }
 
