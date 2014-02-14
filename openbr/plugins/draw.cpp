@@ -374,6 +374,59 @@ class DrawOpticalFlow : public UntrainableTransform
 };
 BR_REGISTER(Transform, DrawOpticalFlow)
 
+/*!
+ * \ingroup transforms
+ * \brief Fill in the segmentations or draw a line between intersecting segments.
+ * \author Austin Blanton \cite imaus10
+ */
+class DrawSegmentation : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(bool fillSegment READ get_fillSegment WRITE set_fillSegment RESET reset_fillSegment STORED false)
+    BR_PROPERTY(bool, fillSegment, true)
+    Q_PROPERTY(QString original READ get_original WRITE set_original RESET reset_original STORED false)
+    BR_PROPERTY(QString, original, "original")
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (!src.file.contains("SegmentsMask") || !src.file.contains("NumSegments")) qFatal("Must supply a Contours object in the metadata to drawContours.");
+        Mat segments = src.file.get<Mat>("SegmentsMask");
+        int numSegments = src.file.get<int>("NumSegments");
+
+        dst.file = src.file;
+        Mat drawn;
+        if (fillSegment) { // color the whole segment
+            drawn = Mat(segments.size(), CV_8UC3, Scalar::all(0));
+            for (int i=1; i<numSegments+1; i++) {
+                Mat mask = segments == i;
+                // set to a random color - get ready for a craaaazy acid trip
+                int b = theRNG().uniform(0, 255);
+                int g = theRNG().uniform(0, 255);
+                int r = theRNG().uniform(0, 255);
+                drawn.setTo(Scalar(r,g,b), mask);
+            }
+        } else { // draw lines where there's a color change
+            // TODO: i don't think this quite works yet
+            // use an edge detector set for any change in pixel value?
+            const Vec3b color(0,255,0);
+            if (!dst.file.contains(original)) qFatal("You must store the original image in the metadata with SaveMat.");
+            drawn = dst.file.get<Mat>(original);
+            dst.file.remove(original);
+            for (int i=0; i<segments.rows; i++) {
+                for (int j=0; j<segments.cols; j++) {
+                    int curr = segments.at<int>(i,j);
+                    if (curr != segments.at<int>(i,j+1) || curr != segments.at<int>(i+1,j)) {
+                        drawn.at<Vec3b>(i,j) = color;
+                    }
+                }
+            }
+        }
+
+        dst.m() = drawn;
+    }
+};
+BR_REGISTER(Transform, DrawSegmentation)
+
 // TODO: re-implement EditTransform using Qt
 #if 0
 /*!
