@@ -34,7 +34,10 @@ class SegmentationTransform : public UntrainableTransform
             drawContours(markers, contours, idx, Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
         }
 
-        watershed(src.file.get<Mat>("original"), markers);
+        Mat orig = src.m();
+        // watershed requires a 3-channel 8-bit image
+        if (orig.channels() == 1) cvtColor(orig, orig, CV_GRAY2BGR);
+        watershed(orig, markers);
         dst.file.set("SegmentsMask", QVariant::fromValue(markers));
         dst.file.set("NumSegments", compCount);
     }
