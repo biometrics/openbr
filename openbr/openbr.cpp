@@ -383,7 +383,9 @@ bool br_img_is_empty(br_template tmpl)
 const char* br_get_filename(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
-    return t->file.name.toStdString().c_str();
+		QByteArray s = t->file.name.toLocal8Bit();
+		char *buffer = s.data();
+		return buffer;
 }
 
 void br_set_filename(br_template tmpl, const char *filename)
