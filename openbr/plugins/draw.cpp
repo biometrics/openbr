@@ -395,30 +395,27 @@ class DrawSegmentation : public UntrainableTransform
 
         dst.file = src.file;
         Mat drawn;
-        if (fillSegment) { // color the whole segment
+        if (fillSegment) {
             drawn = Mat(segments.size(), CV_8UC3, Scalar::all(0));
-            for (int i=1; i<numSegments+1; i++) {
-                Mat mask = segments == i;
+        } else {
+            if (!dst.file.contains(original)) qFatal("You must store the original image in the metadata with SaveMat.");
+            drawn = dst.file.get<Mat>(original);
+            dst.file.remove(original);
+        }
+
+        for (int i=1; i<numSegments+1; i++) {
+            Mat mask = segments == i;
+            if (fillSegment) { // color the whole segment
                 // set to a random color - get ready for a craaaazy acid trip
                 int b = theRNG().uniform(0, 255);
                 int g = theRNG().uniform(0, 255);
                 int r = theRNG().uniform(0, 255);
                 drawn.setTo(Scalar(r,g,b), mask);
-            }
-        } else { // draw lines where there's a color change
-            // TODO: i don't think this quite works yet
-            // use an edge detector set for any change in pixel value?
-            const Vec3b color(0,255,0);
-            if (!dst.file.contains(original)) qFatal("You must store the original image in the metadata with SaveMat.");
-            drawn = dst.file.get<Mat>(original);
-            dst.file.remove(original);
-            for (int i=0; i<segments.rows; i++) {
-                for (int j=0; j<segments.cols; j++) {
-                    int curr = segments.at<int>(i,j);
-                    if (curr != segments.at<int>(i,j+1) || curr != segments.at<int>(i+1,j)) {
-                        drawn.at<Vec3b>(i,j) = color;
-                    }
-                }
+            } else { // draw lines where there's a color change
+                vector<vector<Point> > contours;
+                Scalar color(0,255,0);
+                findContours(mask, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+                drawContours(drawn, contours, -1, color);
             }
         }
 
