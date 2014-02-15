@@ -67,4 +67,55 @@ inline QDataStream &operator>>(QDataStream &stream, Eigen::Matrix< _Scalar, _Row
     return stream;
 }
 
+/*Compute the mean of the each column (dim == 1) or row (dim == 2)
+  of the matrix*/
+template<typename T>
+Eigen::MatrixBase<T> eigMean(const Eigen::MatrixBase<T>& x,int dim)
+{
+    if (dim == 1) {
+        Eigen::MatrixBase<T> y(1,x.cols());
+        for (int i = 0; i < x.cols(); i++)
+            y(i) = x.col(i).sum() / x.rows();
+        return y;
+    } else if (dim == 2) {
+        Eigen::MatrixBase<T> y(x.rows(),1);
+        for (int i = 0; i < x.rows(); i++)
+            y(i) = x.row(i).sum() / x.cols();
+        return y;
+    }
+    qFatal("A matrix can only have two dimensions");
+}
+
+/*Compute the element-wise mean*/
+float eigMean(const Eigen::MatrixXf& x);
+/*Compute the element-wise mean*/
+float eigStd(const Eigen::MatrixXf& x);
+
+/*Compute the std dev of the each column (dim == 1) or row (dim == 2)
+  of the matrix*/
+template<typename T>
+Eigen::MatrixBase<T> eigStd(const Eigen::MatrixBase<T>& x,int dim)
+{
+    Eigen::MatrixBase<T> mean = eigMean(x, dim);
+    if (dim == 1) {
+        Eigen::MatrixBase<T> y(1,x.cols());
+        for (int i = 0; i < x.cols(); i++) {
+            T value = 0;
+            for (int j = 0; j < x.rows(); j++)
+                value += pow(y(j, i) - mean(i), 2);
+            y(i) = sqrt(value / (x.rows() - 1));
+        }
+        return y;
+    } else if (dim == 2) {
+        Eigen::MatrixBase<T> y(x.rows(),1);
+        for (int i = 0; i < x.rows(); i++) {
+            T value = 0;
+            for (int j = 0; j < x.cols(); j++)
+                value += pow(y(i, j) - mean(j), 2);
+            y(i) = sqrt(value / (x.cols() - 1));
+        }
+        return y;
+    }
+    qFatal("A matrix can only have two dimensions");
+}
 #endif // EIGENUTILS_H

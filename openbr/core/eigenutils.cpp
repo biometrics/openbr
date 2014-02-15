@@ -67,3 +67,12 @@ void printEigen(Eigen::MatrixXf X) {
 void printSize(Eigen::MatrixXf X) {
     qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
 }
+
+float eigMean(const Eigen::MatrixXf& x) {
+    return x.array().sum() / (x.rows() * x.cols());
+}
+
+float eigStd(const Eigen::MatrixXf& x) {
+    float mean = eigMean(x);
+    return sqrt((x.array() - mean).pow(2).sum() / (x.cols() * x.rows()));
+}
