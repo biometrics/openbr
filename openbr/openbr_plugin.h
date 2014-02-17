@@ -1374,7 +1374,7 @@ BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGalle
 
 /*!
  * \brief Deduplicate a gallery.
- * \param inputGalleries Gallery to deduplicate.
+ * \param inputGallery Gallery to deduplicate.
  * \param outputGallery Gallery to store the deduplicated result.
  * \param threshold Match score threshold to determine duplicates.
  */
