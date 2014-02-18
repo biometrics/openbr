@@ -31,18 +31,16 @@ janus_error janus_finalize()
     return JANUS_SUCCESS;
 }
 
-struct janus_incomplete_template_type
-{
-    QList<cv::Mat> data;
-};
+struct janus_template_type : public Template
+{};
 
-janus_error janus_initialize_template(janus_incomplete_template *incomplete_template)
+janus_error janus_initialize_template(janus_template *template_)
 {
-    *incomplete_template = new janus_incomplete_template_type();
+    *template_ = new janus_template_type();
     return JANUS_SUCCESS;
 }
 
-janus_error janus_add_image(const janus_image image, const janus_attribute_list attributes, janus_incomplete_template incomplete_template)
+janus_error janus_add_image(const janus_image image, const janus_attribute_list attributes, janus_template template_)
 {
     Template t;
     t.append(cv::Mat(image.height,
@@ -62,18 +60,18 @@ janus_error janus_add_image(const janus_image image, const janus_attribute_list 
     t.file.set("Affine_1", QPointF(t.file.get<float>("JANUS_LEFT_EYE_X"), t.file.get<float>("JANUS_LEFT_EYE_Y")));
     Template u;
     transform->project(t, u);
-    incomplete_template->data.append(u);
+    template_->append(u);
     return JANUS_SUCCESS;
 }
 
-janus_error janus_finalize_template(janus_incomplete_template incomplete_template, janus_template template_, size_t *bytes)
+janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
 {    
     size_t templateBytes = 0;
     size_t numTemplates = 0;
     *bytes = sizeof(templateBytes) + sizeof(numTemplates);
-    janus_template pos = template_ + *bytes;
+    janus_flat_template pos = flat_template + *bytes;
 
-    foreach (const cv::Mat &m, incomplete_template->data) {
+    foreach (const cv::Mat &m, *template_) {
         assert(m.isContinuous());
         const size_t currentTemplateBytes = m.rows * m.cols * m.elemSize();
         if (templateBytes == 0)
@@ -88,13 +86,13 @@ janus_error janus_finalize_template(janus_incomplete_template incomplete_templat
         numTemplates++;
     }
 
-    *(reinterpret_cast<size_t*>(template_)+0) = templateBytes;
-    *(reinterpret_cast<size_t*>(template_)+1) = numTemplates;
-    delete incomplete_template;
+    *(reinterpret_cast<size_t*>(flat_template)+0) = templateBytes;
+    *(reinterpret_cast<size_t*>(flat_template)+1) = numTemplates;
+    delete template_;
     return JANUS_SUCCESS;
 }
 
-janus_error janus_verify(const janus_template a, const size_t a_bytes, const janus_template b, const size_t b_bytes, double *similarity)
+janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, const janus_flat_template b, const size_t b_bytes, double *similarity)
 {
     (void) a_bytes;
     (void) b_bytes;
@@ -116,27 +114,30 @@ janus_error janus_verify(const janus_template a, const size_t a_bytes, const jan
     return JANUS_SUCCESS;
 }
 
-struct janus_incomplete_gallery_type
-{
-    QList< QPair<janus_template, janus_template_id> > templates;
-};
+struct janus_gallery_type : public TemplateList
+{};
 
-janus_error janus_initialize_gallery(janus_incomplete_gallery *incomplete_gallery)
+janus_error janus_initialize_gallery(janus_gallery *gallery)
 {
-    *incomplete_gallery = new janus_incomplete_gallery_type();
+    *gallery = new janus_gallery_type();
     return JANUS_SUCCESS;
 }
 
-janus_error janus_add_template(const janus_template template_, const size_t bytes, const janus_template_id template_id, janus_incomplete_gallery incomplete_gallery)
+janus_error janus_enroll(const janus_template template_, const janus_template_id template_id, janus_gallery gallery)
 {
-    (void) bytes;
-    incomplete_gallery->templates.append(QPair<janus_template, janus_template_id>(template_, template_id));
+    template_->file.set("Template_ID", template_id);
+    gallery->append(*template_);
+    delete template_;
     return JANUS_SUCCESS;
 }
 
-janus_error janus_finalize_gallery(janus_incomplete_gallery incomplete_gallery, const char *gallery_file)
+janus_error janus_finalize_gallery(janus_gallery gallery, janus_gallery_file gallery_file)
 {
-    (void) incomplete_gallery;
-    (void) gallery_file;
+    QFile file(gallery_file);
+    if (!file.open(QFile::WriteOnly))
+        return JANUS_WRITE_ERROR;
+    QDataStream stream(&file);
+    stream << gallery;
+    file.close();
     return JANUS_SUCCESS;
 }
