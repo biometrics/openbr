@@ -25,6 +25,9 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
     if (algorithm.isEmpty()) {
         transform = Transform::fromAlgorithm("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", false);
         distance = Distance::fromAlgorithm("FaceRecognition");
+    } else if (algorithm == "PP5") {
+        transform.reset(Transform::make("PP5Enroll", NULL));
+        distance.reset(Distance::make("PP5Compare", NULL));
     } else {
         transform = Transform::fromAlgorithm(algorithm, false);
         distance = Distance::fromAlgorithm(algorithm);
@@ -34,6 +37,8 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
 
 janus_error janus_finalize()
 {
+    transform.reset();
+    distance.reset();
     Context::finalize();
     return JANUS_SUCCESS;
 }
@@ -73,59 +78,51 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
 
 janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
 {    
-    size_t templateBytes = 0;
-    size_t numTemplates = 0;
-    *bytes = sizeof(templateBytes) + sizeof(numTemplates);
-    janus_flat_template pos = flat_template + *bytes;
-
     foreach (const cv::Mat &m, *template_) {
         assert(m.isContinuous());
-        const size_t currentTemplateBytes = m.rows * m.cols * m.elemSize();
-        if (templateBytes == 0)
-            templateBytes = currentTemplateBytes;
-        if (templateBytes != currentTemplateBytes)
-            return JANUS_UNKNOWN_ERROR;
-        if (*bytes + templateBytes > janus_max_template_size())
+        const size_t templateBytes = m.rows * m.cols * m.elemSize();
+        if (*bytes + sizeof(size_t) + templateBytes > janus_max_template_size())
             break;
-        memcpy(pos, m.data, templateBytes);
-        *bytes += templateBytes;
-        pos = pos + templateBytes;
-        numTemplates++;
+        memcpy(flat_template, &templateBytes, sizeof(templateBytes));
+        flat_template += sizeof(templateBytes);
+        memcpy(flat_template, m.data, templateBytes);
+        flat_template += templateBytes;
+        *bytes += sizeof(size_t) + templateBytes;
     }
 
-    *(reinterpret_cast<size_t*>(flat_template)+0) = templateBytes;
-    *(reinterpret_cast<size_t*>(flat_template)+1) = numTemplates;
     delete template_;
     return JANUS_SUCCESS;
 }
 
 janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, const janus_flat_template b, const size_t b_bytes, double *similarity)
 {
-    (void) a_bytes;
-    (void) b_bytes;
-
-    size_t a_template_bytes, a_templates, b_template_bytes, b_templates;
-    a_template_bytes = *(reinterpret_cast<size_t*>(a)+0);
-    a_templates = *(reinterpret_cast<size_t*>(a)+1);
-    b_template_bytes = *(reinterpret_cast<size_t*>(b)+0);
-    b_templates = *(reinterpret_cast<size_t*>(b)+1);
-
     *similarity = 0;
-    if ((a_templates == 0) || (b_templates == 0))
-        return JANUS_SUCCESS;
 
-    if (a_template_bytes != b_template_bytes)
-        return JANUS_UNKNOWN_ERROR;
+    int comparisons = 0;
+    janus_flat_template a_template = a;
+    while (a_template < a + a_bytes) {
+        const size_t a_template_bytes = *reinterpret_cast<size_t*>(a_template);
+        a_template += sizeof(a_template_bytes);
 
-    for (size_t i=0; i<a_templates; i++)
-        for (size_t j=0; j<b_templates; j++)
-            *similarity += distance->compare(cv::Mat(1, a_template_bytes, CV_8UC1, a+2*sizeof(size_t)+i*a_template_bytes),
-                                             cv::Mat(1, b_template_bytes, CV_8UC1, b+2*sizeof(size_t)+j*b_template_bytes));
+        janus_flat_template b_template = b;
+        while (b_template < b + b_bytes) {
+                const size_t b_template_bytes = *reinterpret_cast<size_t*>(b_template);
+                b_template += sizeof(b_template_bytes);
+
+                *similarity += distance->compare(cv::Mat(1, a_template_bytes, CV_8UC1, a_template),
+                                                 cv::Mat(1, b_template_bytes, CV_8UC1, b_template));
+                comparisons++;
+
+                b_template += b_template_bytes;
+        }
+
+        a_template += a_template_bytes;
+    }
 
     if (*similarity != *similarity) // True for NaN
         return JANUS_UNKNOWN_ERROR;
 
-    *similarity /= a_templates * b_templates;
+    *similarity /= comparisons;
     return JANUS_SUCCESS;
 }
 
