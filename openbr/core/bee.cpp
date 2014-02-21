@@ -172,6 +172,8 @@ Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySi
     qint64 read = file.read((char*)m.data, bytesExpected);
     if (read != bytesExpected)
         qFatal("Invalid matrix size.");
+    if (!file.atEnd())
+        qFatal("Expected matrix end of file.");
     file.close();
 
     Mat result;
