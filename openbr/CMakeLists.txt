@@ -34,7 +34,7 @@ set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementatio
 set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
 mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
 mark_as_advanced(JANUS_BUILD_DOCS)
-set(JANUS_TEST_IMPLEMENTATION openbr)
+set(JANUS_IMPLEMENTATION openbr)
 add_subdirectory(janus)
 
 # Install
