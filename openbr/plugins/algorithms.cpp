@@ -52,7 +52,7 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("AgeGenderDemo", "Stream(SaveMat(original)+Cvt(Gray)+Cascade(FrontalFace)+Expand+<FaceClassificationRegistration>+<FaceClassificationExtraction>+<AgeRegressor>/<GenderClassifier>+Discard+RestoreMat(original)+Draw(inPlace=true)+DrawPropertiesPoint([Age,Gender],Affine_0,inPlace=true)+SaveMat(original)+Discard+Contract+RestoreMat(original)+FPSCalc+Show(false,[AvgFPS,Age,Gender])+Discard)");
         Globals->abbreviations.insert("ShowOpticalFlowField", "Stream(SaveMat(original)+AggregateFrames(2)+OpticalFlow(useMagnitude=false)+Grid(100,100)+DrawOpticalFlow+FPSLimit(30)+Show(false)+Discard)");
         Globals->abbreviations.insert("ShowOpticalFlowMagnitude", "Stream(AggregateFrames(2)+OpticalFlow+Normalize(Range,false,0,255)+Cvt(Color)+Draw+FPSLimit(30)+Show(false)+Discard)");
-        Globals->abbreviations.insert("ShowMotionSegmentation", "Stream(DropFrames(5)+SaveMat(original)+AggregateFrames(2)+OpticalFlow+CvtUChar+Segmentation+DrawSegmentation+Draw+FPSLimit(30)+Show(false)+Discard)");
+        Globals->abbreviations.insert("ShowMotionSegmentation", "Stream(DropFrames(5)+AggregateFrames(2)+OpticalFlow+CvtUChar+WatershedSegmentation+DrawSegmentation+Draw+FPSLimit(30)+Show(false)+Discard)");
 
         Globals->abbreviations.insert("HOG", "Stream(DropFrames(5)+Cvt(Gray)+Grid(5,5)+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)+SVM");
         Globals->abbreviations.insert("HOF", "Stream(DropFrames(5)+Grid(5,5)+AggregateFrames(2)+OpticalFlow+ROIFromPts(32,24)+Expand+Resize(32,32)+Gradient+RectRegions+Bin(0,360,8)+Hist(8)+Cat)+Contract+CatRows+KMeans(500)+Hist(500)");
