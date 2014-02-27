@@ -389,6 +389,9 @@ class OnlineDistance : public Distance
 BR_REGISTER(Distance, OnlineDistance)
 
 /*!
+ * \ingroup distances
+ * \brief Attenuation function based distance from attributes
+ * \author Scott Klum \cite sklum
  */
 class AttributeDistance : public Distance
 {
@@ -398,10 +401,10 @@ class AttributeDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        // Make gaussian attenuation distribution around query attribute value
         float queryValue = query.file.get<float>(attribute);
         float targetValue = target.file.get<float>(attribute);
 
+        // TODO: Set this magic number to something meaningful
         float stddev = 1;
 
         if (queryValue == targetValue) return 1;
@@ -412,14 +415,15 @@ class AttributeDistance : public Distance
 BR_REGISTER(Distance, AttributeDistance)
 
 /*!
+ * \ingroup distances
+ * \brief Sum match scores across multiple distances
+ * \author Scott Klum \cite sklum
  */
 class SumDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
-    Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
     BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
-    BR_PROPERTY(QString, attribute, QString())
 
     void train(const TemplateList &data)
     {
