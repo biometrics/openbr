@@ -433,10 +433,12 @@ public:
         }
 
 #ifdef CVMATIO
-        QString f = basis.file.name;
-        QString vbb = f.replace(f.lastIndexOf("."), 4, ".vbb");
-        vbb.replace(vbb.lastIndexOf("vid"), 3, "annotations");
-        annotations = TemplateList::fromGallery(File(vbb));
+        if (basis.file.contains("vbb")) {
+            QString vbb = basis.file.get<QString>("vbb");
+            annotations = TemplateList::fromGallery(File(vbb));
+        }
+#else
+        qWarning("cvmatio not installed, bounding boxes will not be available. Add -DBR_WITH_CVMATIO cmake flag to install.");
 #endif
 
         return true;

@@ -985,7 +985,7 @@ class vbbGallery : public Gallery
     void init()
     {
         MatlabIO matio;
-        QString filename = file.name;
+        QString filename = (Globals->path.isEmpty() ? "" : Globals->path + "/") + file.name;
         bool ok = matio.open(filename.toStdString(), "r");
         if (!ok) qFatal("Couldn't open the vbb file");
 

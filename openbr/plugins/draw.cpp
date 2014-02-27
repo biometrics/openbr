@@ -384,8 +384,6 @@ class DrawSegmentation : public UntrainableTransform
     Q_OBJECT
     Q_PROPERTY(bool fillSegment READ get_fillSegment WRITE set_fillSegment RESET reset_fillSegment STORED false)
     BR_PROPERTY(bool, fillSegment, true)
-    Q_PROPERTY(QString original READ get_original WRITE set_original RESET reset_original STORED false)
-    BR_PROPERTY(QString, original, "original")
 
     void project(const Template &src, Template &dst) const
     {
@@ -394,14 +392,7 @@ class DrawSegmentation : public UntrainableTransform
         int numSegments = src.file.get<int>("NumSegments");
 
         dst.file = src.file;
-        Mat drawn;
-        if (fillSegment) {
-            drawn = Mat(segments.size(), CV_8UC3, Scalar::all(0));
-        } else {
-            if (!dst.file.contains(original)) qFatal("You must store the original image in the metadata with SaveMat.");
-            drawn = dst.file.get<Mat>(original);
-            dst.file.remove(original);
-        }
+        Mat drawn = fillSegment ? Mat(segments.size(), CV_8UC3, Scalar::all(0)) : src.m();
 
         for (int i=1; i<numSegments+1; i++) {
             Mat mask = segments == i;
