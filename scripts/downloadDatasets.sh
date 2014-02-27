@@ -51,8 +51,8 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
     tar -xf $fname
   done
   rm *.tar
-  ./writeCaltechPedestrianSigset.sh 0 5 > ../data/CaltechPedestrians/train.xml
-  ./writeCaltechPedestrianSigset 6 10 > ../data/CaltechPedestrians/test.xml
+  ./writeCaltechPedestrianSigset.sh 0 5 train > ../data/CaltechPedestrians/train.xml
+  ./writeCaltechPedestrianSigset.sh 6 10 test > ../data/CaltechPedestrians/test.xml
   mv set* ../data/CaltechPedestrians/vid
   if hash curl 2>/dev/null; then
     curl -OL "$prefix/annotations.zip"
