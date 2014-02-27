@@ -16,6 +16,7 @@
 
 #include <QDate>
 #include <QSize>
+#include <QChar>
 #ifndef BR_EMBEDDED
 #include <QtXml>
 #endif // BR_EMBEDDED
@@ -774,13 +775,11 @@ BR_REGISTER(Format, scoresFormat)
  * \author Scott Klum \cite sklum
  *
  */
-#include <QTextStream>
-#include <QChar>
 class ebtsFormat : public Format
 {
     Q_OBJECT
 
-    QByteArray textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
+    QString textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
     {
         // Find the field, skip the number bytes, and account for the semicolon
         int fieldPosition = byteArray.indexOf(fieldNumber, from) + fieldNumber.size() + 1;
@@ -788,18 +787,6 @@ class ebtsFormat : public Format
 
         return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
     }
-;
-QString fieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
-{
-    QString fullField = fieldNumber + ".001:";
-
-    // Find the field, skip the number bytes, and account for the semicolon
-    int fieldPosition = byteArray.indexOf(fullField, from);
-
-    int sepPosition = byteArray.indexOf(QChar(0x1C),fieldPosition);
-
-    return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
-}
 
     Template read() const
     {
@@ -809,10 +796,6 @@ QString fieldValue(const QByteArray &byteArray, const QString &fieldNumber, int 
         Template t;
 
         Mat m;
-
-        qDebug() << fieldValue(byteArray, "1");
-        qDebug() << fieldValue(byteArray, "2");
-
 
         // Demographics
         {
@@ -844,7 +827,6 @@ QString fieldValue(const QByteArray &byteArray, const QString &fieldNumber, int 
 
                 m = imdecode(Mat(3, data.size(), CV_8UC3, data.data()), CV_LOAD_IMAGE_COLOR);
                 if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
-
                 t.m() = m;
             } else qWarning("ebtsFormat::cannot find image data within file.");
 
