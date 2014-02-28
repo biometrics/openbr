@@ -41,6 +41,7 @@ class StasmInitializer : public Initializer
         Globals->abbreviations.insert("RectFromStasmNoseWithBridge", "RectFromPoints([21, 22, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58],0.15,.6)");
         Globals->abbreviations.insert("RectFromStasmMouth","RectFromPoints([59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76],0.3,2)");
         Globals->abbreviations.insert("RectFromStasmHair", "RectFromPoints([13,14,15],1.75,1.5)");
+        Globals->abbreviations.insert("RectFromStasmJaw", "RectFromPoints([2,3,4,5,6,7,8,9,10],.25,1.6)");
     }
 };
 
