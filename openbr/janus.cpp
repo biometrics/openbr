@@ -13,7 +13,7 @@ static QSharedPointer<Distance> distance;
 
 size_t janus_max_template_size()
 {
-    return JANUS_MAX_TEMPLATE_SIZE_LIMIT;
+    return 33554432; // 32 MB
 }
 
 janus_error janus_initialize(const char *sdk_path, const char *model_file)
