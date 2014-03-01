@@ -30,7 +30,10 @@ using namespace br;
 
 const char *br_about()
 {
+    static QMutex aboutLock;
+    QMutexLocker lock(&aboutLock);
     static QByteArray about = Context::about().toLocal8Bit();
+
     return about.data();
 }
 
@@ -260,6 +263,8 @@ const char *br_scratch_path()
 
 const char *br_sdk_path()
 {
+    static QMutex sdkLock;
+    QMutexLocker lock(&sdkLock);
     static QByteArray sdkPath = QDir(Globals->sdkPath).absolutePath().toLocal8Bit();
     return sdkPath.data();
 }
@@ -303,6 +308,8 @@ void br_train_n(int num_inputs, const char *inputs[], const char *model)
 
 const char *br_version()
 {
+    static QMutex versionLock;
+    QMutexLocker lock(&versionLock);
     static QByteArray version = Context::version().toLocal8Bit();
     return version.data();
 }

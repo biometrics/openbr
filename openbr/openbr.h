@@ -56,7 +56,6 @@ extern "C" {
 
 /*!
  * \brief Wraps br::Context::about()
- * \note \ref managed_return_value
  * \see br_version
  */
 BR_EXPORT const char *br_about();
@@ -376,14 +375,12 @@ BR_EXPORT void br_read_pipe(const char *pipe, int *argc, char ***argv);
 
 /*!
  * \brief Wraps br::Context::scratchPath()
- * \note \ref managed_return_value
  * \see br_version
  */
 BR_EXPORT const char *br_scratch_path();
 
 /*!
  * \brief Returns the full path to the root of the SDK.
- * \note \ref managed_return_value
  * \see br_initialize
  */
 BR_EXPORT const char *br_sdk_path();
