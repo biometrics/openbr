@@ -419,7 +419,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                             Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
                             if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
                                 leaveOneImageOutTemplate.file.set("Partition", k);
-                                leaveOneImageOutTemplate.file.set("testOnly", true);
+                                leaveOneImageOutTemplate.file.set("targetOnly", true);
                                 newTemplates.insert(i+1,leaveOneImageOutTemplate);
                             }
                         }

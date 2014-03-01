@@ -65,9 +65,9 @@ class CrossValidateTransform : public MetaTransform
                     const QString label = partitionedData.at(j).file.get<QString>("Label");
                     QList<int> subjectIndices = partitionedData.find("Label",label);
                     QList<int> removed;
-                    // Remove test only data
+                    // Remove target only data
                     for (int k=subjectIndices.size()-1; k>=0; k--)
-                        if (partitionedData[subjectIndices[k]].file.getBool("testOnly")) {
+                        if (partitionedData[subjectIndices[k]].file.getBool("targetOnly")) {
                             removed.append(subjectIndices[k]);
                             subjectIndices.removeAt(k);
                         }

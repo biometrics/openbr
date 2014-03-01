@@ -305,11 +305,14 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
     QList<int> targetPartitions = targets.crossValidationPartitions();
     QList<int> queryPartitions = queries.crossValidationPartitions();
 
+    QList<bool> targetsOnly = File::get<bool>(queries, "targetOnly", false);
+
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];
         const QString labelA = queryLabels[i];
         const int partitionA = queryPartitions[i];
+        const bool targetOnly = targetsOnly[i];
 
         for (int j=0; j<targets.size(); j++) {
             const QString &fileB = targets[j];
@@ -318,6 +321,7 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
 
             Mask_t val;
             if      (fileA == fileB)           val = DontCare;
+            else if (targetOnly)               val = DontCare;
             else if (labelA == "-1")           val = DontCare;
             else if (labelB == "-1")           val = DontCare;
             else if (partitionA != partition)  val = DontCare;
