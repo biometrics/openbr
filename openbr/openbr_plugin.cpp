@@ -392,42 +392,41 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
         const int crossValidate = gallery.get<int>("crossValidate");
 
-        if (gallery.getBool("leaveOneImageOut")) {
-            QStringList labels;
-            for (int i=newTemplates.size()-1; i>=0; i--) {
-                newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", gallery.name);
-
-                QString label = newTemplates.at(i).file.get<QString>("Label");
-                // Have we seen this subject before?
-                if (!labels.contains(label)) {
-                    labels.append(label);
-                    // Get indices belonging to this subject
-                    QList<int> labelIndices = newTemplates.find("Label",label);
-                    for (int j = 0; j < labelIndices.size(); j++) {
-                        // Set subject partitions
-                        newTemplates[labelIndices[j]].file.set("Partition",j%crossValidate);
-                    }
-                    // Extend the gallery for each partition
-                    for (int j=0; j<labelIndices.size(); j++) {
-                        for (int k=0; k<crossValidate; k++) {
-                            Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
-                            if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
-                                leaveOneImageOutTemplate.file.set("Partition", k);
-                                leaveOneImageOutTemplate.file.set("testOnly", true);
-                                newTemplates.insert(i+1,leaveOneImageOutTemplate);
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (int i=newTemplates.size()-1; i>=0; i--) {
+        for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
                 newTemplates[i].file.set("Gallery", gallery.name);
 
                 if (crossValidate > 0) {
-                    if (newTemplates[i].file.getBool("duplicatePartitions")) {
+                    if (gallery.getBool("leaveOneImageOut")) {
+                        QStringList labels;
+                        for (int i=newTemplates.size()-1; i>=0; i--) {
+                            newTemplates[i].file.set("Index", i+templates.size());
+                            newTemplates[i].file.set("Gallery", gallery.name);
+
+                            QString label = newTemplates.at(i).file.get<QString>("Label");
+                            // Have we seen this subject before?
+                            if (!labels.contains(label)) {
+                                labels.append(label);
+                                // Get indices belonging to this subject
+                                QList<int> labelIndices = newTemplates.find("Label",label);
+                                for (int j = 0; j < labelIndices.size(); j++) {
+                                    // Set subject partitions
+                                    newTemplates[labelIndices[j]].file.set("Partition",j%crossValidate);
+                                }
+                                // Extend the gallery for each partition
+                                for (int j=0; j<labelIndices.size(); j++) {
+                                    for (int k=0; k<crossValidate; k++) {
+                                        Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
+                                        if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
+                                            leaveOneImageOutTemplate.file.set("Partition", k);
+                                            leaveOneImageOutTemplate.file.set("testOnly", true);
+                                            newTemplates.insert(i+1,leaveOneImageOutTemplate);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if (newTemplates[i].file.getBool("duplicatePartitions")) {
                         // The duplicatePartitions flag is used to add target images
                         // crossValidate times to the simmat/mask
                         // when multiple training sets are being used
@@ -454,7 +453,6 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                         }
                     }
                 }
-            }
         }
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
