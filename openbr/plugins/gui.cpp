@@ -719,6 +719,8 @@ public:
 
         dst = src;
 
+        if (!Globals->useGui)
+            return;
         if (src.empty())
             return;
 
@@ -771,6 +773,8 @@ public:
     RectMarkingWindow * trueWindow;
     void init()
     {
+        if (!Globals->useGui)
+            return;
         initActual<RectMarkingWindow>();
         trueWindow = dynamic_cast<RectMarkingWindow *> (this->window);
         trueWindow->setKeys(this->keys);
