@@ -24,6 +24,7 @@
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 
 using namespace br;
 
@@ -121,9 +122,9 @@ void br_fuse(int num_input_simmats, const char *input_simmats[],
     Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), normalization, fusion, output_simmat);
 }
 
-void br_initialize(int &argc, char *argv[], const char *sdk_path)
+void br_initialize(int &argc, char *argv[], const char *sdk_path, bool use_gui)
 {
-    Context::initialize(argc, argv, sdk_path);
+    Context::initialize(argc, argv, sdk_path, use_gui);
 }
 
 void br_initialize_default()
@@ -381,8 +382,9 @@ bool br_img_is_empty(br_template tmpl)
 
 const char* br_get_filename(br_template tmpl)
 {
-    Template *t = reinterpret_cast<Template*>(tmpl);
-    return t->file.name.toStdString().c_str();
+    static QByteArray buffer;
+    buffer = reinterpret_cast<Template*>(tmpl)->file.name.toLocal8Bit();
+    return buffer.data();
 }
 
 void br_set_filename(br_template tmpl, const char *filename)
@@ -469,4 +471,9 @@ void br_close_gallery(br_gallery gallery)
 {
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
     delete gal;
+}
+
+void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold)
+{
+    br::Deduplicate(input_gallery, output_gallery, threshold);
 }

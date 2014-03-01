@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8.9)
 # Global settings
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
 set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+set(BR_THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 set(CMAKE_AUTOMOC ON)
 set(CPACK_PACKAGE_NAME "OpenBR")
 set(CPACK_PACKAGE_VENDOR "OpenBiometrics")
@@ -89,6 +90,18 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)
+
+# Find cvmatio (if using it)
+set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")
+if(${BR_WITH_CVMATIO})
+  find_package(cvmatio REQUIRED)
+  add_definitions(-DCVMATIO)
+  add_subdirectory(${CVMATIO_DIR})
+  include_directories(${CVMATIO_DIR}/include)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CVMATIO_DIR}/src/MatlabIO.cpp)
+  link_directories(${CVMATIO_LIB_DIR})
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} cvmatio)
+endif()
 
 # Compiler flags
 if(UNIX)

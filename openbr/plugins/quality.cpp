@@ -272,92 +272,75 @@ BR_REGISTER(Distance, ZScoreDistance)
 
 /*!
  * \ingroup distances
- * \brief Match Probability modification for heat maps \cite klare12
+ * \brief 1v1 heat map comparison
  * \author Scott Klum \cite sklum
  */
 class HeatMapDistance : public Distance
 {
     Q_OBJECT
-    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
-    Q_PROPERTY(bool gaussian READ get_gaussian WRITE set_gaussian RESET reset_gaussian STORED false)
-    Q_PROPERTY(bool crossModality READ get_crossModality WRITE set_crossModality RESET reset_crossModality STORED false)
+    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(int step READ get_step WRITE set_step RESET reset_step STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
-    BR_PROPERTY(br::Distance*, distance, make("Dist(L2)"))
-    BR_PROPERTY(bool, gaussian, true)
-    BR_PROPERTY(bool, crossModality, false)
+    BR_PROPERTY(QString, description, "IdenticalDistance")
     BR_PROPERTY(int, step, 1)
     BR_PROPERTY(QString, inputVariable, "Label")
 
-    QList<MP> mp;
+    QList<br::Distance*> distances;
 
     void train(const TemplateList &src)
     {
-        distance->train(src);
-
-        const QList<int> labels = src.indexProperty(inputVariable);
-
         QList<TemplateList> patches;
 
         // Split src into list of TemplateLists of corresponding patches across all Templates
         for (int i=0; i<step; i++) {
             TemplateList patchBuffer;
-            for (int j=i; j<src.size(); j+=step) {
-                patchBuffer.append(src[j]);
-            }
+            for (int j=0; j<src.size(); j++)
+                patchBuffer.append(Template(src[j].file, src[j][i]));
             patches.append(patchBuffer);
             patchBuffer.clear();
         }
 
-        QScopedPointer<MatrixOutput> matrixOutput(MatrixOutput::make(FileList(patches[0].size()), FileList(patches[0].size())));
+        while (distances.size() < patches.size())
+            distances.append(make(description));
 
-        for (int i=0; i<step; i++) {
-            distance->compare(patches[i], patches[i], matrixOutput.data());
-            QList<float> genuineScores, impostorScores;
-            genuineScores.reserve(step);
-            impostorScores.reserve(step);
-            for (int j=0; j<matrixOutput.data()->data.rows; j++) {
-                for (int k=0; k<j; k++) {
-                    const float score = matrixOutput.data()->data.at<float>(j, k);
-                    if (score == -std::numeric_limits<float>::max()) continue;
-                    if (crossModality) if(src[j*step].file.get<QString>("MODALITY") == src[k*step].file.get<QString>("MODALITY")) continue;
-                    if (labels[j*step] == labels[k*step]) genuineScores.append(score);
-                    else                                                        impostorScores.append(score);
-                }
-            }
-
-            mp.append(MP(genuineScores, impostorScores));
-        }
+        // Train on a distance for each patch
+        for (int i=0; i<distances.size(); i++)
+            distances[i]->train(patches[i]);
     }
 
     float compare(const Template &target, const Template &query) const
     {
         (void) target;
         (void) query;
-        qFatal("You did this wrong");
+        qFatal("Heatmap Distance not compatible with Template to Template comparison.");
 
         return 0;
     }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
     {
-        for (int i=0; i<step; i++) {
-            float rawScore = distance->compare(target[i],query[i]);
-            if (rawScore == -std::numeric_limits<float>::max()) output->setRelative(rawScore, i, 0);
-            else output->setRelative(mp[i](rawScore, gaussian), i, 0);
+        for (int i=0; i<target.size(); i++) {
+            if (target[i].size() != step || query[i].size() != step) qFatal("Heatmap step not equal to the number of patches.");
+            for (int j=0; j<step; j++)
+                output->setRelative(distances[j]->compare(target[i][j],query[i][j]), j, 0);
         }
      }
 
     void store(QDataStream &stream) const
     {
-        distance->store(stream);
-        stream << mp;
+        stream << distances.size();
+        foreach (Distance *distance, distances)
+            distance->store(stream);
     }
 
     void load(QDataStream &stream)
     {
-        distance->load(stream);
-        stream >> mp;
+        int numDistances;
+        stream >> numDistances;
+        while (distances.size() < numDistances)
+            distances.append(make(description));
+        foreach (Distance *distance, distances)
+            distance->load(stream);
     }
 };
 

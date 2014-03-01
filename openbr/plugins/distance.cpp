@@ -18,6 +18,7 @@
 #include <QtConcurrentRun>
 #include <numeric>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
 #include "openbr/core/distance_sse.h"
@@ -61,6 +62,7 @@ private:
             (a.m().type() != b.m().type()))
                 return -std::numeric_limits<float>::max();
 
+// TODO: this max value is never returned based on the switch / default 
         float result = std::numeric_limits<float>::max();
         switch (metric) {
           case Correlation:
@@ -385,6 +387,68 @@ class OnlineDistance : public Distance
 };
 
 BR_REGISTER(Distance, OnlineDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Attenuation function based distance from attributes
+ * \author Scott Klum \cite sklum
+ */
+class AttributeDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
+    BR_PROPERTY(QString, attribute, QString())
+
+    float compare(const Template &target, const Template &query) const
+    {
+        float queryValue = query.file.get<float>(attribute);
+        float targetValue = target.file.get<float>(attribute);
+
+        // TODO: Set this magic number to something meaningful
+        float stddev = 1;
+
+        if (queryValue == targetValue) return 1;
+        else return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((targetValue-queryValue)/stddev, 2));
+    }
+};
+
+BR_REGISTER(Distance, AttributeDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Sum match scores across multiple distances
+ * \author Scott Klum \cite sklum
+ */
+class SumDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
+    BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
+
+    void train(const TemplateList &data)
+    {
+        QFutureSynchronizer<void> futures;
+        foreach (br::Distance *distance, distances)
+            futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
+        futures.waitForFinished();
+    }
+
+    float compare(const Template &target, const Template &query) const
+    {
+        float result = 0;
+
+        foreach (br::Distance *distance, distances) {
+            result += distance->compare(target, query);
+
+            if (result == -std::numeric_limits<float>::max())
+                return result;
+        }
+
+        return result;
+    }
+};
+
+BR_REGISTER(Distance, SumDistance)
 
 } // namespace br
 #include "distance.moc"

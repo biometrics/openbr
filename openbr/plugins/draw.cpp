@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
 #include "openbr_internal.h"
@@ -40,10 +41,12 @@ class DrawTransform : public UntrainableTransform
     Q_PROPERTY(bool points READ get_points WRITE set_points RESET reset_points STORED false)
     Q_PROPERTY(bool rects READ get_rects WRITE set_rects RESET reset_rects STORED false)
     Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
+    Q_PROPERTY(int lineThickness READ get_lineThickness WRITE set_lineThickness RESET reset_lineThickness STORED false)
     BR_PROPERTY(bool, verbose, false)
     BR_PROPERTY(bool, points, true)
     BR_PROPERTY(bool, rects, true)
     BR_PROPERTY(bool, inPlace, false)
+    BR_PROPERTY(int, lineThickness, 1)
 
     void project(const Template &src, Template &dst) const
     {
@@ -61,7 +64,7 @@ class DrawTransform : public UntrainableTransform
         }
         if (rects) {
             foreach (const Rect &rect, OpenCVUtils::toRects(src.file.namedRects() + src.file.rects()))
-                rectangle(dst, rect, color);
+                rectangle(dst, rect, color, lineThickness);
         }
     }
 };
@@ -342,6 +345,75 @@ class AdjacentOverlayTransform : public Transform
 };
 
 BR_REGISTER(Transform, AdjacentOverlayTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Draw a line representing the direction and magnitude of optical flow at the specified points.
+ * \author Austin Blanton \cite imaus10
+ */
+class DrawOpticalFlow : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString original READ get_original WRITE set_original RESET reset_original STORED false)
+    BR_PROPERTY(QString, original, "original")
+
+    void project(const Template &src, Template &dst) const
+    {
+        const Scalar color(0,255,0);
+        Mat flow = src.m();
+        dst = src;
+        if (!dst.file.contains(original)) qFatal("The original img must be saved in the metadata with SaveMat.");
+        dst.m() = dst.file.get<Mat>(original);
+        dst.file.remove(original);
+        foreach (const Point2f &pt, OpenCVUtils::toPoints(dst.file.points())) {
+            Point2f dxy = flow.at<Point2f>(pt.y, pt.x);
+            Point2f newPt(pt.x+dxy.x, pt.y+dxy.y);
+            line(dst, pt, newPt, color);
+        }
+    }
+};
+BR_REGISTER(Transform, DrawOpticalFlow)
+
+/*!
+ * \ingroup transforms
+ * \brief Fill in the segmentations or draw a line between intersecting segments.
+ * \author Austin Blanton \cite imaus10
+ */
+class DrawSegmentation : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(bool fillSegment READ get_fillSegment WRITE set_fillSegment RESET reset_fillSegment STORED false)
+    BR_PROPERTY(bool, fillSegment, true)
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (!src.file.contains("SegmentsMask") || !src.file.contains("NumSegments")) qFatal("Must supply a Contours object in the metadata to drawContours.");
+        Mat segments = src.file.get<Mat>("SegmentsMask");
+        int numSegments = src.file.get<int>("NumSegments");
+
+        dst.file = src.file;
+        Mat drawn = fillSegment ? Mat(segments.size(), CV_8UC3, Scalar::all(0)) : src.m();
+
+        for (int i=1; i<numSegments+1; i++) {
+            Mat mask = segments == i;
+            if (fillSegment) { // color the whole segment
+                // set to a random color - get ready for a craaaazy acid trip
+                int b = theRNG().uniform(0, 255);
+                int g = theRNG().uniform(0, 255);
+                int r = theRNG().uniform(0, 255);
+                drawn.setTo(Scalar(r,g,b), mask);
+            } else { // draw lines where there's a color change
+                vector<vector<Point> > contours;
+                Scalar color(0,255,0);
+                findContours(mask, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+                drawContours(drawn, contours, -1, color);
+            }
+        }
+
+        dst.m() = drawn;
+    }
+};
+BR_REGISTER(Transform, DrawSegmentation)
 
 // TODO: re-implement EditTransform using Qt
 #if 0

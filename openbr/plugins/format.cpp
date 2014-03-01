@@ -16,10 +16,12 @@
 
 #include <QDate>
 #include <QSize>
+#include <QChar>
 #ifndef BR_EMBEDDED
 #include <QtXml>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 #include "openbr_internal.h"
 
 #include "openbr/core/bee.h"
@@ -719,7 +721,7 @@ BR_REGISTER(Format, xmlFormat)
 /*!
  * \ingroup formats
  * \brief Reads in scores or ground truth from a text table.
- * \author Josh Klontz
+ * \author Josh Klontz \cite jklontz
  *
  * Example of the format:
  * \code
@@ -767,6 +769,90 @@ class scoresFormat : public Format
 };
 
 BR_REGISTER(Format, scoresFormat)
+
+/*!
+ * \ingroup formats
+ * \brief Reads FBI EBTS transactions.
+ * \author Scott Klum \cite sklum
+ * https://www.fbibiospecs.org/ebts.html
+ * \note This will fail if a binary blob contains any of the fields attempt to locate within the file
+ */
+class ebtsFormat : public Format
+{
+    Q_OBJECT
+
+    QString textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
+    {
+        // Find the field, skip the number bytes, and account for the semicolon
+        int fieldPosition = byteArray.indexOf(fieldNumber, from) + fieldNumber.size() + 1;
+        int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
+
+        return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
+    }
+
+    Template read() const
+    {
+        QByteArray byteArray;
+        QtUtils::readFile(file, byteArray);
+
+        Template t;
+
+        Mat m;
+
+        // Demographics
+        {
+            QString name = textFieldValue(byteArray, "2.018");
+            QStringList names = name.split(',');
+            t.file.set("FIRSTNAME", names.at(1));
+            t.file.set("LASTNAME", names.at(0));
+            t.file.set("DOB", textFieldValue(byteArray, "2.022").toInt());
+            t.file.set("GENDER", textFieldValue(byteArray, "2.024"));
+            t.file.set("RACE", textFieldValue(byteArray, "2.025"));
+        }
+
+        // Mugshot (first in file used)
+        // Todo: Check for face designation
+        {
+            const QString imageRecord = "10.001:";
+            const QString imageDataRecord = "10.999:";
+
+            int fieldPosition = byteArray.indexOf(imageRecord);
+
+            if (fieldPosition != -1) {
+                int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
+                int dataPosition = byteArray.indexOf(imageDataRecord,sepPosition);
+
+                int recordBytes = byteArray.mid(fieldPosition,sepPosition-fieldPosition).toInt();
+                int headerBytes = byteArray.mid(fieldPosition,dataPosition-fieldPosition).size() + imageDataRecord.size();
+
+                QByteArray data = byteArray.mid(dataPosition+imageRecord.size(),recordBytes-headerBytes);
+
+                m = imdecode(Mat(3, data.size(), CV_8UC3, data.data()), CV_LOAD_IMAGE_COLOR);
+                if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
+                t.m() = m;
+            } else qWarning("ebtsFormat::cannot find image data within file.");
+
+        }
+
+        if (t.file.contains("DOB")) {
+            const QDate dob = QDate::fromString(t.file.get<QString>("DOB"), "yyyyMMdd");
+            const QDate current = QDate::currentDate();
+            int age = current.year() - dob.year();
+            if (current.month() < dob.month()) age--;
+            t.file.set("Age", age);
+        }
+
+        return t;
+    }
+
+    void write(const Template &t) const
+    {
+        (void) t;
+        qFatal("Writing EBTS files is not supported.");
+    }
+};
+
+BR_REGISTER(Format, ebtsFormat)
 
 } // namespace br
 

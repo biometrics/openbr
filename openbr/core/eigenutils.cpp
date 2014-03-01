@@ -54,3 +54,16 @@ void printEigen(Eigen::MatrixXd X) {
         qDebug() << str;
     }
 }
+void printEigen(Eigen::MatrixXf X) {
+    for (int i = 0; i < X.rows(); i++) {
+        QString str;
+        for (int j = 0; j < X.cols(); j++) {
+            str.append(QString::number(X(i,j)) + " ");
+        }
+        qDebug() << str;
+    }
+}
+
+void printSize(Eigen::MatrixXf X) {
+    qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
+}

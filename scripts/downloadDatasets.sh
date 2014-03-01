@@ -35,6 +35,35 @@ if [ ! -d ../data/BioID/img ]; then
   rm *.eye description.txt BioID-FaceDatabase-V1.2.zip
 fi
 
+# Caltech Pedestrian
+if [ ! -d ../data/CaltechPedestrians/vid ]; then
+  mkdir ../data/CaltechPedestrians/vid
+  echo "Downloading Caltech Pedestrians dataset..."
+  prefix="http://www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/datasets/USA"
+  for seq in {0..10}; do
+    fname=`printf "set%02d.tar" $seq`
+    dlpath="$prefix/$fname"
+    if hash curl 2>/dev/null; then
+      curl -OL $dlpath
+    else
+      wget $dlpath
+    fi
+    tar -xf $fname
+  done
+  rm *.tar
+  ./writeCaltechPedestrianSigset.sh 0 5 train > ../data/CaltechPedestrians/train.xml
+  ./writeCaltechPedestrianSigset.sh 6 10 test > ../data/CaltechPedestrians/test.xml
+  mv set* ../data/CaltechPedestrians/vid
+  if hash curl 2>/dev/null; then
+    curl -OL "$prefix/annotations.zip"
+  else
+    wget "$prefix/annotations.zip"
+  fi
+  unzip annotations.zip
+  rm annotations.zip
+  mv annotations ../data/CaltechPedestrians
+fi
+
 # INRIA person
 if [ ! -d ../data/INRIAPerson/img ]; then
   echo "Downloading INRIA person dataset..."
@@ -66,7 +95,7 @@ if [ ! -d ../data/KTH/vid ]; then
     fi
     mkdir ../data/KTH/vid/${vidclass}
     unzip ${vidclass}.zip -d ../data/KTH/vid/${vidclass}
-	rm ${vidclass}.zip
+    rm ${vidclass}.zip
   done
   # this file is corrupted
   rm -f ../data/KTH/vid/boxing/person01_boxing_d4_uncomp.avi

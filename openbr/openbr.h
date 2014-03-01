@@ -67,6 +67,17 @@ BR_EXPORT const char *br_about();
 BR_EXPORT void br_cat(int num_input_galleries, const char *input_galleries[], const char *output_gallery);
 
 /*!
+ * \brief Removes duplicate templates in a gallery.
+ * \param input_gallery Gallery to be deduplicated.
+ * \param output_gallery Deduplicated gallery.
+ * \param threshold Comparisons with a match score >= this value are designated to be duplicates.
+ * \note If a gallery contains n duplicates, the first n-1 duplicates in the gallery will be removed and the nth will be kept.
+ * \note Users are encouraged to use binary gallery formats as the entire gallery is read into memory in one call to Gallery::read.
+ */
+
+BR_EXPORT void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold);
+
+/*!
  * \brief Clusters one or more similarity matrices into a list of subjects.
  *
  * A similarity matrix is a type of br::Output. The current clustering algorithm is a simplified implementation of \cite zhu11.
@@ -213,7 +224,7 @@ BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
  * \brief Wraps br::Context::initialize()
  * \see br_finalize
  */
-BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "");
+BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "", bool use_gui = false);
 /*!
  * \brief Wraps br::Context::initialize() with default arguments.
  * \see br_finalize

@@ -41,6 +41,7 @@
 #include <QVector>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
+#include <assert.h>
 
 /*!
  * \defgroup cpp_plugin_sdk C++ Plugin SDK
@@ -794,12 +795,12 @@ public:
      *                 By default <tt>share/openbr/openbr.bib</tt> will be searched for relative to:
      *                   -# The working directory
      *                   -# The executable's location
-     * \param use_gui Create a QApplication instead of a QCoreApplication.
+     * \param useGui Create a QApplication instead of a QCoreApplication.
      * \note Tiggers \em abort() on failure to locate <tt>share/openbr/openbr.bib</tt>.
      * \note <a href="http://qt-project.org/">Qt</a> users should instead call this <i>after</i> initializing QApplication.
      * \see finalize
      */
-    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool use_gui = true);
+    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool useGui = true);
 
     /*!
      * \brief Call \em once at the end of the application to deallocate global variables.
@@ -1370,6 +1371,14 @@ BR_EXPORT void Convert(const File &fileType, const File &inputFile, const File &
  * \note outputGallery must not be in inputGalleries.
  */
 BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGallery);
+
+/*!
+ * \brief Deduplicate a gallery.
+ * \param inputGallery Gallery to deduplicate.
+ * \param outputGallery Gallery to store the deduplicated result.
+ * \param threshold Match score threshold to determine duplicates.
+ */
+BR_EXPORT void Deduplicate(const File &inputGallery, const File &outputGallery, const QString &threshold);
 
 /*! @}*/
 

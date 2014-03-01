@@ -290,16 +290,18 @@ class DrawDelaunayTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        QList<Point2f> validTriangles = OpenCVUtils::toPoints(src.file.getList<QPointF>("DelaunayTriangles"));
+        dst = src;
 
-        // Clone the matrix do draw on it
-        dst.m() = src.m().clone();
+        if (src.file.contains("DelaunayTriangles")) {
+            QList<Point2f> validTriangles = OpenCVUtils::toPoints(src.file.getList<QPointF>("DelaunayTriangles"));
 
-        for (int i = 0; i < validTriangles.size(); i+=3) {
-            line(dst.m(), validTriangles[i], validTriangles[i+1], Scalar(0,0,0), 1);
-            line(dst.m(), validTriangles[i+1], validTriangles[i+2], Scalar(0,0,0), 1);
-            line(dst.m(), validTriangles[i+2], validTriangles[i], Scalar(0,0,0), 1);
-        }
+            // Clone the matrix do draw on it
+            for (int i = 0; i < validTriangles.size(); i+=3) {
+                line(dst, validTriangles[i], validTriangles[i+1], Scalar(0,0,0), 1);
+                line(dst, validTriangles[i+1], validTriangles[i+2], Scalar(0,0,0), 1);
+                line(dst, validTriangles[i+2], validTriangles[i], Scalar(0,0,0), 1);
+            }
+        } else qWarning("Template does not contain Delaunay triangulation.");
     }
 };
 
