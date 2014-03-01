@@ -108,6 +108,7 @@ class CrossValidateTransform : public MetaTransform
         // If we want to duplicate templates but use the same training data
         // for all partitions (i.e. transforms.size() == 1), we need to
         // restrict the partition
+
         int partition = src.file.get<int>("Partition", 0);
         partition = (partition >= transforms.size()) ? 0 : partition;
         transforms[partition]->project(src, dst);

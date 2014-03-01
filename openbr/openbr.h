@@ -224,7 +224,7 @@ BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
  * \brief Wraps br::Context::initialize()
  * \see br_finalize
  */
-BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "");
+BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "", bool use_gui = false);
 /*!
  * \brief Wraps br::Context::initialize() with default arguments.
  * \see br_finalize

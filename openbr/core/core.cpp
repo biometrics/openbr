@@ -65,6 +65,9 @@ struct AlgorithmCore
         downcast->train(data);
 
         if (!distance.isNull()) {
+            if (Globals->crossValidate > 0)
+                for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
+
             qDebug("Projecting Enrollment");
             downcast->projectUpdate(data,data);
 

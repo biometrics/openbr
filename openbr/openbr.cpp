@@ -122,9 +122,9 @@ void br_fuse(int num_input_simmats, const char *input_simmats[],
     Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), normalization, fusion, output_simmat);
 }
 
-void br_initialize(int &argc, char *argv[], const char *sdk_path)
+void br_initialize(int &argc, char *argv[], const char *sdk_path, bool use_gui)
 {
-    Context::initialize(argc, argv, sdk_path);
+    Context::initialize(argc, argv, sdk_path, use_gui);
 }
 
 void br_initialize_default()
@@ -382,10 +382,9 @@ bool br_img_is_empty(br_template tmpl)
 
 const char* br_get_filename(br_template tmpl)
 {
-    Template *t = reinterpret_cast<Template*>(tmpl);
-		QByteArray s = t->file.name.toLocal8Bit();
-		char *buffer = s.data();
-		return buffer;
+    static QByteArray buffer;
+    buffer = reinterpret_cast<Template*>(tmpl)->file.name.toLocal8Bit();
+    return buffer.data();
 }
 
 void br_set_filename(br_template tmpl, const char *filename)

@@ -268,7 +268,7 @@ class rrOutput : public MatrixOutput
 
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            if (simple) files.append(queryFiles[i]);
+            if (simple) files.append(queryFiles[i].fileName());
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
@@ -276,7 +276,7 @@ class rrOutput : public MatrixOutput
                     if (pair.first < threshold) break;
                     File target = targetFiles[pair.second];
                     target.set("Score", QString::number(pair.first));
-                    if (simple) files.append(target.baseName() + " " + QString::number(pair.first));
+                    if (simple) files.append(target.fileName() + " " + QString::number(pair.first));
                     else files.append(target.flat());
                 }
             }

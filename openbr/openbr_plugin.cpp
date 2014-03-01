@@ -899,8 +899,12 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 {
     qInstallMessageHandler(messageHandler);
 
+    QString sep;
 #ifndef _WIN32
     useGui = useGui && (getenv("DISPLAY") != NULL);
+    sep = ":";
+#else
+    sep = ";";
 #endif // not _WIN32
 
     // We take in argc as a reference due to:
@@ -944,6 +948,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // Search for SDK
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();
+        checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
 
         bool foundSDK = false;
         foreach (const QString &path, checkPaths) {
