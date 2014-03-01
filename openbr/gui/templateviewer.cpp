@@ -72,7 +72,7 @@ void TemplateViewer::refreshImage()
     if (file.isNull() || (format == "Photo")) {
         setImage(file, true);
     } else {
-        const QString path = QString(br_scratch_path()) + "/thumbnails";
+        const QString path = QString(br::Globals->scratchPath()) + "/thumbnails";
         const QString hash = file.hash()+format;
         const QString processedFile = path+"/"+file.baseName()+hash+".png";
         if (!QFileInfo(processedFile).exists()) {

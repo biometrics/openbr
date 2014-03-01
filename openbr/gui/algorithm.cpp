@@ -1,5 +1,6 @@
 #include <QStringList>
 #include <openbr/openbr.h>
+#include <openbr/openbr_plugin.h>
 
 #include "algorithm.h"
 
@@ -18,7 +19,7 @@ bool br::Algorithm::addAlgorithm(const QString &algorithm, const QString &displa
 {
     static QStringList availableAlgorithms;
     if (availableAlgorithms.isEmpty())
-        availableAlgorithms = QString(br_objects("Abbreviation", ".*", false)).split("\n");
+        availableAlgorithms = br::Context::objects("Abbreviation", ".*", false);
 
     if (!availableAlgorithms.contains(algorithm))
         return false;

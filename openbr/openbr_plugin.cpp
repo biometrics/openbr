@@ -203,6 +203,13 @@ QList<QRectF> File::namedRects() const
         const QVariant &variant = m_metadata[key];
         if (variant.canConvert<QRectF>())
             rects.append(variant.value<QRectF>());
+        else if(variant.canConvert<QList<QRectF> >()) {
+            QList<QRectF> list = variant.value<QList<QRectF> >();
+            for (int i=0;i < list.size();i++)
+            {
+                rects.append(list[i]);
+            }
+        }
     }
     return rects;
 }
@@ -1007,6 +1014,47 @@ QString br::Context::version()
 QString br::Context::scratchPath()
 {
     return QString("%1/%2-%3.%4").arg(QDir::homePath(), PRODUCT_NAME, QString::number(PRODUCT_VERSION_MAJOR), QString::number(PRODUCT_VERSION_MINOR));
+}
+
+
+QStringList br::Context::objects(const char *abstractions, const char *implementations, bool parameters)
+{
+    QStringList objectList;
+    QRegExp abstractionsRegExp(abstractions);
+    QRegExp implementationsRegExp(implementations);
+
+    if (abstractionsRegExp.exactMatch("Abbreviation"))
+        foreach (const QString &name, Globals->abbreviations.keys())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Globals->abbreviations[name] : ""));
+
+    if (abstractionsRegExp.exactMatch("Distance"))
+        foreach (const QString &name, Factory<Distance>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Distance>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Format"))
+        foreach (const QString &name, Factory<Format>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Format>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Initializer"))
+        foreach (const QString &name, Factory<Initializer>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Initializer>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Output"))
+        foreach (const QString &name, Factory<Output>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Output>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Transform"))
+        foreach (const QString &name, Factory<Transform>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
+
+
+    return objectList;
 }
 
 void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
