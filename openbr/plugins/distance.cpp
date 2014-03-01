@@ -23,6 +23,7 @@
 
 #include "openbr/core/distance_sse.h"
 #include "openbr/core/qtutils.h"
+#include "openbr/core/opencvutils.h"
 
 using namespace cv;
 
@@ -449,6 +450,42 @@ class SumDistance : public Distance
 };
 
 BR_REGISTER(Distance, SumDistance)
+
+/*!
+ * \ingroup transforms
+ * \brief Compare each template to a fixed gallery (with name = galleryName), using the specified distance.
+ * dst will contain a 1 by n vector of scores.
+ * \author Charles Otto \cite caotto
+ */
+class GalleryCompareTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
+    Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
+    BR_PROPERTY(br::Distance*, distance, NULL)
+    BR_PROPERTY(QString, galleryName, "")
+
+    TemplateList gallery;
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        if (gallery.isEmpty())
+            return;
+
+        QList<float> line = distance->compare(gallery, src);
+        dst.m() = OpenCVUtils::toMat(line, 1);
+    }
+
+    void init()
+    {
+        if (!galleryName.isEmpty())
+            gallery = TemplateList::fromGallery(galleryName);
+    }
+};
+
+BR_REGISTER(Transform, GalleryCompareTransform)
+
 
 } // namespace br
 #include "distance.moc"
