@@ -830,6 +830,18 @@ public:
      */
     static QString scratchPath();
 
+    /*!
+     * \brief Returns names and parameters for the requested objects.
+     *
+     * Each object is \c \\n seperated. Arguments are seperated from the object name with a \c \\t.
+     * \param abstractions Regular expression of the abstractions to search.
+     * \param implementations Regular expression of the implementations to search.
+     * \param parameters Include parameters after object name.
+     * \note \ref managed_return_value
+     * \note This function uses Qt's <a href="http://doc.qt.digia.com/stable/qregexp.html">QRegExp</a> syntax.
+     */
+    static QStringList objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true);
+
 private:
     static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 };

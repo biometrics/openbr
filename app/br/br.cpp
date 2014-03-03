@@ -171,7 +171,11 @@ public:
                 // Do nothing because we checked for this flag prior to initialization
             } else if (!strcmp(fun, "objects")) {
                 check(parc <= 2, "Incorrect parameter count for 'objects'.");
-                printf("%s\n", br_objects(parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*"));
+                int size = br_objects(NULL, 0, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
+                char * temp = new char[size];
+                br_objects(temp, size, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
+                printf("%s\n", temp);
+                delete [] temp;
             } else if (!strcmp(fun, "about")) {
                 check(parc == 0, "No parameters expected for 'about'.");
                 printf("%s\n", br_about());

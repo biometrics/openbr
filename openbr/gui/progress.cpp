@@ -1,4 +1,5 @@
 #include <openbr/openbr.h>
+#include <openbr/openbr_plugin.h>
 
 #include "progress.h"
 
@@ -29,7 +30,7 @@ void br::Progress::checkProgress()
     const bool visible = progress >= 0 && progress < 100;
 
     if (visible) {
-        showMessage(br_most_recent_message());
+        showMessage(Globals->mostRecentMessage);
         pbProgress.setValue(progress);
         if (progress > 100) pbProgress.setMaximum(0);
         else                pbProgress.setMaximum(100);

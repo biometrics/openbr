@@ -41,6 +41,10 @@ extern "C" {
  * \section managed_return_value Managed Return Value
  * Memory for <tt>const char*</tt> return values is managed internally and guaranteed until the next call to the function.
  *
+ * \section input_string_buffer Input String Buffer
+ * Users should input a char * buffer and the size of that buffer. String data will be copied into the buffer, if the buffer is too
+ * small, only part of the string will be copied. Returns the buffer size required to contain the complete string.
+ *
  * \section examples Examples
  * - \ref c_face_recognition_evaluation
  *
@@ -56,7 +60,6 @@ extern "C" {
 
 /*!
  * \brief Wraps br::Context::about()
- * \note \ref managed_return_value
  * \see br_version
  */
 BR_EXPORT const char *br_about();
@@ -256,10 +259,10 @@ BR_EXPORT void br_make_pairwise_mask(const char *target_input, const char *query
 
 /*!
  * \brief Returns the most recent line sent to stderr.
- * \note \ref managed_return_value
+ * \note \ref input_string_buffer
  * \see br_progress br_time_remaining
  */
-BR_EXPORT const char *br_most_recent_message();
+BR_EXPORT int br_most_recent_message(char * buffer, int buffer_length);
 
 /*!
  * \brief Returns names and parameters for the requested objects.
@@ -268,10 +271,10 @@ BR_EXPORT const char *br_most_recent_message();
  * \param abstractions Regular expression of the abstractions to search.
  * \param implementations Regular expression of the implementations to search.
  * \param parameters Include parameters after object name.
- * \note \ref managed_return_value
+ * \note \ref input_string_buffer
  * \note This function uses Qt's <a href="http://doc.qt.digia.com/stable/qregexp.html">QRegExp</a> syntax.
  */
-BR_EXPORT const char *br_objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true);
+BR_EXPORT int br_objects(char * buffer, int buffer_length, const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true);
 
 /*!
  * \brief Renders recognition performance figures for a set of <tt>.csv</tt> files created by \ref br_eval.
@@ -376,14 +379,14 @@ BR_EXPORT void br_read_pipe(const char *pipe, int *argc, char ***argv);
 
 /*!
  * \brief Wraps br::Context::scratchPath()
- * \note \ref managed_return_value
+ * \note \ref input_string_buffer
  * \see br_version
  */
-BR_EXPORT const char *br_scratch_path();
+BR_EXPORT int br_scratch_path(char * buffer, int buffer_length);
+
 
 /*!
  * \brief Returns the full path to the root of the SDK.
- * \note \ref managed_return_value
  * \see br_initialize
  */
 BR_EXPORT const char *br_sdk_path();
@@ -436,7 +439,6 @@ BR_EXPORT void br_train_n(int num_inputs, const char *inputs[], const char *mode
 
 /*!
  * \brief Wraps br::Context::version()
- * \note \ref managed_return_value
  * \see br_about br_scratch_path
  */
 BR_EXPORT const char *br_version();
@@ -508,16 +510,18 @@ BR_EXPORT int br_img_channels(br_template tmpl);
 BR_EXPORT bool br_img_is_empty(br_template tmpl);
 /*!
   * \brief Get the filename for a br::Template
+  * \note \ref input_string_buffer
   */
-BR_EXPORT const char* br_get_filename(br_template tmpl);
+BR_EXPORT int br_get_filename(char * buffer, int buffer_length, br_template tmpl);
 /*!
   * \brief Set the filename for a br::Template.
   */
 BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);
 /*!
   * \brief Get metadata as a string for the given key in the given template.
+  * \note \ref input_string_buffer
   */
-BR_EXPORT const char* br_get_metadata_string(br_template, const char *key);
+BR_EXPORT int br_get_metadata_string(char * buffer, int buffer_length, br_template tmpl, const char *key);
 /*!
   * \brief Enroll a br::Template from the C API! Returns a pointer to a br::TemplateList
   * \param tmpl Pointer to a br::Template.

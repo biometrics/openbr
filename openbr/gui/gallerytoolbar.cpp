@@ -84,7 +84,7 @@ void br::GalleryToolBar::_enroll(const br::File &input)
     galleryLock.lock();
     this->input = input;
     if (input.suffix() == "gal") gallery = input.name + ".mem";
-    else                         gallery = QString("%1/galleries/%2.gal[cache]").arg(br_scratch_path(), qPrintable(input.baseName()+input.hash()));
+    else                         gallery = QString("%1/galleries/%2.gal[cache]").arg(br::Globals->scratchPath(), qPrintable(input.baseName()+input.hash()));
     files = br::Enroll(input.flat(), gallery.flat());
     galleryLock.unlock();
 }
@@ -148,7 +148,7 @@ void br::GalleryToolBar::home()
 
 void br::GalleryToolBar::mean()
 {
-    const QString file = QString("%1/mean/%2.png").arg(br_scratch_path(), input.baseName()+input.hash());
+    const QString file = QString("%1/mean/%2.png").arg(br::Globals->scratchPath(), input.baseName()+input.hash());
     br_set_property("CENTER_TRAIN_B", qPrintable(file));
     br::File trainingFile = input;
     br_train(qPrintable(trainingFile.flat()), "[algorithm=MedianFace]");

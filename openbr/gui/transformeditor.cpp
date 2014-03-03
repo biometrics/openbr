@@ -24,7 +24,7 @@ using namespace br;
 br::TransformEditor::TransformEditor(Transform *transform, QWidget *parent)
     : QWidget(parent)
 {
-    name.addItems(QString(br_objects("Transform", ".*", false)).split('\n'));
+    name.addItems(br::Context::objects("Transform", ".*", false));
     layout.addWidget(&name);
     setLayout(&layout);
 
