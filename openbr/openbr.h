@@ -512,7 +512,7 @@ BR_EXPORT bool br_img_is_empty(br_template tmpl);
   * \brief Get the filename for a br::Template
   * \note \ref input_string_buffer
   */
-BR_EXPORT int br_get_filename(br_template tmpl, char * buffer, int buffer_length);
+BR_EXPORT int br_get_filename(char * buffer, int buffer_length, br_template tmpl);
 /*!
   * \brief Set the filename for a br::Template.
   */
@@ -521,7 +521,7 @@ BR_EXPORT void br_set_filename(br_template tmpl, const char *filename);
   * \brief Get metadata as a string for the given key in the given template.
   * \note \ref input_string_buffer
   */
-BR_EXPORT int br_get_metadata_string(br_template, const char *key, char * buffer, int buffer_length);
+BR_EXPORT int br_get_metadata_string(char * buffer, int buffer_length, br_template tmpl, const char *key);
 /*!
   * \brief Enroll a br::Template from the C API! Returns a pointer to a br::TemplateList
   * \param tmpl Pointer to a br::Template.

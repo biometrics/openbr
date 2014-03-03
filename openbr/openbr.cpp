@@ -361,7 +361,7 @@ bool br_img_is_empty(br_template tmpl)
     return t->m().empty();
 }
 
-int br_get_filename(br_template tmpl, char * buffer, int buffer_length)
+int br_get_filename(char * buffer, int buffer_length, br_template tmpl)
 {
     return partialCopy(reinterpret_cast<Template*>(tmpl)->file.name, buffer, buffer_length);
 }
@@ -372,7 +372,7 @@ void br_set_filename(br_template tmpl, const char *filename)
     t->file.name = filename;
 }
 
-int br_get_metadata_string(br_template tmpl, const char *key, char * buffer, int buffer_length)
+int br_get_metadata_string(char * buffer, int buffer_length, br_template tmpl, const char *key)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
     QVariant qvar = t->file.value(key);
