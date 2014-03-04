@@ -791,7 +791,7 @@ class ebtsFormat : public Format
         quint32 bytes;
         int position; // Starting position of record
 
-        QHash<int,QList<QByteArray>> fields;
+        QHash<int,QList<QByteArray> > fields;
     };
 
     quint32 recordBytes(const QByteArray &byteArray, const float recordType, int from) const
@@ -830,7 +830,7 @@ class ebtsFormat : public Format
                     field.data.append(byteArray.mid(dataBegin, record.bytes-(dataBegin-record.position)));
 
                     // Data fields are always last in the record
-                    record.fields.append(field);
+                    record.fields.insert(field.type,field.data);
                     break;
                 }
                 // Advance the position accounting for the separator
@@ -896,9 +896,10 @@ class ebtsFormat : public Format
 
         // The third field of the first record contains informations about all the remaining records in the transaction
         // We don't care about the first two and the final items
-        for (int i=2; i<r1.fields.at(2).data.size()-1; i++) {
+        QList<QByteArray> recordTypes = r1.fields.value(3);
+        for (int i=2; i<recordTypes.size()-1; i++) {
             // The first two bytes indicate the record index (and we don't want the separator), but we only care about the type
-            QByteArray recordType = r1.fields.at(2).data[i].mid(3);
+            QByteArray recordType = recordTypes[i].mid(3);
             Record r;
             r.type = recordType.toInt();
             records.append(r);
@@ -916,9 +917,9 @@ class ebtsFormat : public Format
         }
 
         if (!frontalIdxs.isEmpty()) {
-            // We use the first type 10 record
-            // Its last field contains the mugshot data (and it will only have one subfield)
-            m = imdecode(Mat(3, records[frontalIdxs.first()].fields.last().data.first().size(), CV_8UC3, records[frontalIdxs.first()].fields.last().data.first().data()), CV_LOAD_IMAGE_COLOR);
+            // We use the first type 10 record to get the frontal
+            QByteArray frontal = records[frontalIdxs.first()].fields.value(999).first();
+            m = imdecode(Mat(3, frontal.size(), CV_8UC3, frontal.data()), CV_LOAD_IMAGE_COLOR);
             if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
             return Template(m);
         } else {
