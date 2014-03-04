@@ -780,22 +780,26 @@ BR_REGISTER(Format, scoresFormat)
 class ebtsFormat : public Format
 {
     Q_OBJECT
-;
-    QString textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
-    {
-        // Find the field, skip the number bytes, and account for the semicolon
-        int fieldPosition = byteArray.indexOf(fieldNumber, from) + fieldNumber.size() + 1;
-        int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
 
-        return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
-    }
+    struct Field {
+        float type;
+        QList<QByteArray> data;
+    };
 
-    int recordBytes(const QByteArray &byteArray, const float fieldNumber, int from = 0) const
+    struct Record {
+        int type;
+        quint32 bytes;
+        int position; // Starting position of record
+
+        QList<Field> fields;
+    };
+
+    quint32 recordBytes(const QByteArray &byteArray, const float recordType, int from) const
     {
         bool ok;
-        int size;
+        quint32 size;
 
-        if (fieldNumber == 4 || fieldNumber == 7) {
+        if (recordType == 4 || recordType == 7) {
             // read first four bytes
             ok = true;
             size = qFromBigEndian<quint32>((const uchar*)byteArray.mid(from,4).constData());
@@ -807,16 +811,47 @@ class ebtsFormat : public Format
         return ok ? size : -1;
     }
 
-    QList<QByteArray> parseRecord(const QByteArray &byteArray, const int from, const int bytes) const
+    void parseRecord(const QByteArray &byteArray, Record &record) const
     {
-        return byteArray.mid(from,bytes).split(QChar(0x1D).toLatin1());
+        if (record.type == 4 || record.type == 7) {
+            // Just a binary blob
+            // Read everything after the first four bytes
+            // Not current supported
+        } else {
+            // Continue reading fields until we get all the data
+            int position = record.position;
+            float dataField = .999;
+            while (position < record.position + record.bytes) {
+                int index = byteArray.indexOf(QChar(0x1D), position);
+                Field field = parseField(byteArray.mid(position, index-position),QChar(0x1F));
+                if (field.type - dataField == record.type ) {
+                    // Data begin after the field identifier and the colon
+                    int dataBegin = byteArray.indexOf(':', position)+1;
+                    field.data.clear();
+                    field.data.append(byteArray.mid(dataBegin, record.bytes-(dataBegin-record.position)));
+
+                    // Data fields are always last in the record
+                    record.fields.append(field);
+                    break;
+                }
+                // Advance the position accounting for the separator
+                position += index-position+1;
+                record.fields.append(field);
+            }
+        }
     }
 
-    QList<QByteArray> parseField(const QByteArray &byteArray, const QChar &sep) const
+    Field parseField(const QByteArray &byteArray, const QChar &sep) const
     {
-        QByteArray data = byteArray.split(':').last();
+        bool ok;
+        Field f;
 
-        return data.split(sep.toLatin1());
+        QList<QByteArray> data = byteArray.split(':');
+
+        f.type = data.first().toFloat(&ok);
+        f.data = data.last().split(sep.toLatin1());
+
+        return f;
     }
 
     Template read() const
@@ -828,40 +863,73 @@ class ebtsFormat : public Format
 
         Mat m;
 
+        QList<Record> records;
+
         // Read the type one record (every EBTS file will have one of these)
-        int recordOneBytes = recordBytes(byteArray,1);
-        QList<QByteArray> recordOne = parseRecord(byteArray,0,recordOneBytes);
+        Record r1;
+        r1.type = 1;
+        r1.position = 0;
+        r1.bytes = recordBytes(byteArray,r1.type,r1.position);
 
-        // The third field (1.03/1.003) will have record identifiers for the remaining
-        // portion of the transaction
-        QList<QByteArray> recordOneFieldThree = parseField(recordOne.at(2),QChar(0x1F));
+        // The fields in a type 1 record are strictly defined
+        QList<QByteArray> data = byteArray.mid(r1.position,r1.bytes).split(QChar(0x1D).toLatin1());
+        foreach (const QByteArray &datum, data) {
+            Field f = parseField(datum,QChar(0x1F));
+            r1.fields.append(f);
+        }
 
-        QList<int> recordTypes;
+        records.append(r1);
 
-        for (int i=2; i<recordOneFieldThree.size()-1; i++) /* We don't care about the first two and the final items */ {
+        // Read the type two record (every EBTS file will have one of these)
+        Record r2;
+        r2.type = 2;
+        r2.position = r1.bytes;
+        r2.bytes = recordBytes(byteArray,r2.type,r2.position);
+
+        // The fields in a type 2 record are strictly defined
+        data = byteArray.mid(r2.position,r2.bytes).split(QChar(0x1D).toLatin1());
+        foreach (const QByteArray &datum, data) {
+            Field f = parseField(datum,QChar(0x1F));
+            r2.fields.append(f);
+        }
+
+
+        records.append(r2);
+
+        // The third field of the first record contains informations about all the remaining records in the transaction
+        // We don't care about the first two and the final items
+        for (int i=2; i<r1.fields.at(2).data.size()-1; i++) {
             // The first two bytes indicate the record index (and we don't want the separator), but we only care about the type
-            QByteArray fieldNumber = recordOneFieldThree[i].mid(3);
-            recordTypes.push_back(fieldNumber.toInt());
+            QByteArray recordType = r1.fields.at(2).data[i].mid(3);
+            Record r;
+            r.type = recordType.toInt();
+            records.append(r);
         }
 
-        int recordTwoBytes = recordBytes(byteArray,2,recordOneBytes);
-        QList<QByteArray> recordTwo = parseRecord(byteArray,recordOneBytes,recordTwoBytes);
+        QList<int> frontalIdxs;
+        int position = r1.bytes + r2.bytes;
+        for (int i=2; i<records.size(); i++) {
+            records[i].position = position;
+            records[i].bytes = recordBytes(byteArray,records[i].type,position);
 
-        QList<int> recordSizes;
-        int startingPosition = recordOneBytes + recordTwoBytes;
-        foreach(int i, recordTypes) {
-            // Maybe switch to position
-            int recordSize = recordBytes(byteArray,i,startingPosition);
-            qDebug() << i << recordSize;
-            recordSizes.append(recordSize);
-            startingPosition += recordSize;
+            parseRecord(byteArray, records[i]);
+            if (records[i].type == 10) frontalIdxs.append(i);
+            position += records[i].bytes;
         }
 
-        // Parse the remaining records knowing that the first four bytes of types 4 and 7 are sizes
-
-        // Win at everything
+        if (!frontalIdxs.isEmpty()) {
+            // We use the first type 10 record
+            // Its last field contains the mugshot data (and it will only have one subfield)
+            m = imdecode(Mat(3, records[frontalIdxs.first()].fields.last().data.first().size(), CV_8UC3, records[frontalIdxs.first()].fields.last().data.first().data()), CV_LOAD_IMAGE_COLOR);
+            if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
+            return Template(m);
+        } else {
+            qWarning("ebtsFormat::cannot find image data within file.");
+            return Template();
+        }
 
         // Demographics
+        /*
         {
             int recordOneSize = recordBytes(byteArray,1);
             qDebug() << recordBytes(byteArray,1);
@@ -906,9 +974,7 @@ class ebtsFormat : public Format
             int age = current.year() - dob.year();
             if (current.month() < dob.month()) age--;
             t.file.set("Age", age);
-        }
-
-        return t;
+        }*/
     }
 
     void write(const Template &t) const
