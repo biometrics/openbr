@@ -35,7 +35,7 @@ namespace br
 
  /*!
  * \ingroup formats
- * \brief Read all frames of a video using OpenCV 
+ * \brief Read all frames of a video using OpenCV
  * \author Charles Otto \cite caotto
  */
 class videoFormat : public Format
@@ -47,11 +47,11 @@ public:
     {
         if (!file.exists() )
             return Template();
-        
+
         VideoCapture videoSource(file.name.toStdString());
         videoSource.open(file.name.toStdString() );
-        
-    
+
+
         Template frames;
         if (!videoSource.isOpened()) {
             qWarning("video file open failed");
@@ -73,7 +73,7 @@ public:
 
     void write(const Template &t) const
     {
-        int fourcc = OpenCVUtils::getFourcc(); 
+        int fourcc = OpenCVUtils::getFourcc();
         VideoWriter videoSink(file.name.toStdString(), fourcc, 30, t.begin()->size());
 
         // Did we successfully open the output file?
@@ -780,7 +780,7 @@ BR_REGISTER(Format, scoresFormat)
 class ebtsFormat : public Format
 {
     Q_OBJECT
-
+;
     QString textFieldValue(const QByteArray &byteArray, const QString &fieldNumber, int from = 0) const
     {
         // Find the field, skip the number bytes, and account for the semicolon
@@ -788,6 +788,35 @@ class ebtsFormat : public Format
         int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
 
         return byteArray.mid(fieldPosition,sepPosition-fieldPosition);
+    }
+
+    int recordBytes(const QByteArray &byteArray, const float fieldNumber, int from = 0) const
+    {
+        bool ok;
+        int size;
+
+        if (fieldNumber == 4 || fieldNumber == 7) {
+            // read first four bytes
+            ok = true;
+            size = qFromBigEndian<quint32>((const uchar*)byteArray.mid(from,4).constData());
+        } else {
+            int index = byteArray.indexOf(QChar(0x1D), from);
+            size = byteArray.mid(from, index-from).split(':').last().toInt(&ok);
+        }
+
+        return ok ? size : -1;
+    }
+
+    QList<QByteArray> parseRecord(const QByteArray &byteArray, const int from, const int bytes) const
+    {
+        return byteArray.mid(from,bytes).split(QChar(0x1D).toLatin1());
+    }
+
+    QList<QByteArray> parseField(const QByteArray &byteArray, const QChar &sep) const
+    {
+        QByteArray data = byteArray.split(':').last();
+
+        return data.split(sep.toLatin1());
     }
 
     Template read() const
@@ -799,10 +828,47 @@ class ebtsFormat : public Format
 
         Mat m;
 
+        // Read the type one record (every EBTS file will have one of these)
+        int recordOneBytes = recordBytes(byteArray,1);
+        QList<QByteArray> recordOne = parseRecord(byteArray,0,recordOneBytes);
+
+        // The third field (1.03/1.003) will have record identifiers for the remaining
+        // portion of the transaction
+        QList<QByteArray> recordOneFieldThree = parseField(recordOne.at(2),QChar(0x1F));
+
+        QList<int> recordTypes;
+
+        for (int i=2; i<recordOneFieldThree.size()-1; i++) /* We don't care about the first two and the final items */ {
+            // The first two bytes indicate the record index (and we don't want the separator), but we only care about the type
+            QByteArray fieldNumber = recordOneFieldThree[i].mid(3);
+            recordTypes.push_back(fieldNumber.toInt());
+        }
+
+        int recordTwoBytes = recordBytes(byteArray,2,recordOneBytes);
+        QList<QByteArray> recordTwo = parseRecord(byteArray,recordOneBytes,recordTwoBytes);
+
+        QList<int> recordSizes;
+        int startingPosition = recordOneBytes + recordTwoBytes;
+        foreach(int i, recordTypes) {
+            // Maybe switch to position
+            int recordSize = recordBytes(byteArray,i,startingPosition);
+            qDebug() << i << recordSize;
+            recordSizes.append(recordSize);
+            startingPosition += recordSize;
+        }
+
+        // Parse the remaining records knowing that the first four bytes of types 4 and 7 are sizes
+
+        // Win at everything
+
         // Demographics
         {
+            int recordOneSize = recordBytes(byteArray,1);
+            qDebug() << recordBytes(byteArray,1);
+            qDebug() << recordBytes(byteArray,2,recordOneSize);
             QString name = textFieldValue(byteArray, "2.018");
             QStringList names = name.split(',');
+            QStringList fields = textFieldValue(byteArray,"1.03").split(QChar(0x1F));
             t.file.set("FIRSTNAME", names.at(1));
             t.file.set("LASTNAME", names.at(0));
             t.file.set("DOB", textFieldValue(byteArray, "2.022").toInt());
