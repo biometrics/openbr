@@ -819,7 +819,7 @@ class ebtsFormat : public Format
             // Not current supported
         } else {
             // Continue reading fields until we get all the data
-            int position = record.position;
+            unsigned int position = record.position;
             while (position < record.position + record.bytes) {
                 int index = byteArray.indexOf(QChar(0x1D), position);
                 Field field = parseField(byteArray.mid(position, index-position),QChar(0x1F));
@@ -892,6 +892,26 @@ class ebtsFormat : public Format
             r2.fields.insert(f.type,f.data);
         }
 
+        // Demographics
+        if (r2.fields.contains(18)) {
+            QString name = r2.fields.value(18).first();
+            QStringList names = name.split(',');
+            t.file.set("FIRSTNAME", names.at(1));
+            t.file.set("LASTNAME", names.at(0));
+        }
+
+        if (r2.fields.contains(22)) t.file.set("DOB", r2.fields.value(22).first().toInt());
+        if (r2.fields.contains(24)) t.file.set("GENDER", QString(r2.fields.value(24).first()));
+        if (r2.fields.contains(25)) t.file.set("RACE", QString(r2.fields.value(25).first()));
+
+        if (t.file.contains("DOB")) {
+            const QDate dob = QDate::fromString(t.file.get<QString>("DOB"), "yyyyMMdd");
+            const QDate current = QDate::currentDate();
+            int age = current.year() - dob.year();
+            if (current.month() < dob.month()) age--;
+            t.file.set("Age", age);
+        }
+
         records.append(r2);
 
         // The third field of the first record contains informations about all the remaining records in the transaction
@@ -921,59 +941,10 @@ class ebtsFormat : public Format
             QByteArray frontal = records[frontalIdxs.first()].fields.value(999).first();
             m = imdecode(Mat(3, frontal.size(), CV_8UC3, frontal.data()), CV_LOAD_IMAGE_COLOR);
             if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
-            return Template(m);
-        } else {
-            qWarning("ebtsFormat::cannot find image data within file.");
-            return Template();
-        }
+            t.m() = m;
+        } else qWarning("ebtsFormat::cannot find image data within file.");
 
-        // Demographics
-        /*
-        {
-            int recordOneSize = recordBytes(byteArray,1);
-            qDebug() << recordBytes(byteArray,1);
-            qDebug() << recordBytes(byteArray,2,recordOneSize);
-            QString name = textFieldValue(byteArray, "2.018");
-            QStringList names = name.split(',');
-            QStringList fields = textFieldValue(byteArray,"1.03").split(QChar(0x1F));
-            t.file.set("FIRSTNAME", names.at(1));
-            t.file.set("LASTNAME", names.at(0));
-            t.file.set("DOB", textFieldValue(byteArray, "2.022").toInt());
-            t.file.set("GENDER", textFieldValue(byteArray, "2.024"));
-            t.file.set("RACE", textFieldValue(byteArray, "2.025"));
-        }
-
-        // Mugshot (first in file used)
-        // Todo: Check for face designation
-        {
-            const QString imageRecord = "10.001:";
-            const QString imageDataRecord = "10.999:";
-
-            int fieldPosition = byteArray.indexOf(imageRecord);
-
-            if (fieldPosition != -1) {
-                int sepPosition = byteArray.indexOf(QChar(0x1D),fieldPosition);
-                int dataPosition = byteArray.indexOf(imageDataRecord,sepPosition);
-
-                int recordBytes = byteArray.mid(fieldPosition,sepPosition-fieldPosition).toInt();
-                int headerBytes = byteArray.mid(fieldPosition,dataPosition-fieldPosition).size() + imageDataRecord.size();
-
-                QByteArray data = byteArray.mid(dataPosition+imageRecord.size(),recordBytes-headerBytes);
-
-                m = imdecode(Mat(3, data.size(), CV_8UC3, data.data()), CV_LOAD_IMAGE_COLOR);
-                if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
-                t.m() = m;
-            } else qWarning("ebtsFormat::cannot find image data within file.");
-
-        }
-
-        if (t.file.contains("DOB")) {
-            const QDate dob = QDate::fromString(t.file.get<QString>("DOB"), "yyyyMMdd");
-            const QDate current = QDate::currentDate();
-            int age = current.year() - dob.year();
-            if (current.month() < dob.month()) age--;
-            t.file.set("Age", age);
-        }*/
+        return t;
     }
 
     void write(const Template &t) const
