@@ -253,7 +253,7 @@ public:
                                 }
                             }
                             else {
-                                rects.removeLast();
+                                rects.remove(rects.size()-1);
                             }
                         }
                     }
@@ -265,7 +265,7 @@ public:
                         drawingRect = false;
                     else
                     {
-                        rects.removeLast();
+                        rects.remove(rects.size()-1);
                         rectLabels.removeLast();
                     }
                 }
