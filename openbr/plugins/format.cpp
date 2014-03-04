@@ -775,7 +775,6 @@ BR_REGISTER(Format, scoresFormat)
  * \brief Reads FBI EBTS transactions.
  * \author Scott Klum \cite sklum
  * https://www.fbibiospecs.org/ebts.html
- * \note This will fail if a binary blob contains any of the fields attempt to locate within the file
  */
 class ebtsFormat : public Format
 {
