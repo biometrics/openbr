@@ -782,7 +782,7 @@ class ebtsFormat : public Format
     Q_OBJECT
 
     struct Field {
-        float type;
+        int type;
         QList<QByteArray> data;
     };
 
@@ -791,7 +791,7 @@ class ebtsFormat : public Format
         quint32 bytes;
         int position; // Starting position of record
 
-        QList<Field> fields;
+        QHash<int,QList<QByteArray>> fields;
     };
 
     quint32 recordBytes(const QByteArray &byteArray, const float recordType, int from) const
@@ -820,11 +820,10 @@ class ebtsFormat : public Format
         } else {
             // Continue reading fields until we get all the data
             int position = record.position;
-            float dataField = .999;
             while (position < record.position + record.bytes) {
                 int index = byteArray.indexOf(QChar(0x1D), position);
                 Field field = parseField(byteArray.mid(position, index-position),QChar(0x1F));
-                if (field.type - dataField == record.type ) {
+                if (field.type == 999 ) {
                     // Data begin after the field identifier and the colon
                     int dataBegin = byteArray.indexOf(':', position)+1;
                     field.data.clear();
@@ -836,7 +835,7 @@ class ebtsFormat : public Format
                 }
                 // Advance the position accounting for the separator
                 position += index-position+1;
-                record.fields.append(field);
+                record.fields.insert(field.type,field.data);
             }
         }
     }
@@ -848,7 +847,7 @@ class ebtsFormat : public Format
 
         QList<QByteArray> data = byteArray.split(':');
 
-        f.type = data.first().toFloat(&ok);
+        f.type = data.first().split('.').last().toInt(&ok);
         f.data = data.last().split(sep.toLatin1());
 
         return f;
@@ -875,7 +874,7 @@ class ebtsFormat : public Format
         QList<QByteArray> data = byteArray.mid(r1.position,r1.bytes).split(QChar(0x1D).toLatin1());
         foreach (const QByteArray &datum, data) {
             Field f = parseField(datum,QChar(0x1F));
-            r1.fields.append(f);
+            r1.fields.insert(f.type,f.data);
         }
 
         records.append(r1);
@@ -890,9 +889,8 @@ class ebtsFormat : public Format
         data = byteArray.mid(r2.position,r2.bytes).split(QChar(0x1D).toLatin1());
         foreach (const QByteArray &datum, data) {
             Field f = parseField(datum,QChar(0x1F));
-            r2.fields.append(f);
+            r2.fields.insert(f.type,f.data);
         }
-
 
         records.append(r2);
 
