@@ -65,6 +65,9 @@ struct AlgorithmCore
         downcast->train(data);
 
         if (!distance.isNull()) {
+            if (Globals->crossValidate > 0)
+                for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
+
             qDebug("Projecting Enrollment");
             downcast->projectUpdate(data,data);
 
@@ -249,6 +252,56 @@ struct AlgorithmCore
         }
 
         Globals->blockSize = old_block_size;
+    }
+
+    void deduplicate(const File &inputGallery, const File &outputGallery, const float threshold)
+    {
+        qDebug("Deduplicating %s to %s with a score threshold of %f", qPrintable(inputGallery.flat()), qPrintable(outputGallery.flat()), threshold);
+
+        if (distance.isNull()) qFatal("Null distance.");
+
+        QScopedPointer<Gallery> i;
+        FileList inputFiles;
+        retrieveOrEnroll(inputGallery, i, inputFiles);
+
+        TemplateList t = i->read();
+
+        Output *o = Output::make(QString("buffer.tail[selfSimilar,threshold=%1,atLeast=0]").arg(QString::number(threshold)),inputFiles,inputFiles);
+
+        // Compare to global tail output
+        distance->compare(t,t,o);
+
+        delete o;
+
+        QString buffer(Globals->buffer);
+
+        QStringList tail = buffer.split("\n");
+
+        // Remove header
+        tail.removeFirst();
+
+        QStringList toRemove;
+        foreach(const QString &s, tail)
+            toRemove.append(s.split(',').at(1));
+
+        QSet<QString> duplicates = QSet<QString>::fromList(toRemove);
+
+        QStringList fileNames = inputFiles.names();
+
+        QList<int> indices;
+        foreach(const QString &d, duplicates)
+            indices.append(fileNames.indexOf(d));
+
+        std::sort(indices.begin(),indices.end(),std::greater<float>());
+
+        qDebug("\n%d duplicates removed.", indices.size());
+
+        for (int i=0; i<indices.size(); i++)
+            inputFiles.removeAt(indices[i]);
+
+        QScopedPointer<Gallery> og(Gallery::make(outputGallery));
+
+        og->writeBlock(inputFiles);
     }
 
     void compare(File targetGallery, File queryGallery, File output)
@@ -494,6 +547,14 @@ void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
         bool done = false;
         while (!done) og->writeBlock(ig->readBlock(&done));
     }
+}
+
+void br::Deduplicate(const File &inputGallery, const File &outputGallery, const QString &threshold)
+{
+    bool ok;
+    float thresh = threshold.toFloat(&ok);
+    if (ok) AlgorithmManager::getAlgorithm(inputGallery.get<QString>("algorithm"))->deduplicate(inputGallery, outputGallery, thresh);
+    else qFatal("Unable to convert deduplication threshold to float.");
 }
 
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)

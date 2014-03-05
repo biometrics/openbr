@@ -268,7 +268,7 @@ class rrOutput : public MatrixOutput
 
         for (int i=0; i<queryFiles.size(); i++) {
             QStringList files;
-            if (simple) files.append(queryFiles[i]);
+            if (simple) files.append(queryFiles[i].fileName());
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
@@ -276,7 +276,7 @@ class rrOutput : public MatrixOutput
                     if (pair.first < threshold) break;
                     File target = targetFiles[pair.second];
                     target.set("Score", QString::number(pair.first));
-                    if (simple) files.append(target.baseName() + " " + QString::number(pair.first));
+                    if (simple) files.append(target.fileName() + " " + QString::number(pair.first));
                     else files.append(target.flat());
                 }
             }
@@ -528,7 +528,7 @@ class tailOutput : public Output
         } else {
             // General case
             for (int k=0; k<comparisons.size(); k++) {
-                if (comparisons[k].value < value) {
+                if (comparisons[k].value <= value) {
                     comparisons.insert(k, Comparison(queryFiles[i], targetFiles[j], value));
                     break;
                 }
@@ -539,6 +539,7 @@ class tailOutput : public Output
             comparisons.removeLast();
         while ((comparisons.size() > atLeast) && (comparisons.last().value < threshold))
             comparisons.removeLast();
+
         lastValue = comparisons.last().value;
         comparisonsLock.unlock();
     }

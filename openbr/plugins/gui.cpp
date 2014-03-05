@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QLabel>
 #include <QElapsedTimer>
+#include <QInputDialog>
 #include <QWaitCondition>
 #include <QMutex>
 #include <QMouseEvent>
@@ -12,6 +13,7 @@
 #include <QLineEdit>
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 #include "openbr/gui/utility.h"
 
@@ -179,6 +181,149 @@ public slots:
 
         return QList<QPointF>();
     }
+};
+
+class RectMarkingWindow : public DisplayWindow
+{
+public:
+    RectMarkingWindow() : DisplayWindow()
+    {
+        drawingRect = false;
+    }
+
+    bool drawingRect;
+    QVector<QRectF> rects;
+    QList<QString> rectLabels;
+
+    QPointF rectOrigin;
+    QPointF currentEnd;
+    QRectF currentRect;
+    bool disableAccept;
+
+    bool eventFilter(QObject *obj, QEvent *event)
+    {
+        if (disableAccept)
+            return QObject::eventFilter(obj, event);
+
+
+        if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseMove)
+        {
+            event->accept();
+
+            QMouseEvent *mouseEvent = (QMouseEvent*)event;
+
+            if (event->type() == QEvent::MouseButtonPress)
+            {
+
+                if (mouseEvent->button() == Qt::LeftButton) {
+                    if (!drawingRect)
+                    {
+                        drawingRect = true;
+                        rectOrigin = mouseEvent->pos();
+                        return true;
+                    }
+                    else
+                    {
+                        drawingRect = false;
+
+                        rects.append(QRectF(rectOrigin, mouseEvent->pos()));
+                        rects.last() = rects.last().normalized();
+                        // If no labels were provided, we store everything as anonymous rectangles
+                        if (promptKeys.empty())
+                           rectLabels.append("rects");
+                        // otherwise, prompt the user to select a label
+                        else
+                        {
+                            // get a label from the user
+                            bool ok = false;
+
+                            // Don't intercept events while the sub-dialog is up (if we take the events, then it will not work correctly)
+                            disableAccept = true;
+                            QString res = QInputDialog::getItem(this, "Select a label", "", promptKeys, next_idx, false, &ok);
+
+                            disableAccept = false;
+                            if (ok) {
+                                rectLabels.append(res);
+                                for (int i=0; i < promptKeys.size(); i++)
+                                {
+                                    if (res == promptKeys[i]) {
+                                        next_idx = (i + 1) % promptKeys.size();
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                rects.remove(rects.size()-1);
+                            }
+                        }
+                    }
+                }
+                // rclick -- reset state if drawing, remove last rect if done
+                else if (mouseEvent->button() == Qt::RightButton && (!rects.isEmpty() || drawingRect))
+                {
+                    if(drawingRect)
+                        drawingRect = false;
+                    else
+                    {
+                        rects.remove(rects.size()-1);
+                        rectLabels.removeLast();
+                    }
+                }
+            }
+            else
+                currentEnd = mouseEvent->pos();
+            QPixmap pixmapBuffer = pixmap;
+
+            QPainter painter(&pixmapBuffer);
+            painter.setPen(Qt::red);
+
+            painter.drawRects(rects);
+
+            if (drawingRect)
+            {
+                currentRect = QRectF(rectOrigin, currentEnd);
+                painter.setPen(Qt::green);
+                painter.drawRect(currentRect);
+            }
+
+            setPixmap(pixmapBuffer);
+
+            return true;
+        } else {
+            if (event->type() == QEvent::KeyPress)
+            {
+                QKeyEvent * kevent = (QKeyEvent *) event;
+                if (kevent->key() == Qt::Key_Enter || kevent->key() == Qt::Key_Return) {
+                    event->accept();
+                    return true;
+                }
+            }
+            return DisplayWindow::eventFilter(obj, event);
+        }
+    }
+
+
+    QList<QPointF> waitForKey()
+    {
+
+        rects.clear();
+        drawingRect = false;
+        disableAccept = false;
+        next_idx = 0;
+        DisplayWindow::waitForKey();
+
+        return QList<QPointF>();
+    }
+
+    void setKeys(const QStringList & keys)
+    {
+        promptKeys = keys;
+    }
+
+    int next_idx;
+private:
+    QStringList promptKeys;
+
 };
 
 class PointMarkingWindow : public DisplayWindow
@@ -552,6 +697,91 @@ public:
 };
 
 BR_REGISTER(Transform, ManualTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Manual select rectangular regions on an image.
+ * Stores marked rectangles as anonymous rectangles, or if a set of labels is provided, prompt the user
+ * to select one of those labels after drawing each rectangle.
+ * \author Charles Otto \cite caotto
+ */
+class ManualRectsTransform : public ShowTransform
+{
+    Q_OBJECT
+
+public:
+
+    Q_PROPERTY(QStringList labels READ get_labels WRITE set_labels RESET reset_labels STORED false)
+    BR_PROPERTY(QStringList, labels, QStringList())
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+
+        dst = src;
+
+        if (!Globals->useGui)
+            return;
+        if (src.empty())
+            return;
+
+        for (int i = 0; i < dst.size(); i++) {
+            foreach(const cv::Mat &m, dst[i]) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    window->waitForKey();
+                    QVector<QRectF> rectSet  = trueWindow->rects;
+                    QList<QString> labelSet= trueWindow->rectLabels;
+
+                    for (int idx = 0; idx < rectSet.size(); idx++)
+                    {
+                        if (dst[i].file.contains(labelSet[idx]))
+                        {
+                            QVariant currentProp = dst[i].file.value(labelSet[idx]);
+                            QList<QVariant> currentPropList;
+
+                            if (currentProp.canConvert<QList<QVariant> >() )
+                            {
+                                currentPropList = currentProp.toList();
+                            }
+                            else if (currentProp.canConvert<QRectF>())
+                            {
+                                currentPropList.append(currentProp);
+                            }
+                            else
+                            {
+                                qFatal("Unknown type of property");
+                            }
+
+                            currentPropList.append(rectSet[idx]);
+                            dst[i].file.set(labelSet[idx], QVariant::fromValue(currentPropList));
+                        }
+                        else
+                        {
+                            dst[i].file.set(labelSet[idx], rectSet[idx]);
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    RectMarkingWindow * trueWindow;
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+        initActual<RectMarkingWindow>();
+        trueWindow = dynamic_cast<RectMarkingWindow *> (this->window);
+        trueWindow->setKeys(this->keys);
+    }
+};
+
+BR_REGISTER(Transform, ManualRectsTransform)
 
 /*!
  * \ingroup transforms

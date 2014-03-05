@@ -158,15 +158,24 @@ public:
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "deduplicate")) {
+                check(parc == 3, "Incorrect parameter count for 'deduplicate'.");
+                br_deduplicate(parv[0], parv[1], parv[2]);
             }
 
             // Miscellaneous
             else if (!strcmp(fun, "help")) {
                 check(parc == 0, "No parameters expected for 'help'.");
                 help();
+            } else if (!strcmp(fun, "gui")) {
+                // Do nothing because we checked for this flag prior to initialization
             } else if (!strcmp(fun, "objects")) {
                 check(parc <= 2, "Incorrect parameter count for 'objects'.");
-                printf("%s\n", br_objects(parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*"));
+                int size = br_objects(NULL, 0, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
+                char * temp = new char[size];
+                br_objects(temp, size, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
+                printf("%s\n", temp);
+                delete [] temp;
             } else if (!strcmp(fun, "about")) {
                 check(parc == 0, "No parameters expected for 'about'.");
                 printf("%s\n", br_about());
@@ -177,11 +186,10 @@ public:
                 check(parc == 1, "Incorrect parameter count for 'daemon'.");
                 daemon = true;
                 daemon_pipe = parv[0];
-            } else if (!strcmp(fun,"slave")) {
+            } else if (!strcmp(fun, "slave")) {
                 check(parc == 1, "Incorrect parameter count for 'slave'");
                 br_slave_process(parv[0]);
-            }
-            else if (!strcmp(fun, "exit")) {
+            } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;
             } else if (!strcmp(fun, "getHeader")) {
@@ -245,6 +253,7 @@ private:
                "\n"
                "==== Miscellaneous ====\n"
                "-help\n"
+               "-gui\n"
                "-objects [abstraction [implementation]]\n"
                "-about\n"
                "-version\n"
@@ -255,7 +264,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-    br_initialize(argc, argv);
+    br_initialize(argc, argv, "", argc >= 2 && !strcmp(argv[1], "-gui"));
 
     FakeMain *fakeMain = new FakeMain(argc, argv);
     QThreadPool::globalInstance()->start(fakeMain);

@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QtConcurrent>
 #include <opencv/highgui.h>
+#include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -346,10 +347,11 @@ public:
         }
 
         // first 4 bytes store 0xEDFE, next 24 store 'Norpix seq  '
-        char *firstFour = new char[4], *nextTwentyFour;
+        char firstFour[4];
         seqFile.seekg(0, ios::beg);
         seqFile.read(firstFour, 4);
-        nextTwentyFour = readText(24);
+        char nextTwentyFour[24];
+        readText(24, nextTwentyFour);
         if (firstFour[0] != (char)0xED || firstFour[1] != (char)0xFE || strncmp(nextTwentyFour, "Norpix seq", 10) != 0) {
             qDebug("Invalid header in seq file");
             return false;
@@ -362,7 +364,8 @@ public:
             qDebug("Invalid header size");
             return false;
         }
-        char *desc = readText(512);
+        char desc[512];
+        readText(512, desc);
         basis.file.set("Description", QString(desc));
 
         width = readInt();
@@ -413,9 +416,9 @@ public:
                 // but there might be 16 extra bytes instead of 8...
                 if (i == 1) {
                     seqFile.seekg(s, ios::beg);
-                    char *zero = new char[1];
-                    seqFile.read(zero, 1);
-                    if (zero[0] == 0) {
+                    char zero;
+                    seqFile.read(&zero, 1);
+                    if (zero == 0) {
                         s += 8;
                         extra += 8;
                     }
@@ -430,10 +433,12 @@ public:
         }
 
 #ifdef CVMATIO
-        QString f = basis.file.name;
-        QString vbb = f.replace(f.lastIndexOf("."), 4, ".vbb");
-        vbb.replace(vbb.lastIndexOf("vid"), 3, "annotations");
-        annotations = TemplateList::fromGallery(File(vbb));
+        if (basis.file.contains("vbb")) {
+            QString vbb = basis.file.get<QString>("vbb");
+            annotations = TemplateList::fromGallery(File(vbb));
+        }
+#else
+        qWarning("cvmatio not installed, bounding boxes will not be available. Add -DBR_WITH_CVMATIO cmake flag to install.");
 #endif
 
         return true;
@@ -497,14 +502,13 @@ private:
     // apparently the text in seq files is 16 bit characters (UTF-16?)
     // since we don't really need the last byte, snad since it gets interpreted as
     // a terminating char, let's just grab the first byte for storage
-    char* readText(int bytes)
+    void readText(int bytes, char * buffer)
     {
-        char *text = new char[bytes], *ret = new char[bytes/2];
-        seqFile.read(text, bytes);
+        seqFile.read(buffer, bytes);
         for (int i=0; i<bytes; i+=2) {
-            ret[i/2] = text[i];
+            buffer[i/2] = buffer[i];
         }
-        return ret;
+        buffer[bytes/2] = '\0';
     }
 
 protected:
@@ -736,7 +740,6 @@ protected:
                         frameSource = new VideoReader();
                 }
             }
-
             open_res = frameSource->open(curr);
             if (!open_res)
             {
@@ -1420,6 +1423,7 @@ public:
     {
         // Delete all the stages
         for (int i = 0; i < processingStages.size(); i++) {
+// TODO: Are we releasing memory which is already freed?
             delete processingStages[i];
         }
         processingStages.clear();

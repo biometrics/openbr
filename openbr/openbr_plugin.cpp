@@ -203,6 +203,13 @@ QList<QRectF> File::namedRects() const
         const QVariant &variant = m_metadata[key];
         if (variant.canConvert<QRectF>())
             rects.append(variant.value<QRectF>());
+        else if(variant.canConvert<QList<QRectF> >()) {
+            QList<QRectF> list = variant.value<QList<QRectF> >();
+            for (int i=0;i < list.size();i++)
+            {
+                rects.append(list[i]);
+            }
+        }
     }
     return rects;
 }
@@ -392,7 +399,12 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
 
         const int crossValidate = gallery.get<int>("crossValidate");
 
-        if (gallery.getBool("leaveOneImageOut")) {
+        // The leaveOneImageOut flag is used when we want to train on n-1 of a subject's images
+        // Thus, we find all the images for a particular subject, and set their partitions based on
+        // the crossValidate parameter
+        // Note that when the number of images per subject varies from subject to subject
+        // the number of subjects will decrease as the partition increases
+        if (gallery.getBool("leaveOneImageOut") && crossValidate > 0) {
             QStringList labels;
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
@@ -414,7 +426,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
                             Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
                             if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
                                 leaveOneImageOutTemplate.file.set("Partition", k);
-                                leaveOneImageOutTemplate.file.set("testOnly", true);
+                                leaveOneImageOutTemplate.file.set("targetOnly", true);
                                 newTemplates.insert(i+1,leaveOneImageOutTemplate);
                             }
                         }
@@ -899,8 +911,12 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 {
     qInstallMessageHandler(messageHandler);
 
+    QString sep;
 #ifndef _WIN32
     useGui = useGui && (getenv("DISPLAY") != NULL);
+    sep = ":";
+#else
+    sep = ";";
 #endif // not _WIN32
 
     // We take in argc as a reference due to:
@@ -944,6 +960,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // Search for SDK
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();
+        checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
 
         bool foundSDK = false;
         foreach (const QString &path, checkPaths) {
@@ -997,6 +1014,47 @@ QString br::Context::version()
 QString br::Context::scratchPath()
 {
     return QString("%1/%2-%3.%4").arg(QDir::homePath(), PRODUCT_NAME, QString::number(PRODUCT_VERSION_MAJOR), QString::number(PRODUCT_VERSION_MINOR));
+}
+
+
+QStringList br::Context::objects(const char *abstractions, const char *implementations, bool parameters)
+{
+    QStringList objectList;
+    QRegExp abstractionsRegExp(abstractions);
+    QRegExp implementationsRegExp(implementations);
+
+    if (abstractionsRegExp.exactMatch("Abbreviation"))
+        foreach (const QString &name, Globals->abbreviations.keys())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Globals->abbreviations[name] : ""));
+
+    if (abstractionsRegExp.exactMatch("Distance"))
+        foreach (const QString &name, Factory<Distance>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Distance>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Format"))
+        foreach (const QString &name, Factory<Format>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Format>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Initializer"))
+        foreach (const QString &name, Factory<Initializer>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Initializer>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Output"))
+        foreach (const QString &name, Factory<Output>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Output>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Transform"))
+        foreach (const QString &name, Factory<Transform>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
+
+
+    return objectList;
 }
 
 void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

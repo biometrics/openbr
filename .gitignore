@@ -41,4 +41,9 @@ scripts/results
 data/INRIAPerson/sigset
 data/KTH/sigset
 data/CaltechPedestrians/annotations
+data/CaltechPedestrians/*.xml
 
+### Sublime ###
+*.check_cache
+*.sublime-project
+*.sublime-workspace

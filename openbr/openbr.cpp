@@ -24,12 +24,31 @@
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 
 using namespace br;
 
+static int partialCopy(const QString & string, char * buffer, int buffer_length)
+{
+
+    QByteArray byteArray = string.toLocal8Bit();
+
+    int copyLength = std::min(buffer_length-1, byteArray.size());
+    if (copyLength < 0)
+        return byteArray.size() + 1;
+
+    memcpy(buffer, byteArray.data(), copyLength);
+    buffer[copyLength] = '\0';
+
+    return byteArray.size() + 1;
+}
+
 const char *br_about()
 {
+    static QMutex aboutLock;
+    QMutexLocker lock(&aboutLock);
     static QByteArray about = Context::about().toLocal8Bit();
+
     return about.data();
 }
 
@@ -121,9 +140,9 @@ void br_fuse(int num_input_simmats, const char *input_simmats[],
     Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), normalization, fusion, output_simmat);
 }
 
-void br_initialize(int &argc, char *argv[], const char *sdk_path)
+void br_initialize(int &argc, char *argv[], const char *sdk_path, bool use_gui)
 {
-    Context::initialize(argc, argv, sdk_path);
+    Context::initialize(argc, argv, sdk_path, use_gui);
 }
 
 void br_initialize_default()
@@ -149,53 +168,14 @@ void br_make_pairwise_mask(const char *target_input, const char *query_input, co
     BEE::makePairwiseMask(target_input, query_input, mask);
 }
 
-const char *br_most_recent_message()
+int br_most_recent_message(char * buffer, int buffer_length)
 {
-    static QByteArray byteArray;
-    byteArray = Globals->mostRecentMessage.toLocal8Bit();
-    return byteArray.data();
+    return partialCopy(Globals->mostRecentMessage, buffer, buffer_length);
 }
 
-const char *br_objects(const char *abstractions, const char *implementations, bool parameters)
+int br_objects(char * buffer, int buffer_length, const char *abstractions, const char *implementations, bool parameters)
 {
-    static QByteArray objects;
-
-    QStringList objectList;
-    QRegExp abstractionsRegExp(abstractions);
-    QRegExp implementationsRegExp(implementations);
-
-    if (abstractionsRegExp.exactMatch("Abbreviation"))
-        foreach (const QString &name, Globals->abbreviations.keys())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Globals->abbreviations[name] : ""));
-
-    if (abstractionsRegExp.exactMatch("Distance"))
-        foreach (const QString &name, Factory<Distance>::names())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Factory<Distance>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Format"))
-        foreach (const QString &name, Factory<Format>::names())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Factory<Format>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Initializer"))
-        foreach (const QString &name, Factory<Initializer>::names())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Factory<Initializer>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Output"))
-        foreach (const QString &name, Factory<Output>::names())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Factory<Output>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Transform"))
-        foreach (const QString &name, Factory<Transform>::names())
-            if (implementationsRegExp.exactMatch(name))
-                objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
-
-    objects = objectList.join("\n").toLocal8Bit();
-    return objects.data();
+    return partialCopy(br::Context::objects(abstractions, implementations, parameters).join('\n'), buffer, buffer_length);
 }
 
 bool br_plot(int num_files, const char *files[], const char *destination, bool show)
@@ -250,15 +230,15 @@ void br_read_pipe(const char *pipe, int *argc, char ***argv)
     *argv = rawCharArrayList.data();
 }
 
-const char *br_scratch_path()
+int br_scratch_path(char * buffer, int buffer_length)
 {
-    static QByteArray byteArray;
-    byteArray = Context::scratchPath().toLocal8Bit();
-    return byteArray.data();
+    return partialCopy(Context::scratchPath(), buffer, buffer_length);
 }
 
 const char *br_sdk_path()
 {
+    static QMutex sdkLock;
+    QMutexLocker lock(&sdkLock);
     static QByteArray sdkPath = QDir(Globals->sdkPath).absolutePath().toLocal8Bit();
     return sdkPath.data();
 }
@@ -302,6 +282,8 @@ void br_train_n(int num_inputs, const char *inputs[], const char *model)
 
 const char *br_version()
 {
+    static QMutex versionLock;
+    QMutexLocker lock(&versionLock);
     static QByteArray version = Context::version().toLocal8Bit();
     return version.data();
 }
@@ -379,10 +361,9 @@ bool br_img_is_empty(br_template tmpl)
     return t->m().empty();
 }
 
-const char* br_get_filename(br_template tmpl)
+int br_get_filename(char * buffer, int buffer_length, br_template tmpl)
 {
-    Template *t = reinterpret_cast<Template*>(tmpl);
-    return t->file.name.toStdString().c_str();
+    return partialCopy(reinterpret_cast<Template*>(tmpl)->file.name, buffer, buffer_length);
 }
 
 void br_set_filename(br_template tmpl, const char *filename)
@@ -391,15 +372,11 @@ void br_set_filename(br_template tmpl, const char *filename)
     t->file.name = filename;
 }
 
-const char* br_get_metadata_string(br_template tmpl, const char *key)
+int br_get_metadata_string(char * buffer, int buffer_length, br_template tmpl, const char *key)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
-    // need an object outside of this scope
-    // so the char pointer is valid
-    static QByteArray result;
     QVariant qvar = t->file.value(key);
-    result = QtUtils::toString(qvar).toUtf8();
-    return result.data();
+    return partialCopy(QtUtils::toString(qvar), buffer, buffer_length);
 }
 
 br_template_list br_enroll_template(br_template tmpl)
@@ -469,4 +446,9 @@ void br_close_gallery(br_gallery gallery)
 {
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
     delete gal;
+}
+
+void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold)
+{
+    br::Deduplicate(input_gallery, output_gallery, threshold);
 }

@@ -60,24 +60,29 @@ class NormalizeTransform : public UntrainableTransform
 
     Q_PROPERTY(bool ByRow READ get_ByRow WRITE set_ByRow RESET reset_ByRow STORED false)
     BR_PROPERTY(bool, ByRow, false)
+    Q_PROPERTY(int alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
+    BR_PROPERTY(int, alpha, 1)
+    Q_PROPERTY(int beta READ get_beta WRITE set_beta RESET reset_beta STORED false)
+    BR_PROPERTY(int, beta, 0)
 
 public:
     /*!< */
     enum NormType { Inf = NORM_INF,
                     L1 = NORM_L1,
-                    L2 = NORM_L2 };
+                    L2 = NORM_L2,
+                    Range = NORM_MINMAX };
 
 private:
     BR_PROPERTY(NormType, normType, L2)
 
     void project(const Template &src, Template &dst) const
     {
-        if (!ByRow) normalize(src, dst, 1, 0, normType, CV_32F);
+        if (!ByRow) normalize(src, dst, alpha, beta, normType, CV_32F);
         else {
             dst = src;
             for (int i=0; i<dst.m().rows; i++) {
                 Mat temp;
-                cv::normalize(dst.m().row(i), temp, 1, 0, normType);
+                cv::normalize(dst.m().row(i), temp, alpha, beta, normType);
                 temp.copyTo(dst.m().row(i));
             }
         }
@@ -132,7 +137,7 @@ private:
         const QList<int> labels = data.indexProperty(inputVariable);
         const int dims = m.cols;
 
-        vector<Mat> mv, av, bv;
+        std::vector<Mat> mv, av, bv;
         split(m, mv);
         for (size_t c = 0; c < mv.size(); c++) {
             av.push_back(Mat(1, dims, CV_64FC1));

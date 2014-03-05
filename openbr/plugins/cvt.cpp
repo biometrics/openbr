@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
@@ -44,7 +45,8 @@ public:
                       Luv = CV_BGR2Luv,
                       RGB = CV_BGR2RGB,
                       XYZ = CV_BGR2XYZ,
-                      YCrCb = CV_BGR2YCrCb };
+                      YCrCb = CV_BGR2YCrCb,
+                      Color = CV_GRAY2BGR };
 
 private:
     BR_PROPERTY(ColorSpace, colorSpace, Gray)
@@ -52,8 +54,8 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() > 1) cvtColor(src, dst, colorSpace);
-        else                        dst = src;
+        if (src.m().channels() > 1 || colorSpace == CV_GRAY2BGR) cvtColor(src, dst, colorSpace);
+        else dst = src;
 
         if (channel != -1) {
             std::vector<Mat> mv;
