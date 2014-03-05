@@ -351,79 +351,6 @@ struct AlgorithmCore
                qPrintable(queryGallery.flat()),
                output.isNull() ? "" : qPrintable(" to " + output.flat()));
 
-        if (output.exists() && output.get<bool>("cache", false)) return;
-        if (queryGallery == ".") queryGallery = targetGallery;
-
-        QScopedPointer<Gallery> t, q;
-        FileList targetFiles, queryFiles;
-        retrieveOrEnroll(targetGallery, t, targetFiles);
-        retrieveOrEnroll(queryGallery, q, queryFiles);
-
-        QList<int> partitionSizes;
-        QList<File> outputFiles;
-        if (output.contains("split")) {
-            if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%%1)");
-            partitionSizes = output.getList<int>("split");
-            for (int i=0; i<partitionSizes.size(); i++) {
-                File splitOutputFile = output.name.arg(i);
-                outputFiles.append(splitOutputFile);
-            }
-        }
-        else outputFiles.append(output);
-
-        QList<Output*> outputs;
-        foreach (const File &outputFile, outputFiles) outputs.append(Output::make(outputFile, targetFiles, queryFiles));
-
-        if (distance.isNull()) qFatal("Null distance.");
-        Globals->currentStep = 0;
-        Globals->totalSteps = double(targetFiles.size()) * double(queryFiles.size());
-        Globals->startTime.start();
-
-        int queryBlock = -1;
-        bool queryDone = false;
-        while (!queryDone) {
-            queryBlock++;
-            TemplateList queries = q->readBlock(&queryDone);
-
-            QList<TemplateList> queryPartitions;
-            if (!partitionSizes.empty()) queryPartitions = queries.partition(partitionSizes);
-            else queryPartitions.append(queries);
-
-            for (int i=0; i<queryPartitions.size(); i++) {
-                int targetBlock = -1;
-                bool targetDone = false;
-                while (!targetDone) {
-                    targetBlock++;
-
-                    TemplateList targets = t->readBlock(&targetDone);
-
-                    QList<TemplateList> targetPartitions;
-                    if (!partitionSizes.empty()) targetPartitions = targets.partition(partitionSizes);
-                    else targetPartitions.append(targets);
-
-                    outputs[i]->setBlock(queryBlock, targetBlock);
-
-                    distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
-
-                    Globals->currentStep += double(targets.size()) * double(queries.size());
-                    Globals->printStatus();
-                }
-            }
-        }
-
-        qDeleteAll(outputs);
-
-        const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
-        if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);
-        Globals->totalSteps = 0;
-    }
-
-    void altCompare(File targetGallery, File queryGallery, File output)
-    {
-        qDebug("Comparing %s and %s%s", qPrintable(targetGallery.flat()),
-               qPrintable(queryGallery.flat()),
-               output.isNull() ? "" : qPrintable(" to " + output.flat()));
-
         bool multiProcess = Globals->file.getBool("multiProcess", false);
 
         if (output.exists() && output.get<bool>("cache", false)) return;
@@ -680,8 +607,7 @@ void br::Enroll(TemplateList &tl)
 
 void br::Compare(const File &targetGallery, const File &queryGallery, const File &output)
 {
-    //AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
-    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->altCompare(targetGallery, queryGallery, output);
+    AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->compare(targetGallery, queryGallery, output);
 }
 
 void br::CompareTemplateLists(const TemplateList &target, const TemplateList &query, Output *output)
