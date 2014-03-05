@@ -630,9 +630,12 @@ class OutputTransform : public TimeVaryingTransform
     {
         (void) data;
     }
-    ;
+
     void init()
     {
+        if (targetName.isEmpty() || queryName.isEmpty() || outputString.isEmpty())
+            return;
+
         QScopedPointer<Gallery> tGallery(Gallery::make(targetName));
         QScopedPointer<Gallery> qGallery(Gallery::make(queryName));
 

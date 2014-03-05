@@ -482,7 +482,6 @@ class GalleryCompareTransform : public Transform
     {
         if (!galleryName.isEmpty()) {
             gallery = TemplateList::fromGallery(galleryName);
-            qDebug() << "Gal compare reading templates from " << galleryName;
         }
         if (!distanceAlgorithm.isEmpty())
         {
