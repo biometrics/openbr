@@ -408,7 +408,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             QStringList labels;
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", gallery.name);
+                newTemplates[i].file.set("Gallery", file.name);
 
                 QString label = newTemplates.at(i).file.get<QString>("Label");
                 // Have we seen this subject before?
@@ -436,7 +436,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         } else {
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", gallery.name);
+                newTemplates[i].file.set("Gallery", file.name);
 
                 if (crossValidate > 0) {
                     if (newTemplates[i].file.getBool("duplicatePartitions")) {
