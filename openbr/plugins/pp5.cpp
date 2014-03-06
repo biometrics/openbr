@@ -367,4 +367,50 @@ class PP5CompareDistance : public Distance
 
 BR_REGISTER(Distance, PP5CompareDistance)
 
+/*!
+ * \ingroup galleries
+ * \brief For storing and comparing PittPatt templates natively
+ * \author Josh Klontz \cite jklontz
+ */
+class PP5Gallery : public Gallery
+                 , public PP5Context
+{
+    Q_OBJECT
+    ppr_gallery_type gallery;
+    int face_id;
+
+    ~PP5Gallery()
+    {
+        ppr_write_gallery(context, qPrintable(file.name), gallery);
+        ppr_free_gallery(gallery);
+    }
+
+    void init()
+    {
+        face_id = 0;
+        ppr_create_gallery(context, &gallery);
+    }
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        qFatal("PP5Gallery read not supported.");
+        return TemplateList();
+    }
+
+    void write(const Template &t)
+    {
+        if (!t.m().data)
+            return;
+
+        ppr_face_type face;
+        createFace(t, &face);
+        TRY(ppr_add_face(context, &gallery, face, face_id, face_id))
+        face_id++;
+        ppr_free_face(face);
+    }
+};
+
+BR_REGISTER(Gallery, PP5Gallery)
+
 #include "plugins/pp5.moc"
