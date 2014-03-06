@@ -363,6 +363,41 @@ class PP5CompareDistance : public Distance
             }
         }
     }
+
+    bool compare(const File &targetGallery, const File &queryGallery, const File &output) const
+    {
+        if ((targetGallery.suffix() != "PP5") || (queryGallery.suffix() != "PP5"))
+            return false;
+
+        ppr_gallery_type native_target, native_query;
+        TRY(ppr_read_gallery(context, qPrintable(targetGallery.name), &native_target));
+        TRY(ppr_read_gallery(context, qPrintable(queryGallery.name), &native_query));
+
+        ppr_similarity_matrix_type native_simmat;
+        TRY(ppr_compare_galleries(context, native_query, native_target, &native_simmat))
+
+        int targets, queries;
+        TRY(ppr_get_num_faces(context, native_target, &targets))
+        TRY(ppr_get_num_faces(context, native_query, &queries))
+
+        QStringList indicies;
+        for (int i=0; i<std::max(targets, queries); i++)
+            indicies.append(QString::number(i));
+        QScopedPointer<Output> o(Output::make(output, QStringList(indicies.mid(0, targets)), QStringList(indicies.mid(0, queries))));
+        o->setBlock(0, 0);
+
+        for (int i=0; i<queries; i++)
+            for (int j=0; j<targets; j++) {
+                float score;
+                TRY(ppr_get_face_similarity_score(context, native_simmat, i, j, &score))
+                o->setRelative(score, i, j);
+            }
+
+        ppr_free_similarity_matrix(native_simmat);
+        ppr_free_gallery(native_target);
+        ppr_free_gallery(native_query);
+        return true;
+    }
 };
 
 BR_REGISTER(Distance, PP5CompareDistance)
