@@ -305,6 +305,14 @@ class PP5CompareDistance : public Distance
                          , public PP5Context
 {
     Q_OBJECT
+    mutable QMap<QString, ppr_gallery_type> cache;
+    mutable QMutex cacheLock;
+
+    ~PP5CompareDistance()
+    {
+        foreach (ppr_gallery_type gallery, cache.values())
+            ppr_free_gallery(gallery);
+    }
 
     float compare(const Template &target, const Template &query) const
     {
@@ -364,14 +372,40 @@ class PP5CompareDistance : public Distance
         }
     }
 
+    ppr_gallery_type cacheRetain(const File &gallery) const
+    {
+        QMutexLocker locker(&cacheLock);
+        ppr_gallery_type native_gallery;
+        if (cache.contains(gallery.name)) {
+            native_gallery = cache[gallery.name];
+        } else {
+            TRY(ppr_read_gallery(context, qPrintable(gallery.name), &native_gallery));
+            if (gallery.get<bool>("retain"))
+                cache.insert(gallery.name, native_gallery);
+        }
+        return native_gallery;
+    }
+
+    void cacheRelease(const File &gallery, ppr_gallery_type native_gallery) const
+    {
+        QMutexLocker locker(&cacheLock);
+        if (cache.contains(gallery.name)) {
+            if (gallery.get<bool>("release")) {
+                cache.remove(gallery.name);
+                ppr_free_gallery(native_gallery);
+            }
+        } else {
+            ppr_free_gallery(native_gallery);
+        }
+    }
+
     bool compare(const File &targetGallery, const File &queryGallery, const File &output) const
     {
         if ((targetGallery.suffix() != "PP5") || (queryGallery.suffix() != "PP5"))
             return false;
 
-        ppr_gallery_type native_target, native_query;
-        TRY(ppr_read_gallery(context, qPrintable(targetGallery.name), &native_target));
-        TRY(ppr_read_gallery(context, qPrintable(queryGallery.name), &native_query));
+        ppr_gallery_type native_target = cacheRetain(targetGallery);
+        ppr_gallery_type native_query = cacheRetain(queryGallery);
 
         ppr_similarity_matrix_type native_simmat;
         TRY(ppr_compare_galleries(context, native_query, native_target, &native_simmat))
@@ -394,8 +428,8 @@ class PP5CompareDistance : public Distance
             }
 
         ppr_free_similarity_matrix(native_simmat);
-        ppr_free_gallery(native_target);
-        ppr_free_gallery(native_query);
+        cacheRelease(targetGallery, native_target);
+        cacheRelease(queryGallery, native_query);
         return true;
     }
 };
