@@ -1331,6 +1331,10 @@ protected:
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;
+
+    friend struct AlgorithmCore;
+    virtual bool compare(const File &targetGallery, const File &queryGallery, const File &output) const /*!< \brief Escape hatch for algorithms that need customized file I/O during comparison. */
+        { (void) targetGallery; (void) queryGallery; (void) output; return false; }
 };
 
 /*!

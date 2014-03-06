@@ -21,9 +21,8 @@
 #include "qtutils.h"
 #include "../plugins/openbr_internal.h"
 
-using namespace br;
+namespace br {
 
-/**** ALGORITHM_CORE ****/
 struct AlgorithmCore
 {
     QSharedPointer<Transform> transform;
@@ -351,6 +350,10 @@ struct AlgorithmCore
                qPrintable(queryGallery.flat()),
                output.isNull() ? "" : qPrintable(" to " + output.flat()));
 
+        // Escape hatch for distances that need to operate directly on the gallery files
+        if (distance->compare(targetGallery, queryGallery, output))
+            return;
+
         bool multiProcess = Globals->file.getBool("multiProcess", false);
 
         if (output.exists() && output.get<bool>("cache", false)) return;
@@ -544,6 +547,9 @@ private:
     }
 };
 
+} // namespace br
+
+using namespace br;
 
 class AlgorithmManager : public Initializer
 {
