@@ -25,6 +25,7 @@ class Idiocy : public QObject
 public:
     enum StreamModes { StreamVideo,
                      DistributeFrames,
+                     StreamGallery,
                      Auto};
 
     Q_ENUMS(StreamModes)
@@ -287,6 +288,75 @@ protected:
     cv::VideoCapture video;
 };
 
+
+class StreamGallery : public TemplateProcessor
+{
+public:
+    StreamGallery()
+    {
+
+    }
+
+    bool open(Template &input)
+    {
+        // Create a gallery
+        gallery = QSharedPointer<Gallery>(Gallery::make(input.file));
+        // Failed ot open the gallery?
+        if (gallery.isNull()) {
+            qDebug()<<"Failed to create gallery!";
+            galleryOk = false;
+            return false;
+        }
+
+        // Set up state variables for future reads
+        galleryOk = true;
+        gallery->set_readBlockSize(100);
+        nextIdx = 0;
+        lastBlock = false;
+        return galleryOk;
+    }
+
+    bool isOpen() { return galleryOk; }
+
+    void close()
+    {
+        galleryOk = false;
+        currentData.clear();
+        nextIdx = 0;
+        lastBlock = true;
+    }
+
+    bool getNextTemplate(Template & output)
+    {
+        // If we still have data available, we return one of those
+        if (nextIdx >= currentData.size())
+        {
+            // Otherwise, read another block
+            if (!lastBlock) {
+                currentData = gallery->readBlock(&lastBlock);
+                nextIdx = 0;
+            }
+            else
+            {
+                galleryOk = false;
+                return false;
+            }
+        }
+        // Return the indicated template, and advance the index
+        output = currentData[nextIdx++];
+        return true;
+    }
+
+protected:
+
+    QSharedPointer<Gallery> gallery;
+    bool galleryOk;
+    bool lastBlock;
+
+    TemplateList currentData;
+    int nextIdx;
+
+};
 
 class DirectReturn : public TemplateProcessor
 {
@@ -730,6 +800,11 @@ protected:
             {
                 if (!frameSource)
                     frameSource = new DirectReturn();
+            }
+            else if (mode == br::Idiocy::StreamGallery)
+            {
+                if (!frameSource)
+                    frameSource = new StreamGallery();
             }
             else if (mode == br::Idiocy::StreamVideo)
             {

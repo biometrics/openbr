@@ -215,9 +215,11 @@ class mtxOutput : public Output
 
         this->rowBlock = rowBlock;
         this->columnBlock = columnBlock;
-        blockScores = cv::Mat(std::min(queryFiles.size()-rowBlock*Globals->blockSize, Globals->blockSize),
-                              std::min(targetFiles.size()-columnBlock*Globals->blockSize, Globals->blockSize),
-                              CV_32FC1);
+
+        int matrixRows  = std::min(queryFiles.size()-rowBlock*this->blockRows, blockRows);
+        int matrixCols  = std::min(targetFiles.size()-columnBlock*this->blockCols, blockCols);
+
+        blockScores = cv::Mat(matrixRows, matrixCols, CV_32FC1);
     }
 
     void setRelative(float value, int i, int j)
@@ -237,7 +239,7 @@ class mtxOutput : public Output
         if (!f.open(QFile::ReadWrite))
             qFatal("Unable to open %s for modifying.", qPrintable(file));
         for (int i=0; i<blockScores.rows; i++) {
-            f.seek(headerSize + sizeof(float)*(quint64(rowBlock*Globals->blockSize+i)*targetFiles.size()+(columnBlock*Globals->blockSize)));
+            f.seek(headerSize + sizeof(float)*(quint64(rowBlock*this->blockRows+i)*targetFiles.size()+(columnBlock*this->blockCols)));
             f.write((const char*)blockScores.row(i).data, sizeof(float)*blockScores.cols);
         }
         f.close();
