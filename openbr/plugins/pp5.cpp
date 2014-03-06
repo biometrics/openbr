@@ -305,13 +305,21 @@ class PP5CompareDistance : public Distance
                          , public PP5Context
 {
     Q_OBJECT
-    mutable QMap<QString, ppr_gallery_type> cache;
+
+    struct NativeGallery
+    {
+        FileList files;
+        QList<int> faceIDs;
+        ppr_gallery_type gallery;
+    };
+
+    mutable QMap<QString, NativeGallery> cache;
     mutable QMutex cacheLock;
 
     ~PP5CompareDistance()
     {
-        foreach (ppr_gallery_type gallery, cache.values())
-            ppr_free_gallery(gallery);
+        foreach (const NativeGallery &gallery, cache.values())
+            ppr_free_gallery(gallery.gallery);
     }
 
     float compare(const Template &target, const Template &query) const
@@ -323,7 +331,6 @@ class PP5CompareDistance : public Distance
         MatrixOutput *score = MatrixOutput::make(targetList.files(), queryList.files());
         compare(targetList, queryList, score);
         return score->data.at<float>(0);
-
     }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
@@ -334,25 +341,27 @@ class PP5CompareDistance : public Distance
         QList<int> target_face_ids, query_face_ids;
         enroll(target, &target_gallery, target_face_ids);
         enroll(query, &query_gallery, query_face_ids);
+        compareNative(target_gallery, target_face_ids, query_gallery, query_face_ids, output);
+        ppr_free_gallery(target_gallery);
+        ppr_free_gallery(query_gallery);
+    }
 
-        ppr_similarity_matrix_type similarity_matrix;
-        TRY(ppr_compare_galleries(context, query_gallery, target_gallery, &similarity_matrix))
-
-        for (int i=0; i<query_face_ids.size(); i++) {
-            int query_face_id = query_face_ids[i];
-            for (int j=0; j<target_face_ids.size(); j++) {
-                int target_face_id = target_face_ids[j];
+    void compareNative(ppr_gallery_type target, const QList<int> &targetIDs, ppr_gallery_type query, const QList<int> &queryIDs, Output *output) const
+    {
+        ppr_similarity_matrix_type simmat;
+        TRY(ppr_compare_galleries(context, query, target, &simmat))
+        for (int i=0; i<queryIDs.size(); i++) {
+            int query_face_id = queryIDs[i];
+            for (int j=0; j<targetIDs.size(); j++) {
+                int target_face_id = targetIDs[j];
                 float score = -std::numeric_limits<float>::max();
                 if ((query_face_id != -1) && (target_face_id != -1)) {
-                    TRY(ppr_get_face_similarity_score(context, similarity_matrix, query_face_id, target_face_id, &score))
+                    TRY(ppr_get_face_similarity_score(context, simmat, query_face_id, target_face_id, &score))
                 }
                 output->setRelative(score, i, j);
             }
         }
-
-        ppr_free_similarity_matrix(similarity_matrix);
-        ppr_free_gallery(target_gallery);
-        ppr_free_gallery(query_gallery);
+        ppr_free_similarity_matrix(simmat);
     }
 
     void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &face_ids) const
@@ -372,114 +381,54 @@ class PP5CompareDistance : public Distance
         }
     }
 
-    ppr_gallery_type cacheRetain(const File &gallery) const
+    NativeGallery cacheRetain(const File &gallery) const
     {
         QMutexLocker locker(&cacheLock);
-        ppr_gallery_type native_gallery;
+        NativeGallery nativeGallery;
         if (cache.contains(gallery.name)) {
-            native_gallery = cache[gallery.name];
+            nativeGallery = cache[gallery.name];
         } else {
-            TRY(ppr_read_gallery(context, qPrintable(gallery.name), &native_gallery));
+            ppr_create_gallery(context, &nativeGallery.gallery);
+            TemplateList templates = TemplateList::fromGallery(gallery);
+            enroll(templates, &nativeGallery.gallery, nativeGallery.faceIDs);
+            nativeGallery.files = templates.files();
             if (gallery.get<bool>("retain"))
-                cache.insert(gallery.name, native_gallery);
+                cache.insert(gallery.name, nativeGallery);
         }
-        return native_gallery;
+        return nativeGallery;
     }
 
-    void cacheRelease(const File &gallery, ppr_gallery_type native_gallery) const
+    void cacheRelease(const File &gallery, const NativeGallery &nativeGallery) const
     {
         QMutexLocker locker(&cacheLock);
         if (cache.contains(gallery.name)) {
             if (gallery.get<bool>("release")) {
                 cache.remove(gallery.name);
-                ppr_free_gallery(native_gallery);
+                ppr_free_gallery(nativeGallery.gallery);
             }
         } else {
-            ppr_free_gallery(native_gallery);
+            ppr_free_gallery(nativeGallery.gallery);
         }
     }
 
     bool compare(const File &targetGallery, const File &queryGallery, const File &output) const
     {
-        if ((targetGallery.suffix() != "PP5") || (queryGallery.suffix() != "PP5"))
+        if (!targetGallery.get<bool>("native") || !queryGallery.get<bool>("native"))
             return false;
 
-        ppr_gallery_type native_target = cacheRetain(targetGallery);
-        ppr_gallery_type native_query = cacheRetain(queryGallery);
+        NativeGallery nativeTarget = cacheRetain(targetGallery);
+        NativeGallery nativeQuery = cacheRetain(queryGallery);
 
-        ppr_similarity_matrix_type native_simmat;
-        TRY(ppr_compare_galleries(context, native_query, native_target, &native_simmat))
-
-        int targets, queries;
-        TRY(ppr_get_num_faces(context, native_target, &targets))
-        TRY(ppr_get_num_faces(context, native_query, &queries))
-
-        QStringList indicies;
-        for (int i=0; i<std::max(targets, queries); i++)
-            indicies.append(QString::number(i));
-        QScopedPointer<Output> o(Output::make(output, QStringList(indicies.mid(0, targets)), QStringList(indicies.mid(0, queries))));
+        QScopedPointer<Output> o(Output::make(output, nativeTarget.files, nativeQuery.files));
         o->setBlock(0, 0);
+        compareNative(nativeTarget.gallery, nativeTarget.faceIDs, nativeQuery.gallery, nativeQuery.faceIDs, o.data());
 
-        for (int i=0; i<queries; i++)
-            for (int j=0; j<targets; j++) {
-                float score;
-                TRY(ppr_get_face_similarity_score(context, native_simmat, i, j, &score))
-                o->setRelative(score, i, j);
-            }
-
-        ppr_free_similarity_matrix(native_simmat);
-        cacheRelease(targetGallery, native_target);
-        cacheRelease(queryGallery, native_query);
+        cacheRelease(targetGallery, nativeTarget);
+        cacheRelease(queryGallery, nativeQuery);
         return true;
     }
 };
 
 BR_REGISTER(Distance, PP5CompareDistance)
-
-/*!
- * \ingroup galleries
- * \brief For storing and comparing PittPatt templates natively
- * \author Josh Klontz \cite jklontz
- */
-class PP5Gallery : public Gallery
-                 , public PP5Context
-{
-    Q_OBJECT
-    ppr_gallery_type gallery;
-    int face_id;
-
-    ~PP5Gallery()
-    {
-        ppr_write_gallery(context, qPrintable(file.name), gallery);
-        ppr_free_gallery(gallery);
-    }
-
-    void init()
-    {
-        face_id = 0;
-        ppr_create_gallery(context, &gallery);
-    }
-
-    TemplateList readBlock(bool *done)
-    {
-        *done = true;
-        qFatal("PP5Gallery read not supported.");
-        return TemplateList();
-    }
-
-    void write(const Template &t)
-    {
-        if (!t.m().data)
-            return;
-
-        ppr_face_type face;
-        createFace(t, &face);
-        TRY(ppr_add_face(context, &gallery, face, face_id, face_id))
-        face_id++;
-        ppr_free_face(face);
-    }
-};
-
-BR_REGISTER(Gallery, PP5Gallery)
 
 #include "plugins/pp5.moc"
