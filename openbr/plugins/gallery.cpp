@@ -123,7 +123,7 @@ class galGallery : public Gallery
             gallery.seek(0);
 
         TemplateList templates;
-        while ((templates.size() < Globals->blockSize) && !stream.atEnd()) {
+        while ((templates.size() < readBlockSize) && !stream.atEnd()) {
             Template m;
             stream >> m;
             templates.append(m);
@@ -348,8 +348,8 @@ class memGallery : public Gallery
             MemoryGalleries::aligned[file] = true;
         }
 
-        TemplateList templates = MemoryGalleries::galleries[file].mid(block*Globals->blockSize, Globals->blockSize);
-        *done = (templates.size() < Globals->blockSize);
+        TemplateList templates = MemoryGalleries::galleries[file].mid(block*readBlockSize, readBlockSize);
+        *done = (templates.size() < readBlockSize);
         block = *done ? 0 : block+1;
         return templates;
     }
