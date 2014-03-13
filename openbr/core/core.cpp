@@ -207,38 +207,6 @@ struct AlgorithmCore
         data >> *transform;
     }
 
-    // Read metadata for all templates stored in the specified gallery, return the read
-    // TeamplateList. If the gallery contains matrices, they are dropped.
-    void emptyRead(const File & file, TemplateList & templates)
-    {
-        // Is this a gallery type containing matrices?
-        if ((QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
-            // Retrieve it block by block, dropping matrices from read templates.
-            QScopedPointer<Gallery> gallery(Gallery::make(file));
-            gallery->set_readBlockSize(10);
-            bool done = false;
-            while (!done)
-            {
-                TemplateList tList = gallery->readBlock(&done);
-                for (int i=0; i < tList.size();i++)
-                {
-                    tList[i].clear();
-                    templates.append(tList[i]);
-                }
-            }
-        }
-        else {
-            // The file may have already been enrolled to a memory gallery
-            emptyRead(getMemoryGallery(file), templates);
-            if (!templates.empty())
-                return;
-
-            // Nope, just retrieve the metadata
-            QScopedPointer<Gallery> gallery(Gallery::make(file));
-            templates = gallery->read();
-        }
-    }
-
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
         if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
@@ -354,154 +322,72 @@ struct AlgorithmCore
         if (distance->compare(targetGallery, queryGallery, output))
             return;
 
-        bool multiProcess = Globals->file.getBool("multiProcess", false);
-
-        if (output.exists() && output.get<bool>("cache", false)) return;
+        if (output.exists() && output.get<bool>("cache")) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
-        // Read metadata for the target and query sets, the resulting
-        // TemplateLists do not contain matrices
-        TemplateList targetMetadata;
-        TemplateList queryMetadata;
+        QScopedPointer<Gallery> t, q;
+        FileList targetFiles, queryFiles;
+        retrieveOrEnroll(targetGallery, t, targetFiles);
+        retrieveOrEnroll(queryGallery, q, queryFiles);
 
-        emptyRead(targetGallery, targetMetadata);
-        emptyRead(queryGallery, queryMetadata);
-
-        // Enroll the metadata we read to memory galleries
-        File targetMetaMem = targetGallery;
-        targetMetaMem.name = targetMetaMem.baseName() + "_meta.mem";
-        File queryMetaMem =  queryGallery;
-        queryMetaMem.name = queryMetaMem.baseName() + "_meta.mem";
-
-        // Store the metadata in memory galleries.
-        QScopedPointer<Gallery> targetMeta(Gallery::make(targetMetaMem));
-        QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
-
-        targetMeta->writeBlock(targetMetadata);
-        queryMeta->writeBlock(queryMetadata);
-
-
-        // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
-        bool transposeCompare = targetMetadata.size() > queryMetadata.size();
-
-        File rowGallery = queryGallery;
-        File colGallery = targetGallery;
-        int rowSize = queryMetadata.size();
-
-        if (transposeCompare)
-        {
-            rowGallery = targetGallery;
-            colGallery = queryGallery;
-            rowSize = targetMetadata.size();
+        QList<int> partitionSizes;
+        QList<File> outputFiles;
+        if (output.contains("split")) {
+            if (!output.fileName().contains("%1")) qFatal("Output file name missing split number place marker (%%1)");
+            partitionSizes = output.getList<int>("split");
+            for (int i=0; i<partitionSizes.size(); i++) {
+                File splitOutputFile = output.name.arg(i);
+                outputFiles.append(splitOutputFile);
+            }
+        } else {
+            outputFiles.append(output);
         }
 
-        // Do we need to enroll the row set? If so we will do it inline with the comparisons
-        bool needEnrollRows = false;
-        if (!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
-        {
-            needEnrollRows = true;
-        }
+        QList<Output*> outputs;
+        foreach (const File &outputFile, outputFiles)
+            outputs.append(Output::make(outputFile, targetFiles, queryFiles));
 
-        // Do we need to enroll the column set? We want it to be in a memory gallery, unless we
-        // are in multi-process mode
-        File colEnrolledGallery = colGallery;
-        QString targetExtension = multiProcess ? "gal" : "mem";
-        if (colGallery.suffix() != targetExtension)
-        {
-            if (multiProcess) {
-                colEnrolledGallery = colGallery.baseName() + colGallery.hash() + ".gal";
-            }
-            else {
-                colEnrolledGallery = colGallery.baseName() + colGallery.hash() + ".mem";
-            }
-
-            // We have to do actual enrollment if the gallery just specified metadata
-            if (!(QStringList() << "gal" << "template" << "mem").contains(colGallery.suffix()))
-            {
-                enroll(colGallery, colEnrolledGallery);
-            }
-            // If it did specify templates, but wasn't the write type, we still need to convert
-            // to the correct gallery type.
-            else
-            {
-                QScopedPointer<Gallery> readColGallery(Gallery::make(colGallery));
-                TemplateList templates = readColGallery->read();
-                QScopedPointer<Gallery> enrolledColOutput(Gallery::make(colEnrolledGallery));
-                enrolledColOutput->writeBlock(templates);
-            }
-        }
-
-        // Describe a GalleryCompare transform, using the data we enrolled
-        QString compareRegionDesc = "GalleryCompare("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")";
-
-        QScopedPointer<Transform> compareRegion;
-
-        // If we need to enroll th row set, add the current transform to the aglorithm
-        if (needEnrollRows)
-        {
-            if (!multiProcess)
-            {
-                compareRegionDesc = "Identity+" + compareRegionDesc;
-                compareRegion.reset(Transform::make(compareRegionDesc,NULL));
-                CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (compareRegion.data());
-                if (downcast == NULL)
-                    qFatal("Pipe downcast failed in compare");
-
-                downcast->transforms[0] = this->transform.data();
-                downcast->init();
-            }
-            else
-            {
-                compareRegionDesc = "ProcessWrapper(" + this->transformString + "+" + compareRegionDesc + ")";
-                compareRegion.reset(Transform::make(compareRegionDesc, NULL));
-            }
-        }
-        else {
-            compareRegion.reset(Transform::make(compareRegionDesc,NULL));
-        }
-
-        compareRegion->init();
-
-        // We also need to add Output and progress counting to the algorithm we are building
-        QString joinDesc = "Identity+Identity";
-        QScopedPointer<Transform> join(Transform::make(joinDesc, NULL));
-
-        // The output transform takes the metadata memGalleries we set up previously as input, along with the
-        // output specification we were passed
-        QString outputRegionDesc = "Output("+ output.flat() +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeCompare ? 1 : 0) + ")";
-        outputRegionDesc += "+ProgressCounter("+QString::number(rowSize)+")+Discard";
-        QScopedPointer<Transform> outputTform(Transform::make(outputRegionDesc, NULL));
-
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (join.data());
-        downcast->transforms[0] = compareRegion.data();
-        downcast->transforms[1] = outputTform.data();
-
-        // With this, we have set up a transform which (optionally) enrolls templates, compares them
-        // against a gallery, and outputs them.
-        join->init();
-
-
-        // Now, we will give that base algorithm to a stream, operating in StreamGallery mode
-        QString streamDesc = "Stream(Identity, readMode=StreamGallery)";
-        QScopedPointer<Transform> streamBase(Transform::make(streamDesc, NULL));
-        WrapperTransform * streamWrapper = dynamic_cast<WrapperTransform *> (streamBase.data());
-        streamWrapper->transform = join.data();
-
-        streamWrapper->init();
-
-        // We set up a template containing the file iwth the row gallery we
-        // want to compare
-        TemplateList rowGalleryTemplate;
-        rowGalleryTemplate.append(Template(rowGallery));
-        TemplateList outputGallery;
-
-        // for prgress counting
+        if (distance.isNull()) qFatal("Null distance.");
         Globals->currentStep = 0;
-        Globals->totalSteps = rowSize;
+        Globals->totalSteps = double(targetFiles.size()) * double(queryFiles.size());
         Globals->startTime.start();
 
-        // Do the actual comparisons
-        streamWrapper->projectUpdate(rowGalleryTemplate, outputGallery);
+        int queryBlock = -1;
+        bool queryDone = false;
+        while (!queryDone) {
+            queryBlock++;
+            TemplateList queries = q->readBlock(&queryDone);
+
+            QList<TemplateList> queryPartitions;
+            if (!partitionSizes.empty()) queryPartitions = queries.partition(partitionSizes);
+            else queryPartitions.append(queries);
+
+            for (int i=0; i<queryPartitions.size(); i++) {
+                int targetBlock = -1;
+                bool targetDone = false;
+                while (!targetDone) {
+                    targetBlock++;
+
+                    TemplateList targets = t->readBlock(&targetDone);
+
+                    QList<TemplateList> targetPartitions;
+                    if (!partitionSizes.empty()) targetPartitions = targets.partition(partitionSizes);
+                    else targetPartitions.append(targets);
+
+                    outputs[i]->setBlock(queryBlock, targetBlock);
+                    distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
+
+                    Globals->currentStep += double(targets.size()) * double(queries.size());
+                    Globals->printStatus();
+                }
+            }
+        }
+
+        qDeleteAll(outputs);
+
+        const float speed = 1000 * Globals->totalSteps / Globals->startTime.elapsed() / std::max(1, abs(Globals->parallelism));
+        if (!Globals->quiet && (Globals->totalSteps > 1)) fprintf(stderr, "\rSPEED=%.1e  \n", speed);
+        Globals->totalSteps = 0;
     }
 
 private:
