@@ -21,13 +21,27 @@ def _handle_string_func(func):
     return call_func
 
 def init_brpy(br_loc='/usr/local/lib'):
-    """Takes the ctypes lib object for br and initializes all function inputs and outputs"""
-    br_loc += '/libopenbr.%s'
-    if os.path.exists(br_loc % 'dylib'):
-        br = cdll.LoadLibrary(br_loc % 'dylib')
-    elif os.path.exists(br_loc % 'so'):
-        br = cdll.LoadLibrary(br_loc % 'so')
-    else:
+    """Initializes all function inputs and outputs for the br ctypes lib object"""
+
+    lib_path = os.environ.get('LD_LIBRARY_PATH')
+    paths = [br_loc]
+    if lib_path:
+        paths.extend(lib_path.split(':'))
+
+    found = False
+    for p in paths:
+        dylib = '%s/%s.%s' % (p, 'libopenbr', 'dylib')
+        so = '%s/%s.%s' % (p, 'libopenbr', 'so')
+        if os.path.exists(dylib):
+            br = cdll.LoadLibrary(dylib)
+            found = True
+            break
+        elif os.path.exists(so):
+            br = cdll.LoadLibrary(so)
+            found = True
+            break
+
+    if not found:
         raise ValueError('Neither .so nor .dylib libopenbr found in %s' % br_loc)
 
     plot_args = _var_string_args(1) + [c_bool]
