@@ -5,8 +5,6 @@
 #include "stasm.h"
 #include "stasmhash.h"
 
-#include <QDebug>
-
 namespace stasm
 {
 static void TraceShape(  // write an image file showing current shape on the image
