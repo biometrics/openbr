@@ -435,7 +435,14 @@ br_template_list br_load_from_gallery(br_gallery gallery)
     return (br_template_list)tl;
 }
 
-void br_add_to_gallery(br_gallery gallery, br_template_list tl)
+void br_add_template_to_gallery(br_gallery gallery, br_template tmpl)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    gal->write(*t);
+}
+
+void br_add_template_list_to_gallery(br_gallery gallery, br_template_list tl)
 {
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);

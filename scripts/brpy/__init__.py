@@ -143,7 +143,8 @@ def init_brpy(br_loc='/usr/local/lib'):
     br.br_make_gallery.restype = c_void_p
     br.br_load_from_gallery.argtypes = [c_void_p]
     br.br_load_from_gallery.restype = c_void_p
-    br.br_add_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_list_to_gallery.argtypes = [c_void_p, c_void_p]
     br.br_close_gallery.argtypes = [c_void_p]
 
     return br
