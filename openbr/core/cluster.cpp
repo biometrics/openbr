@@ -100,7 +100,9 @@ Neighborhood getNeighborhood(const QStringList &simmats)
         int currentRows = -1;
         int columnOffset = 0;
         for (int j=0; j<numGalleries; j++) {
-            cv::Mat m = BEE::readMat(simmats[i*numGalleries+j]);
+            QScopedPointer<br::Format> format(br::Factory<br::Format>::make(simmats[i*numGalleries+j]));
+            br::Template t = format->read();
+            cv::Mat m = t.m();
             if (j==0) {
                 currentRows = m.rows;
                 allNeighbors.resize(currentRows);
@@ -275,13 +277,14 @@ float jaccardIndex(const QVector<int> &indicesA, const QVector<int> &indicesB)
 
 // Evaluates clustering algorithms based on metrics described in
 // Santo Fortunato "Community detection in graphs", Physics Reports 486 (2010)
-void br::EvalClustering(const QString &csv, const QString &input)
+void br::EvalClustering(const QString &csv, const QString &input, QString truth_property)
 {
+    if (truth_property.isEmpty())
+        truth_property = "Label";
     qDebug("Evaluating %s against %s", qPrintable(csv), qPrintable(input));
 
-    // We assume clustering algorithms store assigned cluster labels as integers (since the clusters are
-    // not named). Direct use of ClusterID is not general -cao
-    QList<int> labels = File::get<int>(TemplateList::fromGallery(input), "ClusterID");
+    TemplateList tList = TemplateList::fromGallery(input);
+    QList<int> labels = tList.indexProperty(truth_property);
 
     QHash<int, int> labelToIndex;
     int nClusters = 0;

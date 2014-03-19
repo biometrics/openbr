@@ -109,9 +109,9 @@ void br_eval_classification(const char *predicted_gallery, const char *truth_gal
     EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
-void br_eval_clustering(const char *csv, const char *gallery)
+void br_eval_clustering(const char *csv, const char *gallery, const char * truth_property)
 {
-    EvalClustering(csv, gallery);
+    EvalClustering(csv, gallery, truth_property);
 }
 
 float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv)
