@@ -117,8 +117,9 @@ Neighborhood getNeighborhood(const QStringList &simmats)
                     float val = m.at<float>(k,l);
                     if ((i==j) && (k==l)) continue; // Skips self-similarity scores
 
-                    if ((val != -std::numeric_limits<float>::infinity()) &&
-                        (val != std::numeric_limits<float>::infinity())) {
+                    if (val != -std::numeric_limits<float>::max()
+                        && val != -std::numeric_limits<float>::infinity()
+                        && val != std::numeric_limits<float>::infinity()) {
                         globalMax = std::max(globalMax, val);
                         globalMin = std::min(globalMin, val);
                     }
@@ -159,7 +160,7 @@ Neighborhood getNeighborhood(const QStringList &simmats)
 // Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
 br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv)
 {
-    qDebug("Clustering %d simmat(s)", simmats.size());
+    qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
 
     // Read in gallery parts, keeping top neighbors of each template
     Neighborhood neighborhood = getNeighborhood(simmats);
