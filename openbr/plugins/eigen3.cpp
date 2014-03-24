@@ -19,6 +19,7 @@
 
 #include "openbr/core/common.h"
 #include "openbr/core/eigenutils.h"
+#include "openbr/core/opencvutils.h"
 
 namespace br
 {
@@ -296,6 +297,8 @@ BR_REGISTER(Transform, DFFSTransform)
  */
 class LDATransform : public Transform
 {
+    friend class SparseLDATransform;
+
     Q_OBJECT
     Q_PROPERTY(float pcaKeep READ get_pcaKeep WRITE set_pcaKeep RESET reset_pcaKeep STORED false)
     Q_PROPERTY(bool pcaWhiten READ get_pcaWhiten WRITE set_pcaWhiten RESET reset_pcaWhiten STORED false)
@@ -328,7 +331,7 @@ class LDATransform : public Transform
         pca.keep = pcaKeep;
         pca.whiten = pcaWhiten;
         pca.train(trainingSet);
-        mean = pca.mean;
+        mean = Eigen::MatrixXf(pca.mean);
 
         TemplateList ldaTrainingSet;
         static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
@@ -499,27 +502,134 @@ class LDATransform : public Transform
 
         // Do projection
         outMap = projection.transpose() * (inMap - mean);
-
         if (normalize && isBinary)
             dst.m().at<float>(0,0) = dst.m().at<float>(0,0) / stdDev;
     }
 
     void store(QDataStream &stream) const
     {
-        stream << pcaKeep << directLDA << directDrop << dimsOut << mean << projection;
+        stream << pcaKeep;
+        stream << directLDA;
+        stream << directDrop;
+        stream << dimsOut;
+        stream << mean;
+        stream << projection;
         if (normalize && isBinary)
             stream << stdDev;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> pcaKeep >> directLDA >> directDrop >> dimsOut >> mean >> projection;
+        stream >> pcaKeep;
+        stream >> directLDA;
+        stream >> directDrop;
+        stream >> dimsOut;
+        stream >> mean;
+        stream >> projection;
         if (normalize && isBinary)
             stream >> stdDev;
     }
 };
 
 BR_REGISTER(Transform, LDATransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Projects input into learned Linear Discriminant Analysis subspace
+ *          learned on a sparse subset of features with the highest weight
+ *          in the original LDA algorithm.
+ * \author Brendan Klare \cite bklare
+ */
+class SparseLDATransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(float varThreshold READ get_varThreshold WRITE set_varThreshold RESET reset_varThreshold STORED false)
+    Q_PROPERTY(float pcaKeep READ get_pcaKeep WRITE set_pcaKeep RESET reset_pcaKeep STORED false)
+    Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED false)
+    BR_PROPERTY(float, varThreshold, 1.5)
+    BR_PROPERTY(float, pcaKeep, 0.98)
+    BR_PROPERTY(bool, normalize, true)
+
+    LDATransform ldaSparse;
+    int dimsOut;
+    QList<int> selections;
+
+    Eigen::VectorXf mean;
+
+    void init()
+    {
+        ldaSparse.init();
+        ldaSparse.pcaKeep = pcaKeep;
+        ldaSparse.inputVariable = "Label";
+        ldaSparse.isBinary = true;
+        ldaSparse.normalize = true;
+    }
+
+    void train(const TemplateList &_trainingSet)
+    {
+
+        LDATransform ldaOrig;
+        ldaOrig.init();
+        ldaOrig.inputVariable = "Label";
+        ldaOrig.pcaKeep = pcaKeep;
+        ldaOrig.isBinary = true;
+        ldaOrig.normalize = true;
+
+        ldaOrig.train(_trainingSet);
+
+        //Only works on binary class problems for now
+        assert(ldaOrig.projection.cols() == 1);
+        float ldaStd = eigStd(ldaOrig.projection);
+        for (int i = 0; i < ldaOrig.projection.rows(); i++)
+            if (abs(ldaOrig.projection(i)) > varThreshold * ldaStd)
+                selections.append(i);
+
+        TemplateList newSet;
+        for (int i = 0; i < _trainingSet.size(); i++) {
+            cv::Mat x(_trainingSet[i]);
+            cv::Mat y = cv::Mat(selections.size(), 1, CV_32FC1);
+            int idx = 0;
+            int cnt = 0;
+            for (int j = 0; j < x.rows; j++)
+                for (int k = 0; k < x.cols; k++, cnt++)
+                    if (selections.contains(cnt))
+                        y.at<float>(idx++,0) = x.at<float>(j, k);
+            newSet.append(Template(_trainingSet[i].file, y));
+        }
+        ldaSparse.train(newSet);
+        dimsOut = ldaSparse.dimsOut;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        Eigen::Map<Eigen::MatrixXf> inMap((float*)src.m().ptr<float>(), src.m().rows*src.m().cols, 1);
+        Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), dimsOut, 1);
+
+        int d = selections.size();
+        cv::Mat inSelect(d,1,CV_32F);
+        for (int i = 0; i < d; i++)
+            inSelect.at<float>(i) = src.m().at<float>(selections[i]);
+        ldaSparse.project(Template(src.file, inSelect), dst);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << pcaKeep;
+        stream << ldaSparse;
+        stream << dimsOut;
+        stream << selections;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> pcaKeep;
+        stream >> ldaSparse;
+        stream >> dimsOut;
+        stream >> selections;
+    }
+};
+
+BR_REGISTER(Transform, SparseLDATransform)
 
 /*!
  * \ingroup distances
