@@ -408,7 +408,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             QStringList labels;
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", gallery.name);
+                newTemplates[i].file.set("Gallery", file.name);
 
                 QString label = newTemplates.at(i).file.get<QString>("Label");
                 // Have we seen this subject before?
@@ -436,7 +436,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         } else {
             for (int i=newTemplates.size()-1; i>=0; i--) {
                 newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", gallery.name);
+                newTemplates[i].file.set("Gallery", file.name);
 
                 if (crossValidate > 0) {
                     if (newTemplates[i].file.getBool("duplicatePartitions")) {
@@ -1101,13 +1101,19 @@ void Output::initialize(const FileList &targetFiles, const FileList &queryFiles)
 {
     this->targetFiles = targetFiles;
     this->queryFiles = queryFiles;
+    if (this->blockRows == -1)
+        blockRows = Globals->blockSize;
+
+    if (this->blockCols == -1)
+        blockCols = Globals->blockSize;
+
     selfSimilar = (queryFiles == targetFiles) && (targetFiles.size() > 1) && (queryFiles.size() > 1);
 }
 
 void Output::setBlock(int rowBlock, int columnBlock)
 {
-    offset = QPoint((columnBlock == -1) ? 0 : Globals->blockSize*columnBlock,
-                    (rowBlock == -1) ? 0 : Globals->blockSize*rowBlock);
+    offset = QPoint((columnBlock == -1) ? 0 : blockCols*columnBlock,
+                    (rowBlock == -1) ? 0 : blockRows*rowBlock);
     if (!next.isNull()) next->setBlock(rowBlock, columnBlock);
 }
 

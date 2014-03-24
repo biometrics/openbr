@@ -28,7 +28,7 @@ namespace br
     typedef QVector<Cluster> Clusters;
 
     Clusters ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv);
-    void EvalClustering(const QString &csv, const QString &input);
+    void EvalClustering(const QString &csv, const QString &input, QString truth_property);
 
     Clusters ReadClusters(const QString &csv);
     void WriteClusters(const Clusters &clusters, const QString &csv);

@@ -21,13 +21,27 @@ def _handle_string_func(func):
     return call_func
 
 def init_brpy(br_loc='/usr/local/lib'):
-    """Takes the ctypes lib object for br and initializes all function inputs and outputs"""
-    br_loc += '/libopenbr.%s'
-    if os.path.exists(br_loc % 'dylib'):
-        br = cdll.LoadLibrary(br_loc % 'dylib')
-    elif os.path.exists(br_loc % 'so'):
-        br = cdll.LoadLibrary(br_loc % 'so')
-    else:
+    """Initializes all function inputs and outputs for the br ctypes lib object"""
+
+    lib_path = os.environ.get('LD_LIBRARY_PATH')
+    paths = [br_loc]
+    if lib_path:
+        paths.extend(lib_path.split(':'))
+
+    found = False
+    for p in paths:
+        dylib = '%s/%s.%s' % (p, 'libopenbr', 'dylib')
+        so = '%s/%s.%s' % (p, 'libopenbr', 'so')
+        if os.path.exists(dylib):
+            br = cdll.LoadLibrary(dylib)
+            found = True
+            break
+        elif os.path.exists(so):
+            br = cdll.LoadLibrary(so)
+            found = True
+            break
+
+    if not found:
         raise ValueError('Neither .so nor .dylib libopenbr found in %s' % br_loc)
 
     plot_args = _var_string_args(1) + [c_bool]
@@ -44,7 +58,7 @@ def init_brpy(br_loc='/usr/local/lib'):
     br.br_eval.argtypes = _string_args(3)
     br.br_eval.restype = c_float
     br.br_eval_classification.argtypes = _string_args(4)
-    br.br_eval_clustering.argtypes = _string_args(2)
+    br.br_eval_clustering.argtypes = _string_args(3)
     br.br_eval_detection.argtypes = _string_args(3)
     br.br_eval_detection.restype = c_float
     br.br_eval_landmarking.argtypes = _string_args(3) + [c_int, c_int]
@@ -129,7 +143,8 @@ def init_brpy(br_loc='/usr/local/lib'):
     br.br_make_gallery.restype = c_void_p
     br.br_load_from_gallery.argtypes = [c_void_p]
     br.br_load_from_gallery.restype = c_void_p
-    br.br_add_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_list_to_gallery.argtypes = [c_void_p, c_void_p]
     br.br_close_gallery.argtypes = [c_void_p]
 
     return br

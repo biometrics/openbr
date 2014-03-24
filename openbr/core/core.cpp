@@ -21,13 +21,15 @@
 #include "qtutils.h"
 #include "../plugins/openbr_internal.h"
 
-using namespace br;
+namespace br {
 
-/**** ALGORITHM_CORE ****/
 struct AlgorithmCore
 {
     QSharedPointer<Transform> transform;
     QSharedPointer<Distance> distance;
+
+    QString transformString;
+    QString distanceString;
 
     AlgorithmCore(const QString &name)
     {
@@ -134,6 +136,8 @@ struct AlgorithmCore
         }
         TemplateList data(TemplateList::fromGallery(input));
 
+        bool multiProcess = Globals->file.getBool("multiProcess", false);
+
         if (gallery.contains("append"))
         {
             // Remove any templates which are already in the gallery
@@ -155,20 +159,27 @@ struct AlgorithmCore
         Globals->currentStep = 0;
         Globals->totalSteps = data.length();
 
-        // Trust me, this makes complete sense.
-        // We're just going to make a pipe with a placeholder first transform
-        QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
-        QScopedPointer<Transform> basePipe(Transform::make(pipeDesc,NULL));
+        QScopedPointer<Transform> basePipe;
 
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
-        if (downcast == NULL)
-            qFatal("downcast failed?");
+        if (!multiProcess)
+        {
+            QString pipeDesc = "Identity+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+            basePipe.reset(Transform::make(pipeDesc,NULL));
+            CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
+            if (downcast == NULL)
+                qFatal("downcast failed?");
 
-        // replace that placeholder with the current algorithm
-        downcast->transforms[0] = this->transform.data();
+            // replace that placeholder with the current algorithm
+            downcast->transforms[0] = this->transform.data();
 
-        // call init on the pipe to collapse the algorithm (if its top level is a pipe)
-        downcast->init();
+            // call init on the pipe to collapse the algorithm (if its top level is a pipe)
+            downcast->init();
+        }
+        else
+        {
+            QString pipeDesc = "ProcessWrapper("+transformString+")"+"+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+            basePipe.reset(Transform::make(pipeDesc,NULL));
+        }
 
         // Next, we make a Stream (with placeholder transform)
         QString streamDesc = "Stream(Identity, readMode=DistributeFrames)";
@@ -176,7 +187,7 @@ struct AlgorithmCore
         WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
 
         // replace that placeholder with the pipe we built
-        wrapper->transform = downcast;
+        wrapper->transform = basePipe.data();
 
         // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
         wrapper->init();
@@ -241,17 +252,14 @@ struct AlgorithmCore
         dummyTarget.append(targets[0]);
         QScopedPointer<Output> realOutput(Output::make(output, dummyTarget, queryFiles));
 
-        // Some outputs assume Globals->blockSize is a real thing, of course we have no interest in it.
-        int old_block_size = Globals->blockSize;
-        Globals->blockSize = INT_MAX;
+        realOutput->set_blockRows(INT_MAX);
+        realOutput->set_blockCols(INT_MAX);
         realOutput->setBlock(0,0);
         for (int i=0; i < queries.length(); i++)
         {
             float res = distance->compare(queries[i], targets[i]);
             realOutput->setRelative(res, 0,i);
         }
-
-        Globals->blockSize = old_block_size;
     }
 
     void deduplicate(const File &inputGallery, const File &outputGallery, const float threshold)
@@ -310,7 +318,11 @@ struct AlgorithmCore
                qPrintable(queryGallery.flat()),
                output.isNull() ? "" : qPrintable(" to " + output.flat()));
 
-        if (output.exists() && output.get<bool>("cache", false)) return;
+        // Escape hatch for distances that need to operate directly on the gallery files
+        if (distance->compare(targetGallery, queryGallery, output))
+            return;
+
+        if (output.exists() && output.get<bool>("cache")) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
         QScopedPointer<Gallery> t, q;
@@ -327,11 +339,13 @@ struct AlgorithmCore
                 File splitOutputFile = output.name.arg(i);
                 outputFiles.append(splitOutputFile);
             }
+        } else {
+            outputFiles.append(output);
         }
-        else outputFiles.append(output);
 
         QList<Output*> outputs;
-        foreach (const File &outputFile, outputFiles) outputs.append(Output::make(outputFile, targetFiles, queryFiles));
+        foreach (const File &outputFile, outputFiles)
+            outputs.append(Output::make(outputFile, targetFiles, queryFiles));
 
         if (distance.isNull()) qFatal("Null distance.");
         Globals->currentStep = 0;
@@ -361,7 +375,6 @@ struct AlgorithmCore
                     else targetPartitions.append(targets);
 
                     outputs[i]->setBlock(queryBlock, targetBlock);
-
                     distance->compare(targetPartitions[i], queryPartitions[i], outputs[i]);
 
                     Globals->currentStep += double(targets.size()) * double(queries.size());
@@ -407,14 +420,22 @@ private:
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
         //! [Parsing the algorithm description]
 
+        transformString = words[0];
+
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
-        if (words.size() > 1) distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
+        if (words.size() > 1) {
+            distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
+            distanceString = words[1];
+        }
         //! [Creating the template generation and comparison methods]
     }
 };
 
+} // namespace br
+
+using namespace br;
 
 class AlgorithmManager : public Initializer
 {

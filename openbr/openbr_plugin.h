@@ -996,6 +996,11 @@ class BR_EXPORT Output : public Object
     Q_OBJECT
 
 public:
+    Q_PROPERTY(int blockRows READ get_blockRows WRITE set_blockRows RESET reset_blockRows STORED false)
+    Q_PROPERTY(int blockCols READ get_blockCols WRITE set_blockCols RESET reset_blockCols STORED false)
+    BR_PROPERTY(int, blockRows, -1)
+    BR_PROPERTY(int, blockCols, -1)
+
     FileList targetFiles; /*!< \brief List of files representing the gallery templates. */
     FileList queryFiles; /*!< \brief List of files representing the probe templates. */
     bool selfSimilar; /*!< \brief \c true if the \em targetFiles == \em queryFiles, \c false otherwise. */
@@ -1074,9 +1079,11 @@ public:
  */
 class BR_EXPORT Gallery : public Object
 {
-    Q_OBJECT
-
+    Q_OBJECT    
 public:
+    Q_PROPERTY(int readBlockSize READ get_readBlockSize WRITE set_readBlockSize RESET reset_readBlockSize STORED false)
+    BR_PROPERTY(int, readBlockSize, Globals->blockSize)
+
     virtual ~Gallery() {}
     TemplateList read(); /*!< \brief Retrieve all the stored templates. */
     FileList files(); /*!< \brief Retrieve all the stored template files. */
@@ -1324,6 +1331,10 @@ protected:
 
 private:
     virtual void compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const;
+
+    friend struct AlgorithmCore;
+    virtual bool compare(const File &targetGallery, const File &queryGallery, const File &output) const /*!< \brief Escape hatch for algorithms that need customized file I/O during comparison. */
+        { (void) targetGallery; (void) queryGallery; (void) output; return false; }
 };
 
 /*!

@@ -306,6 +306,22 @@ class PP5CompareDistance : public Distance
 {
     Q_OBJECT
 
+    struct NativeGallery
+    {
+        FileList files;
+        QList<int> faceIDs;
+        ppr_gallery_type gallery;
+    };
+
+    mutable QMap<QString, NativeGallery> cache;
+    mutable QMutex cacheLock;
+
+    ~PP5CompareDistance()
+    {
+        foreach (const NativeGallery &gallery, cache.values())
+            ppr_free_gallery(gallery.gallery);
+    }
+
     float compare(const Template &target, const Template &query) const
     {
         TemplateList targetList;
@@ -315,7 +331,6 @@ class PP5CompareDistance : public Distance
         MatrixOutput *score = MatrixOutput::make(targetList.files(), queryList.files());
         compare(targetList, queryList, score);
         return score->data.at<float>(0);
-
     }
 
     void compare(const TemplateList &target, const TemplateList &query, Output *output) const
@@ -326,25 +341,27 @@ class PP5CompareDistance : public Distance
         QList<int> target_face_ids, query_face_ids;
         enroll(target, &target_gallery, target_face_ids);
         enroll(query, &query_gallery, query_face_ids);
+        compareNative(target_gallery, target_face_ids, query_gallery, query_face_ids, output);
+        ppr_free_gallery(target_gallery);
+        ppr_free_gallery(query_gallery);
+    }
 
-        ppr_similarity_matrix_type similarity_matrix;
-        TRY(ppr_compare_galleries(context, query_gallery, target_gallery, &similarity_matrix))
-
-        for (int i=0; i<query_face_ids.size(); i++) {
-            int query_face_id = query_face_ids[i];
-            for (int j=0; j<target_face_ids.size(); j++) {
-                int target_face_id = target_face_ids[j];
+    void compareNative(ppr_gallery_type target, const QList<int> &targetIDs, ppr_gallery_type query, const QList<int> &queryIDs, Output *output) const
+    {
+        ppr_similarity_matrix_type simmat;
+        TRY(ppr_compare_galleries(context, query, target, &simmat))
+        for (int i=0; i<queryIDs.size(); i++) {
+            int query_face_id = queryIDs[i];
+            for (int j=0; j<targetIDs.size(); j++) {
+                int target_face_id = targetIDs[j];
                 float score = -std::numeric_limits<float>::max();
                 if ((query_face_id != -1) && (target_face_id != -1)) {
-                    TRY(ppr_get_face_similarity_score(context, similarity_matrix, query_face_id, target_face_id, &score))
+                    TRY(ppr_get_face_similarity_score(context, simmat, query_face_id, target_face_id, &score))
                 }
                 output->setRelative(score, i, j);
             }
         }
-
-        ppr_free_similarity_matrix(similarity_matrix);
-        ppr_free_gallery(target_gallery);
-        ppr_free_gallery(query_gallery);
+        ppr_free_similarity_matrix(simmat);
     }
 
     void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &face_ids) const
@@ -362,6 +379,53 @@ class PP5CompareDistance : public Distance
                 face_ids.append(-1);
             }
         }
+    }
+
+    NativeGallery cacheRetain(const File &gallery) const
+    {
+        QMutexLocker locker(&cacheLock);
+        NativeGallery nativeGallery;
+        if (cache.contains(gallery.name)) {
+            nativeGallery = cache[gallery.name];
+        } else {
+            ppr_create_gallery(context, &nativeGallery.gallery);
+            TemplateList templates = TemplateList::fromGallery(gallery);
+            enroll(templates, &nativeGallery.gallery, nativeGallery.faceIDs);
+            nativeGallery.files = templates.files();
+            if (gallery.get<bool>("retain"))
+                cache.insert(gallery.name, nativeGallery);
+        }
+        return nativeGallery;
+    }
+
+    void cacheRelease(const File &gallery, const NativeGallery &nativeGallery) const
+    {
+        QMutexLocker locker(&cacheLock);
+        if (cache.contains(gallery.name)) {
+            if (gallery.get<bool>("release")) {
+                cache.remove(gallery.name);
+                ppr_free_gallery(nativeGallery.gallery);
+            }
+        } else {
+            ppr_free_gallery(nativeGallery.gallery);
+        }
+    }
+
+    bool compare(const File &targetGallery, const File &queryGallery, const File &output) const
+    {
+        if (!targetGallery.get<bool>("native") || !queryGallery.get<bool>("native"))
+            return false;
+
+        NativeGallery nativeTarget = cacheRetain(targetGallery);
+        NativeGallery nativeQuery = cacheRetain(queryGallery);
+
+        QScopedPointer<Output> o(Output::make(output, nativeTarget.files, nativeQuery.files));
+        o->setBlock(0, 0);
+        compareNative(nativeTarget.gallery, nativeTarget.faceIDs, nativeQuery.gallery, nativeQuery.faceIDs, o.data());
+
+        cacheRelease(targetGallery, nativeTarget);
+        cacheRelease(queryGallery, nativeQuery);
+        return true;
     }
 };
 
