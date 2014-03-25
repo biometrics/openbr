@@ -506,38 +506,55 @@ BR_REGISTER(Gallery, csvGallery)
  * \brief Treats each line as a file.
  * \author Josh Klontz \cite jklontz
  *
- * The entire line is treated as the file path.
+ * The entire line is treated as the file path. An optional label may be specified using a space ' ' separator:
  *
+\verbatim
+<FILE>
+<FILE>
+...
+<FILE>
+\endverbatim
+ * or
+\verbatim
+<FILE> <LABEL>
+<FILE> <LABEL>
+...
+<FILE> <LABEL>
+\endverbatim
  * \see csvGallery
  */
 class txtGallery : public Gallery
 {
     Q_OBJECT
-    Q_PROPERTY(QString metadataKey READ get_metadataKey WRITE set_metadataKey RESET reset_metadataKey STORED false)
-    BR_PROPERTY(QString, metadataKey, "")
+    Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
+    BR_PROPERTY(QString, label, "")
 
     QStringList lines;
 
     ~txtGallery()
     {
-        if (!lines.isEmpty()) QtUtils::writeFile(file.name, lines);
+        if (!lines.isEmpty())
+            QtUtils::writeFile(file.name, lines);
     }
 
     TemplateList readBlock(bool *done)
     {
-        *done = true;
         TemplateList templates;
-        if (!file.exists()) return templates;
-
-        foreach (const QString &line, QtUtils::readLines(file))
-            templates.append(File(line));
+        foreach (const QString &line, QtUtils::readLines(file)) {
+            int splitIndex = line.lastIndexOf(' ');
+            if (splitIndex == -1) templates.append(File(line));
+            else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+        }
         *done = true;
         return templates;
     }
 
     void write(const Template &t)
     {
-        lines.append(metadataKey.isEmpty() ? t.file.flat() : t.file.get<QString>(metadataKey));
+        QString line = t.file.name;
+        if (!label.isEmpty())
+            line += " " + t.file.get<QString>(label);
+        lines.append(line);
     }
 };
 
@@ -687,7 +704,9 @@ class dbGallery : public Gallery
         if (!subset.isEmpty()) {
             const QStringList &words = subset.split(":");
             QtUtils::checkArgsSize("Input", words, 2, 4);
-            seed = QtUtils::toInt(words[0]);
+            if      (words[0] == "train") seed = 0;
+            else if (words[0] == "test" ) seed = 1;
+            else                          seed = QtUtils::toInt(words[0]);
             if (words[1].startsWith('{') && words[1].endsWith('}')) {
                 foreach (const QString &regexp, words[1].mid(1, words[1].size()-2).split(","))
                     metadataFields.append(QRegExp(regexp));
@@ -813,15 +832,9 @@ class googleGallery : public Gallery
         return templates;
     }
 
-    void write(const Template &t)
+    void write(const Template &)
     {
-        (void) t;
         qFatal("Not supported.");
-    }
-
-    void init()
-    {
-        //
     }
 };
 

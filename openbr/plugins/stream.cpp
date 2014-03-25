@@ -1285,11 +1285,18 @@ public:
             qWarning("Attempted to train untrainable transform, nothing will happen.");
             return;
         }
+        QList<TemplateList> separated;
+        foreach (const TemplateList & list, data) {
+            foreach(const Template & t, list) {
+                separated.append(TemplateList());
+                separated.last().append(t);
+            }
+        }
 
         for (int i=0; i < transforms.size(); i++) {
             // OK we have a trainable transform, we need to get input data for it.
             if (transforms[i]->trainable) {
-                QList<TemplateList> copy = data;
+                QList<TemplateList> copy = separated;
                 // Project from the start to the trainable stage.
                 subProject(copy,i);
 
