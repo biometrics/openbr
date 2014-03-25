@@ -71,11 +71,7 @@ FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
             for (int i=0; i<attributes.length(); i++) {
                 const QString key = attributes.item(i).nodeName();
                 const QString value = attributes.item(i).nodeValue();
-                if      (key == "url") file.name = value.split('/').last();
-                else if (key == "Rect") {
-                    QStringList points = value.split(',');
-                    file.appendRect(QRect(points.at(0).toInt(),points.at(1).toInt(),points.at(2).toInt()-points.at(0).toInt(),value.split(',').at(3).toInt()-points.at(1).toInt()));
-                }
+                if      (key == "file-name") file.name = value;
                 else if (!ignoreMetadata)    file.set(key, value);
             }
 
