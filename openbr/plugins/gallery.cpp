@@ -506,38 +506,55 @@ BR_REGISTER(Gallery, csvGallery)
  * \brief Treats each line as a file.
  * \author Josh Klontz \cite jklontz
  *
- * The entire line is treated as the file path.
+ * The entire line is treated as the file path. An optional label may be specified using a space ' ' separator:
  *
+\verbatim
+<FILE>
+<FILE>
+...
+<FILE>
+\endverbatim
+ * or
+\verbatim
+<FILE> <LABEL>
+<FILE> <LABEL>
+...
+<FILE> <LABEL>
+\endverbatim
  * \see csvGallery
  */
 class txtGallery : public Gallery
 {
     Q_OBJECT
-    Q_PROPERTY(QString metadataKey READ get_metadataKey WRITE set_metadataKey RESET reset_metadataKey STORED false)
-    BR_PROPERTY(QString, metadataKey, "")
+    Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
+    BR_PROPERTY(QString, label, "")
 
     QStringList lines;
 
     ~txtGallery()
     {
-        if (!lines.isEmpty()) QtUtils::writeFile(file.name, lines);
+        if (!lines.isEmpty())
+            QtUtils::writeFile(file.name, lines);
     }
 
     TemplateList readBlock(bool *done)
     {
-        *done = true;
         TemplateList templates;
-        if (!file.exists()) return templates;
-
-        foreach (const QString &line, QtUtils::readLines(file))
-            templates.append(File(line));
+        foreach (const QString &line, QtUtils::readLines(file)) {
+            int splitIndex = line.lastIndexOf(' ');
+            if (splitIndex == -1) templates.append(File(line));
+            else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+        }
         *done = true;
         return templates;
     }
 
     void write(const Template &t)
     {
-        lines.append(metadataKey.isEmpty() ? t.file.flat() : t.file.get<QString>(metadataKey));
+        QString line = t.file.name;
+        if (!label.isEmpty())
+            line += " " + t.file.get<QString>(label);
+        lines.append(line);
     }
 };
 
