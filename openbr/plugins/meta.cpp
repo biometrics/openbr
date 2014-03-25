@@ -76,7 +76,7 @@ class PipeTransform : public CompositeTransform
 {
     Q_OBJECT    
 
-    void _projectPartial(TemplateList *srcdst, int startIndex, int stopIndex)
+    void _projectPartial(Template *srcdst, int startIndex, int stopIndex)
     {
         for (int i=startIndex; i<stopIndex; i++)
             *srcdst >> *transforms[i];
@@ -124,8 +124,9 @@ class PipeTransform : public CompositeTransform
 
             fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
-            for (int j=0; j < dataLines.size(); j++)
-                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j], i, nextTrainableTransform));
+            for (int j=0; j<dataLines.size(); j++)
+                for (int k=0; k<dataLines[j].size(); k++)
+                    futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j][k], i, nextTrainableTransform));
             futures.waitForFinished();
 
             i = nextTrainableTransform;
