@@ -331,7 +331,7 @@ class LDATransform : public Transform
         pca.keep = pcaKeep;
         pca.whiten = pcaWhiten;
         pca.train(trainingSet);
-        mean = Eigen::MatrixXf(pca.mean);
+        mean = pca.mean;
 
         TemplateList ldaTrainingSet;
         static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
@@ -508,7 +508,6 @@ class LDATransform : public Transform
 
     void store(QDataStream &stream) const
     {
-        stream << pcaKeep;
         stream << directLDA;
         stream << directDrop;
         stream << dimsOut;
@@ -520,7 +519,6 @@ class LDATransform : public Transform
 
     void load(QDataStream &stream)
     {
-        stream >> pcaKeep;
         stream >> directLDA;
         stream >> directDrop;
         stream >> dimsOut;
