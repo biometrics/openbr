@@ -508,6 +508,7 @@ class LDATransform : public Transform
 
     void store(QDataStream &stream) const
     {
+        stream << pcaKeep;
         stream << directLDA;
         stream << directDrop;
         stream << dimsOut;
@@ -519,6 +520,7 @@ class LDATransform : public Transform
 
     void load(QDataStream &stream)
     {
+        stream >> pcaKeep;
         stream >> directLDA;
         stream >> directDrop;
         stream >> dimsOut;
