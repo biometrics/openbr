@@ -42,8 +42,8 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         const QRegularExpression re(regexp);
-        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key));
-        if (match.hasMatch()) dst = Template();
+        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.baseName() : src.file.get<QString>(key));
+        if (!match.hasMatch()) dst = Template();
         else                  dst = src;
     }
 };
@@ -95,19 +95,34 @@ BR_REGISTER(Transform, SelectPointsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Does nothing.
+ * \brief Converts Amazon MTurk labels
+ * \author Scott Klum \cite sklum
  */
-class NoneTransform : public UntrainableMetaTransform
+class MTurkTransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    BR_PROPERTY(QString, inputVariable, QString())
+    BR_PROPERTY(float, maxVotes, 1.)
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
+
+        QMap<QString,QVariant> map = dst.file.get<QMap<QString,QVariant> >(inputVariable);
+
+        bool ok;
+
+        QMapIterator<QString, QVariant> i(map);
+        while (i.hasNext()) {
+            i.next();
+            dst.file.set(i.key(), i.value().toFloat(&ok)/maxVotes);
+        }
     }
 };
 
-BR_REGISTER(Transform, NoneTransform)
+BR_REGISTER(Transform, MTurkTransform)
 
 } // namespace br
 
