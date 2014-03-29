@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <Eigen/Dense>
+
 #include "openbr_internal.h"
 
 #include "openbr/core/common.h"
@@ -22,6 +23,24 @@
 
 namespace br
 {
+
+/*!
+ * \ingroup initializers
+ * \brief Initialize Eigen
+ * http://eigen.tuxfamily.org/dox/TopicMultiThreading.html
+ * \author Scott Klum \cite sklum
+ */
+class EigenInitializer : public Initializer
+{
+    Q_OBJECT
+
+    void initialize() const
+    {
+        Eigen::initParallel();
+    }
+};
+
+BR_REGISTER(Initializer, EigenInitializer)
 
 /*!
  * \ingroup transforms
