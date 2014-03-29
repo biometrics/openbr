@@ -974,6 +974,72 @@ class landmarksGallery : public Gallery
 
 BR_REGISTER(Gallery, landmarksGallery)
 
+/*!
+ * \ingroup galleries
+ * \brief Treats each line as a file.
+ * \author Josh Klontz \cite jklontz
+ *
+ * Columns should be comma separated with first row containing headers.
+ * The first column in the file should be the path to the file to enroll.
+ * Other columns will be treated as file metadata.
+ *
+ * \see txtGallery
+ */
+class turkGallery : public Gallery
+{
+    Q_OBJECT
+;
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        TemplateList templates;
+        if (!file.exists()) return templates;
+
+        QStringList lines = QtUtils::readLines(file);
+        QRegExp regexp(",(?!(?:\\w+,?)+\\])");
+
+        QStringList headers;
+
+        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
+
+        foreach (const QString &line, lines) {
+            QStringList words = line.split(regexp);
+            if (words.size() != headers.size()) continue;
+            File f;
+            f.name = words[0];
+            f.set("Label", words[0].mid(0,5));
+
+            for (int i=1; i<words.size(); i++) {
+                QStringList categories = headers[i].split('[');
+                categories.last().chop(1); // Remove trailing bracket
+                QStringList types = categories.last().split(',');
+
+                QStringList ratings = words[i].split(',');
+                ratings.first() = ratings.first().mid(1); // Remove first bracket
+                ratings.last().chop(1); // Remove trailing bracket
+
+                if (types.size() != ratings.size()) continue;
+
+                QMap<QString,QVariant> categoryMap;
+                for (int j=0; j<types.size(); j++) categoryMap.insert(types[j],ratings[j]);
+
+                f.set(categories[0], categoryMap);
+            }
+            templates.append(f);
+        }
+
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        (void)t;
+        qFatal("turkGallery write not implemented.");
+    }
+};
+
+BR_REGISTER(Gallery, turkGallery)
+
 #ifdef CVMATIO
 
 using namespace cv;
