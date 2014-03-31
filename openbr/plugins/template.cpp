@@ -105,7 +105,7 @@ class MTurkTransform : public UntrainableTransform
     Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
     BR_PROPERTY(QString, inputVariable, QString())
     BR_PROPERTY(float, maxVotes, 1.)
-
+;
     void project(const Template &src, Template &dst) const
     {
         dst = src;
@@ -117,7 +117,8 @@ class MTurkTransform : public UntrainableTransform
         QMapIterator<QString, QVariant> i(map);
         while (i.hasNext()) {
             i.next();
-            dst.file.set(i.key(), i.value().toFloat(&ok)/maxVotes);
+            float value = i.value().toFloat(&ok)/maxVotes;
+            dst.file.set(i.key(), value);
         }
     }
 };

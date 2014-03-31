@@ -396,17 +396,20 @@ BR_REGISTER(Distance, OnlineDistance)
  */
 class AttributeDistance : public Distance
 {
+
     Q_OBJECT
-    Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
-    BR_PROPERTY(QString, attribute, QString())
+    Q_PROPERTY(QString targetAttribute READ get_targetAttribute WRITE set_targetAttribute RESET reset_targetAttribute STORED false)
+    Q_PROPERTY(QString queryAttribute READ get_queryAttribute WRITE set_queryAttribute RESET reset_queryAttribute STORED false)
+    BR_PROPERTY(QString, targetAttribute, QString())
+    BR_PROPERTY(QString, queryAttribute, QString())
 
     float compare(const Template &target, const Template &query) const
     {
-        float queryValue = query.file.get<float>(attribute);
-        float targetValue = target.file.get<float>(attribute);
+        float queryValue = query.file.get<float>(queryAttribute);
+        float targetValue = target.file.get<float>(targetAttribute);
 
         // TODO: Set this magic number to something meaningful
-        float stddev = 1;
+        float stddev = .5;
 
         if (queryValue == targetValue) return 1;
         else return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((targetValue-queryValue)/stddev, 2));
@@ -433,12 +436,14 @@ class SumDistance : public Distance
             futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
         futures.waitForFinished();
     }
-
+;
     float compare(const Template &target, const Template &query) const
     {
         float result = 0;
 
+        QList<float> scores;
         foreach (br::Distance *distance, distances) {
+            scores.append(distance->compare(target, query));
             result += distance->compare(target, query);
 
             if (result == -std::numeric_limits<float>::max())
