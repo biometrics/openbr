@@ -167,9 +167,10 @@ BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char 
  * \brief Evaluates and prints clustering accuracy to the terminal.
  * \param csv The cluster results file.
  * \param gallery The br::Gallery used to generate the \ref simmat that was clustered.
+ * \param truth_property (Optional) which metadata key to use from <i>gallery</i/>, defaults to Label
  * \see br_cluster
  */
-BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery);
+BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery, const char * truth_property);
 
 /*!
  * \brief Evaluates and prints detection accuracy to terminal.
@@ -562,9 +563,13 @@ BR_EXPORT br_gallery br_make_gallery(const char *gallery);
   */
 BR_EXPORT br_template_list br_load_from_gallery(br_gallery gallery);
 /*!
+  * \brief Write a br::Template to the br::Gallery on disk.
+  */
+BR_EXPORT void br_add_template_to_gallery(br_gallery gallery, br_template tmpl);
+/*!
   * \brief Write a br::TemplateList to the br::Gallery on disk.
   */
-BR_EXPORT void br_add_to_gallery(br_gallery gallery, br_template_list tl);
+BR_EXPORT void br_add_template_list_to_gallery(br_gallery gallery, br_template_list tl);
 /*!
   * \brief Close the br::Gallery.
   */

@@ -592,8 +592,10 @@ public:
     template<typename WindowType>
     void initActual()
     {
-        if (!Globals->useGui)
+        if (!Globals->useGui) {
+            qWarning("GUI transform %s created without enabling GUI support.\nRun \"br -gui ...\" to enable GUI support from the command line, or set\nGlobals->useGui to true.", this->metaObject()->className());
             return;
+        }
 
         if (displayBuffer)
             delete displayBuffer;

@@ -58,7 +58,7 @@ def init_brpy(br_loc='/usr/local/lib'):
     br.br_eval.argtypes = _string_args(3)
     br.br_eval.restype = c_float
     br.br_eval_classification.argtypes = _string_args(4)
-    br.br_eval_clustering.argtypes = _string_args(2)
+    br.br_eval_clustering.argtypes = _string_args(3)
     br.br_eval_detection.argtypes = _string_args(3)
     br.br_eval_detection.restype = c_float
     br.br_eval_landmarking.argtypes = _string_args(3) + [c_int, c_int]
@@ -143,7 +143,8 @@ def init_brpy(br_loc='/usr/local/lib'):
     br.br_make_gallery.restype = c_void_p
     br.br_load_from_gallery.argtypes = [c_void_p]
     br.br_load_from_gallery.restype = c_void_p
-    br.br_add_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_to_gallery.argtypes = [c_void_p, c_void_p]
+    br.br_add_template_list_to_gallery.argtypes = [c_void_p, c_void_p]
     br.br_close_gallery.argtypes = [c_void_p]
 
     return br

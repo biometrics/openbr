@@ -137,6 +137,8 @@ QVariant File::parse(const QString &value)
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
     if (ok) return rect;
+    const int i = value.toInt(&ok);
+    if (ok) return i;
     const float f = value.toFloat(&ok);
     if (ok) return f;
     return value;
