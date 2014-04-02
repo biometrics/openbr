@@ -354,46 +354,65 @@ struct AlgorithmCore
         if (distance->compare(targetGallery, queryGallery, output))
             return;
 
+        // Are we comparing the same gallery against itself?
         bool selfCompare = targetGallery == queryGallery;
+
+        // Should we use multiple processes to do enrollment/comparison? If not, we just do multi-threading.
         bool multiProcess = Globals->file.getBool("multiProcess", false);
+
+        // In comparing two galleries, we will keep the smaller one in memory, and load the larger one
+        // incrementally. If the gallery set is larger than the probe set, we operate in transpose mode
+        // i.e. we must transpose our output, to still write the output matrix in row-major order.
+        bool transposeMode = false;
+
+        // Is the larger gallery already enrolled? If not, we will enroll those images in-line with their
+        // comparison against the smaller gallery (which will be enrolled, and stored in memory).
+        bool needEnrollRows = false;
+
+
+
 
         if (output.exists() && output.get<bool>("cache", false)) return;
         if (queryGallery == ".") queryGallery = targetGallery;
 
-        // Read metadata for the target and query sets, the resulting
-        // TemplateLists do not contain matrices
+
+        // To decide which gallery is larger, we need to read both, but at this point we just want the
+        // metadata, and don't need the enrolled matrices.
         TemplateList targetMetadata;
         TemplateList queryMetadata;
 
+        // Emptyread reads a gallery, and discards any matrices present, keeping only the metadata.
         emptyRead(targetGallery, targetMetadata);
         emptyRead(queryGallery, queryMetadata);
 
-        // Enroll the metadata we read to memory galleries
+        // We store the metadata for the target and query sets as separate memory galleries.
+        // This is necessary because we need to intialize the Output with this data, but we don't
+        // create the Output directly in this function (going instead through OutputTransform)
         File targetMetaMem = targetGallery;
         targetMetaMem.name = name + targetMetaMem.baseName()+ "_meta" + targetMetaMem.hash()+ ".mem";
         File queryMetaMem =  queryGallery;
         queryMetaMem.name = name  + queryMetaMem.baseName() + "_meta" + queryMetaMem.hash() + ".mem";
 
+
+
         // Store the metadata in memory galleries.
         QScopedPointer<Gallery> targetMeta(Gallery::make(targetMetaMem));
-        targetMeta->writeBlock(targetMetadata);
-
-        // If we are comparing a file against itself, then we don't need to do anything here since we
-        // already have the metadata in memory.
-        if (!selfCompare) {
-            QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
+        if (targetMeta->files().isEmpty() )
+            targetMeta->writeBlock(targetMetadata);
+        
+        QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
+        if (queryMeta->files().isEmpty())
             queryMeta->writeBlock(queryMetadata);
-        }
 
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
-        bool transposeCompare = targetMetadata.size() > queryMetadata.size();
+        transposeMode = targetMetadata.size() > queryMetadata.size();
 
         File rowGallery = queryGallery;
         File colGallery = targetGallery;
         int rowSize = queryMetadata.size();
 
-        if (transposeCompare)
+        if (transposeMode)
         {
             rowGallery = targetGallery;
             colGallery = queryGallery;
@@ -401,26 +420,26 @@ struct AlgorithmCore
         }
 
 
-        // Do we need to enroll the column set? We want it to be in a memory gallery, unless we
-        // are in multi-process mode
+        // Is the column gallery already enrolled? We keep the enrolled column gallery in memory, and in multi-process
+        // mode, every worker process retains a copy of this gallery in memory. When not in multi-process mode, we can
+        // simple make sure the enrolled data is stored in a memGallery, but in multi-process mode we save the enrolled
+        // data to disk (as a .gal file) so that each worker process can read it without re-doing enrollment.
         File colEnrolledGallery = colGallery;
         QString targetExtension = multiProcess ? "gal" : "mem";
+
+        // If the column gallery is not already of the appropriate type, we need to do something
         if (colGallery.suffix() != targetExtension)
         {
-            if (multiProcess) {
-                colEnrolledGallery = colGallery.baseName() + colGallery.hash() + ".gal";
-            }
-            else {
-                colEnrolledGallery = colGallery.baseName() + colGallery.hash() + ".mem";
-            }
+            // Build the name of a gallery containing the enrolled data, of the appropriate type.
+            colEnrolledGallery = colGallery.baseName() + colGallery.hash() + (multiProcess ? ".gal" : ".mem");
 
-            // We have to do actual enrollment if the gallery just specified metadata
+            // Check if we have to do real enrollment, and not just convert the gallery's type.
             if (!(QStringList() << "gal" << "template" << "mem").contains(colGallery.suffix()))
             {
                 enroll(colGallery, colEnrolledGallery);
             }
-            // If it did specify templates, but wasn't the write type, we still need to convert
-            // to the correct gallery type.
+            // If the gallery does have enrolled templates, but is not the right type, we do a simple
+            // type conversion for it.
             else
             {
                 QScopedPointer<Gallery> readColGallery(Gallery::make(colGallery));
@@ -430,23 +449,42 @@ struct AlgorithmCore
             }
         }
 
-        // Do we need to enroll the row set? If so we will do it inline with the comparisons.
-        bool needEnrollRows = false;
+        // We have handled the column gallery, now decide whehter or not we have to enroll the row gallery.
         if (selfCompare)
         {
+            // For self-comparisons, we just use the already enrolled column set.
             rowGallery = colEnrolledGallery;
         }
+        // Otherwise, we will need to enroll the row set. Since the actual comparison is defined via a transform
+        // which compares incoming templates against a gallery, we will handle enrollment of the row set by simply
+        // building a transform that does enrollment (using the current algorithm), then does the comparison in one
+        // step. This way, we don't have to retain the complete enrolled row gallery in memory, or on disk.
         else if(!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
         {
             needEnrollRows = true;
         }
 
-        // Describe a GalleryCompare transform, using the data we enrolled
+        // At this point, we have decided how we will structure the comparison (either in transpose mode, or not), 
+        // and have the column gallery enrolled, and have decided whether or not we need to enroll the row gallery.
+        // From this point, we will build a single algorithm that (optionally) does enrollment, then does comparisons
+        // and output, optionally using ProcessWrapper to do the enrollment and comparison in separate processes.
+        //
+        // There are two main components to this algorithm. The first is the (optional) enrollment and then the
+        // comparison step (built from a GalleryCompare transform), and the second is the sequential matrix output and
+        // progress counting step.
+        // After the base algorithm is built, the whole thing will be run in a stream, so that I/O can be handled sequentially.
+
+
+
+        // The actual comparison step is done by a GalleryCompare transform, which has a Distance, and a gallery as data.
+        // Incoming templates are compared against the templates in the gallery, and the output is the resulting score
+        // vector.
         QString compareRegionDesc = "GalleryCompare("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")";
 
-        QScopedPointer<Transform> compareRegion;
 
-        // If we need to enroll th row set, add the current transform to the aglorithm
+        QScopedPointer<Transform> compareRegion;
+        // If we need to enroll the row set, we add the current algorithm's enrollment transform before the
+        // GalleryCompare in a pipe.
         if (needEnrollRows)
         {
             if (!multiProcess)
@@ -472,20 +510,27 @@ struct AlgorithmCore
             compareRegion.reset(Transform::make(compareRegionDesc,NULL));
         }
 
+        // At this point, compareRegion is a transform, which optionally does enrollment, then compares the row
+        // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a 
+        // ProcessWrapper transform, and will be transparently run in multiple processes.
         compareRegion->init();
 
-        // We also need to add Output and progress counting to the algorithm we are building
+
+        // We also need to add Output and progress counting to the algorithm we are building, so we will assign them to
+        // two stages of a pipe.
         QString joinDesc = "Identity+Identity";
         QScopedPointer<Transform> join(Transform::make(joinDesc, NULL));
 
         // The output transform takes the metadata memGalleries we set up previously as input, along with the
-        // output specification we were passed
+        // output specification we were passed. Gallery metadata is necessary for some Outputs to function correctly.
         QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
-
-        QString outputRegionDesc = "Output("+ outputString +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeCompare ? 1 : 0) + ")";
+        QString outputRegionDesc = "Output("+ outputString +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeMode ? 1 : 0) + ")";
+        // The ProgressCounter transform will simply provide a display about the number of rows completed.
         outputRegionDesc += "+ProgressCounter("+QString::number(rowSize)+")+Discard";
         QScopedPointer<Transform> outputTform(Transform::make(outputRegionDesc, NULL));
 
+        // Assign the comparison transform we previously built, and the output transform  we just built to
+        // two stages of a pipe.
         CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (join.data());
         downcast->transforms[0] = compareRegion.data();
         downcast->transforms[1] = outputTform.data();
@@ -494,22 +539,22 @@ struct AlgorithmCore
         // against a gallery, and outputs them.
         join->init();
 
-
-        // Now, we will give that base algorithm to a stream, operating in StreamGallery mode
+        // Now, we will give that base transform to a stream, which will incrementally read the row gallery
+        // and pass the transforms it reads through the base algorithm.
         QString streamDesc = "Stream(Identity, readMode=StreamGallery)";
         QScopedPointer<Transform> streamBase(Transform::make(streamDesc, NULL));
         WrapperTransform * streamWrapper = dynamic_cast<WrapperTransform *> (streamBase.data());
         streamWrapper->transform = join.data();
 
+        // The transform we will use is now complete.
         streamWrapper->init();
 
-        // We set up a template containing the file iwth the row gallery we
-        // want to compare
+        // We set up a template containing the rowGallery we want to compare. 
         TemplateList rowGalleryTemplate;
         rowGalleryTemplate.append(Template(rowGallery));
         TemplateList outputGallery;
 
-        // for prgress counting
+        // Set up progress counting variables
         Globals->currentStep = 0;
         Globals->totalSteps = rowSize;
         Globals->startTime.start();
