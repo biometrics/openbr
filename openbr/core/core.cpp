@@ -354,6 +354,7 @@ struct AlgorithmCore
         if (distance->compare(targetGallery, queryGallery, output))
             return;
 
+        bool selfCompare = targetGallery == queryGallery;
         bool multiProcess = Globals->file.getBool("multiProcess", false);
 
         if (output.exists() && output.get<bool>("cache", false)) return;
@@ -369,16 +370,20 @@ struct AlgorithmCore
 
         // Enroll the metadata we read to memory galleries
         File targetMetaMem = targetGallery;
-        targetMetaMem.name = targetMetaMem.baseName() + "_meta.mem";
+        targetMetaMem.name = name + targetMetaMem.baseName()+ "_meta" + targetMetaMem.hash()+ ".mem";
         File queryMetaMem =  queryGallery;
-        queryMetaMem.name = queryMetaMem.baseName() + "_meta.mem";
+        queryMetaMem.name = name  + queryMetaMem.baseName() + "_meta" + queryMetaMem.hash() + ".mem";
 
         // Store the metadata in memory galleries.
         QScopedPointer<Gallery> targetMeta(Gallery::make(targetMetaMem));
-        QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
-
         targetMeta->writeBlock(targetMetadata);
-        queryMeta->writeBlock(queryMetadata);
+
+        // If we are comparing a file against itself, then we don't need to do anything here since we
+        // already have the metadata in memory.
+        if (!selfCompare) {
+            QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
+            queryMeta->writeBlock(queryMetadata);
+        }
 
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
@@ -395,12 +400,6 @@ struct AlgorithmCore
             rowSize = targetMetadata.size();
         }
 
-        // Do we need to enroll the row set? If so we will do it inline with the comparisons
-        bool needEnrollRows = false;
-        if (!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
-        {
-            needEnrollRows = true;
-        }
 
         // Do we need to enroll the column set? We want it to be in a memory gallery, unless we
         // are in multi-process mode
@@ -429,6 +428,17 @@ struct AlgorithmCore
                 QScopedPointer<Gallery> enrolledColOutput(Gallery::make(colEnrolledGallery));
                 enrolledColOutput->writeBlock(templates);
             }
+        }
+
+        // Do we need to enroll the row set? If so we will do it inline with the comparisons.
+        bool needEnrollRows = false;
+        if (selfCompare)
+        {
+            rowGallery = colEnrolledGallery;
+        }
+        else if(!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
+        {
+            needEnrollRows = true;
         }
 
         // Describe a GalleryCompare transform, using the data we enrolled
@@ -468,7 +478,6 @@ struct AlgorithmCore
 
         // The output transform takes the metadata memGalleries we set up previously as input, along with the
         // output specification we were passed
-        
         QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
 
         QString outputRegionDesc = "Output("+ outputString +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeCompare ? 1 : 0) + ")";
