@@ -467,6 +467,8 @@ struct AlgorithmCore
             }
         }
         else {
+            if (multiProcess)
+                compareRegionDesc = "ProcessWrapper(" + compareRegionDesc + ")";
             compareRegion.reset(Transform::make(compareRegionDesc,NULL));
         }
 
