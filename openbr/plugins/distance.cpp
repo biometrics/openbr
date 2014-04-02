@@ -488,6 +488,8 @@ class GalleryCompareTransform : public Transform
             distance = Distance::fromAlgorithm(distanceAlgorithm);
         }
     }
+public:
+    GalleryCompareTransform() : Transform(false, false) {}
 };
 
 BR_REGISTER(Transform, GalleryCompareTransform)
