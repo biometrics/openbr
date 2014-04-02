@@ -468,7 +468,10 @@ struct AlgorithmCore
 
         // The output transform takes the metadata memGalleries we set up previously as input, along with the
         // output specification we were passed
-        QString outputRegionDesc = "Output("+ output.flat() +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeCompare ? 1 : 0) + ")";
+        
+        QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
+
+        QString outputRegionDesc = "Output("+ outputString +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeCompare ? 1 : 0) + ")";
         outputRegionDesc += "+ProgressCounter("+QString::number(rowSize)+")+Discard";
         QScopedPointer<Transform> outputTform(Transform::make(outputRegionDesc, NULL));
 
