@@ -396,7 +396,6 @@ BR_REGISTER(Distance, OnlineDistance)
  */
 class AttributeDistance : public Distance
 {
-
     Q_OBJECT
     Q_PROPERTY(QString targetAttribute READ get_targetAttribute WRITE set_targetAttribute RESET reset_targetAttribute STORED false)
     Q_PROPERTY(QString queryAttribute READ get_queryAttribute WRITE set_queryAttribute RESET reset_queryAttribute STORED false)
