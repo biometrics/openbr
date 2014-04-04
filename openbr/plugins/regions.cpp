@@ -292,7 +292,7 @@ BR_REGISTER(Transform, CropRectTransform)
 
 /*!
  * \ingroup transforms
- * \brief Create matrix from landmarks.
+ * \brief Create rect from landmarks.
  * \author Scott Klum \cite sklum
  * \todo Padding should be a percent of total image size
  */
@@ -313,7 +313,6 @@ class RectFromPointsTransform : public UntrainableTransform
 
         if (src.file.points().isEmpty()) {
             if (Globals->verbose) qWarning("No landmarks");
-            dst = src;
             return;
         }
 
@@ -352,6 +351,33 @@ class RectFromPointsTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, RectFromPointsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Create matrix from landmarks.
+ * \author Scott Klum \cite sklum
+ * \todo Padding should be a percent of total image size
+ */
+
+class BoundingBoxTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        if (src.file.points().isEmpty()) {
+            if (Globals->verbose) qFatal("No landmarks");
+            return;
+        }
+
+        Rect boundingBox = boundingRect(OpenCVUtils::toPoints(src.file.points()).toVector().toStdVector());
+        dst.file.appendRect(OpenCVUtils::fromRect(boundingBox));
+    }
+};
+
+BR_REGISTER(Transform, BoundingBoxTransform)
 
 /*!
  * \ingroup transforms
