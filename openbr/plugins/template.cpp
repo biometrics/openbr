@@ -103,9 +103,13 @@ class MTurkTransform : public UntrainableTransform
     Q_OBJECT
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    Q_PROPERTY(bool classify READ get_classify WRITE set_classify RESET reset_classify STORED false)
+    Q_PROPERTY(bool consensusOnly READ get_consensusOnly WRITE set_consensusOnly RESET reset_consensusOnly STORED false)
     BR_PROPERTY(QString, inputVariable, QString())
     BR_PROPERTY(float, maxVotes, 1.)
-;
+    BR_PROPERTY(bool, classify, false)
+    BR_PROPERTY(bool, consensusOnly, false)
+
     void project(const Template &src, Template &dst) const
     {
         dst = src;
@@ -117,8 +121,11 @@ class MTurkTransform : public UntrainableTransform
         QMapIterator<QString, QVariant> i(map);
         while (i.hasNext()) {
             i.next();
-            float value = i.value().toFloat(&ok)/maxVotes;
-            dst.file.set(i.key(), value);
+            // Normalize to [-1,1]
+            float value = i.value().toFloat(&ok)/maxVotes;//* 2./maxVotes - 1;
+            if (classify) (value > 0) ? value = 1 : value = -1;
+            else if (consensusOnly && (value != 1 && value != -1)) continue;
+            dst.file.set(i.key(),value);
         }
     }
 };

@@ -142,9 +142,42 @@ BR_REGISTER(Transform, CrossValidateTransform)
 class CrossValidateDistance : public Distance
 {
     Q_OBJECT
-
+;
     float compare(const Template &a, const Template &b) const
     {
+        QStringList filters;
+        //filters << "Age" << "GENDER" << "RACE";
+        foreach (const QString &key, filters) {
+            QString aValue = a.file.get<QString>(key, QString());
+            QString bValue = b.file.get<QString>(key, QString());
+
+            // The query value may be a range. Let's check.
+            if (bValue.isEmpty()) bValue = QtUtils::toString(b.file.get<QPointF>(key, QPointF()));
+
+            if (aValue.isEmpty() || bValue.isEmpty()) continue;
+
+            bool keep = false;
+            bool ok;
+
+            QPointF range = QtUtils::toPoint(bValue,&ok);
+
+            if (ok) /* Range */ {
+                int value = range.x();
+                int upperBound = range.y();
+
+                while (value <= upperBound) {
+                    if (aValue == QString::number(value)) {
+                        keep = true;
+                        break;
+                    }
+                    value++;
+                }
+            }
+            else if (aValue == bValue) keep = true;
+
+            if (!keep) return -std::numeric_limits<float>::max();
+        }
+
         static const QString key("Partition"); // More efficient to preallocate this
         const int partitionA = a.file.get<int>(key, 0);
         const int partitionB = b.file.get<int>(key, 0);
