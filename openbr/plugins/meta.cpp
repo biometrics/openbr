@@ -317,6 +317,7 @@ class ForkTransform : public CompositeTransform
     // same as _project, but calls projectUpdate on sub-transforms
     void projectupdate(const Template & src, Template & dst)
     {
+        qDebug() << "In projectupdate...";
         foreach (Transform *f, transforms) {
             try {
                 Template res;
@@ -332,8 +333,8 @@ class ForkTransform : public CompositeTransform
 
     void projectUpdate(const TemplateList & src, TemplateList & dst)
     {
+        qDebug() << "In projectUpdate...";
         dst.reserve(src.size());
-        for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
         foreach (Transform *f, transforms) {
             TemplateList m;
             f->projectUpdate(src, m);
@@ -375,6 +376,7 @@ protected:
     // Apply each transform to src, concatenate the results
     void _project(const Template &src, Template &dst) const
     {
+        qDebug() << "In _project...";
         foreach (const Transform *f, transforms) {
             try {
                 dst.merge((*f)(src));
@@ -388,8 +390,9 @@ protected:
 
     void _project(const TemplateList &src, TemplateList &dst) const
     {
+        qDebug() << "In _project TemplateList...";
         dst.reserve(src.size());
-        for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
+        for (int i=0; i<src.size(); i++) dst.append(Template());
         foreach (const Transform *f, transforms) {
             TemplateList m;
             f->project(src, m);
