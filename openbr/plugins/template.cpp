@@ -95,42 +95,76 @@ BR_REGISTER(Transform, SelectPointsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Converts Amazon MTurk labels
+ * \brief Converts Amazon MTurk labels to a non-map format for use in a transform
+ *        Also optionally normalizes and/or classifies the votes
  * \author Scott Klum \cite sklum
  */
-class MTurkTransform : public UntrainableTransform
+/*
+class TurkTransform : public Transform
 {
     Q_OBJECT
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED true)
     Q_PROPERTY(bool classify READ get_classify WRITE set_classify RESET reset_classify STORED false)
     Q_PROPERTY(bool consensusOnly READ get_consensusOnly WRITE set_consensusOnly RESET reset_consensusOnly STORED false)
     BR_PROPERTY(QString, inputVariable, QString())
+    BR_PROPERTY(QString, outputVariable, QString())
     BR_PROPERTY(float, maxVotes, 1.)
+    BR_PROPERTY(br::Transform*, transform, NULL)
     BR_PROPERTY(bool, classify, false)
     BR_PROPERTY(bool, consensusOnly, false)
 
+    void train(const TemplateList &data)
+    {
+        TemplateList expandedData;
+
+        foreach(const Template &t, data)
+            expandedData.append(expandVotes(t));
+
+        transform->train(expandedData);
+    }
+
     void project(const Template &src, Template &dst) const
     {
+        // Unmap, project, remap
+        transform->project(expandVotes(src),dst);
+
+        QMap<QString,QVariant> map = src.file.get<QMap<QString,QVariant> >(inputVariable);
+        // We expect that whatever transform does to the inputVariable,
+        // the outputVariable will be in the form of (or convertible to) a float
+        map.insert(outputVariable,dst.file.get<float>(outputVariable));
+
         dst = src;
+        dst.file.set(inputVariable,map);
+    }
 
-        QMap<QString,QVariant> map = dst.file.get<QMap<QString,QVariant> >(inputVariable);
+    Template expandVotes(const Template &t) const {
+        // Create a new template matching the one containing the votes in the map structure
+        // but remove the map structure
+        Template expandedT = t;
+        expandedT.file.remove(inputVariable);
 
+        QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(inputVariable);
+        QMapIterator<QString, QVariant> i(map);
         bool ok;
 
-        QMapIterator<QString, QVariant> i(map);
         while (i.hasNext()) {
             i.next();
             // Normalize to [-1,1]
             float value = i.value().toFloat(&ok)/maxVotes;//* 2./maxVotes - 1;
+            if (!ok) qFatal("Failed to expand Turk votes for %s", inputVariable);
             if (classify) (value > 0) ? value = 1 : value = -1;
             else if (consensusOnly && (value != 1 && value != -1)) continue;
-            dst.file.set(i.key(),value);
+            expandedT.file.set(i.key(),value);
         }
+
+        return expandedT;
     }
 };
 
-BR_REGISTER(Transform, MTurkTransform)
+BR_REGISTER(Transform, TurkTransform)*/
 
 } // namespace br
 

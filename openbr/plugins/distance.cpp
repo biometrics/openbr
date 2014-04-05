@@ -21,6 +21,7 @@
 #include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
+#include "openbr/core/common.h"
 #include "openbr/core/distance_sse.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
@@ -391,31 +392,74 @@ BR_REGISTER(Distance, OnlineDistance)
 
 /*!
  * \ingroup distances
- * \brief Attenuation function based distance from attributes
+ * \brief Unmaps turk votes to be used in a distance
  * \author Scott Klum \cite sklum
  */
-class AttributeDistance : public Distance
+class TurkDistance : public Distance
 {
     Q_OBJECT
-    Q_PROPERTY(QString targetAttribute READ get_targetAttribute WRITE set_targetAttribute RESET reset_targetAttribute STORED false)
-    Q_PROPERTY(QString queryAttribute READ get_queryAttribute WRITE set_queryAttribute RESET reset_queryAttribute STORED false)
-    BR_PROPERTY(QString, targetAttribute, QString())
-    BR_PROPERTY(QString, queryAttribute, QString())
-
+    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance)
+    Q_PROPERTY(QString category READ get_category WRITE set_category RESET reset_category)
+    Q_PROPERTY(QStringList targetAttributes READ get_targetAttributes WRITE set_targetAttributes RESET reset_targetAttributes STORED false)
+    Q_PROPERTY(QStringList queryAttributes READ get_queryAttributes WRITE set_queryAttributes RESET reset_queryAttributes STORED false)
+    BR_PROPERTY(br::Distance*, distance, NULL)
+    BR_PROPERTY(QString, category, QString())
+    BR_PROPERTY(QStringList, targetAttributes, QStringList())
+    BR_PROPERTY(QStringList, queryAttributes, QStringList())
+;
     float compare(const Template &target, const Template &query) const
     {
-        float queryValue = query.file.get<float>(queryAttribute);
-        float targetValue = target.file.get<float>(targetAttribute);
+        Template t = unmap(target,category);
+        Template q = unmap(query,category);
 
-        // TODO: Set this magic number to something meaningful
-        float stddev = .5;
+        QList<float> targetValues, queryValues;
+        foreach(const QString &s, targetAttributes) targetValues.append(t.file.get<float>(s));
+        foreach(const QString &s, queryAttributes) queryValues.append(q.file.get<float>(s));
 
-        if (queryValue == targetValue) return 1;
-        else return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((targetValue-queryValue)/stddev, 2));
+        float stddev = .75;
+        float score = 0;
+        for(int i=0; i<targetValues.size(); i++) score += 1./(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((queryValues[i]-targetValues[i])/stddev, 2));
+
+        return score;
+    }
+
+    Template unmap(const Template &t, const QString& variable) const {
+        // Create a new template matching the one containing the votes in the map structure
+        // but remove the map structure
+        Template expandedT = t;
+        expandedT.file.remove(variable);
+
+        QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(variable);
+        QMapIterator<QString, QVariant> i(map);
+
+        while (i.hasNext()) {
+            i.next();
+            float value = i.value().toFloat();
+            expandedT.file.set(i.key(),value);
+        }
+
+        return expandedT;
     }
 };
 
-BR_REGISTER(Distance, AttributeDistance)
+BR_REGISTER(Distance, TurkDistance)
+
+/*!
+ * \ingroup distances
+ * \brief Attenuation function based distance
+ * \author Scott Klum \cite sklum
+ */
+class AttenuationDistance : public Distance
+{
+    Q_OBJECT
+;
+    float compare(const Template &target, const Template &query) const
+    {
+        return 1;
+    }
+};
+
+BR_REGISTER(Distance, AttenuationDistance)
 
 /*!
  * \ingroup distances
@@ -435,18 +479,18 @@ class SumDistance : public Distance
             futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
         futures.waitForFinished();
     }
-;
+
     float compare(const Template &target, const Template &query) const
     {
         float result = 0;
 
-        QList<float> scores;
         foreach (br::Distance *distance, distances) {
-            scores.append(distance->compare(target, query));
-            result += distance->compare(target, query);
+            float score = distance->compare(target, query);
 
-            if (result == -std::numeric_limits<float>::max())
+            if (score == -std::numeric_limits<float>::max())
                 return result;
+
+            result += score;
         }
 
         return result;
