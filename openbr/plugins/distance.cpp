@@ -21,7 +21,6 @@
 #include <opencv2/imgproc/imgproc_c.h>
 #include "openbr_internal.h"
 
-#include "openbr/core/common.h"
 #include "openbr/core/distance_sse.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
@@ -191,9 +190,10 @@ class FuseDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QStringList descriptions READ get_descriptions WRITE set_descriptions RESET reset_descriptions STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
     Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
 
     QList<br::Distance*> distances;
 
@@ -202,9 +202,10 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QString, description, "IdenticalDistance")
+    BR_PROPERTY(QStringList, descriptions, QStringList())
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
+    BR_PROPERTY(QList<int>, indices, QList<int>())
 
     void train(const TemplateList &src)
     {
@@ -214,8 +215,14 @@ private:
 
         QList<TemplateList> partitionedSrc = src.partition(split);
 
-        while (distances.size() < partitionedSrc.size())
-            distances.append(make(description));
+        if (!indices.isEmpty())
+            for (int i=partitionedSrc.size()-1; i>=0; i--)
+                if (!indices.contains(i)) partitionedSrc.removeAt(i);
+
+        if (descriptions.size() != partitionedSrc.size()) qFatal("Incorrect number of distances supplied.");
+
+        for (int i=0; i<descriptions.size(); i++)
+            distances.append(make(descriptions[i]));
 
         // Train on each of the partitions
         for (int i=0; i<distances.size(); i++)
@@ -228,9 +235,10 @@ private:
 
         QList<float> scores;
         for (int i=0; i<distances.size(); i++) {
+            int index = indices.isEmpty() ? i : indices[i];
             float weight;
             weights.isEmpty() ? weight = 1. : weight = weights[i];
-            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+            scores.append(weight*distances[i]->compare(Template(a.file, a[index]),Template(b.file, b[index])));
         }
 
         switch (operation) {
@@ -253,17 +261,14 @@ private:
 
     void store(QDataStream &stream) const
     {
-        stream << distances.size();
         foreach (Distance *distance, distances)
             distance->store(stream);
     }
 
     void load(QDataStream &stream)
     {
-        int numDistances;
-        stream >> numDistances;
-        while (distances.size() < numDistances)
-            distances.append(make(description));
+        for (int i=0; i<descriptions.size(); i++)
+            distances.append(make(descriptions[i]));
         foreach (Distance *distance, distances)
             distance->load(stream);
     }
@@ -389,77 +394,6 @@ class OnlineDistance : public Distance
 };
 
 BR_REGISTER(Distance, OnlineDistance)
-
-/*!
- * \ingroup distances
- * \brief Unmaps turk votes to be used in a distance
- * \author Scott Klum \cite sklum
- */
-class TurkDistance : public Distance
-{
-    Q_OBJECT
-    Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance)
-    Q_PROPERTY(QString category READ get_category WRITE set_category RESET reset_category)
-    Q_PROPERTY(QStringList targetAttributes READ get_targetAttributes WRITE set_targetAttributes RESET reset_targetAttributes STORED false)
-    Q_PROPERTY(QStringList queryAttributes READ get_queryAttributes WRITE set_queryAttributes RESET reset_queryAttributes STORED false)
-    BR_PROPERTY(br::Distance*, distance, NULL)
-    BR_PROPERTY(QString, category, QString())
-    BR_PROPERTY(QStringList, targetAttributes, QStringList())
-    BR_PROPERTY(QStringList, queryAttributes, QStringList())
-;
-    float compare(const Template &target, const Template &query) const
-    {
-        Template t = unmap(target,category);
-        Template q = unmap(query,category);
-
-        QList<float> targetValues, queryValues;
-        foreach(const QString &s, targetAttributes) targetValues.append(t.file.get<float>(s));
-        foreach(const QString &s, queryAttributes) queryValues.append(q.file.get<float>(s));
-
-        float stddev = .75;
-        float score = 0;
-        for(int i=0; i<targetValues.size(); i++) score += 1./(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((queryValues[i]-targetValues[i])/stddev, 2));
-
-        return score;
-    }
-
-    Template unmap(const Template &t, const QString& variable) const {
-        // Create a new template matching the one containing the votes in the map structure
-        // but remove the map structure
-        Template expandedT = t;
-        expandedT.file.remove(variable);
-
-        QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(variable);
-        QMapIterator<QString, QVariant> i(map);
-
-        while (i.hasNext()) {
-            i.next();
-            float value = i.value().toFloat();
-            expandedT.file.set(i.key(),value);
-        }
-
-        return expandedT;
-    }
-};
-
-BR_REGISTER(Distance, TurkDistance)
-
-/*!
- * \ingroup distances
- * \brief Attenuation function based distance
- * \author Scott Klum \cite sklum
- */
-class AttenuationDistance : public Distance
-{
-    Q_OBJECT
-;
-    float compare(const Template &target, const Template &query) const
-    {
-        return 1;
-    }
-};
-
-BR_REGISTER(Distance, AttenuationDistance)
 
 /*!
  * \ingroup distances
