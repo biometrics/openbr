@@ -11,14 +11,11 @@ namespace br
 
 static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString & inputVariable, const QStringList &gallery)
 {
-    QString keepKey = "baggy";
-
     // Return early when no downsampling is required
     if ((classes == std::numeric_limits<int>::max()) &&
             (instances == std::numeric_limits<int>::max()) &&
             (fraction >= 1) &&
-            (gallery.isEmpty()) &&
-            (keepKey.isEmpty()))
+            (gallery.isEmpty()))
         return templates;
 
     const bool atLeast = instances < 0;

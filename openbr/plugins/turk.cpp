@@ -3,50 +3,53 @@
 namespace br
 {
 
+static Template unmap(const Template &t, const QString& variable, const float maxVotes, const float maxRange, const float minRange, const bool classify, const bool consensusOnly) {
+    // Create a new template matching the one containing the votes in the map structure
+    // but remove the map structure
+    Template expandedT = t;
+    expandedT.file.remove(variable);
+
+    QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(variable);
+    QMapIterator<QString, QVariant> i(map);
+    bool ok;
+
+    while (i.hasNext()) {
+        i.next();
+        // Normalize to [minRange,maxRange]
+        float value = i.value().toFloat(&ok)*(maxRange-minRange)/maxVotes - minRange;
+        if (!ok) qFatal("Failed to expand Turk votes for %s", variable);
+        if (classify) (value > maxRange-((maxRange-minRange)/2)) ? value = maxRange : value = minRange;
+        else if (consensusOnly && (value != maxRange && value != minRange)) continue;
+        expandedT.file.set(i.key(),value);
+    }
+
+    return expandedT;
+}
+
 /*!
  * \ingroup transforms
  * \brief Converts Amazon MTurk labels to a non-map format for use in a transform
- *        Also optionally normalizes and/or classifies the votes
  * \author Scott Klum \cite sklum
  */
 class TurkTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(QString HIT READ get_HIT WRITE set_HIT RESET reset_HIT STORED false)
     Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    Q_PROPERTY(float maxRange READ get_maxRange WRITE set_maxRange RESET reset_maxRange STORED false)
+    Q_PROPERTY(float minRange READ get_minRange WRITE set_minRange RESET reset_minRange STORED false)
     Q_PROPERTY(bool classify READ get_classify WRITE set_classify RESET reset_classify STORED false)
     Q_PROPERTY(bool consensusOnly READ get_consensusOnly WRITE set_consensusOnly RESET reset_consensusOnly STORED false)
-    BR_PROPERTY(QString, inputVariable, QString())
-    BR_PROPERTY(float, maxVotes, 1.)
+    BR_PROPERTY(QString, HIT, QString())
+    BR_PROPERTY(float, maxVotes, 1)
+    BR_PROPERTY(float, maxRange, 1)
+    BR_PROPERTY(float, minRange, 0)
     BR_PROPERTY(bool, classify, false)
     BR_PROPERTY(bool, consensusOnly, false)
 
     void project(const Template &src, Template &dst) const
     {
-        dst = unmap(src);
-    }
-
-    Template unmap(const Template &t) const {
-        // Create a new template matching the one containing the votes in the map structure
-        // but remove the map structure
-        Template expandedT = t;
-        expandedT.file.remove(inputVariable);
-
-        QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(inputVariable);
-        QMapIterator<QString, QVariant> i(map);
-        bool ok;
-
-        while (i.hasNext()) {
-            i.next();
-            // Normalize to [-1,1]
-            float value = i.value().toFloat(&ok)/maxVotes;//* 2./maxVotes - 1;
-            if (!ok) qFatal("Failed to expand Turk votes for %s", inputVariable);
-            if (classify) (value > 0) ? value = 1 : value = -1;
-            else if (consensusOnly && (value != 1 && value != -1)) continue;
-            expandedT.file.set(i.key(),value);
-        }
-
-        return expandedT;
+        dst = unmap(src, HIT, maxVotes, maxRange, minRange, classify, consensusOnly);
     }
 };
 
@@ -79,7 +82,7 @@ class MapTransform : public UntrainableTransform
             // converted to the type T. For some reason, you cannot
             // convert from a QVariant to a QVariant.  Thus, this transform
             // has to assume that the metadata we want to organize can be
-            // converted to a float, resulting in a loss of generality :(.
+            // converted to a float, resulting in a loss of generality :-(.
             if (t.file.contains(s)) {
                 map.insert(s,t.file.get<float>(s));
                 mappedT.file.remove(s);
@@ -93,6 +96,48 @@ class MapTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, MapTransform)
+
+
+/*!
+ * \ingroup distances
+ * \brief Unmaps Turk HITs to be compared against query mats
+ * \author Scott Klum \cite sklum
+ */
+class TurkDistance : public Distance
+{
+    Q_OBJECT
+    Q_PROPERTY(QString HIT READ get_HIT WRITE set_HIT RESET reset_HIT)
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    Q_PROPERTY(float maxRange READ get_maxRange WRITE set_maxRange RESET reset_maxRange STORED false)
+    Q_PROPERTY(float minRange READ get_minRange WRITE set_minRange RESET reset_minRange STORED false)
+    Q_PROPERTY(bool classify READ get_classify WRITE set_classify RESET reset_classify STORED false)
+    Q_PROPERTY(bool consensusOnly READ get_consensusOnly WRITE set_consensusOnly RESET reset_consensusOnly STORED false)
+    BR_PROPERTY(QString, HIT, QString())
+    BR_PROPERTY(QStringList, keys, QStringList())
+    BR_PROPERTY(float, maxVotes, 1)
+    BR_PROPERTY(float, maxRange, 1)
+    BR_PROPERTY(float, minRange, 0)
+    BR_PROPERTY(bool, classify, false)
+    BR_PROPERTY(bool, consensusOnly, false)
+
+    float compare(const Template &target, const Template &query) const
+    {
+        Template t = unmap(target, HIT, maxVotes, maxRange, minRange, classify, consensusOnly);
+
+        QList<float> targetValues;
+        foreach(const QString &s, keys) targetValues.append(t.file.get<float>(s));
+
+        float stddev = .75;
+
+        float score = 0;
+        for (int i=0; i<targetValues.size(); i++) score += 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((query.m().at<float>(0,i)-targetValues[i])/stddev, 2));
+
+        return score;
+    }
+};
+
+BR_REGISTER(Distance, TurkDistance)
 
 } // namespace br
 
