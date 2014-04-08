@@ -1315,7 +1315,7 @@ public:
         in.append(src);
         TemplateList out;
         CompositeTransform::project(in,out);
-        dst = out.first();
+        if (!out.isEmpty()) dst = out.first();
         if (out.size() > 1)
             qDebug("Returning first output template only");
     }
@@ -1326,7 +1326,7 @@ public:
         in.append(src);
         TemplateList out;
         projectUpdate(in,out);
-        dst = out.first();
+        if (!out.isEmpty()) dst = out.first();
         if (out.size() > 1)
             qDebug("Returning first output template only");
     }
