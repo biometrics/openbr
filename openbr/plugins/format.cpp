@@ -151,7 +151,7 @@ class csvFormat : public Format
     {
         QFile f(file.name);
         f.open(QFile::ReadOnly);
-        QStringList lines(QString(f.readAll()).split('\n'));
+        QStringList lines(QString(f.readAll()).split(QRegularExpression("[\n|\r\n|\r]"), QString::SkipEmptyParts));
         f.close();
 
         bool isUChar = true;
