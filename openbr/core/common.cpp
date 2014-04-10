@@ -76,3 +76,11 @@ QList<float> Common::linspace(float start, float stop, int n) {
     spaced.append(stop);
     return spaced;
 }
+
+QList<int> Common::ind2sub(int dims, int nPerDim, int idx) {
+    QList<int> subIndices;
+    for (int j = 0; j < dims; j++) {
+        subIndices.append(((int)floor( idx / pow((float)nPerDim, j))) % nPerDim);
+    }
+    return subIndices;
+}

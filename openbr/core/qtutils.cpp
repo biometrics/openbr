@@ -24,6 +24,7 @@
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QRegExp>
+#include <QRegularExpression>
 #include <QStack>
 #include <QUrl>
 #include <QMap>
@@ -81,7 +82,7 @@ void readFile(const QString &file, QStringList &lines)
 {
     QByteArray data;
     readFile(file, data);
-    lines = QString(data).split('\n', QString::SkipEmptyParts);
+    lines = QString(data).split(QRegularExpression("[\n|\r\n|\r]"), QString::SkipEmptyParts);
     for (int i=0; i<lines.size(); i++)
         lines[i] = lines[i].simplified();
 }

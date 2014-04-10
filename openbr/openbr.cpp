@@ -109,9 +109,9 @@ void br_eval_classification(const char *predicted_gallery, const char *truth_gal
     EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
-void br_eval_clustering(const char *csv, const char *gallery)
+void br_eval_clustering(const char *csv, const char *gallery, const char * truth_property)
 {
-    EvalClustering(csv, gallery);
+    EvalClustering(csv, gallery, truth_property);
 }
 
 float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv)
@@ -435,7 +435,14 @@ br_template_list br_load_from_gallery(br_gallery gallery)
     return (br_template_list)tl;
 }
 
-void br_add_to_gallery(br_gallery gallery, br_template_list tl)
+void br_add_template_to_gallery(br_gallery gallery, br_template tmpl)
+{
+    Gallery *gal = reinterpret_cast<Gallery*>(gallery);
+    Template *t = reinterpret_cast<Template*>(tmpl);
+    gal->write(*t);
+}
+
+void br_add_template_list_to_gallery(br_gallery gallery, br_template_list tl)
 {
     Gallery *gal = reinterpret_cast<Gallery*>(gallery);
     TemplateList *realTL = reinterpret_cast<TemplateList*>(tl);

@@ -413,13 +413,13 @@ private:
 
 };
 
-class DisplayGUI : public QMainWindow
+class GUIWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
 
-    DisplayGUI(QWidget * parent = NULL) : QMainWindow(parent)
+    GUIWindow(QWidget * parent = NULL) : QMainWindow(parent)
     {
         centralWidget = new QWidget();
         layout = new QHBoxLayout();
@@ -592,8 +592,10 @@ public:
     template<typename WindowType>
     void initActual()
     {
-        if (!Globals->useGui)
+        if (!Globals->useGui) {
+            qWarning("GUI transform %s created without enabling GUI support.\nRun \"br -gui ...\" to enable GUI support from the command line, or set\nGlobals->useGui to true.", this->metaObject()->className());
             return;
+        }
 
         if (displayBuffer)
             delete displayBuffer;
@@ -795,7 +797,7 @@ class ElicitTransform : public ShowTransform
 
     Q_OBJECT
 
-    DisplayGUI *gui;
+    GUIWindow *gui;
 
 public:
     ElicitTransform() : ShowTransform()
@@ -835,14 +837,16 @@ public:
 
     void init()
     {
-        initActual<DisplayGUI>();
+        initActual<GUIWindow>();
     }
 
     template<typename GUIType>
     void initActual()
     {
-        if (!Globals->useGui)
+        if (!Globals->useGui) {
+            qWarning("GUI transform %s created without enabling GUI support.\nRun \"br -gui ...\" to enable GUI support from the command line, or set\nGlobals->useGui to true.", this->metaObject()->className());
             return;
+        }
 
         TimeVaryingTransform::init();
 

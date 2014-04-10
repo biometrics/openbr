@@ -138,8 +138,8 @@ public:
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalClassification'.");
                 br_eval_classification(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
             } else if (!strcmp(fun, "evalClustering")) {
-                check(parc == 2, "Incorrect parameter count for 'evalClustering'.");
-                br_eval_clustering(parv[0], parv[1]);
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalClustering'.");
+                br_eval_clustering(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "evalDetection")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalDetection'.");
                 br_eval_detection(parv[0], parv[1], parc == 3 ? parv[2] : "");

@@ -335,6 +335,10 @@ V<T> Downsample(V<T> vals, int k)
     return newVals;
 }
 
+/*! \brief Converts index into subdimensions.
+*/
+QList<int> ind2sub(int dims, int nPerDim, int idx);
+
 }
 
 #endif // COMMON_COMMON_H

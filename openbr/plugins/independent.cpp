@@ -9,13 +9,14 @@ using namespace cv;
 namespace br
 {
 
-static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString & inputVariable, const QStringList &gallery)
+static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString & inputVariable, const QStringList &gallery, const QStringList &subjects)
 {
     // Return early when no downsampling is required
     if ((classes == std::numeric_limits<int>::max()) &&
             (instances == std::numeric_limits<int>::max()) &&
             (fraction >= 1) &&
-            (gallery.isEmpty()))
+            (gallery.isEmpty()) &&
+            (subjects.isEmpty()))
         return templates;
 
     const bool atLeast = instances < 0;
@@ -67,6 +68,11 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
             if (!gallery.contains(downsample[i].file.get<QString>("Gallery")))
                 downsample.removeAt(i);
 
+    if (!subjects.isEmpty())
+        for (int i=downsample.size()-1; i>=0; i--)
+            if (subjects.contains(downsample[i].file.get<QString>(inputVariable)))
+                downsample.removeAt(i);
+
     return downsample;
 }
 
@@ -79,12 +85,15 @@ class DownsampleTrainingTransform : public Transform
     Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(QStringList gallery READ get_gallery WRITE set_gallery RESET reset_gallery STORED false)
+    Q_PROPERTY(QStringList subjects READ get_subjects WRITE set_subjects RESET reset_subjects STORED false)
     BR_PROPERTY(br::Transform*, transform, NULL)
     BR_PROPERTY(int, classes, std::numeric_limits<int>::max())
     BR_PROPERTY(int, instances, std::numeric_limits<int>::max())
     BR_PROPERTY(float, fraction, 1)
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QStringList, gallery, QStringList())
+    BR_PROPERTY(QStringList, subjects, QStringList())
+
 
     void project(const Template & src, Template & dst) const
     {
@@ -97,7 +106,7 @@ class DownsampleTrainingTransform : public Transform
         if (!transform || !transform->trainable)
             return;
 
-        TemplateList downsampled = Downsample(data, classes, instances, fraction, inputVariable, gallery);
+        TemplateList downsampled = Downsample(data, classes, instances, fraction, inputVariable, gallery, subjects);
 
         transform->train(downsampled);
     }
