@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="Open+NEC3Enroll(true)+Affine(192,240,.345,.475,-1,-1,-1,-1,Cubic)+Cvt(Gray)"
+BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml)+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475,-1,-1,-1,-1,Cubic)+Cvt(Gray)"
 NOSE="RectFromStasmNoseWithBridge+ROI+Resize(76,52,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 MOUTH="RectFromStasmMouth+ROI+Resize(36,104,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 EYES="RectFromStasmEyes+ROI+Resize(24,136,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
@@ -9,9 +9,10 @@ BROW="RectFromStasmBrow+ROI+Resize(24,136,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 JAW="RectFromStasmJaw+ROI+Resize(104,164,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 FACE="Cascade(FrontalFace)+Resize(104,104,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 
-: '
+mkdir -p models
 
-br -crossValidate 2 -algorithm "CrossValidate($BASE+Stasm(false,true,[(66.24,114),(125.76,114)])+ \
+if [ ! -f models/all ]; then
+  br -crossValidate 2 -algorithm "CrossValidate($BASE+Stasm(false,true,[(66.24,114),(125.76,114)])+ \
 ($BROW+Center(Range)+ \
 (Turk(unibrow,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=hasunibrow,outputVariable=predicted_hasunibrow)+Cat)/ \
 (Turk(eyebroworientation,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=eyebrowsdown,outputVariable=predicted_eyebrowsdown)/ \
@@ -87,8 +88,7 @@ Turk(nosewidth,[narrow,thick],3), \
 Turk(nosesize,[smallnose,bignose],3), \
 Turk(chinsize,[shortchin,longchin],3)],indices=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,20,21,22,23,24,25,26])" \
 -path ../../img/CUHK-VHDC/CUFSF/target/ -train results30v2.turk models/all 
-
-'
+fi
 
 br -crossValidate 2 -path ../../img/CUHK-VHDC/CUFSF/target/ -algorithm models/all -compare results30v2.turk results30v2.turk simmat/eyes.mtx
 
