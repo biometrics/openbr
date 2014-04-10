@@ -17,7 +17,7 @@ static Template unmap(const Template &t, const QString& variable, const float ma
         i.next();
         // Normalize to [minRange,maxRange]
         float value = i.value().toFloat(&ok)*(maxRange-minRange)/maxVotes - minRange;
-        if (!ok) qFatal("Failed to expand Turk votes for %s", variable);
+        if (!ok) qFatal("Failed to expand Turk votes for %s", qPrintable(variable));
         if (classify) (value > maxRange-((maxRange-minRange)/2)) ? value = maxRange : value = minRange;
         else if (consensusOnly && (value != maxRange && value != minRange)) continue;
         expandedT.file.set(i.key(),value);
