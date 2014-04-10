@@ -288,6 +288,34 @@ BR_REGISTER(Transform, RenameFirstTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Add any ground truth to the template using the file's base name.
+ * \author Josh Klontz \cite jklontz
+ */
+class GroundTruthTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString groundTruth READ get_groundTruth WRITE set_groundTruth RESET reset_groundTruth STORED false)
+    BR_PROPERTY(QString, groundTruth, "")
+
+    QMap<QString,File> files;
+
+    void init()
+    {
+        foreach (const File &file, TemplateList::fromGallery(groundTruth).files())
+            files.insert(file.baseName(), file);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+        dst.file.append(files[dst.file.baseName()].localMetadata());
+    }
+};
+
+BR_REGISTER(Transform, GroundTruthTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
