@@ -559,6 +559,38 @@ class txtGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, txtGallery)
+/*!
+ * \ingroup galleries
+ * \brief Treats each line as a call to File::flat()
+ * \author Josh Klontz \cite jklontz
+ */
+class flatGallery : public Gallery
+{
+    Q_OBJECT
+    QStringList lines;
+
+    ~flatGallery()
+    {
+        if (!lines.isEmpty())
+            QtUtils::writeFile(file.name, lines);
+    }
+
+    TemplateList readBlock(bool *done)
+    {
+        TemplateList templates;
+        foreach (const QString &line, QtUtils::readLines(file))
+            templates.append(File(line));
+        *done = true;
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        lines.append(t.file.flat());
+    }
+};
+
+BR_REGISTER(Gallery, flatGallery)
 
 /*!
  * \ingroup galleries
