@@ -1,14 +1,14 @@
 #!/bin/bash
 
 BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml,[NEC3RightEye,NEC3LeftEye])+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475)+Cvt(Gray)+Stasm(false,true,[(66.24,114),(125.76,114)])"
-SUBSPACE="Normalize(L2)+PCA(0.95)+Center(Range)"
-NOSE="RectFromStasmNoseWithBridge+ROI+Resize(76,52)+$SUBSPACE"
-MOUTH="RectFromStasmMouth+ROI+Resize(36,104)+$SUBSPACE"
-EYES="RectFromStasmEyes+ROI+Resize(24,136)+$SUBSPACE"
-HAIR="RectFromStasmHair+ROI+Resize(60,116)+$SUBSPACE"
-BROW="RectFromStasmBrow+ROI+Resize(24,136)+$SUBSPACE"
-JAW="RectFromStasmJaw+ROI+Resize(104,164)+$SUBSPACE"
-FACE="Crop(24,30,144,190)+$SUBSPACE"
+SUBSPACE="CvtFloat+PCA(0.95)+Center(Range)"
+NOSE="RectFromStasmNoseWithBridge+ROI+Resize(36,24)+$SUBSPACE"
+MOUTH="RectFromStasmMouth+ROI+Resize(24,36)+$SUBSPACE"
+EYES="RectFromStasmEyes+ROI+Resize(24,36)+$SUBSPACE"
+HAIR="RectFromStasmHair+ROI+Resize(24,36)+$SUBSPACE"
+BROW="RectFromStasmBrow+ROI+Resize(24,36)+$SUBSPACE"
+JAW="RectFromStasmJaw+ROI+Resize(36,36)+$SUBSPACE"
+FACE="Crop(24,30,144,190)+Resize(36,36)+$SUBSPACE"
 
 mkdir -p models
 rm models/all
