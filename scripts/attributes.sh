@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml,[NEC3RightEye,NEC3LeftEye])+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475)+Cvt(Gray)+Stasm(false,true,[(66.24,114),(125.76,114)])"
+BASE="Open+PP5Enroll(true)+Rename(PP5_Landmark0_Right_Eye,Affine_0)+Rename(PP5_Landmark1_Left_Eye,Affine_1)+Affine(192,240,.345,.475)+Cvt(Gray)+Stasm(false,true,[(66.24,114),(125.76,114)])"
 SUBSPACE="CvtFloat+PCA(0.95)+Center(Range)"
 NOSE="RectFromStasmNoseWithBridge+ROI+Resize(36,24)+$SUBSPACE"
 MOUTH="RectFromStasmMouth+ROI+Resize(24,36)+$SUBSPACE"
