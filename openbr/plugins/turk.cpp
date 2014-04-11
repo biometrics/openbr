@@ -78,13 +78,8 @@ class MapTransform : public UntrainableTransform
         QMap<QString,QVariant> map;
 
         foreach(const QString &s, inputVariables) {
-            // Get checks if the variant stored in m_metdata can be
-            // converted to the type T. For some reason, you cannot
-            // convert from a QVariant to a QVariant.  Thus, this transform
-            // has to assume that the metadata we want to organize can be
-            // converted to a float, resulting in a loss of generality :-(.
             if (t.file.contains(s)) {
-                map.insert(s,t.file.get<float>(s));
+                map.insert(s,t.file.value(s));
                 mappedT.file.remove(s);
             }
         }

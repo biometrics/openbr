@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml)+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475,-1,-1,-1,-1,Cubic)+Cvt(Gray)"
+BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml,[NEC3RightEye,NEC3LeftEye])+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475,-1,-1,-1,-1,Cubic)+Cvt(Gray)"
 NOSE="RectFromStasmNoseWithBridge+ROI+Resize(76,52,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 MOUTH="RectFromStasmMouth+ROI+Resize(36,104,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
 EYES="RectFromStasmEyes+ROI+Resize(24,136,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
@@ -90,11 +90,11 @@ Turk(chinsize,[shortchin,longchin],3)],indices=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,
 -path ../../img/CUHK-VHDC/CUFSF/target/ -train results30v2.turk models/all 
 fi
 
-br -crossValidate 2 -path ../../img/CUHK-VHDC/CUFSF/target/ -algorithm models/all -compare results30v2.turk results30v2.turk simmat/eyes.mtx
+br -crossValidate 2 -path ../../img/CUHK-VHDC/CUFSF/target/ -algorithm models/all -compare results30v2.turk results30v2.turk simmat/all.mtx
 
-br -crossValidate 2 -setHeader simmat/eyes.mtx ../../sigsets/CUHK-VHDC/CUFSF/target.xml ../../sigsets/CUHK-VHDC/CUFSF/query.xml
-br -crossValidate 2 -convert Output simmat/eyes.mtx output/eyes.rank
-br -crossValidate 2 -convert Output simmat/eyes.mtx algorithm_dataset/eyes_CUFSF%1.eval
+br -crossValidate 2 -setHeader simmat/all.mtx ../../sigsets/CUHK-VHDC/CUFSF/target.xml ../../sigsets/CUHK-VHDC/CUFSF/query.xml
+br -crossValidate 2 -convert Output simmat/all.mtx output/all.rank
+br -crossValidate 2 -convert Output simmat/all.mtx algorithm_dataset/all_CUFSF%1.eval
 
 # Not trained on: earpitch, earsize, neck thickness
 # Not used for comparison: gender, eyelashvisbility

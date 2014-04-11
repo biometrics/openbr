@@ -295,7 +295,9 @@ class GroundTruthTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString groundTruth READ get_groundTruth WRITE set_groundTruth RESET reset_groundTruth STORED false)
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QString, groundTruth, "")
+    BR_PROPERTY(QStringList, keys, QStringList())
 
     QMap<QString,File> files;
 
@@ -308,7 +310,7 @@ class GroundTruthTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        dst.file.append(files[dst.file.baseName()].localMetadata());
+        foreach(const QString &key, keys) dst.file.set(key,files[dst.file.baseName()].value(key));
     }
 };
 
