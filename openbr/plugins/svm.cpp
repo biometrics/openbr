@@ -74,7 +74,7 @@ static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C,
             svm.train_auto(data, lab, Mat(), Mat(), params, 5);
         } catch (...) {
             qWarning("Some classes do not contain sufficient examples or are not discriminative enough for accurate SVM classification.");
-            svm.train(data, lab);
+            svm.train(data, lab, Mat(), Mat(), params);
         }
     } else {
         params.C = C;
