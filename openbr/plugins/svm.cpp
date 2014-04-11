@@ -161,7 +161,8 @@ private:
             dst.m().at<float>(0, 0) = prediction;
             // positive values ==> first class
             // negative values ==> second class
-            prediction = prediction > 0 ? 0 : 1;
+            if (type != EPS_SVR && type != NU_SVR)
+                prediction = prediction > 0 ? 0 : 1;
         }
         if (type == EPS_SVR || type == NU_SVR)
             dst.file.set(outputVariable, prediction);
