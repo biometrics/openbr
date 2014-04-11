@@ -1,28 +1,30 @@
 #!/bin/bash
 
-BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml,[NEC3RightEye,NEC3LeftEye])+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475,-1,-1,-1,-1,Cubic)+Cvt(Gray)"
-NOSE="RectFromStasmNoseWithBridge+ROI+Resize(76,52,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-MOUTH="RectFromStasmMouth+ROI+Resize(36,104,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-EYES="RectFromStasmEyes+ROI+Resize(24,136,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-HAIR="RectFromStasmHair+ROI+Resize(60,116,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-BROW="RectFromStasmBrow+ROI+Resize(24,136,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-JAW="RectFromStasmJaw+ROI+Resize(104,164,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
-FACE="Cascade(FrontalFace)+Resize(104,104,Cubic)+Normalize(L2)+PCA(0.95)+Cat"
+BASE="Open+GroundTruth(../../sigsets/CUHK-VHDC/CUFSF/target.xml,[NEC3RightEye,NEC3LeftEye])+Rename(NEC3RightEye,Affine_0)+Rename(NEC3LeftEye,Affine_1)+Affine(192,240,.345,.475)+Cvt(Gray)"
+SUBSPACE="Normalize(L2)+PCA(0.95)+Center(Range)"
+NOSE="RectFromStasmNoseWithBridge+ROI+Resize(76,52)+$SUBSPACE"
+MOUTH="RectFromStasmMouth+ROI+Resize(36,104)+$SUBSPACE"
+EYES="RectFromStasmEyes+ROI+Resize(24,136)+$SUBSPACE"
+HAIR="RectFromStasmHair+ROI+Resize(60,116)+$SUBSPACE"
+BROW="RectFromStasmBrow+ROI+Resize(24,136)+$SUBSPACE"
+JAW="RectFromStasmJaw+ROI+Resize(104,164)+$SUBSPACE"
+FACE="Cascade(FrontalFace)+Resize(104,104)+$SUBSPACE"
 
 mkdir -p models
+rm models/all
 
 if [ ! -f models/all ]; then
   br -crossValidate 2 -algorithm "CrossValidate($BASE+Stasm(false,true,[(66.24,114),(125.76,114)])+ \
-($BROW+Center(Range)+ \
+($BROW+ \
 (Turk(unibrow,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=hasunibrow,outputVariable=predicted_hasunibrow)+Cat)/ \
 (Turk(eyebroworientation,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=eyebrowsdown,outputVariable=predicted_eyebrowsdown)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=eyebrowsuptodown,outputVariable=predicted_eyebrowsuptodown)+Cat)/ \
 (Turk(eyebrowthickness,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=thickeyebrows,outputVariable=predicted_thickeyebrows)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=lighteyebrows,outputVariable=predicted_lighteyebrows)+Cat))/ \
-($MOUTH+Center(Range)+ \
+($MOUTH+ \
 (Turk(expression,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=smiling,outputVariable=predicted_smiling)+Cat)/ \
 (Turk(mouthasymmetry,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=asymmetrical,outputVariable=predicted_asymmetrical)+Cat))/ \
-($EYES+Center(Range)+ \
+($EYES+ \
 (Turk(eyecolor,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=darkeyes,outputVariable=predicted_darkeyes)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=lighteyes,outputVariable=predicted_lighteyes)+Cat)/ \
 (Turk(baggyeyes,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=baggy,outputVariable=predicted_baggy)+Cat)/ \
@@ -34,7 +36,7 @@ SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=lighteyes,outputVariable=predicte
 (Turk(smalleyes,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=hassmalleyes,outputVariable=predicted_hassmalleyes)+Cat)/ \
 (Turk(glasses,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=hasglasses,outputVariable=predicted_hasglasses)+Cat)/ \
 (Turk(eyelashvisibility,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=feweyelashes,outputVariable=predicted_feweyelashes)+Cat))/ \
-($FACE+Center(Range)+ \
+($FACE+ \
 (Turk(gender,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=male,outputVariable=predicted_male)+Cat)/ \
 (Turk(cheekdensity,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=puffy,outputVariable=predicted_puffy)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=in,outputVariable=predicted_in)/ \
@@ -45,20 +47,20 @@ SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=normal,outputVariable=predicted_n
 (Turk(facelength,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=longface,outputVariable=predicted_longface)+Cat)/ \
 (Turk(nosetomouthdist,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=long,outputVariable=predicted_long)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=small,outputVariable=predicted_small)+Cat))/ \
-($HAIR+Center(Range)+ \
+($HAIR+ \
 (Turk(foreheadwrinkles,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=wrinkled,outputVariable=predicted_wrinkled)+Cat)/ \
 (Turk(haircolor,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=darkhair,outputVariable=predicted_darkhair)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=lighthair,outputVariable=predicted_lighthair)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=greyhair,outputVariable=predicted_greyhair)+Cat)/ \
 (Turk(hairstyle,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=curlyhair,outputVariable=predicted_curlyhair)+Cat))/ \
-($NOSE+Center(Range)+ \
+($NOSE+ \
 (Turk(noseorientation,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=upnose,outputVariable=predicted_upnose)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=downnose,outputVariable=predicted_downnose)+Cat)/ \
 (Turk(nosewidth,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=narrow,outputVariable=predicted_narrow)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=thick,outputVariable=predicted_thick)+Cat)/ \
 (Turk(nosesize,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=smallnose,outputVariable=predicted_smallnose)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=bignose,outputVariable=predicted_bignose)+Cat))/ \
-($JAW+Center(Range)+ \
+($JAW+ \
 (Turk(chinsize,3)+SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=shortchin,outputVariable=predicted_shortchin)/ \
 SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=longchin,outputVariable=predicted_longchin))+Cat)): \
 CrossValidate+Fuse([ \
