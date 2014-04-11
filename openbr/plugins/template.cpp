@@ -42,8 +42,8 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         const QRegularExpression re(regexp);
-        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.baseName() : src.file.get<QString>(key));
-        if (!match.hasMatch()) dst = Template();
+        const QRegularExpressionMatch match = re.match(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key));
+        if (match.hasMatch()) dst = Template();
         else                  dst = src;
     }
 };
