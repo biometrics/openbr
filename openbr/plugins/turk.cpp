@@ -57,6 +57,58 @@ BR_REGISTER(Transform, TurkTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Convenience class for training turk attribute regressors
+ * \author Josh Klontz \cite jklontz
+ */
+class TurkClassifierTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    Q_PROPERTY(QStringList values READ get_values WRITE set_values RESET reset_values STORED false)
+    Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    BR_PROPERTY(QString, key, QString())
+    BR_PROPERTY(QStringList, values, QStringList())
+    BR_PROPERTY(float, maxVotes, 1)
+
+    Transform *child;
+
+    void init()
+    {
+        QString algorithm = QString("Turk(%1, %2)+").arg(key, QString::number(maxVotes));
+        QStringList classifiers;
+        foreach (const QString &value, values)
+            classifiers.append(QString("SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=%1,outputVariable=predicted_%1)").arg(value));
+        algorithm += classifiers.join("/");
+        if (values.size() > 1)
+            algorithm += "+Cat";
+        child = Transform::make(algorithm);
+    }
+
+    void train(const QList<TemplateList> &data)
+    {
+        child->train(data);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        child->project(src, dst);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        child->store(stream);
+    }
+
+    void load(QDataStream &stream)
+    {
+        child->load(stream);
+    }
+};
+
+BR_REGISTER(Transform, TurkClassifierTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Converts metadata into a map structure
  * \author Scott Klum \cite sklum
  */
