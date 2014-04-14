@@ -1,4 +1,5 @@
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 #include "openbr/core/qtutils.h"
 
 namespace br
@@ -12,6 +13,10 @@ namespace br
 class turkGallery : public Gallery
 {
     Q_OBJECT
+    Q_PROPERTY(bool flat READ get_flat WRITE set_flat RESET reset_flat STORED false)
+    Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED false)
+    BR_PROPERTY(bool, flat, false)
+    BR_PROPERTY(bool, normalize, false)
 
     struct Attribute : public QStringList
     {
@@ -22,6 +27,23 @@ class turkGallery : public Gallery
             name = str.mid(0, i);
             if (i != -1)
                 append(str.mid(i+1, str.length()-i-2).split(","));
+        }
+
+        Attribute normalized() const
+        {
+            bool ok;
+            QList<float> values;
+            foreach (const QString &value, *this) {
+                values.append(value.toFloat(&ok));
+                if (!ok)
+                    qFatal("Can't normalize non-numeric vector!");
+            }
+
+            Attribute normal(name);
+            const float sum = Common::Sum(values);
+            for (int i=0; i<values.size(); i++)
+                normal.append(QString::number(values[i] / sum));
+            return normal;
         }
     };
 
@@ -48,10 +70,18 @@ class turkGallery : public Gallery
                 if (type.size() != rating.size())
                     qFatal(".turk Gallery incorrect ratings count.");
 
-                QMap<QString,QVariant> categoryMap;
-                for (int j=0; j<type.size(); j++)
-                    categoryMap.insert(type[j], rating[j]);
-                f.set(type.name, categoryMap);
+                if (normalize)
+                    rating = rating.normalized();
+
+                if (flat) {
+                    for (int j=0; j<type.size(); j++)
+                        f.set(type.name + "_" + type[j], rating[j]);
+                } else {
+                    QMap<QString,QVariant> categoryMap;
+                    for (int j=0; j<type.size(); j++)
+                        categoryMap.insert(type[j], rating[j]);
+                    f.set(type.name, categoryMap);
+                }
             }
             templates.append(f);
         }
