@@ -51,6 +51,19 @@ class GammaTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, GammaTransform)
 
+class GammaFullTransform : public UntrainableTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(float gamma READ get_gamma WRITE set_gamma RESET reset_gamma STORED false)
+    BR_PROPERTY(float, gamma, 0.2)
+
+    void project(const Template &src, Template &dst) const
+    {
+        pow(src, gamma, dst);
+    }
+};
+
+BR_REGISTER(Transform, GammaFullTransform)
 /*!
  * \ingroup transforms
  * \brief Gaussian blur

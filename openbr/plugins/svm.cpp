@@ -74,7 +74,7 @@ static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C,
             svm.train_auto(data, lab, Mat(), Mat(), params, 5);
         } catch (...) {
             qWarning("Some classes do not contain sufficient examples or are not discriminative enough for accurate SVM classification.");
-            svm.train(data, lab);
+            svm.train(data, lab, Mat(), Mat(), params);
         }
     } else {
         params.C = C;
@@ -161,7 +161,8 @@ private:
             dst.m().at<float>(0, 0) = prediction;
             // positive values ==> first class
             // negative values ==> second class
-            prediction = prediction > 0 ? 0 : 1;
+            if (type != EPS_SVR && type != NU_SVR)
+                prediction = prediction > 0 ? 0 : 1;
         }
         if (type == EPS_SVR || type == NU_SVR)
             dst.file.set(outputVariable, prediction);
