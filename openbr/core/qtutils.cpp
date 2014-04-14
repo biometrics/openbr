@@ -27,12 +27,11 @@
 #include <QRegularExpression>
 #include <QStack>
 #include <QUrl>
-#include <QMap>
-
 #include <openbr/openbr_plugin.h>
 
 #include "alphanum.hpp"
 #include "qtutils.h"
+#include "opencvutils.h"
 
 using namespace br;
 
@@ -413,9 +412,7 @@ QString toString(const QVariant &variant)
                                             QString::number(rect.y()),
                                             QString::number(rect.width()),
                                             QString::number(rect.height()));
-    } else if (variant.canConvert(QVariant::Map)) {
-        return toString(qvariant_cast<QVariantMap>(variant));
-    }
+    } else if (variant.canConvert<cv::Mat>()) return OpenCVUtils::matrixToString(variant.value<cv::Mat>());
 
     return QString();
 }
