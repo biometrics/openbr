@@ -1,7 +1,67 @@
 #include "openbr_internal.h"
+#include "openbr/core/qtutils.h"
 
 namespace br
 {
+
+/*!
+ * \ingroup galleries
+ * \brief For Amazon Mechanical Turk datasets
+ * \author Scott Klum \cite sklum
+ */
+class turkGallery : public Gallery
+{
+    Q_OBJECT
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        TemplateList templates;
+        if (!file.exists()) return templates;
+
+        QStringList lines = QtUtils::readLines(file);
+        QRegExp regexp(",(?!(?:\\w+,?)+\\])");
+
+        QStringList headers;
+
+        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
+
+        foreach (const QString &line, lines) {
+            QStringList words = line.split(regexp);
+            if (words.size() != headers.size()) continue;
+            File f;
+            f.name = words[0];
+            f.set("Label", words[0].mid(0,5));
+
+            for (int i=1; i<words.size(); i++) {
+                QStringList categories = headers[i].split('[');
+                categories.last().chop(1); // Remove trailing bracket
+                QStringList types = categories.last().split(',');
+
+                QStringList ratings = words[i].split(',');
+                ratings.first() = ratings.first().mid(1); // Remove first bracket
+                ratings.last().chop(1); // Remove trailing bracket
+
+                if (types.size() != ratings.size()) continue;
+
+                QMap<QString,QVariant> categoryMap;
+                for (int j=0; j<types.size(); j++) categoryMap.insert(types[j],ratings[j]);
+
+                f.set(categories[0], categoryMap);
+            }
+            templates.append(f);
+        }
+
+        return templates;
+    }
+
+    void write(const Template &)
+    {
+        qFatal("turkGallery write not implemented.");
+    }
+};
+
+BR_REGISTER(Gallery, turkGallery)
 
 static Template unmap(const Template &t, const QString& variable, const float maxVotes, const float maxRange, const float minRange, const bool classify, const bool consensusOnly) {
     // Create a new template matching the one containing the votes in the map structure
