@@ -13,41 +13,45 @@ class turkGallery : public Gallery
 {
     Q_OBJECT
 
+    struct Attribute : public QStringList
+    {
+        QString name;
+        Attribute(const QString &str = QString())
+        {
+            const int i = str.indexOf('[');
+            name = str.mid(0, i);
+            if (i != -1)
+                append(str.mid(i+1, str.length()-i-2).split(","));
+        }
+    };
+
     TemplateList readBlock(bool *done)
     {
         *done = true;
         TemplateList templates;
-        if (!file.exists()) return templates;
-
         QStringList lines = QtUtils::readLines(file);
-        QRegExp regexp(",(?!(?:\\w+,?)+\\])");
-
-        QStringList headers;
-
-        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
+        if (lines.empty())
+            qFatal(".turk Gallery missing header.");
+        QList<Attribute> types;
+        foreach (const QString &header, parse(lines.takeFirst()))
+            types.append(header);
 
         foreach (const QString &line, lines) {
-            QStringList words = line.split(regexp);
-            if (words.size() != headers.size()) continue;
-            File f;
-            f.name = words[0];
-            f.set("Label", words[0].mid(0,5));
+            const QStringList words = parse(line);
+            if (words.size() != types.size())
+                qFatal(".turk Gallery incorrect column count.");
 
+            File f(words[0], words[0].mid(0,5));
             for (int i=1; i<words.size(); i++) {
-                QStringList categories = headers[i].split('[');
-                categories.last().chop(1); // Remove trailing bracket
-                QStringList types = categories.last().split(',');
-
-                QStringList ratings = words[i].split(',');
-                ratings.first() = ratings.first().mid(1); // Remove first bracket
-                ratings.last().chop(1); // Remove trailing bracket
-
-                if (types.size() != ratings.size()) continue;
+                Attribute &type = types[i];
+                Attribute rating(words[i]);
+                if (type.size() != rating.size())
+                    qFatal(".turk Gallery incorrect ratings count.");
 
                 QMap<QString,QVariant> categoryMap;
-                for (int j=0; j<types.size(); j++) categoryMap.insert(types[j],ratings[j]);
-
-                f.set(categories[0], categoryMap);
+                for (int j=0; j<type.size(); j++)
+                    categoryMap.insert(type[j], rating[j]);
+                f.set(type.name, categoryMap);
             }
             templates.append(f);
         }
