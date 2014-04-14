@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE="Open+PP5Register+Rename(PP5_Landmark0_Right_Eye,Affine_0)+Rename(PP5_Landmark1_Left_Eye,Affine_1)+Affine(192,240,.345,.475)+Cvt(Gray)+Stasm(false,true,[(66.24,114),(125.76,114)])"
-SUBSPACE="CvtFloat+Blur(1.1)+GammaFull(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,4,4)+Hist(59)+Cat+PCA(0.95)"
+SUBSPACE="Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,4,4)+Hist(59)+Cat+PCA(0.95)"
 
 NOSE="RectFromStasmNoseWithBridge+ROI+Resize(36,24)+$SUBSPACE"
 MOUTH="RectFromStasmMouth+ROI+Resize(24,36)+$SUBSPACE"
@@ -12,7 +12,10 @@ JAW="RectFromStasmJaw+ROI+Resize(36,36)+$SUBSPACE"
 FACE="Crop(24,30,144,190)+Resize(36,36)+$SUBSPACE"
 
 ATTDIR=Attributes
-mkdir $ATTDIR
+mkdir -p $ATTDIR
+
+# Provide a sensible default value for DATA if undefined
+DATA=${DATA:-~/data/CUHK-VHDC}
 
 if [ ! -f $ATTDIR/all.model ]; then
   br -gui -crossValidate 2 -algorithm "CrossValidate($BASE+ \
