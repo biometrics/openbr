@@ -116,24 +116,15 @@ T Max(const QList<T> &vals)
 }
 
 /*!
- * \brief Returns the sum of a vector of values.
- */
-template <template<class> class V, typename T>
-double Sum(const V<T> &vals)
-{
-    double sum = 0;
-    foreach (T val, vals) sum += val;
-    return sum;
-}
-
-/*!
  * \brief Returns the mean and standard deviation of a vector of values.
  */
 template <template<class> class V, typename T>
 double Mean(const V<T> &vals)
 {
     if (vals.isEmpty()) return 0;
-    return Sum(vals) / vals.size();
+    double sum = 0;
+    foreach (T val, vals) sum += val;
+    return sum / vals.size();
 }
 
 /*!
