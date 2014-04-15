@@ -219,6 +219,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
 
     const bool minimalist = destination.getBool("minimalist");
+    const bool uncertainty = destination.get<bool>("uncertainty");
 
     // Use a br::file for simple storage of plot options
     File cmcOpts;
@@ -268,7 +269,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + theme(aspect.ratio=1)\n\n")));
 
     p.file.write(qPrintable(QString("ggplot(CMC, aes(x=X, y=Y%1%2)) + ggtitle(\"%3\") + xlab(\"Rank\") + ylab(\"Retrieval Rate\")").arg(p.major.size > 1 ? QString(" ,colour=factor(%1)").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString(), cmcOpts.get<QString>("title",QString())) +
-                            QString(((p.major.smooth || p.minor.smooth) ? (minimalist ? " + stat_summary(geom=\"line\", fun.y=mean, size=%1)" : " + stat_summary(geom=\"line\", fun.y=min, aes(linetype=\"Min/Max\"), size=%1) + stat_summary(geom=\"line\", "
+                            QString(((p.major.smooth || p.minor.smooth) ? (!uncertainty ? " + stat_summary(geom=\"line\", fun.y=mean, size=%1)" : " + stat_summary(geom=\"line\", fun.y=min, aes(linetype=\"Min/Max\"), size=%1) + stat_summary(geom=\"line\", "
                             "fun.y=max, aes(linetype=\"Min/Max\"), size=%1) + stat_summary(geom=\"line\", fun.y=mean, aes(linetype=\"Mean\"), size=%1) + scale_linetype_manual(\"Legend\", values=c(\"Mean\"=1, \"Min/Max\"=2))") : " + geom_line(size=%1)")).arg(QString::number(cmcOpts.get<float>("thickness",1))) +
                             (minimalist ? "" : " + scale_x_log10(labels=c(1,5,10,50,100), breaks=c(1,5,10,50,100)) + annotation_logticks(sides=\"b\")") +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
