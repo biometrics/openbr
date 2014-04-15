@@ -67,7 +67,6 @@ static Template unmap(const Template &t, const QString& variable, const float ma
     // Create a new template matching the one containing the votes in the map structure
     // but remove the map structure
     Template expandedT = t;
-    expandedT.file.remove(variable);
 
     QMap<QString,QVariant> map = t.file.get<QMap<QString,QVariant> >(variable);
     QMapIterator<QString, QVariant> i(map);
