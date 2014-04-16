@@ -160,9 +160,11 @@ class TurkClassifierTransform : public Transform
     Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
     Q_PROPERTY(QStringList values READ get_values WRITE set_values RESET reset_values STORED false)
     Q_PROPERTY(float maxVotes READ get_maxVotes WRITE set_maxVotes RESET reset_maxVotes STORED false)
+    Q_PROPERTY(bool isMeta READ get_isMeta WRITE set_isMeta RESET reset_isMeta STORED false)
     BR_PROPERTY(QString, key, QString())
     BR_PROPERTY(QStringList, values, QStringList())
     BR_PROPERTY(float, maxVotes, 1)
+    BR_PROPERTY(bool, isMeta, false)
 
     Transform *child;
 
@@ -175,6 +177,8 @@ class TurkClassifierTransform : public Transform
         algorithm += classifiers.join("/");
         if (values.size() > 1)
             algorithm += "+Cat";
+        if (isMeta)
+            algorithm += QsString("+Average+SaveMat(predicted_%1)").arg(value);
         child = Transform::make(algorithm);
     }
 
