@@ -108,7 +108,7 @@ class TurkClassifierTransform : public Transform
             classifiers.append(QString("SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=%1,outputVariable=predicted_%1)").arg(key + "_" + value));
         child = Transform::make(classifiers.join("/") + (classifiers.size() > 1 ? "+Cat" : ""));
         if (isMeta)
-            algorithm += QsString("+Average+SaveMat(predicted_%1)").arg(value);
+            algorithm += QString("+Average+SaveMat(predicted_%1)").arg(value);
     }
 
     void train(const QList<TemplateList> &data)
