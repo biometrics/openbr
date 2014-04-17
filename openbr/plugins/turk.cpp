@@ -105,8 +105,8 @@ class TurkClassifierTransform : public Transform
     {
         QStringList classifiers;
         foreach (const QString &value, values) 
-            classifiers.append(QString("SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=%1,outputVariable=predicted_%1)%2").arg(key + "_" + value).arg(isMeta ? QString("+Average+SaveMat(predicted_%1)").arg(value) : ""));
-        QString algorithm = classifiers.join("/") + (classifiers.size() > 1 ? "+Cat" : "");
+            classifiers.append(QString("(SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=%1,outputVariable=predicted_%1)%2)").arg(key + "_" + value, isMeta ? QString("+Average+SaveMat(predicted_%1)").arg(value) : QString()));
+        child = Transform::make(classifiers.join("/") + (classifiers.size() > 1 ? "+Cat" : ""));
     }
 
     void train(const QList<TemplateList> &data)
