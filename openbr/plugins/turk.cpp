@@ -147,10 +147,9 @@ class TurkDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        const float stddev = .75;
         float score = 0;
         for (int i=0; i<values.size(); i++)
-            score += 1 / (stddev*sqrt(2*CV_PI)) * exp(-0.5*pow((query.m().at<float>(0,i)-target.file.get<float>(key + "_" + values[i]))/stddev, 2));
+            score -= fabs(query.m().at<float>(i) - target.file.get<float>(key + "_" + values[i]));
         return score;
     }
 };
