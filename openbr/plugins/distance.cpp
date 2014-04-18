@@ -51,7 +51,8 @@ public:
                   INF,
                   L1,
                   L2,
-                  Cosine };
+                  Cosine,
+                  Dot};
 
 private:
     BR_PROPERTY(Metric, metric, L2)
@@ -88,6 +89,8 @@ private:
             break;
           case Cosine:
             return cosine(a, b);
+          case Dot:
+            return a.m().dot(b);
           default:
             qFatal("Invalid metric");
         }
