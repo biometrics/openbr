@@ -1,5 +1,6 @@
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
+#include "openbr/core/opencvutils.h"
 #include "openbr/core/qtutils.h"
 
 namespace br
@@ -145,12 +146,28 @@ class TurkDistance : public Distance
     BR_PROPERTY(QString, key, QString())
     BR_PROPERTY(QStringList, values, QStringList())
 
+    bool targetHuman;
+    bool queryMachine;
+
+    void init()
+    {
+        targetHuman = Globals->property("TurkTargetHuman").toBool();
+        queryMachine = Globals->property("TurkQueryMachine").toBool();
+    }
+
+    cv::Mat getValues(const Template &t) const
+    {
+        QList<float> result;
+        foreach (const QString &value, values)
+            result.append(t.file.get<float>(key + "_" + value));
+        return OpenCVUtils::toMat(result, 1);
+    }
+
     float compare(const Template &target, const Template &query) const
     {
-        float score = 0;
-        for (int i=0; i<values.size(); i++)
-            score -= fabs(query.m().at<float>(i) - target.file.get<float>(key + "_" + values[i]));
-        return score;
+        const cv::Mat a = targetHuman ? getValues(target) : target.m();
+        const cv::Mat b = queryMachine ? query.m() : getValues(query);
+        return -norm(a, b, cv::NORM_L1);
     }
 };
 
