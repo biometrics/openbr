@@ -120,18 +120,6 @@ Turk(chinsize,[shortchin,longchin],3)])" \
 fi
 
 br -crossValidate 2 -path $DATA/CUFSF/target/ -algorithm $ATTDIR/all.model -compare results1194v2.turk results1194v2.turk $ATTDIR/all.mtx
-
 br -crossValidate 2 -setHeader $ATTDIR/all.mtx $DATA/CUFSF/target.xml $DATA/CUFSF/query.xml
-br -crossValidate 2 -convert Output $ATTDIR/all.mtx $ATTDIR/all.rank
 br -crossValidate 2 -convert Output $ATTDIR/all.mtx $ATTDIR/all_CUFSF%1.eval
-
-# Not trained on: earpitch, earsize, neck thickness
-
-#br -crossValidate 2 -path $DATA/CUFSF/target/ -algorithm models/attributes -enroll results30v2.turk gallery/results30v2.gal
-
-#for attribute in male puffy in scars moles long long small darkeyes lighteyes upnose downnose darkhair lighthair thickeyebrows lighteyebrows upnose downnose small thick smallnose bignose asymmetrical eyebrowsdown eyebrowsuptodown shortchin longchin baggy almond buriedeyes sleepy line round smalleyes smiling feweyelashes wrinkled curlyhair unibrow; do
-
-#echo $attribute
-#br -evalRegression gallery/results30v2.gal gallery/results30v2.gal $attribute predicted_$attribute
-
-#done
+br -plot $ATTDIR/all_CUFSF* results.pdf
