@@ -1,7 +1,3 @@
-#ifdef BR_LIBRARY
-  #define JANUS_LIBRARY
-#endif
-
 #include "janus.h"
 #include "janus_io.h"
 #include "openbr_plugin.h"
@@ -20,7 +16,7 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
 {
     int argc = 1;
     const char *argv[1] = { "janus" };
-    Context::initialize(argc, (char**)argv, sdk_path);
+    Context::initialize(argc, (char**)argv, sdk_path, false);
     QString algorithm = model_file;
     if (algorithm.isEmpty()) {
         transform = Transform::fromAlgorithm("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", false);
