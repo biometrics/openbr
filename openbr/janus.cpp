@@ -74,6 +74,7 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
 
 janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
 {    
+    *bytes = 0;
     foreach (const cv::Mat &m, *template_) {
         assert(m.isContinuous());
         const size_t templateBytes = m.rows * m.cols * m.elemSize();
@@ -118,7 +119,8 @@ janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, cons
     if (*similarity != *similarity) // True for NaN
         return JANUS_UNKNOWN_ERROR;
 
-    *similarity /= comparisons;
+    if (comparisons > 0) *similarity /= comparisons;
+    else                 *similarity = std::numeric_limits<double>::lowest();
     return JANUS_SUCCESS;
 }
 
