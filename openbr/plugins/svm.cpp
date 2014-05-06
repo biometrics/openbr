@@ -260,10 +260,10 @@ private:
         trainSVM(svm, deltaData, deltaLab, kernel, type, -1, -1);
     }
 
-    float compare(const Template &ta, const Template &tb) const
+    float compare(const Mat &a, const Mat &b) const
     {
         Mat delta;
-        absdiff(ta, tb, delta);
+        absdiff(a, b, delta);
         return svm.predict(delta.reshape(1, 1));
     }
 

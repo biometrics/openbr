@@ -322,7 +322,7 @@ class PP5CompareDistance : public Distance
             ppr_free_gallery(gallery.gallery);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         TemplateList targetList;
         targetList.append(target);

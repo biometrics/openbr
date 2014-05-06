@@ -1324,7 +1324,8 @@ public:
     virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
-    virtual float compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
+    virtual float compare(const Template &a, const Template &b) const { return compare(a.m(), b.m()); } /*!< \brief Compute the distance between two templates. */
+    virtual float compare(const cv::Mat &a, const cv::Mat &b) const = 0;
 
 protected:
     inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */

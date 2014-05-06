@@ -58,10 +58,10 @@ private:
     BR_PROPERTY(Metric, metric, L2)
     BR_PROPERTY(bool, negLogPlusOne, true)
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        if ((a.m().size != b.m().size) ||
-            (a.m().type() != b.m().type()))
+        if ((a.size != b.size) ||
+            (a.type() != b.type()))
                 return -std::numeric_limits<float>::max();
 
 // TODO: this max value is never returned based on the switch / default 
@@ -90,7 +90,7 @@ private:
           case Cosine:
             return cosine(a, b);
           case Dot:
-            return a.m().dot(b);
+            return a.dot(b);
           default:
             qFatal("Invalid metric");
         }
@@ -138,7 +138,7 @@ class DefaultDistance : public Distance
         distance = Distance::make("Dist("+file.suffix()+")");
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
         return distance->compare(a, b);
     }
@@ -169,7 +169,7 @@ class PipeDistance : public Distance
         futures.waitForFinished();
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
         float result = -std::numeric_limits<float>::max();
         foreach (br::Distance *distance, distances) {
@@ -224,6 +224,11 @@ private:
             distances[i]->train(partitionedSrc[i]);
     }
 
+    float compare(const Mat &a, const Mat &b) const
+    {
+        return distances.first()->compare(a, b);
+    }
+
     float compare(const Template &a, const Template &b) const
     {
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
@@ -232,7 +237,7 @@ private:
         for (int i=0; i<distances.size(); i++) {
             float weight;
             weights.isEmpty() ? weight = 1. : weight = weights[i];
-            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+            scores.append(weight*distances[i]->compare(a[i], b[i]));
         }
 
         switch (operation) {
@@ -282,9 +287,9 @@ class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        return l1(a.m().data, b.m().data, a.m().total());
+        return l1(a.data, b.data, a.total());
     }
 };
 
@@ -299,9 +304,9 @@ class HalfByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        return packed_l1(a.m().data, b.m().data, a.m().total());
+        return packed_l1(a.data, b.data, a.total());
     }
 };
 
@@ -321,6 +326,11 @@ class NegativeLogPlusOneDistance : public Distance
     void train(const TemplateList &src)
     {
         distance->train(src);
+    }
+
+    float compare(const cv::Mat &a, const cv::Mat &b) const
+    {
+        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &a, const Template &b) const
@@ -350,20 +360,17 @@ class IdenticalDistance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        const Mat &am = a.m();
-        const Mat &bm = b.m();
-        const size_t size = am.total() * am.elemSize();
-        if (size != bm.total() * bm.elemSize()) return 0;
+        const size_t size = a.total() * a.elemSize();
+        if (size != b.total() * b.elemSize()) return 0;
         for (size_t i=0; i<size; i++)
-            if (am.data[i] != bm.data[i]) return 0;
+            if (a.data[i] != b.data[i]) return 0;
         return 1;
     }
 };        
 
 BR_REGISTER(Distance, IdenticalDistance)
-
 
 /*!
  * \ingroup distances
@@ -380,6 +387,11 @@ class OnlineDistance : public Distance
 
     mutable QHash<QString,float> scoreHash;
     mutable QMutex mutex;
+
+    float compare(const Mat &a, const Mat &b) const
+    {
+        return compare(Template(a), Template(b));
+    }
 
     float compare(const Template &target, const Template &query) const
     {
@@ -402,6 +414,12 @@ class AttributeDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
     BR_PROPERTY(QString, attribute, QString())
+
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
 
     float compare(const Template &target, const Template &query) const
     {
@@ -435,6 +453,11 @@ class SumDistance : public Distance
         foreach (br::Distance *distance, distances)
             futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
         futures.waitForFinished();
+    }
+
+    float compare(const Mat &a, const Mat &b) const
+    {
+        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &target, const Template &query) const

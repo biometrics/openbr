@@ -163,11 +163,11 @@ class BayesianQuantizationDistance : public Distance
         futures.waitForFinished();
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
-        const uchar *aData = a.m().data;
-        const uchar *bData = b.m().data;
-        const int size = a.m().rows * a.m().cols;
+        const uchar *aData = a.data;
+        const uchar *bData = b.data;
+        const int size = a.rows * a.cols;
         float likelihood = 0;
         for (int i=0; i<size; i++)
             likelihood += loglikelihoods[i*256+abs(aData[i]-bData[i])];
@@ -257,6 +257,12 @@ class ProductQuantizationDistance : public Distance
     Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
     BR_PROPERTY(bool, bayesian, false)
 
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
+
     float compare(const Template &a, const Template &b) const
     {
         float distance = 0;
@@ -296,6 +302,12 @@ class RecursiveProductQuantizationDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)
     BR_PROPERTY(float, t, -std::numeric_limits<float>::max())
+
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
 
     float compare(const Template &a, const Template &b) const
     {

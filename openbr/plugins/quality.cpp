@@ -182,7 +182,7 @@ class MatchProbabilityDistance : public Distance
         mp = MP(genuineScores, impostorScores);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         const float rawScore = distance->compare(target, query);
         if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
@@ -244,6 +244,11 @@ class ZScoreDistance : public Distance
         Common::MeanStdDev(scores, &mean, &stddev);
 
         if (stddev == 0) qFatal("Stddev is 0.");
+    }
+
+    float compare(const cv::Mat &a, const cv::Mat &b) const
+    {
+        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &target, const Template &query) const
@@ -308,7 +313,7 @@ class HeatMapDistance : public Distance
             distances[i]->train(patches[i]);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         (void) target;
         (void) query;
@@ -399,6 +404,11 @@ class UnitDistance : public Distance
         b = impostorMean;
 
         qDebug("a = %f, b = %f", a, b);
+    }
+
+    float compare(const cv::Mat &a, const cv::Mat &b) const
+    {
+        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &target, const Template &query) const

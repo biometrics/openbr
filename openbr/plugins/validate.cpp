@@ -143,6 +143,12 @@ class CrossValidateDistance : public Distance
 {
     Q_OBJECT
 
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error");
+        return 0;
+    }
+
     float compare(const Template &a, const Template &b) const
     {
         static const QString key("Partition"); // More efficient to preallocate this
@@ -162,6 +168,12 @@ BR_REGISTER(Distance, CrossValidateDistance)
 class FilterDistance : public Distance
 {
     Q_OBJECT
+
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
 
     float compare(const Template &a, const Template &b) const
     {
@@ -196,6 +208,12 @@ class MetadataDistance : public Distance
 
     Q_PROPERTY(QStringList filters READ get_filters WRITE set_filters RESET reset_filters STORED false)
     BR_PROPERTY(QStringList, filters, QStringList())
+
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
 
     float compare(const Template &a, const Template &b) const
     {
@@ -249,6 +267,12 @@ class RejectDistance : public Distance
     BR_PROPERTY(QStringList, keys, QStringList())
     Q_PROPERTY(bool rejectIfContains READ get_rejectIfContains WRITE set_rejectIfContains RESET reset_rejectIfContains STORED false)
     BR_PROPERTY(bool, rejectIfContains, false)
+
+    float compare(const cv::Mat &, const cv::Mat &) const
+    {
+        qFatal("Logic error.");
+        return 0;
+    }
 
     float compare(const Template &a, const Template &b) const
     {
