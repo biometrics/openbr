@@ -224,11 +224,6 @@ private:
             distances[i]->train(partitionedSrc[i]);
     }
 
-    float compare(const Mat &a, const Mat &b) const
-    {
-        return distances.first()->compare(a, b);
-    }
-
     float compare(const Template &a, const Template &b) const
     {
         if (a.size() != b.size()) qFatal("Comparison size mismatch");
@@ -237,7 +232,7 @@ private:
         for (int i=0; i<distances.size(); i++) {
             float weight;
             weights.isEmpty() ? weight = 1. : weight = weights[i];
-            scores.append(weight*distances[i]->compare(a[i], b[i]));
+            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
         }
 
         switch (operation) {
@@ -328,11 +323,6 @@ class NegativeLogPlusOneDistance : public Distance
         distance->train(src);
     }
 
-    float compare(const cv::Mat &a, const cv::Mat &b) const
-    {
-        return compare(Template(a), Template(b));
-    }
-
     float compare(const Template &a, const Template &b) const
     {
         return -log(distance->compare(a,b)+1);
@@ -388,11 +378,6 @@ class OnlineDistance : public Distance
     mutable QHash<QString,float> scoreHash;
     mutable QMutex mutex;
 
-    float compare(const Mat &a, const Mat &b) const
-    {
-        return compare(Template(a), Template(b));
-    }
-
     float compare(const Template &target, const Template &query) const
     {
         float currentScore = distance->compare(target, query);
@@ -414,12 +399,6 @@ class AttributeDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
     BR_PROPERTY(QString, attribute, QString())
-
-    float compare(const cv::Mat &, const cv::Mat &) const
-    {
-        qFatal("Logic error.");
-        return 0;
-    }
 
     float compare(const Template &target, const Template &query) const
     {
@@ -453,11 +432,6 @@ class SumDistance : public Distance
         foreach (br::Distance *distance, distances)
             futures.addFuture(QtConcurrent::run(distance, &Distance::train, data));
         futures.waitForFinished();
-    }
-
-    float compare(const Mat &a, const Mat &b) const
-    {
-        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &target, const Template &query) const

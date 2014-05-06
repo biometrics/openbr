@@ -246,11 +246,6 @@ class ZScoreDistance : public Distance
         if (stddev == 0) qFatal("Stddev is 0.");
     }
 
-    float compare(const cv::Mat &a, const cv::Mat &b) const
-    {
-        return compare(Template(a), Template(b));
-    }
-
     float compare(const Template &target, const Template &query) const
     {
         float score = distance->compare(target,query);
@@ -404,11 +399,6 @@ class UnitDistance : public Distance
         b = impostorMean;
 
         qDebug("a = %f, b = %f", a, b);
-    }
-
-    float compare(const cv::Mat &a, const cv::Mat &b) const
-    {
-        return compare(Template(a), Template(b));
     }
 
     float compare(const Template &target, const Template &query) const

@@ -1386,6 +1386,16 @@ QList<float> Distance::compare(const TemplateList &targets, const Template &quer
     return scores;
 }
 
+float compare(const Template &a, const Template &b) const
+{
+    return compare(a.m(), b.m());
+}
+
+float compare(const cv::Mat &, const cv::Mat &) const
+{
+    qFatal("Logic error: distance metric did not implement a comparison function or was accessed at an unsupported level of abstraction.");
+}
+
 /* Distance - private methods */
 void Distance::compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const
 {

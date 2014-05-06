@@ -257,12 +257,6 @@ class ProductQuantizationDistance : public Distance
     Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
     BR_PROPERTY(bool, bayesian, false)
 
-    float compare(const cv::Mat &, const cv::Mat &) const
-    {
-        qFatal("Logic error.");
-        return 0;
-    }
-
     float compare(const Template &a, const Template &b) const
     {
         float distance = 0;
@@ -302,12 +296,6 @@ class RecursiveProductQuantizationDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)
     BR_PROPERTY(float, t, -std::numeric_limits<float>::max())
-
-    float compare(const cv::Mat &, const cv::Mat &) const
-    {
-        qFatal("Logic error.");
-        return 0;
-    }
 
     float compare(const Template &a, const Template &b) const
     {
