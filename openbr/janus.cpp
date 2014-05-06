@@ -120,7 +120,7 @@ janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, cons
         return JANUS_UNKNOWN_ERROR;
 
     if (comparisons > 0) *similarity /= comparisons;
-    else                 *similarity = std::numeric_limits<double>::lowest();
+    else                 *similarity = -std::numeric_limits<double>::max();
     return JANUS_SUCCESS;
 }
 
