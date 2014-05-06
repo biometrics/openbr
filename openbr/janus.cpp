@@ -136,3 +136,23 @@ janus_error janus_enroll(const janus_template template_, const janus_template_id
     delete template_;
     return JANUS_SUCCESS;
 }
+
+janus_error janus_gallery_size(janus_gallery gallery, int *size)
+{
+    *size = TemplateList::fromGallery(gallery).size();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_compare(janus_gallery target, janus_gallery query, double *similarity_matrix, janus_template_id *target_ids, janus_template_id *query_ids)
+{
+    const TemplateList targets = TemplateList::fromGallery(target);
+    const TemplateList queries = TemplateList::fromGallery(query);
+    QScopedPointer<MatrixOutput> matrix(MatrixOutput::make(targets.files(), queries.files()));
+    distance->compare(targets, queries, matrix.data());
+    const QVector<janus_template_id> targetIds = File::get<janus_template_id,File>(matrix->targetFiles, "TEMPLATE_ID").toVector();
+    const QVector<janus_template_id> queryIds  = File::get<janus_template_id,File>(matrix->queryFiles,  "TEMPLATE_ID").toVector();
+    memcpy(similarity_matrix, matrix->data.data, matrix->data.rows * matrix->data.cols * sizeof(double));
+    memcpy(target_ids, targetIds.data(), targetIds.size() * sizeof(janus_template_id));
+    memcpy(query_ids, queryIds.data(), queryIds.size() * sizeof(janus_template_id));
+    return JANUS_SUCCESS;
+}
