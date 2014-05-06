@@ -169,7 +169,7 @@ class PipeDistance : public Distance
         futures.waitForFinished();
     }
 
-    float compare(const Mat &a, const Mat &b) const
+    float compare(const Template &a, const Template &b) const
     {
         float result = -std::numeric_limits<float>::max();
         foreach (br::Distance *distance, distances) {

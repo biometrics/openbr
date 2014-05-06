@@ -1393,7 +1393,7 @@ float compare(const Template &a, const Template &b) const
 
 float compare(const cv::Mat &, const cv::Mat &) const
 {
-    qFatal("Logic error: distance metric did not implement a comparison function or was accessed at an unsupported level of abstraction.");
+    qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
 }
 
 /* Distance - private methods */
