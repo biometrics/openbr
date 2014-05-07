@@ -1388,7 +1388,14 @@ QList<float> Distance::compare(const TemplateList &targets, const Template &quer
 
 float Distance::compare(const Template &a, const Template &b) const
 {
-    return compare(a.m(), b.m());
+    float similarity = 0;
+    foreach (const cv::Mat &ma, a)
+        foreach (const cv::Mat &mb, b)
+            similarity += compare(ma, mb);
+    const int comparisons = a.size() * b.size();
+    if (comparisons > 0) similarity /= comparisons;
+    else                 similarity = -std::numeric_limits<float>::max();
+    return similarity;
 }
 
 float Distance::compare(const cv::Mat &, const cv::Mat &) const
