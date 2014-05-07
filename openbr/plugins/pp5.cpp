@@ -368,14 +368,16 @@ class PP5CompareDistance : public Distance
     {
         int subject_id = 0, face_id = 0;
         foreach (const Template &src, templates) {
-            if (src.m().data) {
-                ppr_face_type face;
-                createFace(src, &face);
-                TRY(ppr_add_face(context, gallery, face, subject_id, face_id))
+            if (!src.empty() && src.m().data) {
+                foreach (const cv::Mat &m, src) {
+                    ppr_face_type face;
+                    createFace(m, &face);
+                    TRY(ppr_add_face(context, gallery, face, subject_id, face_id))
+                    face_id++;
+                    ppr_free_face(face);
+                }
                 subject_ids.append(subject_id);
                 subject_id++;
-                face_id++;
-                ppr_free_face(face);
             } else {
                 subject_ids.append(-1);
             }
