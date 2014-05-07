@@ -1386,12 +1386,12 @@ QList<float> Distance::compare(const TemplateList &targets, const Template &quer
     return scores;
 }
 
-float compare(const Template &a, const Template &b) const
+float Distance::compare(const Template &a, const Template &b) const
 {
     return compare(a.m(), b.m());
 }
 
-float compare(const cv::Mat &, const cv::Mat &) const
+float Distance::compare(const cv::Mat &, const cv::Mat &) const
 {
     qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
 }
