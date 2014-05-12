@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Janus API
 include_directories(janus/include)
 install(DIRECTORY janus/include DESTINATION .)
-set(BR_JANUS janus/src/janus_io.cpp janus/src/opencv_io/opencv_io.cpp)
+set(BR_JANUS janus/src/opencv_io/opencv_io.cpp)
 add_definitions(-DJANUS_LIBRARY)
 
 # Collect source files
