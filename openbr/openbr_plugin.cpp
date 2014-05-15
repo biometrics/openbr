@@ -1401,6 +1401,7 @@ float Distance::compare(const Template &a, const Template &b) const
 float Distance::compare(const cv::Mat &, const cv::Mat &) const
 {
     qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
+    return -std::numeric_limits<float>::max();
 }
 
 /* Distance - private methods */
