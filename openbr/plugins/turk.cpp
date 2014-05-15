@@ -105,6 +105,7 @@ class TurkClassifierTransform : public Transform
     void init()
     {
         QStringList classifiers;
+        isMeta = false; // Trying to satisfy a bug. This is not used anyways.        
         foreach (const QString &value, values) 
             classifiers.append(QString("(SVM(RBF,EPS_SVR,returnDFVal=true,inputVariable=%1,outputVariable=predicted_%1)%2)").arg(key + "_" + value, isMeta ? QString("+Average+SaveMat(predicted_%1)").arg(value) : QString()));
         child = Transform::make(classifiers.join("/") + (classifiers.size() > 1 ? "+Cat" : ""));
