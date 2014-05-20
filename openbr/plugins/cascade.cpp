@@ -315,8 +315,6 @@ class CascadeTransform : public MetaTransform
 		
 		bool buildPos = false; //  If true, build positive vector from single image
 		
-		QList<QString> vectors;
-		
 		trainParams params;
 		
 		// Fill in from params (param defaults are same as struct defaults, so no checks are needed)
@@ -382,10 +380,6 @@ class CascadeTransform : public MetaTransform
 					if (f.localKeys().contains("maxxangle")) params.maxxangle = f.localMetadata()["maxxangle"].toDouble();
 					if (f.localKeys().contains("maxyangle")) params.maxyangle = f.localMetadata()["maxyangle"].toDouble();
 					if (f.localKeys().contains("maxzangle")) params.maxzangle = f.localMetadata()["maxzangle"].toDouble();	
-						
-				}else if (tset == "vector"){
-					vectors.append(f.path() + foldersep + f.fileName());
-				}
 			}
 		}
 		
