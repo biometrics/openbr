@@ -23,153 +23,153 @@
 
 using namespace cv;
     
-    struct TrainParams{
-    
-    public:
-        QString data;               // REQUIRED: Filepath to store trained classifier
-        QString vec;                // REQUIRED: Filepath to store vector of positive samples, default "vector"
-        QString img;                // Filepath to source object image. Either this or info is REQUIRED
-        QString info;               // Description file of source images. Either this or img is REQUIRED
-        QString bg;                 // REQUIRED: Filepath to background list file
-        int num;                    // Number of samples to generate
-        int bgcolor;            // Background color supplied image (via img)
-        int bgthresh;           // Threshold to determine bgcolor match
-        bool inv;                   // Invert colors
-        bool randinv;               // Randomly invert colors
-        int maxidev;                // Max intensity deviation of foreground pixels
-        double maxxangle;           // Maximum rotation angle (X)
-        double maxyangle;           // Maximum rotation angle (Y)
-        double maxzangle;           // Maximum rotation angle (Z)
-        bool show;                  // Show generated samples
-        int w;                      // REQUIRED: Sample width
-        int h;                      // REQUIRED: Sample height
-        int numPos;                 // Number of positive samples
-        int numNeg;                 // Number of negative samples
-        int numStages;              // Number of stages
-        int precalcValBufSize;      // Precalculated val buffer size in Mb
-        int precalcIdxBufSize;      // Precalculated index buffer size in Mb
-        bool baseFormatSave;        // Save in old format
-        QString stageType;          // Stage type (BOOST)
-        QString featureType;        // Feature type (HAAR, LBP)
-        QString bt;                 // Boosted classifier type (DAB, RAB, LB, GAB)
-        double minHitRate;          // Minimal hit rate per stage
-        double maxFalseAlarmRate;   // Max false alarm rate per stage
-        double weightTrimRate;      // Weight for trimming
-        int maxDepth;               // Max weak tree depth
-        int maxWeakCount;           // Max weak tree count per stage
-        QString mode;               // Haar feature mode (BASIC, CORE, ALL)
-    
-        TrainParams(){
-            num = -1;
-            maxidev = -1;
-            maxxangle = -1;
-            maxyangle = -1;
-            maxzangle = -1;
-            w = -1;
-            h = -1;
-            numPos = -1;
-            numNeg = -1;
-            numStages = -1;
-            precalcValBufSize = -1;
-            precalcIdxBufSize = -1;
-            minHitRate = -1;
-            maxFalseAlarmRate = -1;
-            weightTrimRate = -1;
-            maxDepth = -1;
-            maxWeakCount = -1;
-            inv = false;
-            randinv = false;
-            show = false;
-            baseFormatSave = false;
-            vec = "vector.vec";
-            bgcolor = -1;
-            bgthresh = -1;
-        }
-    };
+struct TrainParams{
 
-    QString buildTrainingArgs(TrainParams params){
-        QString args = "";
-        if (params.data != "") args += "-data " + params.data + " ";
-        else return "";
-        if (params.vec != "") args += "-vec " + params.vec + " ";
-        else return "";
-        if (params.bg != "") args += "-bg " + params.bg + " ";
-        else return "";
-        if (params.numPos >= 0) args += "-numPos " + QString::number(params.numPos) + " ";
-        if (params.numNeg >= 0) args += "-numNeg " + QString::number(params.numNeg) + " ";
-        if (params.numStages >= 0) args += "-numStages " + QString::number(params.numStages) + " ";
-        if (params.precalcValBufSize >= 0) args += "-precalcValBufSize " + QString::number(params.precalcValBufSize) + " ";
-        if (params.precalcIdxBufSize >= 0) args += "-precalcIdxBufSize " + QString::number(params.precalcIdxBufSize) + " ";
-        if (params.baseFormatSave) args += "-baseFormatSave ";
-        if (params.stageType != "") args += "-stageType " + params.stageType + " ";
-        if (params.featureType != "") args += "-featureType " + params.featureType + " ";
-        if (params.w >= 0) args += "-w " + QString::number(params.w) + " ";
-        else return "";
-        if (params.h >= 0) args += "-h " + QString::number(params.h) + " ";
-        else return "";
-        if (params.bt != "") args += "-bt " + params.bt + " ";
-        if (params.minHitRate >= 0) args += "-minHitRate " + QString::number(params.minHitRate) + " ";
-        if (params.maxFalseAlarmRate >= 0) args += "-maxFalseAlarmRate " + QString::number(params.maxFalseAlarmRate) + " ";
-        if (params.weightTrimRate >= 0) args += "-weightTrimRate " + QString::number(params.weightTrimRate) + " ";
-        if (params.maxDepth >= 0) args += "-maxDepth " + QString::number(params.maxDepth) + " ";
-        if (params.maxWeakCount >= 0) args += "-maxWeakCount " + QString::number(params.maxWeakCount) + " ";
-        if (params.mode != "") args += "-mode " + params.mode + " ";
-        return args;
-    }
+public:
+    QString data;               // REQUIRED: Filepath to store trained classifier
+    QString vec;                // REQUIRED: Filepath to store vector of positive samples, default "vector"
+    QString img;                // Filepath to source object image. Either this or info is REQUIRED
+    QString info;               // Description file of source images. Either this or img is REQUIRED
+    QString bg;                 // REQUIRED: Filepath to background list file
+    int num;                    // Number of samples to generate
+    int bgcolor;            // Background color supplied image (via img)
+    int bgthresh;           // Threshold to determine bgcolor match
+    bool inv;                   // Invert colors
+    bool randinv;               // Randomly invert colors
+    int maxidev;                // Max intensity deviation of foreground pixels
+    double maxxangle;           // Maximum rotation angle (X)
+    double maxyangle;           // Maximum rotation angle (Y)
+    double maxzangle;           // Maximum rotation angle (Z)
+    bool show;                  // Show generated samples
+    int w;                      // REQUIRED: Sample width
+    int h;                      // REQUIRED: Sample height
+    int numPos;                 // Number of positive samples
+    int numNeg;                 // Number of negative samples
+    int numStages;              // Number of stages
+    int precalcValBufSize;      // Precalculated val buffer size in Mb
+    int precalcIdxBufSize;      // Precalculated index buffer size in Mb
+    bool baseFormatSave;        // Save in old format
+    QString stageType;          // Stage type (BOOST)
+    QString featureType;        // Feature type (HAAR, LBP)
+    QString bt;                 // Boosted classifier type (DAB, RAB, LB, GAB)
+    double minHitRate;          // Minimal hit rate per stage
+    double maxFalseAlarmRate;   // Max false alarm rate per stage
+    double weightTrimRate;      // Weight for trimming
+    int maxDepth;               // Max weak tree depth
+    int maxWeakCount;           // Max weak tree count per stage
+    QString mode;               // Haar feature mode (BASIC, CORE, ALL)
 
+    TrainParams(){
+        num = -1;
+        maxidev = -1;
+        maxxangle = -1;
+        maxyangle = -1;
+        maxzangle = -1;
+        w = -1;
+        h = -1;
+        numPos = -1;
+        numNeg = -1;
+        numStages = -1;
+        precalcValBufSize = -1;
+        precalcIdxBufSize = -1;
+        minHitRate = -1;
+        maxFalseAlarmRate = -1;
+        weightTrimRate = -1;
+        maxDepth = -1;
+        maxWeakCount = -1;
+        inv = false;
+        randinv = false;
+        show = false;
+        baseFormatSave = false;
+        vec = "vector.vec";
+        bgcolor = -1;
+        bgthresh = -1;
+    }
+};
 
-    QString buildSampleArgs(TrainParams params){
-        QString args = "";
-        if (params.vec != "") args += "-vec "+params.vec+" ";
-        else return "";
-        if (params.img != "") args += "-img " + params.img + " ";
-        else if (params.info != "") args += "-info " + params.info + " ";
-        else return "";
-        if (params.bg != "") args += "-bg " + params.bg + " ";
-        if (params.num > 0) args += "-num " + QString::number(params.num) + " ";
-        if (params.bgcolor >=0 ) args += "-bgcolor " + QString::number(params.bgcolor) + " "; 
-        if (params.bgthresh >= 0) args += "-bgthresh " + QString::number(params.bgthresh) + " "; 
-        if (params.maxidev >= 0) args += "-maxidev " + QString::number(params.maxidev) + " "; 
-        if (params.maxxangle >= 0) args += "-maxxangle " + QString::number(params.maxxangle) + " "; 
-        if (params.maxyangle >= 0) args += "-maxyangle " + QString::number(params.maxyangle) + " "; 
-        if (params.maxzangle >= 0) args += "-maxzangle " + QString::number(params.maxzangle) + " "; 
-        if (params.w >= 0) args += "-w " + QString::number(params.w) + " "; 
-        if (params.h >= 0) args += "-h " + QString::number(params.h) + " ";
-        if (params.show) args += "-show ";
-        if (params.inv) args += "-inv ";
-        if (params.randinv) args += "-randinv ";
-        return args;
-    }
-
-    void execCommand(QString cmd, QString args){
-    #ifdef _WIN32
-            cmd += ".exe";
-    #endif
-            cmd += " " + args;
-            system(cmd.toLocal8Bit().data());
-    }
-    
-    void genSamples(TrainParams params, QString argStr = ""){
-        QString cmdArgs = buildSampleArgs(params);
-        if (argStr != "") cmdArgs += " " + argStr;
-        execCommand("opencv_createsamples",cmdArgs);
-    }
+QString buildTrainingArgs(TrainParams params){
+    QString args = "";
+    if (params.data != "") args += "-data " + params.data + " ";
+    else return "";
+    if (params.vec != "") args += "-vec " + params.vec + " ";
+    else return "";
+    if (params.bg != "") args += "-bg " + params.bg + " ";
+    else return "";
+    if (params.numPos >= 0) args += "-numPos " + QString::number(params.numPos) + " ";
+    if (params.numNeg >= 0) args += "-numNeg " + QString::number(params.numNeg) + " ";
+    if (params.numStages >= 0) args += "-numStages " + QString::number(params.numStages) + " ";
+    if (params.precalcValBufSize >= 0) args += "-precalcValBufSize " + QString::number(params.precalcValBufSize) + " ";
+    if (params.precalcIdxBufSize >= 0) args += "-precalcIdxBufSize " + QString::number(params.precalcIdxBufSize) + " ";
+    if (params.baseFormatSave) args += "-baseFormatSave ";
+    if (params.stageType != "") args += "-stageType " + params.stageType + " ";
+    if (params.featureType != "") args += "-featureType " + params.featureType + " ";
+    if (params.w >= 0) args += "-w " + QString::number(params.w) + " ";
+    else return "";
+    if (params.h >= 0) args += "-h " + QString::number(params.h) + " ";
+    else return "";
+    if (params.bt != "") args += "-bt " + params.bt + " ";
+    if (params.minHitRate >= 0) args += "-minHitRate " + QString::number(params.minHitRate) + " ";
+    if (params.maxFalseAlarmRate >= 0) args += "-maxFalseAlarmRate " + QString::number(params.maxFalseAlarmRate) + " ";
+    if (params.weightTrimRate >= 0) args += "-weightTrimRate " + QString::number(params.weightTrimRate) + " ";
+    if (params.maxDepth >= 0) args += "-maxDepth " + QString::number(params.maxDepth) + " ";
+    if (params.maxWeakCount >= 0) args += "-maxWeakCount " + QString::number(params.maxWeakCount) + " ";
+    if (params.mode != "") args += "-mode " + params.mode + " ";
+    return args;
+}
 
 
-    void trainCascade(TrainParams params,QString argStr = ""){
-        QString cmdArgs = buildTrainingArgs(params);
-        if (argStr != "") cmdArgs += " " + argStr;
+QString buildSampleArgs(TrainParams params){
+    QString args = "";
+    if (params.vec != "") args += "-vec "+params.vec+" ";
+    else return "";
+    if (params.img != "") args += "-img " + params.img + " ";
+    else if (params.info != "") args += "-info " + params.info + " ";
+    else return "";
+    if (params.bg != "") args += "-bg " + params.bg + " ";
+    if (params.num > 0) args += "-num " + QString::number(params.num) + " ";
+    if (params.bgcolor >=0 ) args += "-bgcolor " + QString::number(params.bgcolor) + " "; 
+    if (params.bgthresh >= 0) args += "-bgthresh " + QString::number(params.bgthresh) + " "; 
+    if (params.maxidev >= 0) args += "-maxidev " + QString::number(params.maxidev) + " "; 
+    if (params.maxxangle >= 0) args += "-maxxangle " + QString::number(params.maxxangle) + " "; 
+    if (params.maxyangle >= 0) args += "-maxyangle " + QString::number(params.maxyangle) + " "; 
+    if (params.maxzangle >= 0) args += "-maxzangle " + QString::number(params.maxzangle) + " "; 
+    if (params.w >= 0) args += "-w " + QString::number(params.w) + " "; 
+    if (params.h >= 0) args += "-h " + QString::number(params.h) + " ";
+    if (params.show) args += "-show ";
+    if (params.inv) args += "-inv ";
+    if (params.randinv) args += "-randinv ";
+    return args;
+}
+
+void execCommand(QString cmd, QString args){
+#ifdef _WIN32
+        cmd += ".exe";
+#endif
+        cmd += " " + args;
+        system(cmd.toLocal8Bit().data());
+}
+
+void genSamples(TrainParams params, QString argStr = ""){
+    QString cmdArgs = buildSampleArgs(params);
+    if (argStr != "") cmdArgs += " " + argStr;
+    execCommand("opencv_createsamples",cmdArgs);
+}
+
+
+void trainCascade(TrainParams params,QString argStr = ""){
+    QString cmdArgs = buildTrainingArgs(params);
+    if (argStr != "") cmdArgs += " " + argStr;
+
+    execCommand("opencv_traincascade", cmdArgs);
+}
+
+QString rectToString(QRectF r){
+    QString out = " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
+    return out;
+}
     
-        execCommand("opencv_traincascade", cmdArgs);
-    }
-    
-    QString rectToString(QRectF r){
-        QString out = " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
-        return out;
-    }
-    
-    namespace br
-    {
+namespace br
+{
         
 class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
 {
