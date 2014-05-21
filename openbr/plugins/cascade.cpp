@@ -19,7 +19,7 @@
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/resource.h"
-#include <stdlib.h>
+#include <QProcess>
 
 using namespace cv;
     
@@ -31,8 +31,8 @@ struct TrainParams
     QString info;               // Description file of source images. Either this or img is REQUIRED
     QString bg;                 // REQUIRED: Filepath to background list file
     int num;                    // Number of samples to generate
-    int bgcolor;            // Background color supplied image (via img)
-    int bgthresh;           // Threshold to determine bgcolor match
+    int bgcolor;                // Background color supplied image (via img)
+    int bgthresh;               // Threshold to determine bgcolor match
     bool inv;                   // Invert colors
     bool randinv;               // Randomly invert colors
     int maxidev;                // Max intensity deviation of foreground pixels
@@ -87,15 +87,15 @@ struct TrainParams
     }
 };
 
-QString buildTrainingArgs(TrainParams params)
+QString buildTrainingArgs(const TrainParams params)
 {
     QString args = "";
     if (params.data != "") args += "-data " + params.data + " ";
-    else return "";
+    else qFatal("Must specify storage location for cascade");
     if (params.vec != "") args += "-vec " + params.vec + " ";
-    else return "";
+    else qFatal("Must specify location of positive vector");
     if (params.bg != "") args += "-bg " + params.bg + " ";
-    else return "";
+    else qFatal("Must specify negative images");
     if (params.numPos >= 0) args += "-numPos " + QString::number(params.numPos) + " ";
     if (params.numNeg >= 0) args += "-numNeg " + QString::number(params.numNeg) + " ";
     if (params.numStages >= 0) args += "-numStages " + QString::number(params.numStages) + " ";
@@ -105,9 +105,9 @@ QString buildTrainingArgs(TrainParams params)
     if (params.stageType != "") args += "-stageType " + params.stageType + " ";
     if (params.featureType != "") args += "-featureType " + params.featureType + " ";
     if (params.w >= 0) args += "-w " + QString::number(params.w) + " ";
-    else return "";
+    else qFatal("Must specify width");
     if (params.h >= 0) args += "-h " + QString::number(params.h) + " ";
-    else return "";
+    else qFatal("Must specify height");
     if (params.bt != "") args += "-bt " + params.bt + " ";
     if (params.minHitRate >= 0) args += "-minHitRate " + QString::number(params.minHitRate) + " ";
     if (params.maxFalseAlarmRate >= 0) args += "-maxFalseAlarmRate " + QString::number(params.maxFalseAlarmRate) + " ";
@@ -118,15 +118,14 @@ QString buildTrainingArgs(TrainParams params)
     return args;
 }
 
-
-QString buildSampleArgs(TrainParams params)
+QString buildSampleArgs(const TrainParams params)
 {
     QString args = "";
     if (params.vec != "") args += "-vec "+params.vec+" ";
-    else return "";
+    else qFatal("Must specify location of positive vector");
     if (params.img != "") args += "-img " + params.img + " ";
     else if (params.info != "") args += "-info " + params.info + " ";
-    else return "";
+    else qFatal("Must specify positive images");
     if (params.bg != "") args += "-bg " + params.bg + " ";
     if (params.num > 0) args += "-num " + QString::number(params.num) + " ";
     if (params.bgcolor >=0 ) args += "-bgcolor " + QString::number(params.bgcolor) + " "; 
@@ -149,31 +148,24 @@ void execCommand(QString cmd, QString args)
         cmd += ".exe";
 #endif
         cmd += " " + args;
-        system(cmd.toLocal8Bit().data());
+        QProcess::execute(cmd);
 }
 
-void genSamples(TrainParams params, QString argStr = "")
+void genSamples(const TrainParams params, const QString argStr = "")
 {
     QString cmdArgs = buildSampleArgs(params);
     if (argStr != "") cmdArgs += " " + argStr;
     execCommand("opencv_createsamples",cmdArgs);
 }
 
-
-void trainCascade(TrainParams params,QString argStr = "")
+void trainCascade(const TrainParams params, const QString argStr = "")
 {
     QString cmdArgs = buildTrainingArgs(params);
     if (argStr != "") cmdArgs += " " + argStr;
 
     execCommand("opencv_traincascade", cmdArgs);
 }
-
-QString rectToString(QRectF r)
-{
-    QString out = " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
-    return out;
-}
-    
+ 
 namespace br
 {
         
@@ -215,11 +207,11 @@ private:
     }
 };
 
-
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV cascade classifier
  * \author Josh Klontz \cite jklontz
+ * \author David Crouse \cite dgcrouse
  */
 class CascadeTransform : public MetaTransform
 {
@@ -248,33 +240,31 @@ class CascadeTransform : public MetaTransform
     Q_PROPERTY(bool show READ get_show WRITE set_show RESET reset_show STORED false)    
     Q_PROPERTY(bool baseFormatSave READ get_baseFormatSave WRITE set_baseFormatSave RESET reset_baseFormatSave STORED false)
     Q_PROPERTY(bool overwrite READ get_overwrite WRITE set_overwrite RESET reset_overwrite STORED false)
-    
-    
+
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
     BR_PROPERTY(bool, ROCMode, false)
         
-        // Training parameters - Default values provided trigger OpenCV defaults
+    // Training parameters - Default values provided trigger OpenCV defaults
     BR_PROPERTY(int, numStages, -1)
-    BR_PROPERTY(int,w,-1)
-    BR_PROPERTY(int,h,-1)
-    BR_PROPERTY(int,numPos,-1)
-    BR_PROPERTY(int,numNeg,-1)      
-    BR_PROPERTY(int,precalcValBufSize,-1)
-    BR_PROPERTY(int,precalcIdxBufSize,-1)
-    BR_PROPERTY(double,minHitRate,-1)
-    BR_PROPERTY(double,maxFalseAlarmRate,-1)
-    BR_PROPERTY(double,weightTrimRate,-1)
-    BR_PROPERTY(int,maxDepth,-1)
-    BR_PROPERTY(int,maxWeakCount,-1)
-    BR_PROPERTY(QString,stageType,"")
-    BR_PROPERTY(QString,featureType,"")
-    BR_PROPERTY(QString,bt,"")
-    BR_PROPERTY(QString,mode,"")
-    BR_PROPERTY(bool,show,false)
-    BR_PROPERTY(bool,baseFormatSave,false)  
-    BR_PROPERTY(bool,overwrite,false)
-                                    
+    BR_PROPERTY(int, w, -1)
+    BR_PROPERTY(int, h, -1)
+    BR_PROPERTY(int, numPos, -1)
+    BR_PROPERTY(int, numNeg, -1)      
+    BR_PROPERTY(int, precalcValBufSize, -1)
+    BR_PROPERTY(int, precalcIdxBufSize, -1)
+    BR_PROPERTY(double, minHitRate, -1)
+    BR_PROPERTY(double, maxFalseAlarmRate, -1)
+    BR_PROPERTY(double, weightTrimRate, -1)
+    BR_PROPERTY(int, maxDepth, -1)
+    BR_PROPERTY(int, maxWeakCount, -1)
+    BR_PROPERTY(QString, stageType, "")
+    BR_PROPERTY(QString, featureType, "")
+    BR_PROPERTY(QString, bt, "")
+    BR_PROPERTY(QString, mode, "")
+    BR_PROPERTY(bool, show, false)
+    BR_PROPERTY(bool, baseFormatSave, false)  
+    BR_PROPERTY(bool, overwrite, false)                     
 
     Resource<CascadeClassifier> cascadeResource;
 
@@ -295,8 +285,7 @@ class CascadeTransform : public MetaTransform
         }
         
         FileList files = data.files();
-        
-        
+
         // Open positive and negative list files
         QString posFName = "pos.txt";
         QString negFName = "neg.txt";
@@ -307,13 +296,12 @@ class CascadeTransform : public MetaTransform
         QTextStream posStream(&posFile);
         QTextStream negStream(&negFile);
         
-        
         const QString endln = "\r\n";   
         
         int posCount = 0;
         int negCount = 0;
         
-        bool buildPos = false; //  If true, build positive vector from single image
+        bool buildPos = false; // If true, build positive vector from single image
         
         TrainParams params;
         
@@ -341,8 +329,8 @@ class CascadeTransform : public MetaTransform
         
         for (int i = 0; i < files.length(); i++){
             File f = files[i];
-            if (f.localKeys().contains("training-set")){
-                QString tset = f.localMetadata()["training-set"].toString().toLower();
+            if (f.contains("training-set")){
+                QString tset = f.get<QString>("training-set",QString()).toLower();
                 
                 // Negative samples
                 if (tset == "neg"){
@@ -358,7 +346,8 @@ class CascadeTransform : public MetaTransform
                     
                     // Extract rectangles
                     for (int j = 0; j < f.rects().length(); j++){
-                        rects += rectToString(f.rects()[j]);
+                        QRectF r = f.rects()[j];
+                        rects += " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
                         posCount++;
                     }
                     if (f.rects().length() > 0)
@@ -371,15 +360,15 @@ class CascadeTransform : public MetaTransform
                     params.img = f.path() + QDir::separator() + f.fileName();
                     
                     // Parse settings (unique to this one tag)
-                    if (f.localKeys().contains("num")) params.num = f.localMetadata()["num"].toInt();
-                    if (f.localKeys().contains("bgcolor")) params.bgcolor = f.localMetadata()["bgcolor"].toInt();
-                    if (f.localKeys().contains("bgthresh")) params.bgthresh = f.localMetadata()["bgthresh"].toInt();
-                    if (f.localKeys().contains("inv")) params.inv =  f.localMetadata()["inv"].toBool();
-                    if (f.localKeys().contains("randinv")) params.randinv =  f.localMetadata()["randinv"].toBool();
-                    if (f.localKeys().contains("maxidev")) params.maxidev = f.localMetadata()["maxidev"].toInt();
-                    if (f.localKeys().contains("maxxangle")) params.maxxangle = f.localMetadata()["maxxangle"].toDouble();
-                    if (f.localKeys().contains("maxyangle")) params.maxyangle = f.localMetadata()["maxyangle"].toDouble();
-                    if (f.localKeys().contains("maxzangle")) params.maxzangle = f.localMetadata()["maxzangle"].toDouble();  
+                    if (f.contains("num")) params.num = f.get<int>("num",0);
+                    if (f.contains("bgcolor")) params.bgcolor = f.get<int>("bgcolor",0);
+                    if (f.contains("bgthresh")) params.bgthresh =f.get<int>("bgthresh",0);
+                    if (f.contains("inv")) params.inv =  f.get<bool>("inv",false);
+                    if (f.contains("randinv")) params.randinv =  f.get<bool>("randinv",false);
+                    if (f.contains("maxidev")) params.maxidev = f.get<int>("maxidev",0);
+                    if (f.contains("maxxangle")) params.maxxangle = f.get<double>("maxxangle",0);
+                    if (f.contains("maxyangle")) params.maxyangle = f.get<double>("maxyangle",0);
+                    if (f.contains("maxzangle")) params.maxzangle = f.get<double>("maxzangle",0); 
                 }
             }
         }
@@ -408,13 +397,11 @@ class CascadeTransform : public MetaTransform
             params.numNeg = negCount*10;
         }
         
-        
         genSamples(params);
         trainCascade(params);
         if (posFile.exists()) posFile.remove();
         negFile.remove();
     }
-    
 
     void project(const Template &src, Template &dst) const
     {
