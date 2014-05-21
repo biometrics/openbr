@@ -90,67 +90,67 @@ struct TrainParams
 QStringList buildTrainingArgs(const TrainParams params)
 {
     QStringList args;
-    if (params.data != "") args.append("-data " + params.data + " ");
+    if (params.data != "") args << "-data" << params.data;
     else qFatal("Must specify storage location for cascade");
-    if (params.vec != "") args.append("-vec " + params.vec + " ");
+    if (params.vec != "") args << "-vec" << params.vec;
     else qFatal("Must specify location of positive vector");
-    if (params.bg != "") args.append("-bg " + params.bg + " ");
+    if (params.bg != "") args << "-bg" << params.bg;
     else qFatal("Must specify negative images");
-    if (params.numPos >= 0) args.append("-numPos " + QString::number(params.numPos) + " ");
-    if (params.numNeg >= 0) args.append("-numNeg " + QString::number(params.numNeg) + " ");
-    if (params.numStages >= 0) args.append("-numStages " + QString::number(params.numStages) + " ");
-    if (params.precalcValBufSize >= 0) args.append("-precalcValBufSize " + QString::number(params.precalcValBufSize) + " ");
-    if (params.precalcIdxBufSize >= 0) args.append("-precalcIdxBufSize " + QString::number(params.precalcIdxBufSize) + " ");
-    if (params.baseFormatSave) args.append("-baseFormatSave ");
-    if (params.stageType != "") args.append("-stageType " + params.stageType + " ");
-    if (params.featureType != "") args.append("-featureType " + params.featureType + " ");
-    if (params.w >= 0) args.append("-w " + QString::number(params.w) + " ");
+    if (params.numPos >= 0) args << "-numPos" << QString::number(params.numPos);
+    if (params.numNeg >= 0) args << "-numNeg" << QString::number(params.numNeg);
+    if (params.numStages >= 0) args << "-numStages" << QString::number(params.numStages);
+    if (params.precalcValBufSize >= 0) args << "-precalcValBufSize" << QString::number(params.precalcValBufSize);
+    if (params.precalcIdxBufSize >= 0) args << "-precalcIdxBufSize" << QString::number(params.precalcIdxBufSize);
+    if (params.baseFormatSave) args << "-baseFormatSave";
+    if (params.stageType != "") args << "-stageType" << params.stageType;
+    if (params.featureType != "") args << "-featureType" << params.featureType;
+    if (params.w >= 0) args << "-w" << QString::number(params.w);
     else qFatal("Must specify width");
-    if (params.h >= 0) args.append("-h " + QString::number(params.h) + " ");
+    if (params.h >= 0) args << "-h" << QString::number(params.h);
     else qFatal("Must specify height");
-    if (params.bt != "") args.append("-bt " + params.bt + " ");
-    if (params.minHitRate >= 0) args.append("-minHitRate " + QString::number(params.minHitRate) + " ");
-    if (params.maxFalseAlarmRate >= 0) args.append("-maxFalseAlarmRate " + QString::number(params.maxFalseAlarmRate) + " ");
-    if (params.weightTrimRate >= 0) args.append("-weightTrimRate " + QString::number(params.weightTrimRate) + " ");
-    if (params.maxDepth >= 0) args.append("-maxDepth " + QString::number(params.maxDepth) + " ");
-    if (params.maxWeakCount >= 0) args.append("-maxWeakCount " + QString::number(params.maxWeakCount) + " ");
-    if (params.mode != "") args.append("-mode " + params.mode + " ");
+    if (params.bt != "") args << "-bt" << params.bt;
+    if (params.minHitRate >= 0) args << "-minHitRate" << QString::number(params.minHitRate);
+    if (params.maxFalseAlarmRate >= 0) args << "-maxFalseAlarmRate" << QString::number(params.maxFalseAlarmRate);
+    if (params.weightTrimRate >= 0) args << "-weightTrimRate" << QString::number(params.weightTrimRate);
+    if (params.maxDepth >= 0) args << "-maxDepth" << QString::number(params.maxDepth);
+    if (params.maxWeakCount >= 0) args << "-maxWeakCount" << QString::number(params.maxWeakCount);
+    if (params.mode != "") args << "-mode" << params.mode;
     return args;
 }
 
 QStringList buildSampleArgs(const TrainParams params)
 {
     QStringList args;
-    if (params.vec != "") args.append("-vec " + params.vec+" ");
+    if (params.vec != "") args << "-vec" << params.vec;
     else qFatal("Must specify location of positive vector");
-    if (params.img != "") args.append("-img " + params.img + " ");
-    else if (params.info != "") args.append("-info " + params.info + " ");
+    if (params.img != "") args << "-img" << params.img;
+    else if (params.info != "") args << "-info" << params.info;
     else qFatal("Must specify positive images");
-    if (params.bg != "") args.append("-bg " + params.bg + " ");
-    if (params.num > 0) args.append("-num " + QString::number(params.num) + " ");
-    if (params.bgcolor >=0 ) args.append("-bgcolor " + QString::number(params.bgcolor) + " "); 
-    if (params.bgthresh >= 0) args.append("-bgthresh " + QString::number(params.bgthresh) + " "); 
-    if (params.maxidev >= 0) args.append("-maxidev " + QString::number(params.maxidev) + " "); 
-    if (params.maxxangle >= 0) args.append("-maxxangle " + QString::number(params.maxxangle) + " "); 
-    if (params.maxyangle >= 0) args.append("-maxyangle " + QString::number(params.maxyangle) + " "); 
-    if (params.maxzangle >= 0) args.append("-maxzangle " + QString::number(params.maxzangle) + " "); 
-    if (params.w >= 0) args.append("-w " + QString::number(params.w) + " "); 
-    if (params.h >= 0) args.append("-h " + QString::number(params.h) + " ");
-    if (params.show) args.append("-show ");
-    if (params.inv) args.append("-inv ");
-    if (params.randinv) args.append("-randinv ");
+    if (params.bg != "") args << "-bg" << params.bg;
+    if (params.num > 0) args << "-num" << QString::number(params.num);
+    if (params.bgcolor >=0 ) args << "-bgcolor" << QString::number(params.bgcolor); 
+    if (params.bgthresh >= 0) args << "-bgthresh" << QString::number(params.bgthresh); 
+    if (params.maxidev >= 0) args << "-maxidev" << QString::number(params.maxidev); 
+    if (params.maxxangle >= 0) args << "-maxxangle" << QString::number(params.maxxangle); 
+    if (params.maxyangle >= 0) args << "-maxyangle" << QString::number(params.maxyangle); 
+    if (params.maxzangle >= 0) args << "-maxzangle" << QString::number(params.maxzangle); 
+    if (params.w >= 0) args << "-w" << QString::number(params.w); 
+    if (params.h >= 0) args << "-h" << QString::number(params.h);
+    if (params.show) args << "-show";
+    if (params.inv) args << "-inv";
+    if (params.randinv) args << "-randinv";
     return args;
 }
 
 void genSamples(const TrainParams params)
 {
-    QStringList cmdArgs = buildSampleArgs(params);
+    const QStringList cmdArgs = buildSampleArgs(params);
     QProcess::execute("opencv_createsamples",cmdArgs);
 }
 
 void trainCascade(const TrainParams params)
 {
-    QStringList cmdArgs = buildTrainingArgs(params);
+    const QStringList cmdArgs = buildTrainingArgs(params);
     QProcess::execute("opencv_traincascade", cmdArgs);
 }
  
