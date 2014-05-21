@@ -23,7 +23,8 @@
 
 using namespace cv;
     
-struct TrainParams{
+struct TrainParams
+{
     QString data;               // REQUIRED: Filepath to store trained classifier
     QString vec;                // REQUIRED: Filepath to store vector of positive samples, default "vector"
     QString img;                // Filepath to source object image. Either this or info is REQUIRED
@@ -57,7 +58,8 @@ struct TrainParams{
     int maxWeakCount;           // Max weak tree count per stage
     QString mode;               // Haar feature mode (BASIC, CORE, ALL)
 
-    TrainParams(){
+    TrainParams()
+    {
         num = -1;
         maxidev = -1;
         maxxangle = -1;
@@ -85,7 +87,8 @@ struct TrainParams{
     }
 };
 
-QString buildTrainingArgs(TrainParams params){
+QString buildTrainingArgs(TrainParams params)
+{
     QString args = "";
     if (params.data != "") args += "-data " + params.data + " ";
     else return "";
@@ -116,7 +119,8 @@ QString buildTrainingArgs(TrainParams params){
 }
 
 
-QString buildSampleArgs(TrainParams params){
+QString buildSampleArgs(TrainParams params)
+{
     QString args = "";
     if (params.vec != "") args += "-vec "+params.vec+" ";
     else return "";
@@ -139,7 +143,8 @@ QString buildSampleArgs(TrainParams params){
     return args;
 }
 
-void execCommand(QString cmd, QString args){
+void execCommand(QString cmd, QString args)
+{
 #ifdef _WIN32
         cmd += ".exe";
 #endif
@@ -147,21 +152,24 @@ void execCommand(QString cmd, QString args){
         system(cmd.toLocal8Bit().data());
 }
 
-void genSamples(TrainParams params, QString argStr = ""){
+void genSamples(TrainParams params, QString argStr = "")
+{
     QString cmdArgs = buildSampleArgs(params);
     if (argStr != "") cmdArgs += " " + argStr;
     execCommand("opencv_createsamples",cmdArgs);
 }
 
 
-void trainCascade(TrainParams params,QString argStr = ""){
+void trainCascade(TrainParams params,QString argStr = "")
+{
     QString cmdArgs = buildTrainingArgs(params);
     if (argStr != "") cmdArgs += " " + argStr;
 
     execCommand("opencv_traincascade", cmdArgs);
 }
 
-QString rectToString(QRectF r){
+QString rectToString(QRectF r)
+{
     QString out = " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
     return out;
 }
@@ -276,7 +284,8 @@ class CascadeTransform : public MetaTransform
     }
     
     // Train transform
-    void train(const TemplateList& data){
+    void train(const TemplateList& data)
+    {
         if (overwrite){
             QDir dataDir(model);
             if (dataDir.exists()){
