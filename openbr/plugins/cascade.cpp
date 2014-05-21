@@ -24,8 +24,6 @@
 using namespace cv;
     
 struct TrainParams{
-
-public:
     QString data;               // REQUIRED: Filepath to store trained classifier
     QString vec;                // REQUIRED: Filepath to store vector of positive samples, default "vector"
     QString img;                // Filepath to source object image. Either this or info is REQUIRED
