@@ -1037,62 +1037,61 @@ class topPredictionsGallery : public Gallery
 
     ~topPredictionsGallery()
     {
-    	QString result = QString("# of attributes: %1").arg(QString::number(attributes.count()));
+        QString result = QString("# of attributes: %1").arg(QString::number(attributes.count()));
         QtUtils::writeFile(file.name, result);
         if (!attributes.isEmpty())
-    	{
-    		QMapIterator <float, QString> it(attributes);
-    		it.toBack();
-    		if (out_count > 1)
-    		{
-    			if (attributes.count() < out_count)
-    				out_count = attributes.count();
-    			
-    			for (int i = 0; i < out_count; i++)
-    			{
-    				it.previous();
-    				result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key())); 
-                	QtUtils::writeFile(file.name, result);
-    			}
-    		}
-    		else
-    		{
-    			int count = 0;
-    			it.toBack();
-    			while (it.hasPrevious())
-    			{
-    				it.previous();
-    				if (it.key() >= out_count)
-    				{
-    					result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key())); 
-                		QtUtils::writeFile(file.name, result);
-    					count++;
-    				}
-    			}
-    		}
-    	}
+        {
+            QMapIterator <float, QString> it(attributes);
+            it.toBack();
+            if (out_count > 1)
+                {
+                if (attributes.count() < out_count)
+                out_count = attributes.count();
+
+                for (int i = 0; i < out_count; i++)
+                {
+                    it.previous();
+                    result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key())); 
+                    QtUtils::writeFile(file.name, result);
+                }
+            }
+            else
+            {
+                int count = 0;
+                it.toBack();
+                while (it.hasPrevious())
+                {
+                    it.previous();
+                    if (it.key() >= out_count)
+                    {
+                        result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key())); 
+                        QtUtils::writeFile(file.name, result);
+                        count++;
+                    }
+                }
+            }
+        }
     }
 
     //Pure virtial function so needs an implementation
     TemplateList readBlock(bool *done)
     {
-        *done = true;
-        return TemplateList() << file;
+        (void) done;
+        qFatal("Unsupported.");
+        return TemplateList();
     }
 
     void write(const Template &t)
     {
-    	QList<QString> keys = t.file.localKeys();
-    	for (int i = 0; i < keys.count(); i++)
-    	{
-    		QString key = keys.at(i);
-    		if (key.startsWith("predicted_"))
-    		{
-    			float val = t.file.get<float>(key);
-    			attributes.insert(val, key); //use float as key to keep in order
-    		}
-
-    	}
+        QList<QString> keys = t.file.localKeys();
+        foreach (const QString &key, keys)
+        {
+            if (key.startsWith("predicted_"))
+            {
+                float val = t.file.get<float>(key);
+                attributes.insert(val, key); //use float as key to keep in order
+            }
+        }
     }
 };
 
