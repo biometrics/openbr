@@ -93,22 +93,6 @@ class SelectPointsTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, SelectPointsTransform)
 
-/*!
- * \ingroup transforms
- * \brief Does nothing.
- */
-class NoneTransform : public UntrainableMetaTransform
-{
-    Q_OBJECT
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-    }
-};
-
-BR_REGISTER(Transform, NoneTransform)
-
 } // namespace br
 
 #include "template.moc"

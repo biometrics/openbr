@@ -193,9 +193,10 @@ class FuseDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QStringList descriptions READ get_descriptions WRITE set_descriptions RESET reset_descriptions STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
     Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
+    Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
 
     QList<br::Distance*> distances;
 
@@ -204,9 +205,10 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QString, description, "IdenticalDistance")
+    BR_PROPERTY(QStringList, descriptions, QStringList())
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
+    BR_PROPERTY(QList<int>, indices, QList<int>())
 
     void train(const TemplateList &src)
     {
@@ -216,8 +218,14 @@ private:
 
         QList<TemplateList> partitionedSrc = src.partition(split);
 
-        while (distances.size() < partitionedSrc.size())
-            distances.append(make(description));
+        if (!indices.isEmpty())
+            for (int i=partitionedSrc.size()-1; i>=0; i--)
+                if (!indices.contains(i)) partitionedSrc.removeAt(i);
+
+        if (descriptions.size() != partitionedSrc.size()) qFatal("Incorrect number of distances supplied.");
+
+        for (int i=0; i<descriptions.size(); i++)
+            distances.append(make(descriptions[i]));
 
         // Train on each of the partitions
         for (int i=0; i<distances.size(); i++)
@@ -230,9 +238,10 @@ private:
 
         QList<float> scores;
         for (int i=0; i<distances.size(); i++) {
+            int index = indices.isEmpty() ? i : indices[i];
             float weight;
             weights.isEmpty() ? weight = 1. : weight = weights[i];
-            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+            scores.append(weight*distances[i]->compare(Template(a.file, a[index]),Template(b.file, b[index])));
         }
 
         switch (operation) {
@@ -255,17 +264,14 @@ private:
 
     void store(QDataStream &stream) const
     {
-        stream << distances.size();
         foreach (Distance *distance, distances)
             distance->store(stream);
     }
 
     void load(QDataStream &stream)
     {
-        int numDistances;
-        stream >> numDistances;
-        while (distances.size() < numDistances)
-            distances.append(make(description));
+        for (int i=0; i<descriptions.size(); i++)
+            distances.append(make(descriptions[i]));
         foreach (Distance *distance, distances)
             distance->load(stream);
     }
@@ -391,32 +397,6 @@ BR_REGISTER(Distance, OnlineDistance)
 
 /*!
  * \ingroup distances
- * \brief Attenuation function based distance from attributes
- * \author Scott Klum \cite sklum
- */
-class AttributeDistance : public Distance
-{
-    Q_OBJECT
-    Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
-    BR_PROPERTY(QString, attribute, QString())
-
-    float compare(const Template &target, const Template &query) const
-    {
-        float queryValue = query.file.get<float>(attribute);
-        float targetValue = target.file.get<float>(attribute);
-
-        // TODO: Set this magic number to something meaningful
-        float stddev = 1;
-
-        if (queryValue == targetValue) return 1;
-        else return 1/(stddev*sqrt(2*CV_PI))*exp(-0.5*pow((targetValue-queryValue)/stddev, 2));
-    }
-};
-
-BR_REGISTER(Distance, AttributeDistance)
-
-/*!
- * \ingroup distances
  * \brief Sum match scores across multiple distances
  * \author Scott Klum \cite sklum
  */
@@ -439,10 +419,12 @@ class SumDistance : public Distance
         float result = 0;
 
         foreach (br::Distance *distance, distances) {
-            result += distance->compare(target, query);
+            float score = distance->compare(target, query);
 
-            if (result == -std::numeric_limits<float>::max())
+            if (score == -std::numeric_limits<float>::max())
                 return result;
+
+            result += score;
         }
 
         return result;
