@@ -87,7 +87,7 @@ struct TrainParams
     }
 };
 
-QStringList buildTrainingArgs(const TrainParams params)
+static QStringList buildTrainingArgs(const TrainParams &params)
 {
     QStringList args;
     if (params.data != "") args << "-data" << params.data;
@@ -118,7 +118,7 @@ QStringList buildTrainingArgs(const TrainParams params)
     return args;
 }
 
-QStringList buildSampleArgs(const TrainParams params)
+static QStringList buildSampleArgs(const TrainParams &params)
 {
     QStringList args;
     if (params.vec != "") args << "-vec" << params.vec;
@@ -142,13 +142,13 @@ QStringList buildSampleArgs(const TrainParams params)
     return args;
 }
 
-void genSamples(const TrainParams params)
+static void genSamples(const TrainParams &params)
 {
     const QStringList cmdArgs = buildSampleArgs(params);
     QProcess::execute("opencv_createsamples",cmdArgs);
 }
 
-void trainCascade(const TrainParams params)
+static void trainCascade(const TrainParams &params)
 {
     const QStringList cmdArgs = buildTrainingArgs(params);
     QProcess::execute("opencv_traincascade", cmdArgs);
@@ -264,19 +264,19 @@ class CascadeTransform : public MetaTransform
     // Train transform
     void train(const TemplateList& data)
     {
-        if (overwrite){
+        if (overwrite) {
             QDir dataDir(model);
-            if (dataDir.exists()){
+            if (dataDir.exists()) {
                 dataDir.removeRecursively();
                 QDir::current().mkdir(model);
             }
         }
         
-        FileList files = data.files();
+        const FileList files = data.files();
 
         // Open positive and negative list files
-        QString posFName = "pos.txt";
-        QString negFName = "neg.txt";
+        const QString posFName = "pos.txt";
+        const QString negFName = "neg.txt";
         QFile posFile(posFName);
         QFile negFile(negFName);
         posFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -315,25 +315,25 @@ class CascadeTransform : public MetaTransform
         if (params.w < 0)   params.w = minSize;
         if (params.h < 0)   params.h = minSize;
         
-        for (int i = 0; i < files.length(); i++){
+        for (int i = 0; i < files.length(); i++) {
             File f = files[i];
-            if (f.contains("training-set")){
+            if (f.contains("training-set")) {
                 QString tset = f.get<QString>("training-set",QString()).toLower();
                 
                 // Negative samples
-                if (tset == "neg"){
+                if (tset == "neg") {
                     if (negCount > 0) negStream<<endln;
                     negStream << f.path() << QDir::separator() << f.fileName();
                     negCount++;
                 
                 // Positive samples for crop/rescale    
-                }else if (tset == "pos"){
+                }else if (tset == "pos") {
                     
                     if (posCount > 0) posStream<<endln;
                     QString rects = "";
                     
                     // Extract rectangles
-                    for (int j = 0; j < f.rects().length(); j++){
+                    for (int j = 0; j < f.rects().length(); j++) {
                         QRectF r = f.rects()[j];
                         rects += " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
                         posCount++;
@@ -342,7 +342,7 @@ class CascadeTransform : public MetaTransform
                         posStream << f.path() << QDir::separator() << f.fileName() << " " << f.rects().length() << " " << rects;
                     
                 // Single positive sample for background removal and overlay on negatives
-                }else if (tset == "pos-base"){
+                }else if (tset == "pos-base") {
                     
                     buildPos = true;
                     params.img = f.path() + QDir::separator() + f.fileName();
@@ -364,24 +364,24 @@ class CascadeTransform : public MetaTransform
         // Fill in remaining params conditionally
         posFile.close();
         negFile.close();
-        if (buildPos){
-            if (params.numPos < 0){
+        if (buildPos) {
+            if (params.numPos < 0) {
                 if (params.num > 0) params.numPos = (int)(params.num*.95);
                 else params.numPos = 950;
                 posFile.remove();
             }
         }else{
             params.info = posFName;
-            if (params.numPos < 0){
+            if (params.numPos < 0) {
                 params.numPos = (int)(posCount*.95);
             }
         }
         params.bg = negFName;
         params.data = model;
-        if (params.num < 0){
+        if (params.num < 0) {
             params.num = posCount;
         }
-        if (params.numNeg < 0){
+        if (params.numNeg < 0) {
             params.numNeg = negCount*10;
         }
         
