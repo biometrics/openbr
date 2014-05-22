@@ -1051,7 +1051,7 @@ class topPredictionsGallery : public Gallery
                 for (int i = 0; i < out_count; i++)
                 {
                     it.previous();
-                    result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key())); 
+                    result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key()));
                     QtUtils::writeFile(file.name, result);
                 }
             }
@@ -1064,7 +1064,7 @@ class topPredictionsGallery : public Gallery
                     it.previous();
                     if (it.key() >= out_count)
                     {
-                        result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key())); 
+                        result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key()));
                         QtUtils::writeFile(file.name, result);
                         count++;
                     }
