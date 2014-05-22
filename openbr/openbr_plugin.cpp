@@ -1389,10 +1389,17 @@ QList<float> Distance::compare(const TemplateList &targets, const Template &quer
 float Distance::compare(const Template &a, const Template &b) const
 {
     float similarity = 0;
-    foreach (const cv::Mat &ma, a)
-        foreach (const cv::Mat &mb, b)
-            similarity += compare(ma, mb);
-    const int comparisons = a.size() * b.size();
+    int comparisons = 0;
+    foreach (const cv::Mat &ma, a) {
+        foreach (const cv::Mat &mb, b) {
+            const float score = compare(ma, mb);
+            if (score != -std::numeric_limits<float>::max()) {
+                similarity += score;
+                comparisons++;
+            }
+        }
+    }
+
     if (comparisons > 0) similarity /= comparisons;
     else                 similarity = -std::numeric_limits<float>::max();
     return similarity;
@@ -1401,6 +1408,7 @@ float Distance::compare(const Template &a, const Template &b) const
 float Distance::compare(const cv::Mat &, const cv::Mat &) const
 {
     qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
+    return -std::numeric_limits<float>::max();
 }
 
 /* Distance - private methods */
