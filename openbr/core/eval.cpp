@@ -130,6 +130,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
 
+    if (simmat.type() != CV_32FC1)
+        qFatal("Invalid simmat format");
+
+    if (mask.type() != CV_8UC1)
+        qFatal("Invalid mask format");
+
     float result = -1;
 
     // Make comparisons
