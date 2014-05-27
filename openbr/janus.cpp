@@ -77,6 +77,9 @@ janus_error janus_finalize_template(janus_template template_, janus_flat_templat
 {    
     *bytes = 0;
     foreach (const cv::Mat &m, *template_) {
+        if (!m.data)
+            continue;
+
         if (!m.isContinuous())
             return JANUS_UNKNOWN_ERROR;
 
