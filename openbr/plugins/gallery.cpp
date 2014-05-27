@@ -1033,40 +1033,49 @@ class topPredictionsGallery : public Gallery
     Q_PROPERTY(float out_count READ get_out_count WRITE set_out_count RESET reset_out_count STORED false)
     BR_PROPERTY(float, out_count, 3)
 
-    QMap<float, QString> attributes;
+    QMap<QString, QMap<float, QString> > attributes;
 
     ~topPredictionsGallery()
     {
-        QString result = QString("# of attributes: %1").arg(QString::number(attributes.count()));
+        QString result = QString("\n====================\n  # of Templates: %1 \n====================").arg(QString::number(attributes.count()));
         QtUtils::writeFile(file.name, result);
         if (!attributes.isEmpty())
         {
-            QMapIterator <float, QString> it(attributes);
-            it.toBack();
-            if (out_count > 1)
-                {
-                if (attributes.count() < out_count)
-                out_count = attributes.count();
-
-                for (int i = 0; i < out_count; i++)
-                {
-                    it.previous();
-                    result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key()));
-                    QtUtils::writeFile(file.name, result);
-                }
-            }
-            else
+            QMapIterator <QString, QMap<float, QString> > a_it(attributes);
+            while (a_it.hasNext())
             {
-                int count = 0;
+                a_it.next();
+                QString result = QString("\n\n++++++++++++++++++++\n%1\n++++++++++++++++++++\n").arg(QString(a_it.key()));
+                QtUtils::writeFile(file.name, result);
+
+                QMap<float, QString> attribute = a_it.value();
+                QMapIterator <float, QString> it(attribute);
                 it.toBack();
-                while (it.hasPrevious())
-                {
-                    it.previous();
-                    if (it.key() >= out_count)
+                if (out_count > 1)
                     {
-                        result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key()));
+                    if (attribute.count() < out_count)
+                    out_count = attribute.count();
+
+                    for (int i = 0; i < out_count; i++)
+                    {
+                        it.previous();
+                        result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key()));
                         QtUtils::writeFile(file.name, result);
-                        count++;
+                    }
+                }
+                else
+                {
+                    int count = 0;
+                    it.toBack();
+                    while (it.hasPrevious())
+                    {
+                        it.previous();
+                        if (it.key() >= out_count)
+                        {
+                            result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key()));
+                            QtUtils::writeFile(file.name, result);
+                            count++;
+                        }
                     }
                 }
             }
@@ -1084,14 +1093,17 @@ class topPredictionsGallery : public Gallery
     void write(const Template &t)
     {
         QList<QString> keys = t.file.localKeys();
+        QMap <float, QString> data;
         foreach (const QString &key, keys)
         {
             if (key.startsWith("predicted_"))
             {
                 float val = t.file.get<float>(key);
-                attributes.insert(val, key); //use float as key to keep in order
+                data.insert(val, key); //use float as key to keep in order
             }
         }
+
+        attributes.insert(t.file.name, data);
     }
 };
 
