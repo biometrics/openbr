@@ -239,7 +239,7 @@ BR_REGISTER(Transform, RemoveTransform)
  * \brief Rename metadata key
  * \author Josh Klontz \cite jklontz
  */
-class RenameTransform : public UntrainableMetaTransform
+class RenameTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString find READ get_find WRITE set_find RESET reset_find STORED false)
@@ -247,12 +247,12 @@ class RenameTransform : public UntrainableMetaTransform
     BR_PROPERTY(QString, find, "")
     BR_PROPERTY(QString, replace, "")
 
-    void project(const Template &src, Template &dst) const
+    void project(const File &src, File &dst) const
     {
         dst = src;
-        if (dst.file.localKeys().contains(find)) {
-            dst.file.set(replace, dst.file.value(find));
-            dst.file.remove(find);
+        if (dst.localKeys().contains(find)) {
+            dst.set(replace, dst.value(find));
+            dst.remove(find);
         }
     }
 };
@@ -264,7 +264,7 @@ BR_REGISTER(Transform, RenameTransform)
  * \brief Rename first found metadata key
  * \author Josh Klontz \cite jklontz
  */
-class RenameFirstTransform : public UntrainableMetaTransform
+class RenameFirstTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList find READ get_find WRITE set_find RESET reset_find STORED false)
@@ -272,13 +272,13 @@ class RenameFirstTransform : public UntrainableMetaTransform
     BR_PROPERTY(QStringList, find, QStringList())
     BR_PROPERTY(QString, replace, "")
 
-    void project(const Template &src, Template &dst) const
+    void project(const File &src, File &dst) const
     {
         dst = src;
         foreach (const QString &key, find)
-            if (dst.file.localKeys().contains(key)) {
-                dst.file.set(replace, dst.file.value(key));
-                dst.file.remove(key);
+            if (dst.localKeys().contains(key)) {
+                dst.set(replace, dst.value(key));
+                dst.remove(key);
                 break;
             }
     }
@@ -291,16 +291,16 @@ BR_REGISTER(Transform, RenameFirstTransform)
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
-class AsTransform : public UntrainableMetaTransform
+class AsTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString extension READ get_extension WRITE set_extension RESET reset_extension STORED false)
     BR_PROPERTY(QString, extension, "")
 
-    void project(const Template &src, Template &dst) const
+    void project(const File &src, File &dst) const
     {
         dst = src;
-        dst.file.name = dst.file.name.left(dst.file.name.lastIndexOf('.')+1) + extension;
+        dst.name = dst.name.left(dst.name.lastIndexOf('.')+1) + extension;
     }
 };
 
@@ -311,7 +311,7 @@ BR_REGISTER(Transform, AsTransform)
  * \brief Apply the input regular expression to the value of inputProperty, store the matched portion in outputProperty.
  * \author Charles Otto \cite caotto
  */
-class RegexPropertyTransform : public UntrainableMetaTransform
+class RegexPropertyTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
@@ -321,14 +321,14 @@ class RegexPropertyTransform : public UntrainableMetaTransform
     BR_PROPERTY(QString, inputProperty, "name")
     BR_PROPERTY(QString, outputProperty, "Label")
 
-    void project(const Template &src, Template &dst) const
+    void project(const File &src, File &dst) const
     {
         dst = src;
         QRegularExpression re(regexp);
-        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProperty));
+        QRegularExpressionMatch match = re.match(dst.get<QString>(inputProperty));
         if (!match.hasMatch())
-            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.get<QString>(inputProperty)));
-        dst.file.set(outputProperty, match.captured(match.lastCapturedIndex()));
+            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.get<QString>(inputProperty)));
+        dst.set(outputProperty, match.captured(match.lastCapturedIndex()));
     }
 };
 
