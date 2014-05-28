@@ -1019,6 +1019,104 @@ class landmarksGallery : public Gallery
 
 BR_REGISTER(Gallery, landmarksGallery)
 
+/*!
+ * \ingroup galleries
+ * \brief Prints top attributes.
+ * \author Babatunde Ogunfemi \cite baba1472
+ *
+ * Prints to std the top attributes of each given template. 
+ * An optional threshold may be specified in parenthesis: threshold < 1 gives all attributes in order from
+ * threshold, while threshold > 1 gives attributes in order up to the threshold amount has been printed
+ *
+ */
+class topPredictionsGallery : public Gallery
+{
+    Q_OBJECT
+    Q_PROPERTY(float out_count READ get_out_count WRITE set_out_count RESET reset_out_count STORED false)
+    BR_PROPERTY(float, out_count, 3)
+
+    QList<QStringList> attributes;
+
+    ~topPredictionsGallery()
+    {
+        QStringList data;
+        QString result = QString("\n====================\n  # of Templates: %1 \n====================").arg(QString::number(attributes.count()));
+        data.append(result);
+        if (!attributes.isEmpty())
+        {
+            foreach (const QStringList &a_list, attributes)
+            {
+                result = QString("\n\n+++++++++++++++++++++++++++++++++++++++++++++");
+                data.append(result);
+
+                data.append(a_list);
+
+                result = QString("+++++++++++++++++++++++++++++++++++++++++++++");
+                data.append(result);
+            }
+
+            QtUtils::writeFile(file.name, data);
+        }
+    }
+
+    //Pure virtial function so needs an implementation
+    TemplateList readBlock(bool *done)
+    {
+        (void) done;
+        qFatal("Unsupported.");
+        return TemplateList();
+    }
+
+    void write(const Template &t)
+    {
+        QList<QString> keys = t.file.localKeys();
+        QMap <float, QString> data;
+        QStringList top_attributes;
+        foreach (const QString &key, keys)
+        {
+            if (key.startsWith("predicted_"))
+            {
+                float val = t.file.get<float>(key);
+                data.insert(val, key); //use float as key to keep in order
+            }
+        }
+
+        QMapIterator <float, QString> it(data);
+        QString result;
+        it.toBack();
+        if (out_count > 1)
+        {
+            if (data.count() < out_count)
+                out_count = data.count();
+
+            for (int i = 0; i < out_count; i++)
+            {
+                it.previous();
+                result = QString("%1)	%2 : %3").arg(QString::number(i + 1), it.value(), QString::number((float)it.key()));
+                top_attributes.append(result);
+            }
+        }
+        else
+        {
+            int count = 0;
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                it.previous();
+                if (it.key() >= out_count)
+                {
+                    result = QString("%1)	%2 : %3").arg(QString::number(count + 1), it.value(), QString::number((float)it.key()));
+                    top_attributes.append(result);
+                    count++;
+                }
+            }
+        }
+        attributes.append(top_attributes);
+    }
+};
+
+BR_REGISTER(Gallery, topPredictionsGallery)
+
 #ifdef CVMATIO
 
 using namespace cv;
