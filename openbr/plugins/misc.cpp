@@ -636,10 +636,8 @@ class OutputTransform : public TimeVaryingTransform
         if (targetName.isEmpty() || queryName.isEmpty() || outputString.isEmpty())
             return;
 
-        FileList targetFiles;
-        FileList queryFiles;
-        emptyRead(targetName, targetFiles, false);
-        emptyRead(queryName, queryFiles, false);
+        FileList targetFiles = FileList::fromGallery(targetName);
+        FileList queryFiles  = FileList::fromGallery(queryName);
 
         currentBlockRow = 0;
         currentBlockCol = 0;

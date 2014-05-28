@@ -314,11 +314,6 @@ struct WorkerProcess
     void mainLoop();
 };
 
-
-// Read metadata for all templates stored in the specified gallery, return the read
-// TeamplateList. If the gallery contains matrices, they are dropped.
-void emptyRead(const File & file, FileList & templates, bool cache = true);
-
 }
 
 #endif // OPENBR_INTERNAL_H

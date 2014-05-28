@@ -350,8 +350,8 @@ struct AlgorithmCore
         FileList queryMetadata;
 
         // Emptyread reads a gallery, and discards any matrices present, keeping only the metadata.
-        emptyRead(targetGallery, targetMetadata);
-        emptyRead(queryGallery, queryMetadata);
+        targetMetadata = FileList::fromGallery(targetGallery, true);
+        queryMetadata  = FileList::fromGallery(queryGallery, true);
 
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)

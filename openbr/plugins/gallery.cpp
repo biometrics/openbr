@@ -393,16 +393,17 @@ class memGallery : public Gallery
 
 BR_REGISTER(Gallery, memGallery)
 
-void emptyRead(const File & file, FileList & fileData, bool cache)
+FileList FileList::fromGallery(const File & file, bool cache)
 {
     File targetMeta = file;
     targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
 
+    FileList fileData;
+
     // Did we already read the data?
     if (MemoryGalleries::galleries.contains(targetMeta))
     {
-        fileData = MemoryGalleries::galleries[targetMeta].files();
-        return;
+        return MemoryGalleries::galleries[targetMeta].files();
     }
 
     TemplateList templates;
@@ -434,6 +435,7 @@ void emptyRead(const File & file, FileList & fileData, bool cache)
         memOutput->writeBlock(templates);
     }
     fileData = templates.files();
+    return fileData;
 }
 
 /*!

@@ -369,6 +369,8 @@ struct BR_EXPORT FileList : public QList<File>
 
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
+
+    static FileList fromGallery(const File &gallery, bool cache = false); /*!< \brief Create a file list from a br::Gallery. */
 };
 
 /*!
