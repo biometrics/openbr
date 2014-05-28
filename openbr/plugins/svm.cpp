@@ -163,9 +163,12 @@ private:
             // negative values ==> second class
             prediction = prediction > 0 ? 0 : 1;
         }
-        if (type == EPS_SVR || type == NU_SVR)
+        if (type == EPS_SVR || type == NU_SVR) {
             dst.file.set(outputVariable, prediction);
-        else
+            dst.m() = Mat(1, 1, CV_32F);
+            dst.m().at<float>(0, 0) = prediction;
+
+        } else
             dst.file.set(outputVariable, reverseLookup[prediction]);
     }
 
