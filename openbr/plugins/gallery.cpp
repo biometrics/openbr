@@ -1037,21 +1037,23 @@ class topPredictionsGallery : public Gallery
 
     ~topPredictionsGallery()
     {
+        QStringList data;
         QString result = QString("\n====================\n  # of Templates: %1 \n====================").arg(QString::number(attributes.count()));
-        QtUtils::writeFile(file.name, result);
+        data.append(result);
         if (!attributes.isEmpty())
         {
             foreach (const QStringList &a_list, attributes)
             {
-                QString result = QString("\n\n+++++++++++++++++++++++++++++++++++++++++++++");
-                QtUtils::writeFile(file.name, result);
+                result = QString("\n\n+++++++++++++++++++++++++++++++++++++++++++++");
+                data.append(result);
 
-                foreach (const QString &output, a_list)
-                    QtUtils::writeFile(file.name, output);
+                data.append(a_list);
 
                 result = QString("+++++++++++++++++++++++++++++++++++++++++++++");
-                QtUtils::writeFile(file.name, result);
+                data.append(result);
             }
+
+            QtUtils::writeFile(file.name, data);
         }
     }
 
