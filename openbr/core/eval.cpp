@@ -592,7 +592,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         for (int j=0; j<predictedPoints.size(); j++)
             pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
     }
-    qDebug() << "Skipped " << skipped << " files do to point size mismatch.";
+    qDebug() << "Skipped " << skipped << " files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
     for (int i=0; i<pointErrors.size(); i++) {
