@@ -77,15 +77,23 @@ janus_error janus_finalize_template(janus_template template_, janus_flat_templat
 {    
     *bytes = 0;
     foreach (const cv::Mat &m, *template_) {
-        assert(m.isContinuous());
+        if (!m.data)
+            continue;
+
+        if (!m.isContinuous())
+            return JANUS_UNKNOWN_ERROR;
+
         const size_t templateBytes = m.rows * m.cols * m.elemSize();
         if (*bytes + sizeof(size_t) + templateBytes > janus_max_template_size())
             break;
+
         memcpy(flat_template, &templateBytes, sizeof(templateBytes));
         flat_template += sizeof(templateBytes);
+        *bytes += sizeof(templateBytes);
+
         memcpy(flat_template, m.data, templateBytes);
         flat_template += templateBytes;
-        *bytes += sizeof(size_t) + templateBytes;
+        *bytes += templateBytes;
     }
 
     delete template_;
