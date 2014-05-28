@@ -636,11 +636,10 @@ class OutputTransform : public TimeVaryingTransform
         if (targetName.isEmpty() || queryName.isEmpty() || outputString.isEmpty())
             return;
 
-        QScopedPointer<Gallery> tGallery(Gallery::make(targetName));
-        QScopedPointer<Gallery> qGallery(Gallery::make(queryName));
-
-        FileList targetFiles = tGallery->files();
-        FileList queryFiles  = qGallery->files();
+        FileList targetFiles;
+        FileList queryFiles;
+        emptyRead(targetName, targetFiles, false);
+        emptyRead(queryName, queryFiles, false);
 
         currentBlockRow = 0;
         currentBlockCol = 0;

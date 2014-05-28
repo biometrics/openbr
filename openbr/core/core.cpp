@@ -207,38 +207,6 @@ struct AlgorithmCore
         data >> *transform;
     }
 
-    // Read metadata for all templates stored in the specified gallery, return the read
-    // TeamplateList. If the gallery contains matrices, they are dropped.
-    void emptyRead(const File & file, TemplateList & templates)
-    {
-        // Is this a gallery type containing matrices?
-        if ((QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
-            // Retrieve it block by block, dropping matrices from read templates.
-            QScopedPointer<Gallery> gallery(Gallery::make(file));
-            gallery->set_readBlockSize(10);
-            bool done = false;
-            while (!done)
-            {
-                TemplateList tList = gallery->readBlock(&done);
-                for (int i=0; i < tList.size();i++)
-                {
-                    tList[i].clear();
-                    templates.append(tList[i]);
-                }
-            }
-        }
-        else {
-            // The file may have already been enrolled to a memory gallery
-            emptyRead(getMemoryGallery(file), templates);
-            if (!templates.empty())
-                return;
-
-            // Nope, just retrieve the metadata
-            QScopedPointer<Gallery> gallery(Gallery::make(file));
-            templates = gallery->read();
-        }
-    }
-
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
         if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
@@ -378,31 +346,12 @@ struct AlgorithmCore
 
         // To decide which gallery is larger, we need to read both, but at this point we just want the
         // metadata, and don't need the enrolled matrices.
-        TemplateList targetMetadata;
-        TemplateList queryMetadata;
+        FileList targetMetadata;
+        FileList queryMetadata;
 
         // Emptyread reads a gallery, and discards any matrices present, keeping only the metadata.
         emptyRead(targetGallery, targetMetadata);
         emptyRead(queryGallery, queryMetadata);
-
-        // We store the metadata for the target and query sets as separate memory galleries.
-        // This is necessary because we need to intialize the Output with this data, but we don't
-        // create the Output directly in this function (going instead through OutputTransform)
-        File targetMetaMem = targetGallery;
-        targetMetaMem.name = name + targetMetaMem.baseName()+ "_meta" + targetMetaMem.hash()+ ".mem";
-        File queryMetaMem =  queryGallery;
-        queryMetaMem.name = name  + queryMetaMem.baseName() + "_meta" + queryMetaMem.hash() + ".mem";
-
-
-
-        // Store the metadata in memory galleries.
-        QScopedPointer<Gallery> targetMeta(Gallery::make(targetMetaMem));
-        if (targetMeta->files().isEmpty() )
-            targetMeta->writeBlock(targetMetadata);
-        
-        QScopedPointer<Gallery> queryMeta(Gallery::make(queryMetaMem));
-        if (queryMeta->files().isEmpty())
-            queryMeta->writeBlock(queryMetadata);
 
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
@@ -524,7 +473,7 @@ struct AlgorithmCore
         // The output transform takes the metadata memGalleries we set up previously as input, along with the
         // output specification we were passed. Gallery metadata is necessary for some Outputs to function correctly.
         QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
-        QString outputRegionDesc = "Output("+ outputString +"," + targetMetaMem.flat() +"," + queryMetaMem.flat() + ","+ QString::number(transposeMode ? 1 : 0) + ")";
+        QString outputRegionDesc = "Output("+ outputString +"," + targetGallery.flat() +"," + queryGallery.flat() + ","+ QString::number(transposeMode ? 1 : 0) + ")";
         // The ProgressCounter transform will simply provide a display about the number of rows completed.
         outputRegionDesc += "+ProgressCounter("+QString::number(rowSize)+")+Discard";
         QScopedPointer<Transform> outputTform(Transform::make(outputRegionDesc, NULL));
@@ -769,5 +718,6 @@ QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorith
 {
     return AlgorithmManager::getAlgorithm(algorithm)->distance;
 }
+
 
 #include "core.moc"
