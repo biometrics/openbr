@@ -1024,7 +1024,9 @@ BR_REGISTER(Gallery, landmarksGallery)
  * \brief Prints top attributes.
  * \author Babatunde Ogunfemi \cite baba1472
  *
- * Prints to std out the top predictions. An optional threshold may be specified using a space ' ' separator:
+ * Prints to std the top attributes of each given template. 
+ * An optional threshold may be specified in parenthesis: threshold < 1 gives all attributes in order from
+ * threshold, while threshold > 1 gives attributes in order up to the threshold amount has been printed
  *
  */
 class topPredictionsGallery : public Gallery
