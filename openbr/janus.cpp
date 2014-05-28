@@ -1,7 +1,3 @@
-#ifdef BR_LIBRARY
-  #define JANUS_LIBRARY
-#endif
-
 #include "janus.h"
 #include "janus_io.h"
 #include "openbr_plugin.h"
@@ -20,7 +16,8 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
 {
     int argc = 1;
     const char *argv[1] = { "janus" };
-    Context::initialize(argc, (char**)argv, sdk_path);
+    Context::initialize(argc, (char**)argv, sdk_path, false);
+    Globals->quiet = true;
     QString algorithm = model_file;
     if (algorithm.isEmpty()) {
         transform = Transform::fromAlgorithm("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", false);
@@ -78,23 +75,32 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
 
 janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
 {    
+    *bytes = 0;
     foreach (const cv::Mat &m, *template_) {
-        assert(m.isContinuous());
+        if (!m.data)
+            continue;
+
+        if (!m.isContinuous())
+            return JANUS_UNKNOWN_ERROR;
+
         const size_t templateBytes = m.rows * m.cols * m.elemSize();
         if (*bytes + sizeof(size_t) + templateBytes > janus_max_template_size())
             break;
+
         memcpy(flat_template, &templateBytes, sizeof(templateBytes));
         flat_template += sizeof(templateBytes);
+        *bytes += sizeof(templateBytes);
+
         memcpy(flat_template, m.data, templateBytes);
         flat_template += templateBytes;
-        *bytes += sizeof(size_t) + templateBytes;
+        *bytes += templateBytes;
     }
 
     delete template_;
     return JANUS_SUCCESS;
 }
 
-janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, const janus_flat_template b, const size_t b_bytes, double *similarity)
+janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, const janus_flat_template b, const size_t b_bytes, float *similarity)
 {
     *similarity = 0;
 
@@ -122,7 +128,8 @@ janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, cons
     if (*similarity != *similarity) // True for NaN
         return JANUS_UNKNOWN_ERROR;
 
-    *similarity /= comparisons;
+    if (comparisons > 0) *similarity /= comparisons;
+    else                 *similarity = -std::numeric_limits<float>::max();
     return JANUS_SUCCESS;
 }
 
@@ -136,5 +143,25 @@ janus_error janus_enroll(const janus_template template_, const janus_template_id
     stream << *template_;
     file.close();
     delete template_;
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_gallery_size(janus_gallery gallery, size_t *size)
+{
+    *size = TemplateList::fromGallery(gallery).size();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_compare(janus_gallery target, janus_gallery query, float *similarity_matrix, janus_template_id *target_ids, janus_template_id *query_ids)
+{
+    const TemplateList targets = TemplateList::fromGallery(target);
+    const TemplateList queries = TemplateList::fromGallery(query);
+    QScopedPointer<MatrixOutput> matrix(MatrixOutput::make(targets.files(), queries.files()));
+    distance->compare(targets, queries, matrix.data());
+    const QVector<janus_template_id> targetIds = File::get<janus_template_id,File>(matrix->targetFiles, "TEMPLATE_ID").toVector();
+    const QVector<janus_template_id> queryIds  = File::get<janus_template_id,File>(matrix->queryFiles,  "TEMPLATE_ID").toVector();
+    memcpy(similarity_matrix, matrix->data.data, matrix->data.rows * matrix->data.cols * sizeof(float));
+    memcpy(target_ids, targetIds.data(), targetIds.size() * sizeof(janus_template_id));
+    memcpy(query_ids, queryIds.data(), queryIds.size() * sizeof(janus_template_id));
     return JANUS_SUCCESS;
 }

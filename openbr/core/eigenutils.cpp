@@ -76,3 +76,22 @@ float eigStd(const Eigen::MatrixXf& x) {
     float mean = eigMean(x);
     return sqrt((x.array() - mean).pow(2).sum() / (x.cols() * x.rows()));
 }
+
+MatrixXf removeRowCol(MatrixXf X, int row, int col) {
+    MatrixXf Y(X.rows() - 1,X.cols() - 1);
+
+    for (int i1 = 0, i2 = 0; i1 < X.rows(); i1++) {
+        if (i1 == row)
+            continue;
+        i2++;
+
+        for (int j1 = 0, j2 = 0; j1 < X.cols(); j1++) {
+            if (j1 == col)
+                continue;
+            j2++;
+
+            Y(i2,j2) = X(i1,j1);
+        }
+    }
+    return Y;
+}

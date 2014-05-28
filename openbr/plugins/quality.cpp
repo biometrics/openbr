@@ -182,7 +182,7 @@ class MatchProbabilityDistance : public Distance
         mp = MP(genuineScores, impostorScores);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         const float rawScore = distance->compare(target, query);
         if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
@@ -308,7 +308,7 @@ class HeatMapDistance : public Distance
             distances[i]->train(patches[i]);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         (void) target;
         (void) query;

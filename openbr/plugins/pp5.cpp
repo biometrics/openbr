@@ -309,7 +309,7 @@ class PP5CompareDistance : public Distance
     struct NativeGallery
     {
         FileList files;
-        QList<int> faceIDs;
+        QList<int> subjectIDs;
         ppr_gallery_type gallery;
     };
 
@@ -320,6 +320,11 @@ class PP5CompareDistance : public Distance
     {
         foreach (const NativeGallery &gallery, cache.values())
             ppr_free_gallery(gallery.gallery);
+    }
+
+    float compare(const cv::Mat &target, const cv::Mat &query) const
+    {
+        return compare(Template(target), Template(query));
     }
 
     float compare(const Template &target, const Template &query) const
@@ -338,10 +343,10 @@ class PP5CompareDistance : public Distance
         ppr_gallery_type target_gallery, query_gallery;
         ppr_create_gallery(context, &target_gallery);
         ppr_create_gallery(context, &query_gallery);
-        QList<int> target_face_ids, query_face_ids;
-        enroll(target, &target_gallery, target_face_ids);
-        enroll(query, &query_gallery, query_face_ids);
-        compareNative(target_gallery, target_face_ids, query_gallery, query_face_ids, output);
+        QList<int> target_subject_ids, query_subject_ids;
+        enroll(target, &target_gallery, target_subject_ids);
+        enroll(query, &query_gallery, query_subject_ids);
+        compareNative(target_gallery, target_subject_ids, query_gallery, query_subject_ids, output);
         ppr_free_gallery(target_gallery);
         ppr_free_gallery(query_gallery);
     }
@@ -351,12 +356,12 @@ class PP5CompareDistance : public Distance
         ppr_similarity_matrix_type simmat;
         TRY(ppr_compare_galleries(context, query, target, &simmat))
         for (int i=0; i<queryIDs.size(); i++) {
-            int query_face_id = queryIDs[i];
+            int query_subject_id = queryIDs[i];
             for (int j=0; j<targetIDs.size(); j++) {
-                int target_face_id = targetIDs[j];
+                int target_subject_id = targetIDs[j];
                 float score = -std::numeric_limits<float>::max();
-                if ((query_face_id != -1) && (target_face_id != -1)) {
-                    TRY(ppr_get_face_similarity_score(context, simmat, query_face_id, target_face_id, &score))
+                if ((query_subject_id != -1) && (target_subject_id != -1)) {
+                    TRY(ppr_get_subject_similarity_score(context, simmat, query_subject_id, target_subject_id, &score))
                 }
                 output->setRelative(score, i, j);
             }
@@ -364,19 +369,22 @@ class PP5CompareDistance : public Distance
         ppr_free_similarity_matrix(simmat);
     }
 
-    void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &face_ids) const
+    void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &subject_ids) const
     {
-        int face_id = 0;
+        int subject_id = 0, face_id = 0;
         foreach (const Template &src, templates) {
-            if (src.m().data) {
-                ppr_face_type face;
-                createFace(src, &face);
-                TRY(ppr_add_face(context, gallery, face, face_id, face_id))
-                face_ids.append(face_id);
-                face_id++;
-                ppr_free_face(face);
+            if (!src.empty() && src.m().data) {
+                foreach (const cv::Mat &m, src) {
+                    ppr_face_type face;
+                    createFace(m, &face);
+                    TRY(ppr_add_face(context, gallery, face, subject_id, face_id))
+                    face_id++;
+                    ppr_free_face(face);
+                }
+                subject_ids.append(subject_id);
+                subject_id++;
             } else {
-                face_ids.append(-1);
+                subject_ids.append(-1);
             }
         }
     }
@@ -390,7 +398,7 @@ class PP5CompareDistance : public Distance
         } else {
             ppr_create_gallery(context, &nativeGallery.gallery);
             TemplateList templates = TemplateList::fromGallery(gallery);
-            enroll(templates, &nativeGallery.gallery, nativeGallery.faceIDs);
+            enroll(templates, &nativeGallery.gallery, nativeGallery.subjectIDs);
             nativeGallery.files = templates.files();
             if (gallery.get<bool>("retain"))
                 cache.insert(gallery.name, nativeGallery);
@@ -421,7 +429,7 @@ class PP5CompareDistance : public Distance
 
         QScopedPointer<Output> o(Output::make(output, nativeTarget.files, nativeQuery.files));
         o->setBlock(0, 0);
-        compareNative(nativeTarget.gallery, nativeTarget.faceIDs, nativeQuery.gallery, nativeQuery.faceIDs, o.data());
+        compareNative(nativeTarget.gallery, nativeTarget.subjectIDs, nativeQuery.gallery, nativeQuery.subjectIDs, o.data());
 
         cacheRelease(targetGallery, nativeTarget);
         cacheRelease(queryGallery, nativeQuery);

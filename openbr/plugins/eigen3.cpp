@@ -659,11 +659,11 @@ class L1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
-        const int size = a.m().rows * a.m().cols;
-        Eigen::Map<Eigen::VectorXf> aMap((float*)a.m().data, size);
-        Eigen::Map<Eigen::VectorXf> bMap((float*)b.m().data, size);
+        const int size = a.rows * a.cols;
+        Eigen::Map<Eigen::VectorXf> aMap((float*)a.data, size);
+        Eigen::Map<Eigen::VectorXf> bMap((float*)b.data, size);
         return (aMap-bMap).cwiseAbs().sum();
     }
 };
@@ -679,11 +679,11 @@ class L2Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
-        const int size = a.m().rows * a.m().cols;
-        Eigen::Map<Eigen::VectorXf> aMap((float*)a.m().data, size);
-        Eigen::Map<Eigen::VectorXf> bMap((float*)b.m().data, size);
+        const int size = a.rows * a.cols;
+        Eigen::Map<Eigen::VectorXf> aMap((float*)a.data, size);
+        Eigen::Map<Eigen::VectorXf> bMap((float*)b.data, size);
         return (aMap-bMap).squaredNorm();
     }
 };

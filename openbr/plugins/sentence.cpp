@@ -43,12 +43,12 @@ class SentenceSimilarityDistance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        uchar *aBuffer = a.m().data;
-        uchar *bBuffer = b.m().data;
-        const uchar *aEnd = aBuffer + a.m().cols;
-        const uchar *bEnd = bBuffer + b.m().cols;
+        uchar *aBuffer = a.data;
+        uchar *bBuffer = b.data;
+        const uchar *aEnd = aBuffer + a.cols;
+        const uchar *bEnd = bBuffer + b.cols;
 
         int32_t aWord, bWord, aRows, bRows, aColumns, bColumns;
         float *aData, *bData;

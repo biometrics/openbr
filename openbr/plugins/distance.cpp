@@ -51,16 +51,17 @@ public:
                   INF,
                   L1,
                   L2,
-                  Cosine };
+                  Cosine,
+                  Dot};
 
 private:
     BR_PROPERTY(Metric, metric, L2)
     BR_PROPERTY(bool, negLogPlusOne, true)
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        if ((a.m().size != b.m().size) ||
-            (a.m().type() != b.m().type()))
+        if ((a.size != b.size) ||
+            (a.type() != b.type()))
                 return -std::numeric_limits<float>::max();
 
 // TODO: this max value is never returned based on the switch / default 
@@ -88,6 +89,8 @@ private:
             break;
           case Cosine:
             return cosine(a, b);
+          case Dot:
+            return a.dot(b);
           default:
             qFatal("Invalid metric");
         }
@@ -135,7 +138,7 @@ class DefaultDistance : public Distance
         distance = Distance::make("Dist("+file.suffix()+")");
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
         return distance->compare(a, b);
     }
@@ -279,9 +282,9 @@ class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        return l1(a.m().data, b.m().data, a.m().total());
+        return l1(a.data, b.data, a.total());
     }
 };
 
@@ -296,9 +299,9 @@ class HalfByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        return packed_l1(a.m().data, b.m().data, a.m().total());
+        return packed_l1(a.data, b.data, a.total());
     }
 };
 
@@ -347,20 +350,17 @@ class IdenticalDistance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        const Mat &am = a.m();
-        const Mat &bm = b.m();
-        const size_t size = am.total() * am.elemSize();
-        if (size != bm.total() * bm.elemSize()) return 0;
+        const size_t size = a.total() * a.elemSize();
+        if (size != b.total() * b.elemSize()) return 0;
         for (size_t i=0; i<size; i++)
-            if (am.data[i] != bm.data[i]) return 0;
+            if (a.data[i] != b.data[i]) return 0;
         return 1;
     }
 };        
 
 BR_REGISTER(Distance, IdenticalDistance)
-
 
 /*!
  * \ingroup distances

@@ -130,6 +130,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
 
+    if (simmat.type() != CV_32FC1)
+        qFatal("Invalid simmat format");
+
+    if (mask.type() != CV_8UC1)
+        qFatal("Invalid mask format");
+
     float result = -1;
 
     // Make comparisons
@@ -427,84 +433,106 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     return lines;
 }
 
-QString getDetectKey(const TemplateList &templates)
+struct DetectionKey : public QString
 {
-    const File &f = templates.first().file;
-    foreach (const QString &key, f.localKeys()) {
-        // first check for single detections
+    enum Type {
+        Invalid,
+        Rect,
+        RectList,
+        XYWidthHeight
+    } type;
+
+    DetectionKey(const QString &key = "", Type type = Invalid)
+        : QString(key), type(type) {}
+};
+
+static DetectionKey getDetectKey(const FileList &files)
+{
+    if (files.empty())
+        return DetectionKey();
+
+    const File &f = files.first();
+    const QStringList localKeys = f.localKeys();
+
+    // first check for single detections
+    foreach (const QString &key, localKeys)
         if (!f.get<QRectF>(key, QRectF()).isNull())
-            return key;
-    }
+            return DetectionKey(key, DetectionKey::Rect);
+
     // and then multiple
     if (!f.rects().empty())
-        return "Rects";
-    return "";
+        return DetectionKey("Rects", DetectionKey::RectList);
+
+    // check for <Key>_X, <Key>_Y, <Key>_Width, <Key>_Height
+    foreach (const QString &localKey, localKeys) {
+        if (!localKey.endsWith("_X"))
+            continue;
+        const QString key = localKey.mid(0, localKey.size()-2);
+        if (localKeys.contains(key+"_Y") &&
+            localKeys.contains(key+"_Width") &&
+            localKeys.contains(key+"_Height"))
+            return DetectionKey(key, DetectionKey::XYWidthHeight);
+    }
+
+    return DetectionKey();
 }
 
-bool detectKeyIsList(QString key, const TemplateList &templates)
+// return a list of detections independent of the detection key format
+static QList<Detection> getDetections(const DetectionKey &key, const File &f, bool isTruth)
 {
-    return templates.first().file.get<QRectF>(key, QRectF()).isNull();
-}
-
-// return a list of detections whether the template holds
-// multiple detections or a single detection
-QList<Detection> getDetections(QString key, const Template &t, bool isList, bool isTruth)
-{
-    File f = t.file;
     QList<Detection> dets;
-    if (isList) {
+    if (key.type == DetectionKey::RectList) {
         QList<QRectF> rects = f.rects();
         QList<float> confidences = f.getList<float>("Confidences", QList<float>());
         if (!isTruth && rects.size() != confidences.size())
             qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
         for (int i=0; i<rects.size(); i++) {
             if (isTruth)
-                dets.append(Detection(rects.at(i)));
+                dets.append(Detection(rects[i]));
             else
-                dets.append(Detection(rects.at(i), confidences.at(i)));
+                dets.append(Detection(rects[i], confidences[i]));
         }
-    } else {
-        if (isTruth)
-            dets.append(Detection(f.get<QRectF>(key)));
-        else
-            dets.append(Detection(f.get<QRectF>(key), f.get<float>("Confidence", -1)));
+    } else if (key.type == DetectionKey::Rect) {
+        dets.append(Detection(f.get<QRectF>(key), isTruth ? -1 : f.get<float>("Confidence", -1)));
+    } else if (key.type == DetectionKey::XYWidthHeight) {
+        const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
+        dets.append(Detection(rect, isTruth ? -1 : f.get<float>("Confidence", -1)));
     }
     return dets;
 }
 
-QMap<QString, Detections> getDetections(const TemplateList &predicted, const TemplateList &truth)
+static QMap<QString, Detections> getDetections(const File &predictedGallery, const File &truthGallery)
 {
+    const FileList predicted = TemplateList::fromGallery(predictedGallery).files();
+    const FileList truth = TemplateList::fromGallery(truthGallery).files();
+
     // Figure out which metadata field contains a bounding box
-    QString truthDetectKey = getDetectKey(truth);
-    if (truthDetectKey.isEmpty()) qFatal("No suitable ground truth metadata key found.");
-    QString predictedDetectKey = getDetectKey(predicted);
-    if (predictedDetectKey.isEmpty()) qFatal("No suitable predicted metadata key found.");
+    DetectionKey truthDetectKey = getDetectKey(truth);
+    if (truthDetectKey.isEmpty())
+        qFatal("No suitable ground truth metadata key found.");
+
+    DetectionKey predictedDetectKey = getDetectKey(predicted);
+    if (predictedDetectKey.isEmpty())
+        qFatal("No suitable predicted metadata key found.");
+
     qDebug("Using metadata key: %s%s",
            qPrintable(predictedDetectKey),
            qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
 
     QMap<QString, Detections> allDetections;
-    bool predKeyIsList = detectKeyIsList(predictedDetectKey, predicted);
-    bool truthKeyIsList = detectKeyIsList(truthDetectKey, truth);
-    foreach (const Template &t, predicted) {
-        QList<Detection> dets = getDetections(predictedDetectKey, t, predKeyIsList, false);
-        allDetections[t.file.baseName()].predicted.append(dets);
-    }
-    foreach (const Template &t, truth) {
-        QList<Detection> dets = getDetections(truthDetectKey, t, truthKeyIsList, true);
-        allDetections[t.file.baseName()].truth.append(dets);
-    }
+    foreach (const File &f, predicted)
+        allDetections[f.baseName()].predicted.append(getDetections(predictedDetectKey, f, false));
+    foreach (const File &f, truth)
+        allDetections[f.baseName()].truth.append(getDetections(truthDetectKey, f, true));
     return allDetections;
 }
 
 float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
-    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
-    const TemplateList truth(TemplateList::fromGallery(truthGallery));
 
     // Organized by file, QMap used to preserve order
-    QMap<QString, Detections> allDetections = getDetections(predicted, truth);
+    QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     int totalTrueDetections = 0;
@@ -592,7 +620,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         for (int j=0; j<predictedPoints.size(); j++)
             pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
     }
-    qDebug() << "Skipped " << skipped << " files do to point size mismatch.";
+    qDebug() << "Skipped " << skipped << " files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
     for (int i=0; i<pointErrors.size(); i++) {
