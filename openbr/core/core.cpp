@@ -706,7 +706,7 @@ QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algori
         return AlgorithmManager::getAlgorithm(algorithm)->transform;
     else {
         QSharedPointer<Transform> orig_tform = AlgorithmManager::getAlgorithm(algorithm)->transform;
-        QSharedPointer<Transform> newRoot = QSharedPointer<Transform>(Transform::make("Stream(Identity)", NULL));
+        QSharedPointer<Transform> newRoot = QSharedPointer<Transform>(Transform::make("Stream(Identity, readMode=DistributeFrames)", NULL));
         WrapperTransform * downcast = dynamic_cast<WrapperTransform *> (newRoot.data());
         downcast->transform = orig_tform.data();
         downcast->init();
