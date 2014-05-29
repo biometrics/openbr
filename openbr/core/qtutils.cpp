@@ -99,7 +99,16 @@ void readFile(const QString &file, QByteArray &data, bool uncompress)
 
 void writeFile(const QString &file, const QStringList &lines)
 {
-    writeFile(file, lines.join("\n"));
+    QFile f(file);
+    touchDir(f);
+
+    if (!f.open(QFile::WriteOnly))
+        qFatal("Failed to open %s for writing.", qPrintable(file));
+
+    foreach(const QString & line, lines) {
+        f.write((line+"\n").toLocal8Bit() );
+    }
+    f.close();
 }
 
 void writeFile(const QString &file, const QString &data)
