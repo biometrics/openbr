@@ -591,7 +591,7 @@ class txtGallery : public Gallery
         for (qint64 i = 0; i < readBlockSize; i++)
         {
             QByteArray lineBytes = f.readLine();
-            QString line(lineBytes);
+            QString line = QString::fromLocal8Bit(lineBytes).simplified();
 
             if (!line.isEmpty()){
                 int splitIndex = line.lastIndexOf(' ');
@@ -655,7 +655,7 @@ class flatGallery : public Gallery
             QByteArray line = f.readLine();
 
             if (!line.isEmpty())
-                templates.append(File(QString(line)));
+                templates.append(File(QString::fromLocal8Bit(line).simplified()));
 
             if (f.atEnd()) {
                 *done=true;
