@@ -662,7 +662,7 @@ class OutputTransform : public TimeVaryingTransform
             fragmentsPerCol = 1;
         }
 
-        output = QSharedPointer<Output>(Output::make(outputString, targetFiles, queryFiles));
+        output = QSharedPointer<Output>(Output::make(outputString+"[targetGallery="+targetName+",queryGallery="+queryName+"]", targetFiles, queryFiles));
         output->blockRows = fragmentsPerCol;
         output->blockCols = fragmentsPerRow;
         output->initialize(targetFiles, queryFiles);
