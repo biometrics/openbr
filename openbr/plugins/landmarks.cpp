@@ -378,7 +378,7 @@ class NamePointsTransform : public UntrainableMetadataTransform
     BR_PROPERTY(QList<int>, indices, QList<int>())
     BR_PROPERTY(QStringList, names, QStringList())
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         if (indices.size() != names.size()) qFatal("Point/name size mismatch");
 
@@ -406,7 +406,7 @@ class AnonymizePointsTransform : public UntrainableMetadataTransform
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
     BR_PROPERTY(QStringList, names, QStringList())
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
 

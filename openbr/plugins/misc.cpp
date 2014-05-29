@@ -247,7 +247,7 @@ class RenameTransform : public UntrainableMetadataTransform
     BR_PROPERTY(QString, find, "")
     BR_PROPERTY(QString, replace, "")
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         if (dst.localKeys().contains(find)) {
@@ -272,7 +272,7 @@ class RenameFirstTransform : public UntrainableMetadataTransform
     BR_PROPERTY(QStringList, find, QStringList())
     BR_PROPERTY(QString, replace, "")
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         foreach (const QString &key, find)
@@ -297,7 +297,7 @@ class AsTransform : public UntrainableMetadataTransform
     Q_PROPERTY(QString extension READ get_extension WRITE set_extension RESET reset_extension STORED false)
     BR_PROPERTY(QString, extension, "")
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         dst.name = dst.name.left(dst.name.lastIndexOf('.')+1) + extension;
@@ -321,7 +321,7 @@ class RegexPropertyTransform : public UntrainableMetadataTransform
     BR_PROPERTY(QString, inputProperty, "name")
     BR_PROPERTY(QString, outputProperty, "Label")
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         QRegularExpression re(regexp);

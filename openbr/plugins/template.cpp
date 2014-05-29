@@ -15,7 +15,7 @@ class KeepMetadataTransform : public UntrainableMetadataTransform
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList())
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         foreach(const QString& localKey, dst.localKeys()) {
@@ -61,7 +61,7 @@ class RemoveMetadataTransform : public UntrainableMetadataTransform
     Q_PROPERTY(QString attributeName READ get_attributeName WRITE set_attributeName RESET reset_attributeName STORED false)
     BR_PROPERTY(QString, attributeName, "None")
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         if (dst.contains(attributeName))
@@ -81,7 +81,7 @@ class SelectPointsTransform : public UntrainableMetadataTransform
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
 
-    void project(const File &src, File &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         QList<QPointF> origPoints = src.points();

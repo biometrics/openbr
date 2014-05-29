@@ -322,12 +322,12 @@ class MetadataTransform : public Transform
     Q_OBJECT
 public:
 
-    virtual void project(const File &src, File &dst) const = 0;
+    virtual void projectMetadata(const File &src, File &dst) const = 0;
 
     void project(const Template & src, Template & dst) const
     {
         dst = src;
-        project(src.file, dst.file);
+        projectMetadata(src.file, dst.file);
     }
 
 protected:
