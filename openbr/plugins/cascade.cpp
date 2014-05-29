@@ -15,11 +15,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/objdetect/objdetect.hpp>
-//#include <opencv2/objdetect/objdetect_c.h>
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/resource.h"
+#include "openbr/core/qtutils.h"
 #include <QProcess>
+#include <QTemporaryFile>
 
 using namespace cv;
     
@@ -153,7 +154,7 @@ static void trainCascade(const TrainParams &params)
     const QStringList cmdArgs = buildTrainingArgs(params);
     QProcess::execute("opencv_traincascade", cmdArgs);
 }
- 
+
 namespace br
 {
         
@@ -169,19 +170,11 @@ public:
         else if (model == "Eye")         file += "haarcascades/haarcascade_eye_tree_eyeglasses.xml";
         else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";
         else if (model == "ProfileFace") file += "haarcascades/haarcascade_profileface.xml";
-        else{
-            // Create temp folder if does not exist
-            file = model+QDir::separator()+"cascade.xml";
-            QDir dir(model);
-            if (!dir.exists())
-                if (!QDir::current().mkdir(model)) qFatal("Cannot create model.");
-            
-            // Make sure file can be created
-            QFile pathTest(file);
-            if (pathTest.exists()) pathTest.remove();
-            
-            if (!pathTest.open(QIODevice::WriteOnly | QIODevice::Text)) qFatal("Cannot create model.");
-            pathTest.remove();
+        else {
+            // Create a directory for trainable cascades
+            file += "openbrcascades/"+model+"/cascade.xml";
+            QFile touchFile(file);
+            QtUtils::touchDir(touchFile);
         }                             
     }
 
@@ -227,7 +220,6 @@ class CascadeTransform : public MetaTransform
     Q_PROPERTY(QString mode READ get_mode WRITE set_mode RESET reset_mode STORED false) 
     Q_PROPERTY(bool show READ get_show WRITE set_show RESET reset_show STORED false)    
     Q_PROPERTY(bool baseFormatSave READ get_baseFormatSave WRITE set_baseFormatSave RESET reset_baseFormatSave STORED false)
-    Q_PROPERTY(bool overwrite READ get_overwrite WRITE set_overwrite RESET reset_overwrite STORED false)
 
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
@@ -251,8 +243,7 @@ class CascadeTransform : public MetaTransform
     BR_PROPERTY(QString, bt, "")
     BR_PROPERTY(QString, mode, "")
     BR_PROPERTY(bool, show, false)
-    BR_PROPERTY(bool, baseFormatSave, false)  
-    BR_PROPERTY(bool, overwrite, false)                     
+    BR_PROPERTY(bool, baseFormatSave, false)                    
 
     Resource<CascadeClassifier> cascadeResource;
 
@@ -264,32 +255,19 @@ class CascadeTransform : public MetaTransform
     // Train transform
     void train(const TemplateList& data)
     {
-        if (overwrite) {
-            QDir dataDir(model);
-            if (dataDir.exists()) {
-                dataDir.removeRecursively();
-                QDir::current().mkdir(model);
-            }
-        }
-        
-        const FileList files = data.files();
+        // Don't train if we're using OpenCV's prebuilt cascades
+        if (model == "Ear" || model == "Eye" || model == "FrontalFace" || model == "ProfileFace")
+            return;
 
-        // Open positive and negative list files
-        const QString posFName = "pos.txt";
-        const QString negFName = "neg.txt";
-        QFile posFile(posFName);
-        QFile negFile(negFName);
-        posFile.open(QIODevice::WriteOnly | QIODevice::Text);
-        negFile.open(QIODevice::WriteOnly | QIODevice::Text);
+        // Open positive and negative list temporary files
+        QTemporaryFile posFile;
+        QTemporaryFile negFile;
+
+        posFile.open();
+        negFile.open();
+
         QTextStream posStream(&posFile);
         QTextStream negStream(&negFile);
-        
-        const QString endln = "\r\n";   
-        
-        int posCount = 0;
-        int negCount = 0;
-        
-        bool buildPos = false; // If true, build positive vector from single image
         
         TrainParams params;
         
@@ -315,6 +293,13 @@ class CascadeTransform : public MetaTransform
         if (params.w < 0)   params.w = minSize;
         if (params.h < 0)   params.h = minSize;
         
+        int posCount = 0;
+        int negCount = 0;
+
+        bool buildPos = false; // If true, build positive vector from single image
+
+        const FileList files = data.files();
+
         for (int i = 0; i < files.length(); i++) {
             File f = files[i];
             if (f.contains("training-set")) {
@@ -322,73 +307,63 @@ class CascadeTransform : public MetaTransform
                 
                 // Negative samples
                 if (tset == "neg") {
-                    if (negCount > 0) negStream<<endln;
-                    negStream << f.path() << QDir::separator() << f.fileName();
+                    negStream << f.path() << QDir::separator() << f.fileName() << endl;
                     negCount++;
-                
                 // Positive samples for crop/rescale    
-                }else if (tset == "pos") {
-                    
-                    if (posCount > 0) posStream<<endln;
-                    QString rects = "";
+                } else if (tset == "pos") {
+                    QString buffer = "";
                     
                     // Extract rectangles
-                    for (int j = 0; j < f.rects().length(); j++) {
-                        QRectF r = f.rects()[j];
-                        rects += " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
+                    QList<QRectF> rects = f.rects();
+                    for (int j = 0; j < rects.size(); j++) {
+                        QRectF r = rects[j];
+                        buffer += " " + QString::number(r.x()) + " " + QString::number(r.y()) + " " + QString::number(r.width()) + " "+ QString::number(r.height());
                         posCount++;
                     }
-                    if (f.rects().length() > 0)
-                        posStream << f.path() << QDir::separator() << f.fileName() << " " << f.rects().length() << " " << rects;
+
+                    posStream << f.path() << QDir::separator() << f.fileName() << " " << f.rects().length() << " " << buffer << endl;
                     
                 // Single positive sample for background removal and overlay on negatives
-                }else if (tset == "pos-base") {
-                    
+                } else if (tset == "pos-base") {
                     buildPos = true;
                     params.img = f.path() + QDir::separator() + f.fileName();
                     
                     // Parse settings (unique to this one tag)
-                    if (f.contains("num")) params.num = f.get<int>("num",0);
-                    if (f.contains("bgcolor")) params.bgcolor = f.get<int>("bgcolor",0);
-                    if (f.contains("bgthresh")) params.bgthresh =f.get<int>("bgthresh",0);
+                    if (f.contains("num")) params.num = f.get<int>("num");
+                    if (f.contains("bgcolor")) params.bgcolor = f.get<int>("bgcolor");
+                    if (f.contains("bgthresh")) params.bgthresh =f.get<int>("bgthresh");
                     if (f.contains("inv")) params.inv =  f.get<bool>("inv",false);
                     if (f.contains("randinv")) params.randinv =  f.get<bool>("randinv",false);
-                    if (f.contains("maxidev")) params.maxidev = f.get<int>("maxidev",0);
-                    if (f.contains("maxxangle")) params.maxxangle = f.get<double>("maxxangle",0);
-                    if (f.contains("maxyangle")) params.maxyangle = f.get<double>("maxyangle",0);
-                    if (f.contains("maxzangle")) params.maxzangle = f.get<double>("maxzangle",0); 
+                    if (f.contains("maxidev")) params.maxidev = f.get<int>("maxidev");
+                    if (f.contains("maxxangle")) params.maxxangle = f.get<double>("maxxangle");
+                    if (f.contains("maxyangle")) params.maxyangle = f.get<double>("maxyangle");
+                    if (f.contains("maxzangle")) params.maxzangle = f.get<double>("maxzangle");
                 }
             }
         }
         
-        // Fill in remaining params conditionally
         posFile.close();
         negFile.close();
+
+        // Fill in remaining params conditionally
         if (buildPos) {
             if (params.numPos < 0) {
-                if (params.num > 0) params.numPos = (int)(params.num*.95);
+                if (params.num > 0) params.numPos = params.num*.95;
                 else params.numPos = 950;
-                posFile.remove();
             }
-        }else{
-            params.info = posFName;
-            if (params.numPos < 0) {
-                params.numPos = (int)(posCount*.95);
-            }
+        } else {
+            params.info = posFile.fileName();
+            if (params.numPos < 0) params.numPos = posCount*.95;
         }
-        params.bg = negFName;
-        params.data = model;
-        if (params.num < 0) {
-            params.num = posCount;
-        }
-        if (params.numNeg < 0) {
-            params.numNeg = negCount*10;
-        }
-        
+
+        if (params.num < 0) params.num = posCount;
+        if (params.numNeg < 0) params.numNeg = negCount*10;
+
+        params.bg = negFile.fileName();
+        params.data = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model + "/cascade.xml";
+
         genSamples(params);
         trainCascade(params);
-        if (posFile.exists()) posFile.remove();
-        negFile.remove();
     }
 
     void project(const Template &src, Template &dst) const
