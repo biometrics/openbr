@@ -393,6 +393,51 @@ class memGallery : public Gallery
 
 BR_REGISTER(Gallery, memGallery)
 
+FileList FileList::fromGallery(const File & file, bool cache)
+{
+    File targetMeta = file;
+    targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
+
+    FileList fileData;
+
+    // Did we already read the data?
+    if (MemoryGalleries::galleries.contains(targetMeta))
+    {
+        return MemoryGalleries::galleries[targetMeta].files();
+    }
+
+    TemplateList templates;
+    // OK we read the data in some form, does the gallery type containing matrices?
+    if ((QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
+        // Retrieve it block by block, dropping matrices from read templates.
+        QScopedPointer<Gallery> gallery(Gallery::make(file));
+        gallery->set_readBlockSize(10);
+        bool done = false;
+        while (!done)
+        {
+            TemplateList tList = gallery->readBlock(&done);
+            for (int i=0; i < tList.size();i++)
+            {
+                tList[i].clear();
+                templates.append(tList[i].file);
+            }
+        }
+    }
+    else {
+        // this is a gallery format that doesn't include matrices, so we can just read it
+        QScopedPointer<Gallery> gallery(Gallery::make(file));
+        templates= gallery->read();
+    }
+
+    if (cache)
+    {
+        QScopedPointer<Gallery> memOutput(Gallery::make(targetMeta));
+        memOutput->writeBlock(templates);
+    }
+    fileData = templates.files();
+    return fileData;
+}
+
 /*!
  * \ingroup galleries
  * \brief Treats each line as a file.
