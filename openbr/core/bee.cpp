@@ -164,23 +164,30 @@ Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySi
     int typeSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
 
     // Get matrix data
-    qint64 bytesExpected = (qint64)rows*(qint64)cols*(qint64)typeSize;
     Mat m;
     if (isMask)
         m.create(rows, cols, OpenCVType<BEE::Mask_t,1>::make());
     else
         m.create(rows, cols, OpenCVType<BEE::Simmat_t,1>::make());
 
-    qint64 read = file.read((char*)m.data, bytesExpected);
-    if (read != bytesExpected)
-        qFatal("Invalid matrix size.");
+    qint64 bytesPerRow = m.cols * typeSize;
+
+    for (int i=0; i < m.rows;i++)
+    {
+        cv::Mat aRow = m.row(i);
+        qint64 bytesRead = file.read((char *)aRow.data, bytesPerRow);
+        if (bytesRead != bytesPerRow)
+        {
+            qFatal("Didn't read complete row!");
+        }
+    }
     if (!file.atEnd())
         qFatal("Expected matrix end of file.");
     file.close();
 
-    Mat result;
+    Mat result = m;
     if (isDistance ^ matrix.get<bool>("negate", false)) m.convertTo(result, -1, -1);
-    else                                                result = m.clone();
+
     return result;
 }
 

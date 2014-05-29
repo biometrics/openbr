@@ -574,24 +574,46 @@ class txtGallery : public Gallery
     Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
     BR_PROPERTY(QString, label, "")
 
-    QStringList lines;
-
+    QFile f;
     ~txtGallery()
     {
-        if (!lines.isEmpty())
-            QtUtils::writeFile(file.name, lines);
+        f.close();
     }
 
     TemplateList readBlock(bool *done)
     {
+        *done = false;
+        if (f.atEnd())
+            f.seek(0);
+
         TemplateList templates;
-        foreach (const QString &line, QtUtils::readLines(file)) {
-            int splitIndex = line.lastIndexOf(' ');
-            if (splitIndex == -1) templates.append(File(line));
-            else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+
+        for (qint64 i = 0; i < readBlockSize; i++)
+        {
+            QByteArray lineBytes = f.readLine();
+            QString line(lineBytes);
+
+            if (!line.isEmpty()){
+                int splitIndex = line.lastIndexOf(' ');
+                if (splitIndex == -1) templates.append(File(line));
+                else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+            }
+
+            if (f.atEnd()) {
+                *done=true;
+                break;
+            }
         }
-        *done = true;
+
         return templates;
+    }
+
+    void init()
+    {
+        f.setFileName(file);
+        QtUtils::touchDir(f);
+        if (!f.open(QFile::ReadWrite))
+            qFatal("Failed to open %s for read/write.", qPrintable(file));
     }
 
     void write(const Template &t)
@@ -599,7 +621,8 @@ class txtGallery : public Gallery
         QString line = t.file.name;
         if (!label.isEmpty())
             line += " " + t.file.get<QString>(label);
-        lines.append(line);
+
+        f.write((line+"\n").toLocal8Bit() );
     }
 };
 
@@ -612,26 +635,49 @@ BR_REGISTER(Gallery, txtGallery)
 class flatGallery : public Gallery
 {
     Q_OBJECT
-    QStringList lines;
 
+    QFile f;
     ~flatGallery()
     {
-        if (!lines.isEmpty())
-            QtUtils::writeFile(file.name, lines);
+        f.close();
     }
 
     TemplateList readBlock(bool *done)
     {
+        *done = false;
+        if (f.atEnd())
+            f.seek(0);
+
         TemplateList templates;
-        foreach (const QString &line, QtUtils::readLines(file))
-            templates.append(File(line));
-        *done = true;
+
+        for (qint64 i = 0; i < readBlockSize; i++)
+        {
+            QByteArray line = f.readLine();
+
+            if (!line.isEmpty())
+                templates.append(File(QString(line)));
+
+            if (f.atEnd()) {
+                *done=true;
+                break;
+            }
+        }
+
         return templates;
+    }
+
+    void init()
+    {
+        f.setFileName(file);
+        QtUtils::touchDir(f);
+        if (!f.open(QFile::ReadWrite))
+            qFatal("Failed to open %s for read/write.", qPrintable(file));
+
     }
 
     void write(const Template &t)
     {
-        lines.append(t.file.flat());
+        f.write((t.file.flat()+"\n").toLocal8Bit() );
     }
 };
 
