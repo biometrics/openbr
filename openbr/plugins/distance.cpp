@@ -204,7 +204,7 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QString, description, "IdenticalDistance")
+    BR_PROPERTY(QString, description, "L2")
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
 
