@@ -517,13 +517,16 @@ class ProgressCounterTransform : public TimeVaryingTransform
 
         qint64 elapsed = timer.elapsed();
 
+        if (!dst.empty()) {
+            Globals->currentProgress = dst.last().file.get<qint64>("p",0);
+            Globals->currentStep++;
+        }
+
         // updated every second
         if (elapsed > 1000) {
             Globals->printStatus();
             timer.start();
         }
-
-        Globals->currentStep++;
 
         return;
     }
@@ -537,12 +540,13 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
     }
 
     void init()
     {
         timer.start();
+        Globals->currentStep = 0;
     }
 
 public:
@@ -688,6 +692,40 @@ public:
 };
 
 BR_REGISTER(Transform, OutputTransform)
+
+class FileExclusionTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString exclusionGallery READ get_exclusionGallery WRITE set_exclusionGallery RESET reset_exclusionGallery STORED false)
+    BR_PROPERTY(QString, exclusionGallery, "")
+
+    QSet<QString> excluded;
+
+    void project(const Template & src, Template & dst) const
+    {
+        qFatal("FileExclusion can't do anything here");
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        foreach(const Template & srcTemp, src)
+        {
+            if (!excluded.contains(srcTemp.file))
+                dst.append(srcTemp);
+        }
+    }
+
+    void init()
+    {
+        if (exclusionGallery.isEmpty())
+            return;
+        FileList temp = FileList::fromGallery(exclusionGallery);
+        excluded = QSet<QString>::fromList(temp.names());
+    }
+};
+
+BR_REGISTER(Transform, FileExclusionTransform)
 
 }
 

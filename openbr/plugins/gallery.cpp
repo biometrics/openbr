@@ -23,6 +23,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QXmlStreamReader>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
@@ -127,6 +128,7 @@ class galGallery : public Gallery
             Template m;
             stream >> m;
             templates.append(m);
+            templates.last().file.set("p", totalSize());
         }
 
         *done = stream.atEnd();
@@ -140,6 +142,17 @@ class galGallery : public Gallery
 
         stream << t;
     }
+
+    qint64 totalSize()
+    {
+        return gallery.size();
+    }
+
+    qint64 position()
+    {
+        return gallery.pos();
+    }
+
 };
 
 BR_REGISTER(Gallery, galGallery)
@@ -328,6 +341,7 @@ class memGallery : public Gallery
 {
     Q_OBJECT
     int block;
+    qint64 gallerySize;
 
     void init()
     {
@@ -338,6 +352,7 @@ class memGallery : public Gallery
             MemoryGalleries::galleries[file] = gallery->read();
             align(MemoryGalleries::galleries[file]);
             MemoryGalleries::aligned[file] = true;
+            gallerySize = MemoryGalleries::galleries[file].size();
         }
     }
 
@@ -349,6 +364,10 @@ class memGallery : public Gallery
         }
 
         TemplateList templates = MemoryGalleries::galleries[file].mid(block*readBlockSize, readBlockSize);
+        for (qint64 i = 0; i < templates.size();i++) {
+            templates[i].file.set("p", i + block * readBlockSize);
+        }
+
         *done = (templates.size() < readBlockSize);
         block = *done ? 0 : block+1;
         return templates;
@@ -387,6 +406,16 @@ class memGallery : public Gallery
 
         templates.uniform = uniform;
         templates.alignedData = alignedData;
+    }
+
+    qint64 totalSize()
+    {
+        return gallerySize;
+    }
+
+    qint64 position()
+    {
+        return block * readBlockSize;
     }
 
 };
@@ -449,16 +478,19 @@ FileList FileList::fromGallery(const File & file, bool cache)
  *
  * \see txtGallery
  */
-class csvGallery : public Gallery
+class csvGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(int fileIndex READ get_fileIndex WRITE set_fileIndex RESET reset_fileIndex)
     BR_PROPERTY(int, fileIndex, 0)
 
     FileList files;
+    QStringList headers;
 
     ~csvGallery()
     {
+        f.close();
+
         if (files.isEmpty()) return;
 
         QMap<QString,QVariant> samples;
@@ -496,25 +528,37 @@ class csvGallery : public Gallery
 
     TemplateList readBlock(bool *done)
     {
-        *done = true;
+        *done = false;
         TemplateList templates;
-        if (!file.exists()) return templates;
-
-        QStringList lines = QtUtils::readLines(file);
+        if (!file.exists()) {
+            *done = true;
+            return templates;
+        }
         QRegExp regexp("\\s*,\\s*");
-        QStringList headers;
-        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
 
-        foreach (const QString &line, lines) {
+        if (f.pos() == 0)
+        {
+            // read a line
+            QByteArray lineBytes = f.readLine();
+            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+            headers = line.split(regexp);
+        }
+
+        for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++){
+            QByteArray lineBytes = f.readLine();
+            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+
             QStringList words = line.split(regexp);
             if (words.size() != headers.size()) continue;
-            File f;
-            for (int i=0; i<words.size(); i++) {
-                if (i == 0) f.name = words[i];
-                else        f.set(headers[i], words[i]);
+            File fi;
+            for (int j=0; j<words.size(); j++) {
+                if (j == 0) fi.name = words[j];
+                else        fi.set(headers[j], words[j]);
             }
-            templates.append(f);
+            templates.append(fi);
+            templates.last().file.set("p", f.pos());
         }
+        *done = f.atEnd();
 
         return templates;
     }
@@ -568,17 +612,11 @@ BR_REGISTER(Gallery, csvGallery)
 \endverbatim
  * \see csvGallery
  */
-class txtGallery : public Gallery
+class txtGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
     BR_PROPERTY(QString, label, "")
-
-    QFile f;
-    ~txtGallery()
-    {
-        f.close();
-    }
 
     TemplateList readBlock(bool *done)
     {
@@ -597,6 +635,7 @@ class txtGallery : public Gallery
                 int splitIndex = line.lastIndexOf(' ');
                 if (splitIndex == -1) templates.append(File(line));
                 else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+                templates.last().file.set("p", this->position());
             }
 
             if (f.atEnd()) {
@@ -606,14 +645,6 @@ class txtGallery : public Gallery
         }
 
         return templates;
-    }
-
-    void init()
-    {
-        f.setFileName(file);
-        QtUtils::touchDir(f);
-        if (!f.open(QFile::ReadWrite))
-            qFatal("Failed to open %s for read/write.", qPrintable(file));
     }
 
     void write(const Template &t)
@@ -627,20 +658,15 @@ class txtGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, txtGallery)
+
 /*!
  * \ingroup galleries
  * \brief Treats each line as a call to File::flat()
  * \author Josh Klontz \cite jklontz
  */
-class flatGallery : public Gallery
+class flatGallery : public FileGallery
 {
     Q_OBJECT
-
-    QFile f;
-    ~flatGallery()
-    {
-        f.close();
-    }
 
     TemplateList readBlock(bool *done)
     {
@@ -654,8 +680,10 @@ class flatGallery : public Gallery
         {
             QByteArray line = f.readLine();
 
-            if (!line.isEmpty())
+            if (!line.isEmpty()) {
                 templates.append(File(QString::fromLocal8Bit(line).trimmed()));
+                templates.last().file.set("p", this->position());
+            }
 
             if (f.atEnd()) {
                 *done=true;
@@ -664,15 +692,6 @@ class flatGallery : public Gallery
         }
 
         return templates;
-    }
-
-    void init()
-    {
-        f.setFileName(file);
-        QtUtils::touchDir(f);
-        if (!f.open(QFile::ReadWrite))
-            qFatal("Failed to open %s for read/write.", qPrintable(file));
-
     }
 
     void write(const Template &t)
@@ -688,28 +707,139 @@ BR_REGISTER(Gallery, flatGallery)
  * \brief A \ref sigset input.
  * \author Josh Klontz \cite jklontz
  */
-class xmlGallery : public Gallery
+class xmlGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata STORED false)
     BR_PROPERTY(bool, ignoreMetadata, false)
     FileList files;
 
+    QXmlStreamReader reader;
+
+    QString currentSignatureName;
+    bool signatureActive;
+
     ~xmlGallery()
     {
+        f.close();
         if (!files.isEmpty())
             BEE::writeSigset(file, files, ignoreMetadata);
     }
 
     TemplateList readBlock(bool *done)
     {
+        if (reader.atEnd())
+            f.seek(0);
+
+        TemplateList templates;
+        qint64 count = 0;
+        while (!reader.atEnd())
+        {
+            // if an identity is active we try to read presentations
+            if (signatureActive)
+            {
+                while (signatureActive)
+                {
+                    QXmlStreamReader::TokenType signatureToken = reader.readNext();
+
+                    // did the signature end?
+                    if (signatureToken == QXmlStreamReader::EndElement && reader.name() == "biometric-signature") {
+                        signatureActive = false;
+                        break;
+                    }
+                    // did we reach the end of the document? Theoretically this shoudln't happen without reaching the end of
+                    if (signatureToken == QXmlStreamReader::EndDocument)
+                        break;
+
+                    // a presentation!
+                    if (signatureToken == QXmlStreamReader::StartElement && reader.name() == "presentation") {
+                        templates.append(Template(File("",currentSignatureName)));
+                        foreach (const QXmlStreamAttribute & attribute, reader.attributes()) {
+                            // file-name is stored directly on file, not as a key/value pair
+                            if (attribute.name() == "file-name")
+                                templates.last().file.name = attribute.value().toString();
+                            // other values are directly set as metadata
+                            else if (!ignoreMetadata) templates.last().file.set(attribute.name().toString(), attribute.value().toString());
+                        }
+
+                        // a presentation can have bounding boxes as child elements
+                        bool signatureActive = true;
+                        QList<QRectF> rects = templates.last().file.rects();
+                        while (signatureActive)
+                        {
+                            QXmlStreamReader::TokenType pToken = reader.readNext();
+                            if (pToken == QXmlStreamReader::EndElement && reader.name() == "presentation")
+                                break;
+
+                            if (pToken == QXmlStreamReader::StartElement)
+                            {
+                                // get boudning box properties as attributes, just going to assume this all works
+                                qreal x = reader.attributes().value("x").toDouble();
+                                qreal y = reader.attributes().value("y").toDouble();
+                                qreal width =  reader.attributes().value("width").toDouble();
+                                qreal height = reader.attributes().value("height").toDouble();
+                                rects += QRectF(x, y, width, height);
+                            }
+                        }
+                        templates.last().file.setRects(rects);
+                        templates.last().file.set("p", f.pos());
+
+                        count++;
+                        if (count >= this->readBlockSize) {
+                            *done = false;
+                            return templates;
+                        }
+                    }
+                }
+            }
+            // otherwise, keep reading elements until the next identity is reacehed
+            else
+            {
+                QXmlStreamReader::TokenType token = reader.readNext();
+
+                // end of file?
+                if (token == QXmlStreamReader::EndDocument)
+                    break;
+
+                // we are only interested in new elements
+                if (token != QXmlStreamReader::StartElement)
+                    continue;
+
+                QStringRef elName = reader.name();
+
+                // biometric-signature-set is the root element
+                if (elName == "biometric-signature-set")
+                    continue;
+
+                // biometric-signature -- an identity
+                if (elName == "biometric-signature")
+                {
+                    // read the name associated with the current signature
+                    if (!reader.attributes().hasAttribute("name"))
+                    {
+                        qDebug() << "Biometric signature missing name";
+                        continue;
+                    }
+                    currentSignatureName = reader.attributes().value("name").toString();
+                    signatureActive = true;
+                }
+            }
+
+        }
         *done = true;
-        return TemplateList(BEE::readSigset(file, ignoreMetadata));
+
+        return templates;
     }
 
     void write(const Template &t)
     {
         files.append(t.file);
+    }
+
+    void init()
+    {
+        FileGallery::init();
+        reader.setDevice(&f);
     }
 };
 
@@ -1177,6 +1307,17 @@ private:
 BR_REGISTER(Gallery, vbbGallery)
 
 #endif
+
+void FileGallery::init()
+{
+    f.setFileName(file);
+    QtUtils::touchDir(f);
+    if (!f.open(QFile::ReadWrite))
+        qFatal("Failed to open %s for read/write.", qPrintable(file));
+    fileSize = f.size();
+
+    Gallery::init();
+}
 
 } // namespace br
 

@@ -345,6 +345,21 @@ protected:
     UntrainableMetadataTransform() : MetadataTransform(false) {}
 };
 
+class FileGallery : public Gallery
+{
+    Q_OBJECT
+public:
+    QFile f;
+    qint64 fileSize;
+
+    virtual ~FileGallery() { f.close(); }
+
+    void init();
+
+    qint64 totalSize() { return fileSize; }
+    qint64 position() { return f.pos(); }
+};
+
 }
 
 #endif // OPENBR_INTERNAL_H
