@@ -155,6 +155,17 @@ BR_EXPORT void br_enroll_n(int num_inputs, const char *inputs[], const char *gal
 BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "");
 
 /*!
+ * \brief Creates a \c .csv file containing performance metrics from evaluating the similarity matrix using galleries containing ground truth labels
+ * \param simmat The \ref simmat to use.
+ * \param target the name of a gallery containing metadata for the target set.
+ * \param query the name of a gallery containing metadata for the query set.
+ * \param csv Optional \c .csv file to contain performance metrics.
+ * \return True accept rate at a false accept rate of one in one thousand.
+ * \see br_plot
+ */
+BR_EXPORT float br_inplace_eval(const char * simmat, const char *target, const char *query, const char *csv = "");
+
+/*!
  * \brief Evaluates and prints classification accuracy to terminal.
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
