@@ -128,7 +128,7 @@ class galGallery : public Gallery
             Template m;
             stream >> m;
             templates.append(m);
-            templates.last().file.set("p", totalSize());
+            templates.last().file.set("progress", totalSize());
         }
 
         *done = stream.atEnd();
@@ -365,7 +365,7 @@ class memGallery : public Gallery
 
         TemplateList templates = MemoryGalleries::galleries[file].mid(block*readBlockSize, readBlockSize);
         for (qint64 i = 0; i < templates.size();i++) {
-            templates[i].file.set("p", i + block * readBlockSize);
+            templates[i].file.set("progress", i + block * readBlockSize);
         }
 
         *done = (templates.size() < readBlockSize);
@@ -556,7 +556,7 @@ class csvGallery : public FileGallery
                 else        fi.set(headers[j], words[j]);
             }
             templates.append(fi);
-            templates.last().file.set("p", f.pos());
+            templates.last().file.set("progress", f.pos());
         }
         *done = f.atEnd();
 
@@ -635,7 +635,7 @@ class txtGallery : public FileGallery
                 int splitIndex = line.lastIndexOf(' ');
                 if (splitIndex == -1) templates.append(File(line));
                 else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
-                templates.last().file.set("p", this->position());
+                templates.last().file.set("progress", this->position());
             }
 
             if (f.atEnd()) {
@@ -682,7 +682,7 @@ class flatGallery : public FileGallery
 
             if (!line.isEmpty()) {
                 templates.append(File(QString::fromLocal8Bit(line).trimmed()));
-                templates.last().file.set("p", this->position());
+                templates.last().file.set("progress", this->position());
             }
 
             if (f.atEnd()) {
@@ -782,7 +782,7 @@ class xmlGallery : public FileGallery
                             }
                         }
                         templates.last().file.setRects(rects);
-                        templates.last().file.set("p", f.pos());
+                        templates.last().file.set("progress", f.pos());
 
                         count++;
                         if (count >= this->readBlockSize) {

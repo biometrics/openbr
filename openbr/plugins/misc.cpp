@@ -518,7 +518,8 @@ class ProgressCounterTransform : public TimeVaryingTransform
         qint64 elapsed = timer.elapsed();
 
         if (!dst.empty()) {
-            Globals->currentProgress = dst.last().file.get<qint64>("p",0);
+            Globals->currentProgress = dst.last().file.get<qint64>("progress",0);
+            dst.last().file.remove("progress");
             Globals->currentStep++;
         }
 
