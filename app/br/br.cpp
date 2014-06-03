@@ -107,6 +107,9 @@ public:
                 } else {
                     br_eval(parv[0], parv[1], parv[2]);
                 }
+            } else if (!strcmp(fun, "inplaceEval")) {
+                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
+                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
                 br_plot(parc-1, parv, parv[parc-1], true);

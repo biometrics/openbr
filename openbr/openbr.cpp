@@ -104,6 +104,11 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
     return Evaluate(simmat, mask, csv);
 }
 
+float br_inplace_eval(const char * simmat, const char *target, const char *query, const char *csv)
+{
+    return InplaceEval(simmat, target, query, csv);
+}
+
 void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
 {
     EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
