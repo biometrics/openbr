@@ -497,6 +497,8 @@ class ProcessWrapperTransform : public TimeVaryingTransform
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
+        if (src.empty())
+            return;
 
         if (!processActive)
         {

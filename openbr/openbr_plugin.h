@@ -687,6 +687,10 @@ public:
     Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
     BR_PROPERTY(double, currentStep, 0)
 
+    Q_PROPERTY(double currentProgress READ get_currentProgress WRITE set_currentProgress RESET reset_currentProgress)
+    BR_PROPERTY(double, currentProgress, 0)
+
+
     /*!
      * \brief Used internally to compute progress() and timeRemaining().
      */
@@ -1094,6 +1098,9 @@ public:
     virtual void write(const Template &t) = 0; /*!< \brief Serialize a template. */
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
     void init();
+
+    virtual qint64 totalSize() { return std::numeric_limits<qint64>::max(); }
+    virtual qint64 position() { return 0; }
 
 private:
     QSharedPointer<Gallery> next;

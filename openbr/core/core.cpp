@@ -134,55 +134,51 @@ struct AlgorithmCore
             if (input.name.isEmpty()) return FileList();
             else                      gallery = getMemoryGallery(input);
         }
-        TemplateList data(TemplateList::fromGallery(input));
 
         bool multiProcess = Globals->file.getBool("multiProcess", false);
+        bool fileExclusion = false;
 
-        if (gallery.contains("append"))
-        {
-            // Remove any templates which are already in the gallery
-            QScopedPointer<Gallery> g(Gallery::make(gallery));
-            files = g->files();
-            QSet<QString> nameSet = QSet<QString>::fromList(files.names());
-            for (int i = data.size() - 1; i>=0; i--) {
-                if (nameSet.contains(data[i].file.name))
-                {
-                    data.removeAt(i);
-                }
-            }
+        // In append mode, we will exclude any templates with filenames already present in the output gallery
+        if (gallery.contains("append") && gallery.exists() ) {
+            FileList::fromGallery(gallery,true);
+            fileExclusion = true;
         }
 
-        if (data.empty())
-            return files;
+        Gallery * temp = Gallery::make(input);
+        qint64 total = temp->totalSize();
 
-        // Store steps for ProgressCounter
         Globals->currentStep = 0;
-        Globals->totalSteps = data.length();
+        Globals->totalSteps = total;
 
         QScopedPointer<Transform> basePipe;
 
-        if (!multiProcess)
-        {
-            QString pipeDesc = "GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+        QString pipeDesc = "GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(total)+")+Discard";
+
+        if (!multiProcess) {
             basePipe.reset(Transform::make(pipeDesc,NULL));
             CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
-            if (downcast == NULL)
-                qFatal("downcast failed?");
 
-            // replace that placeholder with the current algorithm
+            if (downcast == NULL) qFatal("downcast failed?");
+
             downcast->transforms.prepend(this->transform.data());
+            if (fileExclusion) {
+                Transform * temp = Transform::make("FileExclusion(" + gallery.flat() + ")", downcast);
+                downcast->transforms.prepend(temp);
+            }
 
             // call init on the pipe to collapse the algorithm (if its top level is a pipe)
             downcast->init();
         }
-        else
-        {
-            QString pipeDesc = "ProcessWrapper("+transformString+")"+"+GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(data.length())+")+Discard";
+        else {
+            pipeDesc = "ProcessWrapper("+transformString+")"+pipeDesc;
+            if (fileExclusion)
+                pipeDesc = "FileExclusion(" + gallery.flat() +")" + pipeDesc;
+
             basePipe.reset(Transform::make(pipeDesc,NULL));
         }
 
         // Next, we make a Stream (with placeholder transform)
-        QString streamDesc = "Stream(readMode=DistributeFrames)";
+        QString streamDesc = "Stream(readMode=StreamGallery)";
         QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
         WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
 
@@ -194,9 +190,11 @@ struct AlgorithmCore
 
         Globals->startTime.start();
 
-        wrapper->projectUpdate(data,data);
+        TemplateList data, output;
+        data.append(input);
+        wrapper->projectUpdate(data, output);
 
-        files.append(data.files());
+        files.append(output.files());
 
         return files;
     }
@@ -337,12 +335,8 @@ struct AlgorithmCore
         // comparison against the smaller gallery (which will be enrolled, and stored in memory).
         bool needEnrollRows = false;
 
-
-
-
         if (output.exists() && output.get<bool>("cache", false)) return;
         if (queryGallery == ".") queryGallery = targetGallery;
-
 
         // To decide which gallery is larger, we need to read both, but at this point we just want the
         // metadata, and don't need the enrolled matrices.
@@ -359,15 +353,21 @@ struct AlgorithmCore
 
         File rowGallery = queryGallery;
         File colGallery = targetGallery;
-        int rowSize = queryMetadata.size();
+        qint64 rowSize;
 
+        Gallery * temp;
         if (transposeMode)
         {
             rowGallery = targetGallery;
             colGallery = queryGallery;
-            rowSize = targetMetadata.size();
+            temp = Gallery::make(targetGallery);
         }
-
+        else
+        {
+            temp = Gallery::make(queryGallery);
+        }
+        rowSize = temp->totalSize();
+        delete temp;
 
         // Is the column gallery already enrolled? We keep the enrolled column gallery in memory, and in multi-process
         // mode, every worker process retains a copy of this gallery in memory. When not in multi-process mode, we can
@@ -422,8 +422,6 @@ struct AlgorithmCore
         // comparison step (built from a GalleryCompare transform), and the second is the sequential matrix output and
         // progress counting step.
         // After the base algorithm is built, the whole thing will be run in a stream, so that I/O can be handled sequentially.
-
-
 
         // The actual comparison step is done by a GalleryCompare transform, which has a Distance, and a gallery as data.
         // Incoming templates are compared against the templates in the gallery, and the output is the resulting score
