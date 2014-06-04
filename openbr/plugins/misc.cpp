@@ -703,7 +703,7 @@ class FileExclusionTransform : public UntrainableMetaTransform
 
     QSet<QString> excluded;
 
-    void project(const Template & src, Template & dst) const
+    void project(const Template &, Template &) const
     {
         qFatal("FileExclusion can't do anything here");
     }

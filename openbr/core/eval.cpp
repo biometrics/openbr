@@ -303,7 +303,6 @@ float InplaceEval(const QString & simmat, const QString & target, const QString 
 
     // Check format
     QByteArray format = file.readLine();
-    bool isDistance = (format[0] == 'D');
     if (format[1] != '2') qFatal("Invalid matrix header.");
 
     // Read sigset names, we dont' care if they are valid, just want to advance the file pointer.
@@ -319,14 +318,10 @@ float InplaceEval(const QString & simmat, const QString & target, const QString 
     qint64 typeSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
 
     // Get matrix data
-    qint64 bytesExpected = rows*cols*typeSize;
-
     qint64 rowSize = cols * typeSize;
 
     // after reading the header, we are at the start of the matrix data
     qint64 data_pos = file.pos();
-
-    qint64 totalSize = data_pos + bytesExpected;
 
     // Map each unique label to a list of positions in the gallery
     QMap<QString, QList<qint64> > galleryIndices;
