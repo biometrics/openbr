@@ -64,6 +64,24 @@ BR_EXPORT void br_append_utemplate(FILE *file, br_const_utemplate utemplate);
  */
 BR_EXPORT void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data);
 
+/*!
+ * \brief br_universal_template iterator callback.
+ * \see br_iterate_utemplates
+ */
+typedef void (*br_utemplate_callback)(br_const_utemplate);
+
+/*!
+ * \brief Iterate over an inplace array of br_universal_template.
+ * \see br_iterate_utemplates_file
+ */
+BR_EXPORT void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback);
+
+/*!
+ * \brief Iterate over br_universal_template in a file.
+ * \see br_iterate_utemplates
+ */
+BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback);
+
 #ifdef __cplusplus
 }
 #endif

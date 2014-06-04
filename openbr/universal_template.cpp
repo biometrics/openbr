@@ -35,3 +35,29 @@ void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_
     qFile.write((const char*) &size, 4);
     qFile.write((const char*) data, size);
 }
+
+void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback)
+{
+    while (begin != end) {
+        callback(begin);
+        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_const_utemplate) + begin->size);
+    }
+}
+
+void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback)
+{
+    QFile qFile;
+    qFile.open(file, QFile::ReadOnly);
+    while (!qFile.atEnd()) {
+        br_universal_template header;
+        if (qFile.peek((char*) &header, sizeof(br_universal_template)) != sizeof(br_universal_template))
+            qFatal("Unexpected EOF when peeking universal template header.");
+
+        const uint32_t size = sizeof(br_universal_template) + header.size;
+        QByteArray data = qFile.read(size);
+        if (uint32_t(data.size()) != size)
+            qFatal("Unexepected EOF when reading universal template.");
+
+        callback(reinterpret_cast<br_const_utemplate>(data.data()));
+    }
+}
