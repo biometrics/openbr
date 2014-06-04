@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <openbr/universal_template.h>
 
 using namespace cv;
 using namespace std;
@@ -62,17 +63,8 @@ static bool processReply(QNetworkReply* reply)
     static QMutex lock;
     QMutexLocker locker(&lock);
 
-    QFile file;
-    file.open(stdout, QFile::WriteOnly);
     const QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
-    file.write(hash); // ImageID
-    file.write(hash); // TemplateID
-    const int32_t algorithmID = 3; // Encoded image
-    file.write((const char*) &algorithmID, 4); // AlgorithmID
-    const uint32_t size = data.size();
-    file.write((const char*) &size, 4); // Size
-    file.write(data);
-    file.flush();
+    br_append_utemplate_contents(stdout, reinterpret_cast<const int8_t*>(hash.data()), reinterpret_cast<const int8_t*>(hash.data()), 3, data.size(), reinterpret_cast<const int8_t*>(data.data()));
     return true;
 }
 
