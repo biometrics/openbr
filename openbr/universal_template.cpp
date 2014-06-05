@@ -27,7 +27,7 @@ void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
     br_append_utemplate_contents(file, utemplate->imageID, utemplate->templateID, utemplate->algorithmID, utemplate->size, utemplate->data);
 }
 
-void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data)
+void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data)
 {
     static QMutex lock;
     QMutexLocker locker(&lock);
@@ -39,15 +39,15 @@ void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_
     fwrite(data, 1, size, file);
 }
 
-void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback)
+void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback, br_callback_context context)
 {
     while (begin != end) {
-        callback(begin);
+        callback(begin, context);
         begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_const_utemplate) + begin->size);
     }
 }
 
-void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback)
+void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context)
 {
     while (!feof(file)) {
         br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
@@ -56,7 +56,7 @@ void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback)
             t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->size);
             if (fread(t+1, 1, t->size, file) != t->size)
                 qFatal("Unexepected EOF when reading universal template data.");
-            callback(t);
+            callback(t, context);
         }
 
         free(t);

@@ -34,7 +34,7 @@ struct br_universal_template
     int8_t   templateID[16]; /*!< MD5 hash of _data_. */
     int32_t  algorithmID;    /*!< type of _data_. */
     uint32_t size;           /*!< length of _data_. */
-    int8_t   data[];         /*!< _size_-byte buffer. */
+    unsigned char data[];    /*!< _size_-byte buffer. */
 };
 
 typedef struct br_universal_template *br_utemplate;
@@ -62,25 +62,26 @@ BR_EXPORT void br_append_utemplate(FILE *file, br_const_utemplate utemplate);
  * \brief Serialize a br_universal_template to a file.
  * \see br_append_utemplate
  */
-BR_EXPORT void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data);
+BR_EXPORT void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data);
 
 /*!
  * \brief br_universal_template iterator callback.
  * \see br_iterate_utemplates
  */
-typedef void (*br_utemplate_callback)(br_const_utemplate);
+typedef void *br_callback_context;
+typedef void (*br_utemplate_callback)(br_const_utemplate, br_callback_context);
 
 /*!
  * \brief Iterate over an inplace array of br_universal_template.
  * \see br_iterate_utemplates_file
  */
-BR_EXPORT void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback);
+BR_EXPORT void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback, br_callback_context context);
 
 /*!
  * \brief Iterate over br_universal_template in a file.
  * \see br_iterate_utemplates
  */
-BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback);
+BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context);
 
 #ifdef __cplusplus
 }

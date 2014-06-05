@@ -282,9 +282,9 @@ class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Mat &a, const Mat &b) const
+    float compare(const unsigned char *a, const unsigned char *b, size_t size) const
     {
-        return l1(a.data, b.data, a.total());
+        return l1(a, b, size);
     }
 };
 

@@ -41,7 +41,7 @@ static void help()
 
 static QSharedPointer<Transform> algorithm;
 
-static void enroll_utemplate(br_const_utemplate utemplate)
+static void enroll_utemplate(br_const_utemplate utemplate, br_callback_context)
 {
     if (utemplate->algorithmID != 3)
         qFatal("Expected an encoded image.");
@@ -54,7 +54,7 @@ static void enroll_utemplate(br_const_utemplate utemplate)
         const Mat &m = t.m();
         const uint32_t size = m.rows * m.cols * m.elemSize();
         const QByteArray templateID = QCryptographicHash::hash(QByteArray((const char*) m.data, size), QCryptographicHash::Md5);
-        br_append_utemplate_contents(stdout, utemplate->imageID, (const int8_t*) templateID.data(), -1, size, (const int8_t*) m.data);
+        br_append_utemplate_contents(stdout, utemplate->imageID, (const int8_t*) templateID.data(), -1, size, m.data);
     }
 }
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     Context::initialize(argc, argv, "", false);
     Globals->quiet = true;
     algorithm = Transform::fromAlgorithm("FaceRecognition");
-    br_iterate_utemplates_file(stdin, enroll_utemplate);
+    br_iterate_utemplates_file(stdin, enroll_utemplate, NULL);
     Context::finalize();
     return EXIT_SUCCESS;
 }

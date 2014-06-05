@@ -1335,6 +1335,7 @@ public:
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
     virtual float compare(const Template &a, const Template &b) const; /*!< \brief Compute the distance between two templates. */
     virtual float compare(const cv::Mat &a, const cv::Mat &b) const; /*!< \brief Compute the distance between two biometric signatures. */
+    virtual float compare(const uchar *a, const uchar *b, size_t size) const; /*!< \brief Compute the distance between two buffers. */
 
 protected:
     inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */
