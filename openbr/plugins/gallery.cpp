@@ -773,11 +773,11 @@ class xmlGallery : public FileGallery
 
                             if (pToken == QXmlStreamReader::StartElement)
                             {
-                                // get boudning box properties as attributes, just going to assume this all works
-                                qreal x = reader.attributes().value("x").toDouble();
-                                qreal y = reader.attributes().value("y").toDouble();
-                                qreal width =  reader.attributes().value("width").toDouble();
-                                qreal height = reader.attributes().value("height").toDouble();
+                                // get bounding box properties as attributes, just going to assume this all works
+                                qreal x = reader.attributes().value("x").string()->toDouble();
+                                qreal y = reader.attributes().value("y").string()->toDouble();
+                                qreal width =  reader.attributes().value("width").string()->toDouble();
+                                qreal height = reader.attributes().value("height").string()->toDouble();
                                 rects += QRectF(x, y, width, height);
                             }
                         }

@@ -1,4 +1,6 @@
 #include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
 #include <cstdlib>
 #include <cstring>
 
