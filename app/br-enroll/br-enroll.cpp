@@ -46,17 +46,25 @@ static void enroll_utemplate(br_const_utemplate utemplate)
     if (utemplate->algorithmID != 3)
         qFatal("Expected an encoded image.");
 
-    TemplateList templateList;
-    templateList.append(Template(imdecode(Mat(1, utemplate->size, CV_8UC1, (void*) utemplate->data), IMREAD_UNCHANGED)));
-    templateList >> *algorithm;
+    TemplateList templates;
+    templates.append(Template(imdecode(Mat(1, utemplate->size, CV_8UC1, (void*) utemplate->data), IMREAD_UNCHANGED)));
+    templates >> *algorithm;
+
+    foreach (const Template &t, templates) {
+        const Mat &m = t.m();
+        const uint32_t size = m.rows * m.cols * m.elemSize();
+        const QByteArray templateID = QCryptographicHash::hash(QByteArray((const char*) m.data, size), QCryptographicHash::Md5);
+        br_append_utemplate_contents(stdout, utemplate->imageID, (const int8_t*) templateID.data(), -1, size, (const int8_t*) m.data);
+    }
 }
 
 int main(int argc, char *argv[])
 {
     for (int i=1; i<argc; i++)
-        if (!strcmp(argv[i], "-help")) { help(); exit(0); }
+        if (!strcmp(argv[i], "-help")) { help(); exit(EXIT_SUCCESS); }
 
     Context::initialize(argc, argv, "", false);
+    Globals->quiet = true;
     algorithm = Transform::fromAlgorithm("FaceRecognition");
     br_iterate_utemplates_file(stdin, enroll_utemplate);
     Context::finalize();

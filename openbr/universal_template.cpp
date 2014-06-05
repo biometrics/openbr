@@ -27,13 +27,14 @@ void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
 
 void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data)
 {
-    QFile qFile;
-    qFile.open(file, QFile::WriteOnly | QFile::Append);
-    qFile.write((const char*) imageID, 16);
-    qFile.write((const char*) templateID, 16);
-    qFile.write((const char*) &algorithmID, 4);
-    qFile.write((const char*) &size, 4);
-    qFile.write((const char*) data, size);
+    static QMutex lock;
+    QMutexLocker locker(&lock);
+
+    fwrite(imageID, 16, 1, file);
+    fwrite(templateID, 16, 1, file);
+    fwrite(&algorithmID, 4, 1, file);
+    fwrite(&size, 4, 1, file);
+    fwrite(data, 1, size, file);
 }
 
 void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback)
@@ -46,18 +47,16 @@ void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_
 
 void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback)
 {
-    QFile qFile;
-    qFile.open(file, QFile::ReadOnly);
-    while (!qFile.atEnd()) {
-        br_universal_template header;
-        if (qFile.peek((char*) &header, sizeof(br_universal_template)) != sizeof(br_universal_template))
-            qFatal("Unexpected EOF when peeking universal template header.");
+    while (!feof(file)) {
+        br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
 
-        const uint32_t size = sizeof(br_universal_template) + header.size;
-        QByteArray data = qFile.read(size);
-        if (uint32_t(data.size()) != size)
-            qFatal("Unexepected EOF when reading universal template.");
+        if (fread(t, sizeof(br_universal_template), 1, file) > 0) {
+            t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->size);
+            if (fread(t+1, 1, t->size, file) != t->size)
+                qFatal("Unexepected EOF when reading universal template data.");
+            callback(t);
+        }
 
-        callback(reinterpret_cast<br_const_utemplate>(data.data()));
+        free(t);
     }
 }

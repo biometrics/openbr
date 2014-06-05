@@ -60,9 +60,6 @@ static bool processReply(QNetworkReply* reply)
     if (!permissive && imdecode(Mat(1, data.size(), CV_8UC1, (void*)data.data()), IMREAD_ANYDEPTH | IMREAD_ANYCOLOR).empty())
         return false;
 
-    static QMutex lock;
-    QMutexLocker locker(&lock);
-
     const QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
     br_append_utemplate_contents(stdout, reinterpret_cast<const int8_t*>(hash.data()), reinterpret_cast<const int8_t*>(hash.data()), 3, data.size(), reinterpret_cast<const int8_t*>(data.data()));
     return true;
@@ -75,7 +72,7 @@ int main(int argc, char *argv[])
     QNetworkAccessManager networkAccessManager;
 
     for (int i=1; i<argc; i++) {
-        if      (!strcmp(argv[i], "-help"      )) { help(); exit(0); }
+        if      (!strcmp(argv[i], "-help"      )) { help(); exit(EXIT_SUCCESS); }
         else if (!strcmp(argv[i], "-json"      )) json = true;
         else if (!strcmp(argv[i], "-permissive")) permissive = true;
         else                                      { url_provided = processReply(networkAccessManager.get(QNetworkRequest(QUrl(argv[i])))); }
