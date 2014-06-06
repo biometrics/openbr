@@ -61,7 +61,7 @@ static bool processReply(QNetworkReply* reply)
         return false;
 
     const QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
-    br_append_utemplate_contents(stdout, reinterpret_cast<const int8_t*>(hash.data()), reinterpret_cast<const int8_t*>(hash.data()), 3, data.size(), reinterpret_cast<const unsigned char*>(data.data()));
+    br_append_utemplate_contents(stdout, reinterpret_cast<const unsigned char*>(hash.data()), reinterpret_cast<const unsigned char*>(hash.data()), 3, data.size(), reinterpret_cast<const unsigned char*>(data.data()));
     return true;
 }
 

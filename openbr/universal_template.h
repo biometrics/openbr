@@ -30,8 +30,8 @@ extern "C" {
  */
 struct br_universal_template
 {
-    int8_t   imageID[16];    /*!< MD5 hash of the undecoded origin file. */
-    int8_t   templateID[16]; /*!< MD5 hash of _data_. */
+    unsigned char imageID[16];    /*!< MD5 hash of the undecoded origin file. */
+    unsigned char templateID[16]; /*!< MD5 hash of _data_. */
     int32_t  algorithmID;    /*!< type of _data_. */
     uint32_t size;           /*!< length of _data_. */
     unsigned char data[];    /*!< _size_-byte buffer. */
@@ -62,7 +62,7 @@ BR_EXPORT void br_append_utemplate(FILE *file, br_const_utemplate utemplate);
  * \brief Serialize a br_universal_template to a file.
  * \see br_append_utemplate
  */
-BR_EXPORT void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data);
+BR_EXPORT void br_append_utemplate_contents(FILE *file, const unsigned char *imageID, const unsigned char *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data);
 
 /*!
  * \brief br_universal_template iterator callback.

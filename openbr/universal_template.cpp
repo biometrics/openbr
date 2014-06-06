@@ -27,7 +27,7 @@ void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
     br_append_utemplate_contents(file, utemplate->imageID, utemplate->templateID, utemplate->algorithmID, utemplate->size, utemplate->data);
 }
 
-void br_append_utemplate_contents(FILE *file, const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data)
+void br_append_utemplate_contents(FILE *file, const unsigned char *imageID, const unsigned char *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data)
 {
     static QMutex lock;
     QMutexLocker locker(&lock);

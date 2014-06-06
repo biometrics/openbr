@@ -17,12 +17,17 @@
 #include <QtCore>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
+#include <iostream>
 #include <limits>
+#include <utility>
+#include <vector>
 #include <openbr/openbr_plugin.h>
 #include <openbr/universal_template.h>
 
 using namespace br;
 using namespace cv;
+using namespace std;
 
 static void help()
 {
@@ -34,52 +39,94 @@ static void help()
            "_br-search_ does retrieval by comparing query templates to target gallery(s).\n"
            "The search strategy is implementation defined.\n"
            "\n"
-           "For every template read from _stdin_, search writes the top sorted matches as JSON objects to _stdout_ by comparing the query template against gallery URLs.\n"
-           "The JSON objects include `AlgorithmID`, `QueryImageID`, `QueryTemplateID`, `TargetImageID`, `TargetTemplateID`, `Score`, and any algorithm-specific metadata fields set during _enroll_. \n"
+           "For every template read from _stdin_, search writes the top sorted matches a newline-terminated JSON object to _stdout_.\n"
+           "The JSON object will include at least `AlgorithmID`, (query) `ImageID`, (query) `TemplateID`, `Targets` and any algorithm-specific metadata fields set during _enroll_.\n"
            "\n"
            "Optional Arguments\n"
            "------------------\n"
-           "* -help        - Print usage information.\n"
-           "* -limit <int> - Maximum number of returns (20 otherwise).\n");
+           "* -help              - Print usage information.\n"
+           "* -limit <int>       - Maximum number of returns (20 otherwise).\n"
+           "* -threshold <float> - Minimum similarity score (none otherwise).");
 }
 
-static int limit = 20;
-static float threshold = -std::numeric_limits<float>::max();
+static size_t limit = 20;
+static float threshold = -numeric_limits<float>::max();
 
-struct Result
+struct SearchResults
 {
-    int8_t targetImageID[16], targetTemplateID[16], queryImageID[16], queryTemplateID[16];
-    int32_t algorithmID;
-    float score;
-};
-
-struct TopTargets : QList< QPair<br_const_utemplate, float> >
-{
+    typedef pair<float, br_const_utemplate> Target;
+    vector<Target> topTargets;
     br_const_utemplate query;
 
-    TopTargets(br_const_utemplate query)
+    SearchResults(br_const_utemplate query)
         : query(query) {}
 
-    void tryAdd(br_const_utemplate target, float score)
+    virtual ~SearchResults() {}
+
+    void consider(br_const_utemplate target)
     {
-        if ((score < threshold) || ((size() == limit) && (score < last().second)))
+        const float score = compare(target, query);
+        if ((score < threshold) || ((topTargets.size() == limit) && (score < topTargets.front().first)))
             return;
-        (void) target;
+
+        topTargets.push_back(Target(score, target));
+        make_heap(topTargets.begin(), topTargets.end());
+
+        if (topTargets.size() == limit + 1)
+            pop_heap(topTargets.begin(), topTargets.end());
     }
 
-    void print() const
+    static void writeMD5asHex(const unsigned char *md5)
     {
-
+        cout << hex << setfill('0');
+        for (int i=0; i<16; i++)
+            cout << setw(2) << md5[i];
+        cout << dec;
     }
+
+    void print()
+    {
+        sort_heap(topTargets.begin(), topTargets.end());
+
+        cout << "{ \"AlgorithmID\"=" << query->algorithmID;
+        cout << ", \"QueryImageID\"=";
+        writeMD5asHex(query->imageID);
+        cout << ", \"QueryTemplateID\"=";
+        writeMD5asHex(query->templateID);
+        printMetadata(query);
+        cout << ", \"Targets\"=[ ";
+        for (int i=topTargets.size()-1; i>=0; i--) {
+            Target &target = topTargets[i];
+            cout  << "{ \"ImageID\"=";
+            writeMD5asHex(target.second->imageID);
+            cout << ", \"TemplateID\"=";
+            writeMD5asHex(target.second->templateID);
+            cout << ", \"Score\"=" << target.first;
+            printMetadata(target.second);
+            cout << " }";
+            if (i > 0)
+                cout << ", ";
+        }
+        cout << "]}\n" << flush;
+    }
+
+    virtual float compare(br_const_utemplate target, br_const_utemplate query) const = 0;
+    virtual void printMetadata(br_const_utemplate) const { return; }
 };
 
-struct FaceRecognitionResult : public Result
+struct FaceRecognition : public SearchResults
 {
-    int32_t x, y, width, height;
+    QSharedPointer<Distance> algorithm;
 
-    FaceRecognitionResult()
+    FaceRecognition(br_const_utemplate query)
+        : SearchResults(query)
     {
-        algorithmID = -1;
+        algorithm = Distance::fromAlgorithm("FaceRecognition");
+    }
+
+    float compare(br_const_utemplate target, br_const_utemplate query) const
+    {
+        return algorithm->compare(target->data, query->data, 768);
     }
 };
 
@@ -102,22 +149,21 @@ struct MappedGallery
     }
 };
 
-static QSharedPointer<Distance> distance;
 static QList<MappedGallery> galleries;
 
 static void compare_utemplates(br_const_utemplate target, br_callback_context context)
 {
-    TopTargets *topTargets = (TopTargets*) context;
-    topTargets->tryAdd(target, distance->compare(target->data, topTargets->query->data, 768));
+    SearchResults *searchResults = (SearchResults*) context;
+    searchResults->consider(target);
 }
 
 static void search_utemplate(br_const_utemplate query, br_callback_context)
 {
-    TopTargets *topTargets = new TopTargets(query);
+    SearchResults *searchResults = new FaceRecognition(query);
     foreach (const MappedGallery &gallery, galleries)
-        br_iterate_utemplates(reinterpret_cast<br_const_utemplate>(gallery.data), reinterpret_cast<br_const_utemplate>(gallery.data + gallery.size), compare_utemplates, topTargets);
-    topTargets->print();
-    delete topTargets;
+        br_iterate_utemplates(reinterpret_cast<br_const_utemplate>(gallery.data), reinterpret_cast<br_const_utemplate>(gallery.data + gallery.size), compare_utemplates, searchResults);
+    searchResults->print();
+    delete searchResults;
 }
 
 int main(int argc, char *argv[])
@@ -136,7 +182,6 @@ int main(int argc, char *argv[])
         galleries.append(MappedGallery(url));
 
     Globals->quiet = true;
-    distance = Distance::fromAlgorithm("FaceRecognition");
     br_iterate_utemplates_file(stdin, search_utemplate, NULL);
 
     Context::finalize();
