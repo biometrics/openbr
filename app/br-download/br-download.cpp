@@ -50,44 +50,64 @@ static bool json = false;
 static bool permissive = false;
 static bool url_provided = false;
 
-static bool processReply(QNetworkReply* reply)
+static void process(QString url, QNetworkAccessManager &nam)
 {
-    while (!reply->isFinished())
-        QCoreApplication::processEvents();
-    const QByteArray data = reply->readAll();
-    reply->deleteLater();
+    if (url.isEmpty())
+        return;
+
+    if (url.startsWith("file://"))
+        url = url.mid(7);
+
+    QIODevice *device = NULL;
+    if (QFileInfo(url).exists()) {
+        device = new QFile(url);
+        device->open(QIODevice::ReadOnly);
+    } else {
+        QNetworkReply *reply = nam.get(QNetworkRequest(url));
+        while (!reply->isFinished())
+            QCoreApplication::processEvents();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qDebug() << reply->errorString();
+            reply->deleteLater();
+        } else {
+            device = reply;
+        }
+    }
+
+    if (!device)
+        return;
+
+    const QByteArray data = device->readAll();
+    device->deleteLater();
 
     if (!permissive && imdecode(Mat(1, data.size(), CV_8UC1, (void*)data.data()), IMREAD_ANYDEPTH | IMREAD_ANYCOLOR).empty())
-        return false;
+        return;
 
     const QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
     br_append_utemplate_contents(stdout, reinterpret_cast<const unsigned char*>(hash.data()), reinterpret_cast<const unsigned char*>(hash.data()), 3, data.size(), reinterpret_cast<const unsigned char*>(data.data()));
-    return true;
 }
 
 int main(int argc, char *argv[])
 {
     QCoreApplication application(argc, argv);
-
-    QNetworkAccessManager networkAccessManager;
+    QNetworkAccessManager nam;
 
     for (int i=1; i<argc; i++) {
         if      (!strcmp(argv[i], "-help"      )) { help(); exit(EXIT_SUCCESS); }
         else if (!strcmp(argv[i], "-json"      )) json = true;
         else if (!strcmp(argv[i], "-permissive")) permissive = true;
-        else                                      { url_provided = processReply(networkAccessManager.get(QNetworkRequest(QUrl(argv[i])))); }
+        else                                      { url_provided = true; process(argv[i], nam); }
     }
 
     if (!url_provided) {
         QFile file;
         file.open(stdin, QFile::ReadOnly);
-
         while (!file.atEnd()) {
             const QByteArray line = file.readLine();
-            const QString url = json ? QJsonDocument::fromJson(line).object().value("URL").toString()
-                                     : QString::fromLocal8Bit(line);
-            if (!url.isEmpty())
-                processReply(networkAccessManager.get(QNetworkRequest(url)));
+            process(json ? QJsonDocument::fromJson(line).object().value("URL").toString()
+                         : QString::fromLocal8Bit(line),
+                    nam);
         }
     }
 
