@@ -52,6 +52,7 @@ static bool url_provided = false;
 
 static void process(QString url, QNetworkAccessManager &nam)
 {
+    url = url.simplified();
     if (url.isEmpty())
         return;
 
@@ -68,7 +69,7 @@ static void process(QString url, QNetworkAccessManager &nam)
             QCoreApplication::processEvents();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << reply->errorString();
+            qDebug() << reply->errorString() << url;
             reply->deleteLater();
         } else {
             device = reply;
@@ -79,7 +80,8 @@ static void process(QString url, QNetworkAccessManager &nam)
         return;
 
     const QByteArray data = device->readAll();
-    device->deleteLater();
+    delete device;
+    device = NULL;
 
     if (!permissive && imdecode(Mat(1, data.size(), CV_8UC1, (void*)data.data()), IMREAD_ANYDEPTH | IMREAD_ANYCOLOR).empty())
         return;
