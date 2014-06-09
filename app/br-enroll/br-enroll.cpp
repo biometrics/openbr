@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 
     Context::initialize(argc, argv, "", false);
     Globals->quiet = true;
+    Globals->enrollAll = true;
     algorithm = Transform::fromAlgorithm("FaceRecognition");
     br_iterate_utemplates_file(stdin, enroll_utemplate, NULL);
     Context::finalize();
