@@ -733,6 +733,7 @@ class xmlGallery : public FileGallery
 
         TemplateList templates;
         qint64 count = 0;
+
         while (!reader.atEnd())
         {
             // if an identity is active we try to read presentations
@@ -747,6 +748,7 @@ class xmlGallery : public FileGallery
                         signatureActive = false;
                         break;
                     }
+
                     // did we reach the end of the document? Theoretically this shoudln't happen without reaching the end of
                     if (signatureToken == QXmlStreamReader::EndDocument)
                         break;
@@ -763,9 +765,8 @@ class xmlGallery : public FileGallery
                         }
 
                         // a presentation can have bounding boxes as child elements
-                        bool signatureActive = true;
                         QList<QRectF> rects = templates.last().file.rects();
-                        while (signatureActive)
+                        while (true)
                         {
                             QXmlStreamReader::TokenType pToken = reader.readNext();
                             if (pToken == QXmlStreamReader::EndElement && reader.name() == "presentation")
@@ -773,22 +774,25 @@ class xmlGallery : public FileGallery
 
                             if (pToken == QXmlStreamReader::StartElement)
                             {
-                                // get bounding box properties as attributes, just going to assume this all works
-                                qreal x = reader.attributes().value("x").string()->toDouble();
-                                qreal y = reader.attributes().value("y").string()->toDouble();
-                                qreal width =  reader.attributes().value("width").string()->toDouble();
-                                qreal height = reader.attributes().value("height").string()->toDouble();
-                                rects += QRectF(x, y, width, height);
+                                if (reader.attributes().hasAttribute("x")
+                                    && reader.attributes().hasAttribute("y")
+                                    && reader.attributes().hasAttribute("width")
+                                    && reader.attributes().hasAttribute("height") )
+                                {
+                                    // get bounding box properties as attributes, just going to assume this all works
+                                    qreal x = reader.attributes().value("x").string()->toDouble();
+                                    qreal y = reader.attributes().value("y").string()->toDouble();
+                                    qreal width =  reader.attributes().value("width").string()->toDouble();
+                                    qreal height = reader.attributes().value("height").string()->toDouble();
+                                    rects += QRectF(x, y, width, height);
+                                }
                             }
                         }
                         templates.last().file.setRects(rects);
                         templates.last().file.set("progress", f.pos());
 
+                        // we read another complete template
                         count++;
-                        if (count >= this->readBlockSize) {
-                            *done = false;
-                            return templates;
-                        }
                     }
                 }
             }
@@ -822,9 +826,17 @@ class xmlGallery : public FileGallery
                     }
                     currentSignatureName = reader.attributes().value("name").toString();
                     signatureActive = true;
+
+                    // If we've already read enough templates for this block, then break here.
+                    // We wait untill the start of the next signature to be sure that done should
+                    // actually be false (i.e. there are actually items left in this file)
+                    if (count >= this->readBlockSize) {
+                        *done = false;
+                        return templates;
+                    }
+
                 }
             }
-
         }
         *done = true;
 
