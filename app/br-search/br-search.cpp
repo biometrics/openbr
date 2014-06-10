@@ -78,10 +78,12 @@ struct SearchResults
 
     static void writeMD5asHex(const unsigned char *md5)
     {
+        const char prevFill = cout.fill();
         cout << hex << setfill('0');
         for (int i=0; i<16; i++)
-            cout << setw(2) << md5[i];
+            cout << setw(2) << int(md5[i]);
         cout << dec;
+        setfill(prevFill);
     }
 
     void print()
@@ -107,7 +109,7 @@ struct SearchResults
             if (i > 0)
                 cout << ", ";
         }
-        cout << "]}\n" << flush;
+        cout << "] }\n" << flush;
     }
 
     virtual float compare(br_const_utemplate target, br_const_utemplate query) const = 0;

@@ -43,7 +43,7 @@ void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_
 {
     while (begin != end) {
         callback(begin, context);
-        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_const_utemplate) + begin->size);
+        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_universal_template) + begin->size);
     }
 }
 
