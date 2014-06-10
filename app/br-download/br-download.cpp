@@ -50,7 +50,7 @@ static bool json = false;
 static bool permissive = false;
 static bool url_provided = false;
 
-static void process(QString url, QNetworkAccessManager &nam)
+static void process(QString url, const QByteArray &metadata, QNetworkAccessManager &nam)
 {
     url = url.simplified();
     if (url.isEmpty())
@@ -88,6 +88,11 @@ static void process(QString url, QNetworkAccessManager &nam)
 
     const QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
     br_append_utemplate_contents(stdout, reinterpret_cast<const unsigned char*>(hash.data()), reinterpret_cast<const unsigned char*>(hash.data()), 3, data.size(), reinterpret_cast<const unsigned char*>(data.data()));
+
+    if (!metadata.isEmpty()) {
+        const QByteArray metadataHash = QCryptographicHash::hash(metadata, QCryptographicHash::Md5);
+        br_append_utemplate_contents(stdout, reinterpret_cast<const unsigned char*>(hash.data()), reinterpret_cast<const unsigned char*>(metadataHash.data()), 2, metadata.size() + 1 /* include null terminator */, reinterpret_cast<const unsigned char*>(metadata.data()));
+    }
 }
 
 int main(int argc, char *argv[])
@@ -99,7 +104,7 @@ int main(int argc, char *argv[])
         if      (!strcmp(argv[i], "-help"      )) { help(); exit(EXIT_SUCCESS); }
         else if (!strcmp(argv[i], "-json"      )) json = true;
         else if (!strcmp(argv[i], "-permissive")) permissive = true;
-        else                                      { url_provided = true; process(argv[i], nam); }
+        else                                      { url_provided = true; process(argv[i], QByteArray(), nam); }
     }
 
     if (!url_provided) {
@@ -109,6 +114,7 @@ int main(int argc, char *argv[])
             const QByteArray line = file.readLine();
             process(json ? QJsonDocument::fromJson(line).object().value("URL").toString()
                          : QString::fromLocal8Bit(line),
+                    json ? line.simplified() : QByteArray(),
                     nam);
         }
     }
