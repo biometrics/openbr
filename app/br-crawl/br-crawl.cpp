@@ -72,7 +72,7 @@ static void crawl(QFileInfo url, int currentDepth = 0)
     } else if (url.isFile()) {
         const QString suffix = url.suffix();
         if ((suffix == "bmp") || (suffix == "jpg") || (suffix == "jpeg") || (suffix == "png") || (suffix == "tiff")) {
-            printf(json ? "{ URL = \"file://%s\" }\n" : "file://%s\n", qPrintable(url.canonicalFilePath()));
+            printf(json ? "{ \"URL\" : \"file://%s\" }\n" : "file://%s\n", qPrintable(url.canonicalFilePath()));
             fflush(stdout);
             currentImages++;
         }

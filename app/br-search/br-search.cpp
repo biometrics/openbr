@@ -90,20 +90,21 @@ struct SearchResults
     {
         sort_heap(topTargets.begin(), topTargets.end());
 
-        cout << "{ \"AlgorithmID\"=" << query->algorithmID;
-        cout << ", \"QueryImageID\"=";
+        cout << "{ \"AlgorithmID\":\"" << query->algorithmID;
+        cout << "\", \"QueryImageID\":\"";
         writeMD5asHex(query->imageID);
-        cout << ", \"QueryTemplateID\"=";
+        cout << "\", \"QueryTemplateID\":\"";
         writeMD5asHex(query->templateID);
+        cout << "\"";
         printMetadata(query);
-        cout << ", \"Targets\"=[ ";
+        cout << ", \"Targets\":[ ";
         for (int i=topTargets.size()-1; i>=0; i--) {
             Target &target = topTargets[i];
-            cout  << "{ \"ImageID\"=";
+            cout  << "{ \"ImageID\":\"";
             writeMD5asHex(target.second->imageID);
-            cout << ", \"TemplateID\"=";
+            cout << "\", \"TemplateID\":\"";
             writeMD5asHex(target.second->templateID);
-            cout << ", \"Score\"=" << target.first;
+            cout << "\", \"Score\":" << target.first;
             printMetadata(target.second);
             cout << " }";
             if (i > 0)

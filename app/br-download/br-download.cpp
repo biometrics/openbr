@@ -111,11 +111,18 @@ int main(int argc, char *argv[])
         QFile file;
         file.open(stdin, QFile::ReadOnly);
         while (!file.atEnd()) {
-            const QByteArray line = file.readLine();
-            process(json ? QJsonDocument::fromJson(line).object().value("URL").toString()
-                         : QString::fromLocal8Bit(line),
-                    json ? line.simplified() : QByteArray(),
+            const QByteArray line = file.readLine().simplified();
+            if (line.isEmpty())
+                continue;
+
+            QJsonParseError error;
+            process(json ? QJsonDocument::fromJson(line, &error).object().value("URL").toString()
+                         : QString::fromLatin1(line),
+                    json ? line : QByteArray(),
                     nam);
+
+            if (error.error != QJsonParseError::NoError)
+                qDebug() << error.errorString();
         }
     }
 
