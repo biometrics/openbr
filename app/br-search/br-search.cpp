@@ -131,6 +131,19 @@ struct FaceRecognition : public SearchResults
     {
         return algorithm->compare(target->data, query->data, 768);
     }
+
+    void printMetadata(br_const_utemplate t) const
+    {
+        const float *metadata = reinterpret_cast<const float*>(&t->data[768]);
+        cout << ", \"X\":"         << metadata[0]
+             << ", \"Y\":"         << metadata[1]
+             << ", \"Width\":"     << metadata[2]
+             << ", \"Height\":"    << metadata[3]
+             << ", \"RightEyeX\":" << metadata[4]
+             << ", \"RightEyeY\":" << metadata[5]
+             << ", \"LeftEyeX\":"  << metadata[6]
+             << ", \"LeftEyeY\":"  << metadata[7];
+    }
 };
 
 struct MappedGallery
