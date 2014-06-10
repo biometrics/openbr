@@ -30,8 +30,14 @@ static void help()
 
 static void print_utemplate(br_const_utemplate utemplate, br_callback_context)
 {
+    static bool first = true;
+    if (first) {
+        first = false;
+    } else {
+        printf("\n");
+    }
+
     fwrite(utemplate->data, 1, utemplate->size, stdout);
-    printf("\n");
 }
 
 int main(int argc, char *argv[])
