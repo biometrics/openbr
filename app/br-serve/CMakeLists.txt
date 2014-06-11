@@ -1,0 +1,5 @@
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_executable(br-serve br-serve.cpp ${BR_RESOURCES})
+target_link_libraries(br-serve openbr ${BR_THIRDPARTY_LIBS})
+qt5_use_modules(br-serve ${QT_DEPENDENCIES})
+install(TARGETS br-serve RUNTIME DESTINATION bin)
