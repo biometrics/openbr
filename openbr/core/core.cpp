@@ -516,17 +516,19 @@ private:
     QString getFileName(const QString &description) const
     {
         const QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
-        return QFileInfo(file).exists() ? file : QString();
+        QFileInfo qFile(file);
+        return qFile.exists() && !qFile.isDir() ? file : QString();
     }
 
-    void init(const File &description)
+    void init(const QString &description)
     {
         // Check if a trained binary already exists for this algorithm
         const QString file = getFileName(description);
         if (!file.isEmpty()) return init(file);
 
-        if (description.exists()) {
-            qDebug("Loading %s", qPrintable(description.fileName()));
+        QFileInfo dFile(description);
+        if (dFile.exists()) {
+            qDebug("Loading %s", qPrintable(dFile.fileName()));
             load(description);
             return;
         }
@@ -536,7 +538,7 @@ private:
             return init(Globals->abbreviations[description]);
 
         //! [Parsing the algorithm description]
-        QStringList words = QtUtils::parse(description.flat(), ':');
+        QStringList words = QtUtils::parse(description, ':');
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
         //! [Parsing the algorithm description]
 
