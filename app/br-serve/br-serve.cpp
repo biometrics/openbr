@@ -19,6 +19,9 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <qhttpserver.h>
+#include <qhttprequest.h>
+#include <qhttpresponse.h>
 #include <openbr/universal_template.h>
 
 static void help()
@@ -34,53 +37,40 @@ static void help()
            "* -port <int> - The port to communicate on (80 otherwise).");
 }
 
-static int port = 80;
+QProcess process;
 
-class Server : public QObject
+class Handler : public QObject
 {
     Q_OBJECT
-    QTcpServer *tcpServer;
 
-public:
-    Server()
-        : tcpServer(new QTcpServer(this))
+public slots:
+    void handle(QHttpRequest *request, QHttpResponse *response)
     {
-        if (!tcpServer->listen(QHostAddress::Any, port)) {
-            qDebug() << tcpServer->errorString();
-            exit(EXIT_FAILURE);
-            return;
-        }
-
-        connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
-    }
-
-private slots:
-    void newConnection()
-    {
-        QByteArray block = "HTTP/1.0 200 Ok\r\n"
-                           "Content-Type: text/html; charset=\"utf-8\"\r\n"
-                           "\r\n"
-                           "<h1>Hello World!</h1>\n";
-
-        QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-        connect(clientConnection, SIGNAL(disconnected()),
-                clientConnection, SLOT(deleteLater()));
-
-        clientConnection->write(block);
-        clientConnection->disconnectFromHost();
+        (void) request;
+        response->setHeader("Content-Length", QString::number(11));
+        response->writeHead(200); // everything is OK
+        response->write("Hello World");
+        response->end();
     }
 };
 
 int main(int argc, char *argv[])
 {
     QCoreApplication application(argc, argv);
+    int port = 80;
 
     for (int i=1; i<argc; i++) {
         if      (!strcmp(argv[i], "-help")) { help(); exit(EXIT_SUCCESS); }
-        else if (!strcmp(argv[i], "-port")) { port = atoi(argv[++i]); }
+        else if (!strcmp(argv[i], "-port")) port = atoi(argv[++i]);
+        else                                process.execute(argv[i]);
     }
 
-    Server server;
+    QHttpServer server;
+    Handler handler;
+    QObject::connect(&server, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
+                     &handler, SLOT(handle(QHttpRequest*, QHttpResponse*)));
+
+    server.listen(port);
     return application.exec();
 }
 
