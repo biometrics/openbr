@@ -18,7 +18,6 @@
 #include <QtNetwork>
 #include <cstdio>
 #include <cstring>
-#include <string>
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
@@ -27,9 +26,9 @@
 static void help()
 {
     printf("br-serve [command]\n"
-           "===================\n"
+           "==================\n"
            "\n"
-           "_br-serve_ converts the command's stdin/stdout into a webservice.\n"
+           "_br-serve_ converts the command's stdin/stdout into a web service.\n"
            "\n"
            "Optional Arguments\n"
            "------------------\n"
@@ -37,7 +36,8 @@ static void help()
            "* -port <int> - The port to communicate on (80 otherwise).");
 }
 
-QProcess process;
+static int port = 80;
+static QProcess process;
 
 class Handler : public QObject
 {
@@ -46,10 +46,39 @@ class Handler : public QObject
 public slots:
     void handle(QHttpRequest *request, QHttpResponse *response)
     {
-        (void) request;
-        response->setHeader("Content-Length", QString::number(11));
+        QByteArray message;
+
+        const QUrlQuery urlQuery(request->url());
+        if (urlQuery.hasQueryItem("url")) {
+            process.write(qPrintable(QString(urlQuery.queryItemValue("url") + "\n")));
+            process.waitForReadyRead();
+            message = process.readAll();
+        } else {
+            QString path = request->path();
+            if (path == "/")
+                path = "localhost";
+            message = QString("<!DOCTYPE html>\n"
+                              "<html>\n"
+                              "<head>\n"
+                              "  <title>Web Services API</title>\n"
+                              "</head>\n"
+                              "\n"
+                              "<body>\n"
+                              "  <h1><a href=\"http://en.wikipedia.org/wiki/Query_string\">Query String</a> Parameters</h1>"
+                              "  <ul>\n"
+                              "    <li><b>url</b> - Query URL for processing.</li>\n"
+                              "  </ul>\n"
+                              "  <h1>Examples</h1>\n"
+                              "  <ul>\n"
+                              "    <li>http://%1%2/?url=data.liblikely.org/misc/lenna.tiff</li>\n"
+                              "  </ul>\n"
+                              "</body>\n"
+                              "</html>").arg(path, port == 80 ? QString() : (QString(":") + QString::number(port))).toLatin1();
+        }
+
+        response->setHeader("Content-Length", QString::number(message.size()));
         response->writeHead(200); // everything is OK
-        response->write("Hello World");
+        response->write(message);
         response->end();
     }
 };
@@ -57,12 +86,11 @@ public slots:
 int main(int argc, char *argv[])
 {
     QCoreApplication application(argc, argv);
-    int port = 80;
 
     for (int i=1; i<argc; i++) {
         if      (!strcmp(argv[i], "-help")) { help(); exit(EXIT_SUCCESS); }
         else if (!strcmp(argv[i], "-port")) port = atoi(argv[++i]);
-        else                                process.execute(argv[i]);
+        else                                process.start(argv[i]);
     }
 
     QHttpServer server;
