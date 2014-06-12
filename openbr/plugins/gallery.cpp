@@ -28,6 +28,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 
+#include "openbr/universal_template.h"
 #include "openbr/core/bee.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -88,19 +89,9 @@ class arffGallery : public Gallery
 
 BR_REGISTER(Gallery, arffGallery)
 
-/*!
- * \ingroup galleries
- * \brief A binary gallery.
- *
- * Designed to be a literal translation of templates to disk.
- * Compatible with TemplateList::fromBuffer.
- * \author Josh Klontz \cite jklontz
- */
-class galGallery : public Gallery
+class BinaryGallery : public Gallery
 {
     Q_OBJECT
-    QFile gallery;
-    QDataStream stream;
 
     void init()
     {
@@ -125,9 +116,7 @@ class galGallery : public Gallery
 
         TemplateList templates;
         while ((templates.size() < readBlockSize) && !stream.atEnd()) {
-            Template m;
-            stream >> m;
-            templates.append(m);
+            templates.append(readTemplate());
             templates.last().file.set("progress", totalSize());
         }
 
@@ -135,13 +124,9 @@ class galGallery : public Gallery
         return templates;
     }
 
-    void write(const Template &t)
-    {
-        if (t.isEmpty() && t.file.isNull())
-            return;
-
-        stream << t;
-    }
+protected:
+    QFile gallery;
+    QDataStream stream;
 
     qint64 totalSize()
     {
@@ -153,9 +138,67 @@ class galGallery : public Gallery
         return gallery.pos();
     }
 
+    virtual Template readTemplate() = 0;
+};
+
+/*!
+ * \ingroup galleries
+ * \brief A binary gallery.
+ *
+ * Designed to be a literal translation of templates to disk.
+ * Compatible with TemplateList::fromBuffer.
+ * \author Josh Klontz \cite jklontz
+ */
+class galGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        Template t;
+        stream >> t;
+        return t;
+    }
+
+    void write(const Template &t)
+    {
+        if (t.isEmpty() && t.file.isNull())
+            return;
+        stream << t;
+    }
 };
 
 BR_REGISTER(Gallery, galGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief A contiguous array of br_universal_template.
+ * \author Josh Klontz \cite jklontz
+ */
+class utGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        cv::Mat m;
+        br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
+        if (gallery.read((char*)t, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
+            m = cv::Mat(1, t->size, CV_8UC1);
+            if (gallery.read((char*)m.data, t->size) != t->size)
+                qFatal("Unexepected EOF when reading universal template data.");
+        }
+        free(t);
+        return m;
+    }
+
+    void write(const Template &)
+    {
+        qFatal("Not implemented.");
+    }
+};
+
+BR_REGISTER(Gallery, utGallery)
 
 /*!
  * \ingroup galleries
