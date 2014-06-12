@@ -49,6 +49,6 @@ int main(int argc, char *argv[])
         else if (!strcmp(argv[i], "-algorithmID")) algorithmID = new int(atoi(argv[++i]));
     }
 
-    br_iterate_utemplates_file(stdin, select_utemplate, NULL);
+    br_iterate_utemplates_file(stdin, select_utemplate, NULL, false);
     return EXIT_SUCCESS;
 }

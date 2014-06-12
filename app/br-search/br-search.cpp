@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
         galleries.append(MappedGallery(url));
 
     Globals->quiet = true;
-    br_iterate_utemplates_file(stdin, search_utemplate, NULL);
+    br_iterate_utemplates_file(stdin, search_utemplate, NULL, false);
 
     Context::finalize();
     return EXIT_SUCCESS;

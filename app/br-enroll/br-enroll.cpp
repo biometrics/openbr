@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     Globals->quiet = true;
     Globals->enrollAll = true;
     algorithm = Transform::fromAlgorithm("FaceRecognition");
-    br_iterate_utemplates_file(stdin, enroll_utemplate, NULL);
+    br_iterate_utemplates_file(stdin, enroll_utemplate, NULL, true);
     Context::finalize();
     return EXIT_SUCCESS;
 }

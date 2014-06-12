@@ -45,6 +45,6 @@ int main(int argc, char *argv[])
     for (int i=1; i<argc; i++)
         if      (!strcmp(argv[i], "-help")) { help(); exit(EXIT_SUCCESS); }
 
-    br_iterate_utemplates_file(stdin, print_utemplate, NULL);
+    br_iterate_utemplates_file(stdin, print_utemplate, NULL, false);
     return EXIT_SUCCESS;
 }

@@ -81,7 +81,7 @@ BR_EXPORT void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplat
  * \brief Iterate over br_universal_template in a file.
  * \see br_iterate_utemplates
  */
-BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context);
+BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context, bool parallel);
 
 #ifdef __cplusplus
 }

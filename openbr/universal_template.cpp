@@ -1,6 +1,8 @@
 #include <QFile>
+#include <QFutureSynchronizer>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QtConcurrent>
 #include <cstdlib>
 #include <cstring>
 
@@ -47,8 +49,15 @@ void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_
     }
 }
 
-void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context)
+static void callAndFree(br_utemplate_callback callback, br_utemplate t, br_callback_context context)
 {
+    callback(t, context);
+    free(t);
+}
+
+void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context, bool parallel)
+{
+    QFutureSynchronizer<void> futures;
     while (!feof(file)) {
         br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
 
@@ -56,9 +65,11 @@ void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_c
             t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->size);
             if (fread(t+1, 1, t->size, file) != t->size)
                 qFatal("Unexepected EOF when reading universal template data.");
-            callback(t, context);
+            if (parallel) futures.addFuture(QtConcurrent::run(callAndFree, callback, t, context));
+            else          callAndFree(callback, t, context);
+        } else {
+            free(t);
         }
-
-        free(t);
     }
+    futures.waitForFinished();
 }
