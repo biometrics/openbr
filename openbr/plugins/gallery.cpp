@@ -95,17 +95,26 @@ class BinaryGallery : public Gallery
 
     void init()
     {
-        gallery.setFileName(file);
-        if (file.get<bool>("remove"))
-            gallery.remove();
-        QtUtils::touchDir(gallery);
-        QFile::OpenMode mode = QFile::ReadWrite;
+        const QString baseName = file.baseName();
+        if (baseName == "stdin") {
+            gallery.open(stdin, QFile::ReadOnly);
+        } else if (baseName == "stdout") {
+            gallery.open(stdout, QFile::WriteOnly);
+        } else if (baseName == "stderr") {
+            gallery.open(stderr, QFile::WriteOnly);
+        } else {
+            gallery.setFileName(file);
+            if (file.get<bool>("remove"))
+                gallery.remove();
+            QtUtils::touchDir(gallery);
+            QFile::OpenMode mode = QFile::ReadWrite;
 
-        if (file.get<bool>("append"))
-            mode |= QFile::Append;
+            if (file.get<bool>("append"))
+                mode |= QFile::Append;
 
-        if (!gallery.open(mode))
-            qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
+            if (!gallery.open(mode))
+                qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
+        }
         stream.setDevice(&gallery);
     }
 
@@ -181,20 +190,44 @@ class utGallery : public BinaryGallery
 
     Template readTemplate()
     {
-        cv::Mat m;
-        br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
-        if (gallery.read((char*)t, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
-            m = cv::Mat(1, t->size, CV_8UC1);
-            if (gallery.read((char*)m.data, t->size) != t->size)
-                qFatal("Unexepected EOF when reading universal template data.");
+        Template t;
+        br_utemplate ut = (br_utemplate) malloc(sizeof(br_universal_template));
+        if (gallery.read((char*)ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
+            cv::Mat m = cv::Mat(1, ut->size, CV_8UC1);
+            char *dst = (char*) m.data;
+            qint64 bytesNeeded = ut->size;
+            while (bytesNeeded > 0) {
+                qint64 bytesRead = gallery.read(dst, bytesNeeded);
+                if (bytesRead <= 0)
+                    qFatal("Unexepected EOF when reading universal template data.");
+                bytesNeeded -= bytesRead;
+                dst += bytesRead;
+            }
+            t.append(m);
+            t.file.set("ImageID", QVariant(QByteArray((const char*)ut->imageID, 16)));
+            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut->templateID, 16)));
+            t.file.set("AlgorithmID", QVariant(ut->algorithmID));
         }
-        free(t);
-        return m;
+        free(ut);
+        return t;
     }
 
-    void write(const Template &)
+    void write(const Template &t)
     {
-        qFatal("Not implemented.");
+        const QByteArray imageID = t.file.get<QByteArray>("ImageID");
+        if (imageID.size() != 16)
+            qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
+
+        const int32_t algorithmID = t.file.get<int32_t>("AlgorithmID");
+        const QByteArray data((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+        const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
+        const uint32_t size = data.size();
+
+        gallery.write(imageID);
+        gallery.write(templateID);
+        gallery.write((const char*) &algorithmID, 4);
+        gallery.write((const char*) &size, 4);
+        gallery.write(data);
     }
 };
 

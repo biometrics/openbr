@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                     json ? line : QByteArray(),
                     nam);
 
-            if (error.error != QJsonParseError::NoError)
+            if (json && (error.error != QJsonParseError::NoError))
                 qDebug() << error.errorString();
         }
     }

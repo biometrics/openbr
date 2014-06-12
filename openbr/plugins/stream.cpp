@@ -334,6 +334,8 @@ public:
             // Otherwise, read another block
             if (!lastBlock) {
                 currentData = gallery->readBlock(&lastBlock);
+                if (currentData.empty())
+                    qFatal("Expected at least one template.");
                 nextIdx = 0;
             }
             else

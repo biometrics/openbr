@@ -31,7 +31,7 @@ class AlgorithmsInitializer : public Initializer
     void initialize() const
     {
         // Face
-        Globals->abbreviations.insert("FaceRecognition", "FaceDetection+Expand+<FaceRecognitionRegistration>+Expand+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>:MatchProbability(ByteL1)");
+        Globals->abbreviations.insert("FaceRecognition", "FaceDetection+Expand+<FaceRecognitionRegistration>+Expand+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>+SetMetadata(AlgorithmID,-1):MatchProbability(ByteL1)");
         Globals->abbreviations.insert("GenderClassification", "FaceDetection+Expand+<FaceClassificationRegistration>+Expand+<FaceClassificationExtraction>+<GenderClassifier>+Discard");
         Globals->abbreviations.insert("AgeRegression", "FaceDetection+Expand+<FaceClassificationRegistration>+Expand+<FaceClassificationExtraction>+<AgeRegressor>+Discard");
         Globals->abbreviations.insert("FaceQuality", "Open+Expand+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+ImageQuality+Cvt(Gray)+DFFS+Discard");

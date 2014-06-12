@@ -37,17 +37,28 @@ class OpenTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (!src.isEmpty()) { dst = src; return; }
-        if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
         dst.file = src.file;
-        foreach (const File &file, src.file.split()) {
-            QScopedPointer<Format> format(Factory<Format>::make(file));
-            Template t = format->read();
-            if (t.isEmpty()) qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
-            dst.append(t);
-            dst.file.append(t.file.localMetadata());
+        if (src.empty()) {
+            if (Globals->verbose)
+                qDebug("Opening %s", qPrintable(src.file.flat()));
+
+            // Read from disk otherwise
+            foreach (const File &file, src.file.split()) {
+                QScopedPointer<Format> format(Factory<Format>::make(file));
+                Template t = format->read();
+                if (t.isEmpty())
+                    qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
+                dst.append(t);
+                dst.file.append(t.file.localMetadata());
+            }
+            dst.file.set("FTO", dst.isEmpty());
+        } else {
+            // Propogate or decode existing matricies
+            foreach (const Mat &m, src) {
+                if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1)) dst += m;
+                else                                                         dst += imdecode(src.m(), IMREAD_UNCHANGED);
+            }
         }
-        dst.file.set("FTO", dst.isEmpty());
     }
 };
 
