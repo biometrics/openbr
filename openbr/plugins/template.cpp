@@ -74,6 +74,28 @@ BR_REGISTER(Transform, SetMetadataTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Clear templates without the required metadata.
+ * \author Josh Klontz \cite jklontz
+ */
+class IfMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    Q_PROPERTY(QString value READ get_value WRITE set_value RESET reset_value STORED false)
+    BR_PROPERTY(QString, key, "")
+    BR_PROPERTY(QString, value, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (src.file.get<QString>(key, "") == value)
+            dst = src;
+    }
+};
+
+BR_REGISTER(Transform, IfMetadataTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Removes a metadata field from all templates
  * \author Brendan Klare \cite bklare
  */

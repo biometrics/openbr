@@ -215,6 +215,9 @@ class utGallery : public BinaryGallery
 
     void write(const Template &t)
     {
+        if (t.empty())
+            return;
+
         const QByteArray imageID = t.file.get<QByteArray>("ImageID");
         if (imageID.size() != 16)
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
