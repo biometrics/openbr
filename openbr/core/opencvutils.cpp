@@ -362,13 +362,18 @@ QDataStream &operator>>(QDataStream &stream, Mat &m)
     stream >> rows >> cols >> type;
     m.create(rows, cols, type);
 
-    // Read data
     int len;
     stream >> len;
-    if (len > 0) {
-        if (!m.isContinuous()) qFatal("Can't deserialize non-continuous matrices.");
-        const int read = stream.readRawData((char*)m.data, len);
-        if (read != len) qFatal("Mat deserialization failure, exptected: %d bytes, read: %d bytes.", len, read);
+    char *data = (char*) m.data;
+
+    // In certain circumstances, like reading from stdin or sockets, we may not
+    // be given all the data we need at once because it isn't available yet.
+    // So we loop until it we get it.
+    while (len > 0) {
+        const int read = stream.readRawData(data, len);
+        if (read == -1) qFatal("Mat deserialization failure, exptected %d more bytes.", len);
+        data += read;
+        len -= read;
     }
     return stream;
 }
