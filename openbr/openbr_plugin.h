@@ -174,14 +174,15 @@ struct BR_EXPORT File
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
+    File(const QVariantMap &metadata) : m_metadata(metadata) {} /*!< \brief Construct a file from metadata. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
 
-    inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
-    inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+    inline QStringList localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
+    inline QVariantMap localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
 
-    void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
+    void append(const QVariantMap &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
     inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
     inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
@@ -326,7 +327,7 @@ struct BR_EXPORT File
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
-    QMap<QString,QVariant> m_metadata;
+    QVariantMap m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
