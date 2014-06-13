@@ -125,7 +125,10 @@ class BinaryGallery : public Gallery
 
         TemplateList templates;
         while ((templates.size() < readBlockSize) && !stream.atEnd()) {
-            templates.append(readTemplate());
+            const Template t = readTemplate();
+            if (t.isEmpty() && t.file.isNull())
+                continue;
+            templates.append(t);
             templates.last().file.set("progress", totalSize());
         }
 
@@ -199,7 +202,7 @@ class utGallery : public BinaryGallery
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
                 if (bytesRead <= 0)
-                    qFatal("Unexepected EOF when reading universal template data, needed: %d more bytes.", bytesNeeded);
+                    qFatal("Unexepected EOF when reading universal template data, needed: %d more bytes.", int(bytesNeeded));
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
