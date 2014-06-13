@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.sri.vt.majic</groupId>
+    <artifactId>majic-parent</artifactId>
+    <version>0.1.9-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.sri.vt</groupId>
+  <artifactId>randomlib</artifactId>
+  <version>1.9-SNAPSHOT</version>
+  <packaging>majic-cmake</packaging>
+  <name>randomlib</name>
+
+  <repositories>
+    <repository>
+      <id>artifactory-vt</id>
+      <name>SRI VT Repository</name>
+      <url>https://artifactory-vt.sarnoff.internal/artifactory/repo</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.sri.vt.majic</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-cmake-configure</id>
+            <configuration>
+              <options>
+                <COMMON_INSTALL_PATH>ON</COMMON_INSTALL_PATH>
+                <RANDOMLIB_LIB_TYPE>BOTH</RANDOMLIB_LIB_TYPE>
+                <DISABLE_BOOST>ON</DISABLE_BOOST>
+                <RANDOMLIB_DOCUMENTATION>OFF</RANDOMLIB_DOCUMENTATION>
+              </options>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-cmake-test</id>
+            <configuration>
+              <configs>
+                <config>Release</config>
+              </configs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

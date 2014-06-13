@@ -1,0 +1,283 @@
+A reverse chronological list of changes to RandomLib
+
+For more information, see
+
+    http://randomlib.sourceforge.net/
+
+The current version of the library is 1.9.
+
+Changes between 1.9 (released 2014-03-15) and 1.8 versions:
+
+  * Many changes in cmake support:
+    + minimum version of cmake needed increased to 2.8.4 (which was
+      released in 2011-02);
+    + allow building both shared and static libraries with -D
+      RANDOMLIB_LIB_TYPE=BOTH;
+    + both shared and static libraries (Release plus Debug) included in
+      binary installer;
+    + find_package uses COMPONENTS and RandomLib_USE_STATIC_LIBS to
+      select the library to use;
+    + find_package version checking allows nmake and Visual Studio
+      generators to interoperate on Windows;
+    + find_package (RandomLib ...) requires that RandomLib be
+      capitalized correctly;
+    + on Unix/Linux, don't include the version number in directory for
+      the cmake configuration files;
+    + defaults for RANDOMLIB_DOCUMENTATION is now OFF;
+    + the configuration parameters PACKAGE_PATH and INSTALL_PATH are
+      now deprecated (use CMAKE_INSTALL_PREFIX instead).
+
+  * _d added to library name in Windows project files.
+
+Changes between 1.8 (released 2013-10-08) and 1.7 versions:
+
+  * Work around a problem with Visual Studio 9.
+
+Changes between 1.7 (released 2013-09-27) and 1.6 versions:
+
+  * Add UniformInteger, DiscreteNormal, and DiscreteNormalAlt.
+  * cmake configuration changes:
+    + use folders in Visual Studio to reduce clutter;
+    + improving setting of runtime path for Unix-like OS;
+    + install PDB files when compiling with Visual Studio to aid
+      debugging.
+  * Eliminate link error in debug mode (in RandomMixer) and various
+    warning messages.
+  * Add macros RANDOMLIB_VERSION_{MAJOR,MINOR,PATCH} to Config.h.
+
+Changes between 1.6 (released 2012-09-13) and 1.5 versions:
+
+  * Documentation changes:
+    + remove html documentation from distribution and use web links if
+      doxygen is not available;
+    + use doxygen tags to document exceptions;
+    + use Greek letters where appropriate (requires doxygen 1.8.1.2 or
+      later);
+    + use MathJax to display equations.
+
+  * Support building with cygwin and mingw32-g++ on Windows (via
+    cmake).
+
+  * Releases via git now use the "release" branch of the main
+    randomlib repository (instead of a separate randomlib-release
+    repository).
+
+Changes between 1.5 (released 2012-03-20) and 1.4 versions:
+
+  * cmake tweaks:
+    + improve find_package's matching of compiler versions;
+    + CMAKE_INSTALL_PREFIX set from CMAKE_PREFIX_PATH if available;
+    + fix cmake warning with Visual Studio Express.
+
+  * Fix for compilation with Visual Studio 11.
+
+Changes between 1.4 (released 2012-02-21) and 1.3 versions:
+
+  * Add MPFR interface.
+
+  * Add InversePiProb and InverseEProb.
+
+  * Change RandomNumber to a signed-magnitude representation; this
+    results in slight incompatibilities in the interface.
+
+  * A tweak to ExactNormal to minimize the number of digits generated.
+
+  * Improve efficiency of ExactExponential.
+
+  * Improve documentation on configuration with cmake.
+
+  * cmake's find_package ensures that the compiler versions match on
+    Windows.
+
+Changes between 1.3 (released 2012-01-21) and 1.2 versions:
+
+  * Improve algorithm used by RandomLib::ExactNormal class.
+
+  * Add internal documenation to the cmake configuration files.
+
+Changes between 1.2 (released 2011-12-20) and 1.1 versions:
+
+  * Change license to MIT/X11.
+
+  * Add RandomLib::ExactNormal class.  This enables you to sample
+    exactly from a normal distribution with zero mean and unit variance
+    (assuming that the underlying generator is perfect).
+
+  * Document function arguments and return values.
+
+  * Include OpenMP header in RandomThread.cpp.
+
+Change between 1.1 (released 2011-09-21) and 1.0 versions:
+
+  * Ensure that randomlib-config.cmake is relocatable.
+
+Changes between 1.0 (released 2011-08-12) and 2011-06 versions:
+
+  * cmake changes:
+    + include FindRandom.cmake in distribution;
+    + building with cmake creates and installs randomlib-config.cmake;
+    + better support for building a shared library under Windows.
+
+Changes between 2011-06 (released 2011-06-04) and 2010-05 versions:
+
+  * Convert parallelization example, RandomThread.cpp, to OpenMP.
+
+  * Migrate source from subversion to git.
+
+Changes between 2011-05 (released 2011-05-17) and 2010-04 versions:
+
+  * INCOMPATIBLE CHANGE: the default constructor Random r; sets the seed
+    to [].  Use r.Reseed(); to reset the seed to Random::SeedVector();
+
+  * Make sure Global generators are exported to the dll.
+
+Changes between 2011-04 (released 2011-04-12) and 2010-01 versions:
+
+  * Use cmake for configuration.
+
+  * Improve documentation on installation process.
+
+  * Improve documentation of parallelization.
+
+  * Remove examples RandomPermutation and shuffle and add
+    RandomCoverage, RandomExact, RandomLambda, RandomSave, and
+    RandomThread
+
+  * Add specialized swap
+
+  * Ensure the code works with compilers with no long double type.
+
+  * Add new and delete operators for SFMT19937 under Visual Studio.
+
+Changes between 2010-01 and 2009-02 versions:
+
+  * Move to SourceForge.
+
+Changes between 2009-02 and 2008-11 versions:
+
+  * RandomPermutation and shuffle accept -r option to undo a permutation
+    or shuffle.
+
+  * Minor documentation fixes.
+
+Changes between 2008-11 and 2008-04 versions:
+
+  * Changes to suppress warnings with g++ 4.3.
+
+  * Optional support for C++11's static_assert.
+
+  * Document RandomPermutation and shuffle.
+
+  * Minor documentation fixes.
+
+Changes between 2008-04 and 2008-01 versions:
+
+  * Reorganized so random algorithm and mixer can be selected
+    independently.  This eliminated a lot of duplicate code.
+
+  * This requires a new, incompatible, output format.  Format is now
+    independent of the current base of the stream.
+
+  * Name() now returns more informative name.
+
+  * SFMT19937 init_by_array mixer adopted for MT19937 generators.  This
+    is an incompatible change for the MT19937 generators.  However it is
+    possible to hook the MT19937 engine with the MixerMT1 mixers to
+    recover the previous functionality using
+    + RandomEngine<MT19937<Random_u32>, MixerMT1<Random_u32> >
+    + RandomEngine<MT19937<Random_u64>, MixerMT1<Random_u64> >
+
+  * The way 32-bit results are glued together for to provide the
+    Ran64() result is now LSB ordered.  Previously the 32-bit version
+    of MT19937 used MSB ordering here.  This means that certain large
+    integer results will be different for
+    RandomEngine<MT19937<Random_u32>, MixerMT1<Random_u32> >
+
+  * Support Altivec instructions on PowerPC for SFTM19937.  Also use
+    longer long double on PowerPC.
+
+  * Add -s seed option to shuffle and RandomPermutation.
+
+  * Use strtoull (where available) instead of strtoul in convert a
+    string seed to numeric form.
+
+  * Switch project files to MS Visual Studio 2005.
+
+  * Use SeedVector() instead of SeedWord() for the default constructor
+    for Random.
+
+  * Make 32-bit version of SFMT19937 the default generator.
+
+Changes between 2008-01 and 2007-05 versions:
+
+  * This is a maintenance release in anticipation of a forthcoming major
+    restructuring of the code.
+
+  * Use table of powers of two for g++ 4.1.
+
+  * Minor documentation fixes.
+
+Changes between 2007-05 and 2007-04 versions:
+
+  * Add SFMT19937 generators.
+
+  * Introduce RandomGenerator::Name() to identify generator.
+
+  * Change define used to make 64-bit generator the default.
+
+  * Add RandomSelect::Weight.
+
+  * Ensure portability to systems where RandomSeed::u32 is longer than 32
+    bits.
+
+Changes between 2007-04 and 2006-12 versions:
+
+  * Add utilities RandomPermutation and shuffle.
+
+  * Implement MSB ordering on binary I/O in a portable way.
+
+Changes between 2006-12 and 2006-11 versions:
+
+  * Add leapfrogging.  The output format needed to be changed to
+    accommodate an extra word of data.  However, I/O routines can still
+    read the 2006-11 version.
+
+Changes between 2006-11 and 2006-10 versions:
+
+  * Introduce RandomCanonical class which accepts the random generator
+    as a template argument.
+
+  * This allows the inclusion of 32-bit and 64-bit versions of mt19937.
+
+  * Include checksum in I/O.
+
+  * Include boost serialization.
+
+Changes between 2006-10 and 2006-09 versions:
+
+  * Make 64-bit ready so a 64-bit version of mt19937 can be dropped in.
+
+  * Fix a bug in the seeding.  (This bug was trigged by seed length of
+    624 or greater; so it was unlikely to have been encountered in
+    practice.)
+
+  * Stop the special case treatment for
+    Random::IntegerC<T>(numeric_limits<T>::max()).  In some cases (e.g.,
+    T = int) this now gives different (but equivalent) results.
+
+Changes between 2006-09 and 2006-08 versions:
+
+  * Add ExponentialProb, ExactExponential, ExactPower, and RandomNumber.
+
+  * Fix weakness in the seeding algorithm.  A given seed now gives a
+    random sequence different from previous version; so this is an
+    incompatible change.
+
+  * Restructure the documentation.
+
+  * Allow constructors to accept vectors of any integral type and
+    constructors with a pair of iterators.
+
+Change between 2006-08 and 2006-07 versions:
+
+  * Improve efficiency of Integer(n) where n is a power of two.
