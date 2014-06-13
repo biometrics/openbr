@@ -323,19 +323,16 @@ struct StreamGallery : public TemplateProcessor
     bool getNextTemplate(Template & output)
     {
         // If we still have data available, we return one of those
-        if (nextIdx >= currentData.size())
-        {
-            // Otherwise, read another block
-            if (!lastBlock) {
-                currentData = gallery->readBlock(&lastBlock);
-                nextIdx = 0;
-            }
-
-            if (lastBlock || currentData.empty()) {
-                galleryOk = false;
-                return false;
-            }
+        if ((nextIdx >= currentData.size()) && !lastBlock) {
+            currentData = gallery->readBlock(&lastBlock);
+            nextIdx = 0;
         }
+
+        if (nextIdx >= currentData.size()) {
+            galleryOk = false;
+            return false;
+        }
+
         // Return the indicated template, and advance the index
         output = currentData[nextIdx++];
         return true;
