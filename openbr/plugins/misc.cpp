@@ -106,7 +106,7 @@ private:
     void project(const Template &src, Template &dst) const
     {
         dst.file = src.file;
-        QString url = src.file.get<QString>("URL").simplified();
+        QString url = src.file.get<QString>("URL", src.file.name).simplified();
         if (url.isEmpty())
             return;
 
