@@ -193,8 +193,8 @@ class utGallery : public BinaryGallery
         Template t;
         br_utemplate ut = (br_utemplate) malloc(sizeof(br_universal_template));
         if (gallery.read((char*)ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
-            cv::Mat m = cv::Mat(1, ut->size, CV_8UC1);
-            char *dst = (char*) m.data;
+            QByteArray data(ut->size, Qt::Uninitialized);
+            char *dst = data.data();
             qint64 bytesNeeded = ut->size;
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
@@ -203,10 +203,17 @@ class utGallery : public BinaryGallery
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
-            t.append(m);
-            t.file.set("ImageID", QVariant(QByteArray((const char*)ut->imageID, 16)));
-            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut->templateID, 16)));
-            t.file.set("AlgorithmID", QVariant(ut->algorithmID));
+
+            if (ut->algorithmID == 5) {
+                QDataStream stream(&data, QIODevice::ReadOnly);
+                stream >> t;
+            } else {
+                t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()));
+            }
+
+            t.file.set("ImageID", QVariant(QByteArray((const char*)ut->imageID, 16).toHex()));
+            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut->templateID, 16).toHex()));
+            t.file.set("AlgorithmID", ut->algorithmID);
         }
         free(ut);
         return t;
@@ -222,12 +229,18 @@ class utGallery : public BinaryGallery
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
         const int32_t algorithmID = t.file.get<int32_t>("AlgorithmID");
-        const QByteArray data((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+        QByteArray data;
+        if (algorithmID == 5) {
+            QDataStream stream(&data, QIODevice::WriteOnly);
+            stream << t;
+        } else {
+            data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+        }
         const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
         const uint32_t size = data.size();
 
-        gallery.write(imageID);
-        gallery.write(templateID);
+        gallery.write(QByteArray::fromHex(imageID));
+        gallery.write(QByteArray::fromHex(templateID));
         gallery.write((const char*) &algorithmID, 4);
         gallery.write((const char*) &size, 4);
         gallery.write(data);

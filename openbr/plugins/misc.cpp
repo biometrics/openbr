@@ -149,6 +149,9 @@ private:
             if (!decoded.empty())
                 dst += (mode == Encoded) ? encoded : decoded;
         }
+
+        dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5)));
+        dst.file.set("AlgorithmID", mode == Decoded ? 5 : 3);
     }
 };
 
