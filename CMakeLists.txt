@@ -91,6 +91,12 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 # Find Alphanum
 find_package(Alphanum REQUIRED)
 
+# Add RandomLib
+add_subdirectory(3rdparty/RandomLib-1.9/)
+set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} Random.lib)
+include_directories(3rdparty/RandomLib-1.9/include/)
+link_directories(${CMAKE_BINARY_DIR}/3rdparty/RandomLib-1.9/src/)
+
 # Find cvmatio (if using it)
 set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")
 if(${BR_WITH_CVMATIO})

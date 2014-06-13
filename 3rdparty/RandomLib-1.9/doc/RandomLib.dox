@@ -1,0 +1,3079 @@
+// -*- text -*-
+/**
+ * \file RandomLib.dox
+ * \brief Documentation for Random, MT19937, SFMT19937, RandomSeed, etc.
+ *
+ * Written by Charles Karney <charles@karney.com> and licensed under the
+ * MIT/X11 License.  For more information, see
+ * http://randomlib.sourceforge.net/
+ **********************************************************************/
+
+/**
+\mainpage Random number library
+\author Charles F. F. Karney (charles@karney.com)
+\version 1.9
+\date 2014-03-15
+
+\section abstract Abstract
+
+%RandomLib is a C++ interface to the Mersenne Twister random number
+generator,
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">
+MT19937</a> and to
+the SIMD-oriented Fast Mersenne Twister random number generator,
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/index.html">
+SFMT19937</a>.
+It provides convenient access to random integers and reals at a variety
+of precisions.  %RandomLib also contains new algorithms which permit
+<b>exact sampling from the normal and discrete normal distributions</b>
+(provided that the underlying generator is perfect).  The emphasis in
+this implementation is on providing a reliable source of random numbers
+for scientific applications where there's a premium on accuracy,
+repeatability, portability, and ease of use.  By default, this library
+uses SFMT's improved method for seeding the generator and it allows
+access to both the 32-bit and 64-bit versions of MT19937 and SFMT19937
+and includes implementations of the SFMT19937 using SSE2 and AltiVec
+instructions.
+
+<b>NOTE:</b> The original motivation for this library was to provide a
+robust library for random numbers of C++ applications.  With C++11 much
+of the functionality of this library is available in the standard C++
+library via the <code>&lt;random&gt;</code> header.  If your compiler
+supports C++11, it may be preferable to use its built-in capabilities
+instead of %RandomLib.
+
+\section download Download
+
+The main project page is at
+-  <a href="http://sourceforge.net/projects/randomlib">
+  http://sourceforge.net/projects/randomlib </a>
+.
+The code is available for download at
+- <a href="http://sourceforge.net/projects/randomlib/files/distrib/RandomLib-1.9.tar.gz">
+  RandomLib-1.9.tar.gz</a>
+- <a href="http://sourceforge.net/projects/randomlib/files/distrib/RandomLib-1.9.zip">
+  RandomLib-1.9.zip</a>
+.
+as either a compressed tar file (tar.gz) or a zip file.  (The two
+archives have identical contents, except that the zip file has DOS line
+endings.)  Alternatively you can get the latest release using git
+\verbatim
+  git clone -b r1.9 git://git.code.sf.net/p/randomlib/code randomlib
+\endverbatim
+
+It is licensed under the
+<a href="http://www.opensource.org/licenses/MIT">MIT/X11 License</a>;
+see <a href="LICENSE.txt">LICENSE.txt</a> for the terms.
+For more information, see http://randomlib.sourceforge.net/
+
+\section contents Contents
+ - \ref intro
+ - \ref install
+ - \ref start
+ - \ref organization
+ - \ref seeds
+ - \ref integer
+ - \ref real
+   - \ref fixed
+   - \ref floating
+   - \ref reals
+ - \ref other
+ - \ref otherdist
+ - \ref mpfr
+ - \ref save
+ - \ref programming
+ - \ref parallel
+ - \ref function
+ - \ref old
+
+<center>
+Forward to \ref intro.
+</center>
+
+**********************************************************************/
+/**
+\page intro Introduction
+
+<center>
+Forward to \ref install.  Up to \ref contents.
+</center>
+
+%RandomLib is a C++ class which implements the Mersenne Twister random
+number generator,
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">
+MT19937</a>
+and the SIMD-oriented Fast Mersenne Twister random number generator,
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/index.html">
+SFMT19937</a>.  For a description of MT19937 see\n
+<a href="mailto:m-mat@math.sci.hiroshima-u.ac.jp">Makoto Matsumoto</a> and
+Takuji Nishimura,\n
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.pdf">
+Mersenne Twister: A 623-Dimensionally Equidistributed Uniform
+Pseudo-Random Number Generator</a>,\n
+<a href="http://dx.doi.org/10.1145/272991.272995">
+ACM TOMACS 8, 3--30 (1998)</a>.\n
+For a description of SFMT19937 see\n
+<a href="mailto:saito@math.sci.hiroshima-u.ac.jp">Mutsuo Saito</a>,\n
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/M062821.pdf">
+An Application of Finite Field: Design and Implementation of 128-bit
+Instruction-Based Fast Pseudorandom Number Generator</a>,
+\n Master's Thesis, Dept. of Math., Hiroshima University (Feb. 2007),\n
+<a href="mailto:saito@math.sci.hiroshima-u.ac.jp">Mutsuo Saito</a> and
+<a href="mailto:m-mat@math.sci.hiroshima-u.ac.jp">Makoto
+Matsumoto</a>,\n
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/sfmt.pdf">
+SIMD-oriented Fast Mersenne Twister: a 128-bit Pseudorandom Number
+Generator</a>,\n
+accepted in the proceedings of MCQMC2006.
+
+MT19937 and SFMT19937 are high-quality random number generators with an
+exceptionally large period 2<sup>19937</sup> &minus; 1 or about
+10<sup>6001</sup>; it passes all current tests for randomness.
+
+The emphasis in this implementation is on providing a reliable source
+of random numbers for scientific applications where there's a premium
+on
+- accuracy -- all the results from Random are exact assuming that the
+  underlying generators are perfect.  Thus a random integer in [0, \e n)
+  is given by Integer(\e n) which guarantees that all possible results
+  are equally likely.  Similarly FloatN() is equivalent to sampling a
+  random number in (0,1) and exactly rounding it to the nearest
+  representable double.
+- repeatability -- extensive facilities for managing the seed for the
+  generator.  It's easy to seed the generators in a parallel application
+  in a systematic way to give repeatable results.
+- portability -- the same results are obtained on different platforms.
+- efficiency -- template functions provide fast general code.
+- ease of use -- the interface makes it difficult to misuse the
+  generator with most usage errors being caught at compile time.
+
+Random provides the basic functionality of the MT19937 and SFMT19937
+random generator, converting the random data into various formats.  It
+provides methods for returning random integers of various sizes (short
+int, int, long int, etc.), for returning random integers in the
+semi-closed interval [0,\e n) and the closed interval [\e m,\e n].
+
+You can obtain uniform random reals at various precisions; these are
+defined by rounding a random number uniformly sampled in (0,1) and
+exactly rounding it (down, up, or nearest) to a subset of representable
+reals.  Thus Float() is the result of rounding a random number in (0,1)
+down to the nearest representable double.
+
+Boolean() returns true with probability 1/2.  Prob(\e x) returns true
+with probability \e x.  Prob(\e a, \e b) returns true with probability
+<i>a</i>/\e b.
+
+Bits<\e n>() returns \e n bits of randomness in a bitset<\e n>.
+
+In addition, Random provides facilities for setting seeds, for selecting
+a "random" seed, for saving and restoring its state, and for jumping the
+generator forwards and backwards.
+
+RandomLib::NormalDistribution and RandomLib::ExponentialDistribution are
+classes which sample from the normal and exponential distributions.
+RandomLib::RandomSelect selects from an arbitrary discrete distribution.
+
+Finally, RandomLib::RandomNumber provides support for infinite precision
+random numbers.  These are used by RandomLib::ExactExponential and
+RandomLib::ExactNormal which sample \e exactly from the exponential and
+normal distributions.  RandomLib::DiscreteNormal and
+RandomLib::DiscreteNormalAlt sample exactly from the discrete normal
+distribution (important in some applications in cryptography).
+
+Both 32-bit and 64-bit versions of MT19937 and SFMT19937 are provided
+with the 32-bit version of SFMT19937 being the default generator.  See
+\ref switch for a comparison between the various generators and how to
+change the default generator.
+
+%RandomLib depends on no external libraries (other than the standard C++
+library).  However, boost serialization can optionally be used for
+saving and restoring the state of the generator.  The example code for
+parallelization, RandomThread.cpp, uses OpenMP.
+
+My interest in random number generators extends back through much of my
+professional career in plasma physics, chaos theory, and computational
+chemistry.  I wrote a random number library for Fortran 77 and Fortran
+90 which implemented one of Knuth's recommended random number generators
+(see http://w3.pppl.gov/ntcc/RNG/).  With the current C++ random number
+library, I switched to a more robust underlying generator, SFMT19937,
+provided more flexible seeding options, and provided exact
+implementations for uniform real and integer distributions.
+
+Undoubtedly, bugs lurk in this code and in the documentation.  Please
+report any you find to charles@karney.com.
+
+<center>
+Forward to \ref install.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page install Installing %RandomLib
+
+<center>
+Back to \ref intro.  Forward to \ref start.  Up to \ref contents.
+</center>
+
+%RandomLib has been developed under Linux with the g++ compiler
+(versions 4.0 and later) and under Windows with MS Visual Studio 2005,
+2008, and 10 (2010), 11 (2012), and 12 (2013).  Earlier versions were
+tested also under Darwin and Solaris.  It should compile on a wide range
+of other systems.  First download either
+<a href="http://sourceforge.net/projects/randomlib/files/distrib/RandomLib-1.9.tar.gz">
+RandomLib-1.9.tar.gz</a> or
+<a href="http://sourceforge.net/projects/randomlib/files/distrib/RandomLib-1.9.zip">
+RandomLib-1.9.zip</a>.  Then pick one of the first three options below:
+- \ref cmake.  This is the preferred installation method as it will work
+  on the widest range of platforms.  However it requires that you have
+  <a href="http://www.cmake.org">cmake</a> installed.
+- \ref gnu.  This is a simple installation method that works with g++
+  and Gnu make on Linux and many Unix platforms.
+- \ref windows.  This is a simple installation method that works with
+  Visual Studio 2005 and 2008 under Windows.  Use cmake if you use
+  Visual Studio 2010.
+- \ref maintainer.  This describes addition tasks of interest only to
+  the maintainers of this code.
+
+The first installation method uses two important techniques which
+make software maintenance simpler
+- <b>Out-of-source builds:</b>  This means that you create a separate
+  directory for compiling the code.  In the description here the
+  directories are called BUILD and are located in the top-level of the
+  source tree.  You might want to use a suffix to denote the type of
+  build, e.g., BUILD-vc9 for Visual Studio 9, or BUILD-shared for a
+  build which creates a shared library.  The advantages of out-of-source
+  builds are:
+  - You don't mess up the source tree, so it's easy to "clean up".
+    Indeed the source tree might be on a read-only file system.
+  - Builds for multiple platforms or compilers don't interfere with each
+    other.
+- <b>The library is installed:</b> After compilation, there is a
+  separate <i>install</i> step which copies the headers, libraries, and
+  documentation to a "central" location.  You may at this point delete
+  the source and build directories.  If you have administrative
+  privileges, you can install %RandomLib for the use of all users (e.g.,
+  in /usr/local).  Otherwise, you can install it for your personal use
+  (e.g., in $HOME/packages).
+
+\section cmake Installation with cmake
+
+This is the recommended method of installation, however it requires that
+cmake be installed on your system.  This permits %RandomLib to be built
+either as a shared or a static library on a wide variety of systems.
+cmake can also determine the capabilities of your system and adjust
+the compilation of the libraries and examples appropriately.
+
+cmake is available for most computer platforms.  On Linux systems cmake
+will typically one of the standard packages and can be installed by a
+command like \verbatim
+  yum install cmake \endverbatim
+(executed as root).  On other systems, download a binary
+installer from http://www.cmake.org click on download, and save and run
+the appropriate installer.  Run the cmake command with no arguments to
+get help.  Other useful tools are ccmake and cmake-gui which offer
+curses and graphical interfaces to cmake.  Building under cmake depends
+on whether it is targeting an IDE (interactive development environment)
+or generating Unix-style makefiles.  The instructions below have been
+tested with makefiles and g++ on Linux and with the Visual Studio IDE on
+Windows.
+
+Here are the steps to compile and install %RandomLib:
+- Unpack the source, running one of \verbatim
+  tar xfpz RandomLib-1.9.tar.gz
+  unzip -q RandomLib-1.9.zip \endverbatim
+  then enter the directory created \verbatim
+  cd RandomLib-1.9 \endverbatim
+- Create a separate build directory and enter it, for example, \verbatim
+  mkdir BUILD
+  cd BUILD \endverbatim
+- Run cmake, pointing it to the source directory (..).  On Linux, Unix,
+  and MacOSX systems, the command is \verbatim
+  cmake .. \endverbatim
+  For Windows, the command is typically one of \verbatim
+  cmake -G "Visual Studio 10" -D CMAKE_INSTALL_PREFIX=C:/pkg-vc10/RandomLib ..
+  cmake -G "Visual Studio 9 2008" -D CMAKE_INSTALL_PREFIX=C:/pkg-vc9/RandomLib ..
+  \endverbatim
+  The definitions of CMAKE_INSTALL_PREFIX are optional (see below).  The
+  settings given above are recommended to keep versions of %RandomLib
+  built with different versions of the compiler separate.  If you need
+  to rerun cmake, use \verbatim
+  cmake . \endverbatim
+  possibly including some options via <code>-D</code> (see the next step).
+- cmake allows you to configure how %RandomLib is built and installed by
+  supplying options, for example \verbatim
+  cmake -D CMAKE_INSTALL_PREFIX=/tmp/random . \endverbatim
+  The options you might need to change are
+  - <code>COMMON_INSTALL_PATH</code> governs the installation
+    convention.  If it is on ON (the Linux default), the installation
+    is to a common directory, e.g., /usr/local.  If it is OFF (the
+    Windows default), the installation directory contains the package
+    name, e.g., C:/pkg/RandomLib-1.9.  The installation directories for
+    the documentation and cmake configuration depend on the variable
+    with deeper paths relative to CMAKE_INSTALL_PREFIX being used when
+    it's ON:
+    - documentation: OFF: doc/html; ON: share/doc/RandomLib/html;
+    - cmake configuration: OFF cmake; ON: share/cmake/RandomLib;
+    .
+  - <code>CMAKE_INSTALL_PREFIX</code> (default: <code>/usr/local</code>
+    on non-Windows systems, <code>C:/Program Files/RandomLib</code> on
+    Windows systems) specifies where the library will be installed.  For
+    windows systems, it is recommended to use a prefix which includes
+    the compiler version, as shown above (and also, possibly, whether
+    this is a 64-bit build, e.g., <code>cmake -G "Visual Studio 10
+    Win64" -D CMAKE_INSTALL_PREFIX=C:/pkg-vc10-x64/RandomLib ..</code>)
+    If you just want to try the library to see if it suits your needs,
+    pick <code>CMAKE_INSTALL_PREFIX</code>=/tmp/random, for example.
+  - <code>RANDOMLIB_LIB_TYPE</code> (allowed values: SHARED, STATIC, or
+    BOTH), specifies the types of libraries build.  If %RandomLib is
+    built and installed with <code>RANDOMLIB_LIB_TYPE</code>=BOTH (the
+    default), then two libraries are available as
+    <code>${RandomLib_SHARED_LIBRARIES}</code> and
+    <code>${RandomLib_STATIC_LIBRARIES}</code>.
+  - <code>DISABLE_VECTOR_OPTIMIZATIONS</code> (default:
+    OFF).  cmake determines whether your computer supports
+    vector instructions (SSE2 for Intel or AltiVec for PowerPC).
+    However if you expect to copy the library and executables which link
+    to the library to a platform which does not support these
+    instructions, then you'll need to set this flag to ON.
+  - <code>DISABLE_BOOST</code> (default: OFF).  The boost
+    library is used (optionally) by some of the example programs.
+    Usually, it's OK to let cmake look for the library.  However,
+    sometimes it finds a version of boost which is incompatible with
+    your compiler; in this case, set the flag to ON.
+  - <code>CMAKE_BUILD_TYPE</code> (default: Release).  This
+    flags only affects non-IDE compile environments (like make and g++).
+    The default is actually blank, but this is treated as
+    Release.  Choose one of
+    \verbatim
+    Debug
+    Release
+    RelWithDebInfo
+    MinSizeRel
+    \endverbatim
+    (With IDE compile environments, you get to select the build type in
+    the IDE.)
+  - <code>RANDOMLIB_DOCUMENTATION</code> (default: OFF).  If set to ON,
+    then html documentation is created from the source files, provided a
+    sufficiently recent version of doxygen can be found.  Otherwise, the
+    html documentation will redirect to the appropriate version of the
+    online documentation.
+- Build and install the software.  In non-IDE environments, run
+  \verbatim
+  make         # compile the library and the examples
+  make test    # run some tests
+  make install # as root, if CMAKE_INSTALL_PREFIX is a system directory
+  \endverbatim
+  On IDE environments, run your IDE (e.g., Visual Studio), load
+  RandomLib.sln, pick the build type (e.g., Release), and select
+  "Build Solution".  If this succeeds, select "RUN_TESTS" to build;
+  finally, select "INSTALL" to install (RUN_TESTS and INSTALL are in
+  the CMakePredefinedTargets folder).  Alternatively, you run the
+  Visual Studio compiler from the command line with \verbatim
+  cmake --build . --config Release --target ALL_BUILD
+  cmake --build . --config Release --target RUN_TESTS
+  cmake --build . --config Release --target INSTALL \endverbatim
+  For maximum flexibility, it's a good idea to build and install both
+  the Debug and Release versions of the library (in that order).  If you
+  use cmake to configure and build your programs, then the right version
+  of the library (debug vs. release) will automatically be used.
+- The headers and library are installed in the
+  include/RandomLib and lib directories under
+  <code>CMAKE_INSTALL_PREFIX</code>.  (dll dynamic libraries are
+  installed in bin.)  For documentation, open
+  <a href="index.html">
+  share/doc/RandomLib/html/index.html</a> in a web browser.
+
+\section gnu Installation with GNU compiler and Make
+
+This method requires the standard GNU suite of tools, in particular make
+and g++.  This builds a static library and the examples.
+
+Here are the steps to compile and install %RandomLib:
+- Unpack the source, running \verbatim
+  tar xfpz RandomLib-1.9.tar.gz \endverbatim
+  then enter the directory created \verbatim
+  cd RandomLib-1.9 \endverbatim
+- Edit \verbatim
+  include/RandomLib/Config.h \endverbatim
+  If you are using a moderately new Intel processor include the line
+  \code
+  #define HAVE_SSE2 1 \endcode
+  If you are using a moderately new Power PC include the line
+  \code
+  #define HAVE_ALTIVEC 1 \endcode
+  %RandomLib will build and run fine with neither of these lines; it'll
+  just run somewhat slower.  If your C++ compiler does not recognize the
+  long double type (unlikely), insert \code
+  #undef HAVE_LONG_DOUBLE \endcode
+- Build and install the software: \verbatim
+  make             # compile the library and the examples
+  make install     # as root \endverbatim
+  If you have boost installed, then running the first command as
+  \verbatim
+  make HAVE_BOOST_SERIALIZATION=1 \endverbatim
+  will include boost-specific code in the example
+  RandomSave.cpp.  The parallelization example RandomThread.cpp will be
+  compiled using OpenMP by default.  To turn this <i>off</i> use \verbatim
+  make HAVE_OPENMP=0 \endverbatim
+  The installation is in directories under /usr/local.  You can specify a
+  different installation directory with, for example,
+  \verbatim
+  make PREFIX=/tmp/random install \endverbatim
+- The headers and library are installed in the
+  include/RandomLib and lib directories under
+  <code>PREFIX</code>.  For documentation, open
+  <a href="index.html">
+  share/doc/RandomLib/html/index.html</a> in a web browser.
+
+\section windows Installation on Windows
+
+This method requires Visual Studio 2008 (or 2005).  This builds a static
+library and the examples.  If you only have Visual Studio 2010, use
+cmake to create the necessary solution file.  %RandomLib does not
+compile correctly with Visual Studio 2003.
+- Unpack the source, running \verbatim
+  unzip -q RandomLib-1.9.zip \endverbatim
+  then enter the directory created \verbatim
+  cd RandomLib-1.9 \endverbatim
+- Edit \verbatim
+  include/RandomLib/Config.h \endverbatim
+  If you are using a moderately new Intel processor include the line
+  \code
+  #define HAVE_SSE2 1 \endcode
+  %RandomLib will build and run fine without this line; it'll
+  just run somewhat slower.
+- Open windows/RandomLib-vc9.sln in Visual Studio 2008
+  (for Visual Studio 2005, replace -vc9 by -vc8).
+- Pick the build type (e.g., Release), and select "Build
+  Solution".
+- The library and the compiled examples are in the
+  windows/Release.
+- Copy the library windows/Release/RandomLib.lib and the
+  headers in include/RandomLib somewhere convenient.  The
+  headers should remain in a directory named %RandomLib.
+  For documentation, open
+  <a href="index.html">doc/html/index.html</a> in a web
+  browser.
+
+\section maintainer Maintainer tasks
+
+Check the code out of git with \verbatim
+  git clone -b master git://git.code.sf.net/p/randomlib/code randomlib
+\endverbatim
+Here the "master" branch is checked out.  There are three branches in
+the git repository:
+- <b>master</b>: the main branch for code maintenance.  Releases are
+  tagged on this branch as, e.g., v1.9.
+- <b>devel</b>: the development branch; changes made here are merged
+  into master.
+- <b>release</b>: the release branch created by unpacking the source
+  releases (git is \e not used to merge changes from the other
+  branches into this branch).  This is the \e default branch of the
+  repository (the branch you get if cloning the repository without
+  specifying a branch).  This differs from the master branch in that
+  some administrative files are excluded while some intermediate files
+  are included (in order to aid building on as many platforms as
+  possible).  Releases are tagged on this branch as, e.g., r1.9.
+.
+In order to build a source distribution, configure with cmake and then
+run \verbatim
+  make dist \endverbatim
+which will package the source tree for distribution as \verbatim
+  RandomLib-1.9.tar.gz
+  RandomLib-1.9.zip \endverbatim
+Finally, \verbatim
+  make package \endverbatim
+or building PACKAGE in Visual Studio will create a binary installer for
+%RandomLib.  For Windows, this requires in the installation of
+<a href="http://nsis.sourceforge.net">NSIS</a>.  On Windows, you should
+configure %RandomLib with <code>PACKAGE_DEBUG_LIBS</code>=ON, build both
+Release and Debug versions of the library and finally build PACKAGE in
+Release mode.  This will get the release and debug versions of the
+library included in the package.  (This has not been tested to any extent.
+Presumably people using %RandomLib will be able to build it from the
+source.)
+
+The script tests/test-distribution checks out the source from git,
+verifies that it builds correctly and prepares the release packages.
+
+<center>
+Back to \ref intro.  Forward to \ref start.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page start Getting started
+
+<center>
+Back to \ref install.  Forward to \ref organization.  Up to \ref contents.
+</center>
+
+Look at the code in the examples directory of the distribution for
+samples of code using %RandomLib.  In particular see RandomExample.cpp
+which illustrates several uses of random numbers and RandomCoverage.cpp
+while illustrates the calling sequence of many of the functions of
+%RandomLib.  Both these programs are compiled by default; see \ref
+install for details
+
+In order to use %RandomLib, you will need to
+- Include the header files for %RandomLib in your code.  For basic
+  random numbers, you will need \code
+  #include <RandomLib/Random.hpp> \endcode
+  If you are sampling from the normal distribution, for example,
+  you will also need \code
+  #include <RandomLib/NormalDistribution.hpp> \endcode
+- Include the RandomLib:: namespace prefix to the %RandomLib classes,
+  or include \code
+  using namespace RandomLib; \endcode
+  in your code.
+- Finally compile and link your code.  You have two options here.
+  - Use cmake to build your package.  If you are familiar with cmake
+    this typically will be far the simplest option.
+  - Set the include paths and linking options "manually".
+- Building your code with cmake.  In brief, the necessary steps are:
+  - include in your CMakeLists.txt files \verbatim
+    find_package (RandomLib 1.9 REQUIRED)
+    include_directories (${RandomLib_INCLUDE_DIRS})
+    add_definitions (${RandomLib_DEFINITIONS})
+    add_executable (program source1.cpp source2.cpp)
+    target_link_libraries (program ${RandomLib_LIBRARIES}) \endverbatim
+    (The <code>add_definitions</code> line is only needed for Windows
+    and can be omitted if you're using cmake version 2.8.11 or later.)
+  - configure your package, e.g., with \verbatim
+    mkdir BUILD
+    cd BUILD
+    cmake -G "Visual Studio 10" \
+      -D CMAKE_PREFIX_PATH=C:/pkg-vc10 \
+      -D CMAKE_PREFIX_PATH=C:/pkg-vc10/testrandom \
+      .. \endverbatim
+    Note that you almost always want to configure and build your code
+    somewhere other than the source directory (in this case, we use the
+    BUILD subdirectory).
+  - build your package.  On Linux and MacOS this usually involves just
+    running make.  On Windows, you can load the solution file created by
+    cmake into Visual Studio; alternatively, you can get cmake to run
+    build your code with \verbatim
+    cmake --build . --config Release --target ALL_BUILD \endverbatim
+    You might also want to install your package (using "make install" or
+    build the "INSTALL" target with the command above).
+  .
+  The most import step is the find_package command.  The cmake
+  documentation describes the locations searched by find_package (the
+  appropriate rule for %RandomLib are those for "Config" mode lookups).
+  In brief, the locations that are searched are (from least specific to
+  most specific, i.e., in <i>reverse</i> order) are
+  - under the system paths, i.e., locations such as <code>C:/Program
+    Files</code> and <code>/usr/local</code>);
+  - frequently, it's necessary to search within a "package directory"
+    (or set of directories) for external dependencies; this is given by
+    a (semicolon separated) list of directories specified by the cmake
+    variable <code>CMAKE_PREFIX_PATH</code> (illustrated above);
+  - the package directory for %RandomLib can be overridden with the
+    <i>environment variable</i> <code>RandomLib_DIR</code> (which is the
+    directory under which %RandomLib is installed);
+  - finally, if you need to point to a particular build of %RandomLib,
+    define the <i>cmake variable</i> <code>RandomLib_DIR</code>, which
+    specifies the directory containing the configuration file
+    <code>randomlib-config.cmake</code> (for debugging this may be the
+    top-level <i>build</i> directory, as opposed to <i>installation</i>
+    directory, for %RandomLib).
+  .
+  Typically, specifying nothing or <code>CMAKE_PREFIX_PATH</code>
+  suffices.  However the two <code>RandomLib_DIR</code> variables allow
+  for a specific version to be chosen.  On Windows systems (with Visual
+  Studio), find_package will only find versions of %RandomLib built with
+  the right version of the compiler.  (If you used a non-cmake method of
+  installing %RandomLib, you can try copying cmake/FindRandomLib.cmake
+  to somewhere in your <code>CMAKE_MODULE_PATH</code> in order for
+  find_package to work.  However, this method has not been thoroughly
+  tested.)
+
+  If %RandomLib is found, then the following cmake variables are set:
+  - <code>RandomLib_FOUND</code> = 1
+  - <code>RandomLib_VERSION</code> = 1.9
+  - <code>RandomLib_INCLUDE_DIRS</code>
+  - <code>RandomLib_LIBRARIES</code> = one of the following two:
+  - <code>RandomLib_SHARED_LIBRARIES</code> = RandomLib
+  - <code>RandomLib_STATIC_LIBRARIES</code> = RandomLib_STATIC
+  - <code>RandomLib_DEFINITIONS</code> = one of the following two:
+  - <code>RandomLib_SHARED_DEFINITIONS</code> = -DRANDOMLIB_SHARED_LIB=1
+  - <code>RandomLib_STATIC_DEFINITIONS</code> = -DRANDOMLIB_SHARED_LIB=0
+  - <code>RandomLib_LIBRARY_DIRS</code>
+  - <code>RandomLib_BINARY_DIRS</code>
+  .
+  Either of <code>RandomLib_SHARED_LIBRARIES</code> or
+  <code>RandomLib_STATIC_LIBRARIES</code> may be empty, if that version
+  of the library is unavailable.  If you require a specific version,
+  SHARED or STATIC, of the library, add a <code>COMPONENTS</code> clause
+  to find_package, e.g.,
+  \verbatim
+    find_package (RandomLib 1.9 REQUIRED COMPONENTS SHARED) \endverbatim
+  causes only packages which include the shared library to be found.  If
+  the package includes both versions of the library, then
+  <code>RandomLib_LIBRARIES</code> and
+  <code>RandomLib_DEFINITIONS</code> are set to the shared versions,
+  unless you include \verbatim
+    set (RandomLib_USE_STATIC_LIBS ON) \endverbatim
+  <i>before</i> the find_package command.  You can check whether
+  <code>RandomLib_LIBRARIES</code> refers to the shared or static
+  library with \verbatim
+    get_target_property(_LIBTYPE ${RandomLib_LIBRARIES} TYPE) \endverbatim
+  which results in <code>_LIBTYPE</code> being set to
+  <code>SHARED_LIBRARY</code> or <code>STATIC_LIBRARY</code>.
+  On Windows, cmake takes care of linking to the release or debug
+  version of the library as appropriate.  (This assumes that the Release
+  and Debug versions of the libraries were built and installed.  This is
+  true for the Windows binary installer for %RandomLib version 1.9 and
+  later.)
+- Here are the steps to compile and link your code using %RandomLib
+  "manually".
+  - Tell the compiler where to find the header files.  With g++ and with
+    /usr/local specified as the installation directory,
+    this is accomplished with \verbatim
+    g++ -c -g -O3 -funroll-loops -I/usr/local/include testprogram.cpp
+    \endverbatim
+    With Visual Studio, specify the include directory in the IDE via,
+    e.g.,
+    \verbatim
+    C/C++ -> General -> Additional Include Directories = C:\pkg-vc10\RandomLib\include
+    \endverbatim
+  - If using the shared (or static) library with Visual Studio, define
+    the macro <code>RANDOMLIB_SHARED_LIB=1</code> (or
+    <code>0</code>), e.g.,
+    \verbatim
+    C/C++ -> Preprocessor -> Preprocessor Definitions = RANDOMLIB_SHARED_LIB=1
+    \endverbatim
+    This is only needed for Windows systems.  (If you configure your
+    package with cmake, this definition is added automatically.)
+  - Tell the linker the name, Random, and location of the
+    library.  Using g++ as the linker, you would use \verbatim
+    g++ -g -o testprogram testprogram.o -L/usr/local/lib -lRandom
+    \endverbatim
+    With Visual Studio, you supply this information in the IDE via,
+    e.g., \verbatim
+    Linker -> Input -> Additional Dependencies = Random-i.lib (for shared library)
+    Linker -> Input -> Additional Dependencies = Random.lib (for static library)
+    Linker -> General -> Additional Library Directories = C:\pkg-vc10\RandomLib\lib
+    \endverbatim
+    Note that the library name is <b>Random</b> and not
+    %RandomLib.  For the Debug version of your program add "_d" to
+    the library, e.g., Random_d-i.lib or Random_d.lib.
+  - Tell the runtime environment where to find the shared library
+    (assuming you compiled %RandomLib as a shared library).  With g++,
+    this is accomplished by modifying the link line above to read \verbatim
+    g++ -g -o testprogram testprogram.o -Wl,-rpath=/usr/local/lib \
+      -L/usr/local/lib -lRandom
+    \endverbatim
+    (There are two other ways to specify the location of shared libraries
+    at runtime: (1) define the environment variable
+    <code>LD_LIBRARY_PATH</code> to be a colon-separated list of
+    directories to search; (2) as <b>root</b>, specify /usr/local/lib as a
+    directory searched by ldconfig(8).)  On Windows, you need to ensure
+    that Random.dll or Random_d.dll is in the same directory as
+    your executable or else include the directory containing the dll in
+    your <code>PATH</code>.
+
+The following gives a quick idea of the capabilities of the library.
+Note that the classes are all defined in the RandomLib namespace.
+\code
+  #include <RandomLib/Random.hpp>
+
+  unsigned u; unsigned long long l;
+  float f; double d; long double e; bool b;
+  RandomLib::Random r;        // create random number object
+  r.Reseed();                 // seed with a "unique" seed
+  std::cout << "Using " << r.Name() << "\n"
+            << "with seed " << r.SeedString() << "\n";
+
+  f = r.FixedU<float>();      // result in (0,1] with 24 bits of randomness
+  d = r.Fixed();              // result in [0,1) with 53 bits of randomness
+  e = r.FixedN<long double>(); // result in [0,1] with 64 bits of randomness
+  d = r.FloatN();   // a random in [0,1] rounded to the nearest double
+  u = r.Integer();            // a random unsigned in [0,2^32)
+  l = r.Integer<unsigned long long>(); // a random unsigned long long
+  u = r.Integer<16>();        // a random unsigned in [0,2^16)
+  u = r.Integer(52U);         // a random unsigned in [0,52)
+  u = r(52);     // the same, enables passing r to std::random_shuffle
+  u = r.IntegerC(1,6);        // a random integer in [1,6]
+  b = r.Boolean();            // true with prob 1/2
+  b = r.Prob(4, 7);           // true with prob 4/7
+  b = r.Prob(0.34);           // true with prob 0.34
+
+  #include <RandomLib/NormalDistribution.hpp>
+
+  RandomLib::NormalDistribution<> g;
+  d = g(r);                   // sample from normal distribution
+
+  #include <RandomLib/ExponentialDistribution.hpp>
+
+  RandomLib::ExponentialDistribution<> x;
+  d = x(r);                   // sample from exponential distribution
+\endcode
+
+Here is a complete example, RandomExample.cpp.
+
+\include RandomExample.cpp
+
+Typical output from this program is:
+\verbatim
+Using RandomEngine<SFMT19937<Random_u32>,MixerSFMT>
+with seed [273392,1301667572,964,562213576,2011]
+Estimate pi = 3.1316
+Tossing a coin 20 times: HHTHHHHTHTTHTTTHHTTT
+Generate 20 random bits: 10110101000101001001
+Throwing a pair of dice 15 times: 3 4 6 5 3 10 8 6 7 7 3 6 12 6 9
+A different way of throwing dice: 4 8 10 6 4 9 5 2 5 7 7 6 7 6 3
+Draw balls from urn containing 5 red and 5 white balls: RWWWWRWRRR
+Shuffling the letters a..z: ibsymngwpcakhujqvdlrtexzfo
+Estimate mean and variance of normal distribution: -0.00648971, 0.981155
+Some low precision reals (1/16): 0.6875 0 0.5625 0.125 0
+Used 94637 random numbers
+Self test of RandomEngine<MT19937<Random_u32>,MixerSFMT> passed
+Self test of RandomEngine<MT19937<Random_u64>,MixerSFMT> passed
+Self test of RandomEngine<SFMT19937<Random_u32>,MixerSFMT> passed
+Self test of RandomEngine<SFMT19937<Random_u64>,MixerSFMT> passed
+\endverbatim
+
+Here is a complete CMakeList.txt files you can use to build this test
+code using the installed library: \verbatim
+project (RandomExample)
+cmake_minimum_required (VERSION 2.8.4)
+
+find_package (RandomLib 1.9 REQUIRED)
+
+if (NOT MSVC)
+  set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif ()
+
+include_directories (${RandomLib_INCLUDE_DIRS})
+add_definitions (${RandomLib_DEFINITIONS})
+add_executable (${PROJECT_NAME} RandomExample.cpp)
+target_link_libraries (${PROJECT_NAME} ${RandomLib_LIBRARIES})
+
+if (MSVC)
+  get_target_property (_LIBTYPE ${RandomLib_LIBRARIES} TYPE)
+  if (_LIBTYPE STREQUAL "SHARED_LIBRARY")
+    # On Windows systems, copy the shared library to build directory
+    add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+    copy $<TARGET_FILE:${RandomLib_LIBRARIES}> ${CMAKE_CFG_INTDIR}
+    COMMENT "Copying shared library for RandomLib")
+  endif ()
+endif () \endverbatim
+
+Certain macros can change the behavior of %RandomLib.  Define these
+before the inclusion of RandomLib/Random.hpp in your
+code.  The macros are
+- <code>\#define HAVE_BOOST_SERIALIZATION 1</code>\n
+  allows boost serialization to be used to save and
+  restore the random number state.  See \ref save.
+- <code>\#define RANDOMLIB_DEFAULT_GENERATOR</code> \e name \n
+  changes the random number generator used for
+  RandomLib::Random (and
+  RandomLib::RandomGenerator).  \e name should
+  be one of \verbatim
+  MRandomGenerator32
+  MRandomGenerator64
+  SRandomGenerator32 (default if unset)
+  SRandomGenerator64 \endverbatim
+  The SRandomGeneratorNN generators are recommended.  See
+  \ref switch.
+
+<center>
+Back to \ref install.  Forward to \ref organization.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page organization Code organization
+
+<center>
+Back to \ref start.  Forward to \ref seeds.  Up to \ref contents.
+</center>
+
+Random manipulates the data arrays, the seed and the state.  These are
+managed by the following classes, which are all defined in the RandomLib
+namespace:
+
+ - RandomSeed.  This provides low-level facilities for changing and
+   reporting the seed.
+
+ - RandomEngine<Algorithm, Mixer>. This is derived from RandomSeed.  This
+   provides facilities for managing the state, returning the next random
+   number, stepping the state, saving and restoring the state and the
+   seed.  It uses two classes specified as template parameters Algorithm
+   and Mixer.  These classes contain no state and are invoked through
+   static methods.
+     - Algorithm.  This provides a mechanism for producing the next batch
+       of state given the current state.  This is what most people
+       understand by a random number algorithm.  In addition, it
+       provides a facility to convert an arbitrary state (as given by
+       Mixer) into a legal state and to "temper" the state immediately
+       prior to being returned by RandomEngine.  This package provides
+       definitions of the following Algorithms
+         - MT19937<Random_u32> -- 32-bit version of MT19937
+         - MT19937<Random_u64> -- 64-bit version of MT19937
+         - SFMT19937<Random_u32> -- 32-bit version of SFMT19937
+         - SFMT19937<Random_u64> -- 64-bit version of SFMT19937
+     - Mixer.  This converts the current seed into an initial state by
+       some suitable mixing procedure.  For more details see \ref seeds.
+       This package provides the following definitions of the following
+       Mixers:
+         - MixerMT0<Random_u32> -- init_by_array from 32-bit version of
+           MT19937
+         - MixerMT0<Random_u64> -- init_by_array from 64-bit version of
+           MT19937
+         - MixerMT1<Random_u32> -- improved version of
+           MixerMT0<Random_u32>
+         - MixerMT1<Random_u64> -- improved version of
+           MixerMT0<Random_u64>
+         - MixerSFMT -- init_by_array from SFMT19937
+         .
+       only MixerSFMT is recommended for production use.
+
+ - RandomGenerator is defined by\code
+   typedef RandomEngine<SFMT19937<Random_u32>, MixerSFMT> RandomGenerator;
+   \endcode
+   This is the standard user interface for accessing the random number
+   generator to provide random numbers in 32-bit and 64-bit chunks.  See
+   \ref switch for how to access the MT19937 generator or the 64-bit
+   versions of these generators.
+
+ - RandomCanonical.  This accepts a random generator as a template
+   parameter and is a derived class of that generator.  RandomCanonical
+   converts the random bits from the underlying generator into usable
+   data: integers in specific ranges, real numbers at various
+   resolutions, etc.
+
+ - Random is defined by\code
+   typedef RandomCanonical<RandomGenerator> Random; \endcode
+
+ - RandomType is a utility template class which is used to couple a
+   bit-width and an unsigned C++ type.  The following typedefs are
+   included \code
+   typedef RandomType<32, uint32_t> Random_u32;
+   typedef RandomType<64, uint64_t> Random_u64; \endcode
+
+For most purposes, users should ignore the existence of RandomSeed,
+RandomEngine, RandomGenerator, and RandomCanonical and access all the
+capabilities of these classes via thru the class RandomLib::Random which
+inherits all the needed functionality of its base classes.  This
+documentation reflects this recommendation.  (In restricted
+applications, a user might wish to interface to the library via the
+lower-level RandomGenerator class as a source of random words.)
+
+Unfortunately the relation between this classes is sufficiently
+complicated to defeat doxygen's indexing capabilities; if you need to
+look up the definition of one of Random's member functions, you can
+refer to the brief index in \ref function.
+
+Finally, distributions such as the normal and exponential distribution
+are provided by the classes RandomLib::NormalDistribution and
+RandomLib::ExponentialDistribution.  They access the random data by
+being passed a Random object as an argument to operator().
+
+Several errors in using %RandomLib are caught at compile time.  Runtime
+errors are signaled by throwing RandomLib::RandomErr exceptions with a
+explanatory message.
+
+%RandomLib includes facilities for sampling from the uniform,
+exponential, and normal distributions using
+<a href="http://www.mpfr.org"> MPFR</a> (version 3.0 and later).  These
+are a header-only interface (the header names all being with "MPFR")
+which use MPFR's random number generator and may be used apart from the
+rest of %RandomLib.  MPFRExample.cpp illustrates their use.  See \ref
+mpfr for more information.
+
+These routines have been developed and tested with g++ version 4.x under
+Linux 2.6.x on 32-bit and 64-bit Intel and 64-bit AMD CPUs, MS Visual
+Studio 2005 and 2008, under Windows.  Earlier versions of this library
+were tested with g++ under Darwin on a PowerPC and under Solaris on
+64-bit SPARC platforms.  Porting to other platforms with a standard C++
+compiler and template library should be straightforward provided that
+the radix for integer and real types is 2.
+
+A note about portability.  For the most part, the code uses standard
+C++.  System dependencies creep into the computation of SeedVector and
+SeedWord (e.g., to access the PID and the high-precision clock).  In
+addition, it's assumed that unsigned integers can be cast into signed
+integers preserving the bit pattern (assuming a twos-complement
+convention for signed numbers).  Visual Studio 2005, 2008, 2010
+compiling for a 32-bit machines have a bug in their standard template
+library implementations which prevent you from creating vectors of
+SFMT19937 generators if they are compiled with SSE2 instructions (via
+HAVE_SSE2); this prevents you from using, for example, a std::vector to
+hold such objects.  To circumvent this bug you will need to create your
+own containers which call new and delete explicitly.  (%RandomLib
+includes new and new[] operators for SFMT19937 which return correctly
+aligned blocks of memory.)  See RandomThread.cpp for an example of a
+simple fixed-size container.
+
+<center>
+Back to \ref start.  Forward to \ref seeds.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page seeds The seed
+
+<center>
+Back to \ref organization.  Forward to \ref integer.  Up to \ref contents.
+</center>
+
+The state of MT19937 is given by a set of 19937 bits.  (The discussion
+here is illustrated with the MT19937 generator.  The properties of the
+SFMT19937 generator are similar.)  Over the course of the period of the
+generator all possible states are visited.  (The state consisting of all
+zeros is disallowed.)  Thus the sequence consists of
+<i>X</i><sub><i>i</i></sub> where <i>X</i><sub><i>i</i> + <i>L</i></sub>
+= <i>X</i><sub><i>i</i></sub> and \e L = 2<sup>19937</sup> &minus; 1.
+When using the generator we need to specify a starting state \e j so
+that the sequence is then <i>Y</i><sub><i>i</i>; <i>j</i></sub> =
+<i>X</i><sub><i>j</i> + <i>i</i></sub>.
+
+However, rather than specified an unwieldy set of 19937 bits, we instead
+specify a vector \e s of 32-bit integers.  The length of \e s is
+arbitrary (it can even be zero), however in most applications, its
+length will be small---often a length of 1 provides sufficient "seed
+space".  The process of seeding MT19937 consists of "mixing" the \e s in
+some way to provide the necessary starting state \e j.  Thus the random
+sequence is now viewed as <i>Z</i><sub><i>i</i>; <i>s</i></sub> =
+<i>Y</i><sub><i>i</i>; <i>j</i>(<i>s</i>)</sub> =
+<i>X</i><sub><i>j</i>(<i>s</i>) + <i>i</i></sub>.
+
+Now the user's view of a typical random number generator is that
+<i>Z</i><sub><i>i</i>; <i>s</i></sub> and <i>Z</i><sub><i>i</i>;
+<i>s</i>'</sub> are \e independent provided \e s and \e s' are distinct.
+A necessary condition for independence is that |\e j(\e s) &minus; \e
+j(\e s')| > \e R where \e R is the maximum number of random numbers
+needed for a particular seed.  If we assume that the seeding function \e
+j(\e s) produces randomly distributed starting positions and if maximum
+number of seeds we might use is \e S, then the probability of
+overlapping sequences, i.e., that |\e j(\e s) &minus; \e j(\e s')| < \e
+R for some \e s and \e s' is \e S<sup>2</sup>\e R / \e L.
+
+Suppose we take \e R = 10<sup>200</sup> and \e S = 10<sup>100</sup>,
+then the probability of overlap is a tiny 10<sup>&minus;5600</sup>.  (On
+the other hand with rand() for which the period \e L is 2<sup>32</sup>,
+we have an appreciable probability of overlap with \e R = 2000 and \e S
+= 1000.)  This means that we can safely assume that the sequences
+<i>Z</i><sub><i>i</i>; <i>s</i></sub> are independent and this then
+means that from the user's perspective the most useful representation of
+the state of the generator is [\e i, \e s] which is given by [Count(),
+Seed()].
+
+It's frequently desirable to start each run of a code with a different
+"arbitrary" seed.  The current time (in seconds) is frequently used for
+this purpose.  However, if many runs are started simultaneously, many are
+likely to use the same seed.  Random::SeedWord() can instead be called.
+This returns an unsigned long generated from various sources
+(/dev/urandom, the microsecond clock, etc.).
+
+Because Random::SeedWord() returns a result in [0, 2<sup>32</sup>),
+there's a strong probability of collisions after 2<sup>16</sup>
+invocations.  If you expect that your code will be invoked more often
+than that, then instead use Random::SeedVector() to seed the generator.
+This returns a vector of unsigned longs which is almost certainly
+unique.  However successive calls to Random::SeedVector() may return the
+same result.  If multiple random number sequences are required, for
+example in a multi-threaded application, then Random::SeedVector() can
+be called once by the master thread to define a master seed and each
+slave thread would set its seed to a vector obtained by appending a
+thread index to the master seed.  The default constructor
+for Random sets the seed to the vector [Random::SeedVector()].
+
+Whenever random numbers are used it is important to record the seed
+used.  Without this information, it will be impossible to repeated
+(e.g., to track down a bug).  Random::SeedString() returns
+the seed vector as a string allowing it to be printed on standard
+output easily.  Thus
+\code
+  RandomLib::Random r;
+  r.Reseed();            // sets seed to [Random::SeedVector()]
+  std::cout << "Random seed set to " << r.SeedString() << \n";
+\endcode
+
+The seed may be set with the constructor as follows:
+\code
+  using RandomLib::Random;
+  Random r1;                  // set seed to []
+  Random r2(1234);            // set seed to [1234]
+  Random r3("[1,2,3,4]");     // set seed to [1,2,3,4]
+  unsigned v[] = {1,2,3,4};
+  Random r4(v, v+4);          // seed set via iterators
+  Random r5(std::vector<unsigned>(v, v+4)); // seed set via vector
+  Random r6(Random::SeedWord());            // use a "random" integer seed
+  Random r7(Random::SeedVector());          // use a "unique" vector seed
+\endcode
+After a random object is created, you can change its seed with
+Reseed(...) with
+\code
+  using RandomLib::Random;
+  Random r;                   // created with seed []
+  r.Reseed();                 // use a "unique" vector seed
+  r.Reseed(1234);             // set seed to [1234]
+  r.Reseed("[1,2,3,4]");      // set seed to [1,2,3,4]
+  unsigned v[] = {1,2,3,4};
+  r.Reseed(v, v+4);           // seed set via iterators
+  r.Reseed(std::vector<unsigned>(v, v+4)); // seed set via vector
+  r.Reseed(Random::SeedWord());            // use a "random" integer seed
+  r.Reseed(Random::SeedVector());          // same as r.Reseed()
+  r.Reseed(std::vector<unsigned>(0));      // set seed to []
+\endcode
+Tools are provided to convert between the string and vector
+representations of a seed \code
+  using RandomLib::Random;
+  std::vector<unsigned long> seed(Random::StringToVector("[1,2,3,4]");
+  std::cout << Random::VectorToString(seed) << "\n";
+\endcode
+
+The original C interface for the Mersenne Twister provided two
+seed-setting interfaces: (a) init_genrand, which took a single unsigned
+long as argument and (b) init_by_array, which took an array (length > 0)
+of unsigned longs as an argument.  Thus, the set of allowed seeds was
+{\e a, [\e a], [\e a, \e b], [\e a, \e b, \e c], ...}, where \e a and
+[\e a] were distinct.  But this then presents a confusing interface to
+the user.  In addition, it's not clear how best to report back the seed
+to the user.
+
+In this implementation, seeds are always vectors (of arbitrary length,
+including zero).  Thus the set of allowable seeds is {[], [\e a], [\e a,
+\e b], [\e a, \e b, \e c], ...}  which is easily and unambiguously
+represented by the STL vector container.  Note also that [], [0], [0,
+0], etc. are all distinct as are [\e a], [\e a, 0], [\e a, 0, 0].
+Seeding with Reseed(\e n) merely sets the seed to a vector of length
+one, [\e n].
+
+Also, since the init_by_array routine in the original MT19937
+implementation has some weaknesses (the most serious of which is
+distinct short seeds can result in the same state, this library uses, by
+default, SFMT's method for mixing the seed into the random generator
+state.  (This method has been adopted by the proposed C++11 standard,
+see
+<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2461.pdf">
+P. Becker, Working Draft, Standard for Programming Language C++,
+Oct. 2007, Sec. 26.4.7.1</a>.)  In this implementation, this mixing
+class is called MixerSFMT.
+
+Two other mixing classes MixerMT0 and MixerMT1 are provided.  MixerMT0
+implements the mixing methods in MT19937 and MT19937_64.  These methods
+have some defects which are partially corrected by the MixerMT1 classes
+with are described in the (superseded) proposal to the C++11 standards,
+Brown, et al.,
+<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2079.pdf">
+Random Number Generation in C++0x: A Comprehensive Proposal, version 3</a>.
+
+<center>
+Back to \ref organization.  Forward to \ref integer.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page integer Random integers
+
+<center>
+Back to \ref seeds.  Forward to \ref real.  Up to \ref contents.
+</center>
+
+The following routines return random integers of the given type
+uniformly distributed in [min, max].  These are member functions of
+Random.  Here \e IntType is any integer type, \e b, the bitcount, is an
+integer, \e w = Random::width.  For the a 32-bit (resp. 64-bit) random
+generator, result_type is an unsigned int (resp. unsigned long long int)
+and \e w = 32 (resp. 64).  The "C" in IntegerC stands for "closed".
+<center>
+<table>
+<caption>Definitions of routines returning integers</caption>
+<tr>
+  <th>routine
+  <th>type
+  <th>min
+  <th>max
+<tr>
+  <td>Integer<IntType, b>()
+  <td>IntType
+  <td>0
+  <td>2<sup><i>b</i></sup> &minus; 1
+<tr>
+  <td>Integer<b>()
+  <td>unsigned
+  <td>0
+  <td>2<sup><i>b</i></sup> &minus; 1
+<tr>
+  <td>Integer();
+  <td>unsigned
+  <td>0
+  <td>std::numeric_limits<unsigned>::max()
+<tr>
+  <td>Integer<IntType>()
+  <td>IntType
+  <td>std::numeric_limits<IntType>::min()
+  <td>std::numeric_limits<IntType>::max()
+<tr>
+  <td>Boolean()
+  <td>bool
+  <td>false
+  <td>true
+<tr>
+  <td>Integer<IntType>(IntType \e n)
+  <td>IntType
+  <td>0
+  <td>\e n &minus; 1\n
+  (if \e n = 0, std::numeric_limits<IntType>::max();\n
+   if \e n < 0, 0)
+<tr>
+  <td>IntegerC<IntType>(IntType \e n)
+  <td>IntType
+  <td>0
+  <td>\e n \n
+  (if \e n < 0, 0)
+<tr>
+  <td>IntegerC<IntType>(IntType \e m, IntType \e n)
+  <td>IntType
+  <td>\e m
+  <td>\e n \n
+  (if \e n < \e m, \e m)
+<tr>
+  <td>operator()()
+  <td>Random::result_type
+  <td>0
+  <td>2<sup><i>w</i></sup> &minus; 1
+<tr>
+  <td>operator()(result_type n)
+  <td>Random::result_type
+  <td>0
+  <td>\e n &minus; 1\n(if \e n = 0, std::numeric_limits<result_type>::max())
+</table>
+</center>
+
+Here are some examples of calling these routines \code
+  RandomLib::Random r; r.Reseed();
+  r();                          // unsigned in [0, 2^32)
+  r(52);                        // unsigned in [0, 52)
+  r.Integer();                  // unsigned in [0, 2^32)
+  r.Integer<int>();             // int in [-2^31, 2^31)
+  r.Integer<unsigned char>();   // unsigned char in [0, 256)
+  r.Integer<8>();               // unsigned in [0, 256)
+  r.Integer<int, 8>();          // int in [0, 256)
+  r.Boolean();                  // boolean in [false, true]
+  r.Integer(52);                // int in [0, 52)
+  r.Integer(52u);               // unsigned in [0, 52)
+  r.IntegerC(51);               // int in [0, 51]
+  r.IntegerC(1,52);             // int in [1, 52]
+\endcode
+
+<center>
+Back to \ref seeds.  Forward to \ref real.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page real Random real numbers
+
+<center>
+Back to \ref integer.  Forward to \ref other.  Up to \ref contents.
+</center>
+
+The Random class generates two classes of uniform real results: \ref
+fixed "fixed" point numbers (where the spacing between possible results
+is a constant) and \ref floating "floating" point numbers (where the
+spacing between possible results varies).
+
+\section fixed Fixed-point real numbers
+
+The results returned by Fixed(), FixedU(), FixedN(), FixedW(), FixedO(),
+and FixedC() are "fixed-point reals" with precision \e p.  These are of
+the form \e i / 2<sup><i>p</i></sup> where \e i is an integer.  If, for
+real data type RealType, we restrict \e p > 0 and \e p &le;
+std::numeric_limits<RealType>::digits, then all such numbers in [-1,1]
+are representable.  For \e p = 3, the set of numbers in [0,1] is {0,
+1/8, 1/4, 3/8, 1/2, 5/8, 3/4, 7/8, 1}.
+
+The results returned FixedS() are of "offset fixed-point reals" with
+precision \e p.  These are of the form (\e i + 1/2) /
+2<sup><i>p</i></sup> where \e i is an integer.  If, for real data type
+RealType, we restrict \e p > 0 and \e p &le;
+std::numeric_limits<RealType>::digits, then all such numbers in
+(&minus;1/2,1/2) are representable.  (This only "works" for radix 2
+systems; with larger bases, the results can't be represented exactly.)
+Note that possibly "exceptional" numbers, &minus;1/2, 0, and 1/2, are
+not included in this set.  For \e p = 3, the set of numbers in
+(&minus;1/2,1/2) is {&minus;7/16, &minus;5/16, &minus;3/16, &minus;1/16,
+1/16, 3/16, 5/16, 7/16}.
+
+\section floating Floating-point real numbers
+
+The results returned by Float(), FloatU(), FloatN(), FloatW() are
+"floating-point reals" with precision \e p and exponent range \e e.  The
+possible results for such floating numbers in [&minus;1,1] consist of
+ - \e f / 2<sup><i>p</i> + <i>s</i></sup> for \e f in (2<sup><i>p</i>
+   &minus; 1</sup>, 2<sup><i>p</i></sup>] and \e s in [0,\e e],
+ - \e f / 2<sup><i>p</i> + <i>s</i></sup> for \e f in
+   [&minus;2<sup><i>p</i></sup>, &minus;2<sup><i>p</i> &minus; 1</sup>)
+   and \e s in [0,\e e],
+ - \e f / 2<sup><i>p</i> + <i>e</i></sup> for \e f in
+   [&minus;2<sup><i>p</i> &minus; 1</sup>, 2<sup><i>p</i> &minus; 1</sup>].
+
+For real data type RealType, such numbers are representable if
+ - \e p > 0
+ - \e e &ge; 0
+ - \e p &le; std::numeric_limits<RealType>::digits
+ - \e p + \e e &le; std::numeric_limits<RealType>::digits &minus;
+   std::numeric_limits<RealType>::min_exponent
+
+For \e e = 0, the numbers become the \ref fixed "fixed" point numbers
+with precision \e p.
+
+Here is an example of the floating point points with \e p = 3 and \e e =
+2 together with the probabilities yielded by Float(), FloatU(),
+FloatN().
+
+<center>
+<table>
+<caption>Floats with \e p = 3, \e e = 2</caption>
+<tr><th>\e X
+    <th>prob(Float() = \e X)
+    <th>prob(FloatU() = \e X)
+    <th>prob(FloatN() = \e X)
+<tr><td>   0   <td>      1/32  <td>   0    <td>     0.5/32
+<tr><td>   1/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   2/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   3/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   4/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   5/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   6/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   7/32<td>      1/32  <td>   1/32 <td>      1/32
+<tr><td>   4/16<td>      1/16  <td>   1/32 <td>     1.5/32
+<tr><td>   5/16<td>      1/16  <td>   1/16 <td>      1/16
+<tr><td>   6/16<td>      1/16  <td>   1/16 <td>      1/16
+<tr><td>   7/16<td>      1/16  <td>   1/16 <td>      1/16
+<tr><td>   4/8 <td>      1/8   <td>   1/16 <td>     1.5/16
+<tr><td>   5/8 <td>      1/8   <td>   1/8  <td>      1/8
+<tr><td>   6/8 <td>      1/8   <td>   1/8  <td>      1/8
+<tr><td>   7/8 <td>      1/8   <td>   1/8  <td>      1/8
+<tr><td>   1   <td>      0     <td>   1/8  <td>     0.5/8
+</table>
+</center>
+
+The description of floating-point numbers assumes that the underlying
+hardware supports denormalized numbers.  This is the case with most
+modern computers.  The code attempts to deal also with older hardware
+where there's a gap between 0 and 1/2<sup><i>e</i> + 1</sup>, but this
+has not been tested.
+
+\section reals Summary of real number routines
+
+The following table provides a succinct definition of each of the member
+functions of Random routines that return a real result.  Here \e u is a
+uniformly distributed random number in (0,1).  This is drawn from a
+continuous distribution; i.e., it may be thought of as consisting of a
+binary point followed by an infinite sequence of random binary bits.
+(This is just a useful conceptual framework.  None of the
+implementations of these functions require an explicit realization of \e
+u.)
+
+The term "fixed" means a fixed-point real with precision \e p, and we
+have \e h = 1/2<sup><i>p</i></sup> (the smallest positive fixed-point
+number).  The term "float" means a floating-point real with precision \e
+p and exponent range \e e.
+
+<center>
+<table>
+<caption>Definitions of routines returning reals</caption>
+<tr>
+  <th>routine
+  <th>mnemonic
+  <th>definition
+<tr>
+  <td>Fixed()
+  <td>default (down)
+  <td>round \e u down to previous fixed
+<tr>
+  <td>FixedU()
+  <td>upper
+  <td>round \e u up to next fixed
+<tr>
+  <td>FixedN()
+  <td>nearest
+  <td>round \e u to nearest fixed
+<tr>
+  <td>FixedW()
+  <td>wide
+  <td>round 2\e u &minus; 1 to nearest fixed
+<tr>
+  <td>FixedS()
+  <td>symmetric
+  <td>round \e u &minus; 1/2 to nearest offset fixed
+<tr>
+  <td>FixedO()
+  <td>open
+  <td>round (1 &minus; \e h)\e u up to nearest fixed
+<tr>
+  <td>FixedC()
+  <td>closed
+  <td>round (1 + \e h)\e u down to nearest fixed
+<tr>
+  <td>Float()
+  <td>default (down)
+  <td>round \e u down to previous float
+<tr>
+  <td>FloatU()
+  <td>upper
+  <td>round \e u up to next float
+<tr>
+  <td>FloatN()
+  <td>nearest
+  <td>round \e u to nearest float
+<tr>
+  <td>FloatW()
+  <td>wide
+  <td>round 2\e u &minus; 1 to nearest float
+</table>
+</center>
+
+The precision and exponent range are determined as follows.  Each of
+the fixed-point routines comes in 3 variants, for example,
+ - Fixed<RealType,p>() -- return fixed-point real of type RealType,
+   precision \e p;
+ - Fixed<RealType>() -- as above with \e p =
+   std::numeric_limits<RealType>::digits;
+ - Fixed() -- as above with RealType = double.
+
+Similarly each of the floating-point routines comes in 3 variants, for
+example,
+ - Float<RealType,p,e>() -- return floating-point real of type
+   RealType, precision \e p, exponent range \e e;
+ - Float<RealType>() -- as above with \e p =
+   std::numeric_limits<RealType>::digits and
+   \e e = &minus; std::numeric_limits<RealType>::min_exponent;
+ - Float() -- as above with RealType = double.
+
+Typical values of digits and min_exponent are given by
+<center>
+<table>
+<caption>Typical parameters for real types</caption>
+<tr>
+  <th>type
+  <th>digits
+  <th>-min_exponent
+<tr>
+  <td>float            <td>24     <td>125
+<tr>
+  <td>double           <td>53     <td>1021
+<tr>
+  <td>long double      <td>64     <td>16381
+<tr>
+  <td>long double (Power PC)<td>106<td>968
+<tr>
+  <td>long double (Sun)<td>113    <td>16494
+</table>
+</center>
+
+In the following tables, the columns have the following meanings
+ - "min" and "max" give the bounds on the returned results;
+ - "num" gives the number of distinct results;
+ - "prob" gives the probability of each result.
+
+next(X) is the next representable float following X.
+prev(X) is the previous representable float preceding X.
+
+<center>
+<table>
+<caption>Properties of routines returning reals</caption>
+<tr>
+  <th>routine
+  <th>min
+  <th>max
+  <th>num
+  <th>prob
+<tr>
+  <td>Fixed()
+  <td>0
+  <td>1&minus;<i>h</i>
+  <td>2<sup><i>p</i></sup>
+  <td><i>h</i>
+<tr>
+  <td>FixedU()
+  <td><i>h</i>
+  <td>1
+  <td>2<sup><i>p</i></sup>
+  <td><i>h</i>
+<tr>
+  <td>FixedN()
+  <td>0
+  <td>1
+  <td>2<sup><i>p</i></sup> + 1
+  <td><i>h</i> (<i>h</i>/2 at endpoints)
+<tr>
+  <td>FixedW()
+  <td>&minus;1
+  <td>1
+  <td>2<sup><i>p</i>+1</sup> + 1
+  <td><i>h</i>/2 (<i>h</i>/4 at endpoints)
+<tr>
+  <td>FixedS()
+  <td>&minus;(1&minus;<i>h</i>)/2
+  <td>(1&minus;<i>h</i>)/2
+  <td>2<sup><i>p</i></sup>
+  <td><i>h</i>
+<tr>
+  <td>FixedO()
+  <td><i>h</i>
+  <td>1&minus;<i>h</i>
+  <td>2<sup><i>p</i></sup>&minus;1
+  <td><i>h</i>/(1&minus;<i>h</i>)
+<tr>
+  <td>FixedC()
+  <td>0
+  <td>1
+  <td>2<sup><i>p</i></sup>+1
+  <td><i>h</i>/(1+<i>h</i>)
+<tr>
+  <td>Float()
+  <td>0
+  <td>1&minus;<i>h</i>
+  <td>2<sup><i>p</i></sup>(1+<i>e</i>/2)
+  <td>min(1,next(<i>X</i>))&minus;<i>X</i>
+<tr>
+  <td>FloatU()
+  <td>1/2<sup><i>p</i>+<i>e</i></sup>
+  <td>1
+  <td>2<sup><i>p</i></sup>(1+<i>e</i>/2)
+  <td><i>X</i>&minus;max(0,prev(<i>X</i>))
+<tr>
+  <td>FloatN()
+  <td>0
+  <td>1
+  <td>2<sup><i>p</i></sup>(1+<i>e</i>/2)+1
+  <td>(min(1,next(<i>X</i>))&minus;max(0,prev(<i>X</i>)))/2
+<tr>
+  <td>FloatW()
+  <td>&minus;1
+  <td>1
+  <td>2<sup><i>p</i>+1</sup>(1+<i>e</i>/2)+1
+  <td>(min(1,next(<i>X</i>))&minus;max(&minus;1,prev(<i>X</i>)))/4
+</table>
+</center>
+
+From these definitions, we can show that:
+- probability(Fixed() < \e X) = \e X) for all representable
+  fixed-point numbers \e X in [0,1];
+- probability(Float() < \e X) = \e X) for all representable
+  floating-point numbers \e X in [0,1];
+- probability(FixedU() &le; \e X) = \e X) for all representable
+  fixed-point numbers \e X in [0,1];
+- probability(FloatU() &le; \e X) = \e X) for all representable
+  floating-point numbers \e X in [0,1];
+- probability(FixedN() < \e X) = \e X) for all \e X in (0,1)
+  midway between representable fixed-point numbers \e X in [0,1];
+- probability(FloatN() < \e X) = \e X) for all \e X in (0,1)
+  midway between representable floating-point numbers \e X in [0,1].
+
+We can easily show that certain distributions are equivalent:
+<center>
+<table>
+<caption>Equivalences between routines returning reals</caption>
+<tr>
+  <th>Function
+  <th>Equivalent
+<tr>
+  <td>FixedU<RealType,p>()
+  <td>Fixed<RealType,p>() + h
+<tr>
+  <td>FixedU<RealType,p>()
+  <td>1 &minus; Fixed<RealType,p>()
+<tr>
+  <td>FixedN<RealType,p>()
+  <td>Boolean() ? Fixed<RealType,p>() : FixedU<RealType,p>()
+<tr>
+  <td>FixedN<RealType,p>()
+  <td>1 &minus; FixedN<RealType,p>()
+<tr>
+  <td>FixedO<RealType,p>()
+  <td>1 &minus; FixedO<RealType,p>()
+<tr>
+  <td>FixedC<RealType,p>()
+  <td>1 &minus; FixedC<RealType,p>()
+<tr>
+  <td>FixedS<RealType,p>()
+  <td>Fixed<RealType,p>() &minus; (1&minus;h)/2
+<tr>
+  <td>FixedS<RealType,p>()
+  <td>&minus; FixedS<RealType,p>()
+<tr>
+  <td>FixedW<RealType,p>()
+  <td>(Boolean() ? 1 : &minus;1) FixedN<RealType,p>()
+<tr>
+  <td>FixedW<RealType,p>()
+  <td>&minus; FixedW<RealType,p>()
+<tr>
+  <td>FixedW<RealType,p&minus;1>()
+  <td>2 FixedN<RealType,p>() &minus; 1
+<tr>
+  <td>FloatN<RealType,p,e>()
+  <td>Boolean() ? Float<RealType,p,e>() : FloatU<RealType,p,e>()
+<tr>
+  <td>FloatW<RealType,p,e>()
+  <td>(Boolean() ? 1 : &minus;1) FloatN<RealType,p,e>()
+<tr>
+  <td>FloatW<RealType,p,e>()
+  <td>&minus; FloatW<RealType,p,e>()
+<tr>
+  <td>Float<RealType,p,0>()
+  <td>Fixed<RealType,p>()
+<tr>
+  <td>FloatU<RealType,p,0>()
+  <td>FixedU<RealType,p>()
+<tr>
+  <td>FloatN<RealType,p,0>()
+  <td>FixedN<RealType,p>()
+<tr>
+  <td>FloatW<RealType,p,0>()
+  <td>FixedW<RealType,p>()
+</table>
+</center>
+
+A caution about FixedO() and FixedC().  All four of
+FixedS(), FixedN() &minus; 0.5, FixedO() &minus; 0.5, and
+FixedC() &minus; 0.5 produce results which are strictly symmetric
+about 0 and would thus be suitable for an unbiased random walk.  The
+variances of the first two distributions are 1/12 +
+O(<i>h</i><sup>2</sup>), close to the ideal value.  On the other hand
+the variances of the distributions of FixedO() and
+FixedC() are 1/12 + O(\e h), significantly further from the
+ideal value.  (In practice, using a strictly symmetric normal
+distribution is preferable for simulating a random walk.)
+
+Similarly, consider estimating the value of &pi; by randomly selecting
+points in a unit square and determining what fraction lie in a circle of
+diameter 1.  Sampling in the square using FixedO() or
+FixedC() gives poorer results than FixedN(), and
+FixedS() gives slightly better results.
+
+Because of their definitions in terms of \e u, any of Fixed(),
+FixedU(), FixedN(), or FixedS() can be used to
+cover the periodic unit interval in an unbiased way.  Thus to sample an
+angle uniformly, use 2 * &pi; * Fixed() or 2 * &pi; *
+FixedS().  The latter has the advantage that it is strictly
+symmetric about zero.  In addition, angles which are multiples of &pi;/2
+are avoided (which may obviate the need to check for special cases).
+
+Usually, these real routines would be invoked by specifying the type and
+allowing the precision to be determined from the type, e.g.,
+Real<double>().  However, in some cases it might be useful to
+specify a lower precision:
+ - to match the precision on another platform and thereby to ensure
+   portability, e.g., Real<double, 48>() to match the precision
+   of the Cray 1 computers.
+ - for debugging to explore boundary cases or to allow a thorough
+   exploration of possible results, e.g., Real<real, 4>().
+ - to control rounding errors, e.g.,
+   1.0 + Real<double, 52>() samples the doubles in [1, 2)
+   uniformly (while 1.0 + Real<double>() does not).
+ - for economy, e.g., Real<double, 32>() consumes 1 random
+   number from RandomGenerator instead of 2.  (This is the weakest
+   reason.  The overall speedup is likely to be small; and, in any case,
+   accuracy should trump speed.)
+
+<center>
+Back to \ref integer.  Forward to \ref other.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page other Other random results
+
+<center>
+Back to \ref real.  Forward to \ref otherdist.  Up to \ref contents.
+</center>
+
+The following routines return true with the given probability
+
+<center>
+<table>
+<caption>Definitions of routines returning booleans</caption>
+<tr>
+  <th>routine
+  <th>probability
+<tr>
+  <td>Boolean()
+  <td>1/2
+<tr>
+  <td>Prob<NumericType>(NumericType p)
+  <td>\e p
+<tr>
+  <td>Prob<NumericType>(NumericType m, NumericType n)
+  <td><i>m</i>/<i>n</i>
+</table>
+</center>
+
+Prob accepts both real and integer types.  However, typically the
+one-argument version (the Bernoulli distribution) would be used with a
+real argument and the two-argument version would be used with integer
+arguments.  Prob<NumericType>(NumericType p) is false if \e p &le; 0 and
+true if \e p &ge; 1.  Prob<NumericType>(NumericType m, NumericType n)
+returns false if \e m &le; 0 or \e n < 0 and true if \e m &ge; \e n.  The
+results of Prob are \e exact.  In particular, Prob<double>(x, y) returns
+true with probability <i>x</i>/<i>y</i> even if <i>x</i>/<i>y</i> cannot
+be exactly represented as a double (e.g., it underflows to zero).
+
+<center>
+<table>
+<caption>Equivalences between routines returning booleans</caption>
+<tr>
+  <th>Function
+  <th>Equivalent
+<tr>
+  <td>Boolean()
+  <td>Integer<bool>()
+<tr>
+  <td>Boolean()
+  <td>Prob(1, 2)
+<tr>
+  <td>Boolean()
+  <td>Prob(0.5)
+<tr>
+  <td>Prob<RealType>(x)
+  <td>Float<RealType>() < x
+<tr>
+  <td>Prob<RealType>(x)
+  <td>FloatU<RealType>() &le; x
+</table>
+</center>
+
+Finally, Bits<n>() returns \e n random bits in a std::bitset<n>.  For
+example \code
+  RandomLib::Random r; r.Reseed();
+  std::cout << "Generate 20 random bits: " << r.Bits<20>() << "\n"; \endcode
+might produce \verbatim
+  Generate 20 random bits: 10110101000101001001
+\endverbatim
+
+<center>
+Back to \ref real.  Forward to \ref otherdist.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page otherdist Other random distributions
+
+<center>
+Back to \ref other.  Forward to \ref mpfr.  Up to \ref contents.
+</center>
+
+This library includes implementation of a few other random distributions
+- RandomLib::NormalDistribution samples from a Gaussian.  This uses the
+  ratio method with Leva's modifications to avoid computing logarithms
+  too frequently.
+- RandomLib::ExponentialDistribution samples from an exponential
+  distribution.  This is uses FloatU to avoid log(0) and to allow rare
+  large values to be returned.
+- RandomLib::RandomSelect selects for a discrete set with specified
+  weights using the Walker algorithm.  With integer weights this is an
+  exact implementation.
+- RandomLib::LeadingZeros returns the number of zero bits after the
+  binary point of a uniform random number in (0,1).  This is exact.
+- RandomLib::ExponentialProb returns true with probability
+  exp(&minus;\e p) using von Neumann's algorithm.  This is exact.
+- RandomLib::InverseEProb returns true with probability 1/\e e using von
+  Neumann's algorithm.  This is exact.
+- RandomLib::InversePiProb returns true with probability 1/&pi; using
+  one of Ramanujan's expansions for 1/&pi;.  (The algorithm is from
+  Flajolet et al., 2011.)  This is exact.
+- RandomLib::DiscreteNormal and RandomLib::DiscreteNormalAlt are two
+  classes for sampling from the discrete normal distribution; the first
+  is tuned for speed and the second is tuned to minimize the use of
+  random bits.  (These are based on the algorithm used by
+  RandomLib::ExactNormal.)  These are exact.
+- RandomLib::UniformInteger provides a facility for <i>partially</i>
+  sampling integers from the interval [0,\e m).
+  RandomLib::DiscreteNormalAlt uses this class to achieve ideal scaling
+  in the consumption of random bits.  This is exact.
+
+These provide fast, reasonably accurate (or, where noted, exact)
+implementations of these distributions.
+
+In general, it is difficult to sample from an distribution and round the
+result exactly to the nearest representable real number.  However, for
+some simple distributions, the exact distribution is given by a series
+of uniform distributions and this provides a method for sampling
+exactly.  The class which represents the result of sampling from such
+distributions is RandomLib::RandomNumber.  It can be thought of as an
+infinite precision random number.  At any time only some of the leading
+digits have been computed and the result then stands for any number
+obtained by filling in the remaining digits uniformly and randomly.  The
+following are distributions which return a RandomNumber
+- RandomLib::ExactExponential samples exactly from an exponential
+  distribution.  The surprisingly simple algorithm is due to von Neumann
+  but adapted here to use infinite precision.
+- RandomLib::ExactNormal samples exactly from a normal distribution.
+  This applies the ideas behind RandomLib::ExactExponential to the
+  normal distribution.
+- RandomLib::ExactPower samples exactly from a power distribution
+  (<i>n</i> + 1) <i>x</i><sup><i>n</i></sup> for \e x in (0,1) and
+  integer \e n &ge; 0.
+
+No attempt has been to optimize these exact distributions for speed.
+However, with base = 2, ExactExponential delivers \e k bits of accuracy
+consuming, on average, only about 5.6 + \e k bits of randomness; so a fast
+implementation is possible.  (Similarly it's possible to return true
+with probability 1/\e e consuming 6 bits of randomness.)
+
+The algorithms used by RandomLib::ExactExponential and
+RandomLib::ExactNormal have been included in
+<a href="http://www.mpfr.org">MPFR</a>.  See also \ref mpfr.
+
+The following code samples from the exponential distribution, rounding
+the results exactly to the nearest double.  Thus the probability that
+0.75 is returned is exactly 2 exp(&minus;3/4)
+sinh(2<sup>&minus;54</sup>) (with no error in the evaluation of exp and
+sinh).  (This assumes, of course, that the underlying random number
+generator is perfect.)
+\code
+  RandomLib::Random r; r.Reseed();
+  const int b = 32;
+  RandomLib::ExactExponential<b> edist;
+  for (size_t i = 0; i < 10; ++i) {
+    RandomLib::RandomNumber<b> x = edist(r);  // Sample exactly
+    double y = x.Value<double>(r); // Round exactly to nearest double
+    std::cout << y << "\n";
+  }
+\endcode
+A more extensive example of generating exact distributions is given by
+RandomExact.cpp.
+
+<center>
+Back to \ref other.  Forward to \ref mpfr.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page mpfr MPFR interface
+
+<center>
+Back to \ref otherdist.  Forward to \ref save.  Up to \ref contents.
+</center>
+
+<b>Note:</b> Adaptions of RandomLib::MPFRExponential and
+RandomLib::MPFRNormal will be included in the next (post 3.1.2) release
+of MPFR as functions <code>mpfr_erandom</code> and
+<code>mpfr_nrandom</code>.
+
+The classes RandomLib::MPFRUniform, RandomLib::MPFRExponential, and
+RandomLib::MPFRNormal, provide a efficient methods of computing random
+deviates and returning the results in the form of
+<a href="http://www.mpfr.org"> MPFR</a> numbers.  These classes
+(together with RandomLib::MPFRRandom) are header-only implementations
+which do not depend on the rest of %RandomLib.  In order to use these
+headers, you can copy them into the directory tree where you are
+developing an MPFR application (make sure they stay within a directory
+called %RandomLib) and include them with e.g., \code
+ #include <RandomLib/MPFRNormal.hpp>
+\endcode
+
+(There are 3 additional classes included in %RandomLib:
+RandomLib::MPFRExponentialL, RandomLib::MPFRNormalK, and
+RandomLib::MPFRNormalR.  But these are included for illustrative
+purposes only and therefore they are marked as <b>deprecated</b> in the
+documentation.)
+
+For high precision, the time per sample for RandomLib::MPFRUniform,
+RandomLib::MPFRExponential, and RandomLib::MPFRNormal is proportional to
+the precision where the constant of proportionality is governed by
+generating the required number of random bits and copying these into the
+result.  Thus, using these methods, the generation of random numbers in
+MPFR is amongst the cheapest of operations (cheaper, for example, than
+multiplication).  The timing data is giving in the tables below.
+
+This table gives the time required to generate a random sample from an
+exponential distribution:
+<center>
+<table>
+<caption>Times (us) for sampling from the exponential distribution
+</caption>
+<tr><th>prec</th><th>(1)</th><th>(2)</th><th>(3)</th><th>(4)</th></tr>
+<tr><td>4      </td><td>     </td><td>    </td><td>0.30</td><td>10     </td></tr>
+<tr><td>8      </td><td>     </td><td>    </td><td>0.30</td><td>7.7    </td></tr>
+<tr><td>16     </td><td>     </td><td>    </td><td>0.30</td><td>7.0    </td></tr>
+<tr><td>24     </td><td>0.056</td><td>0.21</td><td>0.30</td><td>6.4    </td></tr>
+<tr><td>32     </td><td>     </td><td>    </td><td>0.33</td><td>8.6    </td></tr>
+<tr><td>48     </td><td>     </td><td>    </td><td>0.35</td><td>8.5    </td></tr>
+<tr><td>53     </td><td>0.079</td><td>0.29</td><td>0.35</td><td>8.5    </td></tr>
+<tr><td>64     </td><td>0.069</td><td>0.30</td><td>0.35</td><td>8.4    </td></tr>
+<tr><td>128    </td><td>     </td><td>    </td><td>0.37</td><td>13     </td></tr>
+<tr><td>256    </td><td>     </td><td>    </td><td>0.41</td><td>23     </td></tr>
+<tr><td>1024   </td><td>     </td><td>    </td><td>0.64</td><td>82     </td></tr>
+<tr><td>4096   </td><td>     </td><td>    </td><td>1.5 </td><td>520    </td></tr>
+<tr><td>16384  </td><td>     </td><td>    </td><td>4.9 </td><td>5200   </td></tr>
+<tr><td>65536  </td><td>     </td><td>    </td><td>19  </td><td>53000  </td></tr>
+<tr><td>262144 </td><td>     </td><td>    </td><td>81  </td><td>490000 </td></tr>
+<tr><td>1048576</td><td>     </td><td>    </td><td>300 </td><td>4100000</td></tr>
+</table>
+</center>
+Key to methods for sampling from the exponential distribution: <br>
+(1) RandomLib::ExponentialDistribution; <br>
+(2) RandomLib::ExactExponential, with \e bits = 32; <br>
+(3) RandomLib::MPFRExponential, with \e bits = 32, which uses the same
+algorithm as RandomLib::ExactExponential; <br>
+(4) RandomLib::MPFRExponentialL, which uses the same algorithm as
+RandomLib::ExponentialDistribution (taking the log of a uniform
+deviate). <br>
+
+This table gives the time required to generate a random sample from an
+normal distribution:
+<center>
+<table>
+<caption>Times (us) for sampling from the normal distribution</caption>
+<tr><th>prec</th><th>(1)</th><th>(2)</th><th>(3)</th><th>(3')</th><th>(4)</th><th>(4')</th></tr>
+<tr><td>4      </td><td>     </td><td>    </td><td>0.91</td><td>1.2</td><td>0.62 </td><td>2.7    </td></tr>
+<tr><td>8      </td><td>     </td><td>    </td><td>0.91</td><td>1.2</td><td>0.61 </td><td>2.4    </td></tr>
+<tr><td>16     </td><td>     </td><td>    </td><td>0.91</td><td>1.2</td><td>0.61 </td><td>2.6    </td></tr>
+<tr><td>24     </td><td>0.034</td><td>0.54</td><td>0.91</td><td>1.2</td><td>0.65 </td><td>2.8    </td></tr>
+<tr><td>32     </td><td>     </td><td>    </td><td>0.95</td><td>1.2</td><td>0.92 </td><td>3.0    </td></tr>
+<tr><td>48     </td><td>     </td><td>    </td><td>0.96</td><td>1.3</td><td>0.92 </td><td>3.1    </td></tr>
+<tr><td>53     </td><td>0.047</td><td>0.61</td><td>0.96</td><td>1.3</td><td>0.93 </td><td>3.2    </td></tr>
+<tr><td>64     </td><td>0.043</td><td>0.64</td><td>0.97</td><td>1.3</td><td>1.0  </td><td>3.4    </td></tr>
+<tr><td>128    </td><td>     </td><td>    </td><td>0.99</td><td>1.3</td><td>1.2  </td><td>4.8    </td></tr>
+<tr><td>256    </td><td>     </td><td>    </td><td>1.0 </td><td>1.3</td><td>1.5  </td><td>7.7    </td></tr>
+<tr><td>1024   </td><td>     </td><td>    </td><td>1.3 </td><td>1.5</td><td>3.7  </td><td>26     </td></tr>
+<tr><td>4096   </td><td>     </td><td>    </td><td>2.1 </td><td>2.4</td><td>18   </td><td>160    </td></tr>
+<tr><td>16384  </td><td>     </td><td>    </td><td>5.4 </td><td>5.7</td><td>150  </td><td>1600   </td></tr>
+<tr><td>65536  </td><td>     </td><td>    </td><td>19  </td><td>19 </td><td>1300 </td><td>15000  </td></tr>
+<tr><td>262144 </td><td>     </td><td>    </td><td>77  </td><td>76 </td><td>11000</td><td>140000 </td></tr>
+<tr><td>1048576</td><td>     </td><td>    </td><td>300 </td><td>300</td><td>87000</td><td>1000000</td></tr>
+</table>
+</center>
+Key to methods for sampling from the normal distribution: <br>
+(1) RandomLib::NormalDistribution; <br>
+(2) RandomLib::ExactNormal, with \e bits = 32; <br>
+(3) RandomLib::MPFRNormal, with \e bits = 32, which uses the same
+algorithm as RandomLib::ExactNormal; <br>
+(3') RandomLib::MPFRNormalK, with \e bits = 32, which uses the Kahn
+algorithm; <br>
+(4) RandomLib::MPFRNormalR, which uses the same algorithm as
+RandomLib::NormalDistribution (the ratio method); <br>
+(4') MPFR's grandom, which uses the polar method. <br>
+
+Notes:
+ - The timing tests used RandomLib 1.4, MPFR 3.1.0, g++ 4.6.1 on a
+   64-bit Intel Xeon 2.66GHz running Linux Fedora Release 15.
+ - Methods (1) use standard algorithms for sampling from these
+   distributions.  These are reasonably accurate but do <b>not</b> yield
+   correctly rounded results (in the sense of MPFR).
+ - Methods (2) use adaptions of von Neumann's method.  These give correctly
+   rounded results.
+ - Methods (3) adapt methods (2) to MPFR.  For high precision, the time
+   scales linearly with precision.  Method (3'), which uses
+   RandomLib::MPFRExponential internally, is an alternate method of
+   sampling from the normal distribution using Kahn's algorithm.  Damien
+   Stehl&eacute; suggested the use of Kahn's algorithm to me.  For high
+   precision, the time is proportional to the precision for these
+   methods and they all have the same constant of proportionality.
+ - Methods (4) adapt methods (1) to MPFR.  For high precision, the time
+   scales approximately as the 3/2 power of the precision.  Method (4')
+   uses the grandom function.
+ - RandomLib::MPFRExponential and RandomLib::MPFRNormal have meager
+   internal documentation.  Refer to RandomLib::ExactExponential and
+   RandomLib::ExactNormal (which implement the same algorithms) for more
+   information.
+
+The von Neumann methods work in two phases.  (1) Some number of uniform
+random numbers are consumed to form the initial digits of the random
+sample.  (2) Additional digits are copied directly from the random
+number generator to the random sample.  It is convenient to be able to
+interrupt the process after phase (1) and the RandomLib::MPFRRandom
+class holds this intermediate object.  The utility of
+RandomLib::MPFRRandom is seen by considering Kahn's algorithm for normal
+sampling: pick \e y and \e z from the exponential distribution until (\e
+y &minus; 1)<sup>2</sup> &lt; 2\e z and then return \e y.  If \e y and \e z
+are returned as RandomLib::MPFRRandom objects then only sufficient
+digits need to be generated to determine the acceptance test.  If the
+test passes, then digits only need to be added to \e y (and not to \e
+z).  Since the implementation of RandomLib::MPFRNormalK for details.
+RandomLib::MPFRUniform is a thin wrapper for RandomLib::MPFRRandom which
+returns samples in [0,1).
+
+The classes RandomLib::MPFRRandom, RandomLib::MPFRUniform,
+RandomLib::MPFRExponential, RandomLib::MPFRNormal, and
+RandomLib::MPFRNormalK all take a template parameter \e bits (default
+value 32) which gives the number of bits in each "digit" of the
+RandomLib::MPFRRandom object.  This must evenly divide GMP_LIMB_BITS.
+For portability you should not set this to 64.  Typically 32 will
+provide the best efficiency.  Smaller values are useful for debugging,
+for studying algorithmic complexity (see Knuth and Yao, 1976), or if
+random bits are expensive (e.g., they are being generated by a hardware
+generator).
+
+Here is an example of using RandomLib::MPFRNormal:
+
+\include MPFRExample.cpp
+
+Typical output from this program is:
+\verbatim
+Sample from the unit normal distribution at precision 240
+-5.6692556912807683301494494874784943926662835210924611284269456310097367350e-2
+8.5362069032310026750031502283620341952982028910093176612208572465159728631e-1
+...
+Sample ranges from the normal distribution at precision 20
+[0,1] -> 7.2809029e-1
+[-2.25,-2.28125] -> -2.2580643
+...
+\endverbatim
+
+<center>
+Back to \ref otherdist.  Forward to \ref save.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page save Saving and restoring the state
+
+<center>
+Back to \ref mpfr.  Forward to \ref programming.  Up to \ref contents.
+</center>
+
+A Random can be copied, saved, and restored in a variety of
+ways as illustrated here by RandomSave.cpp
+
+\include RandomSave.cpp
+
+As you can see in this example, you can use Boost serialization to save
+and restore the state of a Random object to various types of archives
+provided you have the Boost serialization library installed (see
+http://www.boost.org).  To turn this feature on, compile any code which
+includes RandomLib/Random.hpp with HAVE_BOOST_SERIALIZATION defined to
+be 1, and link the resulting code with libboost_serialization.  In order
+to declare the boost archives, you will need to include the appropriate
+header file, e.g.,
+\code
+  #include <boost/archive/xml_iarchive.hpp>
+  #include <boost/archive/xml_oarchive.hpp>
+\endcode
+
+<center>
+Back to \ref mpfr.  Forward to \ref programming.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page programming Programming tips
+
+<center>
+Back to \ref save.  Forward to \ref parallel.  Up to \ref contents.
+</center>
+
+This page contains the following sections
+   - \ref conversion
+   - \ref stl
+   - \ref misc
+   - \ref switch
+   - \ref timing
+   - \ref checking
+
+\section conversion Conversion from std::rand()
+
+Here are simple steps to convert a code using rand() to Random:
+- Change \#include &lt;cstdlib&gt; to \#include &lt;RandomLib/Random.hpp&gt;.
+- Change std::srand(unsigned int) to
+  RandomLib::Random::Global.Reseed(unsigned long); change
+  std::srand(time(0)) to RandomLib::Random::Global.Reseed().  (Reseed()
+  uses a more "random" seed than the current time in seconds.)
+- As a stop-gap, change std::rand() to RandomLib::Random::Global() and
+  change RAND_MAX to RandomLib::Random::max.  Preferably, you should see
+  how std::rand() is being used and substitute the appropriate member
+  function of Random.  For example:
+ - To obtain a random real in [0,1), change
+   double(std::rand())/(RAND_MAX + 1.0) to
+   RandomLib::Random::Global.Fixed<double>().
+ - To generate a random real in (0,1], to avoid a singularity at 0, use
+   RandomLib::Random::Global.FixedU<double>().
+ - To generate a real symmetrically distributed in (&minus;1/2,1/2), use
+   RandomLib::Random::Global.FixedS<double>().
+ - To obtain a random integer in [0,n), change int(n *
+   double(std::rand())/(RAND_MAX + 1.0)) to
+   RandomLib::Random::Global.Integer(n).
+ - To select a random integer in [m,n], use
+   RandomLib::Random::Global.IntegerC(m,n).
+- Change std::random_shuffle(first, last) to std::random_shuffle(first,
+  last, RandomLib::Random::Global).
+- Change std::generate(first, last, std::rand) to pass
+  RandomLib::Random::Global by reference.  See section on using the \ref
+  stl "standard template library".
+
+These examples use Random::Global which is a globally defined Random
+object.  In many cases this suffices.  However, if different parts of
+your code need independent random number streams, you can create your
+own Random objects.  In these cases, you might want to vary the seeds
+used to initialize the separate streams in a systematic way and, in that
+case, you can seed Random with a vector.  When you pass Random objects
+to other routines you should usually (always?) pass them by reference,
+Random&, to ensure that that the change in the state of the generator is
+seen by the parent routine.
+
+\section stl Interaction with the standard template library
+
+Do not pass a Random object to std::generate to fill an vector with
+random integers.  Even though operator()() is defined to produce an
+random integer in [0,2<sup>32</sup>), generate makes a \e copy of its
+operator argument.  Thus
+\code
+  RandomLib::Random r; r.Reseed();
+  std::vector<unsigned> a(10);
+  std::vector<unsigned> b(10);
+  std::generate(a.begin(), a.end(), r);
+  std::generate(b.begin(), b.end(), r);
+\endcode
+results in \e a and \e b having the same contents and r.Count() == 0.
+You should instead pass the Random object by reference as in
+\code
+  std::generate<std::vector<unsigned>::iterator, RandomLib::Random&>
+    (a.begin(), a.end(), r);
+  std::generate<std::vector<unsigned>::iterator, RandomLib::Random&>
+    (b.begin(), b.end(), r);
+\endcode
+Alternatively (and more flexibly) you can define function objects which
+accept the Random by reference in the constructor as follows:
+\code
+  template<typename IntType = int> class RandomInteger {
+  private:
+    RandomLib::Random& _r;
+    const IntType _m, _n;
+  public:
+    RandomInteger(RandomLib::Random& r, IntType m, IntType n)
+      : _r(r), _m(m), _n(n) {}
+    IntType operator()() { return _r.IntegerC<IntType>(_m, _n); }
+  };
+
+  template<typename RealType = double> class RandomNormal {
+  private:
+    RandomLib::Random& _r;
+    const RandomLib::NormalDistribution<RealType> _n;
+    const RealType _mean, _sigma;
+  public:
+    RandomNormal(RandomLib::Random& r,
+                 RealType mean = RealType(0), RealType sigma = RealType(1))
+      : _r(r), _n(RandomLib::NormalDistribution<RealType>())
+      , _mean(mean), _sigma(sigma) {}
+    RealType operator()() { return _n(_r, _mean, _sigma); }
+  };
+\endcode
+Now, you can use
+\code
+  RandomLib::Random r; r.Reseed();
+  std::vector<int> a(10);     // Fill with integers in [-10,10]
+  std::generate(a.begin(), a.end(), RandomInteger<>(r,-10,10));
+  std::vector<double> b(10);       // Fill with normal deviates
+  std::generate(b.begin(), b.end(), RandomNormal<>(r,1.0,2.0));
+\endcode
+C++11 offers a better way of doing this using lambda expressions.  These
+allow you to write function objects "in line" (rather than as some small
+once-used class in another part of the file.  See RandomLambda.cpp.
+
+On the other hand, std::random_shuffle does pass its operator argument by
+reference.  Thus a vector can be shuffled with
+\code
+  RandomLib::Random r; r.Reseed();
+  std::vector<unsigned> a(100);
+  for (unsigned i = 0; i < 100; ++i) a[i] = i;
+  // create a random permutation of [0,100)
+  std::random_shuffle(a.begin(), a.end(), r);
+\endcode
+This shuffles because operator()(unsigned n) is defined to produce an
+random integer in [0,\e n).  This shuffling can result in all possible
+permutations of vectors of lengths up to 2000 (because 2000! <
+2<sup>19937</sup>), whereas the built-in random number generator
+(invoked when the last argument to random_shuffle is omitted) can
+typically only produce all the permutations of 12 or fewer objects.
+This method of shuffling only works if the number of elements being
+shuffled is less than 2^32.  On 64-bit computers, this condition can be
+violated.  In that case, use SRandom64 as the basic random number class,
+or else pass a function object which can accept a unsigned long long
+argument; for an example see RandomLambda.cpp.
+
+\section misc Miscellaneous
+
+When saving the state of a program in a restart file, it is usually
+necessary to save only the Random objects with Save(...).  (In fact,
+Random contains no additional state beyond the state of RandomGenerator.
+And thus Save just calls the underlying RandomGenerator::Save.)
+
+RandomSelect has state which is derivable from its input weights.
+However, neither it nor the other distributions contain state which
+depends on the Random argument to operator()(Random& r) (which is a
+const member function).
+
+For speed and for better control over round-off errors, the real
+routines FixedX are preferred over FloatX.  In a few cases, FloatX gives
+better results, e.g., in the implementation of ExponentialDistribution
+where it provides finer granularity in the results.
+
+Fixed, FixedU, FixedN, FixedW, FixedS are all obtained by rounding an
+ideal uniform deviate and so can all be used to sample periodic
+intervals uniformly.  If possible, avoid using FixedC and FixedO since
+they can introduce bias into your simulations.  Instead of FixedC,
+consider FixedN.  Instead of FixedO, consider FixedU (to avoid 0) or
+shift interval to (&minus;1/2,1/2) and use FixedS.  You can also generate
+results in (0,1) by invoking FixedS with a smaller precision and
+shifting the result, for example
+\code
+  RandomLib::Random r; r.Reseed();
+  double y =              // result in (0,1)
+    r.FixedS<double, std::numeric_limits<double>::digits - 1>() + 0.5;
+\endcode
+
+This library defines a STATIC_ASSERT to check template parameters and
+the values of some constants at compile time.  For example, this will
+prevent you from requesting 100 bits of accuracy in a float, e.g.,
+Fixed<float,100>().  The error message you get from the compiler
+may not be very informative.  However if you look at the corresponding
+line of source code in the header file, you should be able to figure out
+the problem.
+
+Avoid using calling %RandomLib twice in one expression, e.g.,
+\code
+  pi = std::atan2(0.0, 1.0);
+  y = std::sqrt(r.Fixed()) * std::sin(2 * pi * r.FixedS())
+\endcode
+because you don't know which random number will of computed first.  This
+means that changing compilers or even just changing the optimization
+level might lead to large changes in your results even if the random
+seed is the same.  In this case, you could instead use
+\code
+  pi = std::atan2(0.0, 1.0);
+  y = std::sqrt(r.Fixed());
+  y *= std::sin(2 * pi * r.FixedS())
+\endcode
+Similarly replace
+\code
+  std::cout << "count=" << r.Count() << " next rv=" << r() << "\n";
+\endcode
+by
+\code
+  std::cout << "count=" << r.Count();
+  std::cout << " next rv=" << r() << "\n";
+\endcode
+
+\section switch Selection of default generator
+
+%RandomLib provides 8 typedefs offering you easy access to 4 different
+random generators:\code
+  // the 32-bit version of MT19937 with SFMT19937's mixer
+  typedef RandomEngine<MT19937  <Random_u32>, MixerSFMT> MRandomGenerator32;
+  // the 64-bit version of MT19937 with SFMT19937's mixer
+  typedef RandomEngine<MT19937  <Random_u64>, MixerSFMT> MRandomGenerator64;
+  // the 32-bit version of SFMT19937
+  typedef RandomEngine<SFMT19937<Random_u32>, MixerSFMT> SRandomGenerator32;
+  // the 64-bit version of SFMT19937
+  typedef RandomEngine<SFMT19937<Random_u64>, MixerSFMT> SRandomGenerator64;
+  typedef RandomCanonical<MRandomGenerator32> MRandom32;
+  typedef RandomCanonical<MRandomGenerator64> MRandom64;
+  typedef RandomCanonical<SRandomGenerator32> SRandom32;
+  typedef RandomCanonical<SRandomGenerator64> SRandom64; \endcode
+Thus {M,S}RandomGenerator{32,64} gives access to the 32-bit and 64-bit
+versions of MT19937 and SFMT19937 generators.
+
+Normally, two additional typedefs are provided \code
+  typedef SRandomGenerator32 RandomGenerator;
+  typedef RandomCanonical<RandomGenerator> Random; \endcode
+However if the preprocessor symbol RANDOMLIB_DEFAULT_GENERATOR is
+defined to be one of {M,S}RandomGenerator{32,64} when compiling files
+that include Random.hpp, then RandomGenerator is defined to be this
+instead.  This can be defined by
+supplying -DRANDOMLIB_DEFAULT_GENERATOR=MRandomGenerator32 on the
+command line for the compiler or by specifying the value when invoking
+make, e.g., make RANDOMLIB_DEFAULT_GENERATOR=MRandomGenerator32
+RandomExample.
+
+In normal use, all the functions of %RandomLib should be accessed via the
+RandomLib::Random class (or occasionally via the underlying generator
+RandomLib::RandomGenerator).
+
+The SIMD-oriented Fast Mersenne Twister random number generator,
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/index.html">
+SFMT19937</a> was developed in 2006 as an improvement on the
+<a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">
+MT19937</a>.  By and large these two generators have very similar
+properties and can be regarded as strong enough for nearly all
+applications.  However the SFMT19937 generator does have some
+advantages:
+ - SFMT19937 can be implemented efficiently on a machine supporting SSE2
+   or AltiVec instructions.
+ - SFMT19937 recovers from a state with a preponderance of 0s more
+   quickly (this is unlikely to occur in practice).
+ - SFMT19937 has better equidistribution properties.  But this is
+   unlikely to be observable.
+ .
+In addition, SFMT19937 adopted an improved scheme for converting the
+seed into the state (via MixerSFMT) and, by default, this is used for
+the MT19937 generator in this library.  Because of these advantages,
+Random is typedef'ed to the SFMT19937 generator, by default.
+
+The 32-bit and 64-bit versions are comparable in strength.  Indeed with
+the SFMT19937 generator these are essentially the same (the underlying
+algorithm manipulates 128-bit words in both cases).  For example, we
+have \code
+  SRandom32 a("1 2 3"); a.StepCount(1000000);
+  SRandom64 b("1 2 3"); b.StepCount(500000);
+  assert(a.Ran64() == b.Ran64()); \endcode
+The implementations of these is portable across 32-bit and 64-bit
+architectures.  Thus the choice of between these is probably best made
+on the basis of the speed on the target platform.  A glance at the
+timing data in the \ref timing "next section" shows that the 64-bit
+versions are about the same speed on a 64-bit machine (x86_64).  However
+on a 64-bit machine, random routines which can consume 64-bits random
+results in one piece, e.g., r.Integer<unsigned long long>() and
+r.Fixed<double>, are faster with 64-bit versions of the generator.  In
+practice, the 32-bit versions are more likely to perform well on a wide
+range of CPUs.  However, it's likely that the 64-bit version will be a
+better choice in a few years (particularly if double-precision floating
+point random numbers are used).
+
+I recommend against mixing generators within a single code.  This will
+merely result in a more complicated code.  However, while you are
+experimenting with different generators, you should print out the type
+of generator being used, given by Name(), together with the seed.  For
+example:
+\code
+  RandomLib::SRandom64 r;
+  std::cout << "Using " << r.Name()
+            << " with seed " << r.SeedString() << "\n";
+\endcode
+
+Quick summary: stick with the default generator RandomLib::SRandom32
+accessed through RandomLib::Random.  In certain cases, switching to the
+64-bit version RandomLib::SRandom64 might be advisable.
+
+\section timing Timing results
+
+The following times were obtained on a Linux system running Fedora 12,
+kernel version 2.6.32, and compiling with g++ version 4.4.4 with
+optimization flags "-O3 -funroll-loops", on an Intel system.  Here \e r
+is a Random object, \e n is a unsigned variable with value 0 (but the
+compiler doesn't know its value), \e N is a large positive integer, and
+all times are in ns (unless another time unit is given)
+
+<center>
+<table>
+<caption>Times (ns) for various operations</caption>
+<tr><th rowspan="2">operation</th>
+<th colspan="2">Intel Xeon, x86_64 2.66GHz (SSE2)</th></tr>
+<tr><th>SRandom32</th><th>SRandom64</th>
+</tr>
+<tr><td>std::rand()                     </td><td colspan="2">10      </td></tr>
+<tr><td>r()                             </td><td>2.0   </td><td>2.7  </td></tr>
+<tr><td>r.Integer<unsigned>()           </td><td>2.3   </td><td>2.6  </td></tr>
+<tr><td>r.Integer<unsigned long long>() </td><td>4.3   </td><td>2.7  </td></tr>
+<tr><td>r.Integer<unsigned,6>()         </td><td>2.0   </td><td>2.9  </td></tr>
+<tr><td>r.Integer<unsigned>(52u)        </td><td>3.0   </td><td>3.7  </td></tr>
+<tr><td>r.Integer<unsigned>(52u+n)      </td><td>10    </td><td>11   </td></tr>
+<tr><td>r.Fixed<float>()                </td><td>3.1   </td><td>3.5  </td></tr>
+<tr><td>r.Fixed<double>()               </td><td>5.6   </td><td>3.4  </td></tr>
+<tr><td>r.Float<float>()                </td><td>17    </td><td>18   </td></tr>
+<tr><td>r.Float<double>()               </td><td>18    </td><td>17   </td></tr>
+<tr><td>r.Prob<float>(0.28f)            </td><td>9.1   </td><td>9.3  </td></tr>
+<tr><td>r.Prob<double>(0.28)            </td><td>8.0   </td><td>8.6  </td></tr>
+<tr><td>NormalDistribution<float>()(r)  </td><td>35    </td><td>35   </td></tr>
+<tr><td>NormalDistribution<double>()(r) </td><td>44    </td><td>43   </td></tr>
+<tr><td>SeedWord()                      </td><td colspan="2">1.1 ms  </td></tr>
+<tr><td>SeedVector()                    </td><td colspan="2">19 us   </td></tr>
+<tr><td>r.Reset(), r.SetCount(0)        </td><td colspan="2">6.9 us  </td></tr>
+<tr><td>r.StepCount(N)                  </td><td>0.63 N</td><td>1.3 N</td></tr>
+<tr><td>r.StepCount(-N)                 </td><td>1.1 N </td><td>2.3 N</td></tr>
+</table>
+</center>
+
+These timing figures were produced by RandomTime.cpp.  You should run
+this yourself to determine the times relevant to your system.  It is
+easy to adapt RandomTime.cpp to produce timings for MRandom{32,64};
+however on SSE2 systems, these will be noticeably slower than the
+SFMT19937 generators.
+
+Loop unrolling is critical in the performance of, e.g., Fixed<double>().
+If your compiler doesn't unroll the loops in Fixed<RealType,p>(), you
+can provide specializations with the loops unrolled by hand.  Much of
+the speed of this implementation comes from extensive use of inlined
+procedures.  This also make the timing results sensitive to the context
+in which Random is called.  Compare the results for
+r.Integer<unsigned>(52u) (typical if drawing a card from a deck) and
+r.Integer<unsigned>(52u+n) (as typical called by std::random_shuffle).
+In the first case the compiler can precompute some of the variables used
+resulting is a much faster execution.  The best way of gauging the speed
+is to time or to profile your own application.
+
+The time quoted for r.Reset(0), r.SetCount() gives the time to reset the
+generator and to convert the seed to the initial state.  Note that
+r.Reseed(...) merely stores the seed and does not update the state and
+r.Reset() also similarly does not reinitialize the generator state.  The
+random generator state is produced from the seed by calling the mixer
+when the first random number is requested or when SetCount is called.
+
+Beware of the compiler optimizing too much code away when doing timing
+studies.  Timing this section of code
+\code
+  RandomLib::Random r; r.Reseed();
+  const size_t n = 100000000;
+  for (size_t i = n; i; --i) r.Fixed<double>();
+\endcode
+will usually result is an unrealistically short time (by up to a factor
+of \e three!) because the compiler skips over a lot of the computation
+(the tempering of the random results and all the real multiplications).
+You can prevent the compiler from "cheating" in this way by using the
+results from the timed functions.  Thus
+\code
+  RandomLib::Random r; r.Reseed();
+  const size_t n = 100000000;
+  double d = 0;
+  for (size_t i = n; i; --i) d += r.Fixed<double>();
+  std::cout << "Sum: " << d << "\n";
+\endcode
+More simply, you can  store the results in a variable which is declared
+volatile
+\code
+  RandomLib::Random r; r.Reseed();
+  const size_t n = 100000000;
+  volatile double d;
+  for (size_t i = n; i; --i) d = r.Fixed<double>();
+\endcode
+
+\section checking Checking the engines
+
+The SelfTest() method of the random generators checks the that the
+correct results are obtained stepping the generator both forwards and
+backwards.  This throws an exception if the an error is detected.  E.g.,
+\code
+    RandomLib::Random::SelfTest();
+\endcode
+RandomExample.cpp listed in \ref start includes tests of all the
+generators.
+
+In addition, RandomCoverage.cpp includes code to check the various
+generators using their authors' test cases.  This checks the current
+implementations of MT19937 and SFMT19937 against their original
+implementations.  (The original 64-bit implementation of MT19937 used a
+vector of 64-bit integers for the seed.  So for this check above it is
+necessary to recast these as a vector of 32-bit integers,by inserting 0
+elements.)
+
+<center>
+Back to \ref save.  Forward to \ref parallel.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page parallel Parallelization
+
+<center>
+Back to \ref programming.  Forward to \ref function.  Up to \ref contents.
+</center>
+
+Many large codes are designed to run in parallel environments.  The
+parallelization may be across the cores of a multi-core computer or
+across a cluster of computers.  Some of the more-or-less portable
+methods for parallelization are
+- C++11 threads or boost threads
+- the <a href="http://www.mcs.anl.gov/research/projects/mpi/">
+  Message Passing Interface</a>
+- <a href="http://threadingbuildingblocks.org">
+  Threading Building Blocks</a>
+- <a href="http://openmp.org"> OpenMP</a>
+.
+I will use OpenMP to illustrate the techniques for paralleling
+RandomLib because both g++ and Visual Studio support it and because it
+entails the least modification of a serial code.  However the techniques
+are readily applied to the other parallelization methods listed above.
+
+We can stipulate some goals for a parallel code which uses random
+numbers:
+-# The result should be correct.
+-# The program should make effective use of the computational resources.
+-# Running the code twice with the same random number seed on the same
+   hardware with the same number of processors should produce identical
+   results.
+-# Running the code twice with the same random number seed on the same
+   hardware with a different number of processors should produce identical
+   results.
+-# Running the code twice with the same random number seed on the same
+   hardware in a serial mode should produce identical
+   results.
+
+Goal 1 requires (a) that updates to shared objects are properly
+protected by locks and (b) that the random numbers used by different
+threads are independent.  There are three ways that (b) can be achieved:
+- Different threads use a single Random object with access to it protect
+  by a lock.  The drawbacks to this approach are the potentially high
+  cost of frequently locking the Random object and the impossibility of
+  achieving goal 3 using such a scheme (since the order that different
+  thread acquire the lock on the Random object will be indeterminate).
+- Different threads use copies of a single Random object (or more
+  generally they use distinct Random objects which have the same seed),
+  but they access non-overlapping sequences out of the Random object.
+- Different threads use distinct Random objects which have distinct
+  seeds.
+.
+We shall use a combination of the last two ways.
+
+Achieving goal 2 depends on the problem.  However, many applications
+using random numbers can be decomposed into many independent (or weakly
+dependent) pieces which can be run as separate threads.  There will
+potentially be stalls in the threads waiting for locks to be released.
+In some cases, the overall throughput will be limited by some other
+critical resource, e.g., bandwidth to the disk.  However, it's often
+possible to ensure that the all cores on a multiprocessor machine are
+busy and to speed up dramatically applications using random sampling.
+
+The remaining goals, 3--5, concern the issues of being able to
+repeat a calculation possibly in a simpler environment for the purposes
+of validation, debugging, etc.  For some applications, this may not
+matter.  However, a Monte Carlo simulation of neutron transport in a
+fission reactor is an example of a code where it's very important to
+ensure that the code is correct and where it's easy to diagnose
+problems.
+
+An example: estimate the volume of an <i>n</i>-dimensional unit sphere.
+A simple way to do this is to sample points uniformly in the enclosing
+<i>n</i>-dimensional cube and count how many of these points lie inside
+the sphere.  The following code is a slight improvement to this where we
+integrate analytically in one of the dimensions.  (These samples of code
+are taken from RandomThread.cpp.) \code
+double dotrials(Random& r, int d, long long n) {
+  // Require d > 0, n > 0
+  double w = 0;
+  for ( ; n--; ) {              // Iterate n times
+    double h = 0;
+    for (int i = 1; i < d; ++i) { // Iterate d-1 times
+      double x = 2 * r.FixedS();  // x is in (-1, 1)
+      h += x * x;                 // cumulative radius^2
+      if (h >= 1) break;          // Point can't be in sphere; bail out,
+    }
+    // If h < 1 then inside a (d-1) dimensional unit sphere at radius
+    // sqrt(h), so extent of last dimension is +/- sqrt(1 -h)
+    w += h < 1 ? sqrt(1 - h) : 0;
+  }
+  return w;
+}
+
+double result(int d, long long n, double w) {
+  // Volume of (d-1) dimensional box = 2^(d-1).
+  // Multiply by another 2 to account for +/- extent in last dimension.
+  return double(1U << d) * w / double(n);
+}
+
+int main() {
+  int d = 4;                    // Number of dimensions
+  long long n = 100000000;      // Number of trials 10^8
+  Random r; r.Reset();
+  double weight = dotrials(r, d, n);
+  double volume = result(d, n, weight);
+  cout << volume << "\n";
+} \endcode
+I've divided the computation of the volume into two functions, dotrials
+and result, to aid in the exposition.  Nearly all the time is spent in
+dotrials and, as it stands, the loops in this function cannot of
+executed in parallel because of the updates to the random number
+generator, \e r.
+
+Convert this to a code which is ready for parallelization by making
+multiple calls to dotrials as follows \code
+int main() {
+  int d = 4;                    // Number of dimensions
+  long long n = 100000000;      // Number of trials 10^8
+  int k = 100;                  // Number of tasks
+  vector<double> w(k);          // Vector for partial weights
+  for (int i = 0; i < k; ++i) { // the main loop over tasks
+
+    Random r;                   // task specific Random
+    // Initialize r in a task specific way ...
+
+    // Do the work; last argument splits n exactly into k pieces
+    w[i] = dotrials(r, d, (n * (i + 1))/k - (n * i)/k);
+  }
+  // Sum up the weights from the individual tasks
+  double weight = accumulate(w.begin(), w.end(), 0.0);
+  // Compute the result
+  double volume = result(d, n, weight);
+  cout << volume << "\n";
+} \endcode
+
+The loop here splits the <i>n</i> samples into <i>k</i> independent
+<i>tasks</i>.  This loop is a candidate for parallelization.  First we
+need to decide on a suitable choice for <i>k</i> and on how the random
+number generators should be initialized.  These need to address two
+issues:
+ - Efficiency: We can see from the following table that reseeding the
+   generator is roughly as expensive as consuming 4000 random numbers
+   from the generator.  There may also be overhead in dealing with a
+   large number of tiny tasks.
+ - Statistical accuracy: A sequence of numbers produced by MT19937 or
+   SFMT19937 with a given seed has some proven good statistical
+   properties.  Little is known about the properties of the sequence of
+   numbers obtained when these generators are frequently reseeded.
+ .
+<center>
+<table>
+<caption>Approximate relative times for basic seeding operations</caption>
+<tr>
+  <th>Function
+  <th>Relative time
+<tr>
+  <td>s = Random::SeedWord();
+  <td>500000
+<tr>
+  <td>v = Random::SeedVector();
+  <td>10000
+<tr>
+  <td>r.Reseed(v), r.SetCount(0)
+  <td>4000
+<tr>
+  <td>i = r();
+  <td>1
+<tr>
+  <td>r.StepCount(N);
+  <td>abs(N)/3
+</table>
+</center>
+In order to address efficiency, we should pick <i>k</i> small enough
+that we use at least 10<sup>4</sup> to 10<sup>5</sup> random numbers for
+each task.  In order to preserve the statistical properties of
+SFMT19937, we should consume as many random numbers as possible for each
+task.  (Incidentally, this table also shows the high cost of
+Random::SeedWord().  This is mainly because of accessing /dev/urandom.
+Typically you should call Random::SeedWord() at most once per code run.)
+In addition we should choose <i>k</i> large enough to spread the tasks
+out between the CPUs.  It is good to choose <i>k</i> to be a several
+times the number of CPUs.  This ensures good utilization of resources
+if some of the tasks complete more quickly than others (because they
+entail less computation or because some CPUs are faster than others); it
+also allows you to more your code to a larger machine (or group of
+machines) without adjusting <i>k</i>.
+
+An obvious way to initialize the random generator for each task is to
+include the task number <i>i</i> in the seed.  For example \code
+  // Set master_seed to a "unique" vector
+  vector<unsigned long> master_seed(Random::SeedVector());
+  master_seed.push_back(0);     // Reserve an additional slot
+
+  for (int i = 0; i < k; ++i) { // the main loop over tasks
+
+    Random r;                   // task specific Random
+    {
+      vector<unsigned long> seed(master_seed); // task specific seed
+      seed.back() = i;                         // include task id in seed
+      r.Reseed(seed);
+    }
+
+    w[i] = dotrials(r, d, (n * (i + 1))/k - (n * i)/k);
+  }
+\endcode
+Note the ease with which the seed can be made to depend on the task id
+&mdash; merely by appending it to the seed vector.  This is easily
+generalized in more complicated applications, e.g., if the tasks are
+indexed in two directions.
+
+However, we can improve on this a little by using <i>leapfrogging</i>.
+This is illustrated by \code
+  vector<unsigned long> master_seed(Random::SeedVector());
+
+  for (int i = 0; i < 10; ++i) { // the main loop over tasks
+
+    Random r(master_seed);      // use the same seed for each task
+    r.SetStride(10, i);         // turn on leapfrogging with an offset i
+    ...
+  }
+\endcode
+where I have taken <i>k</i> = 10.  In this example, each of the 10
+tasks uses the <i>same</i> seed.  However, the calls to SetStride cause
+task 0 to use the random numbers with indices 0, 10, 20, 31...,
+task 1 to use those with indices 1, 11, 21, 31, ..., and so on.  This
+interval between random indices (10 in this example) is called the
+<i>stride</i>.
+
+There is an overhead to this approach, since the numbers skipped over
+still have to be computed.  However the cost of an unused number is only
+1/3 of the cost of a number that is used.  The relative cost might be
+even smaller if each tasks does an appreciably amount of additional
+computation for each random number it consumes.  In the example
+described here, the overhead of when a stride is 4 is about 25%.  This
+would be less in a more realistic example.  The <i>advantage</i> of
+leapfrogging is that we retain the statistical benefits of using fewer
+longer sequences from the SFMT19937 generator.
+
+We can combine the two approaches with \code
+  // Set master_seed to a "unique" vector
+  vector<unsigned long> master_seed(Random::SeedVector());
+  master_seed.push_back(0);     // Reserve an additional slot
+  int l = 4;                    // The leapfrogging stride
+
+  for (int i = 0; i < k; ++i) { // the main loop over tasks
+
+    Random r;                   // task specific Random
+    {
+      vector<unsigned long> seed(master_seed); // task specific seed
+      seed.back() = i / l;      // include task id in seed
+      r.Reseed(seed);
+      // Turn on leapfrogging with an offset that depends on the task id
+      r.SetStride(l, i % l);
+    }
+
+    // Do the work; last argument splits n exactly into k pieces
+    w[i] = dotrials(r, d, (n * (i + 1))/k - (n * i)/k);
+  }
+\endcode
+With the numerical values given here, the 100 tasks use 25 sequences
+(each with a distinct seed), and 4000000 samples are taken from each
+sequence.
+
+The final step is to cause the iterations of the main task loop to be
+carried out in parallel.  With OpenMP, this is easily achieved by
+inserting the pragma \code
+#pragma omp parallel for
+  for (int i = 0; i < k; ++i) { // the main loop over tasks
+    ...
+  }
+\endcode
+and compiling the code with -fopenmp, for g++, or turning on OpenMP
+support in Visual Studio (C/C++ -> Language -> OpenMP Support).  OpenMP
+is easy to configure using cmake (see the file, examples/CMakeLists.txt)
+
+RandomThread.cpp is a complete program that carries out this
+computation.  Running \verbatim
+RandomThread -n 1e10 \endverbatim
+gives \verbatim
+Estimate volume of a 4-dimensional sphere;
+samples = -n 10000000000; tasks = -k 100; leapfrog stride = -l 4;
+using RandomEngine<SFMT19937<Random_u32>,MixerSFMT>
+with master seed = -s [64121,1307135579,11192,562213576,2011].
+Estimated volume = 4.93475199 \endverbatim
+On an 8-core Intel Xeon, x86_64 2.66GHz machine with SSE2 instructions
+this takes about 70 sec.  The \e exact result for the volume of a
+4-dimensional sphere is &pi;<sup>2</sup>/2 = 4.9348022...
+
+You can verify that goals 3--5 have been met by varying the number
+of threads allocated.  This is accomplished by setting the environment
+variable <code>OMP_NUM_THREADS</code> at run time.  In particular,
+setting this to 1 causes the code to be executed serially; thus
+\verbatim
+env OMP_NUM_THREADS=1 RandomThread -n 1e10 -s 64121,1307135579,11192,562213576,2011
+\endverbatim
+returns the <i>identical</i> result, 4.93475199 (but takes about 8 times
+longer).
+
+<center>
+Back to \ref programming.  Forward to \ref function.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page function Function index
+
+<center>
+Back to \ref parallel.  Forward to \ref old.  Up to \ref contents.
+</center>
+
+The relation between Random and its base classes is through template
+arguments and this defeats doxygen's indexing capabilities.  Here you
+will all the public elements of Random listed together with a more basic
+declaration that doxygen can provide a link for.
+
+These problems with doxygen do not extend to the documentation for
+distributions for which you can follow the links in \ref otherdist.
+
+Here is the key to the types of the the variables
+ - r: RandomLib::Random
+ - g, g1, g2: RandomLib::Random (or RandomLib::RandomGenerator)
+
+typedefs and consts
+ - Random::seed_type; &nbsp; &nbsp;
+   RandomLib::RandomSeed::seed_type
+ - Random::result_type; &nbsp; &nbsp;
+   RandomLib::RandomEngine::result_type
+ - Random::width; &nbsp; &nbsp;
+   RandomLib::RandomEngine::width
+ - Random::min; &nbsp; &nbsp;
+   RandomLib::RandomEngine::min
+ - Random::max; &nbsp; &nbsp;
+   RandomLib::RandomEngine::max
+
+Setting and examining the seed
+ - Random g(v); &nbsp; &nbsp;
+   RandomLib::RandomEngine::RandomEngine(const std::vector<IntType>&)
+ - Random g(a, b); &nbsp; &nbsp;
+   RandomLib::RandomEngine::RandomEngine(InputIterator, InputIterator)
+ - Random g(n); &nbsp; &nbsp;
+   RandomLib::RandomEngine::RandomEngine(seed_type)
+ - Random g; &nbsp; &nbsp;
+   RandomLib::RandomEngine::RandomEngine()
+ - Random g(s); &nbsp; &nbsp;
+   RandomLib::RandomEngine::RandomEngine(const std::string&)
+ - g.Reseed(v); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Reseed(const std::vector<IntType>&)
+ - g.Reseed(a,b); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Reseed(InputIterator a, InputIterator b)
+ - g.Reseed(n); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Reseed(seed_type n)
+ - g.Reseed(); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Reseed()
+ - g.Reseed(s); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Reseed(const std::string& s)
+ - g.Seed(); &nbsp; &nbsp;
+   RandomLib::RandomSeed::Seed()
+ - g.SeedString(); &nbsp; &nbsp;
+   RandomLib::RandomSeed::SeedString()
+
+Static functions for seed management
+ - Random::SeedWord(); &nbsp; &nbsp;
+   RandomLib::RandomSeed::SeedWord();
+ - Random::SeedVector(); &nbsp; &nbsp;
+   RandomLib::RandomSeed::SeedVector();
+ - Random::VectorToString(v); &nbsp; &nbsp;
+   RandomLib::RandomSeed::VectorToString(const std::vector<IntType>&)
+ - Random::StringToVector(s); &nbsp; &nbsp;
+   RandomLib::RandomSeed::StringToVector(const std::string&)
+
+I/O
+ - g.Save(os, bin); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Save(std::ostream&, bool) const
+ - g.Load(os, bin); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Load(std::istream&, bool)
+ - os << g; &nbsp; &nbsp;
+   RandomLib::RandomEngine::operator<<()
+ - is >> g; &nbsp; &nbsp;
+   RandomLib::RandomEngine::operator>>()
+
+Functions returning random integers
+ - g(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::operator()()
+ - Ran(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Ran()
+ - Ran32(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Ran32()
+ - Ran64(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Ran64()
+ - r(n); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::operator()(result_type n)
+ - r.Integer(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Integer()
+ - r.Integer(n); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Integer(IntType n)
+ - r.IntegerC(n); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::IntegerC(IntType n)
+ - r.IntegerC(m, n); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::IntegerC(IntType m, IntType n)
+
+Functions returning random reals
+ - r.Fixed(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Fixed()
+ - r.Real(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Real()
+ - r.FixedU(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedU()
+ - r.FixedN(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedN()
+ - r.FixedW(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedW()
+ - r.FixedS(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedS()
+ - r.FixedO(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedO()
+ - r.FixedC(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FixedC()
+ - r.Float(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Float()
+ - r.FloatU(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FloatU()
+ - r.FloatN(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FloatN()
+ - r.FloatW(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::FloatW()
+
+Functions returning random booleans
+ - r.Boolean(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Boolean()
+ - r.Prob(p); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Prob(NumericType)
+ - r.Prob(p, q); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Prob(NumericType, NumericType)
+
+Function returning random bits
+ - r.Bits<n>(); &nbsp; &nbsp;
+   RandomLib::RandomCanonical::Bits<nbits>()
+
+Setting position in sequence
+ - g.Count(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Count()
+ - g.SetCount(n); &nbsp; &nbsp;
+   RandomLib::RandomEngine::SetCount(long long)
+ - g.StepCount(n); &nbsp; &nbsp;
+   RandomLib::RandomEngine::StepCount(long long)
+ - g.Reset(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Reset()
+ - g.SetStride(n, k); &nbsp; &nbsp;
+   RandomLib::RandomEngine::SetStride(unsigned, unsigned)
+ - g.GetStride(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::GetStride()
+
+Other
+ - Random::Global; &nbsp; &nbsp;
+   RandomLib::Random::Global
+ - Random g2(g1); &nbsp; &nbsp;
+   default copy constructor
+ - g2 = g1; &nbsp; &nbsp;
+   default copy assignment
+ - g1 == g2; &nbsp; &nbsp;
+   RandomLib::RandomEngine::operator==()
+ - g1 != g2; &nbsp; &nbsp;
+   RandomLib::RandomEngine::operator!=()
+ - RandomGenerator::Name(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::Name()
+ - RandomGenerator::SelfTest(); &nbsp; &nbsp;
+   RandomLib::RandomEngine::SelfTest()
+ - g1.swap(g2); &nbsp; &nbsp;
+   RandomLib::RandomEngine::swap()
+ - swap(g1, g2); &nbsp; &nbsp;
+   std::swap()
+
+<center>
+Back to \ref parallel.  Forward to \ref old.  Up to \ref contents.
+</center>
+**********************************************************************/
+/**
+\page old Old versions
+
+<center>
+Back to \ref function.  Up to \ref contents.
+</center>
+
+List of versions in reverse chronological order together with a brief
+list of changes.  (Note: Old versions of the library use a year-month
+style of numbering.  Now, the library uses a major and minor version
+number.)  Recent versions of %RandomLib are available at
+<a href="http://sf.net/projects/randomlib/files/distrib/">
+http://sourceforge.net/projects/randomlib/files/distrib/</a>.
+Older versions are in
+<a href="http://sf.net/projects/randomlib/files/distrib/archive/">
+http://sourceforge.net/projects/randomlib/files/distrib/archive/</a>.
+
+The corresponding documentation for these versions is obtained by
+clicking on the &ldquo;Version <i>m.nn</i>&rdquo; links below.  Some of
+the links in the documentaion of older versions may be out of date (in
+particular the links for the source code will not work if the code has
+been migrated to the archive subdirectory).  All the releases are
+available as tags &ldquo;r<i>m.nn</i>&rdquo; in the the "release" branch
+of the git repository for %RandomLib.
+
+ - <a href="http://randomlib.sf.net/1.9">Version 1.9</a>
+   (released 2014-03-15)
+   - Many changes in cmake support:
+     - minimum version of cmake needed increased to 2.8.4 (which was
+       released in 2011-02);
+     - allow building both shared and static libraries with <code>-D
+       RANDOMLIB_LIB_TYPE=BOTH</code>;
+     - both shared and static libraries (Release plus Debug) included in
+       binary installer;
+     - find_package uses COMPONENTS and RandomLib_USE_STATIC_LIBS to
+       select the library to use;
+     - find_package version checking allows nmake and Visual Studio
+       generators to interoperate on Windows;
+     - find_package (%RandomLib ...) requires that %RandomLib be
+       capitalized correctly;
+     - on Unix/Linux, don't include the version number in directory for
+       the cmake configuration files;
+     - defaults for RANDOMLIB_DOCUMENTATION is now OFF;
+     - the configuration parameters PACKAGE_PATH and INSTALL_PATH are
+       now deprecated (use CMAKE_INSTALL_PREFIX instead).
+   - _d added to library name in Windows project files.
+
+ - <a href="http://randomlib.sf.net/1.8">Version 1.8</a>
+   (released 2013-10-08)
+   - Work around a problem with Visual Studio 9.
+
+ - <a href="http://randomlib.sf.net/1.7">Version 1.7</a>
+   (released 2013-09-27)
+   - Add RandomLib::UniformInteger, RandomLib::DiscreteNormal, and
+     RandomLib::DiscreteNormalAlt.
+   - cmake configuration changes:
+     - use folders in Visual Studio to reduce clutter;
+     - improving setting of runtime path for Unix-like OS;
+     - install PDB files when compiling with Visual Studio to aid
+       debugging.
+   - Eliminate link error in debug mode (in RandomMixer) and various
+     warning messages.
+   - Add macros RANDOMLIB_VERSION_{MAJOR,MINOR,PATCH} to Config.h.
+
+ - <a href="http://randomlib.sf.net/1.6">Version 1.6</a>
+   (released 2012-09-13)
+   - Documentation changes:
+     - remove html documentation from distribution and use web links if
+       doxygen is not available;
+     - use doxygen tags to document exceptions;
+     - use Greek letters where appropriate (requires doxygen 1.8.1.2 or
+       later);
+     - use MathJax to display equations.
+   - Support building with cygwin and mingw32-g++ on Windows (via
+     cmake).
+   - Releases via git now use the "release" branch of the main
+     randomlib repository (instead of a separate randomlib-release
+     repository).
+
+ - <a href="http://randomlib.sf.net/1.5">Version 1.5</a>
+   (released 2012-03-20)
+   - cmake tweaks:
+     - improve find_package's matching of compiler versions;
+     - CMAKE_INSTALL_PREFIX set from CMAKE_PREFIX_PATH if available;
+     - fix cmake warning with Visual Studio Express.
+   - Fix for compilation with Visual Studio 11.
+
+ - <a href="http://randomlib.sf.net/1.4">Version 1.4</a>
+   (released 2012-02-21)
+   - Add \ref mpfr.
+   - Add RandomLib::InversePiProb and RandomLib::InverseEProb.
+   - Change RandomLib::RandomNumber to a signed-magnitude representation;
+     this results in slight incompatibilities in the interface.
+   - A tweak to RandomLib::ExactNormal to minimize the number of digits
+     generated.
+   - Improve efficiency of RandomLib::ExactExponential.
+   - Improve documentation on configuration with cmake.
+   - cmake's find_package ensures that the compiler versions match on
+     Windows.
+
+ - <a href="http://randomlib.sf.net/1.3">Version 1.3</a>
+   (released 2012-01-21)
+   - Improve algorithm used by RandomLib::ExactNormal class.
+   - Add internal documenation to the cmake configuration files.
+
+ - <a href="http://randomlib.sf.net/1.2">Version 1.2</a>
+   (released 2011-12-20)
+   - Change license to MIT/X11.
+   - Add RandomLib::ExactNormal class.  This enables you to sample \e
+     exactly from a normal distribution with zero mean and unit variance
+     (assuming that the underlying generator is perfect).
+   - Document function arguments and return values.
+   - Include OpenMP header in RandomThread.cpp.
+
+ - <a href="http://randomlib.sf.net/1.1">Version 1.1</a>
+   (released 2011-09-21)
+   - Ensure that randomlib-config.cmake is relocatable.
+
+ - <a href="http://randomlib.sf.net/1.0">Version 1.0</a>
+   (released 2011-08-12)
+   - cmake changes:
+     - include FindRandom.cmake in distribution;
+     - building with cmake creates and installs randomlib-config.cmake;
+     - better support for building a shared library under Windows.
+
+ - <a href="http://randomlib.sf.net/2011-06">Version 2011-06</a>
+   (released 2011-06-04)
+   - Convert parallelization example, RandomThread.cpp, to OpenMP.
+   - Migrate source from subversion to git.
+
+ - <a href="http://randomlib.sf.net/2011-05">Version 2011-05</a>
+   (released 2011-05-17)
+   - INCOMPATIBLE CHANGE: the default constructor Random r; sets the seed
+     to [].  Use r.Reseed(); to reset the seed to Random::SeedVector();
+   - Make sure Global generators are exported to the dll.
+
+ - <a href="http://randomlib.sf.net/2011-04">Version 2011-04</a>
+   (released 2011-04-12)
+   - Use cmake for configuration.
+   - Improve documentation on installation process.
+   - Improve documentation of parallelization.
+   - Remove examples RandomPermutation and shuffle and add
+     RandomCoverage, RandomExact, RandomLambda, RandomSave, and
+     RandomThread.
+   - Add specialized swap.
+   - Ensure the code works with compilers with no long double type.
+   - Add new and delete operators for SFMT19937 under Visual Studio.
+
+ - <a href="http://randomlib.sf.net/2010-01">Version 2010-01</a>
+   (released 2011-01-11)
+   - Move to SourceForge.
+
+ - <a href="http://randomlib.sf.net/2009-02">Version 2009-02</a>
+   (released 2009-02-10)
+   - RandomPermutation and shuffle accept -r option to undo a
+     permutation or shuffle.
+   - Minor documentation fixes.
+
+ - <a href="http://randomlib.sf.net/2008-11">Version 2008-11</a>
+   (released 2008-11-10)
+   - Changes to suppress warnings with g++ 4.3.
+   - Optional support for C++11's static_assert.
+   - Document RandomPermutation and shuffle.
+   - Minor documentation fixes.
+
+ - <a href="http://randomlib.sf.net/2008-04">Version 2008-04</a>
+   (released 2008-04-28)
+   - Reorganized so random algorithm and mixer can be selected
+     independently.  This eliminated a lot of duplicate code.
+   - This requires a new, incompatible, output format.  Format is now
+     independent of the current base of the stream.
+   - Name() now returns more informative name.
+   - SFMT19937 init_by_array mixer adopted for MT19937 generators.  This
+     is an incompatible change for the MT19937 generators.  However it
+     is possible to hook the MT19937 engine with the MixerMT1 mixers to
+     recover the previous functionality using
+     - RandomEngine<MT19937<Random_u32>,&nbsp;MixerMT1<Random_u32>&nbsp;>
+     - RandomEngine<MT19937<Random_u64>,&nbsp;MixerMT1<Random_u64>&nbsp;>
+   - The way 32-bit results are glued together for to provide the
+     Ran64() result is now LSB ordered.  Previously the 32-bit version
+     of MT19937 used MSB ordering here.  This means that certain large
+     integer results will be different for
+     RandomEngine<MT19937<Random_u32>,&nbsp;MixerMT1<Random_u32>&nbsp;>
+   - Support AltiVec instructions on PowerPC for SFTM19937.  Also use
+     longer long double on PowerPC.
+   - Add -s seed option to shuffle and RandomPermutation.
+   - Use strtoull (where available) instead of strtoul in convert a
+     string seed to numeric form.
+   - Switch project files to MS Visual Studio 2005.
+   - Use SeedVector() instead of SeedWord() for the default constructor
+     for Random.
+   - Make 32-bit version of SFMT19937 the default generator.
+
+ - <a href="http://randomlib.sf.net/2008-01">Version 2008-01</a>
+   (released 2008-01-07)
+   - This is a maintenance release in anticipation of a forthcoming
+     major restructuring of the code.
+   - Use table of powers of two for g++ 4.1.
+   - Minor documentation fixes.
+
+ - <a href="http://randomlib.sf.net/2007-05">Version 2007-05</a>
+   (released 2007-05-21)
+   - Add SFMT19937 generators.
+   - Introduce RandomGenerator::Name() to identify generator.
+   - Change define used to make 64-bit generator the default.
+   - Add RandomSelect::Weight.
+   - Ensure portability to systems where uint32_t is longer than 32
+     bits.
+
+ - <a href="http://randomlib.sf.net/2007-04">Version 2007-04</a>
+   (released 2007-04-12)
+   - Add utilities RandomPermutation and shuffle.
+   - Implement MSB ordering on binary I/O in a portable way.
+
+ - <a href="http://randomlib.sf.net/2006-12">Version 2006-12</a>
+   (released 2006-12-05)
+   - Add leapfrogging.  The output format needed to be changed to
+     accommodate an extra word of data.  However, I/O routines can still
+     read the 2006-11 version.
+
+ - <a href="http://randomlib.sf.net/2006-11">Version 2006-11</a>
+   (released 2006-11-02)
+   - Introduce RandomCanonical class which accepts the random generator
+     as a template argument.
+   - This allows the inclusion of 32-bit and 64-bit versions of mt19937.
+   - Include checksum in I/O.
+   - Include boost serialization.
+
+ - <a href="http://randomlib.sf.net/2006-10">Version 2006-10</a>
+   (released 2006-10-05)
+   - Make 64-bit ready so a 64-bit version of mt19937 can be dropped in.
+   - Fix a bug in the seeding.  (This bug was triggered by seed length of
+     624 or greater; so it was unlikely to have been encountered in
+     practice.)
+   - Stop the special case treatment for
+     Random::IntegerC<T>(numeric_limits<T>::max()).  In some cases (e.g.,
+     T = int) this now gives different (but equivalent) results.
+
+ - Version 2006-09
+   - Add ExponentialProb, ExactExponential, ExactPower, and RandomNumber.
+   - Fix weakness in the seeding algorithm.  A given seed now gives a
+     random sequence different from previous version; so this is an
+     incompatible change.
+   - Restructure the documentation.
+   - Allow constructors to accept vectors of any integral type and
+     constructors with a pair of iterators.
+
+ - <a href="http://randomlib.sf.net/2006-08">Version 2006-08</a>
+   (released 2006-08-17)
+   - Improve efficiency of Integer(n) where n is a power of two.
+
+<center>
+Back to \ref function.  Up to \ref contents.
+</center>
+**********************************************************************/
