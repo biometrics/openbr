@@ -91,6 +91,7 @@ class DownloadTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_ENUMS(Mode)
+    Q_PROPERTY(Mode mode READ get_mode WRITE set_mode RESET reset_mode STORED false)
 
 public:
     enum Mode { Permissive,
