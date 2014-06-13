@@ -289,28 +289,22 @@ protected:
 };
 
 
-class StreamGallery : public TemplateProcessor
+struct StreamGallery : public TemplateProcessor
 {
-public:
-    StreamGallery()
-    {
-
-    }
-
     bool open(Template &input)
     {
         // Create a gallery
         gallery = QSharedPointer<Gallery>(Gallery::make(input.file));
-        // Failed ot open the gallery?
+        // Failed to open the gallery?
         if (gallery.isNull()) {
-            qDebug()<<"Failed to create gallery!";
+            qDebug("Failed to create gallery!");
             galleryOk = false;
             return false;
         }
 
         // Set up state variables for future reads
         galleryOk = true;
-        gallery->set_readBlockSize(100);
+        gallery->readBlockSize = 100;
         nextIdx = 0;
         lastBlock = false;
         return galleryOk;
@@ -334,12 +328,10 @@ public:
             // Otherwise, read another block
             if (!lastBlock) {
                 currentData = gallery->readBlock(&lastBlock);
-                if (currentData.empty())
-                    qFatal("Expected at least one template.");
                 nextIdx = 0;
             }
-            else
-            {
+
+            if (lastBlock || currentData.empty()) {
                 galleryOk = false;
                 return false;
             }
