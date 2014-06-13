@@ -1,5 +1,6 @@
+#include <QtCore>
+
 #include "openbr_internal.h"
-#include <QRegularExpression>
 
 namespace br
 {
@@ -93,6 +94,25 @@ class IfMetadataTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, IfMetadataTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Represent the metadata as JSON template data.
+ * \author Josh Klontz \cite jklontz
+ */
+class JSONTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.file = src.file;
+        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(src.file.localMetadata())).toJson(QJsonDocument::Compact);
+        dst += cv::Mat(1, json.size(), CV_8UC1, (void*) json.data());
+    }
+};
+
+BR_REGISTER(Transform, JSONTransform)
 
 /*!
  * \ingroup transforms
