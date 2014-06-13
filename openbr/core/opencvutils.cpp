@@ -345,12 +345,12 @@ QDataStream &operator<<(QDataStream &stream, const Mat &m)
     stream << rows << cols << type;
 
     // Write data
-    int len = rows*cols*m.elemSize();
+    int len = rows * cols * m.elemSize();
     stream << len;
     if (len > 0) {
         if (!m.isContinuous()) qFatal("Can't serialize non-continuous matrices.");
         int written = stream.writeRawData((const char*)m.data, len);
-        if (written != len) qFatal("Serialization failure.");
+        if (written != len) qFatal("Mat serialization failure, expected: %d bytes, wrote: %d bytes.", len, written);
     }
     return stream;
 }
@@ -366,9 +366,9 @@ QDataStream &operator>>(QDataStream &stream, Mat &m)
     int len;
     stream >> len;
     if (len > 0) {
-        if (!m.isContinuous()) qFatal("opencvutils.cpp operator>> Mat can't deserialize non-continuous matrices.");
-        int written = stream.readRawData((char*)m.data, len);
-        if (written != len) qFatal("opencvutils.cpp operator>> Mat serialization failure.");
+        if (!m.isContinuous()) qFatal("Can't deserialize non-continuous matrices.");
+        const int read = stream.readRawData((char*)m.data, len);
+        if (read != len) qFatal("Mat deserialization failure, exptected: %d bytes, read: %d bytes.", len, read);
     }
     return stream;
 }
