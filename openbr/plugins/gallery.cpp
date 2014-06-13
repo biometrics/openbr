@@ -207,6 +207,9 @@ class utGallery : public BinaryGallery
                 dst += bytesRead;
             }
 
+            if (QCryptographicHash::hash(data, QCryptographicHash::Md5) != QByteArray((const char*)ut->templateID, 16))
+                qFatal("MD5 hash check failure!");
+
             if (ut->algorithmID == 5) {
                 QDataStream stream(&data, QIODevice::ReadOnly);
                 stream >> t;
