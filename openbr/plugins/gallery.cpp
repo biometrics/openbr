@@ -248,6 +248,7 @@ class utdGallery : public BinaryGallery
     Template readTemplate()
     {
         qFatal("Not supported");
+        return Template();
     }
 
     void write(const Template &t)
