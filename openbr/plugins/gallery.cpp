@@ -14,8 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <QCryptographicHash>
-#include <QRegularExpression>
+#include <QtCore>
 #include <QtConcurrentRun>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
@@ -261,6 +260,64 @@ class utdGallery : public BinaryGallery
 };
 
 BR_REGISTER(Gallery, utdGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief Newline-separated URLs.
+ * \author Josh Klontz \cite jklontz
+ */
+class urlGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        Template t;
+        t.file.set("URL", QString::fromLocal8Bit(gallery.readLine()).simplified());
+        return t;
+    }
+
+    void write(const Template &t)
+    {
+        const QString url = t.file.get<QString>("URL", "");
+        if (!url.isEmpty()) {
+            gallery.write(qPrintable(url));
+            gallery.write("\n");
+        }
+    }
+};
+
+BR_REGISTER(Gallery, urlGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief Newline-separated JSON objects.
+ * \author Josh Klontz \cite jklontz
+ */
+class jsonGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        QJsonParseError error;
+        File file = QJsonDocument::fromJson(gallery.readLine(), &error).object().toVariantMap();
+        if (error.error != QJsonParseError::NoError)
+            qDebug() << error.errorString();
+        return file;
+    }
+
+    void write(const Template &t)
+    {
+        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(t.file.localMetadata())).toJson(QJsonDocument::Compact);
+        if (!json.isEmpty()) {
+            gallery.write(json);
+            gallery.write("\n");
+        }
+    }
+};
+
+BR_REGISTER(Gallery, jsonGallery)
 
 /*!
  * \ingroup galleries
