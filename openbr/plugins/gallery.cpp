@@ -214,7 +214,7 @@ class utGallery : public BinaryGallery
                 QDataStream stream(&data, QIODevice::ReadOnly);
                 stream >> t;
             } else {
-                t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()));
+                t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()).clone() /* We don't want a shallow copy! */);
             }
 
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut->imageID, 16).toHex()));
