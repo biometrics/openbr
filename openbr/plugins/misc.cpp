@@ -150,7 +150,7 @@ private:
                 dst += (mode == Encoded) ? encoded : decoded;
         }
 
-        dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5)));
+        dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex()));
         dst.file.set("AlgorithmID", mode == Decoded ? 5 : 3);
     }
 };

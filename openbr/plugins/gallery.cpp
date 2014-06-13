@@ -199,7 +199,7 @@ class utGallery : public BinaryGallery
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
                 if (bytesRead <= 0)
-                    qFatal("Unexepected EOF when reading universal template data.");
+                    qFatal("Unexepected EOF when reading universal template data, needed: %d more bytes.", bytesNeeded);
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
@@ -224,7 +224,7 @@ class utGallery : public BinaryGallery
         if (t.empty())
             return;
 
-        const QByteArray imageID = t.file.get<QByteArray>("ImageID");
+        const QByteArray imageID = QByteArray::fromHex(t.file.get<QByteArray>("ImageID"));
         if (imageID.size() != 16)
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
@@ -239,8 +239,8 @@ class utGallery : public BinaryGallery
         const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
         const uint32_t size = data.size();
 
-        gallery.write(QByteArray::fromHex(imageID));
-        gallery.write(QByteArray::fromHex(templateID));
+        gallery.write(imageID);
+        gallery.write(templateID);
         gallery.write((const char*) &algorithmID, 4);
         gallery.write((const char*) &size, 4);
         gallery.write(data);
