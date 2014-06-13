@@ -956,6 +956,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals = new Context();
     Globals->init(File());
     Globals->useGui = useGui;
+    Globals->algorithm = "Identity";
 
     Common::seedRNG();
 

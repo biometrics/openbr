@@ -236,6 +236,31 @@ BR_REGISTER(Gallery, utGallery)
 
 /*!
  * \ingroup galleries
+ * \brief Newline-separated br_universal_template data.
+ * \author Josh Klontz \cite jklontz
+ */
+class utdGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        qFatal("Not supported");
+    }
+
+    void write(const Template &t)
+    {
+        if (t.empty())
+            return;
+        gallery.write(QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize()));
+        gallery.write("\n");
+    }
+};
+
+BR_REGISTER(Gallery, utdGallery)
+
+/*!
+ * \ingroup galleries
  * \brief Reads/writes templates to/from folders.
  * \author Josh Klontz \cite jklontz
  * \param regexp An optional regular expression to match against the files extension.
