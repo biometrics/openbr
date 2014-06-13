@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QtNetwork>
 #include <QElapsedTimer>
 #include <QRegularExpression>
 #include <opencv2/highgui/highgui.hpp>
@@ -80,6 +81,77 @@ class DecodeTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, DecodeTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Downloads an image from a URL
+ * \author Josh Klontz \cite jklontz
+ */
+class DownloadTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_ENUMS(Mode)
+
+public:
+    enum Mode { Permissive,
+                Encoded,
+                Decoded };
+private:
+    BR_PROPERTY(Mode, mode, Encoded)
+
+    mutable QNetworkAccessManager nam;
+    mutable QMutex namLock;
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.file = src.file;
+        QString url = src.file.get<QString>("URL").simplified();
+        if (url.isEmpty())
+            return;
+
+        if (url.startsWith("file://"))
+            url = url.mid(7);
+
+        QIODevice *device = NULL;
+        if (QFileInfo(url).exists()) {
+            device = new QFile(url);
+            device->open(QIODevice::ReadOnly);
+        } else {
+            namLock.lock();
+            QNetworkReply *reply = nam.get(QNetworkRequest(url));
+            namLock.unlock();
+
+            reply->waitForReadyRead(-1);
+            while (!reply->isFinished())
+                QCoreApplication::processEvents();
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qDebug() << reply->errorString() << url;
+                reply->deleteLater();
+            } else {
+                device = reply;
+            }
+        }
+
+        if (!device)
+            return;
+
+        const QByteArray data = device->readAll();
+        delete device;
+        device = NULL;
+
+        Mat encoded(1, data.size(), CV_8UC1, (void*)data.data());
+        if (mode == Permissive) {
+            dst += encoded;
+        } else {
+            Mat decoded = imdecode(encoded, IMREAD_UNCHANGED);
+            if (!decoded.empty())
+                dst += (mode == Encoded) ? encoded : decoded;
+        }
+    }
+};
+
+BR_REGISTER(Transform, DownloadTransform)
 
 /*!
  * \ingroup transforms
