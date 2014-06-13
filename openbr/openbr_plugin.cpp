@@ -863,8 +863,10 @@ void br::Context::printStatus()
 {
     if (verbose || quiet || (totalSteps < 2)) return;
     const float p = progress();
-    if (p < 1)
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)), qPrintable(QtUtils::toTime(timeRemaining())), Globals->currentStep);
+    if (p < 1) {
+        int s = timeRemaining();
+        fprintf(stderr,"%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
+    }
 }
 
 float br::Context::progress() const
