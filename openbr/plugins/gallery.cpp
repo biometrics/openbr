@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
 #ifndef BR_EMBEDDED

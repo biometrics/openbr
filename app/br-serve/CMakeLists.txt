@@ -4,6 +4,7 @@ set(QHTTPSERVER_SRC ${QHTTPSERVER_DIR}/src/qhttpconnection.cpp
                     ${QHTTPSERVER_DIR}/src/qhttprequest.cpp
                     ${QHTTPSERVER_DIR}/src/qhttpserver.cpp
                     ${QHTTPSERVER_DIR}/http-parser/http_parser.c)
+add_definitions(-DQHTTPSERVER_EXPORT)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qhttpserver/src
                     ${CMAKE_SOURCE_DIR}/3rdparty/qhttpserver/http-parser
                     ${CMAKE_CURRENT_BINARY_DIR})
