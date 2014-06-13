@@ -502,6 +502,11 @@ private:
         else            trainable = false;
     }
 
+    bool timeVarying() const
+    {
+        return transform->timeVarying();
+    }
+
     void train(const TemplateList &data)
     {
         if (QFileInfo(getFileName()).exists())
@@ -525,6 +530,21 @@ private:
     void project(const TemplateList &src, TemplateList &dst) const
     {
         transform->project(src, dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        transform->projectUpdate(src, dst);
+    }
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        transform->projectUpdate(src, dst);
+    }
+
+    void finalize(TemplateList & output)
+    {
+        transform->finalize(output);
     }
 
     QString getFileName() const
