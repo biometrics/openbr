@@ -52,6 +52,8 @@ public slots:
         if (urlQuery.hasQueryItem("url")) {
             process.write(qPrintable(QString(urlQuery.queryItemValue("url") + "\n")));
             process.waitForReadyRead();
+            if (process.error() != QProcess::UnknownError)
+                qFatal("%s\n", qPrintable(process.errorString()));
             message = process.readAll();
         } else {
             QString path = request->path();
