@@ -365,7 +365,7 @@ class jsonGallery : public BinaryGallery
 
     void writeTemplate(const Template &t)
     {
-        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(t.file.localMetadata())).toJson(QJsonDocument::Compact);
+        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(t.file.localMetadata())).toJson().replace('\n', "");
         if (!json.isEmpty()) {
             gallery.write(json);
             gallery.write("\n");
