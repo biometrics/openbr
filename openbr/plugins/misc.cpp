@@ -142,6 +142,7 @@ private:
         device = NULL;
 
         Mat encoded(1, data.size(), CV_8UC1, (void*)data.data());
+        encoded = encoded.clone();
         if (mode == Permissive) {
             dst += encoded;
         } else {
