@@ -240,6 +240,29 @@ class utGallery : public BinaryGallery
             stream << t;
         } else {
             data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+
+            if (algorithmID == -1) {
+                const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
+                const QPointF firstEye   = t.file.get<QPointF>("First_Eye");
+                const QPointF secondEye  = t.file.get<QPointF>("Second_Eye");
+                const float x         = frontalFace.x();
+                const float y         = frontalFace.y();
+                const float width     = frontalFace.width();
+                const float height    = frontalFace.height();
+                const float rightEyeX = firstEye.x();
+                const float rightEyeY = firstEye.y();
+                const float leftEyeX  = secondEye.x();
+                const float leftEyeY  = secondEye.y();
+
+                data.append((const char*)&x        , sizeof(float));
+                data.append((const char*)&y        , sizeof(float));
+                data.append((const char*)&width    , sizeof(float));
+                data.append((const char*)&height   , sizeof(float));
+                data.append((const char*)&rightEyeX, sizeof(float));
+                data.append((const char*)&rightEyeY, sizeof(float));
+                data.append((const char*)&leftEyeX , sizeof(float));
+                data.append((const char*)&leftEyeY , sizeof(float));
+            }
         }
         const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
         const uint32_t size = data.size();
