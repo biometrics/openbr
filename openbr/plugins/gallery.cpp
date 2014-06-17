@@ -315,7 +315,9 @@ class urlGallery : public BinaryGallery
     Template readTemplate()
     {
         Template t;
-        t.file.set("URL", QString::fromLocal8Bit(gallery.readLine()).simplified());
+        const QString url = QString::fromLocal8Bit(gallery.readLine()).simplified();
+        if (!url.isEmpty())
+            t.file.set("URL", url);
         return t;
     }
 
