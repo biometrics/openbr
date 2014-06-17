@@ -194,11 +194,11 @@ class utGallery : public BinaryGallery
     Template readTemplate()
     {
         Template t;
-        br_utemplate ut = (br_utemplate) malloc(sizeof(br_universal_template));
-        if (gallery.read((char*)ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
-            QByteArray data(ut->size, Qt::Uninitialized);
+        br_universal_template ut;
+        if (gallery.read((char*)&ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
+            QByteArray data(ut.size, Qt::Uninitialized);
             char *dst = data.data();
-            qint64 bytesNeeded = ut->size;
+            qint64 bytesNeeded = ut.size;
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
                 if (bytesRead <= 0)
@@ -207,21 +207,20 @@ class utGallery : public BinaryGallery
                 dst += bytesRead;
             }
 
-            if (QCryptographicHash::hash(data, QCryptographicHash::Md5) != QByteArray((const char*)ut->templateID, 16))
+            if (QCryptographicHash::hash(data, QCryptographicHash::Md5) != QByteArray((const char*)ut.templateID, 16))
                 qFatal("MD5 hash check failure!");
 
-            if (ut->algorithmID == 5) {
+            if (ut.algorithmID == 5) {
                 QDataStream stream(&data, QIODevice::ReadOnly);
                 stream >> t;
             } else {
                 t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()).clone() /* We don't want a shallow copy! */);
             }
 
-            t.file.set("ImageID", QVariant(QByteArray((const char*)ut->imageID, 16).toHex()));
-            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut->templateID, 16).toHex()));
-            t.file.set("AlgorithmID", ut->algorithmID);
+            t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
+            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
+            t.file.set("AlgorithmID", ut.algorithmID);
         }
-        free(ut);
         return t;
     }
 
