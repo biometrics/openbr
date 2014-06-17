@@ -1368,11 +1368,17 @@ BR_EXPORT void Train(const File &input, const File &model);
  * \see br_enroll
  */
 BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
+
 /*!
  * \brief High-level function for enrolling templates.
  * \see br_enroll
  */
 BR_EXPORT void Enroll(TemplateList &tmpl);
+
+/*!
+ * \brief A naive alternative to \ref br::Enroll
+ */
+BR_EXPORT void Project(const File &input, const File &output);
 
 /*!
  * \brief High-level function for comparing galleries.

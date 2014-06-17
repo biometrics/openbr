@@ -130,10 +130,21 @@ class BinaryGallery : public Gallery
                 continue;
             templates.append(t);
             templates.last().file.set("progress", totalSize());
+
+            // Special case for pipes where we want to process data as soon as it is available
+            if (gallery.isSequential())
+                break;
         }
 
         *done = stream.atEnd();
         return templates;
+    }
+
+    void write(const Template &t)
+    {
+        writeTemplate(t);
+        if (gallery.isSequential())
+            gallery.flush();
     }
 
 protected:
@@ -151,6 +162,7 @@ protected:
     }
 
     virtual Template readTemplate() = 0;
+    virtual void writeTemplate(const Template &t) = 0;
 };
 
 /*!
@@ -172,7 +184,7 @@ class galGallery : public BinaryGallery
         return t;
     }
 
-    void write(const Template &t)
+    void writeTemplate(const Template &t)
     {
         if (t.isEmpty() && t.file.isNull())
             return;
@@ -224,7 +236,7 @@ class utGallery : public BinaryGallery
         return t;
     }
 
-    void write(const Template &t)
+    void writeTemplate(const Template &t)
     {
         if (t.empty())
             return;
@@ -292,7 +304,7 @@ class utdGallery : public BinaryGallery
         return Template();
     }
 
-    void write(const Template &t)
+    void writeTemplate(const Template &t)
     {
         if (t.empty())
             return;
@@ -321,7 +333,7 @@ class urlGallery : public BinaryGallery
         return t;
     }
 
-    void write(const Template &t)
+    void writeTemplate(const Template &t)
     {
         const QString url = t.file.get<QString>("URL", "");
         if (!url.isEmpty()) {
@@ -351,7 +363,7 @@ class jsonGallery : public BinaryGallery
         return file;
     }
 
-    void write(const Template &t)
+    void writeTemplate(const Template &t)
     {
         const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(t.file.localMetadata())).toJson(QJsonDocument::Compact);
         if (!json.isEmpty()) {

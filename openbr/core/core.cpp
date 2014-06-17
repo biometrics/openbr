@@ -199,6 +199,22 @@ struct AlgorithmCore
         return files;
     }
 
+    void project(File input, File output)
+    {
+        qDebug("Projecting %s%s", qPrintable(input.flat()),
+               output.isNull() ? "" : qPrintable(" to " + output.flat()));
+
+        QScopedPointer<Gallery> inputGallery(Gallery::make(input));
+        QScopedPointer<Gallery> outputGallery(Gallery::make(output));
+
+        bool done;
+        do {
+            TemplateList templates = inputGallery->readBlock(&done);
+            templates >> *transform;
+            outputGallery->writeBlock(templates);
+        } while (!done);
+    }
+
     void enroll(TemplateList &data)
     {
         if (transform.isNull()) qFatal("Null transform.");
@@ -611,6 +627,11 @@ void br::Train(const File &input, const File &model)
 FileList br::Enroll(const File &input, const File &gallery)
 {
     return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
+}
+
+void br::Project(const File &input, const File &output)
+{
+    return AlgorithmManager::getAlgorithm(output.get<QString>("algorithm"))->project(input, output);
 }
 
 void br::Enroll(TemplateList &tl)

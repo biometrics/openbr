@@ -99,6 +99,11 @@ void br_enroll_n(int num_inputs, const char *inputs[], const char *gallery)
     else                Enroll(File(inputs[0]), gallery);
 }
 
+void br_project(const char *input, const char *gallery)
+{
+    Project(File(input), File(gallery));
+}
+
 float br_eval(const char *simmat, const char *mask, const char *csv)
 {
     return Evaluate(simmat, mask, csv);

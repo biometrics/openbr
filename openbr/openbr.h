@@ -145,6 +145,11 @@ BR_EXPORT void br_enroll(const char *input, const char *gallery = "");
 BR_EXPORT void br_enroll_n(int num_inputs, const char *inputs[], const char *gallery = "");
 
 /*!
+ * \brief A naive alternative to \ref br_enroll.
+ */
+BR_EXPORT void br_project(const char *input, const char *output);
+
+/*!
  * \brief Creates a \c .csv file containing performance metrics from evaluating the similarity matrix using the mask matrix.
  * \param simmat The \ref simmat to use.
  * \param mask The \ref mask to use.
