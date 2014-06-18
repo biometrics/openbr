@@ -14,17 +14,10 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <QFile>
-#include <QFileInfo>
-#include <QHash>
-#include <QMap>
-#include <QRegExp>
+#include <QtCore>
 #ifndef BR_EMBEDDED
 #include <QtXml>
 #endif // BR_EMBEDDED
-#include <algorithm>
-#include <limits>
-#include <openbr/openbr_plugin.h>
 
 #include "bee.h"
 #include "opencvutils.h"
@@ -33,23 +26,21 @@
 using namespace cv;
 using namespace br;
 
-/**** BEE ****/
-FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
+namespace BEE
+{
+
+FileList readSigset(const File &sigset, bool ignoreMetadata)
 {
     FileList fileList;
 
 #ifndef BR_EMBEDDED
     QDomDocument doc(sigset.fileName());
-    QFile file(sigset.resolved());
-    bool success;
-    success = file.open(QIODevice::ReadOnly); if (!success) qFatal("Unable to open %s for reading.", qPrintable(sigset));
-    success = doc.setContent(&file);
-
-    file.close();
-
-    if (!success) {
-        qWarning("Unable to parse %s.", qPrintable(sigset));
-        return fileList;
+    {
+        QFile file(sigset.resolved());
+        if (!file.open(QIODevice::ReadOnly))
+            qFatal("Unable to open %s for reading.", qPrintable(sigset));
+        if (!doc.setContent(&file))
+            qFatal("Unable to parse %s.", qPrintable(sigset));
     }
 
     QDomElement docElem = doc.documentElement();
@@ -105,7 +96,7 @@ FileList BEE::readSigset(const File &sigset, bool ignoreMetadata)
     return fileList;
 }
 
-void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata)
+void writeSigset(const QString &sigset, const FileList &files, bool ignoreMetadata)
 {
     QStringList lines; lines.reserve(3*files.size()+3);
     lines.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -137,7 +128,7 @@ void BEE::writeSigset(const QString &sigset, const br::FileList &files, bool ign
     QtUtils::writeFile(sigset, lines);
 }
 
-Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySigset)
+Mat readMatrix(const File &matrix, QString *targetSigset, QString *querySigset)
 {
     QFile file(matrix);
     bool success = file.open(QFile::ReadOnly);
@@ -148,7 +139,6 @@ Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySi
     bool isDistance = (format[0] == 'D');
     if (format[1] != '2') qFatal("Invalid matrix header.");
 
-
     // Read sigsets
     if (targetSigset != NULL) *targetSigset = file.readLine().simplified();
     else                      file.readLine();
@@ -156,57 +146,52 @@ Mat BEE::readMat(const br::File &matrix, QString *targetSigset, QString *querySi
     else                     file.readLine();
 
     // Get matrix size
-    QStringList words = QString(file.readLine()).split(" ");
-    int rows = words[1].toInt();
-    int cols = words[2].toInt();
-
-    bool isMask = words[0][1] == 'B';
-    int typeSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
+    const QStringList words = QString(file.readLine()).split(" ");
+    const int rows = words[1].toInt();
+    const int cols = words[2].toInt();
+    const bool isMask = words[0][1] == 'B';
+    const int typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
 
     // Get matrix data
     Mat m;
     if (isMask)
-        m.create(rows, cols, OpenCVType<BEE::Mask_t,1>::make());
+        m.create(rows, cols, OpenCVType<BEE::MaskValue,1>::make());
     else
-        m.create(rows, cols, OpenCVType<BEE::Simmat_t,1>::make());
+        m.create(rows, cols, OpenCVType<BEE::SimmatValue,1>::make());
 
-    qint64 bytesPerRow = m.cols * typeSize;
-
-    for (int i=0; i < m.rows;i++)
-    {
-        cv::Mat aRow = m.row(i);
+    const qint64 bytesPerRow = m.cols * typeSize;
+    for (int i=0; i<m.rows; i++) {
+        Mat aRow = m.row(i);
         qint64 bytesRead = file.read((char *)aRow.data, bytesPerRow);
         if (bytesRead != bytesPerRow)
-        {
             qFatal("Didn't read complete row!");
-        }
     }
     if (!file.atEnd())
         qFatal("Expected matrix end of file.");
     file.close();
 
     Mat result = m;
-    if (isDistance ^ matrix.get<bool>("negate", false)) m.convertTo(result, -1, -1);
-
+    if (isDistance ^ matrix.get<bool>("negate", false))
+        m.convertTo(result, -1, -1);
     return result;
 }
 
-void BEE::writeMat(const Mat &m, const QString &matrix, const QString &targetSigset, const QString &querySigset)
+void writeMatrix(const Mat &m, const QString &fileName, const QString &targetSigset, const QString &querySigset)
 {
     bool isMask = false;
-    if (m.type() == OpenCVType<BEE::Mask_t,1>::make())
+    if (m.type() == OpenCVType<BEE::MaskValue,1>::make())
         isMask = true;
-    else if (m.type() != OpenCVType<BEE::Simmat_t,1>::make())
+    else if (m.type() != OpenCVType<BEE::SimmatValue,1>::make())
         qFatal("Invalid matrix type, .mtx files can only contain single channel float or uchar matrices.");
 
-    int elemSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
-
-    QString matrixType = isMask ? "B" : "F";
+    const int elemSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
+    const QString matrixType = isMask ? "B" : "F";
 
     char buff[4];
-    QFile file(matrix);
+    QFile file(fileName);
     QtUtils::touchDir(file);
-    bool success = file.open(QFile::WriteOnly); if (!success) qFatal("Unable to open %s for writing.", qPrintable(matrix));
+    if (!file.open(QFile::WriteOnly))
+        qFatal("Unable to open %s for writing.", qPrintable(fileName));
     file.write("S2\n");
     file.write(qPrintable(targetSigset));
     file.write("\n");
@@ -219,7 +204,7 @@ void BEE::writeMat(const Mat &m, const QString &matrix, const QString &targetSig
     file.write(" ");
     file.write(qPrintable(QString::number(m.cols)));
     file.write(" ");
-    int endian = 0x12345678;
+    const int endian = 0x12345678;
     memcpy(&buff, &endian, 4);
     file.write(buff, 4);
     file.write("\n");
@@ -227,57 +212,58 @@ void BEE::writeMat(const Mat &m, const QString &matrix, const QString &targetSig
     file.close();
 }
 
-void BEE::readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset)
+void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset)
 {
     qDebug("Reading %s header.", qPrintable(matrix));
-    readMat(matrix, targetSigset, querySigset);
+    readMatrix(matrix, targetSigset, querySigset);
 }
 
-void BEE::writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset)
+void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset)
 {
     qDebug("Writing %s header to %s %s.", qPrintable(matrix), qPrintable(targetSigset), qPrintable(querySigset));
-
-    writeMat(readMat(matrix), matrix, targetSigset, querySigset);
+    writeMatrix(readMatrix(matrix), matrix, targetSigset, querySigset);
 }
 
-void BEE::makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
+void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
-    FileList targets = TemplateList::fromGallery(targetInput).files();
-    FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
-    int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) writeMat(makeMask(targets, queries), mask, targetInput, queryInput);
-    else {
+    const FileList targets = TemplateList::fromGallery(targetInput).files();
+    const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
+    const int partitions = targets.first().get<int>("crossValidate");
+    if (partitions == 0) {
+        writeMatrix(makeMask(targets, queries), mask, targetInput, queryInput);
+    } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMat(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMatrix(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
 
-void BEE::makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask)
+void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask)
 {
-    FileList targets = TemplateList::fromGallery(targetInput).files();
-    FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
-    int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) writeMat(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
-    else {
+    qDebug("Making pairwise mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
+    const FileList targets = TemplateList::fromGallery(targetInput).files();
+    const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
+    const int partitions = targets.first().get<int>("crossValidate");
+    if (partitions == 0) {
+        writeMatrix(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
+    } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMat(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMatrix(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
 
-cv::Mat BEE::makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition)
+Mat makePairwiseMask(const FileList &targets, const FileList &queries, int partition)
 {
-    // Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
+    // TODO: Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
     // doing string comparisons (but that isn't implemented yet for FileList) -cao
-    QList<QString> targetLabels = File::get<QString>(targets, "Label", "-1");
-    QList<QString> queryLabels = File::get<QString>(queries, "Label", "-1");
-
-    QList<int> targetPartitions = targets.crossValidationPartitions();
-    QList<int> queryPartitions = queries.crossValidationPartitions();
+    const QStringList targetLabels = File::get<QString>(targets, "Label", "-1");
+    const QStringList queryLabels = File::get<QString>(queries, "Label", "-1");
+    const QList<int> targetPartitions = targets.crossValidationPartitions();
+    const QList<int> queryPartitions = queries.crossValidationPartitions();
 
     Mat mask(queries.size(), 1, CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
@@ -289,7 +275,7 @@ cv::Mat BEE::makePairwiseMask(const br::FileList &targets, const br::FileList &q
         const QString labelB = targetLabels[i];
         const int partitionB = targetPartitions[i];
 
-        Mask_t val;
+        MaskValue val;
         if      (fileA == fileB)           val = DontCare;
         else if (labelA == "-1")           val = DontCare;
         else if (labelB == "-1")           val = DontCare;
@@ -298,23 +284,21 @@ cv::Mat BEE::makePairwiseMask(const br::FileList &targets, const br::FileList &q
         else if (partitionB != partition)  val = DontCare;
         else if (labelA == labelB)         val = Match;
         else                               val = NonMatch;
-        mask.at<Mask_t>(i,0) = val;
+        mask.at<MaskValue>(i,0) = val;
     }
 
     return mask;
 }
 
-cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, int partition)
+Mat makeMask(const FileList &targets, const FileList &queries, int partition)
 {
-    // Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
+    // TODO: Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
     // doing string comparisons (but that isn't implemented yet for FileList) -cao
-    QList<QString> targetLabels = File::get<QString>(targets, "Label", "-1");
-    QList<QString> queryLabels = File::get<QString>(queries, "Label", "-1");
-
-    QList<int> targetPartitions = targets.crossValidationPartitions();
-    QList<int> queryPartitions = queries.crossValidationPartitions();
-
-    QList<bool> targetsOnly = File::get<bool>(queries, "targetOnly", false);
+    const QStringList targetLabels = File::get<QString>(targets, "Label", "-1");
+    const QStringList queryLabels = File::get<QString>(queries, "Label", "-1");
+    const QList<int> targetPartitions = targets.crossValidationPartitions();
+    const QList<int> queryPartitions = queries.crossValidationPartitions();
+    const QList<bool> targetsOnly = File::get<bool>(queries, "targetOnly", false);
 
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
@@ -328,7 +312,7 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             const QString labelB = targetLabels[j];
             const int partitionB = targetPartitions[j];
 
-            Mask_t val;
+            MaskValue val;
             if      (fileA == fileB)           val = DontCare;
             else if (targetOnly)               val = DontCare;
             else if (labelA == "-1")           val = DontCare;
@@ -338,14 +322,14 @@ cv::Mat BEE::makeMask(const br::FileList &targets, const br::FileList &queries, 
             else if (partitionB != partition)  val = DontCare;
             else if (labelA == labelB)         val = Match;
             else                               val = NonMatch;
-            mask.at<Mask_t>(i,j) = val;
+            mask.at<MaskValue>(i,j) = val;
         }
     }
 
     return mask;
 }
 
-void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method)
+void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method)
 {
     qDebug("Combining %d masks to %s with method %s", inputMasks.size(), qPrintable(outputMask), qPrintable(method));
 
@@ -356,12 +340,12 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
 
     QList<Mat> masks;
     foreach (const QString &inputMask, inputMasks)
-        masks.append(readMat(inputMask));
-    if (masks.size() < 2) qFatal("Expected at least two masks.");
+        masks.append(readMatrix(inputMask));
+    if (masks.size() < 2)
+        qFatal("Expected at least two masks.");
 
     const int rows = masks.first().rows;
     const int columns = masks.first().cols;
-
     Mat combinedMask(rows, columns, CV_8UC1);
     for (int i=0; i<rows; i++) {
         for (int j=0; j<columns; j++) {
@@ -369,7 +353,7 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
             int imposterCount = 0;
             int dontcareCount = 0;
             for (int k=0; k<masks.size(); k++) {
-                switch (masks[k].at<Mask_t>(i,j)) {
+                switch (masks[k].at<MaskValue>(i,j)) {
                   case Match:
                     genuineCount++;
                     break;
@@ -383,14 +367,16 @@ void BEE::combineMasks(const QStringList &inputMasks, const QString &outputMask,
             }
             if ((genuineCount != 0) && (imposterCount != 0)) qFatal("Comparison is both a genuine and an imposter.");
 
-            Mask_t val;
+            MaskValue val;
             if      (genuineCount > 0)  val = Match;
             else if (imposterCount > 0) val = NonMatch;
             else                        val = DontCare;
             if (AND && (dontcareCount > 0)) val = DontCare;
-            combinedMask.at<Mask_t>(i,j) = val;
+            combinedMask.at<MaskValue>(i,j) = val;
         }
     }
 
-    writeMat(combinedMask, outputMask, "Combined_Targets", "Combined_Queries");
+    writeMatrix(combinedMask, outputMask, "Combined_Targets", "Combined_Queries");
 }
+
+} // namespace BEE

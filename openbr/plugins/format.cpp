@@ -293,12 +293,12 @@ class mtxFormat : public Format
 
     Template read() const
     {
-        return BEE::readMat(file);
+        return BEE::readMatrix(file);
     }
 
     void write(const Template &t) const
     {
-        BEE::writeMat(t, file);
+        BEE::writeMatrix(t, file);
     }
 };
 

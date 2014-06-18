@@ -99,7 +99,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QString target, query;
     Mat scores;
     if (simmat.endsWith(".mtx")) {
-        scores = BEE::readMat(simmat, &target, &query);
+        scores = BEE::readMatrix(simmat, &target, &query);
     } else {
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();
@@ -144,8 +144,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
     for (int i=0; i<simmat.rows; i++) {
         for (int j=0; j<simmat.cols; j++) {
-            const BEE::Mask_t mask_val = mask.at<BEE::Mask_t>(i,j);
-            const BEE::Simmat_t simmat_val = simmat.at<BEE::Simmat_t>(i,j);
+            const BEE::MaskValue mask_val = mask.at<BEE::MaskValue>(i,j);
+            const BEE::SimmatValue simmat_val = simmat.at<BEE::SimmatValue>(i,j);
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
@@ -315,7 +315,7 @@ float InplaceEval(const QString & simmat, const QString & target, const QString 
     qint64 cols = words[2].toLongLong();
 
     bool isMask = words[0][1] == 'B';
-    qint64 typeSize = isMask ? sizeof(BEE::Mask_t) : sizeof(BEE::Simmat_t);
+    qint64 typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
 
     // Get matrix data
     qint64 rowSize = cols * typeSize;
