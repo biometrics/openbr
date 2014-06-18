@@ -29,7 +29,7 @@ namespace br
     float InplaceEval(const QString & simmat, const QString & target, const QString & query, const QString & csv = "");
 
     void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
-    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = ""); // Return average overlap
+    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", bool normalize = false); // Return average overlap
     float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1); // Return average error
     void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
 }
