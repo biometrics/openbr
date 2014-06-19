@@ -18,16 +18,13 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
     const char *argv[1] = { "janus" };
     Context::initialize(argc, (char**)argv, sdk_path, false);
     Globals->quiet = true;
-    QString algorithm = model_file;
+    const QString algorithm = model_file;
     if (algorithm.isEmpty()) {
-        transform = Transform::fromAlgorithm("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", false);
+        transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
-    } else if (algorithm == "PP5") {
-        transform.reset(Transform::make("PP5Enroll", NULL));
-        distance.reset(Distance::make("PP5Compare", NULL));
     } else {
-        transform = Transform::fromAlgorithm(algorithm, false);
-        distance = Distance::fromAlgorithm(algorithm);
+        transform.reset(Transform::make(algorithm + "Enroll", NULL));
+        distance.reset(Distance::make(algorithm + "Compare", NULL));
     }
     return JANUS_SUCCESS;
 }
