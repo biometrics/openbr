@@ -271,11 +271,16 @@ private:
 
 int main(int argc, char *argv[])
 {
-    br_initialize(argc, argv, "", argc >= 2 && !strcmp(argv[1], "-gui"));
+    const bool gui         = (argc >= 2) && !strcmp(argv[1], "-gui");
+    const bool noEventLoop = (argc >= 2) && !strcmp(argv[1], "-noEventLoop");
+    br_initialize(argc, argv, "", gui);
 
-    FakeMain *fakeMain = new FakeMain(argc, argv);
-    QThreadPool::globalInstance()->start(fakeMain);
-    QCoreApplication::exec();
+    if (noEventLoop) {
+        FakeMain(argc, argv).run();
+    } else {
+        QThreadPool::globalInstance()->start(new FakeMain(argc, argv));
+        QCoreApplication::exec();
+    }
 
     br_finalize();
 }
