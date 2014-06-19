@@ -100,7 +100,9 @@ int main(int argc, char *argv[])
     QObject::connect(&server, SIGNAL(newRequest(QHttpRequest*, QHttpResponse*)),
                      &handler, SLOT(handle(QHttpRequest*, QHttpResponse*)));
 
-    server.listen(port);
+    if (!server.listen(port))
+        qFatal("Failed to connect to port: %d.", port);
+
     return application.exec();
 }
 
