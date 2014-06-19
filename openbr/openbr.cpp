@@ -99,9 +99,19 @@ void br_enroll_n(int num_inputs, const char *inputs[], const char *gallery)
     else                Enroll(File(inputs[0]), gallery);
 }
 
+void br_project(const char *input, const char *gallery)
+{
+    Project(File(input), File(gallery));
+}
+
 float br_eval(const char *simmat, const char *mask, const char *csv)
 {
     return Evaluate(simmat, mask, csv);
+}
+
+float br_inplace_eval(const char * simmat, const char *target, const char *query, const char *csv)
+{
+    return InplaceEval(simmat, target, query, csv);
 }
 
 void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)

@@ -14,7 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <QRegularExpression>
+#include <QtCore>
 #include <QtConcurrentRun>
 #ifndef BR_EMBEDDED
 #include <QNetworkAccessManager>
@@ -23,10 +23,12 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QXmlStreamReader>
 #endif // BR_EMBEDDED
 #include <opencv2/highgui/highgui.hpp>
 #include "openbr_internal.h"
 
+#include "openbr/universal_template.h"
 #include "openbr/core/bee.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -87,33 +89,32 @@ class arffGallery : public Gallery
 
 BR_REGISTER(Gallery, arffGallery)
 
-/*!
- * \ingroup galleries
- * \brief A binary gallery.
- *
- * Designed to be a literal translation of templates to disk.
- * Compatible with TemplateList::fromBuffer.
- * \author Josh Klontz \cite jklontz
- */
-class galGallery : public Gallery
+class BinaryGallery : public Gallery
 {
     Q_OBJECT
-    QFile gallery;
-    QDataStream stream;
 
     void init()
     {
-        gallery.setFileName(file);
-        if (file.get<bool>("remove"))
-            gallery.remove();
-        QtUtils::touchDir(gallery);
-        QFile::OpenMode mode = QFile::ReadWrite;
+        const QString baseName = file.baseName();
+        if (baseName == "stdin") {
+            gallery.open(stdin, QFile::ReadOnly);
+        } else if (baseName == "stdout") {
+            gallery.open(stdout, QFile::WriteOnly);
+        } else if (baseName == "stderr") {
+            gallery.open(stderr, QFile::WriteOnly);
+        } else {
+            gallery.setFileName(file);
+            if (file.get<bool>("remove"))
+                gallery.remove();
+            QtUtils::touchDir(gallery);
+            QFile::OpenMode mode = QFile::ReadWrite;
 
-        if (file.get<bool>("append"))
-            mode |= QFile::Append;
+            if (file.get<bool>("append"))
+                mode |= QFile::Append;
 
-        if (!gallery.open(mode))
-            qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
+            if (!gallery.open(mode))
+                qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
+        }
         stream.setDevice(&gallery);
     }
 
@@ -124,9 +125,15 @@ class galGallery : public Gallery
 
         TemplateList templates;
         while ((templates.size() < readBlockSize) && !stream.atEnd()) {
-            Template m;
-            stream >> m;
-            templates.append(m);
+            const Template t = readTemplate();
+            if (t.isEmpty() && t.file.isNull())
+                continue;
+            templates.append(t);
+            templates.last().file.set("progress", totalSize());
+
+            // Special case for pipes where we want to process data as soon as it is available
+            if (gallery.isSequential())
+                break;
         }
 
         *done = stream.atEnd();
@@ -135,14 +142,238 @@ class galGallery : public Gallery
 
     void write(const Template &t)
     {
+        writeTemplate(t);
+        if (gallery.isSequential())
+            gallery.flush();
+    }
+
+protected:
+    QFile gallery;
+    QDataStream stream;
+
+    qint64 totalSize()
+    {
+        return gallery.size();
+    }
+
+    qint64 position()
+    {
+        return gallery.pos();
+    }
+
+    virtual Template readTemplate() = 0;
+    virtual void writeTemplate(const Template &t) = 0;
+};
+
+/*!
+ * \ingroup galleries
+ * \brief A binary gallery.
+ *
+ * Designed to be a literal translation of templates to disk.
+ * Compatible with TemplateList::fromBuffer.
+ * \author Josh Klontz \cite jklontz
+ */
+class galGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        Template t;
+        stream >> t;
+        return t;
+    }
+
+    void writeTemplate(const Template &t)
+    {
         if (t.isEmpty() && t.file.isNull())
             return;
-
         stream << t;
     }
 };
 
 BR_REGISTER(Gallery, galGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief A contiguous array of br_universal_template.
+ * \author Josh Klontz \cite jklontz
+ */
+class utGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        Template t;
+        br_universal_template ut;
+        if (gallery.read((char*)&ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
+            QByteArray data(ut.size, Qt::Uninitialized);
+            char *dst = data.data();
+            qint64 bytesNeeded = ut.size;
+            while (bytesNeeded > 0) {
+                qint64 bytesRead = gallery.read(dst, bytesNeeded);
+                if (bytesRead <= 0)
+                    qFatal("Unexepected EOF when reading universal template data, needed: %d more bytes.", int(bytesNeeded));
+                bytesNeeded -= bytesRead;
+                dst += bytesRead;
+            }
+
+            if (QCryptographicHash::hash(data, QCryptographicHash::Md5) != QByteArray((const char*)ut.templateID, 16))
+                qFatal("MD5 hash check failure!");
+
+            if (ut.algorithmID == 5) {
+                QDataStream stream(&data, QIODevice::ReadOnly);
+                stream >> t;
+            } else {
+                t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()).clone() /* We don't want a shallow copy! */);
+            }
+
+            t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
+            t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
+            t.file.set("AlgorithmID", ut.algorithmID);
+        }
+        return t;
+    }
+
+    void writeTemplate(const Template &t)
+    {
+        if (t.empty())
+            return;
+
+        const QByteArray imageID = QByteArray::fromHex(t.file.get<QByteArray>("ImageID"));
+        if (imageID.size() != 16)
+            qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
+
+        const int32_t algorithmID = t.file.get<int32_t>("AlgorithmID");
+        QByteArray data;
+        if (algorithmID == 5) {
+            QDataStream stream(&data, QIODevice::WriteOnly);
+            stream << t;
+        } else {
+            data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+
+            if (algorithmID == -1) {
+                const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
+                const QPointF firstEye   = t.file.get<QPointF>("First_Eye");
+                const QPointF secondEye  = t.file.get<QPointF>("Second_Eye");
+                const float x         = frontalFace.x();
+                const float y         = frontalFace.y();
+                const float width     = frontalFace.width();
+                const float height    = frontalFace.height();
+                const float rightEyeX = firstEye.x();
+                const float rightEyeY = firstEye.y();
+                const float leftEyeX  = secondEye.x();
+                const float leftEyeY  = secondEye.y();
+
+                data.append((const char*)&x        , sizeof(float));
+                data.append((const char*)&y        , sizeof(float));
+                data.append((const char*)&width    , sizeof(float));
+                data.append((const char*)&height   , sizeof(float));
+                data.append((const char*)&rightEyeX, sizeof(float));
+                data.append((const char*)&rightEyeY, sizeof(float));
+                data.append((const char*)&leftEyeX , sizeof(float));
+                data.append((const char*)&leftEyeY , sizeof(float));
+            }
+        }
+        const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
+        const uint32_t size = data.size();
+
+        gallery.write(imageID);
+        gallery.write(templateID);
+        gallery.write((const char*) &algorithmID, 4);
+        gallery.write((const char*) &size, 4);
+        gallery.write(data);
+    }
+};
+
+BR_REGISTER(Gallery, utGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief Newline-separated br_universal_template data.
+ * \author Josh Klontz \cite jklontz
+ */
+class utdGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        qFatal("Not supported");
+        return Template();
+    }
+
+    void writeTemplate(const Template &t)
+    {
+        if (t.empty())
+            return;
+        gallery.write(QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize()));
+        gallery.write("\n");
+    }
+};
+
+BR_REGISTER(Gallery, utdGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief Newline-separated URLs.
+ * \author Josh Klontz \cite jklontz
+ */
+class urlGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        Template t;
+        const QString url = QString::fromLocal8Bit(gallery.readLine()).simplified();
+        if (!url.isEmpty())
+            t.file.set("URL", url);
+        return t;
+    }
+
+    void writeTemplate(const Template &t)
+    {
+        const QString url = t.file.get<QString>("URL", "");
+        if (!url.isEmpty()) {
+            gallery.write(qPrintable(url));
+            gallery.write("\n");
+        }
+    }
+};
+
+BR_REGISTER(Gallery, urlGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief Newline-separated JSON objects.
+ * \author Josh Klontz \cite jklontz
+ */
+class jsonGallery : public BinaryGallery
+{
+    Q_OBJECT
+
+    Template readTemplate()
+    {
+        QJsonParseError error;
+        File file = QJsonDocument::fromJson(gallery.readLine(), &error).object().toVariantMap();
+        if (error.error != QJsonParseError::NoError)
+            qDebug() << error.errorString();
+        return file;
+    }
+
+    void writeTemplate(const Template &t)
+    {
+        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(t.file.localMetadata())).toJson().replace('\n', "");
+        if (!json.isEmpty()) {
+            gallery.write(json);
+            gallery.write("\n");
+        }
+    }
+};
+
+BR_REGISTER(Gallery, jsonGallery)
 
 /*!
  * \ingroup galleries
@@ -328,6 +559,7 @@ class memGallery : public Gallery
 {
     Q_OBJECT
     int block;
+    qint64 gallerySize;
 
     void init()
     {
@@ -338,6 +570,7 @@ class memGallery : public Gallery
             MemoryGalleries::galleries[file] = gallery->read();
             align(MemoryGalleries::galleries[file]);
             MemoryGalleries::aligned[file] = true;
+            gallerySize = MemoryGalleries::galleries[file].size();
         }
     }
 
@@ -349,6 +582,10 @@ class memGallery : public Gallery
         }
 
         TemplateList templates = MemoryGalleries::galleries[file].mid(block*readBlockSize, readBlockSize);
+        for (qint64 i = 0; i < templates.size();i++) {
+            templates[i].file.set("progress", i + block * readBlockSize);
+        }
+
         *done = (templates.size() < readBlockSize);
         block = *done ? 0 : block+1;
         return templates;
@@ -389,9 +626,64 @@ class memGallery : public Gallery
         templates.alignedData = alignedData;
     }
 
+    qint64 totalSize()
+    {
+        return gallerySize;
+    }
+
+    qint64 position()
+    {
+        return block * readBlockSize;
+    }
+
 };
 
 BR_REGISTER(Gallery, memGallery)
+
+FileList FileList::fromGallery(const File & file, bool cache)
+{
+    File targetMeta = file;
+    targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
+
+    FileList fileData;
+
+    // Did we already read the data?
+    if (MemoryGalleries::galleries.contains(targetMeta))
+    {
+        return MemoryGalleries::galleries[targetMeta].files();
+    }
+
+    TemplateList templates;
+    // OK we read the data in some form, does the gallery type containing matrices?
+    if ((QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
+        // Retrieve it block by block, dropping matrices from read templates.
+        QScopedPointer<Gallery> gallery(Gallery::make(file));
+        gallery->set_readBlockSize(10);
+        bool done = false;
+        while (!done)
+        {
+            TemplateList tList = gallery->readBlock(&done);
+            for (int i=0; i < tList.size();i++)
+            {
+                tList[i].clear();
+                templates.append(tList[i].file);
+            }
+        }
+    }
+    else {
+        // this is a gallery format that doesn't include matrices, so we can just read it
+        QScopedPointer<Gallery> gallery(Gallery::make(file));
+        templates= gallery->read();
+    }
+
+    if (cache)
+    {
+        QScopedPointer<Gallery> memOutput(Gallery::make(targetMeta));
+        memOutput->writeBlock(templates);
+    }
+    fileData = templates.files();
+    return fileData;
+}
 
 /*!
  * \ingroup galleries
@@ -404,16 +696,19 @@ BR_REGISTER(Gallery, memGallery)
  *
  * \see txtGallery
  */
-class csvGallery : public Gallery
+class csvGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(int fileIndex READ get_fileIndex WRITE set_fileIndex RESET reset_fileIndex)
     BR_PROPERTY(int, fileIndex, 0)
 
     FileList files;
+    QStringList headers;
 
     ~csvGallery()
     {
+        f.close();
+
         if (files.isEmpty()) return;
 
         QMap<QString,QVariant> samples;
@@ -451,25 +746,37 @@ class csvGallery : public Gallery
 
     TemplateList readBlock(bool *done)
     {
-        *done = true;
+        *done = false;
         TemplateList templates;
-        if (!file.exists()) return templates;
-
-        QStringList lines = QtUtils::readLines(file);
+        if (!file.exists()) {
+            *done = true;
+            return templates;
+        }
         QRegExp regexp("\\s*,\\s*");
-        QStringList headers;
-        if (!lines.isEmpty()) headers = lines.takeFirst().split(regexp);
 
-        foreach (const QString &line, lines) {
+        if (f.pos() == 0)
+        {
+            // read a line
+            QByteArray lineBytes = f.readLine();
+            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+            headers = line.split(regexp);
+        }
+
+        for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++){
+            QByteArray lineBytes = f.readLine();
+            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+
             QStringList words = line.split(regexp);
             if (words.size() != headers.size()) continue;
-            File f;
-            for (int i=0; i<words.size(); i++) {
-                if (i == 0) f.name = words[i];
-                else        f.set(headers[i], words[i]);
+            File fi;
+            for (int j=0; j<words.size(); j++) {
+                if (j == 0) fi.name = words[j];
+                else        fi.set(headers[j], words[j]);
             }
-            templates.append(f);
+            templates.append(fi);
+            templates.last().file.set("progress", f.pos());
         }
+        *done = f.atEnd();
 
         return templates;
     }
@@ -523,29 +830,38 @@ BR_REGISTER(Gallery, csvGallery)
 \endverbatim
  * \see csvGallery
  */
-class txtGallery : public Gallery
+class txtGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
     BR_PROPERTY(QString, label, "")
 
-    QStringList lines;
-
-    ~txtGallery()
-    {
-        if (!lines.isEmpty())
-            QtUtils::writeFile(file.name, lines);
-    }
-
     TemplateList readBlock(bool *done)
     {
+        *done = false;
+        if (f.atEnd())
+            f.seek(0);
+
         TemplateList templates;
-        foreach (const QString &line, QtUtils::readLines(file)) {
-            int splitIndex = line.lastIndexOf(' ');
-            if (splitIndex == -1) templates.append(File(line));
-            else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+
+        for (qint64 i = 0; i < readBlockSize; i++)
+        {
+            QByteArray lineBytes = f.readLine();
+            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+
+            if (!line.isEmpty()){
+                int splitIndex = line.lastIndexOf(' ');
+                if (splitIndex == -1) templates.append(File(line));
+                else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
+                templates.last().file.set("progress", this->position());
+            }
+
+            if (f.atEnd()) {
+                *done=true;
+                break;
+            }
         }
-        *done = true;
+
         return templates;
     }
 
@@ -554,39 +870,51 @@ class txtGallery : public Gallery
         QString line = t.file.name;
         if (!label.isEmpty())
             line += " " + t.file.get<QString>(label);
-        lines.append(line);
+
+        f.write((line+"\n").toLocal8Bit() );
     }
 };
 
 BR_REGISTER(Gallery, txtGallery)
+
 /*!
  * \ingroup galleries
  * \brief Treats each line as a call to File::flat()
  * \author Josh Klontz \cite jklontz
  */
-class flatGallery : public Gallery
+class flatGallery : public FileGallery
 {
     Q_OBJECT
-    QStringList lines;
-
-    ~flatGallery()
-    {
-        if (!lines.isEmpty())
-            QtUtils::writeFile(file.name, lines);
-    }
 
     TemplateList readBlock(bool *done)
     {
+        *done = false;
+        if (f.atEnd())
+            f.seek(0);
+
         TemplateList templates;
-        foreach (const QString &line, QtUtils::readLines(file))
-            templates.append(File(line));
-        *done = true;
+
+        for (qint64 i = 0; i < readBlockSize; i++)
+        {
+            QByteArray line = f.readLine();
+
+            if (!line.isEmpty()) {
+                templates.append(File(QString::fromLocal8Bit(line).trimmed()));
+                templates.last().file.set("progress", this->position());
+            }
+
+            if (f.atEnd()) {
+                *done=true;
+                break;
+            }
+        }
+
         return templates;
     }
 
     void write(const Template &t)
     {
-        lines.append(t.file.flat());
+        f.write((t.file.flat()+"\n").toLocal8Bit() );
     }
 };
 
@@ -597,28 +925,151 @@ BR_REGISTER(Gallery, flatGallery)
  * \brief A \ref sigset input.
  * \author Josh Klontz \cite jklontz
  */
-class xmlGallery : public Gallery
+class xmlGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata STORED false)
     BR_PROPERTY(bool, ignoreMetadata, false)
     FileList files;
 
+    QXmlStreamReader reader;
+
+    QString currentSignatureName;
+    bool signatureActive;
+
     ~xmlGallery()
     {
+        f.close();
         if (!files.isEmpty())
             BEE::writeSigset(file, files, ignoreMetadata);
     }
 
     TemplateList readBlock(bool *done)
     {
+        if (reader.atEnd())
+            f.seek(0);
+
+        TemplateList templates;
+        qint64 count = 0;
+
+        while (!reader.atEnd())
+        {
+            // if an identity is active we try to read presentations
+            if (signatureActive)
+            {
+                while (signatureActive)
+                {
+                    QXmlStreamReader::TokenType signatureToken = reader.readNext();
+
+                    // did the signature end?
+                    if (signatureToken == QXmlStreamReader::EndElement && reader.name() == "biometric-signature") {
+                        signatureActive = false;
+                        break;
+                    }
+
+                    // did we reach the end of the document? Theoretically this shoudln't happen without reaching the end of
+                    if (signatureToken == QXmlStreamReader::EndDocument)
+                        break;
+
+                    // a presentation!
+                    if (signatureToken == QXmlStreamReader::StartElement && reader.name() == "presentation") {
+                        templates.append(Template(File("",currentSignatureName)));
+                        foreach (const QXmlStreamAttribute & attribute, reader.attributes()) {
+                            // file-name is stored directly on file, not as a key/value pair
+                            if (attribute.name() == "file-name")
+                                templates.last().file.name = attribute.value().toString();
+                            // other values are directly set as metadata
+                            else if (!ignoreMetadata) templates.last().file.set(attribute.name().toString(), attribute.value().toString());
+                        }
+
+                        // a presentation can have bounding boxes as child elements
+                        QList<QRectF> rects = templates.last().file.rects();
+                        while (true)
+                        {
+                            QXmlStreamReader::TokenType pToken = reader.readNext();
+                            if (pToken == QXmlStreamReader::EndElement && reader.name() == "presentation")
+                                break;
+
+                            if (pToken == QXmlStreamReader::StartElement)
+                            {
+                                if (reader.attributes().hasAttribute("x")
+                                    && reader.attributes().hasAttribute("y")
+                                    && reader.attributes().hasAttribute("width")
+                                    && reader.attributes().hasAttribute("height") )
+                                {
+                                    // get bounding box properties as attributes, just going to assume this all works
+                                    qreal x = reader.attributes().value("x").string()->toDouble();
+                                    qreal y = reader.attributes().value("y").string()->toDouble();
+                                    qreal width =  reader.attributes().value("width").string()->toDouble();
+                                    qreal height = reader.attributes().value("height").string()->toDouble();
+                                    rects += QRectF(x, y, width, height);
+                                }
+                            }
+                        }
+                        templates.last().file.setRects(rects);
+                        templates.last().file.set("progress", f.pos());
+
+                        // we read another complete template
+                        count++;
+                    }
+                }
+            }
+            // otherwise, keep reading elements until the next identity is reacehed
+            else
+            {
+                QXmlStreamReader::TokenType token = reader.readNext();
+
+                // end of file?
+                if (token == QXmlStreamReader::EndDocument)
+                    break;
+
+                // we are only interested in new elements
+                if (token != QXmlStreamReader::StartElement)
+                    continue;
+
+                QStringRef elName = reader.name();
+
+                // biometric-signature-set is the root element
+                if (elName == "biometric-signature-set")
+                    continue;
+
+                // biometric-signature -- an identity
+                if (elName == "biometric-signature")
+                {
+                    // read the name associated with the current signature
+                    if (!reader.attributes().hasAttribute("name"))
+                    {
+                        qDebug() << "Biometric signature missing name";
+                        continue;
+                    }
+                    currentSignatureName = reader.attributes().value("name").toString();
+                    signatureActive = true;
+
+                    // If we've already read enough templates for this block, then break here.
+                    // We wait untill the start of the next signature to be sure that done should
+                    // actually be false (i.e. there are actually items left in this file)
+                    if (count >= this->readBlockSize) {
+                        *done = false;
+                        return templates;
+                    }
+
+                }
+            }
+        }
         *done = true;
-        return TemplateList(BEE::readSigset(file, ignoreMetadata));
+
+        return templates;
     }
 
     void write(const Template &t)
     {
         files.append(t.file);
+    }
+
+    void init()
+    {
+        FileGallery::init();
+        reader.setDevice(&f);
     }
 };
 
@@ -1086,6 +1537,17 @@ private:
 BR_REGISTER(Gallery, vbbGallery)
 
 #endif
+
+void FileGallery::init()
+{
+    f.setFileName(file);
+    QtUtils::touchDir(f);
+    if (!f.open(QFile::ReadWrite))
+        qFatal("Failed to open %s for read/write.", qPrintable(file));
+    fileSize = f.size();
+
+    Gallery::init();
+}
 
 } // namespace br
 

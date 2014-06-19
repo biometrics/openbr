@@ -107,6 +107,9 @@ public:
                 } else {
                     br_eval(parv[0], parv[1], parv[2]);
                 }
+            } else if (!strcmp(fun, "inplaceEval")) {
+                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
+                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
                 br_plot(parc-1, parv, parv[parc-1], true);
@@ -158,6 +161,9 @@ public:
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "project")) {
+                check(parc == 2, "Insufficient parameter count for 'project'.");
+                br_project(parv[0], parv[1]);
             } else if (!strcmp(fun, "deduplicate")) {
                 check(parc == 3, "Incorrect parameter count for 'deduplicate'.");
                 br_deduplicate(parv[0], parv[1], parv[2]);
@@ -247,6 +253,7 @@ private:
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
+               "-project <input_gallery> {output_gallery}\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"
                "-<key> <value>\n"

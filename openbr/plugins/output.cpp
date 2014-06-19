@@ -175,6 +175,12 @@ BR_REGISTER(Output, meltOutput)
 class mtxOutput : public Output
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString targetGallery READ get_targetGallery WRITE set_targetGallery RESET reset_targetGallery STORED false)
+    Q_PROPERTY(QString queryGallery READ get_queryGallery WRITE set_queryGallery RESET reset_queryGallery STORED false)
+    BR_PROPERTY(QString, targetGallery, "Unknown_Target")
+    BR_PROPERTY(QString, queryGallery, "Unknown_Query")
+
     int headerSize, rowBlock, columnBlock;
     cv::Mat blockScores;
 
@@ -194,9 +200,9 @@ class mtxOutput : public Output
             const int endian = 0x12345678;
             QByteArray header;
             header.append("S2\n");
-            header.append(qPrintable(targetFiles.first().get<QString>("Gallery", "Unknown_Target")));
+            header.append(qPrintable(targetGallery));
             header.append("\n");
-            header.append(qPrintable(queryFiles.first().get<QString>("Gallery", "Unknown_Query")));
+            header.append(qPrintable(queryGallery));
             header.append("\nMF ");
             header.append(qPrintable(QString::number(queryFiles.size())));
             header.append(" ");

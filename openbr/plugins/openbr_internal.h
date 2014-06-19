@@ -314,6 +314,52 @@ struct WorkerProcess
     void mainLoop();
 };
 
+/*!
+ * \brief A br::Transform that operates solely on metadata
+ */
+class MetadataTransform : public Transform
+{
+    Q_OBJECT
+public:
+
+    virtual void projectMetadata(const File &src, File &dst) const = 0;
+
+    void project(const Template & src, Template & dst) const
+    {
+        dst = src;
+        projectMetadata(src.file, dst.file);
+    }
+
+protected:
+    MetadataTransform(bool trainable = true) : Transform(false,trainable) {}
+};
+
+/*!
+ * \brief A br::Transform that operates solely on metadata, and is untrainable
+ */
+class UntrainableMetadataTransform : public MetadataTransform
+{
+    Q_OBJECT
+
+protected:
+    UntrainableMetadataTransform() : MetadataTransform(false) {}
+};
+
+class FileGallery : public Gallery
+{
+    Q_OBJECT
+public:
+    QFile f;
+    qint64 fileSize;
+
+    virtual ~FileGallery() { f.close(); }
+
+    void init();
+
+    qint64 totalSize() { return fileSize; }
+    qint64 position() { return f.pos(); }
+};
+
 }
 
 #endif // OPENBR_INTERNAL_H

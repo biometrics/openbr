@@ -7,3 +7,6 @@
 [submodule "openbr/janus"]
 	path = openbr/janus
 	url = https://github.com/biometrics/janus.git
+[submodule "3rdparty/qhttpserver"]
+	path = 3rdparty/qhttpserver
+	url = https://github.com/nikhilm/qhttpserver.git

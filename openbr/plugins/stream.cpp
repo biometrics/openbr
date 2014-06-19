@@ -289,28 +289,22 @@ protected:
 };
 
 
-class StreamGallery : public TemplateProcessor
+struct StreamGallery : public TemplateProcessor
 {
-public:
-    StreamGallery()
-    {
-
-    }
-
     bool open(Template &input)
     {
         // Create a gallery
         gallery = QSharedPointer<Gallery>(Gallery::make(input.file));
-        // Failed ot open the gallery?
+        // Failed to open the gallery?
         if (gallery.isNull()) {
-            qDebug()<<"Failed to create gallery!";
+            qDebug("Failed to create gallery!");
             galleryOk = false;
             return false;
         }
 
         // Set up state variables for future reads
         galleryOk = true;
-        gallery->set_readBlockSize(100);
+        gallery->readBlockSize = 100;
         nextIdx = 0;
         lastBlock = false;
         return galleryOk;
@@ -329,19 +323,16 @@ public:
     bool getNextTemplate(Template & output)
     {
         // If we still have data available, we return one of those
-        if (nextIdx >= currentData.size())
-        {
-            // Otherwise, read another block
-            if (!lastBlock) {
-                currentData = gallery->readBlock(&lastBlock);
-                nextIdx = 0;
-            }
-            else
-            {
-                galleryOk = false;
-                return false;
-            }
+        if ((nextIdx >= currentData.size()) && !lastBlock) {
+            currentData = gallery->readBlock(&lastBlock);
+            nextIdx = 0;
         }
+
+        if (nextIdx >= currentData.size()) {
+            galleryOk = false;
+            return false;
+        }
+
         // Return the indicated template, and advance the index
         output = currentData[nextIdx++];
         return true;
@@ -656,28 +647,6 @@ public:
             return false;
         }
 
-        // Try to get a frame from the global pool
-        FrameData * firstFrame = allFrames.tryGetItem();
-
-        // If this fails, things have gone pretty badly.
-        if (firstFrame == NULL) {
-            is_broken = true;
-            return false;
-        }
-
-        // Read a frame from the video source
-        bool res = getNextFrame(*firstFrame);
-
-        // the data source broke already, we couldn't even get one frame
-        // from it even though it claimed to have opened successfully.
-        if (!res) {
-            is_broken = true;
-            return false;
-        }
-
-        // We read one frame ahead of the last one returned, this allows
-        // us to know which frame is the final frame when we return it.
-        lookAhead.append(firstFrame);
         return true;
     }
 
@@ -707,26 +676,17 @@ public:
         if (!res)
         {
             QMutexLocker lock(&last_frame_update);
-            final_frame = lookAhead.back()->sequenceNumber;
-            allFrames.addItem(aFrame);
+            final_frame = aFrame->sequenceNumber;
+            aFrame->data().clear();
         }
-        else {
-            lookAhead.push_back(aFrame);
-        }
-
-        // we will return the first frame on the lookAhead buffer
-        FrameData * rVal = lookAhead.first();
-        lookAhead.pop_front();
-        if (rVal->data.empty())
-            qDebug("returning empty frame from look ahead!");
 
         // If this is the last frame, say so
-        if (rVal->sequenceNumber == final_frame) {
+        if (aFrame->sequenceNumber == final_frame) {
             last_frame = true;
             is_broken = true;
         }
 
-        return rVal;
+        return aFrame;
     }
 
     // Return a frame to the pool, returns true if the frame returned was the last
@@ -854,6 +814,7 @@ protected:
             // couldn't get the next template? nothing to do, otherwise we try to read
             // a frame at the top of this loop.
             if (!open_res) {
+                output.sequenceNumber = next_sequence_number;
                 return false;
             }
         }
@@ -879,7 +840,6 @@ protected:
     bool allReturned;
 
     DoubleBuffer allFrames;
-    QList<FrameData *> lookAhead;
 
     QWaitCondition lastReturned;
     QMutex last_frame_update;

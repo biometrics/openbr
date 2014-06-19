@@ -174,14 +174,15 @@ struct BR_EXPORT File
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
+    File(const QVariantMap &metadata) : m_metadata(metadata) {} /*!< \brief Construct a file from metadata. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
 
-    inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
-    inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+    inline QStringList localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
+    inline QVariantMap localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
 
-    void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
+    void append(const QVariantMap &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
     inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
     inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
@@ -326,7 +327,7 @@ struct BR_EXPORT File
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
-    QMap<QString,QVariant> m_metadata;
+    QVariantMap m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
@@ -369,6 +370,8 @@ struct BR_EXPORT FileList : public QList<File>
 
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
+
+    static FileList fromGallery(const File &gallery, bool cache = false); /*!< \brief Create a file list from a br::Gallery. */
 };
 
 /*!
@@ -684,6 +687,10 @@ public:
      */
     Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
     BR_PROPERTY(double, currentStep, 0)
+
+    Q_PROPERTY(double currentProgress READ get_currentProgress WRITE set_currentProgress RESET reset_currentProgress)
+    BR_PROPERTY(double, currentProgress, 0)
+
 
     /*!
      * \brief Used internally to compute progress() and timeRemaining().
@@ -1093,6 +1100,9 @@ public:
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
     void init();
 
+    virtual qint64 totalSize() { return std::numeric_limits<qint64>::max(); }
+    virtual qint64 position() { return 0; }
+
 private:
     QSharedPointer<Gallery> next;
 };
@@ -1326,6 +1336,7 @@ public:
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
     virtual float compare(const Template &a, const Template &b) const; /*!< \brief Compute the distance between two templates. */
     virtual float compare(const cv::Mat &a, const cv::Mat &b) const; /*!< \brief Compute the distance between two biometric signatures. */
+    virtual float compare(const uchar *a, const uchar *b, size_t size) const; /*!< \brief Compute the distance between two buffers. */
 
 protected:
     inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */
@@ -1357,11 +1368,17 @@ BR_EXPORT void Train(const File &input, const File &model);
  * \see br_enroll
  */
 BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
+
 /*!
  * \brief High-level function for enrolling templates.
  * \see br_enroll
  */
 BR_EXPORT void Enroll(TemplateList &tmpl);
+
+/*!
+ * \brief A naive alternative to \ref br::Enroll
+ */
+BR_EXPORT void Project(const File &input, const File &output);
 
 /*!
  * \brief High-level function for comparing galleries.

@@ -76,7 +76,7 @@ endif()
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
 if(NOT ${BR_EMBEDDED})
-  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Sql Svg Widgets Xml)
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Svg Widgets Xml)
 endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
@@ -90,6 +90,10 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)
+
+# Add RandomLib
+set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_SOURCE_DIR}/3rdparty/RandomLib-1.9/src/Random.cpp)
+include_directories(3rdparty/RandomLib-1.9/include)
 
 # Find cvmatio (if using it)
 set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")
@@ -148,7 +152,7 @@ if(${BR_BUILD_DOCUMENTATION})
 endif()
 
 # Install
-install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
+install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION share/openbr)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 

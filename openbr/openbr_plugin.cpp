@@ -865,14 +865,15 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
+        fprintf(stderr,"%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
+        fflush(stderr);
     }
 }
 
 float br::Context::progress() const
 {
     if (totalSteps == 0) return -1;
-    return currentStep / totalSteps;
+    return currentProgress / totalSteps;
 }
 
 void br::Context::setProperty(const QString &key, const QString &value)
@@ -956,6 +957,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals = new Context();
     Globals->init(File());
     Globals->useGui = useGui;
+    Globals->algorithm = "Identity";
 
     Common::seedRNG();
 
@@ -1405,7 +1407,12 @@ float Distance::compare(const Template &a, const Template &b) const
     return similarity;
 }
 
-float Distance::compare(const cv::Mat &, const cv::Mat &) const
+float Distance::compare(const cv::Mat &a, const cv::Mat &b) const
+{
+    return compare(a.data, b.data, a.rows * a.cols * a.elemSize());
+}
+
+float Distance::compare(const uchar *, const uchar *, size_t) const
 {
     qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
     return -std::numeric_limits<float>::max();

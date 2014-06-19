@@ -204,7 +204,7 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QString, description, "IdenticalDistance")
+    BR_PROPERTY(QString, description, "L2")
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
 
@@ -282,9 +282,9 @@ class ByteL1Distance : public Distance
 {
     Q_OBJECT
 
-    float compare(const Mat &a, const Mat &b) const
+    float compare(const unsigned char *a, const unsigned char *b, size_t size) const
     {
-        return l1(a.data, b.data, a.total());
+        return l1(a, b, size);
     }
 };
 
@@ -488,6 +488,8 @@ class GalleryCompareTransform : public Transform
             distance = Distance::fromAlgorithm(distanceAlgorithm);
         }
     }
+public:
+    GalleryCompareTransform() : Transform(false, false) {}
 };
 
 BR_REGISTER(Transform, GalleryCompareTransform)

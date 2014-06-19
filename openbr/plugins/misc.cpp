@@ -14,6 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QtNetwork>
 #include <QElapsedTimer>
 #include <QRegularExpression>
 #include <opencv2/highgui/highgui.hpp>
@@ -37,21 +38,125 @@ class OpenTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (!src.isEmpty()) { dst = src; return; }
-        if (Globals->verbose) qDebug("Opening %s", qPrintable(src.file.flat()));
         dst.file = src.file;
-        foreach (const File &file, src.file.split()) {
-            QScopedPointer<Format> format(Factory<Format>::make(file));
-            Template t = format->read();
-            if (t.isEmpty()) qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
-            dst.append(t);
-            dst.file.append(t.file.localMetadata());
+        if (src.empty()) {
+            if (Globals->verbose)
+                qDebug("Opening %s", qPrintable(src.file.flat()));
+
+            // Read from disk otherwise
+            foreach (const File &file, src.file.split()) {
+                QScopedPointer<Format> format(Factory<Format>::make(file));
+                Template t = format->read();
+                if (t.isEmpty())
+                    qWarning("Can't open %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
+                dst.append(t);
+                dst.file.append(t.file.localMetadata());
+            }
+            dst.file.set("FTO", dst.isEmpty());
+        } else {
+            // Propogate or decode existing matricies
+            foreach (const Mat &m, src) {
+                if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1)) dst += m;
+                else                                                         dst += imdecode(src.m(), IMREAD_UNCHANGED);
+            }
         }
-        dst.file.set("FTO", dst.isEmpty());
     }
 };
 
 BR_REGISTER(Transform, OpenTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Decodes images
+ * \author Josh Klontz \cite jklontz
+ */
+class DecodeTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.append(cv::imdecode(src.m(), IMREAD_UNCHANGED));
+    }
+};
+
+BR_REGISTER(Transform, DecodeTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Downloads an image from a URL
+ * \author Josh Klontz \cite jklontz
+ */
+class DownloadTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_ENUMS(Mode)
+    Q_PROPERTY(Mode mode READ get_mode WRITE set_mode RESET reset_mode STORED false)
+
+public:
+    enum Mode { Permissive,
+                Encoded,
+                Decoded };
+private:
+    BR_PROPERTY(Mode, mode, Encoded)
+
+    mutable QNetworkAccessManager nam;
+    mutable QMutex namLock;
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.file = src.file;
+        QString url = src.file.get<QString>("URL", src.file.name).simplified();
+        if (url.isEmpty())
+            return;
+
+        if (url.startsWith("file://"))
+            url = url.mid(7);
+
+        QIODevice *device = NULL;
+        if (QFileInfo(url).exists()) {
+            device = new QFile(url);
+            device->open(QIODevice::ReadOnly);
+        } else {
+            namLock.lock();
+            QNetworkReply *reply = nam.get(QNetworkRequest(url));
+            namLock.unlock();
+
+            reply->waitForReadyRead(-1);
+            while (!reply->isFinished())
+                QCoreApplication::processEvents();
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qDebug() << reply->errorString() << url;
+                reply->deleteLater();
+            } else {
+                device = reply;
+            }
+        }
+
+        if (!device)
+            return;
+
+        const QByteArray data = device->readAll();
+        delete device;
+        device = NULL;
+
+        Mat encoded(1, data.size(), CV_8UC1, (void*)data.data());
+        encoded = encoded.clone();
+        if (mode == Permissive) {
+            dst += encoded;
+        } else {
+            Mat decoded = imdecode(encoded, IMREAD_UNCHANGED);
+            if (!decoded.empty())
+                dst += (mode == Encoded) ? encoded : decoded;
+        }
+
+        dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex()));
+        dst.file.set("AlgorithmID", mode == Decoded ? 5 : 3);
+    }
+};
+
+BR_REGISTER(Transform, DownloadTransform)
 
 /*!
  * \ingroup transforms
@@ -239,7 +344,7 @@ BR_REGISTER(Transform, RemoveTransform)
  * \brief Rename metadata key
  * \author Josh Klontz \cite jklontz
  */
-class RenameTransform : public UntrainableMetaTransform
+class RenameTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString find READ get_find WRITE set_find RESET reset_find STORED false)
@@ -247,12 +352,12 @@ class RenameTransform : public UntrainableMetaTransform
     BR_PROPERTY(QString, find, "")
     BR_PROPERTY(QString, replace, "")
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        if (dst.file.localKeys().contains(find)) {
-            dst.file.set(replace, dst.file.value(find));
-            dst.file.remove(find);
+        if (dst.localKeys().contains(find)) {
+            dst.set(replace, dst.value(find));
+            dst.remove(find);
         }
     }
 };
@@ -264,7 +369,7 @@ BR_REGISTER(Transform, RenameTransform)
  * \brief Rename first found metadata key
  * \author Josh Klontz \cite jklontz
  */
-class RenameFirstTransform : public UntrainableMetaTransform
+class RenameFirstTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList find READ get_find WRITE set_find RESET reset_find STORED false)
@@ -272,13 +377,13 @@ class RenameFirstTransform : public UntrainableMetaTransform
     BR_PROPERTY(QStringList, find, QStringList())
     BR_PROPERTY(QString, replace, "")
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         foreach (const QString &key, find)
-            if (dst.file.localKeys().contains(key)) {
-                dst.file.set(replace, dst.file.value(key));
-                dst.file.remove(key);
+            if (dst.localKeys().contains(key)) {
+                dst.set(replace, dst.value(key));
+                dst.remove(key);
                 break;
             }
     }
@@ -291,16 +396,16 @@ BR_REGISTER(Transform, RenameFirstTransform)
  * \brief Change the br::Template::file extension
  * \author Josh Klontz \cite jklontz
  */
-class AsTransform : public UntrainableMetaTransform
+class AsTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString extension READ get_extension WRITE set_extension RESET reset_extension STORED false)
     BR_PROPERTY(QString, extension, "")
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        dst.file.name = dst.file.name.left(dst.file.name.lastIndexOf('.')+1) + extension;
+        dst.name = dst.name.left(dst.name.lastIndexOf('.')+1) + extension;
     }
 };
 
@@ -311,7 +416,7 @@ BR_REGISTER(Transform, AsTransform)
  * \brief Apply the input regular expression to the value of inputProperty, store the matched portion in outputProperty.
  * \author Charles Otto \cite caotto
  */
-class RegexPropertyTransform : public UntrainableMetaTransform
+class RegexPropertyTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
@@ -321,14 +426,14 @@ class RegexPropertyTransform : public UntrainableMetaTransform
     BR_PROPERTY(QString, inputProperty, "name")
     BR_PROPERTY(QString, outputProperty, "Label")
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         QRegularExpression re(regexp);
-        QRegularExpressionMatch match = re.match(dst.file.get<QString>(inputProperty));
+        QRegularExpressionMatch match = re.match(dst.get<QString>(inputProperty));
         if (!match.hasMatch())
-            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.file.get<QString>(inputProperty)));
-        dst.file.set(outputProperty, match.captured(match.lastCapturedIndex()));
+            qFatal("Unable to match regular expression \"%s\" to base name \"%s\"!", qPrintable(regexp), qPrintable(dst.get<QString>(inputProperty)));
+        dst.set(outputProperty, match.captured(match.lastCapturedIndex()));
     }
 };
 
@@ -517,13 +622,17 @@ class ProgressCounterTransform : public TimeVaryingTransform
 
         qint64 elapsed = timer.elapsed();
 
+        if (!dst.empty()) {
+            Globals->currentProgress = dst.last().file.get<qint64>("progress",0);
+            dst.last().file.remove("progress");
+            Globals->currentStep++;
+        }
+
         // updated every second
         if (elapsed > 1000) {
             Globals->printStatus();
             timer.start();
         }
-
-        Globals->currentStep++;
 
         return;
     }
@@ -537,12 +646,13 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
+        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
     }
 
     void init()
     {
         timer.start();
+        Globals->currentStep = 0;
     }
 
 public:
@@ -636,11 +746,8 @@ class OutputTransform : public TimeVaryingTransform
         if (targetName.isEmpty() || queryName.isEmpty() || outputString.isEmpty())
             return;
 
-        QScopedPointer<Gallery> tGallery(Gallery::make(targetName));
-        QScopedPointer<Gallery> qGallery(Gallery::make(queryName));
-
-        FileList targetFiles = tGallery->files();
-        FileList queryFiles  = qGallery->files();
+        FileList targetFiles = FileList::fromGallery(targetName);
+        FileList queryFiles  = FileList::fromGallery(queryName);
 
         currentBlockRow = 0;
         currentBlockCol = 0;
@@ -665,7 +772,7 @@ class OutputTransform : public TimeVaryingTransform
             fragmentsPerCol = 1;
         }
 
-        output = QSharedPointer<Output>(Output::make(outputString, targetFiles, queryFiles));
+        output = QSharedPointer<Output>(Output::make(outputString+"[targetGallery="+targetName+",queryGallery="+queryName+"]", targetFiles, queryFiles));
         output->blockRows = fragmentsPerCol;
         output->blockCols = fragmentsPerRow;
         output->initialize(targetFiles, queryFiles);
@@ -691,6 +798,40 @@ public:
 };
 
 BR_REGISTER(Transform, OutputTransform)
+
+class FileExclusionTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString exclusionGallery READ get_exclusionGallery WRITE set_exclusionGallery RESET reset_exclusionGallery STORED false)
+    BR_PROPERTY(QString, exclusionGallery, "")
+
+    QSet<QString> excluded;
+
+    void project(const Template &, Template &) const
+    {
+        qFatal("FileExclusion can't do anything here");
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        foreach(const Template & srcTemp, src)
+        {
+            if (!excluded.contains(srcTemp.file))
+                dst.append(srcTemp);
+        }
+    }
+
+    void init()
+    {
+        if (exclusionGallery.isEmpty())
+            return;
+        FileList temp = FileList::fromGallery(exclusionGallery);
+        excluded = QSet<QString>::fromList(temp.names());
+    }
+};
+
+BR_REGISTER(Transform, FileExclusionTransform)
 
 }
 

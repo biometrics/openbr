@@ -17,30 +17,29 @@
 #ifndef BEE_BEE_H
 #define BEE_BEE_H
 
-#include <QList>
-#include <QPair>
-#include <QHash>
 #include <QString>
 #include <QStringList>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr_plugin.h>
 
-/*** Functions for parsing BEE style data structures. ***/
+/*!
+ * Functions for parsing NIST BEE data structures.
+ */
 namespace BEE
 {
-    const uchar Match(0xff);
-    const uchar NonMatch(0x7f);
-    const uchar DontCare(0x00);
-    typedef float Simmat_t;
-    typedef uchar Mask_t;
+    typedef float SimmatValue;
+    typedef uchar MaskValue;
+    const MaskValue Match(0xff);
+    const MaskValue NonMatch(0x7f);
+    const MaskValue DontCare(0x00);
 
     // Sigset
     br::FileList readSigset(const br::File &sigset, bool ignoreMetadata = false);
     void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
 
     // Matrix
-    cv::Mat readMat(const br::File & mat, QString * targetSigset = NULL, QString * querySigset = NULL);
-    void writeMat(const cv::Mat &m, const QString &simmat, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
+    cv::Mat readMatrix(const br::File &mat, QString *targetSigset = NULL, QString *querySigset = NULL);
+    void writeMatrix(const cv::Mat &m, const QString &fileName, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
     void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset);
     void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset);
 
