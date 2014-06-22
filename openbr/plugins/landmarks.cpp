@@ -150,16 +150,15 @@ class ProcrustesAlignTransform : public Transform
 
     Eigen::MatrixXf referenceShape;
 
-    MatrixXf getRotation(MatrixXf ref, MatrixXf sample) {
+    MatrixXf getRotation(MatrixXf ref, MatrixXf sample) const {
         MatrixXf R = ref.transpose() * sample;
         JacobiSVD<MatrixXf> svd(R, ComputeFullU | ComputeFullV);
         R = svd.matrixU() * svd.matrixV();
-
         return R;
     }
 
     //Converts x y points in a single vector to two column matrix
-    MatrixXf vectorToMatrix(MatrixXf vector) {
+    MatrixXf vectorToMatrix(MatrixXf vector) const {
         int n = vector.rows();
         MatrixXf matrix(n / 2, 2);
         for (int i = 0; i < n / 2; i++) {
@@ -170,7 +169,7 @@ class ProcrustesAlignTransform : public Transform
         return matrix;
     }
 
-    MatrixXf matrixToVector(MatrixXf matrix) {
+    MatrixXf matrixToVector(MatrixXf matrix) const {
         int n2 = matrix.rows();
         MatrixXf vector(n2 * 2, 1);
         for (int i = 0; i < n2; i++) {
@@ -180,6 +179,7 @@ class ProcrustesAlignTransform : public Transform
         }
         return vector;
     }
+
 
     void train(const TemplateList &data)
     {
@@ -214,72 +214,46 @@ class ProcrustesAlignTransform : public Transform
         //Normalize rotation
         MatrixXf refPrev;
         referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-        float diff = FLT_MAX;
 
         for (int j = 0; j < points.cols(); j++) {
             MatrixXf p = vectorToMatrix(points.col(j));
             MatrixXf R = getRotation(referenceShape, p);
-            p = p * R.transpose();
+            p = p * R;
             points.col(j) = matrixToVector(p);
         }
 
         referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
     }
 
-    void procustesAlgin(const Template &src, Template &dst, MatrixXf p) {
-
-        QList<QPointF> imagePoints = src.file.points();
-        MatrixXf p(imagePoints.size() * 2, 1);
-        for (int i = 0; i < imagePoints.size(); i++) {
-
-        }
-    }
 
     void project(const Template &src, Template &dst) const
     {
-        MatrixXf p(src.file.points().size() * 2, 1);
-
-
-        // Normalize all sets of points
-        for (int j = 0; j < data.size(); j++) {
-            QList<QPointF> imagePoints = data[j].file.points();
-
-            float meanX = 0,
-                  meanY = 0;
-            for (int i = 0; i < imagepoints.size(); i++) {
-                points(i * 2, j) = imagepoints[i].x();
-                points(i * 2 + 1, j) = imagepoints[i].y();
-                meanX += imagePoints[i].x();
-                meanY += imagePoints[i].y();
-            }
-            meanX /= imagePoints.size();
-            meanY /= imagePoints.size();
-
-            for (int i = 0; i < imagePoints.size(); i++) {
-                points(i * 2, j) -= meanX;
-                points(i * 2 + 1, j) -= meanY;
-            }
+        QList<QPointF> imagePoints = src.file.points();
+        MatrixXf p(imagePoints.size() * 2, 1);
+        for (int i = 0; i < imagePoints.size(); i++) {
+            p(i * 2) = imagePoints[i].x();
+            p(i * 2 + 1) = imagePoints[i].y();
         }
+        float norm = p.norm();
+        p = vectorToMatrix(p);
 
+        //Nomralize translation
+        p.col(0) = p.col(0) - MatrixXf::Ones(p.rows(),1) * (p.col(0).sum() / p.rows());
+        p.col(1) = p.col(1) - MatrixXf::Ones(p.rows(),1) * (p.col(1).sum() / p.rows());
 
-        //normalize scale
-        for (int i = 0; i < points.cols(); i++)
-            points.col(i) = points.col(i) / points.col(i).norm();
+        //Normalize scale
+        p /= norm;
 
         //Normalize rotation
-        MatrixXf refPrev;
-        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-        float diff = FLT_MAX;
+        MatrixXf R = getRotation(referenceShape, p);
+        p = p * R;
 
-        for (int j = 0; j < points.cols(); j++) {
-            MatrixXf p = vectorToMatrix(points.col(j));
-            MatrixXf R = getRotation(referenceShape, p);
-            p = p * R.transpose();
-            points.col(j) = matrixToVector(p);
-        }
+        QList<QPointF> procrustesPoints;
+        for (int i = 0; i < p.rows(); i++)
+            procrustesPoints.append(QPointF(p(i, 0), p(i, 1)));
 
-        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-
+        dst = src;
+        dst.file.setList<QPointF>("ProcrustesPoints", procrustesPoints);
     }
 
     void store(QDataStream &stream) const
