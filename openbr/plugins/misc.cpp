@@ -100,8 +100,7 @@ public:
 private:
     BR_PROPERTY(Mode, mode, Encoded)
 
-    mutable QNetworkAccessManager nam;
-    mutable QMutex namLock;
+    mutable QThreadStorage<QNetworkAccessManager*> nam;
 
     void project(const Template &src, Template &dst) const
     {
@@ -118,9 +117,9 @@ private:
             device = new QFile(url);
             device->open(QIODevice::ReadOnly);
         } else {
-            namLock.lock();
-            QNetworkReply *reply = nam.get(QNetworkRequest(url));
-            namLock.unlock();
+            if (!nam.hasLocalData())
+                nam.setLocalData(new QNetworkAccessManager());
+            QNetworkReply *reply = nam.localData()->get(QNetworkRequest(url));
 
             reply->waitForReadyRead(-1);
             while (!reply->isFinished())
