@@ -79,6 +79,7 @@ public slots:
         }
 
         response->setHeader("Content-Length", QString::number(message.size()));
+        response->setHeader("Content-Type", "application/json");
         response->writeHead(200); // everything is OK
         response->write(message);
         response->end();
