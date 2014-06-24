@@ -117,6 +117,22 @@ struct SearchResults
     virtual void printMetadata(br_const_utemplate) const { return; }
 };
 
+struct ImageID : public SearchResults
+{
+    ImageID(br_const_utemplate query)
+        : SearchResults(query) {}
+
+    float compare(br_const_utemplate target, br_const_utemplate query) const
+    {
+        return !memcmp(&target->imageID, &query->imageID, sizeof(target->imageID));
+    }
+
+    void printMetadata(br_const_utemplate t) const
+    {
+        cout << ", \"Data\":\"" << reinterpret_cast<const char*>(&t->data) << "\"";
+    }
+};
+
 struct FaceRecognition : public SearchResults
 {
     QSharedPointer<Distance> algorithm;
@@ -175,7 +191,14 @@ static void compare_utemplates(br_const_utemplate target, br_callback_context co
 
 static void search_utemplate(br_const_utemplate query, br_callback_context)
 {
-    SearchResults *searchResults = new FaceRecognition(query);
+    SearchResults *searchResults = NULL;
+    switch (query->algorithmID) {
+      case 2: searchResults = new ImageID(query);
+      case -1: searchResults = new FaceRecognition(query);
+    }
+    if (!searchResults)
+        qFatal("Unsupported AlgorithmID: %d", query->algorithmID);
+
     foreach (const MappedGallery &gallery, galleries)
         br_iterate_utemplates(reinterpret_cast<br_const_utemplate>(gallery.data), reinterpret_cast<br_const_utemplate>(gallery.data + gallery.size), compare_utemplates, searchResults);
     searchResults->print();
