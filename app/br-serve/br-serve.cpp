@@ -54,7 +54,7 @@ public slots:
             process.waitForReadyRead();
             if (process.error() != QProcess::UnknownError)
                 qFatal("%s\n", qPrintable(process.errorString()));
-            message = process.readAll();
+            message = process.readLine();
         } else {
             QString path = request->path();
             if (path == "/")
