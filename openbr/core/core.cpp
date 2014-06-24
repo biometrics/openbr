@@ -210,8 +210,10 @@ struct AlgorithmCore
         bool done;
         do {
             TemplateList templates = inputGallery->readBlock(&done);
-            templates >> *transform;
-            outputGallery->writeBlock(templates);
+            if (!templates.empty())
+                templates >> *transform;
+            if (!templates.empty())
+                outputGallery->writeBlock(templates);
         } while (!done);
     }
 
