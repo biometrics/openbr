@@ -32,22 +32,23 @@ static TemplateList Expanded(const TemplateList &templates)
 {
     TemplateList expanded;
     foreach (const Template &t, templates) {
+        const bool enrollAll = t.file.get<bool>("enrollAll");
         if (t.isEmpty()) {
-            if (!t.file.get<bool>("enrollAll", false))
+            if (!enrollAll)
                 expanded.append(t);
             continue;
         }
 
-        const bool fte = t.file.get<bool>("FTE", false);
-        QList<QPointF> points = t.file.points();
-        QList<QRectF> rects = t.file.rects();
+        const bool fte = t.file.get<bool>("FTE");
+        const QList<QPointF> points = t.file.points();
+        const QList<QRectF> rects = t.file.rects();
         if (points.size() % t.size() != 0) qFatal("Uneven point count.");
         if (rects.size() % t.size() != 0) qFatal("Uneven rect count.");
         const int pointStep = points.size() / t.size();
         const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || !t.file.get<bool>("enrollAll", false)) {
+            if (!fte || !enrollAll) {
                 expanded.append(Template(t.file, t[i]));
                 expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
                 expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
