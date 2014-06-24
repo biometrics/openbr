@@ -140,6 +140,10 @@ class ProcrustesTransform : public Transform
 BR_REGISTER(Transform, ProcrustesTransform)
 
 /*!
+ * \ingroup transforms
+ * \brief Improved procrustes alignment of points, to include a post processing scaling of points
+ * to faciliate subsequent texture mapping.
+ * \author Brendan Klare \cite bklare
  */
 class ProcrustesAlignTransform : public Transform
 {
