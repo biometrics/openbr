@@ -55,6 +55,13 @@ public slots:
             if (process.error() != QProcess::UnknownError)
                 qFatal("%s\n", qPrintable(process.errorString()));
             message = process.readLine();
+            response->setHeader("Content-Type", "application/json");
+        } else if (urlQuery.hasQueryItem("imageID")) {
+            process.write(qPrintable(QString(urlQuery.queryItemValue("imageID") + "\n")));
+            process.waitForReadyRead();
+            if (process.error() != QProcess::UnknownError)
+                qFatal("%s\n", qPrintable(process.errorString()));
+            response->setHeader("Content-Type", "image/jpeg");
         } else {
             QString path = request->path();
             if (path == "/")
@@ -68,18 +75,20 @@ public slots:
                               "<body>\n"
                               "  <h1><a href=\"http://en.wikipedia.org/wiki/Query_string\">Query String</a> Parameters</h1>"
                               "  <ul>\n"
-                              "    <li><b>url</b> - Query URL for processing.</li>\n"
+                              "    <li><b>url</b> - Query URL for image search.</li>\n"
+                              "    <li><b>imageID</b> - Query ImageID for image retrieval.</li>\n"
                               "  </ul>\n"
                               "  <h1>Examples</h1>\n"
                               "  <ul>\n"
                               "    <li>http://%1%2/?url=data.liblikely.org/misc/lenna.tiff</li>\n"
+                              "    <li>http://%1%2/?imageID=ecaee0b4cd73a76dd2a8060b2909a4a1</li>\n"
                               "  </ul>\n"
                               "</body>\n"
                               "</html>").arg(path, port == 80 ? QString() : (QString(":") + QString::number(port))).toLatin1();
+            response->setHeader("Content-Type", "text/html");
         }
 
         response->setHeader("Content-Length", QString::number(message.size()));
-        response->setHeader("Content-Type", "application/json");
         response->writeHead(200); // everything is OK
         response->write(message);
         response->end();
