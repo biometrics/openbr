@@ -274,7 +274,7 @@ class utGallery : public BinaryGallery
                 data.append((const char*)&leftEyeY , sizeof(float));
             }
         }
-        const QByteArray templateID = QCryptographicHash::hash(data, QCryptographicHash::Md5);
+        const QByteArray templateID = data.isEmpty() ? QByteArray(16, 0) : QCryptographicHash::hash(data, QCryptographicHash::Md5);
         const uint32_t size = data.size();
 
         gallery.write(imageID);
