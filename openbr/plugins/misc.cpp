@@ -119,17 +119,20 @@ private:
         } else {
             if (!nam.hasLocalData())
                 nam.setLocalData(new QNetworkAccessManager());
-            QNetworkReply *reply = nam.localData()->get(QNetworkRequest(url));
+            const QUrl qURL(url, QUrl::StrictMode);
+            if (qURL.isValid() && !qURL.isRelative()) {
+                QNetworkReply *reply = nam.localData()->get(QNetworkRequest(qURL));
 
-            reply->waitForReadyRead(-1);
-            while (!reply->isFinished())
-                QCoreApplication::processEvents();
+                reply->waitForReadyRead(-1);
+                while (!reply->isFinished())
+                    QCoreApplication::processEvents();
 
-            if (reply->error() != QNetworkReply::NoError) {
-                qDebug() << reply->errorString() << url;
-                reply->deleteLater();
-            } else {
-                device = reply;
+                if (reply->error() != QNetworkReply::NoError) {
+                    qDebug() << reply->errorString() << url;
+                    reply->deleteLater();
+                } else {
+                    device = reply;
+                }
             }
         }
 
