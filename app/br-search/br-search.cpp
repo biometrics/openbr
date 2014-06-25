@@ -52,6 +52,27 @@ static void help()
 static size_t limit = 20;
 static float threshold = -numeric_limits<float>::max();
 
+struct MappedGallery
+{
+    QSharedPointer<QFile> file;
+    qint64 size;
+    uchar *data;
+
+    MappedGallery(QString url)
+    {
+        if (url.startsWith("file://"))
+            url = url.mid(7);
+        file.reset(new QFile(url));
+        file->open(QFile::ReadOnly);
+        size = file->size();
+        data = file->map(0, size);
+        if (data == NULL)
+            qFatal("Unable to map gallery: %s", qPrintable(url));
+    }
+};
+
+static QList<MappedGallery> galleries;
+
 struct SearchResults
 {
     typedef pair<float, br_const_utemplate> Target;
@@ -63,27 +84,9 @@ struct SearchResults
 
     virtual ~SearchResults() {}
 
-    void consider(br_const_utemplate target)
+    virtual void consider(const MappedGallery &gallery)
     {
-        const float score = compare(target, query);
-        if ((score < threshold) || ((topTargets.size() == limit) && (score < topTargets.front().first)))
-            return;
-
-        topTargets.push_back(Target(score, target));
-        make_heap(topTargets.begin(), topTargets.end());
-
-        if (topTargets.size() == limit + 1)
-            pop_heap(topTargets.begin(), topTargets.end());
-    }
-
-    static void writeMD5asHex(const unsigned char *md5)
-    {
-        const char prevFill = cout.fill();
-        cout << hex << setfill('0');
-        for (int i=0; i<16; i++)
-            cout << setw(2) << int(md5[i]);
-        cout << dec;
-        setfill(prevFill);
+        br_iterate_utemplates(reinterpret_cast<br_const_utemplate>(gallery.data), reinterpret_cast<br_const_utemplate>(gallery.data + gallery.size), compare_utemplates, this);
     }
 
     void print()
@@ -113,8 +116,51 @@ struct SearchResults
         cout << "] }\n" << flush;
     }
 
+private:
+    void consider(br_const_utemplate target)
+    {
+        if (target->algorithmID != query->algorithmID)
+            return;
+
+        const float score = compare(target, query);
+        if ((score < threshold) || ((topTargets.size() == limit) && (score < topTargets.front().first)))
+            return;
+
+        topTargets.push_back(Target(score, target));
+        make_heap(topTargets.begin(), topTargets.end());
+
+        if (topTargets.size() == limit + 1)
+            pop_heap(topTargets.begin(), topTargets.end());
+    }
+
+    static void compare_utemplates(br_const_utemplate target, br_callback_context context)
+    {
+        SearchResults *searchResults = (SearchResults*) context;
+        searchResults->consider(target);
+    }
+
+    static void writeMD5asHex(const unsigned char *md5)
+    {
+        const char prevFill = cout.fill();
+        cout << hex << setfill('0');
+        for (int i=0; i<16; i++)
+            cout << setw(2) << int(md5[i]);
+        cout << dec;
+        setfill(prevFill);
+    }
+
     virtual float compare(br_const_utemplate target, br_const_utemplate query) const = 0;
     virtual void printMetadata(br_const_utemplate) const { return; }
+};
+
+struct VoidSearch : public SearchResults
+{
+    VoidSearch(br_const_utemplate query)
+        : SearchResults(query) {}
+
+private:
+    void consider(const MappedGallery &) { return; }
+    float compare(br_const_utemplate, br_const_utemplate) const { return 0; }
 };
 
 struct ImageID : public SearchResults
@@ -122,6 +168,7 @@ struct ImageID : public SearchResults
     ImageID(br_const_utemplate query)
         : SearchResults(query) {}
 
+private:
     float compare(br_const_utemplate target, br_const_utemplate query) const
     {
         return !memcmp(&target->imageID, &query->imageID, sizeof(target->imageID));
@@ -135,13 +182,14 @@ struct ImageID : public SearchResults
 
 struct FaceRecognition : public SearchResults
 {
-    QSharedPointer<Distance> algorithm;
-
     FaceRecognition(br_const_utemplate query)
         : SearchResults(query)
     {
         algorithm = Distance::fromAlgorithm("FaceRecognition");
     }
+
+private:
+    QSharedPointer<Distance> algorithm;
 
     float compare(br_const_utemplate target, br_const_utemplate query) const
     {
@@ -162,45 +210,19 @@ struct FaceRecognition : public SearchResults
     }
 };
 
-struct MappedGallery
-{
-    QSharedPointer<QFile> file;
-    qint64 size;
-    uchar *data;
-
-    MappedGallery(QString url)
-    {
-        if (url.startsWith("file://"))
-            url = url.mid(7);
-        file.reset(new QFile(url));
-        file->open(QFile::ReadOnly);
-        size = file->size();
-        data = file->map(0, size);
-        if (data == NULL)
-            qFatal("Unable to map gallery: %s", qPrintable(url));
-    }
-};
-
-static QList<MappedGallery> galleries;
-
-static void compare_utemplates(br_const_utemplate target, br_callback_context context)
-{
-    SearchResults *searchResults = (SearchResults*) context;
-    searchResults->consider(target);
-}
-
 static void search_utemplate(br_const_utemplate query, br_callback_context)
 {
     SearchResults *searchResults = NULL;
     switch (query->algorithmID) {
-      case 2: searchResults = new ImageID(query);
-      case -1: searchResults = new FaceRecognition(query);
+      case  0: searchResults = new VoidSearch(query);      break;
+      case  2: searchResults = new ImageID(query);         break;
+      case -1: searchResults = new FaceRecognition(query); break;
     }
     if (!searchResults)
         qFatal("Unsupported AlgorithmID: %d", query->algorithmID);
 
     foreach (const MappedGallery &gallery, galleries)
-        br_iterate_utemplates(reinterpret_cast<br_const_utemplate>(gallery.data), reinterpret_cast<br_const_utemplate>(gallery.data + gallery.size), compare_utemplates, searchResults);
+        searchResults->consider(gallery);
     searchResults->print();
     delete searchResults;
 }
