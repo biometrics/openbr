@@ -106,9 +106,6 @@ private:
     {
         dst.file = src.file;
         QString url = src.file.get<QString>("URL", src.file.name).simplified();
-        if (url.isEmpty())
-            return;
-
         if (url.startsWith("file://"))
             url = url.mid(7);
 
@@ -136,25 +133,27 @@ private:
             }
         }
 
-        if (!device)
-            return;
-
-        const QByteArray data = device->readAll();
-        delete device;
-        device = NULL;
-
-        Mat encoded(1, data.size(), CV_8UC1, (void*)data.data());
-        encoded = encoded.clone();
-        if (mode == Permissive) {
-            dst += encoded;
-        } else {
-            Mat decoded = imdecode(encoded, IMREAD_UNCHANGED);
-            if (!decoded.empty())
-                dst += (mode == Encoded) ? encoded : decoded;
+        QByteArray data;
+        if (device) {
+            data = device->readAll();
+            delete device;
+            device = NULL;
         }
 
-        dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex()));
-        dst.file.set("AlgorithmID", mode == Decoded ? 5 : 3);
+        if (!data.isEmpty()) {
+            Mat encoded(1, data.size(), CV_8UC1, (void*)data.data());
+            encoded = encoded.clone();
+            if (mode == Permissive) {
+                dst += encoded;
+            } else {
+                Mat decoded = imdecode(encoded, IMREAD_UNCHANGED);
+                if (!decoded.empty())
+                    dst += (mode == Encoded) ? encoded : decoded;
+            }
+
+            dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex()));
+            dst.file.set("AlgorithmID", data.isEmpty() ? 0 : (mode == Decoded ? 5 : 3));
+        }
     }
 };
 

@@ -238,20 +238,18 @@ class utGallery : public BinaryGallery
 
     void writeTemplate(const Template &t)
     {
-        if (t.empty())
-            return;
-
-        const QByteArray imageID = QByteArray::fromHex(t.file.get<QByteArray>("ImageID"));
+        const QByteArray imageID = QByteArray::fromHex(t.file.get<QByteArray>("ImageID", QByteArray(32, '0')));
         if (imageID.size() != 16)
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
-        const int32_t algorithmID = t.file.get<int32_t>("AlgorithmID");
+        const int32_t algorithmID = t.isEmpty() ? 0 : t.file.get<int32_t>("AlgorithmID");
         QByteArray data;
         if (algorithmID == 5) {
             QDataStream stream(&data, QIODevice::WriteOnly);
             stream << t;
         } else {
-            data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+            if (!t.empty())
+                data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
 
             if (algorithmID == -1) {
                 const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
