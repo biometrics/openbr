@@ -379,6 +379,13 @@ class CascadeTransform : public MetaTransform
         foreach (const Template &t, src) {
             const bool enrollAll = t.file.getBool("enrollAll");
 
+            // Mirror the behavior of ExpandTransform in the special case
+            // of an empty template.
+            if (t.empty() && !enrollAll) {
+                dst.append(t);
+                continue;
+            }
+
             for (int i=0; i<t.size(); i++) {
                 const Mat &m = t[i];
                 std::vector<Rect> rects;
