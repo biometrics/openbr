@@ -169,7 +169,7 @@ class ProcrustesAlignTransform : public Transform
         aspectRatio = 0;
     }
 
-    MatrixXf getRotation(MatrixXf ref, MatrixXf sample) const {
+    static MatrixXf getRotation(MatrixXf ref, MatrixXf sample) {
         MatrixXf R = ref.transpose() * sample;
         JacobiSVD<MatrixXf> svd(R, ComputeFullU | ComputeFullV);
         R = svd.matrixU() * svd.matrixV();
@@ -177,7 +177,7 @@ class ProcrustesAlignTransform : public Transform
     }
 
     //Converts x y points in a single vector to two column matrix
-    MatrixXf vectorToMatrix(MatrixXf vector) const {
+    static MatrixXf vectorToMatrix(MatrixXf vector) {
         int n = vector.rows();
         MatrixXf matrix(n / 2, 2);
         for (int i = 0; i < n / 2; i++) {
@@ -188,7 +188,7 @@ class ProcrustesAlignTransform : public Transform
         return matrix;
     }
 
-    MatrixXf matrixToVector(MatrixXf matrix) const {
+    static MatrixXf matrixToVector(MatrixXf matrix) {
         int n2 = matrix.rows();
         MatrixXf vector(n2 * 2, 1);
         for (int i = 0; i < n2; i++) {
@@ -276,7 +276,7 @@ class ProcrustesAlignTransform : public Transform
         }
         p = vectorToMatrix(p);
 
-        //Nomralize translation
+        //Normalize translation
         p.col(0) = p.col(0) - MatrixXf::Ones(p.rows(),1) * (p.col(0).sum() / p.rows());
         p.col(1) = p.col(1) - MatrixXf::Ones(p.rows(),1) * (p.col(1).sum() / p.rows());
 
@@ -286,9 +286,6 @@ class ProcrustesAlignTransform : public Transform
         //Normalize rotation
         MatrixXf R = getRotation(referenceShape, p);
         p = p * R.transpose();
-
-        for (int i = 0; i < p.rows(); i++) {
-        }
 
         //Translate and scale into output space and store in output list
         QList<QPointF> procrustesPoints;
