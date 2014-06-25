@@ -5,9 +5,11 @@
 #include "openbr/core/eigenutils.h"
 #include <QString>
 #include <Eigen/SVD>
+#include <Eigen/Dense>
 
 using namespace std;
 using namespace cv;
+using namespace Eigen;
 
 namespace br
 {
@@ -136,6 +138,189 @@ class ProcrustesTransform : public Transform
 };
 
 BR_REGISTER(Transform, ProcrustesTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Improved procrustes alignment of points, to include a post processing scaling of points
+ * to faciliate subsequent texture mapping.
+ * \author Brendan Klare \cite bklare
+ */
+class ProcrustesAlignTransform : public Transform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(float width READ get_width WRITE set_width RESET reset_width STORED false)
+    Q_PROPERTY(float padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
+    BR_PROPERTY(float, width, 80)
+    BR_PROPERTY(float, padding, 8)
+
+    Eigen::MatrixXf referenceShape;
+    float minX;
+    float minY;
+    float maxX;
+    float maxY;
+    float aspectRatio;
+
+    void init() {
+        minX = FLT_MAX,
+        minY = FLT_MAX,
+        maxX = -FLT_MAX,
+        maxY = -FLT_MAX;
+        aspectRatio = 0;
+    }
+
+    static MatrixXf getRotation(MatrixXf ref, MatrixXf sample) {
+        MatrixXf R = ref.transpose() * sample;
+        JacobiSVD<MatrixXf> svd(R, ComputeFullU | ComputeFullV);
+        R = svd.matrixU() * svd.matrixV();
+        return R;
+    }
+
+    //Converts x y points in a single vector to two column matrix
+    static MatrixXf vectorToMatrix(MatrixXf vector) {
+        int n = vector.rows();
+        MatrixXf matrix(n / 2, 2);
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                matrix(i, j) = vector(i * 2 + j);
+            }
+        }
+        return matrix;
+    }
+
+    static MatrixXf matrixToVector(MatrixXf matrix) {
+        int n2 = matrix.rows();
+        MatrixXf vector(n2 * 2, 1);
+        for (int i = 0; i < n2; i++) {
+            for (int j = 0; j < 2; j++) {
+                vector(i * 2 + j) = matrix(i, j);
+            }
+        }
+        return vector;
+    }
+
+    void train(const TemplateList &data)
+    {
+        MatrixXf points(data[0].file.points().size() * 2, data.size());
+
+        // Normalize all sets of points
+        for (int j = 0; j < data.size(); j++) {
+            QList<QPointF> imagePoints = data[j].file.points();
+
+            float meanX = 0,
+                  meanY = 0;
+            for (int i = 0; i < imagePoints.size(); i++) {
+                points(i * 2, j) = imagePoints[i].x();
+                points(i * 2 + 1, j) = imagePoints[i].y();
+                meanX += imagePoints[i].x();
+                meanY += imagePoints[i].y();
+            }
+            meanX /= imagePoints.size();
+            meanY /= imagePoints.size();
+
+            for (int i = 0; i < imagePoints.size(); i++) {
+                points(i * 2, j) -= meanX;
+                points(i * 2 + 1, j) -= meanY;
+            }
+        }
+
+        //normalize scale
+        for (int i = 0; i < points.cols(); i++)
+            points.col(i) = points.col(i) / points.col(i).norm();
+
+        //Normalize rotation
+        MatrixXf refPrev;
+        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+        float diff = FLT_MAX;
+        while (diff > 1e-5) {//iterate until reference shape is stable
+            refPrev = referenceShape;
+
+            for (int j = 0; j < points.cols(); j++) {
+                MatrixXf p = vectorToMatrix(points.col(j));
+                MatrixXf R = getRotation(referenceShape, p);
+                p = p * R.transpose();
+                points.col(j) = matrixToVector(p);
+            }
+            referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+            diff = (matrixToVector(referenceShape) - matrixToVector(refPrev)).norm();
+        }
+
+        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+
+        //Choose crop boundaries and adjustments that captures all data
+        for (int i = 0; i < points.rows(); i++) {
+            for (int j = 0; j < points.cols(); j++) {
+                if (i % 2 == 0) {
+                if (points(i,j) > maxX)
+                    maxX = points(i, j);
+                if (points(i,j) < minX)
+                    minX = points(i, j);
+                } else {
+                if (points(i,j) > maxY)
+                    maxY = points(i, j);
+                if (points(i,j) < minY)
+                    minY = points(i, j);
+                }
+            }
+        }
+        aspectRatio = (maxX - minX) / (maxY - minY);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        QList<QPointF> imagePoints = src.file.points();
+        MatrixXf p(imagePoints.size() * 2, 1);
+        for (int i = 0; i < imagePoints.size(); i++) {
+            p(i * 2) = imagePoints[i].x();
+            p(i * 2 + 1) = imagePoints[i].y();
+        }
+        p = vectorToMatrix(p);
+
+        //Normalize translation
+        p.col(0) = p.col(0) - MatrixXf::Ones(p.rows(),1) * (p.col(0).sum() / p.rows());
+        p.col(1) = p.col(1) - MatrixXf::Ones(p.rows(),1) * (p.col(1).sum() / p.rows());
+
+        //Normalize scale
+        p /= matrixToVector(p).norm();
+
+        //Normalize rotation
+        MatrixXf R = getRotation(referenceShape, p);
+        p = p * R.transpose();
+
+        //Translate and scale into output space and store in output list
+        QList<QPointF> procrustesPoints;
+        for (int i = 0; i < p.rows(); i++)
+            procrustesPoints.append( QPointF(
+                (p(i, 0) - minX) / (maxX - minX) * (width - 1) + padding,
+                (p(i, 1) - minY) / (maxY - minY) * (qRound( width / aspectRatio) - 1) + padding));
+
+        dst = src;
+        dst.file.setList<QPointF>("ProcrustesPoints", procrustesPoints);
+        dst.file.set("ProcrustesBound", QRectF(0, 0, width + 2 * padding, (qRound(width / aspectRatio) + 2 * padding)));
+    }
+
+    void store(QDataStream &stream) const
+    {
+        stream << referenceShape;
+        stream << minX;
+        stream << minY;
+        stream << maxX;
+        stream << maxY;
+        stream << aspectRatio;
+    }
+
+    void load(QDataStream &stream)
+    {
+        stream >> referenceShape;
+        stream >> minX;
+        stream >> minY;
+        stream >> maxX;
+        stream >> maxY;
+        stream >> aspectRatio;
+    }
+};
+
+BR_REGISTER(Transform, ProcrustesAlignTransform)
 
 /*!
  * \ingroup transforms
