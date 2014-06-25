@@ -57,10 +57,28 @@ public slots:
             message = process.readLine();
             response->setHeader("Content-Type", "application/json");
         } else if (urlQuery.hasQueryItem("ImageID")) {
-            process.write(qPrintable(QString(urlQuery.queryItemValue("ImageID") + "\n")));
-            process.waitForReadyRead();
-            if (process.error() != QProcess::UnknownError)
-                qFatal("%s\n", qPrintable(process.errorString()));
+            const QByteArray imageID = QByteArray::fromHex(urlQuery.queryItemValue("ImageID").toLatin1());
+            if (imageID.size() == 16) {
+                br_universal_template in;
+                in.algorithmID = 2;
+                memcpy(&in.imageID, imageID.data(), 16);
+                memset(in.templateID, 0, 16);
+                in.size = 0;
+
+                process.write((const char *)&in, sizeof(br_universal_template));
+                process.waitForReadyRead();
+                if (process.error() != QProcess::UnknownError)
+                    qFatal("%s\n", qPrintable(process.errorString()));
+
+                br_utemplate out = (br_utemplate) malloc(sizeof(br_universal_template));
+                if (process.read((char*) out, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
+                    out = (br_utemplate) realloc(out, sizeof(br_universal_template) + out->size);
+                    if (process.read(reinterpret_cast<char*>(out+1), out->size) != out->size)
+                        qFatal("Unexepected EOF when reading universal template data.");
+                    message = QByteArray((char*)&out->data, out->size);
+                }
+                free(out);
+            }
             response->setHeader("Content-Type", "image/jpeg");
         } else {
             QString path = request->path();
