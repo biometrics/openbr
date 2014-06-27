@@ -140,6 +140,11 @@ add_subdirectory(openbr)
 
 # Build applications
 add_subdirectory(app)
+foreach(DIR ${BR_THIRDPARTY_APPS_DIR})
+  get_filename_component(FNAME ${DIR} NAME)
+  # DIR could be out-of-tree so we must specify the build directory
+  add_subdirectory(${DIR} 3rdparty_apps/${FNAME})
+endforeach()
 
 # Build the documentation?
 option(BR_BUILD_DOCUMENTATION "Build Documentation (Requires doxygen and latex)")
