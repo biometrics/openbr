@@ -268,11 +268,19 @@ class ProcrustesAlignTransform : public Transform
 
     void project(const Template &src, Template &dst) const
     {
+        float srcMinX = FLT_MAX;
+        float srcMinY = FLT_MAX;
+        float srcMaxX = -FLT_MAX;
+        float srcMaxY = -FLT_MAX;
         QList<QPointF> imagePoints = src.file.points();
         MatrixXf p(imagePoints.size() * 2, 1);
         for (int i = 0; i < imagePoints.size(); i++) {
             p(i * 2) = imagePoints[i].x();
             p(i * 2 + 1) = imagePoints[i].y();
+            if (imagePoints[i].x() < srcMinX)	srcMinX = imagePoints[i].x();
+            if (imagePoints[i].y() < srcMinY)	srcMinY = imagePoints[i].y();
+            if (imagePoints[i].x() < srcMaxX)	srcMaxX = imagePoints[i].x();
+            if (imagePoints[i].y() < srcMaxY)	srcMaxY = imagePoints[i].y();
         }
         p = vectorToMatrix(p);
 
@@ -297,6 +305,9 @@ class ProcrustesAlignTransform : public Transform
         dst = src;
         dst.file.setList<QPointF>("ProcrustesPoints", procrustesPoints);
         dst.file.set("ProcrustesBound", QRectF(0, 0, width + 2 * padding, (qRound(width / aspectRatio) + 2 * padding)));
+        dst.file.set("ProcrustesSrcBound", QRectF(qRound(srcMinX - padding), qRound(srcMinY - padding),
+                                                  qRound(srcMaxX - srcMinX + 2 * padding),
+                                                  qRound(srcMaxY - srcMinY + 2 * padding)));
     }
 
     void store(QDataStream &stream) const
@@ -336,7 +347,7 @@ class DelaunayTransform : public UntrainableTransform
     BR_PROPERTY(float, scaleFactor, 1)
     BR_PROPERTY(bool, warp, true)
 
-    void project(const Template &src, Template &dst) const
+    void project(const Template &src, Template &dst, ) const
     {
         QList<QPointF> points = src.file.points();
         QList<QRectF> rects = src.file.rects();
@@ -463,6 +474,103 @@ class DelaunayTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, DelaunayTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief  Maps texture from one set of points to another. Assumes that points are rigidly transformed
+ * \author Scott Klum \cite sklum
+ * \author Brendan Klare \cite bklare
+ */
+class TextureMapTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
+    Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
+    BR_PROPERTY(float, scaleFactor, 1)
+    BR_PROPERTY(bool, warp, true)
+
+    QList<QPointF> getTriangulation(QList<QPointF> points, QRect bound) {
+        points.append(bound.topLeft());
+        points.append(bound.topRight());
+        points.append(bound.bottomLeft());
+        points.append(bound.bottomRight());
+
+        Subdiv2D subdiv();
+        for (int i = 0; i < points.size(); i++)
+            subdiv.insert(OpenCVUtils::toPoint(points[i]));
+
+        vector<Vec6f> triangleList;
+        subdiv.getTriangleList(triangleList);
+
+        QList<QPointF> validTriangles;
+        for (size_t i = 0; i < triangleList.size(); i++) {
+            bool valid = true;
+            QList<QPointF> vertices;
+            vertices.append(QPointF(triangleList[i][0],triangleList[i][1]));
+            vertices.append(QPointF(triangleList[i][2],triangleList[i][3]));
+            vertices.append(QPointF(triangleList[i][4],triangleList[i][5]));
+            for (int j = 0; j < 3; j++)
+                if (vertices[j].x() > cols || vertices[j].y() > rows || vertices[j].x() < 0 || vertices[j].y() < 0)
+                    valid = false;
+
+            if (valid)
+                validTriangles.append(vertices);
+        }
+
+        return validTriangles;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        QList<QPointF> dstPoints = dst.file.setList<QPointF>("ProcrustesPoints", procrustesPoints);
+        QRectF dstBound  = dst.file.setList<QPointF>("ProcrustesBound", procrustesPoints);
+        QList<QPointF> srcPoints = dst.file.points();
+        QRectF srcBound  = dst.file.setList<QPointF>("ProcrustesSrcBound", procrustesPoints);
+
+        if (dstPoints.empty() || srcPoints.empty()) {
+            dst = src;
+            if (Globals->verbose) qWarning("Delauney triangulation failed because points or rects are empty.");
+            return;
+        }
+
+        QList<QPointF> dstTri = getTriangulation(dstPoints, dstBound);
+        QList<QPointF> srcTri = getTriangulation(srcPoints, srcBound);
+
+        dst.m() = Mat::zeros(dstBound.height(), dstBound.width(), src.m().type());
+        for (int i = 0; i < srcTriangles.size(); i+=3) {
+            Point2f srcPoints[3];
+            Point2f dstPoints[3];
+            for (int j = 0; j < 3; j++) {
+                srcPoints[j] = OpenCVUtils::toPoint(srcTri[i+j]);
+                srcPoints[j] = OpenCVUtils::toPoint(dstTri[i+j]);
+            }
+
+            Mat buffer(dstBound.height(), dstBound.width(), src.m().type());
+            warpAffine(src.m(), buffer, getAffineTransform(srcPoints, dstPoints), Size(cols,rows));
+
+            Mat mask = Mat::zeros(rows, cols, CV_8UC1);
+            Point maskPoints[1][3];
+            maskPoints[0][0] = dstPoints[0];
+            maskPoints[0][1] = dstPoints[1];
+            maskPoints[0][2] = dstPoints[2];
+            const Point* ppt = { maskPoints[0] };
+            fillConvexPoly(mask, ppt, 3, Scalar(255,255,255), 8);
+
+            Mat output(dstBound.height(), dstBound.width(), src.m().type());
+
+            if (i > 0) {
+                Mat overlap;
+                bitwise_and(dst.m(),mask,overlap);
+                mask.setTo(0, overlap!=0);
+            }
+
+            bitwise_and(buffer,mask,output);
+
+            dst.m() += output;
+        }
+    }
+};
 
 /*!
  * \ingroup transforms
