@@ -106,6 +106,7 @@ private:
     {
         dst.file = src.file;
         QString url = src.file.get<QString>("URL", src.file.name).simplified();
+        dst.file.set("URL", url);
         if (url.startsWith("file://"))
             url = url.mid(7);
 

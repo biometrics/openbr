@@ -109,6 +109,7 @@ class JSONTransform : public UntrainableMetaTransform
         dst.file = src.file;
         const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(src.file.localMetadata())).toJson();
         dst += cv::Mat(1, json.size(), CV_8UC1, (void*) json.data());
+        dst.file.set("AlgorithmID", 2);
     }
 };
 
