@@ -134,6 +134,17 @@ if(BUILD_TESTING)
   mark_as_advanced(BUILDNAME)
 endif()
 
+# Look for closedbr automatically
+set(BR_THIRDPARTY_PLUGINS_DIR CACHE PATH "")
+set(BR_THIRDPARTY_APPS_DIR CACHE PATH "")
+mark_as_advanced(BR_THIRDPARTY_PLUGINS_DIR)
+mark_as_advanced(BR_THIRDPARTY_APPS_DIR)
+set(CLOSEDBR_DIR "${CMAKE_SOURCE_DIR}/../closedbr")
+if(EXISTS "${CLOSEDBR_DIR}" AND IS_DIRECTORY "${CLOSEDBR_DIR}")
+  set(BR_THIRDPARTY_PLUGINS_DIR ${BR_THIRDPARTY_PLUGINS_DIR} "${CLOSEDBR_DIR}/plugins")
+  set(BR_THIRDPARTY_APPS_DIR    ${BR_THIRDPARTY_APPS_DIR}    "${CLOSEDBR_DIR}/app")
+endif()
+
 # Build the SDK
 include_directories(BEFORE .) # Find the local headers first
 add_subdirectory(openbr)
