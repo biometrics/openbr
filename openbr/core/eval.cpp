@@ -752,18 +752,13 @@ static QMap<QString, Detections> getDetections(const File &predictedGallery, con
     return allDetections;
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
+static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
 {
-    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    float dLeftTotal = 0.0, dRightTotal = 0.0, dTopTotal = 0.0, dBottomTotal = 0.0;
+    int count = 0, totalTrueDetections = 0;
 
-    // Organized by file, QMap used to preserve order
-    QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
-
-    QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
-    int totalTrueDetections = 0;
-    foreach (Detections detections, allDetections.values()) { // For every file
+    foreach (Detections detections, all.values()) {
         totalTrueDetections += detections.truth.size();
-
         // Try to associate ground truth detections with predicted detections
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
             const Detection truth = detections.truth.takeFirst(); // Take removes the detection
@@ -771,7 +766,16 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
             float bestOverlap = -std::numeric_limits<float>::max();
             // Find the nearest predicted detection to this ground truth detection
             for (int i=0; i<detections.predicted.size(); i++) {
-                const float overlap = truth.overlap(detections.predicted[i]);
+                Detection predicted = detections.predicted[i];
+                float predictedWidth = predicted.boundingBox.width();
+                float x, y, width, height;
+                x = predicted.boundingBox.x() + offsets.x()*predictedWidth;
+                y = predicted.boundingBox.y() + offsets.y()*predictedWidth;
+                width = predicted.boundingBox.width() - offsets.width()*predictedWidth;
+                height = predicted.boundingBox.height() - offsets.height()*predictedWidth;
+                Detection newPredicted(QRectF(x, y, width, height), 0.0);
+
+                const float overlap = truth.overlap(newPredicted);
                 if (overlap > bestOverlap) {
                     bestOverlap = overlap;
                     bestIndex = i;
@@ -781,17 +785,67 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
             // We don't want to associate two ground truth detections with the
             // same prediction, over vice versa.
             const Detection predicted = detections.predicted.takeAt(bestIndex);
-            resolvedDetections.append(ResolvedDetection(predicted.confidence, bestOverlap));
+            resolved.append(ResolvedDetection(predicted.confidence, bestOverlap));
+
+            if (offsets.x() == 0) {
+                // Add side differences to total only for pairs that meet the overlap threshold.
+                if (bestOverlap > 0.3) {
+                    count++;
+                    float width = predicted.boundingBox.width();
+                    dLeftTotal += (truth.boundingBox.left() - predicted.boundingBox.left()) / width;
+                    dRightTotal += (truth.boundingBox.right() - predicted.boundingBox.right()) / width;
+                    dTopTotal += (truth.boundingBox.top() - predicted.boundingBox.top()) / width;
+                    dBottomTotal += (truth.boundingBox.bottom() - predicted.boundingBox.bottom()) / width;
+                }
+            }
         }
 
         foreach (const Detection &detection, detections.predicted)
-            resolvedDetections.append(ResolvedDetection(detection.confidence, 0));
+            resolved.append(ResolvedDetection(detection.confidence, 0));
         for (int i=0; i<detections.truth.size(); i++)
-            falseNegativeDetections.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
+            falseNegative.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
     }
+    if (offsets.x() == 0) {
+        // Calculate average differences in each direction
+        float dRight = dRightTotal / count;
+        float dBottom = dBottomTotal / count;
+        float dX = dLeftTotal / count;
+        float dY = dTopTotal / count;
+        float dWidth = dX - dRight;
+        float dHeight = dY - dBottom;
 
+        offsets.setX(dX);
+        offsets.setY(dY);
+        offsets.setWidth(dWidth);
+        offsets.setHeight(dHeight);
+    }
+    return totalTrueDetections;
+}
+
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize)
+{
+    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    // Organized by file, QMap used to preserve order
+    QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
+
+    QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
+    QRectF normalizations(0, 0, 0, 0);
+    
+    // Associate predictions to ground truth
+    int totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+
+    // Redo association of ground truth to predictions with boundingBoxes
+    // resized based on the average differences on each side.
+    if (normalize) {
+        qDebug("dX = %.3f", normalizations.x());
+        qDebug("dY = %.3f", normalizations.y());
+        qDebug("dWidth = %.3f", normalizations.width());
+        qDebug("dHeight = %.3f", normalizations.height());
+        resolvedDetections.clear();
+        falseNegativeDetections.clear();
+        totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+    }
     std::sort(resolvedDetections.begin(), resolvedDetections.end());
-
     QStringList lines;
     lines.append("Plot, X, Y");
     lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, true));

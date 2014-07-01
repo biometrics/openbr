@@ -193,9 +193,10 @@ BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery, const ch
  * \param predicted_gallery The predicted br::Gallery.
  * \param truth_gallery The ground truth br::Gallery.
  * \param csv Optional \c .csv file to contain performance metrics.
+ * \param normalize Optional \c bool flag to normalize predicted bounding boxes for improved detection. 
  * \return Average detection bounding box overlap.
  */
-BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "");
+BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "", bool normalize = false);
 
 /*!
  * \brief Evaluates and prints landmarking accuracy to terminal.
