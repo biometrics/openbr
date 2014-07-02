@@ -717,6 +717,16 @@ void Object::load(QDataStream &stream)
     init();
 }
 
+bool Object::setPropertyRecursive(const QString & name, QVariant value)
+{
+    if (this->metaObject()->indexOfProperty(qPrintable(name)) == -1)
+        return false;
+
+    qDebug() << "Class: " << metaObject()->className() << "took property" << name;
+    setProperty(name, value);
+    return true;
+}
+
 void Object::setProperty(const QString &name, QVariant value)
 {
     QString type;

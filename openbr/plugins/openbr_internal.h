@@ -201,6 +201,13 @@ public:
             this->trainable = transform->trainable;
     }
 
+    bool setPropertyRecursive(const QString & name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+
+        return transform->setPropertyRecursive(name, value);
+    }
 };
 
 /*!
@@ -292,6 +299,20 @@ public:
 
         return output;
     }
+
+    bool setPropertyRecursive(const QString & name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+
+        for (int i=0; i < this->transforms.size();i++)
+        {
+            if (transforms[i]->setPropertyRecursive(name, value))
+                return true;
+        }
+        return false;
+    }
+
 
 protected:
     bool isTimeVarying;

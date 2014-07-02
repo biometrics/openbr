@@ -597,6 +597,8 @@ public:
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    virtual bool setPropertyRecursive(const QString & name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
+
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:

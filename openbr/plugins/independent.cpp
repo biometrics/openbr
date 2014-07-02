@@ -126,6 +126,20 @@ class IndependentTransform : public MetaTransform
 
     QList<Transform*> transforms;
 
+
+    bool setPropertyRecursive(const QString & name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+
+        if (!transform->setPropertyRecursive(name, value))
+            return false;
+
+        for (int i=0;i < transforms.size();i++) {
+            transforms[i]->setPropertyRecursive(name, value);
+        }
+    }
+
     void init()
     {
         transforms.clear();

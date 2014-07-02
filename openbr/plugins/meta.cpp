@@ -493,6 +493,12 @@ class LoadStoreTransform : public MetaTransform
 public:
     LoadStoreTransform() : transform(NULL) {}
 
+    bool setPropertyRecursive(const QString & name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+        return transform->setPropertyRecursive(name, value);
+    }
 private:
     void init()
     {
