@@ -27,6 +27,7 @@ struct AlgorithmCore
 {
     QSharedPointer<Transform> transform;
     QSharedPointer<Distance> distance;
+    QString galleryCompareString;
 
     QString transformString;
     QString distanceString;
@@ -147,9 +148,6 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        Globals->currentStep = 0;
-        Globals->totalSteps = total;
-
         QScopedPointer<Transform> basePipe;
 
         QString pipeDesc = "GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(total)+")+Discard";
@@ -189,6 +187,8 @@ struct AlgorithmCore
         wrapper->init();
 
         Globals->startTime.start();
+        Globals->currentStep = 0;
+        Globals->totalSteps = total;
 
         TemplateList data, output;
         data.append(input);
@@ -335,7 +335,7 @@ struct AlgorithmCore
                output.isNull() ? "" : qPrintable(" to " + output.flat()));
 
         // Escape hatch for distances that need to operate directly on the gallery files
-        if (distance->compare(targetGallery, queryGallery, output))
+        if (distance && distance->compare(targetGallery, queryGallery, output))
             return;
 
         // Are we comparing the same gallery against itself?
@@ -442,8 +442,11 @@ struct AlgorithmCore
         // The actual comparison step is done by a GalleryCompare transform, which has a Distance, and a gallery as data.
         // Incoming templates are compared against the templates in the gallery, and the output is the resulting score
         // vector.
-        QString compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")])";
-
+        QString compareRegionDesc;
+        if (this->galleryCompareString.isEmpty() )
+            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")])";
+        else
+            compareRegionDesc = "Pipe(["+this->galleryCompareString+"("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")])";
 
         QScopedPointer<Transform> compareRegion;
         // If we need to enroll the row set, we add the current algorithm's enrollment transform before the
@@ -519,6 +522,7 @@ struct AlgorithmCore
 
         // Set up progress counting variables
         Globals->currentStep = 0;
+        Globals->currentProgress = 0;
         Globals->totalSteps = rowSize;
         Globals->startTime.start();
 
@@ -553,19 +557,27 @@ private:
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
 
-        //! [Parsing the algorithm description]
-        QStringList words = QtUtils::parse(description, ':');
+        const bool compareTransform = description.contains('!');
+        QStringList words = QtUtils::parse(description, compareTransform ? '!' : ':');
+
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
+
         //! [Parsing the algorithm description]
-
         transformString = words[0];
-
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         if (words.size() > 1) {
-            distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
-            distanceString = words[1];
+            if (!compareTransform) {
+                distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
+                distanceString = words[1];
+                galleryCompareString.clear();
+            }
+            else {
+                galleryCompareString = words[1];
+                distanceString.clear();
+            }
+            
         }
         //! [Creating the template generation and comparison methods]
     }
