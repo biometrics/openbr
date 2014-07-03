@@ -525,7 +525,7 @@ class IncrementalOutputTransform : public TimeVaryingTransform
 
         dst = src;
         int idx =0;
-        foreach(const Template &t, src) {
+        foreach (const Template &t, src) {
             if (t.empty())
                 continue;
 
@@ -692,9 +692,8 @@ class OutputTransform : public TimeVaryingTransform
             return;
 
         // we received a template, which is the next row/column in order
-        foreach(const Template &t, dst) {
-            for (int i=0; i < t.m().cols; i++)
-            {
+        foreach (const Template &t, dst) {
+            for (int i=0; i < t.m().cols; i++) {
                 output->setRelative(t.m().at<float>(0, i), currentRow, currentCol);
 
                 // row-major input
@@ -718,21 +717,18 @@ class OutputTransform : public TimeVaryingTransform
 
         bool blockDone = false;
         // In direct mode, we don't buffer rows
-        if (!transposeMode)
-        {
+        if (!transposeMode) {
             currentBlockRow++;
             blockDone = true;
         }
         // in transpose mode, we buffer 100 cols before writing the block
-        else if (currentCol == bufferedSize)
-        {
+        else if (currentCol == bufferedSize) {
             currentBlockCol++;
             blockDone = true;
         }
         else return;
 
-        if (blockDone)
-        {
+        if (blockDone) {
             // set the next block, only necessary if we haven't buffered the current item
             output->setBlock(currentBlockRow, currentBlockCol);
             currentRow = 0;
@@ -761,15 +757,13 @@ class OutputTransform : public TimeVaryingTransform
 
         bufferedSize = 100;
 
-        if (transposeMode)
-        {
+        if (transposeMode) {
             // buffer 100 cols at a time
             fragmentsPerRow = bufferedSize;
             // a single col contains comparisons to all query files
             fragmentsPerCol = queryFiles.size();
         }
-        else
-        {
+        else {
             // a single row contains comparisons to all target files
             fragmentsPerRow = targetFiles.size();
             // we output rows one at a time
@@ -819,8 +813,7 @@ class FileExclusionTransform : public UntrainableMetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        foreach(const Template &srcTemp, src)
-        {
+        foreach (const Template &srcTemp, src) {
             if (!excluded.contains(srcTemp.file))
                 dst.append(srcTemp);
         }

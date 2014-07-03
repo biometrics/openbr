@@ -261,7 +261,7 @@ public:
                 // rclick -- reset state if drawing, remove last rect if done
                 else if (mouseEvent->button() == Qt::RightButton && (!rects.isEmpty() || drawingRect))
                 {
-                    if(drawingRect)
+                    if (drawingRect)
                         drawingRect = false;
                     else
                     {
@@ -343,7 +343,7 @@ class PointMarkingWindow : public DisplayWindow
 
             QPainter painter(&pixmapBuffer);
             painter.setBrush(Qt::red);
-            foreach(const QPointF &point, points) painter.drawEllipse(point, 4, 4);
+            foreach (const QPointF &point, points) painter.drawEllipse(point, 4, 4);
 
             setPixmap(pixmapBuffer);
 
@@ -458,7 +458,7 @@ public slots:
         wait.wait(&lock);
 
         QStringList values;
-        for(int i = 0; i<fields.size(); i++) {
+        for (int i = 0; i<fields.size(); i++) {
             values.append(fields.at(i)->text());
             fields[i]->clear();
         }
@@ -482,7 +482,7 @@ private:
     void createForm()
     {
         if (fields.size() != keys.size()) {
-            foreach(const QString& label, keys) {
+            foreach (const QString& label, keys) {
                 QLineEdit *edit = new QLineEdit;
                 fields.append(edit);
                 QFormLayout *form = new QFormLayout;
@@ -672,7 +672,7 @@ public:
             return;
 
         for (int i = 0; i < dst.size(); i++) {
-            foreach(const cv::Mat &m, dst[i]) {
+            foreach (const cv::Mat &m, dst[i]) {
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
@@ -727,7 +727,7 @@ public:
             return;
 
         for (int i = 0; i < dst.size(); i++) {
-            foreach(const cv::Mat &m, dst[i]) {
+            foreach (const cv::Mat &m, dst[i]) {
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
@@ -823,14 +823,14 @@ public:
         if (src.empty()) return;
 
         for (int i = 0; i < dst.size(); i++) {
-            foreach(const cv::Mat &m, dst[i]) {
+            foreach (const cv::Mat &m, dst[i]) {
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 
                 emit updateImage(displayBuffer->copy(displayBuffer->rect()));
 
                 QStringList metadata = gui->waitForButtonPress();
-                for(int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j],metadata[j]);
+                for (int j = 0; j < keys.size(); j++) dst[i].file.set(keys[j],metadata[j]);
             }
         }
     }
@@ -895,7 +895,7 @@ public:
             return;
 
         for (int i = 0; i < dst.size(); i++) {
-            foreach(const cv::Mat &m, dst[i]) {
+            foreach (const cv::Mat &m, dst[i]) {
                 qImageBuffer = toQImage(m);
                 displayBuffer->convertFromImage(qImageBuffer);
 

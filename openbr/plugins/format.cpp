@@ -62,7 +62,7 @@ public:
         }
 
         bool open = true;
-        while(open) {
+        while (open) {
             cv::Mat frame;
             open = videoSource.read(frame);
             if (!open) break;

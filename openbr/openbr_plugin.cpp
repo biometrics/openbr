@@ -205,7 +205,7 @@ QList<QRectF> File::namedRects() const
         const QVariant &variant = m_metadata[key];
         if (variant.canConvert<QRectF>())
             rects.append(variant.value<QRectF>());
-        else if(variant.canConvert<QList<QRectF> >()) {
+        else if (variant.canConvert<QList<QRectF> >()) {
             QList<QRectF> list = variant.value<QList<QRectF> >();
             for (int i=0;i < list.size();i++)
             {
@@ -1323,8 +1323,7 @@ QList<Transform *> Transform::getChildren() const
 
 TemplateEvent *Transform::getEvent(const QString &name)
 {
-    foreach(Transform *child, getChildren())
-    {
+    foreach (Transform *child, getChildren()) {
         TemplateEvent *probe = child->getEvent(name);
         if (probe)
             return probe;
@@ -1347,9 +1346,9 @@ void Transform::train(const TemplateList &data)
 void Transform::train(const QList<TemplateList> &data)
 {
     TemplateList combined;
-    foreach(const TemplateList &set, data) {
+    foreach (const TemplateList &set, data)
         combined.append(set);
-    }
+
     train(combined);
 }
 

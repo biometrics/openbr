@@ -494,7 +494,7 @@ struct TemplateList : public QList<Template>
         int sum = 0;
         QList<TemplateList> partitions; partitions.reserve(partitionSizes.size());
 
-        for(int i=0; i<partitionSizes.size(); i++) {
+        for (int i=0; i<partitionSizes.size(); i++) {
             partitions.append(TemplateList());
             sum+=partitionSizes[i];
         }

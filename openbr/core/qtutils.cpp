@@ -105,9 +105,9 @@ void writeFile(const QString &file, const QStringList &lines)
     if (!f.open(QFile::WriteOnly))
         qFatal("Failed to open %s for writing.", qPrintable(file));
 
-    foreach(const QString & line, lines) {
+    foreach (const QString & line, lines)
         f.write((line+"\n").toLocal8Bit() );
-    }
+
     f.close();
 }
 
@@ -429,7 +429,7 @@ QString toString(const QVariantList &variantList)
 {
     QStringList variants;
 
-    foreach(const QVariant &variant, variantList)
+    foreach (const QVariant &variant, variantList)
         variants.append(toString(variant));
 
     if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";

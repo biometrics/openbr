@@ -305,7 +305,7 @@ struct AlgorithmCore
         tail.removeFirst();
 
         QStringList toRemove;
-        foreach(const QString &s, tail)
+        foreach (const QString &s, tail)
             toRemove.append(s.split(',').at(1));
 
         QSet<QString> duplicates = QSet<QString>::fromList(toRemove);
@@ -313,7 +313,7 @@ struct AlgorithmCore
         QStringList fileNames = inputFiles.names();
 
         QList<int> indices;
-        foreach(const QString &d, duplicates)
+        foreach (const QString &d, duplicates)
             indices.append(fileNames.indexOf(d));
 
         std::sort(indices.begin(),indices.end(),std::greater<float>());
@@ -426,10 +426,8 @@ struct AlgorithmCore
         // which compares incoming templates against a gallery, we will handle enrollment of the row set by simply
         // building a transform that does enrollment (using the current algorithm), then does the comparison in one
         // step. This way, we don't have to retain the complete enrolled row gallery in memory, or on disk.
-        else if(!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
-        {
+        else if (!(QStringList() << "gal" << "mem" << "template").contains(rowGallery.suffix()))
             needEnrollRows = true;
-        }
 
         // At this point, we have decided how we will structure the comparison (either in transpose mode, or not), 
         // and have the column gallery enrolled, and have decided whether or not we need to enroll the row gallery.

@@ -289,8 +289,7 @@ public:
         if (output == NULL)
             qFatal("Dynamic cast failed!");
 
-        foreach(Transform* t, transforms )
-        {
+        foreach (Transform* t, transforms ) {
             bool newItem = false;
             Transform *maybe_copy = t->smartCopy(newItem);
             if (newItem)

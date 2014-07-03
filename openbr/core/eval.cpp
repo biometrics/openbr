@@ -332,16 +332,14 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
 
     qint64 idx  = 0;
     bool done = false;
-    do 
-    {
+    do {
         TemplateList temp = columnGal->readBlock(&done);
         QStringList tempLabels = File::get<QString>(temp, "Label");
 
-        foreach(QString st, tempLabels)
-        {
-            if (!galleryIndices.contains(st)) {
+        foreach (QString st, tempLabels) {
+            if (!galleryIndices.contains(st))
                 galleryIndices.insert(st, QList<qint64>());
-            }
+
             galleryIndices[st].append(idx);
             idx++;
         }
@@ -357,21 +355,17 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
     probeGallery->set_readBlockSize(10000);
     done = false;
     qint64 row_count = 0;
-    do
-    {
+    do {
         TemplateList temp = probeGallery->readBlock(&done);
         QStringList probeLabels = File::get<QString>(temp, "Label");
 
-        for (int i=0; i < probeLabels.size();i++)
-        {
+        for (int i=0; i < probeLabels.size();i++) {
             row_count++;
-            if (!galleryIndices.contains(probeLabels[i])) {
+            if (!galleryIndices.contains(probeLabels[i]))
                 continue;
-            }
 
             QList<qint64> colMask = galleryIndices[probeLabels[i]];
-            foreach(qint64 colID, colMask)
-            {
+            foreach (qint64 colID, colMask) {
                 float score;
                 file.seek(data_pos + i * rowSize + colID * typeSize);
                 file.read((char *) &score, sizeof(float));
@@ -383,7 +377,7 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
             }
         }
 
-    } while(!done);
+    } while (!done);
 
     QMap<float, GenImpCounts> noImpostors = genScoresToCounts;
 
@@ -403,16 +397,14 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
     Mat blockMat(bSize, cols, CV_32FC1);
 
     qint64 bCount = 0;
-    do
-    {
+    do {
         bCount++;
         TemplateList temp = probeGallery2->readBlock(&done);
         QStringList probeLabels = File::get<QString>(temp, "Label");
         temp.clear();
 
         file.read((char *) blockMat.data, rowSize * probeLabels.length());
-        for (int i=0; i < probeLabels.size();i++)
-        {
+        for (int i=0; i < probeLabels.size();i++) {
             row_count++;
             aRow = blockMat.row(i);
 
@@ -445,8 +437,7 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
                 i->impCount++;
             }
         }
-
-    } while(!done);
+    } while (!done);
 
     QList<OperatingPoint> operatingPoints;
     qint64 genAccum = 0;

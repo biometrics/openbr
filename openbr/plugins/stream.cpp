@@ -1355,16 +1355,16 @@ public:
 
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
-        foreach(const TemplateList &list, collector->sets) {
+        foreach (const TemplateList &list, collector->sets)
             dst.append(list);
-        }
+
         collector->sets.clear();
 
         dst.append(final_output);
 
-        foreach(ProcessingStage *stage, processingStages) {
+        foreach (ProcessingStage *stage, processingStages)
             stage->reset();
-        }
+
     }
 
 

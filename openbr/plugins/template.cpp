@@ -19,9 +19,9 @@ class KeepMetadataTransform : public UntrainableMetadataTransform
     void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        foreach(const QString& localKey, dst.localKeys()) {
-            if (!keys.contains(localKey)) dst.remove(localKey);
-        }
+        foreach (const QString& localKey, dst.localKeys())
+            if (!keys.contains(localKey))
+                dst.remove(localKey);
     }
 };
 

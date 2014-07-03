@@ -667,7 +667,7 @@ public:
 
         QList<TemplateList> separated;
         foreach (const TemplateList &list, data) {
-            foreach(const Template &t, list) {
+            foreach (const Template &t, list) {
                 separated.append(TemplateList());
                 separated.last().append(t);
             }
