@@ -138,6 +138,7 @@ class IndependentTransform : public MetaTransform
         for (int i=0;i < transforms.size();i++) {
             transforms[i]->setPropertyRecursive(name, value);
         }
+        return true;
     }
 
     void init()

@@ -722,7 +722,6 @@ bool Object::setPropertyRecursive(const QString & name, QVariant value)
     if (this->metaObject()->indexOfProperty(qPrintable(name)) == -1)
         return false;
 
-    qDebug() << "Class: " << metaObject()->className() << "took property" << name;
     setProperty(name, value);
     init();
     return true;
