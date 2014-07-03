@@ -185,7 +185,7 @@ class PipeTransform : public CompositeTransform
         QList<Transform *> flattened;
         for (int i=0;i < transforms.size(); i++)
         {
-            PipeTransform * probe = dynamic_cast<PipeTransform *> (transforms[i]);
+            PipeTransform *probe = dynamic_cast<PipeTransform *> (transforms[i]);
             if (!probe) {
                 flattened.append(transforms[i]);
                 continue;
@@ -641,7 +641,7 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * smartCopy(bool &newTransform)
+    Transform *smartCopy(bool &newTransform)
     {
         if (!transform->timeVarying()) {
             newTransform = false;
@@ -649,7 +649,7 @@ public:
         }
         newTransform = true;
 
-        DistributeTemplateTransform * output = new DistributeTemplateTransform;
+        DistributeTemplateTransform *output = new DistributeTemplateTransform;
         bool newChild = false;
         output->transform = transform->smartCopy(newChild);
         if (newChild)

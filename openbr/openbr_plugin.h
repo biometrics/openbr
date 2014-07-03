@@ -1258,14 +1258,14 @@ public:
      * and copy enough of their state that projectUpdate can safely be called on the original
      * instance, and the copy concurrently.
      */
-    virtual Transform * smartCopy(bool &newTransform) { newTransform=false; return this;}
+    virtual Transform *smartCopy(bool &newTransform) { newTransform=false; return this;}
 
-    virtual Transform * smartCopy() {bool junk; return smartCopy(junk);}
+    virtual Transform *smartCopy() {bool junk; return smartCopy(junk);}
 
     /*!
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
      */
-    virtual TemplateEvent * getEvent(const QString &name);
+    virtual TemplateEvent *getEvent(const QString &name);
 
     /*!
      * \brief Get a list of child transforms of this transform, child transforms are considered to be

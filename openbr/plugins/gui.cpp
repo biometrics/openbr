@@ -46,7 +46,7 @@ template<typename T>
 class ActualCreation : public NominalCreation
 {
 public:
-    T * basis;
+    T *basis;
 
     void creation()
     {
@@ -83,7 +83,7 @@ public:
     // the template with the NominalCreation interface, and call worker->creation
     // in the slot.
     template<typename T>
-    T * getItem()
+    T *getItem()
     {
         // If this is called by the main thread, we can just create the object
         // it's important to check, otherwise we will have problems trying to
@@ -103,12 +103,12 @@ public:
         emit needCreation();
 
         // collect the results, and return.
-        T * output = actualWorker->basis;
+        T *output = actualWorker->basis;
         delete actualWorker;
         return output;
     }
 
-    NominalCreation * worker;
+    NominalCreation *worker;
 
 signals:
     void needCreation();
@@ -135,7 +135,7 @@ protected:
 
 public:
 
-    DisplayWindow(QWidget * parent = NULL) : QLabel(parent)
+    DisplayWindow(QWidget *parent = NULL) : QLabel(parent)
     {
         setFixedSize(200,200);
         QApplication::instance()->installEventFilter(this);
@@ -161,7 +161,7 @@ public slots:
         setFixedSize(temp);
     }
 
-    bool eventFilter(QObject * obj, QEvent * event)
+    bool eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::KeyPress)
         {
@@ -292,7 +292,7 @@ public:
         } else {
             if (event->type() == QEvent::KeyPress)
             {
-                QKeyEvent * kevent = (QKeyEvent *) event;
+                QKeyEvent *kevent = (QKeyEvent *) event;
                 if (kevent->key() == Qt::Key_Enter || kevent->key() == Qt::Key_Return) {
                     event->accept();
                     return true;
@@ -370,13 +370,13 @@ private:
 
 class PromptWindow : public DisplayWindow
 {
-    bool eventFilter(QObject * obj, QEvent * event)
+    bool eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::KeyPress)
         {
             event->accept();
 
-            QKeyEvent * key_event = dynamic_cast<QKeyEvent *> (event);
+            QKeyEvent *key_event = dynamic_cast<QKeyEvent *> (event);
             if (key_event == NULL) {
                 qDebug("failed to donwcast key event");
                 return true;
@@ -419,7 +419,7 @@ class GUIWindow : public QMainWindow
 
 public:
 
-    GUIWindow(QWidget * parent = NULL) : QMainWindow(parent)
+    GUIWindow(QWidget *parent = NULL) : QMainWindow(parent)
     {
         centralWidget = new QWidget();
         layout = new QHBoxLayout();
@@ -614,9 +614,9 @@ public:
 
 protected:
     MainThreadCreator creator;
-    DisplayWindow * window;
+    DisplayWindow *window;
     QImage qImageBuffer;
-    QPixmap * displayBuffer;
+    QPixmap *displayBuffer;
 
 signals:
     void updateImage(const QPixmap &input);
@@ -772,7 +772,7 @@ public:
             }
         }
     }
-    RectMarkingWindow * trueWindow;
+    RectMarkingWindow *trueWindow;
     void init()
     {
         if (!Globals->useGui)
@@ -812,7 +812,7 @@ public:
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Transform * non_const = (ElicitTransform *) this;
+        Transform *non_const = (ElicitTransform *) this;
         non_const->projectUpdate(src,dst);
     }
 
@@ -910,7 +910,7 @@ public:
             }
         }
     }
-    PromptWindow * p_window;
+    PromptWindow *p_window;
 
 
     void init()

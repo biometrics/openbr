@@ -428,9 +428,9 @@ private:
         // each input dimension. Each input dimension corresponds to
         // one of the input rect region. Thus, each eigenvector represents
         // a set of overlaping regions.
-        float  * midX = new float[nRegions];
-        float * midY = new float[nRegions];
-        float * avgWidth = new float[nRegions];
+        float *midX = new float[nRegions];
+        float *midY = new float[nRegions];
+        float *avgWidth = new float[nRegions];
         float *avgHeight = new float[nRegions];
         float *confs = new float[nRegions];
         int *cnts = new int[nRegions];

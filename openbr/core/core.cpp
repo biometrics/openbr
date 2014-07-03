@@ -49,7 +49,7 @@ struct AlgorithmCore
 
         QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream(readMode=DistributeFrames)", NULL));
 
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
+        CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
         downcast->transforms.append(this->transform.data());
@@ -144,7 +144,7 @@ struct AlgorithmCore
             fileExclusion = true;
         }
 
-        Gallery * temp = Gallery::make(input);
+        Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
         Globals->currentStep = 0;
@@ -156,13 +156,13 @@ struct AlgorithmCore
 
         if (!multiProcess) {
             basePipe.reset(Transform::make(pipeDesc,NULL));
-            CompositeTransform * downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
+            CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
 
             if (downcast == NULL) qFatal("downcast failed?");
 
             downcast->transforms.prepend(this->transform.data());
             if (fileExclusion) {
-                Transform * temp = Transform::make("FileExclusion(" + gallery.flat() + ")", downcast);
+                Transform *temp = Transform::make("FileExclusion(" + gallery.flat() + ")", downcast);
                 downcast->transforms.prepend(temp);
             }
 
@@ -180,7 +180,7 @@ struct AlgorithmCore
         // Next, we make a Stream (with placeholder transform)
         QString streamDesc = "Stream(readMode=StreamGallery)";
         QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
-        WrapperTransform * wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
+        WrapperTransform *wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
 
         // replace that placeholder with the pipe we built
         wrapper->transform = basePipe.data();
@@ -373,7 +373,7 @@ struct AlgorithmCore
         File colGallery = targetGallery;
         qint64 rowSize;
 
-        Gallery * temp;
+        Gallery *temp;
         if (transposeMode)
         {
             rowGallery = targetGallery;
@@ -456,7 +456,7 @@ struct AlgorithmCore
             {
                 compareRegionDesc = compareRegionDesc;
                 compareRegion.reset(Transform::make(compareRegionDesc,NULL));
-                CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (compareRegion.data());
+                CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (compareRegion.data());
                 if (downcast == NULL)
                     qFatal("Pipe downcast failed in compare");
 
@@ -496,7 +496,7 @@ struct AlgorithmCore
 
         // Assign the comparison transform we previously built, and the output transform  we just built to
         // two stages of a pipe.
-        CompositeTransform * downcast = dynamic_cast<CompositeTransform *> (join.data());
+        CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (join.data());
         downcast->transforms.append(compareRegion.data());
         downcast->transforms.append(outputTform.data());
 
@@ -508,7 +508,7 @@ struct AlgorithmCore
         // and pass the transforms it reads through the base algorithm.
         QString streamDesc = "Stream(readMode=StreamGallery)";
         QScopedPointer<Transform> streamBase(Transform::make(streamDesc, NULL));
-        WrapperTransform * streamWrapper = dynamic_cast<WrapperTransform *> (streamBase.data());
+        WrapperTransform *streamWrapper = dynamic_cast<WrapperTransform *> (streamBase.data());
         streamWrapper->transform = join.data();
 
         // The transform we will use is now complete.
@@ -687,7 +687,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
         if (targetFiles.size() != m.cols)
         {
-            MatrixOutput   * mOut = dynamic_cast<MatrixOutput *>(o.data());
+            MatrixOutput *mOut = dynamic_cast<MatrixOutput *>(o.data());
             if (mOut)
                 mOut->data.create(queryFiles.size(), 1, CV_32FC1);
         }
@@ -730,7 +730,7 @@ QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algori
     else {
         QSharedPointer<Transform> orig_tform = AlgorithmManager::getAlgorithm(algorithm)->transform;
         QSharedPointer<Transform> newRoot = QSharedPointer<Transform>(Transform::make("Stream(readMode=DistributeFrames)", NULL));
-        WrapperTransform * downcast = dynamic_cast<WrapperTransform *> (newRoot.data());
+        WrapperTransform *downcast = dynamic_cast<WrapperTransform *> (newRoot.data());
         downcast->transform = orig_tform.data();
         downcast->init();
         return newRoot;

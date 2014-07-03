@@ -1310,7 +1310,7 @@ QList<Transform *> Transform::getChildren() const
 {
     QList<Transform *> output;
     for (int i=0; i < metaObject()->propertyCount(); i++) {
-        const char * prop_name = metaObject()->property(i).name();
+        const char *prop_name = metaObject()->property(i).name();
         const QVariant &variant = this->property(prop_name);
 
         if (variant.canConvert<Transform *>())
@@ -1321,11 +1321,11 @@ QList<Transform *> Transform::getChildren() const
     return output;
 }
 
-TemplateEvent * Transform::getEvent(const QString &name)
+TemplateEvent *Transform::getEvent(const QString &name)
 {
-    foreach(Transform * child, getChildren())
+    foreach(Transform *child, getChildren())
     {
-        TemplateEvent * probe = child->getEvent(name);
+        TemplateEvent *probe = child->getEvent(name);
         if (probe)
             return probe;
     }

@@ -48,8 +48,8 @@ protected:
 class TransformCopier : public ResourceMaker<Transform>
 {
 public:
-    Transform * basis;
-    TransformCopier(Transform * _basis)
+    Transform *basis;
+    TransformCopier(Transform *_basis)
     {
         basis = _basis;
     }
@@ -66,7 +66,7 @@ class TimeInvariantWrapperTransform : public MetaTransform
 public:
     Resource<Transform> transformSource;
 
-    TimeInvariantWrapperTransform(Transform * basis) : transformSource(new TransformCopier(basis))
+    TimeInvariantWrapperTransform(Transform *basis) : transformSource(new TransformCopier(basis))
     {
         if (!basis)
             qFatal("TimeInvariantWrapper created with NULL transform");
@@ -76,14 +76,14 @@ public:
 
     virtual void project(const Template &src, Template &dst) const
     {
-        Transform * aTransform = transformSource.acquire();
+        Transform *aTransform = transformSource.acquire();
         aTransform->projectUpdate(src,dst);
         transformSource.release(aTransform);
     }
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Transform * aTransform = transformSource.acquire();
+        Transform *aTransform = transformSource.acquire();
         aTransform->projectUpdate(src,dst);
         transformSource.release(aTransform);
     }
@@ -94,7 +94,7 @@ public:
     }
 
 private:
-    Transform * baseTransform;
+    Transform *baseTransform;
 };
 
 /*!
@@ -139,7 +139,7 @@ public:
      *\brief For transforms that don't do any training, this default implementation
      * which creates a new copy of the Transform from its description string is sufficient.
      */
-    virtual Transform * smartCopy(bool &newTransform)
+    virtual Transform *smartCopy(bool &newTransform)
     {
         newTransform = true;
         return this->clone();
@@ -262,7 +262,7 @@ public:
      * it creates a new copy of its own class, and gives that copy the child transforms
      * returned by calling smartCopy on this transforms children
      */
-    Transform * smartCopy(bool &newTransform)
+    Transform *smartCopy(bool &newTransform)
     {
         if (!timeVarying()) {
             newTransform = false;
@@ -284,7 +284,7 @@ public:
         name += ")";
         name.replace("br::","");
 
-        CompositeTransform * output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
+        CompositeTransform *output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
 
         if (output == NULL)
             qFatal("Dynamic cast failed!");
@@ -292,7 +292,7 @@ public:
         foreach(Transform* t, transforms )
         {
             bool newItem = false;
-            Transform * maybe_copy = t->smartCopy(newItem);
+            Transform *maybe_copy = t->smartCopy(newItem);
             if (newItem)
                 maybe_copy->setParent(output);
             output->transforms.append(maybe_copy);
@@ -335,7 +335,7 @@ struct WorkerProcess
 {
     QString transform;
     QString baseName;
-    EnrollmentWorker * processInterface;
+    EnrollmentWorker *processInterface;
 
     void mainLoop();
 };

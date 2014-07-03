@@ -573,7 +573,7 @@ class EventTransform : public UntrainableMetaTransform
         event.pulseSignal(dst);
     }
 
-    TemplateEvent * getEvent(const QString &name)
+    TemplateEvent *getEvent(const QString &name)
     {
         return name == eventName ? &event : NULL;
     }
