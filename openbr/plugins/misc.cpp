@@ -625,11 +625,18 @@ class ProgressCounterTransform : public TimeVaryingTransform
         dst = src;
 
         qint64 elapsed = timer.elapsed();
-
+        int last_frame = -2;
         if (!dst.empty()) {
-            Globals->currentProgress = dst.last().file.get<qint64>("progress",0);
-            dst.last().file.remove("progress");
-            Globals->currentStep++;
+            for (int i=0;i < dst.size();i++) {
+                int frame = dst[i].file.get<int>("FrameNumber", -1);
+                if (frame == last_frame)
+                    continue;
+
+                Globals->currentProgress = dst[i].file.get<qint64>("progress",0);
+                dst[i].file.remove("progress");
+                Globals->currentStep++;
+                last_frame = frame;
+            }
         }
 
         // updated every second
@@ -650,13 +657,17 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        qDebug("%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
+        qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
+        Globals->currentStep = 0;
+        Globals->currentProgress = 0;
+        Globals->totalSteps = 0;
     }
 
     void init()
     {
         timer.start();
         Globals->currentStep = 0;
+        Globals->currentProgress = 0;
     }
 
 public:
@@ -713,26 +724,26 @@ class OutputTransform : public TimeVaryingTransform
                 currentCol++;
                 currentRow = 0;
             }
-        }
 
-        bool blockDone = false;
-        // In direct mode, we don't buffer rows
-        if (!transposeMode) {
-            currentBlockRow++;
-            blockDone = true;
-        }
-        // in transpose mode, we buffer 100 cols before writing the block
-        else if (currentCol == bufferedSize) {
-            currentBlockCol++;
-            blockDone = true;
-        }
-        else return;
+            bool blockDone = false;
+            // In direct mode, we don't buffer rows
+            if (!transposeMode) {
+                currentBlockRow++;
+                blockDone = true;
+            }
+            // in transpose mode, we buffer 100 cols before writing the block
+            else if (currentCol == bufferedSize) {
+                currentBlockCol++;
+                blockDone = true;
+            }
+            else return;
 
-        if (blockDone) {
-            // set the next block, only necessary if we haven't buffered the current item
-            output->setBlock(currentBlockRow, currentBlockCol);
-            currentRow = 0;
-            currentCol = 0;
+            if (blockDone) {
+                // set the next block, only necessary if we haven't buffered the current item
+                output->setBlock(currentBlockRow, currentBlockCol);
+                currentRow = 0;
+                currentCol = 0;
+            }
         }
     }
 

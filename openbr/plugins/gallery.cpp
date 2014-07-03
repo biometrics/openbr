@@ -129,7 +129,7 @@ class BinaryGallery : public Gallery
             if (t.isEmpty() && t.file.isNull())
                 continue;
             templates.append(t);
-            templates.last().file.set("progress", totalSize());
+            templates.last().file.set("progress", position());
 
             // Special case for pipes where we want to process data as soon as it is available
             if (gallery.isSequential())

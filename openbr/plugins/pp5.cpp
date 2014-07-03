@@ -45,7 +45,7 @@ class PP5Initializer : public Initializer
     void initialize() const
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
-        Globals->abbreviations.insert("PP5","Open+Expand+PP5Enroll:PP5Compare");
+        Globals->abbreviations.insert("PP5","Open+Expand+PP5Enroll!PP5Gallery");
         Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
         Globals->abbreviations.insert("PP5CropFace", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)+Affine(128,128,0.25,0.35)+Cvt(Gray)");
     }
@@ -85,7 +85,7 @@ struct PP5Context
         default_settings.recognition.automatically_extract_templates = 1;
         default_settings.recognition.enable_comparison = 1;
         default_settings.recognition.enable_extraction = 1;
-        default_settings.recognition.num_comparison_threads = QThreadPool::globalInstance()->maxThreadCount();
+        default_settings.recognition.num_comparison_threads = 1;
         default_settings.recognition.recognizer = PPR_RECOGNIZER_MULTI_POSE;
         TRY(ppr_initialize_context(default_settings, &context))
     }
@@ -205,6 +205,45 @@ struct PP5Context
 
         return metadata;
     }
+
+    void compareNative(ppr_gallery_type target, const QList<int> &targetIDs, ppr_gallery_type query, const QList<int> &queryIDs, Output *output) const
+    {
+        ppr_similarity_matrix_type simmat;
+        TRY(ppr_compare_galleries(context, query, target, &simmat))
+        for (int i=0; i<queryIDs.size(); i++) {
+            int query_subject_id = queryIDs[i];
+            for (int j=0; j<targetIDs.size(); j++) {
+                int target_subject_id = targetIDs[j];
+                float score = -std::numeric_limits<float>::max();
+                if ((query_subject_id != -1) && (target_subject_id != -1)) {
+                    TRY(ppr_get_subject_similarity_score(context, simmat, query_subject_id, target_subject_id, &score))
+                }
+                output->setRelative(score, i, j);
+            }
+        }
+        ppr_free_similarity_matrix(simmat);
+    }
+
+    void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &subject_ids) const
+    {
+        int subject_id = 0, face_id = 0;
+        foreach (const Template &src, templates) {
+            if (!src.empty() && src.m().data) {
+                foreach (const cv::Mat &m, src) {
+                    ppr_face_type face;
+                    createFace(m, &face);
+                    TRY(ppr_add_face(context, gallery, face, subject_id, face_id))
+                    face_id++;
+                    ppr_free_face(face);
+                }
+                subject_ids.append(subject_id);
+                subject_id++;
+            } else {
+                subject_ids.append(-1);
+            }
+        }
+    }
+
 };
 
 /*!
@@ -294,6 +333,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, PP5EnrollTransform)
 
+
 /*!
  * \ingroup distances
  * \brief Compare templates with PP5
@@ -351,44 +391,6 @@ class PP5CompareDistance : public Distance
         ppr_free_gallery(query_gallery);
     }
 
-    void compareNative(ppr_gallery_type target, const QList<int> &targetIDs, ppr_gallery_type query, const QList<int> &queryIDs, Output *output) const
-    {
-        ppr_similarity_matrix_type simmat;
-        TRY(ppr_compare_galleries(context, query, target, &simmat))
-        for (int i=0; i<queryIDs.size(); i++) {
-            int query_subject_id = queryIDs[i];
-            for (int j=0; j<targetIDs.size(); j++) {
-                int target_subject_id = targetIDs[j];
-                float score = -std::numeric_limits<float>::max();
-                if ((query_subject_id != -1) && (target_subject_id != -1)) {
-                    TRY(ppr_get_subject_similarity_score(context, simmat, query_subject_id, target_subject_id, &score))
-                }
-                output->setRelative(score, i, j);
-            }
-        }
-        ppr_free_similarity_matrix(simmat);
-    }
-
-    void enroll(const TemplateList &templates, ppr_gallery_type *gallery, QList<int> &subject_ids) const
-    {
-        int subject_id = 0, face_id = 0;
-        foreach (const Template &src, templates) {
-            if (!src.empty() && src.m().data) {
-                foreach (const cv::Mat &m, src) {
-                    ppr_face_type face;
-                    createFace(m, &face);
-                    TRY(ppr_add_face(context, gallery, face, subject_id, face_id))
-                    face_id++;
-                    ppr_free_face(face);
-                }
-                subject_ids.append(subject_id);
-                subject_id++;
-            } else {
-                subject_ids.append(-1);
-            }
-        }
-    }
-
     NativeGallery cacheRetain(const File &gallery) const
     {
         QMutexLocker locker(&cacheLock);
@@ -438,5 +440,70 @@ class PP5CompareDistance : public Distance
 };
 
 BR_REGISTER(Distance, PP5CompareDistance)
+
+class PP5GalleryTransform: public UntrainableMetaTransform
+                         , public PP5Context
+{
+    Q_OBJECT
+    Q_PROPERTY(QString junk READ get_junk WRITE set_junk RESET reset_junk STORED false)
+    Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
+    BR_PROPERTY(QString, junk, "")
+    BR_PROPERTY(QString, galleryName, "")
+
+    ppr_gallery_type target;
+    QList<int> targetIDs;
+
+    void project(const Template & src, Template & dst) const
+    {
+        TemplateList temp, output;
+        temp.append(src);
+        project(temp, output);
+        if (!output.empty())
+           dst = output[0];
+    }
+
+    void project(const TemplateList & src, TemplateList & dst) const
+    {
+        dst.clear();
+        QList<int> queryIDs;
+
+        ppr_gallery_type query;
+        ppr_create_gallery(context, &query);
+        enroll(src,&query, queryIDs);
+        
+        ppr_similarity_matrix_type simmat;
+        
+        TRY(ppr_compare_galleries(context, query, target, &simmat))
+
+        for (int i=0; i<queryIDs.size(); i++) {
+            dst.append(Template());
+            dst[i].file = src[i].file;
+            dst[i].m() = cv::Mat(1,targetIDs.size(), CV_32FC1);
+
+            int query_subject_id = queryIDs[i];
+            for (int j=0; j<targetIDs.size(); j++) {
+                int target_subject_id = targetIDs[j];
+                float score = -std::numeric_limits<float>::max();
+                if ((query_subject_id != -1) && (target_subject_id != -1)) {
+                    TRY(ppr_get_subject_similarity_score(context, simmat, query_subject_id, target_subject_id, &score))
+                }
+                dst[i].m().at<float>(0,j) = score;
+            }
+        }
+
+        ppr_free_similarity_matrix(simmat);
+        ppr_free_gallery(query);
+    }
+
+    void init()
+    {
+        // set up the gallery
+        ppr_create_gallery(context, &target);
+        TemplateList templates = TemplateList::fromGallery(galleryName);
+        enroll(templates,&target, targetIDs);
+    }
+};
+
+BR_REGISTER(Transform, PP5GalleryTransform)
 
 #include "plugins/pp5.moc"
