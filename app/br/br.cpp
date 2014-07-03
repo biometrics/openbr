@@ -178,7 +178,7 @@ public:
             } else if (!strcmp(fun, "objects")) {
                 check(parc <= 2, "Incorrect parameter count for 'objects'.");
                 int size = br_objects(NULL, 0, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
-                char * temp = new char[size];
+                char *temp = new char[size];
                 br_objects(temp, size, parc >= 1 ? parv[0] : ".*", parc >= 2 ? parv[1] : ".*");
                 printf("%s\n", temp);
                 delete [] temp;

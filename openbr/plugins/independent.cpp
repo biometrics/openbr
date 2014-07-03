@@ -9,7 +9,7 @@ using namespace cv;
 namespace br
 {
 
-static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString & inputVariable, const QStringList &gallery, const QStringList &subjects)
+static TemplateList Downsample(const TemplateList &templates, int classes, int instances, float fraction, const QString &inputVariable, const QStringList &gallery, const QStringList &subjects)
 {
     // Return early when no downsampling is required
     if ((classes == std::numeric_limits<int>::max()) &&
@@ -29,7 +29,7 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
     QMap<QString,int> counts = templates.countValues<QString>(inputVariable, instances != std::numeric_limits<int>::max());
 
     if ((instances != std::numeric_limits<int>::max()) && (classes != std::numeric_limits<int>::max()))
-        foreach (const QString & label, counts.keys())
+        foreach (const QString &label, counts.keys())
             if (counts[label] < instances)
                 counts.remove(label);
 
@@ -94,7 +94,7 @@ class DownsampleTrainingTransform : public Transform
     BR_PROPERTY(QStringList, subjects, QStringList())
 
 
-    void project(const Template & src, Template & dst) const
+    void project(const Template &src, Template &dst) const
     {
        transform->project(src,dst);      
     }
@@ -125,6 +125,21 @@ class IndependentTransform : public MetaTransform
     BR_PROPERTY(br::Transform*, transform, NULL)
 
     QList<Transform*> transforms;
+
+
+    bool setPropertyRecursive(const QString &name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+
+        if (!transform->setPropertyRecursive(name, value))
+            return false;
+
+        for (int i=0;i < transforms.size();i++)
+            transforms[i]->setPropertyRecursive(name, value);
+
+        return true;
+    }
 
     void init()
     {

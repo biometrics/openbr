@@ -68,7 +68,7 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
 
 // Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
 // scores with the size of the target and query lists
-static cv::Mat constructMatchingMask(const cv::Mat & scores, const FileList & target, const FileList & query, int partition=0)
+static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, int partition=0)
 {
     // If the dimensions of the score matrix match the sizes of the target and query lists, construct a normal mask matrix
     if (target.size() == scores.cols && query.size() == scores.rows)
@@ -288,7 +288,7 @@ struct GenImpCounts
     qint64 impCount;
 };
 
-float InplaceEval(const QString & simmat, const QString & target, const QString & query, const QString & csv)
+float InplaceEval(const QString &simmat, const QString &target, const QString &query, const QString &csv)
 {
     qDebug("Evaluating %s%s%s",
             qPrintable(simmat),

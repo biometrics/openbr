@@ -461,9 +461,9 @@ struct TemplateList : public QList<Template>
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
-    QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
-    QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
-    QList<int> applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const;
+    QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
+    QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
+    QList<int> applyIndex(const QString &propName, const QHash<QString, int> &valueMap) const;
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -539,7 +539,7 @@ struct TemplateList : public QList<Template>
      * \brief Returns the number of occurences for each label in the list.
      */
     template<typename T>
-    QMap<T,int> countValues(const QString & propName, bool excludeFailures = false) const
+    QMap<T,int> countValues(const QString &propName, bool excludeFailures = false) const
     {
         QMap<T, int> labelCounts;
         foreach (const File &file, files())
@@ -597,6 +597,8 @@ public:
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
+
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:
@@ -1126,13 +1128,13 @@ class TemplateEvent : public QObject
     Q_OBJECT
 
 public:
-    void pulseSignal(const Template & output) const
+    void pulseSignal(const Template &output) const
     {
         emit theSignal(output);
     }
 
 signals:
-    void theSignal(const Template & output) const;
+    void theSignal(const Template &output) const;
 };
 
 /*!
@@ -1219,7 +1221,7 @@ public:
      * and the transform can emit a final set if templates if it wants. Time-invariant transforms
      * don't have to do anything.
      */
-    virtual void finalize(TemplateList & output) { output = TemplateList(); }
+    virtual void finalize(TemplateList &output) { output = TemplateList(); }
 
     /*!
      * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
@@ -1256,14 +1258,14 @@ public:
      * and copy enough of their state that projectUpdate can safely be called on the original
      * instance, and the copy concurrently.
      */
-    virtual Transform * smartCopy(bool & newTransform) { newTransform=false; return this;}
+    virtual Transform *smartCopy(bool &newTransform) { newTransform=false; return this;}
 
-    virtual Transform * smartCopy() {bool junk; return smartCopy(junk);}
+    virtual Transform *smartCopy() {bool junk; return smartCopy(junk);}
 
     /*!
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
      */
-    virtual TemplateEvent * getEvent(const QString & name);
+    virtual TemplateEvent *getEvent(const QString &name);
 
     /*!
      * \brief Get a list of child transforms of this transform, child transforms are considered to be
