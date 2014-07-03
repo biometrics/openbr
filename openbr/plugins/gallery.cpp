@@ -725,7 +725,7 @@ class memGallery : public Gallery
 
 BR_REGISTER(Gallery, memGallery)
 
-FileList FileList::fromGallery(const File & file, bool cache)
+FileList FileList::fromGallery(const File &file, bool cache)
 {
     File targetMeta = file;
     targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
@@ -1059,7 +1059,7 @@ class xmlGallery : public FileGallery
                     // a presentation!
                     if (signatureToken == QXmlStreamReader::StartElement && reader.name() == "presentation") {
                         templates.append(Template(File("",currentSignatureName)));
-                        foreach (const QXmlStreamAttribute & attribute, reader.attributes()) {
+                        foreach (const QXmlStreamAttribute &attribute, reader.attributes()) {
                             // file-name is stored directly on file, not as a key/value pair
                             if (attribute.name() == "file-name")
                                 templates.last().file.name = attribute.value().toString();

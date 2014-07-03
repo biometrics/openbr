@@ -163,7 +163,7 @@ class DrawPropertiesPointTransform : public UntrainableTransform
         const Scalar textColor(255, 255, 0);
 
         std::string outString = "";
-        foreach (const QString & propName, propNames)
+        foreach (const QString &propName, propNames)
         {
             QVariant prop = dst.file.value(propName);
 

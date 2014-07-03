@@ -525,7 +525,7 @@ class IncrementalOutputTransform : public TimeVaryingTransform
 
         dst = src;
         int idx =0;
-        foreach(const Template & t, src) {
+        foreach(const Template &t, src) {
             if (t.empty())
                 continue;
 
@@ -546,7 +546,7 @@ class IncrementalOutputTransform : public TimeVaryingTransform
     }
 
     // Drop the current gallery.
-    void finalize(TemplateList & data)
+    void finalize(TemplateList &data)
     {
         (void) data;
         galleryUp = false;
@@ -573,7 +573,7 @@ class EventTransform : public UntrainableMetaTransform
         event.pulseSignal(dst);
     }
 
-    TemplateEvent * getEvent(const QString & name)
+    TemplateEvent * getEvent(const QString &name)
     {
         return name == eventName ? &event : NULL;
     }
@@ -646,7 +646,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
         (void) data;
     }
 
-    void finalize(TemplateList & data)
+    void finalize(TemplateList &data)
     {
         (void) data;
         float p = br_progress();
@@ -692,7 +692,7 @@ class OutputTransform : public TimeVaryingTransform
             return;
 
         // we received a template, which is the next row/column in order
-        foreach(const Template & t, dst) {
+        foreach(const Template &t, dst) {
             for (int i=0; i < t.m().cols; i++)
             {
                 output->setRelative(t.m().at<float>(0, i), currentRow, currentCol);
@@ -819,7 +819,7 @@ class FileExclusionTransform : public UntrainableMetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        foreach(const Template & srcTemp, src)
+        foreach(const Template &srcTemp, src)
         {
             if (!excluded.contains(srcTemp.file))
                 dst.append(srcTemp);

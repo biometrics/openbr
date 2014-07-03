@@ -220,7 +220,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
     BR_PROPERTY(bool, detectOnly, false)
     Resource<PP5Context> contexts;
 
-    void project(const Template & src, Template & dst) const
+    void project(const Template &src, Template &dst) const
     {
         if (Globals->enrollAll)
             qFatal("single template project doesn't support enrollAll");
@@ -232,7 +232,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
         dst = dstList.first();
     }
 
-    void project(const TemplateList &srcList, TemplateList & dstList) const
+    void project(const TemplateList &srcList, TemplateList &dstList) const
     {
         // Nothing to do here
         if (srcList.empty())

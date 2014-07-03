@@ -201,10 +201,10 @@ class TemplateProcessor
 {
 public:
     virtual ~TemplateProcessor() {}
-    virtual bool open(Template & input)=0;
+    virtual bool open(Template &input)=0;
     virtual bool isOpen()=0;
     virtual void close()=0;
-    virtual bool getNextTemplate(Template & output)=0;
+    virtual bool getNextTemplate(Template &output)=0;
 protected:
     Template basis;
     string getAbsolutePath(QString filename)
@@ -259,7 +259,7 @@ public:
 
     void close() { video.release(); }
 
-    bool getNextTemplate(Template & output)
+    bool getNextTemplate(Template &output)
     {
         if (!isOpen()) {
             qDebug("video source is not open");
@@ -320,7 +320,7 @@ struct StreamGallery : public TemplateProcessor
         lastBlock = true;
     }
 
-    bool getNextTemplate(Template & output)
+    bool getNextTemplate(Template &output)
     {
         // If we still have data available, we return one of those
         if ((nextIdx >= currentData.size()) && !lastBlock) {
@@ -373,7 +373,7 @@ public:
         basis.clear();
     }
 
-    bool getNextTemplate(Template & output)
+    bool getNextTemplate(Template &output)
     {
         if (!data_ok)
             return false;
@@ -623,7 +623,7 @@ public:
         return this->templates.size();
     }
 
-    bool open(const TemplateList & input, br::Idiocy::StreamModes _mode)
+    bool open(const TemplateList &input, br::Idiocy::StreamModes _mode)
     {
         // Set up variables specific to us
         current_template_idx = 0;
@@ -655,7 +655,7 @@ public:
     // Returns a NULL FrameData if too many frames are out, or the
     // data source is broken. Sets last_frame to true iff the FrameData
     // returned is the last valid frame, and the data source is now broken.
-    FrameData * tryGetFrame(bool & last_frame)
+    FrameData * tryGetFrame(bool &last_frame)
     {
         last_frame = false;
 
@@ -786,7 +786,7 @@ protected:
         return true;
     }
 
-    bool getNextFrame(FrameData & output)
+    bool getNextFrame(FrameData &output)
     {
         bool got_frame = false;
 
@@ -873,9 +873,9 @@ public:
     }
     virtual ~ProcessingStage() {}
 
-    virtual FrameData* run(FrameData * input, bool & should_continue, bool & final)=0;
+    virtual FrameData* run(FrameData * input, bool &should_continue, bool &final)=0;
 
-    virtual bool tryAcquireNextStage(FrameData *& input, bool & final)=0;
+    virtual bool tryAcquireNextStage(FrameData *& input, bool &final)=0;
 
     int stage_id;
 
@@ -901,7 +901,7 @@ public:
 
     // Not much to worry about here, we will project the input
     // and try to continue to the next stage.
-    FrameData * run(FrameData * input, bool & should_continue, bool & final)
+    FrameData * run(FrameData * input, bool &should_continue, bool &final)
     {
         if (input == NULL) {
             qFatal("null input to multi-thread stage");
@@ -916,7 +916,7 @@ public:
 
     // Called from a different thread than run. Nothing to worry about
     // we offer no restrictions on when loops may enter this stage.
-    virtual bool tryAcquireNextStage(FrameData *& input, bool & final)
+    virtual bool tryAcquireNextStage(FrameData *& input, bool &final)
     {
         (void) input;
         final = false;
@@ -974,7 +974,7 @@ public:
     QReadWriteLock statusLock;
     Status currentStatus;
 
-    FrameData * run(FrameData * input, bool & should_continue, bool & final)
+    FrameData * run(FrameData * input, bool &should_continue, bool &final)
     {
         if (input == NULL)
             qFatal("NULL input to stage %d", this->stage_id);
@@ -1025,7 +1025,7 @@ public:
 
 
     // Calledfrom a different thread than run.
-    bool tryAcquireNextStage(FrameData *& input, bool & final)
+    bool tryAcquireNextStage(FrameData *& input, bool &final)
     {
         final = false;
         inputBuffer->addItem(input);
@@ -1078,7 +1078,7 @@ public:
         sets.append(src);
     }
 
-    void train(const TemplateList & data)
+    void train(const TemplateList &data)
     {
         (void) data;
     }
@@ -1099,7 +1099,7 @@ public:
         SingleThreadStage::reset();
     }
 
-    FrameData * run(FrameData * input, bool & should_continue, bool & final)
+    FrameData * run(FrameData * input, bool &should_continue, bool &final)
     {
         if (input == NULL)
             qFatal("NULL frame in input stage");
@@ -1127,7 +1127,7 @@ public:
     }
 
     // The last stage, trying to access the first stage
-    bool tryAcquireNextStage(FrameData *& input, bool & final)
+    bool tryAcquireNextStage(FrameData *& input, bool &final)
     {
         // Return the frame, was it the last one?
         final = dataSource.returnFrame(input);
@@ -1212,7 +1212,7 @@ public:
 
     friend class StreamTransfrom;
 
-    void subProject(QList<TemplateList> & data, int end_idx)
+    void subProject(QList<TemplateList> &data, int end_idx)
     {
         if (end_idx == 0)
             return;
@@ -1239,15 +1239,15 @@ public:
         transforms = backup;
     }
 
-    void train(const QList<TemplateList> & data)
+    void train(const QList<TemplateList> &data)
     {
         if (!trainable) {
             qWarning("Attempted to train untrainable transform, nothing will happen.");
             return;
         }
         QList<TemplateList> separated;
-        foreach (const TemplateList & list, data) {
-            foreach(const Template & t, list) {
+        foreach (const TemplateList &list, data) {
+            foreach(const Template &t, list) {
                 separated.append(TemplateList());
                 separated.last().append(t);
             }
@@ -1292,7 +1292,7 @@ public:
     }
 
 
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         (void) output;
         // Nothing in particular to do here, stream calls finalize
@@ -1301,7 +1301,7 @@ public:
 
     // start processing, consider all templates in src a continuous
     // 'video'
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
         if (src.empty())
@@ -1355,7 +1355,7 @@ public:
 
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
-        foreach(const TemplateList & list, collector->sets) {
+        foreach(const TemplateList &list, collector->sets) {
             dst.append(list);
         }
         collector->sets.clear();
@@ -1504,7 +1504,7 @@ protected:
         (void) src; (void) dst;
         qFatal("nope");
     }
-    void _project(const TemplateList & src, TemplateList & dst) const
+    void _project(const TemplateList &src, TemplateList &dst) const
     {
         (void) src; (void) dst;
         qFatal("nope");
@@ -1542,17 +1542,17 @@ public:
     {
         basis.projectUpdate(src,dst);
     }
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         basis.projectUpdate(src,dst);
     }
 
-    void train(const QList<TemplateList> & data)
+    void train(const QList<TemplateList> &data)
     {
         basis.train(data);
     }
 
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         (void) output;
         // Nothing in particular to do here, stream calls finalize
@@ -1638,7 +1638,7 @@ public:
         basis.init();
     }
 
-    Transform * smartCopy(bool & newTransform)
+    Transform * smartCopy(bool &newTransform)
     {
         // We just want the DirectStream to begin with, so just return a copy of that.
         DirectStreamTransform * res = (DirectStreamTransform *) basis.smartCopy(newTransform);

@@ -146,7 +146,7 @@ public:
     }
 
 public slots:
-    void showImage(const QPixmap & input)
+    void showImage(const QPixmap &input)
     {
         pixmap = input;
 
@@ -315,7 +315,7 @@ public:
         return QList<QPointF>();
     }
 
-    void setKeys(const QStringList & keys)
+    void setKeys(const QStringList &keys)
     {
         promptKeys = keys;
     }
@@ -440,7 +440,7 @@ public:
     }
 
 public slots:
-    void showImage(const QPixmap & input)
+    void showImage(const QPixmap &input)
     {
         hide();
 
@@ -545,11 +545,11 @@ public:
         if (src.empty())
             return;
 
-        foreach (const Template & t, src) {
+        foreach (const Template &t, src) {
             // build label
             QString newTitle;
 
-            foreach (const QString & s, keys) {
+            foreach (const QString &s, keys) {
                 if (s.compare("name", Qt::CaseInsensitive) == 0) {
                     newTitle = newTitle + s + ": " + t.file.fileName() + " ";
                 } else if (t.file.contains(s)) {
@@ -578,7 +578,7 @@ public:
         }
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         (void) output;
         emit hideWindow();
@@ -619,8 +619,8 @@ protected:
     QPixmap * displayBuffer;
 
 signals:
-    void updateImage(const QPixmap & input);
-    void changeTitle(const QString & input);
+    void updateImage(const QPixmap &input);
+    void changeTitle(const QString &input);
     void hideWindow();
     void destroyWindow();
 };
@@ -964,7 +964,7 @@ public:
         last_time = timer.elapsed();
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         (void) output;
     }
@@ -1024,7 +1024,7 @@ public:
         }
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         (void) output;
     }

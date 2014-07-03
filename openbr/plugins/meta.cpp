@@ -149,7 +149,7 @@ class PipeTransform : public CompositeTransform
 
     // For time varying transforms, parallel execution over individual templates
     // won't work.
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
         foreach (Transform *f, transforms)
@@ -158,7 +158,7 @@ class PipeTransform : public CompositeTransform
         }
     }
 
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         output.clear();
         // For each transform,
@@ -212,7 +212,7 @@ protected:
     }
 
    // Single template const project, pass the template through each sub-transform, one after the other
-   virtual void _project(const Template & src, Template & dst) const
+   virtual void _project(const Template &src, Template &dst) const
    {
        dst = src;
        foreach (const Transform *f, transforms) {
@@ -247,7 +247,7 @@ class ExpandTransform : public UntrainableMetaTransform
         dst = Expanded(src);
     }
 
-    virtual void project(const Template & src, Template & dst) const
+    virtual void project(const Template &src, Template &dst) const
     {
         dst = src;
         qDebug("Called Expand project(Template,Template), nothing will happen");
@@ -272,11 +272,11 @@ class ContractTransform : public UntrainableMetaTransform
         if (src.empty()) return;
         Template out;
 
-        foreach (const Template & t, src) {
+        foreach (const Template &t, src) {
             out.merge(t);
         }
         out.file.clearRects();
-        foreach (const Template & t, src) {
+        foreach (const Template &t, src) {
             if (!t.file.rects().empty())
                 out.file.appendRects(t.file.rects());
         }
@@ -284,7 +284,7 @@ class ContractTransform : public UntrainableMetaTransform
         dst.append(out);
     }
 
-    virtual void project(const Template & src, Template & dst) const
+    virtual void project(const Template &src, Template &dst) const
     {
         qFatal("this has gone bad");
         (void) src; (void) dst;
@@ -316,7 +316,7 @@ class ForkTransform : public CompositeTransform
     }
 
     // same as _project, but calls projectUpdate on sub-transforms
-    void projectupdate(const Template & src, Template & dst)
+    void projectupdate(const Template &src, Template &dst)
     {
         foreach (Transform *f, transforms) {
             try {
@@ -331,7 +331,7 @@ class ForkTransform : public CompositeTransform
         }
     }
 
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst.reserve(src.size());
         for (int i=0; i<src.size(); i++) dst.append(Template(src[i].file));
@@ -345,7 +345,7 @@ class ForkTransform : public CompositeTransform
 
     // this is probably going to go bad, fork transform probably won't work well in a variable
     // input/output scenario
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         output.clear();
         // For each transform,
@@ -493,7 +493,7 @@ class LoadStoreTransform : public MetaTransform
 public:
     LoadStoreTransform() : transform(NULL) {}
 
-    bool setPropertyRecursive(const QString & name, QVariant value)
+    bool setPropertyRecursive(const QString &name, QVariant value)
     {
         if (br::Object::setPropertyRecursive(name, value))
             return true;
@@ -549,7 +549,7 @@ private:
         transform->projectUpdate(src, dst);
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         transform->finalize(output);
     }
@@ -641,7 +641,7 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * smartCopy(bool & newTransform)
+    Transform * smartCopy(bool &newTransform)
     {
         if (!transform->timeVarying()) {
             newTransform = false;
@@ -666,8 +666,8 @@ public:
         }
 
         QList<TemplateList> separated;
-        foreach (const TemplateList & list, data) {
-            foreach(const Template & t, list) {
+        foreach (const TemplateList &list, data) {
+            foreach(const Template &t, list) {
                 separated.append(TemplateList());
                 separated.last().append(t);
             }

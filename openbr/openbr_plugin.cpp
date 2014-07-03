@@ -517,7 +517,7 @@ TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propNa
     return result;
 }
 
-QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
+QList<int> TemplateList::indexProperty(const QString &propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
 {
     QHash<QString, int> dummyForwards;
     QHash<int, QVariant> dummyBackwards;
@@ -528,13 +528,13 @@ QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, 
     return indexProperty(propName, *valueMap, *reverseLookup);
 }
 
-QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const
+QList<int> TemplateList::indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const
 {
     valueMap.clear();
     reverseLookup.clear();
 
     const QList<QVariant> originalLabels = File::values(*this, propName);
-    foreach (const QVariant & label, originalLabels) {
+    foreach (const QVariant &label, originalLabels) {
         QString labelString = label.toString();
         if (!valueMap.contains(labelString)) {
             reverseLookup.insert(valueMap.size(), label);
@@ -717,7 +717,7 @@ void Object::load(QDataStream &stream)
     init();
 }
 
-bool Object::setPropertyRecursive(const QString & name, QVariant value)
+bool Object::setPropertyRecursive(const QString &name, QVariant value)
 {
     if (this->metaObject()->indexOfProperty(qPrintable(name)) == -1)
         return false;
@@ -1311,7 +1311,7 @@ QList<Transform *> Transform::getChildren() const
     QList<Transform *> output;
     for (int i=0; i < metaObject()->propertyCount(); i++) {
         const char * prop_name = metaObject()->property(i).name();
-        const QVariant & variant = this->property(prop_name);
+        const QVariant &variant = this->property(prop_name);
 
         if (variant.canConvert<Transform *>())
             output.append(variant.value<Transform *>());
@@ -1321,7 +1321,7 @@ QList<Transform *> Transform::getChildren() const
     return output;
 }
 
-TemplateEvent * Transform::getEvent(const QString & name)
+TemplateEvent * Transform::getEvent(const QString &name)
 {
     foreach(Transform * child, getChildren())
     {
@@ -1347,7 +1347,7 @@ void Transform::train(const TemplateList &data)
 void Transform::train(const QList<TemplateList> &data)
 {
     TemplateList combined;
-    foreach(const TemplateList & set, data) {
+    foreach(const TemplateList &set, data) {
         combined.append(set);
     }
     train(combined);
