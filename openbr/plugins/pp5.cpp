@@ -445,9 +445,7 @@ class PP5GalleryTransform: public UntrainableMetaTransform
                          , public PP5Context
 {
     Q_OBJECT
-    Q_PROPERTY(QString junk READ get_junk WRITE set_junk RESET reset_junk STORED false)
     Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
-    BR_PROPERTY(QString, junk, "")
     BR_PROPERTY(QString, galleryName, "")
 
     ppr_gallery_type target;

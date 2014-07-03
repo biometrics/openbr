@@ -271,8 +271,7 @@ struct AlgorithmCore
         realOutput->set_blockRows(INT_MAX);
         realOutput->set_blockCols(INT_MAX);
         realOutput->setBlock(0,0);
-        for (int i=0; i < queries.length(); i++)
-        {
+        for (int i=0; i < queries.length(); i++) {
             float res = distance->compare(queries[i], targets[i]);
             realOutput->setRelative(res, 0,i);
         }
@@ -374,16 +373,14 @@ struct AlgorithmCore
         qint64 rowSize;
 
         Gallery *temp;
-        if (transposeMode)
-        {
+        if (transposeMode) {
             rowGallery = targetGallery;
             colGallery = queryGallery;
             temp = Gallery::make(targetGallery);
         }
         else
-        {
             temp = Gallery::make(queryGallery);
-        }
+
         rowSize = temp->totalSize();
         delete temp;
 
@@ -395,20 +392,17 @@ struct AlgorithmCore
         QString targetExtension = multiProcess ? "gal" : "mem";
 
         // If the column gallery is not already of the appropriate type, we need to do something
-        if (colGallery.suffix() != targetExtension)
-        {
+        if (colGallery.suffix() != targetExtension) {
             // Build the name of a gallery containing the enrolled data, of the appropriate type.
             colEnrolledGallery = colGallery.baseName() + colGallery.hash() + (multiProcess ? ".gal" : ".mem");
 
             // Check if we have to do real enrollment, and not just convert the gallery's type.
             if (!(QStringList() << "gal" << "template" << "mem").contains(colGallery.suffix()))
-            {
                 enroll(colGallery, colEnrolledGallery);
-            }
+
             // If the gallery does have enrolled templates, but is not the right type, we do a simple
             // type conversion for it.
-            else
-            {
+            else {
                 QScopedPointer<Gallery> readColGallery(Gallery::make(colGallery));
                 TemplateList templates = readColGallery->read();
                 QScopedPointer<Gallery> enrolledColOutput(Gallery::make(colEnrolledGallery));
@@ -417,8 +411,7 @@ struct AlgorithmCore
         }
 
         // We have handled the column gallery, now decide whehter or not we have to enroll the row gallery.
-        if (selfCompare)
-        {
+        if (selfCompare) {
             // For self-comparisons, we just use the already enrolled column set.
             rowGallery = colEnrolledGallery;
         }
@@ -444,17 +437,15 @@ struct AlgorithmCore
         // vector.
         QString compareRegionDesc;
         if (this->galleryCompareString.isEmpty() )
-            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")])";
+            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm+")])";
         else
-            compareRegionDesc = "Pipe(["+this->galleryCompareString+"("+Globals->algorithm + "," + colEnrolledGallery.flat() + ")])";
+            compareRegionDesc = "Pipe(["+galleryCompareString+"])";
 
         QScopedPointer<Transform> compareRegion;
         // If we need to enroll the row set, we add the current algorithm's enrollment transform before the
         // GalleryCompare in a pipe.
-        if (needEnrollRows)
-        {
-            if (!multiProcess)
-            {
+        if (needEnrollRows) {
+            if (!multiProcess) {
                 compareRegionDesc = compareRegionDesc;
                 compareRegion.reset(Transform::make(compareRegionDesc,NULL));
                 CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (compareRegion.data());
@@ -464,8 +455,7 @@ struct AlgorithmCore
                 downcast->transforms.prepend(this->transform.data());
                 downcast->init();
             }
-            else
-            {
+            else {
                 compareRegionDesc = "ProcessWrapper(" + this->transformString + "+" + compareRegionDesc + ")";
                 compareRegion.reset(Transform::make(compareRegionDesc, NULL));
             }
@@ -479,8 +469,7 @@ struct AlgorithmCore
         // At this point, compareRegion is a transform, which optionally does enrollment, then compares the row
         // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a 
         // ProcessWrapper transform, and will be transparently run in multiple processes.
-        compareRegion->init();
-
+        compareRegion->setPropertyRecursive("galleryName", colEnrolledGallery.flat());
 
         // We also need to add Output and progress counting to the algorithm we are building, so we will assign them to
         // two stages of a pipe.
