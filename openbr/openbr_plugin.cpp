@@ -724,6 +724,7 @@ bool Object::setPropertyRecursive(const QString & name, QVariant value)
 
     qDebug() << "Class: " << metaObject()->className() << "took property" << name;
     setProperty(name, value);
+    init();
     return true;
 }
 

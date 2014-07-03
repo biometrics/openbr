@@ -206,7 +206,11 @@ public:
         if (br::Object::setPropertyRecursive(name, value))
             return true;
 
-        return transform->setPropertyRecursive(name, value);
+        if (transform->setPropertyRecursive(name, value)) {
+            init();
+            return true;
+        }
+        return false;
     }
 };
 
@@ -307,8 +311,10 @@ public:
 
         for (int i=0; i < this->transforms.size();i++)
         {
-            if (transforms[i]->setPropertyRecursive(name, value))
+            if (transforms[i]->setPropertyRecursive(name, value)) {
+                init();
                 return true;
+            }
         }
         return false;
     }
