@@ -38,6 +38,7 @@
 #include "core/common.h"
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
+#include "openbr/plugins/openbr_internal.h"
 
 using namespace br;
 using namespace cv;
@@ -721,7 +722,6 @@ bool Object::setPropertyRecursive(const QString &name, QVariant value)
 {
     if (this->metaObject()->indexOfProperty(qPrintable(name)) == -1)
         return false;
-
     setProperty(name, value);
     init();
     return true;
@@ -1235,6 +1235,13 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
+    File parsed("."+str);
+    if (Globals->abbreviations.contains(parsed.suffix())) {
+        Transform * res = make(Globals->abbreviations[parsed.suffix()], parent);
+        applyAdditionalProperties(parsed, res);
+        return res;
+    }
+
     //! [Make a pipe]
     { // Check for use of '+' as shorthand for Pipe(...)
         QStringList words = parse(str, '+');
@@ -1434,4 +1441,15 @@ void Distance::compareBlock(const TemplateList &target, const TemplateList &quer
         for (int j=0; j<target.size(); j++)
             if (target[j].isEmpty() || query[i].isEmpty()) output->setRelative(-std::numeric_limits<float>::max(),i+queryOffset, j+targetOffset);
             else output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
+}
+
+void br::applyAdditionalProperties(File & temp, Transform * target)
+{
+    QVariantMap meta = temp.localMetadata();
+    for (QVariantMap::iterator i = meta.begin(); i != meta.end(); ++i) {
+        if (i.key().startsWith("_Arg"))
+            continue;
+
+        target->setPropertyRecursive(i.key(), i.value() );
+    }
 }

@@ -385,6 +385,9 @@ public:
     qint64 position() { return f.pos(); }
 };
 
+
+void applyAdditionalProperties(File & temp, Transform * target);
+
 }
 
 #endif // OPENBR_INTERNAL_H

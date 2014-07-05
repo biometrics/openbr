@@ -542,9 +542,24 @@ private:
             return;
         }
 
+        File parsed("."+description);
+        const QString parsedFname = getFileName(parsed.suffix());
+        QFileInfo pFile(parsedFname);
+        if (pFile.exists()) {
+            load(parsedFname);
+            applyAdditionalProperties(parsed, transform.data());
+            return;
+        }
+
         // Expand abbreviated algorithms to their full strings
         if (Globals->abbreviations.contains(description))
             return init(Globals->abbreviations[description]);
+
+        if (Globals->abbreviations.contains(parsed.suffix())) {
+            init(Globals->abbreviations[parsed.suffix()]);
+            applyAdditionalProperties(parsed, transform.data());
+            return;
+        }
 
         const bool compareTransform = description.contains('!');
         QStringList words = QtUtils::parse(description, compareTransform ? '!' : ':');
