@@ -168,9 +168,9 @@ struct AlgorithmCore
             downcast->init();
         }
         else {
-            pipeDesc = "ProcessWrapper("+transformString+")"+pipeDesc;
+            pipeDesc = "ProcessWrapper("+transformString+")+"+pipeDesc;
             if (fileExclusion)
-                pipeDesc = "FileExclusion(" + gallery.flat() +")" + pipeDesc;
+                pipeDesc = "FileExclusion(" + gallery.flat() +")+" + pipeDesc;
 
             basePipe.reset(Transform::make(pipeDesc,NULL));
         }
@@ -436,10 +436,11 @@ struct AlgorithmCore
         // Incoming templates are compared against the templates in the gallery, and the output is the resulting score
         // vector.
         QString compareRegionDesc;
+
         if (this->galleryCompareString.isEmpty() )
-            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm+")])";
+            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm+",galleryName="+colEnrolledGallery.flat()+")])";
         else
-            compareRegionDesc = "Pipe(["+galleryCompareString+"])";
+            compareRegionDesc = "Pipe(["+galleryCompareString+"(galleryName="+colEnrolledGallery.flat()+")])";
 
         QScopedPointer<Transform> compareRegion;
         // If we need to enroll the row set, we add the current algorithm's enrollment transform before the
@@ -469,7 +470,6 @@ struct AlgorithmCore
         // At this point, compareRegion is a transform, which optionally does enrollment, then compares the row
         // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a 
         // ProcessWrapper transform, and will be transparently run in multiple processes.
-        compareRegion->setPropertyRecursive("galleryName", colEnrolledGallery.flat());
 
         // We also need to add Output and progress counting to the algorithm we are building, so we will assign them to
         // two stages of a pipe.
