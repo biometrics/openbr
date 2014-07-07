@@ -386,7 +386,7 @@ public:
 };
 
 
-void applyAdditionalProperties(File & temp, Transform * target);
+void applyAdditionalProperties(const File &temp, Transform *target);
 
 }
 

@@ -1443,7 +1443,7 @@ void Distance::compareBlock(const TemplateList &target, const TemplateList &quer
             else output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
 }
 
-void br::applyAdditionalProperties(File & temp, Transform * target)
+void br::applyAdditionalProperties(const File &temp, Transform *target)
 {
     QVariantMap meta = temp.localMetadata();
     for (QVariantMap::iterator i = meta.begin(); i != meta.end(); ++i) {
