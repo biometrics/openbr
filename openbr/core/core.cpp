@@ -522,29 +522,40 @@ struct AlgorithmCore
 private:
     QString name;
 
-    QString getFileName(const QString &description) const
+    // Check if description is either an abbreviation or a model file, if so load it
+    bool loadOrExpand(const QString &description)
     {
-        const QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
-        QFileInfo qFile(file);
-        return qFile.exists() && !qFile.isDir() ? file : QString();
+        // Check if a trained binary already exists for this algorithm
+        QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
+        QFileInfo eFile(file);
+        file = eFile.exists() && !eFile.isDir() ? file : description;
+
+        QFileInfo dFile(file);
+        if (dFile.exists() && !dFile.isDir()) {
+            qDebug("Loading %s", qPrintable(dFile.fileName()));
+            load(file);
+            return true;
+        }
+
+        // Expand abbreviated algorithms to their full strings
+        if (Globals->abbreviations.contains(description)) {
+            init(Globals->abbreviations[description]);
+            return true;
+        }
+        return false;
     }
 
     void init(const QString &description)
     {
-        // Check if a trained binary already exists for this algorithm
-        const QString file = getFileName(description);
-        if (!file.isEmpty()) return init(file);
+        if (loadOrExpand(description))
+            return;
 
-        QFileInfo dFile(description);
-        if (dFile.exists()) {
-            qDebug("Loading %s", qPrintable(dFile.fileName()));
-            load(description);
+        // check if the description is an abbreviation or model file with additional arguments supplied
+        File parsed("."+description);
+        if (loadOrExpand(parsed.suffix())) {
+            applyAdditionalProperties(parsed, transform.data());
             return;
         }
-
-        // Expand abbreviated algorithms to their full strings
-        if (Globals->abbreviations.contains(description))
-            return init(Globals->abbreviations[description]);
 
         const bool compareTransform = description.contains('!');
         QStringList words = QtUtils::parse(description, compareTransform ? '!' : ':');
