@@ -523,7 +523,7 @@ private:
     QString name;
 
     // Check if description is either an abbreviation or a model file, if so load it
-    bool loadOrExpand(const QString & description)
+    bool loadOrExpand(const QString &description)
     {
         // Check if a trained binary already exists for this algorithm
         QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
