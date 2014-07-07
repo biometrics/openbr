@@ -1237,7 +1237,7 @@ Transform *Transform::make(QString str, QObject *parent)
 
     File parsed("."+str);
     if (Globals->abbreviations.contains(parsed.suffix())) {
-        Transform * res = make(Globals->abbreviations[parsed.suffix()], parent);
+        Transform *res = make(Globals->abbreviations[parsed.suffix()], parent);
         applyAdditionalProperties(parsed, res);
         return res;
     }
