@@ -95,3 +95,12 @@ MatrixXf removeRowCol(MatrixXf X, int row, int col) {
     }
     return Y;
 }
+
+MatrixXf pointsToMatrix(QList<QPointF> points) {
+    MatrixXf P(points.size(), 2);
+    for (int i = 0; i < points.size(); i++) {
+        P(i, 0) = points[i].x();
+        P(i, 1) = points[i].y();
+    }
+    return P;
+}
