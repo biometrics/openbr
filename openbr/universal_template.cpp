@@ -66,12 +66,12 @@ static bool read_buffer(FILE *file, char *buffer, size_t bytes, bool eofAllowed)
         if (feof(file)) {
             if (eofAllowed && (bytesRemaining == bytes))
                 return false;
-            qFatal("Unexpected end of file after reading %d of %d bytes.", int(bytes - bytesRemaining), int(bytes));
+            qFatal("End of file after reading %d of %d bytes.", int(bytes - bytesRemaining), int(bytes));
         }
 
         if (ferror(file)) {
             perror(NULL);
-            qFatal("Error while reading %d of %d bytes.", int(bytes - bytesRemaining), int(bytes));
+            qFatal("Error after reading %d of %d bytes.", int(bytes - bytesRemaining), int(bytes));
         }
     }
     return true;
