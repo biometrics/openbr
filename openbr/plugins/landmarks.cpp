@@ -327,7 +327,7 @@ BR_REGISTER(Transform, ProcrustesAlignTransform)
  * \brief Creates a Delaunay triangulation based on a set of points
  * \author Scott Klum \cite sklum
  */
-class DelaunayTransform : public UntrainableTransform
+class DelaunayTransform : public Transform
 {
     Q_OBJECT
 
@@ -467,17 +467,12 @@ BR_REGISTER(Transform, DelaunayTransform)
 /*!
  * \ingroup transforms
  * \brief  Maps texture from one set of points to another. Assumes that points are rigidly transformed
- * \author Scott Klum \cite sklum
  * \author Brendan Klare \cite bklare
+ * \author Scott Klum \cite sklum
  */
 class TextureMapTransform : public UntrainableTransform
 {
     Q_OBJECT
-
-    Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
-    Q_PROPERTY(bool warp READ get_warp WRITE set_warp RESET reset_warp STORED false)
-    BR_PROPERTY(float, scaleFactor, 1)
-    BR_PROPERTY(bool, warp, true)
 
     static QRectF getBounds(QList<QPointF> points, int padding) {
         float srcMinX = FLT_MAX;
@@ -492,8 +487,17 @@ class TextureMapTransform : public UntrainableTransform
         }
         return QRectF(qRound(srcMinX - padding), qRound(srcMinY - padding), qRound(srcMaxX - srcMinX + 2 * padding), qRound(srcMaxY - srcMinY + 2 * padding));
     }
-    QList<QPointF> getTriangulation(const QList<QPointF> _points, const QRectF bound) const {
+
+    static int getVertexIndex(QPointF trianglePts, QList<QPointF> pts) {
+        for (int i = 0; i < pts.size(); i++)
+            if (trianglePts.x() == pts[i].x() && trianglePts.y() == pts[i].y())
+                return i;
+        return -1;
+    }
+
+    QList<QList<int> > getTriangulation(const QList<QPointF> _points, const QRectF bound) const {
         QList<QPointF> points(_points);
+
         /*
         points.append(bound.topLeft());
         points.append(QPointF(bound.right() - 1, bound.top()));
@@ -511,9 +515,7 @@ class TextureMapTransform : public UntrainableTransform
         vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
 
-        QList<QPointF> validTriangles;
-static int SCNT = 0;
-MatrixXf P(triangleList.size() * 3,2);
+        QList<QList<int> > triangleIndices;
         for (size_t i = 0; i < triangleList.size(); i++) {
             bool valid = true;
             QList<QPointF> vertices;
@@ -523,21 +525,16 @@ MatrixXf P(triangleList.size() * 3,2);
             for (int j = 0; j < 3; j++)
                 if (vertices[j].x() > bound.right() || vertices[j].y() > bound.bottom() || vertices[j].x() < bound.left() || vertices[j].y() < bound.top())
                     valid = false;
-for (int j = 0; j < 3;j++) {
-P(i*3+j,0) = vertices[j].x();
-P(i*3+j,1) = vertices[j].y();
-}
-            if (valid)
-                validTriangles.append(vertices);
-        }
-//writeEigen(P, QString("Temp/p%1.bin").arg(SCNT++));
 
-MatrixXf P(validTriangles.size(),2);
-for (int j = 0; j < validTriangles.size() ;j++) {
-P(i*3+j,0) = vertices[j].x();
-P(i*3+j,1) = vertices[j].y();
-}
-        return validTriangles;
+            if (valid) {
+                QList<int> tri;
+                for (int j = 0; j < 3; j++)
+                    tri.append(getVertexIndex(vertices[j], points));
+                triangleIndices.append(tri);
+            }
+        }
+
+        return triangleIndices;
     }
 
     void project(const Template &src, Template &dst) const
@@ -552,43 +549,72 @@ P(i*3+j,1) = vertices[j].y();
             return;
         }
 
-        QList<QPointF> dstTri = getTriangulation(dstPoints, dstBound);
-        QList<QPointF> srcTri = getTriangulation(srcPoints, srcBound);
+        QList<QList<int> > triIndices = getTriangulation(srcPoints, srcBound);
 
-        dst.m() = Mat::zeros(dstBound.height(), dstBound.width(), src.m().type());
-        for (int i = 0; i < srcTri.size(); i+=3) {
-            Point2f srcPoints[3];
-            Point2f dstPoints[3];
+        //QList<QPointF> dstTri = getTriangulation(dstPoints, dstBound);
+        //QList<QPointF> srcTri = getTriangulation(srcPoints, srcBound);
+
+        int dstWidth = dstBound.width() + dstBound.x();
+        int dstHeight = dstBound.height() + dstBound.y();
+        dst.m() = Mat::zeros(dstHeight, dstWidth, src.m().type());
+static int SCNT = 0;
+        for (int i = 0; i < triIndices.size(); i++) {
+            Point2f srcPoint1[3];
+            Point2f dstPoint1[3];
             for (int j = 0; j < 3; j++) {
-                srcPoints[j] = OpenCVUtils::toPoint(srcTri[i+j]);
-                dstPoints[j] = OpenCVUtils::toPoint(dstTri[i+j]);
+                srcPoint1[j] = OpenCVUtils::toPoint(srcPoints[triIndices[i][j]]);
+                dstPoint1[j] = OpenCVUtils::toPoint(dstPoints[triIndices[i][j]]);
             }
 
-            Mat buffer(dstBound.height(), dstBound.width(), src.m().type());
-            warpAffine(src.m(), buffer, getAffineTransform(srcPoints, dstPoints), Size(dstBound.width(), dstBound.height()));
+            Mat buffer(dstHeight, dstWidth, src.m().type());
+            warpAffine(src.m(), buffer, getAffineTransform(srcPoint1, dstPoint1), Size(dstBound.width(), dstBound.height()));
 
-            //Mat mask = Mat::zeros(dstBound.height(), dstBound.width(), CV_8UC1);
-            Mat mask = Mat::zeros(dstBound.height(), dstBound.width(), src.m().type());
+            Mat mask = Mat::zeros(dstHeight, dstWidth, CV_8UC1);
+            //Mat mask = Mat::zeros(dstHeight, dstWidth, src.m().type());
             Point maskPoints[1][3];
-            maskPoints[0][0] = dstPoints[0];
-            maskPoints[0][1] = dstPoints[1];
-            maskPoints[0][2] = dstPoints[2];
+            maskPoints[0][0] = dstPoint1[0];
+            maskPoints[0][1] = dstPoint1[1];
+            maskPoints[0][2] = dstPoint1[2];
             const Point* ppt = { maskPoints[0] };
-            fillConvexPoly(mask, ppt, 3, Scalar(255,255,255), 8);
+            fillConvexPoly(mask, ppt, 3, Scalar(255, 255, 255), 8);
 
-            Mat output(dstBound.height(), dstBound.width(), src.m().type());
+            //dst.m().setTo(buffer, mask);
+            //bitwise_and(buffer, mask, dst.m(), mask);
+            for (int i = 0; i < dstHeight; i++) {
+                for (int j = 0; j < dstWidth; j++) {
+                    if (mask.at<uchar>(i,j) == 255) {
+                        if (dst.m().type() == CV_32FC3 || dst.m().type() == CV_8UC3)
+                            dst.m().at<cv::Vec3b>(i,j) = buffer.at<cv::Vec3b>(i,j);
+                        else if (dst.m().type() == CV_32F)
+                            dst.m().at<float>(i,j) = buffer.at<float>(i,j);
+                        else if (dst.m().type() == CV_8U)
+                            dst.m().at<uchar>(i,j) = buffer.at<uchar>(i,j);
+                        else
+                            qFatal("Unsupported pixel format.");
+                    }
+                        //dst.m().at<src.m().type()>i,j) = 255;
+                }
+            }
+
+            //Mat output(dstBound.height(), dstBound.width(), src.m().type());
 
             /*
             if (i > 0) {
                 Mat overlap;
                 bitwise_and(dst.m(), mask, overlap);
-                mask.setTo(0, overlap!=0);
+                mask.setTo(0, overlap != 0);
             }
             */
 
-            bitwise_and(buffer,mask,output);
-            dst.m() += output;
+            //bitwise_and(buffer,mask,output);
+            //dst.m() += output;
         }
+        /*
+qDebug() <<  dst.m().rows << dst.m().cols << dstBound;
+Eigen::Map<const Eigen::VectorXf> M(dst.m().ptr<float>(), dst.m().rows*dst.m().cols);
+writeEigen((MatrixXf)M, QString("Temp/img%1.bin").arg(SCNT++));
+OpenCVUtils::saveImage(dst.m(), QString("Temp/img%1.jpg").arg(SCNT));
+*/
     }
 };
 
