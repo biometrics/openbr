@@ -589,13 +589,20 @@ public:
     File file; /*!< \brief The file used to construct the plugin. */
 
     virtual void init() {} /*!< \brief Overload this function instead of the default constructor to initialize the derived class. It should be safe to call this function multiple times. */
-    virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. */
+    virtual void store(QDataStream &stream, bool force = false) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
+    virtual void serialize(QDataStream & stream, bool force)
+    {
+        stream << description(force);
+        store(stream, force);
+    }
+
     QStringList parameters() const; /*!< \brief A string describing the parameters the object takes. */
-    QStringList arguments() const; /*!< \brief A string describing the values the object has. */
-    QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
-    QString description() const; /*!< \brief Returns a string description of the object. */
+    QStringList arguments(bool expanded = false); /*!< \brief A string describing the values the object has. */
+    QString argument(int index, bool expanded) const; /*!< \brief A string value for the argument at the specified index. */
+    virtual QString description(bool expanded = false); /*!< \brief Returns a string description of the object. */
+    
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
 
@@ -1272,6 +1279,15 @@ public:
      * any transforms stored as properties of this transform.
      */
     QList<Transform *> getChildren() const;
+
+    static Transform *deserialize(QDataStream &stream)
+    {
+        QString desc;
+        stream >> desc;
+        Transform *res = Transform::make(desc, NULL);
+        res->load(stream);
+        return res;
+    }
 
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */

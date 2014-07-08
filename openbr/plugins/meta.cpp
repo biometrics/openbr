@@ -482,9 +482,9 @@ BR_REGISTER(Transform, CacheTransform)
 class LoadStoreTransform : public MetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QString description2 READ get_description2 WRITE set_description2 RESET reset_description2 STORED false)
     Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
-    BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(QString, description2, "Identity")
     BR_PROPERTY(QString, fileName, QString())
 
     Transform *transform;
@@ -493,6 +493,13 @@ class LoadStoreTransform : public MetaTransform
 public:
     LoadStoreTransform() : transform(NULL) {}
 
+    QString description(bool expanded = false)
+    {
+        if (expanded)
+            return transform->description(expanded);
+        return br::Object::description(expanded);
+    }
+
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
         if (br::Object::setPropertyRecursive(name, value))
@@ -500,12 +507,22 @@ public:
         return transform->setPropertyRecursive(name, value);
     }
 private:
+
+    virtual void store(QDataStream &stream, bool force = false) const
+    {
+        if (force) {
+            transform->store(stream, force);
+        }
+        
+        br::Object::store(stream, false);
+    }
+
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description) ? description : QtUtils::shortTextHash(description);
+        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description2) ? description2 : QtUtils::shortTextHash(description2);
         else baseName = fileName;
-        if (!tryLoad()) transform = make(description);
+        if (!tryLoad()) transform = make(description2);
         else            trainable = false;
     }
 
@@ -524,7 +541,7 @@ private:
         qDebug("Storing %s", qPrintable(baseName));
         QByteArray byteArray;
         QDataStream stream(&byteArray, QFile::WriteOnly);
-        stream << description;
+        stream << description2;
         transform->store(stream);
         QtUtils::writeFile(baseName, byteArray, -1);
     }
@@ -570,8 +587,8 @@ private:
         QByteArray data;
         QtUtils::readFile(file, data, true);
         QDataStream stream(&data, QFile::ReadOnly);
-        stream >> description;
-        transform = Transform::make(description);
+        stream >> description2;
+        transform = Transform::make(description2);
         transform->load(stream);
         return true;
     }

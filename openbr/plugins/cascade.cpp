@@ -415,7 +415,7 @@ class CascadeTransform : public MetaTransform
     }
 
     // TODO: Remove this code when ready to break binary compatibility
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         int size = 1;
         stream << size;

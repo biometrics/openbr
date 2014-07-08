@@ -577,16 +577,31 @@ QStringList Object::parameters() const
     return parameters;
 }
 
-QStringList Object::arguments() const
+QStringList Object::arguments(bool expanded)
 {
     QStringList arguments;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
-        arguments.append(argument(i));
+    
+    for (int i=firstAvailablePropertyIdx; i<metaObject()->propertyCount(); i++) {
+        const char *name = metaObject()->property(i).name();
+
+        QVariant oldVal = property(name);
+        QVariant defaultVal = oldVal;
+
+        if (metaObject()->property(i).isResettable()) {
+            metaObject()->property(i).reset(this);
+            defaultVal = property(name);
+        }
+        
+        if (defaultVal != oldVal) {
+            metaObject()->property(i).write(this, oldVal);
+            arguments.append(name + QString("=") + argument(i, expanded));
+        }
+    }
 
     return arguments;
 }
 
-QString Object::argument(int index) const
+QString Object::argument(int index, bool expanded) const
 {
     if ((index < 0) || (index > metaObject()->propertyCount())) return "";
     const QMetaProperty property = metaObject()->property(index);
@@ -604,19 +619,19 @@ QString Object::argument(int index) const
                 strings.append(QString::number(value));
         } else if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, variant.value< QList<Transform*> >())
-                strings.append(transform->description());
+                strings.append(transform->description(expanded));
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, variant.value< QList<Distance*> >())
-                strings.append(distance->description());
+                strings.append(distance->description(expanded));
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
 
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
-        return variant.value<Transform*>()->description();
+        return variant.value<Transform*>()->description(expanded);
     } else if (type == "br::Distance*") {
-        return variant.value<Distance*>()->description();
+        return variant.value<Distance*>()->description(expanded);
     } else if (type == "QStringList") {
         return "[" + variant.toStringList().join(",") + "]";
     }
@@ -624,13 +639,17 @@ QString Object::argument(int index) const
     return variant.toString();
 }
 
-QString Object::description() const
+QString Object::description(bool expanded)
 {
-    QString argumentString = arguments().join(",");
+    (void) expanded;
+    QString argumentString = arguments(expanded).join(",");
+    if (argumentString.endsWith(","))
+        argumentString.chop(1);
+
     return objectName() + (argumentString.isEmpty() ? "" : ("(" + argumentString + ")"));
 }
 
-void Object::store(QDataStream &stream) const
+void Object::store(QDataStream &stream, bool force) const
 {
     // Start from 1 to skip QObject::objectName
     for (int i=1; i<metaObject()->propertyCount(); i++) {
@@ -641,14 +660,14 @@ void Object::store(QDataStream &stream) const
         const QString type = property.typeName();
         if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, property.read(this).value< QList<Transform*> >())
-                transform->store(stream);
+                transform->store(stream, force);
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
-                distance->store(stream);
+                distance->store(stream, force);
         } else if (type == "br::Transform*") {
-            property.read(this).value<Transform*>()->store(stream);
+            property.read(this).value<Transform*>()->store(stream, force);
         } else if (type == "br::Distance*") {
-            property.read(this).value<Distance*>()->store(stream);
+            property.read(this).value<Distance*>()->store(stream, force);
         } else if (type == "bool") {
             stream << property.read(this).toBool();
         } else if (type == "int") {
@@ -1284,7 +1303,8 @@ Transform *Transform::make(QString str, QObject *parent)
 
 Transform *Transform::clone() const
 {
-    Transform *clone = Factory<Transform>::make(file.flat());
+    Transform * temp = (Transform *) this;
+    Transform *clone = Factory<Transform>::make("."+temp->description(false));
     return clone;
 }
 
@@ -1452,4 +1472,18 @@ void br::applyAdditionalProperties(const File &temp, Transform *target)
 
         target->setPropertyRecursive(i.key(), i.value() );
     }
+}
+
+Transform *br::wrapTransform(Transform *base, const QString &target)
+{
+    Transform *res = Transform::make(target, NULL);
+    res->setPropertyRecursive("transform", QVariant::fromValue(base));
+    return res;
+}
+
+Transform *br::pipeTransforms(QList<Transform *> &transforms)
+{
+    Transform *res = Transform::make("Pipe",NULL);
+    res->setPropertyRecursive("transforms", QVariant::fromValue(transforms));
+    return res;
 }

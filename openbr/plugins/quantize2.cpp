@@ -104,7 +104,7 @@ class BayesianQuantizationTransform : public Transform
         }
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << thresholds;
     }

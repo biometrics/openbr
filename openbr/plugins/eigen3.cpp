@@ -119,7 +119,7 @@ private:
         outMap = eVecs.transpose() * (inMap - mean);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << keep << drop << whiten << originalRows << mean << eVals << eVecs;
     }
@@ -295,9 +295,9 @@ class DFFSTransform : public Transform
         dst.file.set("DFFS", sqrt(pca.residualReconstructionError((*cvtFloat)(src))));
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
-        pca.store(stream);
+        pca.store(stream, force);
     }
 
     void load(QDataStream &stream)
@@ -525,7 +525,7 @@ class LDATransform : public Transform
             dst.m().at<float>(0,0) = dst.m().at<float>(0,0) / stdDev;
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << pcaKeep;
         stream << directLDA;
@@ -631,10 +631,10 @@ class SparseLDATransform : public Transform
         ldaSparse.project(Template(src.file, inSelect), dst);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << pcaKeep;
-        stream << ldaSparse;
+        ldaSparse.store(stream, force);
         stream << dimsOut;
         stream << selections;
     }

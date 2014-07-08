@@ -126,6 +126,10 @@ class IndependentTransform : public MetaTransform
 
     QList<Transform*> transforms;
 
+    QString description(bool expanded)
+    {
+        return transform->description(expanded);
+    }
 
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
@@ -226,12 +230,12 @@ class IndependentTransform : public MetaTransform
         }
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         const int size = transforms.size();
         stream << size;
         for (int i=0; i<size; i++)
-            transforms[i]->store(stream);
+            transforms[i]->store(stream, force);
     }
 
     void load(QDataStream &stream)
@@ -292,10 +296,10 @@ class SingletonTransform : public MetaTransform
         transform->project(src, dst);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         if (transform->parent() == this)
-            transform->store(stream);
+            transform->store(stream, force);
     }
 
     void load(QDataStream &stream)

@@ -167,7 +167,7 @@ private:
         divide(dst, a, dst);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << a << b;
     }
@@ -256,7 +256,7 @@ class RowWiseMeanCenterTransform : public Transform
         dst = m;
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << mean;
     }

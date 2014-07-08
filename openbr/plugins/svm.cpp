@@ -172,7 +172,7 @@ private:
             dst.file.set(outputVariable, reverseLookup[prediction]);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         storeSVM(svm, stream);
         stream << labelMap << reverseLookup;
@@ -270,7 +270,7 @@ private:
         return svm.predict(delta.reshape(1, 1));
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         storeSVM(svm, stream);
     }

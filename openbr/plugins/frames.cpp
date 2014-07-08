@@ -43,7 +43,7 @@ private:
         buffer.clear();
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         (void) stream;
     }

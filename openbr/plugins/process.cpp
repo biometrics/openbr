@@ -305,9 +305,7 @@ public:
         while (!inbound || inbound->state() != QLocalSocket::ConnectedState) {
             bool res = receivedWait.wait(&receivedLock,30*1000);
             if (!res)
-            {
                 qDebug() << key << " " << QThread::currentThread() << " waiting timed out, server thread is " << server.thread() << " base thread " << basis;
-            }
         }
     }
 
@@ -336,6 +334,16 @@ public:
         QDataStream deserializer(readArray);
         deserializer >> input;
         return true;
+    }
+
+    Transform * readTForm()
+    {
+        emit pulseReadSerialized();
+
+        QByteArray data = readArray;
+        QDataStream deserializer(data);
+        Transform * res = Transform::deserialize(deserializer);
+        return res;
     }
 
     template<typename T>
@@ -401,6 +409,8 @@ public:
         comm->connectToRemote(baseName+"_master");
 
         comm->waitForInbound();
+
+        transform = comm->readTForm();
     }
 
     void workerLoop()
@@ -428,7 +438,7 @@ public:
 void WorkerProcess::mainLoop()
 {
     processInterface = new EnrollmentWorker();
-    processInterface->transform = Transform::make(this->transform,NULL);
+    processInterface->transform = NULL;
     processInterface->connections(baseName);
     processInterface->workerLoop();
     delete processInterface;
@@ -478,63 +488,98 @@ protected slots:
     }
 };
 
+struct ProcessData
+{
+    CommunicationManager comm;
+    ProcessInterface proc;
+    bool initialized;
+    ProcessData()
+    {
+        initialized = false;
+    }
+
+    ~ProcessData()
+    {
+        comm.sendSignal(CommunicationManager::SHOULD_END);
+        proc.endProcess();
+        comm.shutdown();
+        comm.shutDownThread();
+    }
+};
+
+
 /*!
  * \ingroup transforms
  * \brief Interface to a separate process
  * \author Charles Otto \cite caotto
  */
-class ProcessWrapperTransform : public TimeVaryingTransform
+class ProcessWrapperTransform : public WrapperTransform
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString transform READ get_transform WRITE set_transform RESET reset_transform)
-    BR_PROPERTY(QString, transform, "")
-
     QString baseKey;
 
-    ProcessInterface workerProcess;
-    CommunicationManager * comm;
+    Resource<ProcessData> processes;
 
-    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    Transform * smartCopy(bool & newTransform)
+    {
+        newTransform = false;
+        return this;
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         if (src.empty())
             return;
+        
+        ProcessData *data = processes.acquire();
+        if (!data->initialized)
+            activateProcess(data);
 
-        if (!processActive)
-        {
-            activateProcess();
-        }
-        comm->sendSignal(CommunicationManager::INPUT_AVAILABLE);
+        CommunicationManager * localComm = &(data->comm);
+        localComm->sendSignal(CommunicationManager::INPUT_AVAILABLE);
 
-        comm->sendData(src);
-
-        comm->readData(dst);
+        localComm->sendData(src);
+        localComm->readData(dst);
+        processes.release(data);
     }
-
 
     void train(const TemplateList& data)
     {
         (void) data;
     }
 
-    // create the process
     void init()
     {
         processActive = false;
+        serialized.clear();
+        if (transform) {
+            QDataStream out(&serialized, QFile::WriteOnly);
+            transform->serialize(out, true);
+        }
     }
 
-    void activateProcess()
+    QByteArray serialized;
+    void transmitTForm(CommunicationManager * localComm) const
     {
-        comm = new CommunicationManager();
-        processActive = true;
+        if (serialized.isEmpty() )
+            qFatal("Trying to transmit empty transform!");
 
+        localComm->writeArray = serialized;
+        emit localComm->pulseSendSerialized();
+    }
+
+    void activateProcess(ProcessData * data) const
+    {
+        data->initialized = true;
         // generate a uuid for our local servers
         QUuid id = QUuid::createUuid();
-        baseKey = id.toString();
+        QString baseKey = id.toString();
 
         QStringList argumentList;
+        // We serialize and transmit the transform directly, so algorithm doesn't matter.
         argumentList.append("-algorithm");
-        argumentList.append(transform);
+        argumentList.append("Identity");
         if (!Globals->path.isEmpty()) {
             argumentList.append("-path");
             argumentList.append(Globals->path);
@@ -544,36 +589,25 @@ class ProcessWrapperTransform : public TimeVaryingTransform
         argumentList.append("-slave");
         argumentList.append(baseKey);
 
-        comm->key = "master_"+baseKey.mid(1,5);
+        data->comm.key = "master_"+baseKey.mid(1,5);
 
-        comm->startServer(baseKey+"_master");
-        workerProcess.startProcess(argumentList);
-        comm->waitForInbound();
-        comm->connectToRemote(baseKey+"_worker");
+        data->comm.startServer(baseKey+"_master");
+
+        data->proc.startProcess(argumentList);
+        data->comm.waitForInbound();
+        data->comm.connectToRemote(baseKey+"_worker");
+
+        transmitTForm(&(data->comm));
     }
 
-    bool timeVarying() const {
-        return false;
-    }
-
-    ~ProcessWrapperTransform()
+    bool timeVarying() const
     {
-        // end the process
-        if (this->processActive) {
-            comm->sendSignal(CommunicationManager::SHOULD_END);
-
-            workerProcess.endProcess();
-            processActive = false;
-            comm->shutdown();
-            comm->shutDownThread();
-
-            delete comm;
-        }
+        return false;
     }
 
 public:
     bool processActive;
-    ProcessWrapperTransform() : TimeVaryingTransform(false,false) { processActive = false; }
+    ProcessWrapperTransform() : WrapperTransform(false) { processActive = false; }
 };
 
 BR_REGISTER(Transform, ProcessWrapperTransform)

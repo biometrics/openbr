@@ -69,7 +69,7 @@ class KMeansTransform : public Transform
         reindex();
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << centers;
     }
@@ -131,7 +131,7 @@ class KNNTransform : public Transform
         dst.file.set("Nearest", gallery[sortedScores[0].second].file.name);
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << gallery;
     }
@@ -196,7 +196,7 @@ class RandomCentroidsTransform : public Transform
         reindex();
     }
 
-    void store(QDataStream &stream) const
+    void store(QDataStream &stream, bool force) const
     {
         stream << centers;
     }

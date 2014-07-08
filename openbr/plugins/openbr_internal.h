@@ -19,7 +19,7 @@ protected:
 private:
     Transform *clone() const { return const_cast<UntrainableTransform*>(this); }
     void train(const TemplateList &data) { (void) data; }
-    void store(QDataStream &stream) const { (void) stream; }
+    void store(QDataStream &stream, bool force) const { (void) stream; (void) force; }
     void load(QDataStream &stream) { (void) stream; }
 };
 
@@ -212,6 +212,45 @@ public:
         }
         return false;
     }
+
+    Transform * smartCopy(bool & newTransform)
+    {
+        if (!timeVarying()) {
+            newTransform = false;
+            return this;
+        }
+        newTransform = true;
+
+        QString name = metaObject()->className();
+        name.replace("Transform","");
+        name += "(Identity";
+
+        QStringList arguments = this->arguments();
+        if (!arguments.isEmpty()) {
+            name += ",";
+            name += this->arguments().join(",");
+        }
+
+        name += ")";
+        name.replace("br::","");
+
+        WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(name, NULL));
+
+        if (output == NULL)
+            qFatal("Dynamic cast failed!");
+
+        bool newItem = false;
+        Transform * maybe_copy = transform->smartCopy(newItem);
+        if (newItem)
+            maybe_copy->setParent(output);
+        output->transform = maybe_copy;
+
+        output->file = this->file;
+        output->init();
+
+        return output;
+    }
+
 };
 
 /*!
@@ -387,6 +426,10 @@ public:
 
 
 void applyAdditionalProperties(const File &temp, Transform *target);
+
+Transform *wrapTransform(Transform *base, const QString &target);
+
+Transform *pipeTransforms(QList<Transform *> &transforms);
 
 }
 
