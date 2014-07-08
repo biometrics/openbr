@@ -593,7 +593,7 @@ public:
     void initActual()
     {
         if (!Globals->useGui) {
-            qWarning("GUI transform %s created without enabling GUI support.\nRun \"br -gui ...\" to enable GUI support from the command line, or set\nGlobals->useGui to true.", this->metaObject()->className());
+            qWarning("GUI transform %s created without enabling GUI support.\nRun \"br -useGui ...\" to enable GUI support from the command line, or set\nGlobals->useGui to true.", this->metaObject()->className());
             return;
         }
 
