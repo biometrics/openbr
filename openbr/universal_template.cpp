@@ -96,3 +96,8 @@ void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_c
     }
     futures.waitForFinished();
 }
+
+void br_log(const char *message)
+{
+    qDebug() << qPrintable(QTime::currentTime().toString("hh:mm:ss.zzz")) << "-" << message;
+}

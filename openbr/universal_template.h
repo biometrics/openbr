@@ -83,6 +83,11 @@ BR_EXPORT void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplat
  */
 BR_EXPORT void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context, bool parallel);
 
+/*!
+ * \brief Write a message annotated with the current time to stderr.
+ */
+BR_EXPORT void br_log(const char *message);
+
 #ifdef __cplusplus
 }
 #endif
