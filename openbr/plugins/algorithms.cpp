@@ -83,6 +83,7 @@ class AlgorithmsInitializer : public Initializer
         // Transforms
         Globals->abbreviations.insert("FaceDetection", "Open+Cvt(Gray)+Cascade(FrontalFace)");
         Globals->abbreviations.insert("DenseLBP", "(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))");
+        Globals->abbreviations.insert("DenseHOG", "Gradient+RectRegions(8,8,6,6)+Bin(0,360,8)+Hist(8)");
         Globals->abbreviations.insert("DenseSIFT", "(Grid(10,10)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("DenseSIFT2", "(Grid(5,5)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("FaceRecognitionRegistration", "(ASEFEyes+Affine(88,88,0.25,0.35)+DownsampleTraining(FTE(DFFS),instances=1))");
