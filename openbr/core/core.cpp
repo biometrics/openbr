@@ -25,6 +25,13 @@ namespace br {
 
 struct AlgorithmCore
 {
+    enum CompareMode
+    {
+        None,
+        DistanceCompare,
+        TransformCompare,
+    };
+
     QSharedPointer<Transform> transform;
     QSharedPointer<Transform> comparison;
     QSharedPointer<Distance> distance;
@@ -47,15 +54,7 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream(readMode=DistributeFrames)", NULL));
-
-        CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
-        if (downcast == NULL)
-            qFatal("downcast failed?");
-        downcast->transforms.append(transform.data());
-
-        downcast->init();
-
+        QScopedPointer<Transform> trainingWrapper(br::wrapTransform(transform.data(), "Stream(readMode=DistributeFrames)"));
         TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
@@ -64,14 +63,14 @@ struct AlgorithmCore
         Globals->startTime.start();
 
         qDebug("Training Enrollment");
-        downcast->train(data);
+        trainingWrapper->train(data);
 
         if (!distance.isNull()) {
             if (Globals->crossValidate > 0)
                 for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
 
             qDebug("Projecting Enrollment");
-            downcast->projectUpdate(data,data);
+            trainingWrapper->projectUpdate(data,data);
 
             qDebug("Training Comparison");
             distance->train(data);
@@ -92,11 +91,21 @@ struct AlgorithmCore
         QDataStream out(&data, QFile::WriteOnly);
 
         // Serialize algorithm to stream
-        out << name;
-        transform->store(out);
-        const bool hasComparer = !distance.isNull();
-        out << hasComparer;
-        if (hasComparer) distance->store(out);
+        transform->serialize(out, false);
+
+        qint32 mode = None;
+        if (!distance.isNull())
+            mode = DistanceCompare;
+        else if (!comparison.isNull())
+            mode = TransformCompare;
+
+        out << mode;
+
+        if (mode == DistanceCompare)
+            distance->serialize(out, false);
+
+        if (mode == TransformCompare)
+            comparison->serialize(out, false);
 
         // Compress and save to file
         QtUtils::writeFile(model, data, -1);
@@ -112,12 +121,21 @@ struct AlgorithmCore
         QDataStream in(&data, QFile::ReadOnly);
 
         // Load algorithm
-        in >> name; init(Globals->abbreviations.contains(name) ? Globals->abbreviations[name] : name);
-        transform->load(in);
-        bool hasDistance; in >> hasDistance;
-        
-        if (hasDistance)
+        transform = QSharedPointer<Transform>(Transform::deserialize(in));
+
+        qint32 mode;
+        in >> mode;
+
+        if (mode == DistanceCompare) {
+            QString distanceDescription;
+            in >> distanceDescription;
+            distance = QSharedPointer<Distance>(Distance::make(distanceDescription, NULL));
             distance->load(in);
+            comparison = QSharedPointer<Transform>(Transform::make("GalleryCompare", NULL));
+            comparison->setPropertyRecursive("distance", QVariant::fromValue(distance.data()));
+        }
+        if (mode == TransformCompare)
+            comparison = QSharedPointer<Transform>(Transform::deserialize(in));
     }
 
     File getMemoryGallery(const File &file) const
@@ -347,7 +365,6 @@ struct AlgorithmCore
         // Emptyread reads a gallery, and discards any matrices present, keeping only the metadata.
         targetMetadata = FileList::fromGallery(targetGallery, true);
         queryMetadata  = FileList::fromGallery(queryGallery, true);
-
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
         transposeMode = targetMetadata.size() > queryMetadata.size();
