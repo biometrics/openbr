@@ -541,7 +541,7 @@ private:
         qDebug("Storing %s", qPrintable(baseName));
         QByteArray byteArray;
         QDataStream stream(&byteArray, QFile::WriteOnly);
-        stream << description2;
+        stream << transform->description();
         transform->store(stream);
         QtUtils::writeFile(baseName, byteArray, -1);
     }
