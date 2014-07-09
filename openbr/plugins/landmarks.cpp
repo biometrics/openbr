@@ -559,6 +559,7 @@ class TextureMapTransform : public UntrainableTransform
         dst.m() = Mat::zeros(dstHeight, dstWidth, src.m().type());
 static int SCNT = 0;
         for (int i = 0; i < triIndices.size(); i++) {
+qDebug() << i;
             Point2f srcPoint1[3];
             Point2f dstPoint1[3];
             for (int j = 0; j < 3; j++) {
@@ -615,6 +616,17 @@ Eigen::Map<const Eigen::VectorXf> M(dst.m().ptr<float>(), dst.m().rows*dst.m().c
 writeEigen((MatrixXf)M, QString("Temp/img%1.bin").arg(SCNT++));
 OpenCVUtils::saveImage(dst.m(), QString("Temp/img%1.jpg").arg(SCNT));
 */
+        dst.file.clearPoints();
+        dst.file.clearRects();
+        dst.file.setPoints(dstPoints);
+        /*
+        qDebug() << "\nSRC=\n" <<srcPoints;
+        qDebug() << "DST=\n" <<dstPoints;
+        qDebug() << "file=\n" <<dst.file.points();
+        char a;
+        cin >> a;
+        */
+
     }
 };
 
