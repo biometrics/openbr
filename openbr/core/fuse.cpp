@@ -39,7 +39,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
     for (int i=0; i<matrix.rows; i++) {
         for (int j=0; j<matrix.cols; j++) {
             float val = matrix.at<float>(i,j);
-            if ((mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) ||
+            if ((mask.at<BEE::MaskValue>(i,j) == BEE::DontCare) ||
                 (val == -std::numeric_limits<float>::max()) ||
                 (val ==  std::numeric_limits<float>::max()))
                 continue;
@@ -55,7 +55,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
     if (method == "MinMax") {
         for (int i=0; i<matrix.rows; i++) {
             for (int j=0; j<matrix.cols; j++) {
-                if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
+                if (mask.at<BEE::MaskValue>(i,j) == BEE::DontCare) continue;
                 float &val = matrix.at<float>(i,j);
                 if      (val == -std::numeric_limits<float>::max()) val = 0;
                 else if (val ==  std::numeric_limits<float>::max()) val = 1;
@@ -66,7 +66,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
         if (stddev == 0) qFatal("Stddev is 0.");
         for (int i=0; i<matrix.rows; i++) {
             for (int j=0; j<matrix.cols; j++) {
-                if (mask.at<BEE::Mask_t>(i,j) == BEE::DontCare) continue;
+                if (mask.at<BEE::MaskValue>(i,j) == BEE::DontCare) continue;
                 float &val = matrix.at<float>(i,j);
                 if      (val == -std::numeric_limits<float>::max()) val = (min - mean) / stddev;
                 else if (val ==  std::numeric_limits<float>::max()) val = (max - mean) / stddev;
@@ -85,7 +85,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
     QString target, query, previousTarget, previousQuery;
     QList<Mat> originalMatrices;
     foreach (const QString &simmat, inputSimmats) {
-        originalMatrices.append(BEE::readMat(simmat,&target,&query));
+        originalMatrices.append(BEE::readMatrix(simmat,&target,&query));
         // Make we're fusing score matrices for the same set of targets and querys
         if (!previousTarget.isEmpty() && !previousQuery.isEmpty() && (previousTarget != target || previousQuery != query))
             qFatal("Target or query files are not the same across fused matrices.");
@@ -163,5 +163,5 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
 
     } while (partition < crossValidate);
 
-    BEE::writeMat(buffer, outputSimmat);
+    BEE::writeMatrix(buffer, outputSimmat);
 }

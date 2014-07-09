@@ -164,9 +164,12 @@ private:
             if (type != EPS_SVR && type != NU_SVR)
                 prediction = prediction > 0 ? 0 : 1;
         }
-        if (type == EPS_SVR || type == NU_SVR)
+        if (type == EPS_SVR || type == NU_SVR) {
             dst.file.set(outputVariable, prediction);
-        else
+            dst.m() = Mat(1, 1, CV_32F);
+            dst.m().at<float>(0, 0) = prediction;
+
+        } else
             dst.file.set(outputVariable, reverseLookup[prediction]);
     }
 
@@ -261,10 +264,10 @@ private:
         trainSVM(svm, deltaData, deltaLab, kernel, type, -1, -1);
     }
 
-    float compare(const Template &ta, const Template &tb) const
+    float compare(const Mat &a, const Mat &b) const
     {
         Mat delta;
-        absdiff(ta, tb, delta);
+        absdiff(a, b, delta);
         return svm.predict(delta.reshape(1, 1));
     }
 

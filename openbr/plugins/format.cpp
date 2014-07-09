@@ -20,6 +20,9 @@
 #ifndef BR_EMBEDDED
 #include <QtXml>
 #endif // BR_EMBEDDED
+#include <QFile>
+#include <QFileInfo>
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include "openbr_internal.h"
@@ -59,7 +62,7 @@ public:
         }
 
         bool open = true;
-        while(open) {
+        while (open) {
             cv::Mat frame;
             open = videoSource.read(frame);
             if (!open) break;
@@ -117,22 +120,30 @@ class binFormat : public Format
 
     void write(const Template &t) const
     {
-        QByteArray data;
-        QDataStream stream(&data, QFile::WriteOnly);
-        if (raw) {
-            const Mat &m = t;
-            stream.writeRawData((const char*)m.data, m.total()*m.elemSize());
-        } else {
-            Mat m;
-            t.m().convertTo(m, CV_32F);
+        QFile f(file);
+        QtUtils::touchDir(f);
+        if (!f.open(QFile::WriteOnly))
+            qFatal("Failed to open %s for writing.", qPrintable(file));
+
+        Mat m;
+        if (!raw) {
+            if (t.m().type() != CV_32FC1)
+                t.m().convertTo(m, CV_32F);
+            else m = t.m();
+
             if (m.channels() != 1) qFatal("Only supports single channel matrices.");
 
-            stream.writeRawData((const char*)&m.rows, 4);
-            stream.writeRawData((const char*)&m.cols, 4);
-            stream.writeRawData((const char*)m.data, 4*m.rows*m.cols);
+            f.write((const char *) &m.rows, 4);
+            f.write((const char *) &m.cols, 4);
         }
+        else m =  t.m();
 
-        QtUtils::writeFile(file, data);
+        qint64 rowSize = m.cols * sizeof(float);
+        for (int i=0; i < m.rows; i++)
+        {
+            f.write((const char *) m.row(i).data, rowSize);
+        }
+        f.close();
     }
 };
 
@@ -282,12 +293,12 @@ class mtxFormat : public Format
 
     Template read() const
     {
-        return BEE::readMat(file);
+        return BEE::readMatrix(file);
     }
 
     void write(const Template &t) const
     {
-        BEE::writeMat(t, file);
+        BEE::writeMatrix(t, file);
     }
 };
 

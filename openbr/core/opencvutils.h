@@ -105,7 +105,6 @@ QDataStream &operator>>(QDataStream &stream, cv::Rect &r);
 QDataStream &operator<<(QDataStream &stream, const cv::Size &s);
 QDataStream &operator>>(QDataStream &stream, cv::Size &s);
 
-
 // As described in "Modern C++ Design" Section 2.5.
 template <typename T>
 struct Type2Type
@@ -113,53 +112,20 @@ struct Type2Type
     typedef T OriginalType;
 };
 
-/****
-OpenCVType
-    Templated OpenCV Mat::type creation.
-****/
+// Templated OpenCV Mat::type creation.
 template <typename Depth, int Channels>
 class OpenCVType
 {
-    static int getDepth(Type2Type<uchar>)
-    {
-        return CV_8U;
-    }
-
-    static int getDepth(Type2Type<char>)
-    {
-        return CV_8S;
-    }
-
-    static int getDepth(Type2Type<ushort>)
-    {
-        return CV_16U;
-    }
-
-    static int getDepth(Type2Type<short>)
-    {
-        return CV_16S;
-    }
-
-    static int getDepth(Type2Type<long>)
-    {
-        return CV_32S;
-    }
-
-    static int getDepth(Type2Type<float>)
-    {
-        return CV_32F;
-    }
-
-    static int getDepth(Type2Type<double>)
-    {
-        return CV_64F;
-    }
+    static int getDepth(Type2Type<uchar>)  { return CV_8U;  }
+    static int getDepth(Type2Type<char>)   { return CV_8S;  }
+    static int getDepth(Type2Type<ushort>) { return CV_16U; }
+    static int getDepth(Type2Type<short>)  { return CV_16S; }
+    static int getDepth(Type2Type<long>)   { return CV_32S; }
+    static int getDepth(Type2Type<float>)  { return CV_32F; }
+    static int getDepth(Type2Type<double>) { return CV_64F; }
 
 public:
-    static int make()
-    {
-        return CV_MAKETYPE((getDepth(Type2Type<Depth>())),(Channels));
-    }
+    static int make() { return CV_MAKETYPE((getDepth(Type2Type<Depth>())),(Channels)); }
 };
 
 #endif // OPENCVUTILS_OPENCVUTILS_H

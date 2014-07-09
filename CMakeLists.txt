@@ -76,7 +76,7 @@ endif()
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
 if(NOT ${BR_EMBEDDED})
-  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Sql Svg Widgets Xml)
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Svg Widgets Xml)
 endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
@@ -90,6 +90,10 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)
+
+# Add RandomLib
+set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_SOURCE_DIR}/3rdparty/RandomLib-1.9/src/Random.cpp)
+include_directories(3rdparty/RandomLib-1.9/include)
 
 # Find cvmatio (if using it)
 set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")
@@ -130,12 +134,28 @@ if(BUILD_TESTING)
   mark_as_advanced(BUILDNAME)
 endif()
 
+# Look for closedbr automatically
+set(BR_THIRDPARTY_PLUGINS_DIR CACHE PATH "")
+set(BR_THIRDPARTY_APPS_DIR CACHE PATH "")
+mark_as_advanced(BR_THIRDPARTY_PLUGINS_DIR)
+mark_as_advanced(BR_THIRDPARTY_APPS_DIR)
+set(CLOSEDBR_DIR "${CMAKE_SOURCE_DIR}/../closedbr")
+if(EXISTS "${CLOSEDBR_DIR}" AND IS_DIRECTORY "${CLOSEDBR_DIR}")
+  set(BR_THIRDPARTY_PLUGINS_DIR ${BR_THIRDPARTY_PLUGINS_DIR} "${CLOSEDBR_DIR}/plugins")
+  set(BR_THIRDPARTY_APPS_DIR    ${BR_THIRDPARTY_APPS_DIR}    "${CLOSEDBR_DIR}/app")
+endif()
+
 # Build the SDK
 include_directories(BEFORE .) # Find the local headers first
 add_subdirectory(openbr)
 
 # Build applications
 add_subdirectory(app)
+foreach(DIR ${BR_THIRDPARTY_APPS_DIR})
+  get_filename_component(FNAME ${DIR} NAME)
+  # DIR could be out-of-tree so we must specify the build directory
+  add_subdirectory(${DIR} 3rdparty_apps/${FNAME})
+endforeach()
 
 # Build the documentation?
 option(BR_BUILD_DOCUMENTATION "Build Documentation (Requires doxygen and latex)")
@@ -148,7 +168,7 @@ if(${BR_BUILD_DOCUMENTATION})
 endif()
 
 # Install
-install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION .)
+install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION share/openbr)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 

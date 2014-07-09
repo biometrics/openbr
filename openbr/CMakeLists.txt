@@ -5,6 +5,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Janus API
 include_directories(janus/include)
 install(DIRECTORY janus/include DESTINATION .)
+set(BR_JANUS janus/src/opencv_io/opencv_io.cpp)
+add_definitions(-DJANUS_LIBRARY)
 
 # Collect source files
 aux_source_directory(. SRC)
@@ -19,7 +21,7 @@ if(NOT ${BR_EMBEDDED})
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
-add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
+add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY

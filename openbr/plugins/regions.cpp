@@ -323,7 +323,7 @@ class RectFromPointsTransform : public UntrainableTransform
 
         QList<QPointF> points;
 
-        foreach(int index, indices) {
+        foreach (int index, indices) {
             if (src.file.points().size() > index) {
                 if (src.file.points()[index].x() < minX) minX = src.file.points()[index].x();
                 if (src.file.points()[index].x() > maxX) maxX = src.file.points()[index].x();

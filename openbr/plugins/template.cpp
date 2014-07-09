@@ -1,5 +1,6 @@
+#include <QtCore>
+
 #include "openbr_internal.h"
-#include <QRegularExpression>
 
 namespace br
 {
@@ -9,18 +10,18 @@ namespace br
  * \brief Retains only the values for the keys listed, to reduce template size
  * \author Scott Klum \cite sklum
  */
-class KeepMetadataTransform : public UntrainableTransform
+class KeepMetadataTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(QStringList, keys, QStringList())
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        foreach(const QString& localKey, dst.file.localKeys()) {
-            if (!keys.contains(localKey)) dst.file.remove(localKey);
-        }
+        foreach (const QString& localKey, dst.localKeys())
+            if (!keys.contains(localKey))
+                dst.remove(localKey);
     }
 };
 
@@ -52,20 +53,84 @@ BR_REGISTER(Transform, RemoveTemplatesTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Sets the metadata key/value pair.
+ * \author Josh Klontz \cite jklontz
+ */
+class SetMetadataTransform : public UntrainableMetadataTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    Q_PROPERTY(QString value READ get_value WRITE set_value RESET reset_value STORED false)
+    BR_PROPERTY(QString, key, "")
+    BR_PROPERTY(QString, value, "")
+
+    void projectMetadata(const File &src, File &dst) const
+    {
+        dst = src;
+        dst.set(key, value);
+    }
+};
+
+BR_REGISTER(Transform, SetMetadataTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Clear templates without the required metadata.
+ * \author Josh Klontz \cite jklontz
+ */
+class IfMetadataTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    Q_PROPERTY(QString value READ get_value WRITE set_value RESET reset_value STORED false)
+    BR_PROPERTY(QString, key, "")
+    BR_PROPERTY(QString, value, "")
+
+    void project(const Template &src, Template &dst) const
+    {
+        if (src.file.get<QString>(key, "") == value)
+            dst = src;
+    }
+};
+
+BR_REGISTER(Transform, IfMetadataTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Represent the metadata as JSON template data.
+ * \author Josh Klontz \cite jklontz
+ */
+class JSONTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.file = src.file;
+        dst.file.set("AlgorithmID", 2);
+        const QByteArray json = QJsonDocument(QJsonObject::fromVariantMap(dst.file.localMetadata())).toJson().replace('\n', ' ');
+        dst += cv::Mat(1, json.size()+1 /*include null terminator*/, CV_8UC1, (void*) json.data()).clone();
+    }
+};
+
+BR_REGISTER(Transform, JSONTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Removes a metadata field from all templates
  * \author Brendan Klare \cite bklare
  */
-class RemoveMetadataTransform : public UntrainableTransform
+class RemoveMetadataTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString attributeName READ get_attributeName WRITE set_attributeName RESET reset_attributeName STORED false)
     BR_PROPERTY(QString, attributeName, "None")
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        if (dst.file.contains(attributeName))
-            dst.file.remove(attributeName);
+        if (dst.contains(attributeName))
+            dst.remove(attributeName);
     }
 };
 BR_REGISTER(Transform, RemoveMetadataTransform)
@@ -75,19 +140,19 @@ BR_REGISTER(Transform, RemoveMetadataTransform)
  * \brief Retains only landmarks/points at the provided indices
  * \author Brendan Klare \cite bklare
  */
-class SelectPointsTransform : public UntrainableTransform
+class SelectPointsTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
-        QList<QPointF> origPoints = src.file.points();
-        dst.file.clearPoints();
+        QList<QPointF> origPoints = src.points();
+        dst.clearPoints();
         for (int i = 0; i < indices.size(); i++)
-            dst.file.appendPoint(origPoints[indices[i]]);
+            dst.appendPoint(origPoints[indices[i]]);
     }
 };
 

@@ -18,6 +18,7 @@
 #include "eval.h"
 #include "openbr/core/common.h"
 #include "openbr/core/qtutils.h"
+#include <QMapIterator>
 
 using namespace cv;
 
@@ -67,7 +68,7 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
 
 // Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
 // scores with the size of the target and query lists
-static cv::Mat constructMatchingMask(const cv::Mat & scores, const FileList & target, const FileList & query, int partition=0)
+static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, int partition=0)
 {
     // If the dimensions of the score matrix match the sizes of the target and query lists, construct a normal mask matrix
     if (target.size() == scores.cols && query.size() == scores.rows)
@@ -98,7 +99,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
     QString target, query;
     Mat scores;
     if (simmat.endsWith(".mtx")) {
-        scores = BEE::readMat(simmat, &target, &query);
+        scores = BEE::readMatrix(simmat, &target, &query);
     } else {
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();
@@ -130,6 +131,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
 
+    if (simmat.type() != CV_32FC1)
+        qFatal("Invalid simmat format");
+
+    if (mask.type() != CV_8UC1)
+        qFatal("Invalid mask format");
+
     float result = -1;
 
     // Make comparisons
@@ -137,8 +144,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
     for (int i=0; i<simmat.rows; i++) {
         for (int j=0; j<simmat.cols; j++) {
-            const BEE::Mask_t mask_val = mask.at<BEE::Mask_t>(i,j);
-            const BEE::Simmat_t simmat_val = simmat.at<BEE::Simmat_t>(i,j);
+            const BEE::MaskValue mask_val = mask.at<BEE::MaskValue>(i,j);
+            const BEE::SimmatValue simmat_val = simmat.at<BEE::SimmatValue>(i,j);
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
             comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
@@ -266,6 +273,221 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 
     QtUtils::writeFile(csv, lines);
     qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
+    return result;
+}
+
+struct GenImpCounts
+{
+    GenImpCounts()
+    {
+        genCount = 1;
+        impCount = 0;
+    }
+
+    qint64 genCount;
+    qint64 impCount;
+};
+
+float InplaceEval(const QString &simmat, const QString &target, const QString &query, const QString &csv)
+{
+    qDebug("Evaluating %s%s%s",
+            qPrintable(simmat),
+            qPrintable(" with " + target + " and " + query),
+            csv.isEmpty() ? "" : qPrintable(" to " + csv));
+
+    // To start with, we will find the size of the header, and check if the file size is consistent with the information
+    // given in the header.
+    QFile file(simmat);
+    bool success = file.open(QFile::ReadOnly);
+    if (!success) qFatal("Unable to open %s for reading.", qPrintable(simmat));
+
+    // Check format
+    QByteArray format = file.readLine();
+    if (format[1] != '2') qFatal("Invalid matrix header.");
+
+    // Read sigset names, we dont' care if they are valid, just want to advance the file pointer.
+    file.readLine();
+    file.readLine();
+
+    // Get matrix size
+    QStringList words = QString(file.readLine()).split(" ");
+    qint64 rows = words[1].toLongLong();
+    qint64 cols = words[2].toLongLong();
+
+    bool isMask = words[0][1] == 'B';
+    qint64 typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
+
+    // Get matrix data
+    qint64 rowSize = cols * typeSize;
+
+    // after reading the header, we are at the start of the matrix data
+    qint64 data_pos = file.pos();
+
+    // Map each unique label to a list of positions in the gallery
+    QMap<QString, QList<qint64> > galleryIndices;
+
+    // Next we will find the locations of all genuine scores based on the galleries, we will not instantiate a mask matrix
+    QScopedPointer<Gallery> columnGal(Gallery::make(target));
+    columnGal->set_readBlockSize(10000);
+
+    qint64 idx  = 0;
+    bool done = false;
+    do {
+        TemplateList temp = columnGal->readBlock(&done);
+        QStringList tempLabels = File::get<QString>(temp, "Label");
+
+        foreach (QString st, tempLabels) {
+            if (!galleryIndices.contains(st))
+                galleryIndices.insert(st, QList<qint64>());
+
+            galleryIndices[st].append(idx);
+            idx++;
+        }
+    } while (!done);
+
+    qint64 genTotal = 0;
+    qint64 imposterTotal = 0;
+
+    // map a genuine score threshold to the set of imposter scores uniquely rejected at that threshold
+    QMap<float, GenImpCounts> genScoresToCounts;
+
+    QScopedPointer<Gallery> probeGallery (Gallery::make(query));
+    probeGallery->set_readBlockSize(10000);
+    done = false;
+    qint64 row_count = 0;
+    do {
+        TemplateList temp = probeGallery->readBlock(&done);
+        QStringList probeLabels = File::get<QString>(temp, "Label");
+
+        for (int i=0; i < probeLabels.size();i++) {
+            row_count++;
+            if (!galleryIndices.contains(probeLabels[i]))
+                continue;
+
+            QList<qint64> colMask = galleryIndices[probeLabels[i]];
+            foreach (qint64 colID, colMask) {
+                float score;
+                file.seek(data_pos + i * rowSize + colID * typeSize);
+                file.read((char *) &score, sizeof(float));
+                if (genScoresToCounts.contains(score))
+                    genScoresToCounts[score].genCount++;
+                else
+                    genScoresToCounts.insert(score, GenImpCounts());
+                genTotal++;
+            }
+        }
+
+    } while (!done);
+
+    QMap<float, GenImpCounts> noImpostors = genScoresToCounts;
+
+    imposterTotal = rows * cols - genTotal;
+
+    file.seek(data_pos);
+    cv::Mat aRow(1, cols, CV_32FC1);
+    qint64 highImpostors = 0;
+
+    QScopedPointer<Gallery> probeGallery2 (Gallery::make(query));
+    int bSize = 10000;
+    probeGallery2->set_readBlockSize(bSize);
+    done = false;
+    row_count  = 0;
+
+    //sequence, mapfunciton, reducefunction
+    Mat blockMat(bSize, cols, CV_32FC1);
+
+    qint64 bCount = 0;
+    do {
+        bCount++;
+        TemplateList temp = probeGallery2->readBlock(&done);
+        QStringList probeLabels = File::get<QString>(temp, "Label");
+        temp.clear();
+
+        file.read((char *) blockMat.data, rowSize * probeLabels.length());
+        for (int i=0; i < probeLabels.size();i++) {
+            row_count++;
+            aRow = blockMat.row(i);
+
+            QList<qint64> colMask = galleryIndices[probeLabels[i]];
+            int listIdx = 0;
+
+            for (qint64 colIdx = 0; colIdx < cols; colIdx++)
+            {
+                // if our list index is past the end of colMask, we just have impostor scores left
+                if (listIdx < colMask.size() )
+                {
+                    // we hit the next gen score, skip it, and advance listIdx
+                    if (colIdx == colMask[listIdx])
+                    {
+                        listIdx++;
+                        continue;
+                    }
+                }
+                float score = aRow.at<float>(0, colIdx);
+                QMap<float, GenImpCounts>::iterator i = genScoresToCounts.upperBound(score);
+                if (i == genScoresToCounts.end() )
+                {
+                    // no genuine scores >= this impostor score, nothing to do.
+                    highImpostors++;
+                    continue;
+                }
+
+                // The iterator points to the first score > this one, i.e. the highest threshold for which this
+                // score will be rejected
+                i->impCount++;
+            }
+        }
+    } while (!done);
+
+    QList<OperatingPoint> operatingPoints;
+    qint64 genAccum = 0;
+    qint64 impAccum = highImpostors;
+
+    QMapIterator<float, GenImpCounts> i(genScoresToCounts);
+    
+    i.toBack();
+   
+    // iterating in reverse order of thresholds
+    while (i.hasPrevious()) {
+        i.previous();
+        // we want to accumulate false accept, true accept points
+        float thresh = i.key();
+        // genAccum -- number of gen scores at this threshold and above
+        genAccum += i.value().genCount;
+
+        operatingPoints.append(OperatingPoint(thresh, float(impAccum) / float(imposterTotal), float(genAccum) / float(genTotal)));
+
+        // imp count -- number of impostor scores at this threshold and above
+        impAccum += i.value().impCount;
+    }
+
+    QStringList lines;
+    lines.append("Plot,X,Y");
+    lines.append("Metadata,"+QString::number(cols)+",Gallery");
+    lines.append("Metadata,"+QString::number(rows)+",Probe");
+    lines.append("Metadata,"+QString::number(genTotal)+",Genuine");
+    lines.append("Metadata,"+QString::number(imposterTotal)+",Impostor");
+    lines.append("Metadata,"+QString::number(cols*rows-(genTotal+imposterTotal))+",Ignored");
+
+    // Write Detection Error Tradeoff (DET), PRE, REC
+    int points = qMin(operatingPoints.size(), Max_Points);
+    for (int i=0; i<points; i++) {
+        const OperatingPoint &operatingPoint = operatingPoints[double(i) / double(points-1) * double(operatingPoints.size()-1)];
+        lines.append(QString("DET,%1,%2").arg(QString::number(operatingPoint.FAR),
+                                              QString::number(1-operatingPoint.TAR)));
+        lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPoint.score),
+                                              QString::number(operatingPoint.FAR)));
+        lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPoint.score),
+                                              QString::number(1-operatingPoint.TAR)));
+    }
+
+    float result;
+    // Write FAR/TAR Bar Chart (BC)
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getTAR(operatingPoints, 0.01), 'f', 3))));
+
+    qDebug("TAR @ FAR = 0.01: %.3f", result);
+    QtUtils::writeFile(csv, lines);
     return result;
 }
 
@@ -427,90 +649,107 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     return lines;
 }
 
-QString getDetectKey(const TemplateList &templates)
+struct DetectionKey : public QString
 {
-    const File &f = templates.first().file;
-    foreach (const QString &key, f.localKeys()) {
-        // first check for single detections
+    enum Type {
+        Invalid,
+        Rect,
+        RectList,
+        XYWidthHeight
+    } type;
+
+    DetectionKey(const QString &key = "", Type type = Invalid)
+        : QString(key), type(type) {}
+};
+
+static DetectionKey getDetectKey(const FileList &files)
+{
+    if (files.empty())
+        return DetectionKey();
+
+    const File &f = files.first();
+    const QStringList localKeys = f.localKeys();
+
+    // first check for single detections
+    foreach (const QString &key, localKeys)
         if (!f.get<QRectF>(key, QRectF()).isNull())
-            return key;
-    }
+            return DetectionKey(key, DetectionKey::Rect);
+
     // and then multiple
     if (!f.rects().empty())
-        return "Rects";
-    return "";
+        return DetectionKey("Rects", DetectionKey::RectList);
+
+    // check for <Key>_X, <Key>_Y, <Key>_Width, <Key>_Height
+    foreach (const QString &localKey, localKeys) {
+        if (!localKey.endsWith("_X"))
+            continue;
+        const QString key = localKey.mid(0, localKey.size()-2);
+        if (localKeys.contains(key+"_Y") &&
+            localKeys.contains(key+"_Width") &&
+            localKeys.contains(key+"_Height"))
+            return DetectionKey(key, DetectionKey::XYWidthHeight);
+    }
+
+    return DetectionKey();
 }
 
-bool detectKeyIsList(QString key, const TemplateList &templates)
+// return a list of detections independent of the detection key format
+static QList<Detection> getDetections(const DetectionKey &key, const File &f, bool isTruth)
 {
-    return templates.first().file.get<QRectF>(key, QRectF()).isNull();
-}
-
-// return a list of detections whether the template holds
-// multiple detections or a single detection
-QList<Detection> getDetections(QString key, const Template &t, bool isList, bool isTruth)
-{
-    File f = t.file;
     QList<Detection> dets;
-    if (isList) {
+    if (key.type == DetectionKey::RectList) {
         QList<QRectF> rects = f.rects();
         QList<float> confidences = f.getList<float>("Confidences", QList<float>());
         if (!isTruth && rects.size() != confidences.size())
             qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
         for (int i=0; i<rects.size(); i++) {
             if (isTruth)
-                dets.append(Detection(rects.at(i)));
+                dets.append(Detection(rects[i]));
             else
-                dets.append(Detection(rects.at(i), confidences.at(i)));
+                dets.append(Detection(rects[i], confidences[i]));
         }
-    } else {
-        if (isTruth)
-            dets.append(Detection(f.get<QRectF>(key)));
-        else
-            dets.append(Detection(f.get<QRectF>(key), f.get<float>("Confidence", -1)));
+    } else if (key.type == DetectionKey::Rect) {
+        dets.append(Detection(f.get<QRectF>(key), isTruth ? -1 : f.get<float>("Confidence", -1)));
+    } else if (key.type == DetectionKey::XYWidthHeight) {
+        const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
+        dets.append(Detection(rect, isTruth ? -1 : f.get<float>("Confidence", -1)));
     }
     return dets;
 }
 
-QMap<QString, Detections> getDetections(const TemplateList &predicted, const TemplateList &truth)
+static QMap<QString, Detections> getDetections(const File &predictedGallery, const File &truthGallery)
 {
+    const FileList predicted = TemplateList::fromGallery(predictedGallery).files();
+    const FileList truth = TemplateList::fromGallery(truthGallery).files();
+
     // Figure out which metadata field contains a bounding box
-    QString truthDetectKey = getDetectKey(truth);
-    if (truthDetectKey.isEmpty()) qFatal("No suitable ground truth metadata key found.");
-    QString predictedDetectKey = getDetectKey(predicted);
-    if (predictedDetectKey.isEmpty()) qFatal("No suitable predicted metadata key found.");
+    DetectionKey truthDetectKey = getDetectKey(truth);
+    if (truthDetectKey.isEmpty())
+        qFatal("No suitable ground truth metadata key found.");
+
+    DetectionKey predictedDetectKey = getDetectKey(predicted);
+    if (predictedDetectKey.isEmpty())
+        qFatal("No suitable predicted metadata key found.");
+
     qDebug("Using metadata key: %s%s",
            qPrintable(predictedDetectKey),
            qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
 
     QMap<QString, Detections> allDetections;
-    bool predKeyIsList = detectKeyIsList(predictedDetectKey, predicted);
-    bool truthKeyIsList = detectKeyIsList(truthDetectKey, truth);
-    foreach (const Template &t, predicted) {
-        QList<Detection> dets = getDetections(predictedDetectKey, t, predKeyIsList, false);
-        allDetections[t.file.baseName()].predicted.append(dets);
-    }
-    foreach (const Template &t, truth) {
-        QList<Detection> dets = getDetections(truthDetectKey, t, truthKeyIsList, true);
-        allDetections[t.file.baseName()].truth.append(dets);
-    }
+    foreach (const File &f, predicted)
+        allDetections[f.baseName()].predicted.append(getDetections(predictedDetectKey, f, false));
+    foreach (const File &f, truth)
+        allDetections[f.baseName()].truth.append(getDetections(truthDetectKey, f, true));
     return allDetections;
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv)
+static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
 {
-    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
-    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
-    const TemplateList truth(TemplateList::fromGallery(truthGallery));
+    float dLeftTotal = 0.0, dRightTotal = 0.0, dTopTotal = 0.0, dBottomTotal = 0.0;
+    int count = 0, totalTrueDetections = 0;
 
-    // Organized by file, QMap used to preserve order
-    QMap<QString, Detections> allDetections = getDetections(predicted, truth);
-
-    QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
-    int totalTrueDetections = 0;
-    foreach (Detections detections, allDetections.values()) { // For every file
+    foreach (Detections detections, all.values()) {
         totalTrueDetections += detections.truth.size();
-
         // Try to associate ground truth detections with predicted detections
         while (!detections.truth.isEmpty() && !detections.predicted.isEmpty()) {
             const Detection truth = detections.truth.takeFirst(); // Take removes the detection
@@ -518,7 +757,16 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
             float bestOverlap = -std::numeric_limits<float>::max();
             // Find the nearest predicted detection to this ground truth detection
             for (int i=0; i<detections.predicted.size(); i++) {
-                const float overlap = truth.overlap(detections.predicted[i]);
+                Detection predicted = detections.predicted[i];
+                float predictedWidth = predicted.boundingBox.width();
+                float x, y, width, height;
+                x = predicted.boundingBox.x() + offsets.x()*predictedWidth;
+                y = predicted.boundingBox.y() + offsets.y()*predictedWidth;
+                width = predicted.boundingBox.width() - offsets.width()*predictedWidth;
+                height = predicted.boundingBox.height() - offsets.height()*predictedWidth;
+                Detection newPredicted(QRectF(x, y, width, height), 0.0);
+
+                const float overlap = truth.overlap(newPredicted);
                 if (overlap > bestOverlap) {
                     bestOverlap = overlap;
                     bestIndex = i;
@@ -528,17 +776,67 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
             // We don't want to associate two ground truth detections with the
             // same prediction, over vice versa.
             const Detection predicted = detections.predicted.takeAt(bestIndex);
-            resolvedDetections.append(ResolvedDetection(predicted.confidence, bestOverlap));
+            resolved.append(ResolvedDetection(predicted.confidence, bestOverlap));
+
+            if (offsets.x() == 0) {
+                // Add side differences to total only for pairs that meet the overlap threshold.
+                if (bestOverlap > 0.3) {
+                    count++;
+                    float width = predicted.boundingBox.width();
+                    dLeftTotal += (truth.boundingBox.left() - predicted.boundingBox.left()) / width;
+                    dRightTotal += (truth.boundingBox.right() - predicted.boundingBox.right()) / width;
+                    dTopTotal += (truth.boundingBox.top() - predicted.boundingBox.top()) / width;
+                    dBottomTotal += (truth.boundingBox.bottom() - predicted.boundingBox.bottom()) / width;
+                }
+            }
         }
 
         foreach (const Detection &detection, detections.predicted)
-            resolvedDetections.append(ResolvedDetection(detection.confidence, 0));
+            resolved.append(ResolvedDetection(detection.confidence, 0));
         for (int i=0; i<detections.truth.size(); i++)
-            falseNegativeDetections.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
+            falseNegative.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
     }
+    if (offsets.x() == 0) {
+        // Calculate average differences in each direction
+        float dRight = dRightTotal / count;
+        float dBottom = dBottomTotal / count;
+        float dX = dLeftTotal / count;
+        float dY = dTopTotal / count;
+        float dWidth = dX - dRight;
+        float dHeight = dY - dBottom;
 
+        offsets.setX(dX);
+        offsets.setY(dY);
+        offsets.setWidth(dWidth);
+        offsets.setHeight(dHeight);
+    }
+    return totalTrueDetections;
+}
+
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize)
+{
+    qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    // Organized by file, QMap used to preserve order
+    QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
+
+    QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
+    QRectF normalizations(0, 0, 0, 0);
+    
+    // Associate predictions to ground truth
+    int totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+
+    // Redo association of ground truth to predictions with boundingBoxes
+    // resized based on the average differences on each side.
+    if (normalize) {
+        qDebug("dX = %.3f", normalizations.x());
+        qDebug("dY = %.3f", normalizations.y());
+        qDebug("dWidth = %.3f", normalizations.width());
+        qDebug("dHeight = %.3f", normalizations.height());
+        resolvedDetections.clear();
+        falseNegativeDetections.clear();
+        totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+    }
     std::sort(resolvedDetections.begin(), resolvedDetections.end());
-
     QStringList lines;
     lines.append("Plot, X, Y");
     lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, true));
@@ -592,7 +890,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         for (int j=0; j<predictedPoints.size(); j++)
             pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
     }
-    qDebug() << "Skipped " << skipped << " files do to point size mismatch.";
+    qDebug() << "Skipped " << skipped << " files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
     for (int i=0; i<pointErrors.size(); i++) {

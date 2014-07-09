@@ -13,7 +13,7 @@ if ! hash br 2>/dev/null; then
 fi
 
 # Get the data
-./downloadDatasets.sh
+./downloadMEDS.sh
 
 if [ ! -e Algorithm_Dataset ]; then
   mkdir Algorithm_Dataset

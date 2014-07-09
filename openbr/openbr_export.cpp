@@ -59,6 +59,7 @@
  * - \subpage windows_msvc
  * - \subpage osx_clang
  * - \subpage linux_gcc
+ * - \subpage raspbian_gcc
  *
  * \section installation_from_binary From Binary
  * Pre-compiled releases are not currently provided, but they can be built from source using the instructions above.
@@ -317,6 +318,70 @@ $ br -help
  $ gnome-open html/index.html
  \endcode
  */
+
+/*!
+ * \page raspbian_gcc Raspbian 3.0.1 - GCC 4.6.3 - ARMv6
+ * -# Install CMake 2.8.9
+ \code
+ $ sudo apt-get install cmake
+ \endcode
+ * -# Download OpenCV 2.4.9
+ \code
+ $ wget http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.9/opencv-2.4.9.zip
+ $ unzip opencv-2.4.9.zip
+ $ cd opencv-2.4.9
+ $ mkdir build
+ $ cd build
+ $ cmake -DCMAKE_BUILD_TYPE=Release ..
+ $ make
+ $ sudo make install
+ $ cd ../..
+ $ rm -rf opencv-2.4.9*
+ \endcode
+ * -# Install Qt5
+ *  -# Modify source list
+ \code
+ $ nano /etc/apt/sources.list
+ \endcode
+ by changing:
+ \code
+ deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi
+ \endcode
+ to:
+ \code
+ deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi
+ \endcode
+ *  -# Update apt-get
+ \code
+ $ sudo apt-get update
+ \endcode
+ *  -# Install packages
+ \code
+ $ sudo apt-get install qt5-default libqt5svg5-dev
+ \endcode
+ * -# Create a <a href="github.com">GitHub</a> account, follow their instructions for <a href="https://help.github.com/articles/set-up-git">setting up Git</a>.
+ \code
+ $ git clone https://github.com/biometrics/openbr.git
+ $ cd openbr
+ $ git submodule init
+ $ git submodule update
+ \endcode
+ * -# Build OpenBR!
+ \code
+ $ mkdir build # from the OpenBR root directory
+ $ cd build
+ $ cmake -DCMAKE_BUILD_TYPE=Release ..
+ $ make
+ $ sudo make install
+ \endcode
+ * -# (Optional) Test OpenBR!
+ \code
+ $ cd openbr/scripts
+ $ ./downloadDatasets.sh
+ $ cd ../build
+ $ make test
+ \endcode
+*/
 
  /*!
   * \page help Help

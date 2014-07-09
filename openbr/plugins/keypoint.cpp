@@ -126,13 +126,13 @@ class KeyPointMatcherDistance : public Distance
             qFatal("Failed to create DescriptorMatcher: %s", qPrintable(matcher));
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const Mat &a, const Mat &b) const
     {
-        if ((a.m().rows < 2) || (b.m().rows < 2)) return 0;
+        if ((a.rows < 2) || (b.rows < 2)) return 0;
 
         std::vector< std::vector<DMatch> > matches;
-        if (a.m().rows < b.m().rows) descriptorMatcher->knnMatch(a, b, matches, 2);
-        else                         descriptorMatcher->knnMatch(b, a, matches, 2);
+        if (a.rows < b.rows) descriptorMatcher->knnMatch(a, b, matches, 2);
+        else                 descriptorMatcher->knnMatch(b, a, matches, 2);
 
         QList<float> distances;
         foreach (const std::vector<DMatch> &match, matches) {

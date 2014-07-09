@@ -182,12 +182,21 @@ class MatchProbabilityDistance : public Distance
         mp = MP(genuineScores, impostorScores);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
-        const float rawScore = distance->compare(target, query);
-        if (rawScore == -std::numeric_limits<float>::max()) return rawScore;
-        if (!Globals->scoreNormalization) return -log(rawScore+1);
-        return mp(rawScore, gaussian);
+        return normalize(distance->compare(target, query));
+    }
+
+    float compare(const uchar *a, const uchar *b, size_t size) const
+    {
+        return normalize(distance->compare(a, b, size));
+    }
+
+    float normalize(float score) const
+    {
+        if (score == -std::numeric_limits<float>::max()) return score;
+        if (!Globals->scoreNormalization) return -log(score+1);
+        return mp(score, gaussian);
     }
 
     void store(QDataStream &stream) const
@@ -308,7 +317,7 @@ class HeatMapDistance : public Distance
             distances[i]->train(patches[i]);
     }
 
-    float compare(const Template &target, const Template &query) const
+    float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         (void) target;
         (void) query;

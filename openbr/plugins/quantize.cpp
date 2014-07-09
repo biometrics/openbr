@@ -163,11 +163,11 @@ class BayesianQuantizationDistance : public Distance
         futures.waitForFinished();
     }
 
-    float compare(const Template &a, const Template &b) const
+    float compare(const cv::Mat &a, const cv::Mat &b) const
     {
-        const uchar *aData = a.m().data;
-        const uchar *bData = b.m().data;
-        const int size = a.m().rows * a.m().cols;
+        const uchar *aData = a.data;
+        const uchar *bData = b.data;
+        const int size = a.rows * a.cols;
         float likelihood = 0;
         for (int i=0; i<size; i++)
             likelihood += loglikelihoods[i*256+abs(aData[i]-bData[i])];

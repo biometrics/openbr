@@ -55,15 +55,22 @@ endfunction()
 # Qt Plugins
 function(install_qt_imageformats)
   if(${BR_INSTALL_DEPENDENCIES})
-    set(IMAGE_FORMATS_DIR "${_qt5Core_install_prefix}/plugins/imageformats/")
-    install(FILES ${IMAGE_FORMATS_DIR}/qgif.dll
-                  ${IMAGE_FORMATS_DIR}/qico.dll
-                  ${IMAGE_FORMATS_DIR}/qjpeg.dll
-                  ${IMAGE_FORMATS_DIR}/qmng.dll
-                  ${IMAGE_FORMATS_DIR}/qsvg.dll
-                  ${IMAGE_FORMATS_DIR}/qtga.dll
-				  ${IMAGE_FORMATS_DIR}/qtiff.dll
-				  ${IMAGE_FORMATS_DIR}/qwbmp.dll
+    set(IMAGE_FORMATS_DIR "${_qt5Core_install_prefix}/plugins/imageformats")
+    if(CMAKE_HOST_WIN32)
+      set(INSTALL_DEPENDENCIES_PREFIX "")
+      set(INSTALL_DEPENDENCIES_EXTENSION ".dll")
+    else()
+      set(INSTALL_DEPENDENCIES_PREFIX "lib")
+      set(INSTALL_DEPENDENCIES_EXTENSION ".dylib")
+    endif()
+    install(FILES ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qgif${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qico${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qjpeg${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qmng${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qsvg${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtga${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtiff${INSTALL_DEPENDENCIES_EXTENSION}
+                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qwbmp${INSTALL_DEPENDENCIES_EXTENSION}
             DESTINATION bin/imageformats)
   endif()
 endfunction()

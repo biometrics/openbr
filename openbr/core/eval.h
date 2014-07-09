@@ -26,8 +26,10 @@ namespace br
     float Evaluate(const QString &simmat, const QString &mask = "", const QString &csv = ""); // Returns TAR @ FAR = 0.001
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv = "", int parition = 0);
     float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &csv = "");
+    float InplaceEval(const QString & simmat, const QString & target, const QString & query, const QString & csv = "");
+
     void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
-    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = ""); // Return average overlap
+    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", bool normalize = false); // Return average overlap
     float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1); // Return average error
     void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
 }

@@ -174,14 +174,15 @@ struct BR_EXPORT File
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
+    File(const QVariantMap &metadata) : m_metadata(metadata) {} /*!< \brief Construct a file from metadata. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
 
-    inline QList<QString> localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
-    inline QMap<QString,QVariant> localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
+    inline QStringList localKeys() const { return m_metadata.keys(); } /*!< \brief Returns the private metadata keys. */
+    inline QVariantMap localMetadata() const { return m_metadata; } /*!< \brief Returns the private metadata. */
 
-    void append(const QMap<QString,QVariant> &localMetadata); /*!< \brief Add new metadata fields. */
+    void append(const QVariantMap &localMetadata); /*!< \brief Add new metadata fields. */
     void append(const File &other); /*!< \brief Append another file using \c separator. */
     inline File &operator+=(const QMap<QString,QVariant> &other) { append(other); return *this; } /*!< \brief Add new metadata fields. */
     inline File &operator+=(const File &other) { append(other); return *this; } /*!< \brief Append another file using \c separator. */
@@ -326,7 +327,7 @@ struct BR_EXPORT File
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
 private:
-    QMap<QString,QVariant> m_metadata;
+    QVariantMap m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
     BR_EXPORT friend QDataStream &operator>>(QDataStream &stream, File &file);
 
@@ -369,6 +370,8 @@ struct BR_EXPORT FileList : public QList<File>
 
     QList<int> crossValidationPartitions() const; /*!< \brief Returns the cross-validation partition (default=0) for each file in the list. */
     int failures() const; /*!< \brief Returns the number of files with br::File::failed(). */
+
+    static FileList fromGallery(const File &gallery, bool cache = false); /*!< \brief Create a file list from a br::Gallery. */
 };
 
 /*!
@@ -458,9 +461,9 @@ struct TemplateList : public QList<Template>
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
-    QList<int> indexProperty(const QString & propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
-    QList<int> indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const;
-    QList<int> applyIndex(const QString & propName, const QHash<QString, int> & valueMap) const;
+    QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
+    QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
+    QList<int> applyIndex(const QString &propName, const QHash<QString, int> &valueMap) const;
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -491,7 +494,7 @@ struct TemplateList : public QList<Template>
         int sum = 0;
         QList<TemplateList> partitions; partitions.reserve(partitionSizes.size());
 
-        for(int i=0; i<partitionSizes.size(); i++) {
+        for (int i=0; i<partitionSizes.size(); i++) {
             partitions.append(TemplateList());
             sum+=partitionSizes[i];
         }
@@ -536,7 +539,7 @@ struct TemplateList : public QList<Template>
      * \brief Returns the number of occurences for each label in the list.
      */
     template<typename T>
-    QMap<T,int> countValues(const QString & propName, bool excludeFailures = false) const
+    QMap<T,int> countValues(const QString &propName, bool excludeFailures = false) const
     {
         QMap<T, int> labelCounts;
         foreach (const File &file, files())
@@ -594,6 +597,8 @@ public:
     QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
     QString description() const; /*!< \brief Returns a string description of the object. */
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
+    virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
+
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
 private:
@@ -684,6 +689,10 @@ public:
      */
     Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
     BR_PROPERTY(double, currentStep, 0)
+
+    Q_PROPERTY(double currentProgress READ get_currentProgress WRITE set_currentProgress RESET reset_currentProgress)
+    BR_PROPERTY(double, currentProgress, 0)
+
 
     /*!
      * \brief Used internally to compute progress() and timeRemaining().
@@ -1093,6 +1102,9 @@ public:
     static Gallery *make(const File &file); /*!< \brief Make a gallery to/from a file on disk. */
     void init();
 
+    virtual qint64 totalSize() { return std::numeric_limits<qint64>::max(); }
+    virtual qint64 position() { return 0; }
+
 private:
     QSharedPointer<Gallery> next;
 };
@@ -1116,13 +1128,13 @@ class TemplateEvent : public QObject
     Q_OBJECT
 
 public:
-    void pulseSignal(const Template & output) const
+    void pulseSignal(const Template &output) const
     {
         emit theSignal(output);
     }
 
 signals:
-    void theSignal(const Template & output) const;
+    void theSignal(const Template &output) const;
 };
 
 /*!
@@ -1209,7 +1221,7 @@ public:
      * and the transform can emit a final set if templates if it wants. Time-invariant transforms
      * don't have to do anything.
      */
-    virtual void finalize(TemplateList & output) { output = TemplateList(); }
+    virtual void finalize(TemplateList &output) { output = TemplateList(); }
 
     /*!
      * \brief Does the transform require the non-const version of project? Can vary for aggregation type transforms
@@ -1246,14 +1258,14 @@ public:
      * and copy enough of their state that projectUpdate can safely be called on the original
      * instance, and the copy concurrently.
      */
-    virtual Transform * smartCopy(bool & newTransform) { newTransform=false; return this;}
+    virtual Transform *smartCopy(bool &newTransform) { newTransform=false; return this;}
 
-    virtual Transform * smartCopy() {bool junk; return smartCopy(junk);}
+    virtual Transform *smartCopy() {bool junk; return smartCopy(junk);}
 
     /*!
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
      */
-    virtual TemplateEvent * getEvent(const QString & name);
+    virtual TemplateEvent *getEvent(const QString &name);
 
     /*!
      * \brief Get a list of child transforms of this transform, child transforms are considered to be
@@ -1324,7 +1336,9 @@ public:
     virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
-    virtual float compare(const Template &a, const Template &b) const = 0; /*!< \brief Compute the distance between two templates. */
+    virtual float compare(const Template &a, const Template &b) const; /*!< \brief Compute the distance between two templates. */
+    virtual float compare(const cv::Mat &a, const cv::Mat &b) const; /*!< \brief Compute the distance between two biometric signatures. */
+    virtual float compare(const uchar *a, const uchar *b, size_t size) const; /*!< \brief Compute the distance between two buffers. */
 
 protected:
     inline Distance *make(const QString &description) { return make(description, this); } /*!< \brief Make a subdistance. */
@@ -1356,11 +1370,17 @@ BR_EXPORT void Train(const File &input, const File &model);
  * \see br_enroll
  */
 BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
+
 /*!
  * \brief High-level function for enrolling templates.
  * \see br_enroll
  */
 BR_EXPORT void Enroll(TemplateList &tmpl);
+
+/*!
+ * \brief A naive alternative to \ref br::Enroll
+ */
+BR_EXPORT void Project(const File &input, const File &output);
 
 /*!
  * \brief High-level function for comparing galleries.

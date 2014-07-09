@@ -38,6 +38,7 @@
 #include "core/common.h"
 #include "core/opencvutils.h"
 #include "core/qtutils.h"
+#include "openbr/plugins/openbr_internal.h"
 
 using namespace br;
 using namespace cv;
@@ -205,7 +206,7 @@ QList<QRectF> File::namedRects() const
         const QVariant &variant = m_metadata[key];
         if (variant.canConvert<QRectF>())
             rects.append(variant.value<QRectF>());
-        else if(variant.canConvert<QList<QRectF> >()) {
+        else if (variant.canConvert<QList<QRectF> >()) {
             QList<QRectF> list = variant.value<QList<QRectF> >();
             for (int i=0;i < list.size();i++)
             {
@@ -517,7 +518,7 @@ TemplateList TemplateList::relabel(const TemplateList &tl, const QString &propNa
     return result;
 }
 
-QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
+QList<int> TemplateList::indexProperty(const QString &propName, QHash<QString, int> * valueMap,QHash<int, QVariant> * reverseLookup) const
 {
     QHash<QString, int> dummyForwards;
     QHash<int, QVariant> dummyBackwards;
@@ -528,13 +529,13 @@ QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, 
     return indexProperty(propName, *valueMap, *reverseLookup);
 }
 
-QList<int> TemplateList::indexProperty(const QString & propName, QHash<QString, int> & valueMap, QHash<int, QVariant> & reverseLookup) const
+QList<int> TemplateList::indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const
 {
     valueMap.clear();
     reverseLookup.clear();
 
     const QList<QVariant> originalLabels = File::values(*this, propName);
-    foreach (const QVariant & label, originalLabels) {
+    foreach (const QVariant &label, originalLabels) {
         QString labelString = label.toString();
         if (!valueMap.contains(labelString)) {
             reverseLookup.insert(valueMap.size(), label);
@@ -717,6 +718,15 @@ void Object::load(QDataStream &stream)
     init();
 }
 
+bool Object::setPropertyRecursive(const QString &name, QVariant value)
+{
+    if (this->metaObject()->indexOfProperty(qPrintable(name)) == -1)
+        return false;
+    setProperty(name, value);
+    init();
+    return true;
+}
+
 void Object::setProperty(const QString &name, QVariant value)
 {
     QString type;
@@ -865,14 +875,15 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        fprintf(stderr, "%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g  \r", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep, Globals->totalSteps);
+        fprintf(stderr,"\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
+        fflush(stderr);
     }
 }
 
 float br::Context::progress() const
 {
     if (totalSteps == 0) return -1;
-    return currentStep / totalSteps;
+    return currentProgress / totalSteps;
 }
 
 void br::Context::setProperty(const QString &key, const QString &value)
@@ -956,6 +967,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals = new Context();
     Globals->init(File());
     Globals->useGui = useGui;
+    Globals->algorithm = "Identity";
 
     Common::seedRNG();
 
@@ -1223,6 +1235,13 @@ Transform *Transform::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
+    File parsed("."+str);
+    if (Globals->abbreviations.contains(parsed.suffix())) {
+        Transform *res = make(Globals->abbreviations[parsed.suffix()], parent);
+        applyAdditionalProperties(parsed, res);
+        return res;
+    }
+
     //! [Make a pipe]
     { // Check for use of '+' as shorthand for Pipe(...)
         QStringList words = parse(str, '+');
@@ -1298,8 +1317,8 @@ QList<Transform *> Transform::getChildren() const
 {
     QList<Transform *> output;
     for (int i=0; i < metaObject()->propertyCount(); i++) {
-        const char * prop_name = metaObject()->property(i).name();
-        const QVariant & variant = this->property(prop_name);
+        const char *prop_name = metaObject()->property(i).name();
+        const QVariant &variant = this->property(prop_name);
 
         if (variant.canConvert<Transform *>())
             output.append(variant.value<Transform *>());
@@ -1309,11 +1328,10 @@ QList<Transform *> Transform::getChildren() const
     return output;
 }
 
-TemplateEvent * Transform::getEvent(const QString & name)
+TemplateEvent *Transform::getEvent(const QString &name)
 {
-    foreach(Transform * child, getChildren())
-    {
-        TemplateEvent * probe = child->getEvent(name);
+    foreach (Transform *child, getChildren()) {
+        TemplateEvent *probe = child->getEvent(name);
         if (probe)
             return probe;
     }
@@ -1335,9 +1353,9 @@ void Transform::train(const TemplateList &data)
 void Transform::train(const QList<TemplateList> &data)
 {
     TemplateList combined;
-    foreach(const TemplateList & set, data) {
+    foreach (const TemplateList &set, data)
         combined.append(set);
-    }
+
     train(combined);
 }
 
@@ -1386,6 +1404,36 @@ QList<float> Distance::compare(const TemplateList &targets, const Template &quer
     return scores;
 }
 
+float Distance::compare(const Template &a, const Template &b) const
+{
+    float similarity = 0;
+    int comparisons = 0;
+    foreach (const cv::Mat &ma, a) {
+        foreach (const cv::Mat &mb, b) {
+            const float score = compare(ma, mb);
+            if (score != -std::numeric_limits<float>::max()) {
+                similarity += score;
+                comparisons++;
+            }
+        }
+    }
+
+    if (comparisons > 0) similarity /= comparisons;
+    else                 similarity = -std::numeric_limits<float>::max();
+    return similarity;
+}
+
+float Distance::compare(const cv::Mat &a, const cv::Mat &b) const
+{
+    return compare(a.data, b.data, a.rows * a.cols * a.elemSize());
+}
+
+float Distance::compare(const uchar *, const uchar *, size_t) const
+{
+    qFatal("Logic error: %s did not implement a comparison function or was accessed at an unsupported level of abstraction.", metaObject()->className());
+    return -std::numeric_limits<float>::max();
+}
+
 /* Distance - private methods */
 void Distance::compareBlock(const TemplateList &target, const TemplateList &query, Output *output, int targetOffset, int queryOffset) const
 {
@@ -1393,4 +1441,15 @@ void Distance::compareBlock(const TemplateList &target, const TemplateList &quer
         for (int j=0; j<target.size(); j++)
             if (target[j].isEmpty() || query[i].isEmpty()) output->setRelative(-std::numeric_limits<float>::max(),i+queryOffset, j+targetOffset);
             else output->setRelative(compare(target[j], query[i]), i+queryOffset, j+targetOffset);
+}
+
+void br::applyAdditionalProperties(const File &temp, Transform *target)
+{
+    QVariantMap meta = temp.localMetadata();
+    for (QVariantMap::iterator i = meta.begin(); i != meta.end(); ++i) {
+        if (i.key().startsWith("_Arg"))
+            continue;
+
+        target->setPropertyRecursive(i.key(), i.value() );
+    }
 }

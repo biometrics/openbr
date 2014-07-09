@@ -32,22 +32,23 @@ static TemplateList Expanded(const TemplateList &templates)
 {
     TemplateList expanded;
     foreach (const Template &t, templates) {
+        const bool enrollAll = t.file.get<bool>("enrollAll");
         if (t.isEmpty()) {
-            if (!t.file.get<bool>("enrollAll", false))
+            if (!enrollAll)
                 expanded.append(t);
             continue;
         }
 
-        const bool fte = t.file.get<bool>("FTE", false);
-        QList<QPointF> points = t.file.points();
-        QList<QRectF> rects = t.file.rects();
+        const bool fte = t.file.get<bool>("FTE");
+        const QList<QPointF> points = t.file.points();
+        const QList<QRectF> rects = t.file.rects();
         if (points.size() % t.size() != 0) qFatal("Uneven point count.");
         if (rects.size() % t.size() != 0) qFatal("Uneven rect count.");
         const int pointStep = points.size() / t.size();
         const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || !t.file.get<bool>("enrollAll", false)) {
+            if (!fte || !enrollAll) {
                 expanded.append(Template(t.file, t[i]));
                 expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
                 expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
@@ -148,7 +149,7 @@ class PipeTransform : public CompositeTransform
 
     // For time varying transforms, parallel execution over individual templates
     // won't work.
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
         foreach (Transform *f, transforms)
@@ -157,7 +158,7 @@ class PipeTransform : public CompositeTransform
         }
     }
 
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         output.clear();
         // For each transform,
@@ -184,7 +185,7 @@ class PipeTransform : public CompositeTransform
         QList<Transform *> flattened;
         for (int i=0;i < transforms.size(); i++)
         {
-            PipeTransform * probe = dynamic_cast<PipeTransform *> (transforms[i]);
+            PipeTransform *probe = dynamic_cast<PipeTransform *> (transforms[i]);
             if (!probe) {
                 flattened.append(transforms[i]);
                 continue;
@@ -211,7 +212,7 @@ protected:
     }
 
    // Single template const project, pass the template through each sub-transform, one after the other
-   virtual void _project(const Template & src, Template & dst) const
+   virtual void _project(const Template &src, Template &dst) const
    {
        dst = src;
        foreach (const Transform *f, transforms) {
@@ -246,7 +247,7 @@ class ExpandTransform : public UntrainableMetaTransform
         dst = Expanded(src);
     }
 
-    virtual void project(const Template & src, Template & dst) const
+    virtual void project(const Template &src, Template &dst) const
     {
         dst = src;
         qDebug("Called Expand project(Template,Template), nothing will happen");
@@ -271,11 +272,11 @@ class ContractTransform : public UntrainableMetaTransform
         if (src.empty()) return;
         Template out;
 
-        foreach (const Template & t, src) {
+        foreach (const Template &t, src) {
             out.merge(t);
         }
         out.file.clearRects();
-        foreach (const Template & t, src) {
+        foreach (const Template &t, src) {
             if (!t.file.rects().empty())
                 out.file.appendRects(t.file.rects());
         }
@@ -283,7 +284,7 @@ class ContractTransform : public UntrainableMetaTransform
         dst.append(out);
     }
 
-    virtual void project(const Template & src, Template & dst) const
+    virtual void project(const Template &src, Template &dst) const
     {
         qFatal("this has gone bad");
         (void) src; (void) dst;
@@ -315,7 +316,7 @@ class ForkTransform : public CompositeTransform
     }
 
     // same as _project, but calls projectUpdate on sub-transforms
-    void projectupdate(const Template & src, Template & dst)
+    void projectupdate(const Template &src, Template &dst)
     {
         foreach (Transform *f, transforms) {
             try {
@@ -330,7 +331,7 @@ class ForkTransform : public CompositeTransform
         }
     }
 
-    void projectUpdate(const TemplateList & src, TemplateList & dst)
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst.reserve(src.size());
         for (int i=0; i<src.size(); i++) dst.append(Template());
@@ -344,7 +345,7 @@ class ForkTransform : public CompositeTransform
 
     // this is probably going to go bad, fork transform probably won't work well in a variable
     // input/output scenario
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         output.clear();
         // For each transform,
@@ -492,6 +493,12 @@ class LoadStoreTransform : public MetaTransform
 public:
     LoadStoreTransform() : transform(NULL) {}
 
+    bool setPropertyRecursive(const QString &name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+        return transform->setPropertyRecursive(name, value);
+    }
 private:
     void init()
     {
@@ -500,6 +507,11 @@ private:
         else baseName = fileName;
         if (!tryLoad()) transform = make(description);
         else            trainable = false;
+    }
+
+    bool timeVarying() const
+    {
+        return transform->timeVarying();
     }
 
     void train(const TemplateList &data)
@@ -525,6 +537,21 @@ private:
     void project(const TemplateList &src, TemplateList &dst) const
     {
         transform->project(src, dst);
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        transform->projectUpdate(src, dst);
+    }
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        transform->projectUpdate(src, dst);
+    }
+
+    void finalize(TemplateList &output)
+    {
+        transform->finalize(output);
     }
 
     QString getFileName() const
@@ -614,7 +641,7 @@ class DistributeTemplateTransform : public MetaTransform
 
 public:
 
-    Transform * smartCopy(bool & newTransform)
+    Transform *smartCopy(bool &newTransform)
     {
         if (!transform->timeVarying()) {
             newTransform = false;
@@ -622,7 +649,7 @@ public:
         }
         newTransform = true;
 
-        DistributeTemplateTransform * output = new DistributeTemplateTransform;
+        DistributeTemplateTransform *output = new DistributeTemplateTransform;
         bool newChild = false;
         output->transform = transform->smartCopy(newChild);
         if (newChild)
@@ -639,8 +666,8 @@ public:
         }
 
         QList<TemplateList> separated;
-        foreach (const TemplateList & list, data) {
-            foreach(const Template & t, list) {
+        foreach (const TemplateList &list, data) {
+            foreach (const Template &t, list) {
                 separated.append(TemplateList());
                 separated.last().append(t);
             }
