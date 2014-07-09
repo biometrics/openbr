@@ -589,9 +589,10 @@ public:
     File file; /*!< \brief The file used to construct the plugin. */
 
     virtual void init() {} /*!< \brief Overload this function instead of the default constructor to initialize the derived class. It should be safe to call this function multiple times. */
-    virtual void store(QDataStream &stream, bool force = false) const; /*!< \brief Serialize the object. */
+    virtual void store(QDataStream &stream, bool force = false) const; /*!< \brief Serialize the object. If force is true, classes must serialize directly on the stream not to e.g. a separate file. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
+    /*!< \brief Serialize an object created via the plugin system, including the string used to build the base object, allowing re-creation of the object without knowledge of its base string*/
     virtual void serialize(QDataStream &stream, bool force)
     {
         stream << description(force);
@@ -599,7 +600,7 @@ public:
     }
 
     QStringList parameters() const; /*!< \brief A string describing the parameters the object takes. */
-    QStringList arguments(bool expanded = false); /*!< \brief A string describing the values the object has. */
+    QStringList arguments(bool expanded = false); /*!< \brief A string describing the values the object has. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
     QString argument(int index, bool expanded) const; /*!< \brief A string value for the argument at the specified index. */
     virtual QString description(bool expanded = false); /*!< \brief Returns a string description of the object. */
     
