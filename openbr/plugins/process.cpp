@@ -21,7 +21,7 @@ class CommunicationManager : public QObject
 {
     Q_OBJECT
 public:
-    QThread * basis;
+    QThread *basis;
     CommunicationManager()
     {
         basis = new QThread;
@@ -294,7 +294,7 @@ public:
     QString serverName;
     QString remoteName;
 
-    QLocalSocket * inbound;
+    QLocalSocket *inbound;
     QLocalSocket outbound;
     QLocalServer server;
 
@@ -309,7 +309,7 @@ public:
         }
     }
 
-    void connectToRemote(const QString & remoteName)
+    void connectToRemote(const QString &remoteName)
     {
         emit pulseOutboundConnect(remoteName);
 
@@ -328,7 +328,7 @@ public:
 
 
     template<typename T>
-    bool readData(T & input)
+    bool readData(T &input)
     {
         emit pulseReadSerialized();
         QDataStream deserializer(readArray);
@@ -336,18 +336,18 @@ public:
         return true;
     }
 
-    Transform * readTForm()
+    Transform *readTForm()
     {
         emit pulseReadSerialized();
 
         QByteArray data = readArray;
         QDataStream deserializer(data);
-        Transform * res = Transform::deserialize(deserializer);
+        Transform *res = Transform::deserialize(deserializer);
         return res;
     }
 
     template<typename T>
-    bool sendData(const T & output)
+    bool sendData(const T &output)
     {
         QBuffer buffer;
         buffer.open(QBuffer::ReadWrite);
@@ -386,7 +386,7 @@ class EnrollmentWorker : public QObject
 {
     Q_OBJECT
 public:
-    CommunicationManager * comm;
+    CommunicationManager *comm;
     QString name;
 
     ~EnrollmentWorker()
@@ -397,10 +397,10 @@ public:
         delete comm;
     }
 
-    br::Transform * transform;
+    br::Transform *transform;
 
 public:
-    void connections(const QString & baseName)
+    void connections(const QString &baseName)
     {
         comm = new CommunicationManager();
         name = baseName;
@@ -521,7 +521,7 @@ class ProcessWrapperTransform : public WrapperTransform
 
     Resource<ProcessData> processes;
 
-    Transform * smartCopy(bool & newTransform)
+    Transform *smartCopy(bool &newTransform)
     {
         newTransform = false;
         return this;
@@ -536,7 +536,7 @@ class ProcessWrapperTransform : public WrapperTransform
         if (!data->initialized)
             activateProcess(data);
 
-        CommunicationManager * localComm = &(data->comm);
+        CommunicationManager *localComm = &(data->comm);
         localComm->sendSignal(CommunicationManager::INPUT_AVAILABLE);
 
         localComm->sendData(src);
@@ -560,7 +560,7 @@ class ProcessWrapperTransform : public WrapperTransform
     }
 
     QByteArray serialized;
-    void transmitTForm(CommunicationManager * localComm) const
+    void transmitTForm(CommunicationManager *localComm) const
     {
         if (serialized.isEmpty() )
             qFatal("Trying to transmit empty transform!");
@@ -569,7 +569,7 @@ class ProcessWrapperTransform : public WrapperTransform
         emit localComm->pulseSendSerialized();
     }
 
-    void activateProcess(ProcessData * data) const
+    void activateProcess(ProcessData *data) const
     {
         data->initialized = true;
         // generate a uuid for our local servers

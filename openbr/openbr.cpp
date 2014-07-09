@@ -28,7 +28,7 @@
 
 using namespace br;
 
-static int partialCopy(const QString & string, char * buffer, int buffer_length)
+static int partialCopy(const QString &string, char *buffer, int buffer_length)
 {
 
     QByteArray byteArray = string.toLocal8Bit();
@@ -109,7 +109,7 @@ float br_eval(const char *simmat, const char *mask, const char *csv)
     return Evaluate(simmat, mask, csv);
 }
 
-float br_inplace_eval(const char * simmat, const char *target, const char *query, const char *csv)
+float br_inplace_eval(const char *simmat, const char *target, const char *query, const char *csv)
 {
     return InplaceEval(simmat, target, query, csv);
 }
@@ -119,7 +119,7 @@ void br_eval_classification(const char *predicted_gallery, const char *truth_gal
     EvalClassification(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
-void br_eval_clustering(const char *csv, const char *gallery, const char * truth_property)
+void br_eval_clustering(const char *csv, const char *gallery, const char *truth_property)
 {
     EvalClustering(csv, gallery, truth_property);
 }
@@ -178,12 +178,12 @@ void br_make_pairwise_mask(const char *target_input, const char *query_input, co
     BEE::makePairwiseMask(target_input, query_input, mask);
 }
 
-int br_most_recent_message(char * buffer, int buffer_length)
+int br_most_recent_message(char *buffer, int buffer_length)
 {
     return partialCopy(Globals->mostRecentMessage, buffer, buffer_length);
 }
 
-int br_objects(char * buffer, int buffer_length, const char *abstractions, const char *implementations, bool parameters)
+int br_objects(char *buffer, int buffer_length, const char *abstractions, const char *implementations, bool parameters)
 {
     return partialCopy(br::Context::objects(abstractions, implementations, parameters).join('\n'), buffer, buffer_length);
 }
@@ -240,7 +240,7 @@ void br_read_pipe(const char *pipe, int *argc, char ***argv)
     *argv = rawCharArrayList.data();
 }
 
-int br_scratch_path(char * buffer, int buffer_length)
+int br_scratch_path(char *buffer, int buffer_length)
 {
     return partialCopy(Context::scratchPath(), buffer, buffer_length);
 }
@@ -298,9 +298,9 @@ const char *br_version()
     return version.data();
 }
 
-void br_slave_process(const char * baseName)
+void br_slave_process(const char *baseName)
 {
-    WorkerProcess * worker = new WorkerProcess;
+    WorkerProcess *worker = new WorkerProcess;
     worker->transform = Globals->algorithm;
     worker->baseName = baseName;
     worker->mainLoop();
@@ -371,7 +371,7 @@ bool br_img_is_empty(br_template tmpl)
     return t->m().empty();
 }
 
-int br_get_filename(char * buffer, int buffer_length, br_template tmpl)
+int br_get_filename(char *buffer, int buffer_length, br_template tmpl)
 {
     return partialCopy(reinterpret_cast<Template*>(tmpl)->file.name, buffer, buffer_length);
 }
@@ -382,7 +382,7 @@ void br_set_filename(br_template tmpl, const char *filename)
     t->file.name = filename;
 }
 
-int br_get_metadata_string(char * buffer, int buffer_length, br_template tmpl, const char *key)
+int br_get_metadata_string(char *buffer, int buffer_length, br_template tmpl, const char *key)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
     QVariant qvar = t->file.value(key);

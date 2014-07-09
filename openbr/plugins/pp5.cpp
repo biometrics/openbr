@@ -452,7 +452,7 @@ class PP5GalleryTransform: public UntrainableMetaTransform
     QList<int> targetIDs;
     TemplateList gallery;
 
-    void project(const Template & src, Template & dst) const
+    void project(const Template &src, Template &dst) const
     {
         TemplateList temp, output;
         temp.append(src);
@@ -461,7 +461,7 @@ class PP5GalleryTransform: public UntrainableMetaTransform
            dst = output[0];
     }
 
-    void project(const TemplateList & src, TemplateList & dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         dst.clear();
         QList<int> queryIDs;
@@ -505,7 +505,7 @@ class PP5GalleryTransform: public UntrainableMetaTransform
         }
     }
 
-    void train(const TemplateList & data)
+    void train(const TemplateList &data)
     {
         gallery = data;
     }

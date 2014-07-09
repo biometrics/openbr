@@ -7,7 +7,7 @@
 namespace br
 {
 
-static void _train(Transform * transform, TemplateList data) // think data has to be a copy -cao
+static void _train(Transform *transform, TemplateList data) // think data has to be a copy -cao
 {
     transform->train(data);
 }

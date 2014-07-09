@@ -483,7 +483,7 @@ class GalleryCompareTransform : public Transform
             gallery = TemplateList::fromGallery(galleryName);
     }
 
-    void train(const TemplateList & data)
+    void train(const TemplateList &data)
     {
         gallery = data;
     }

@@ -592,7 +592,7 @@ public:
     virtual void store(QDataStream &stream, bool force = false) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
-    virtual void serialize(QDataStream & stream, bool force)
+    virtual void serialize(QDataStream &stream, bool force)
     {
         stream << description(force);
         store(stream, force);
@@ -1315,7 +1315,7 @@ inline TemplateList &operator>>(TemplateList &srcdst, const Transform &f)
 /*!
  * \brief Convenience function equivalent to store().
  */
-inline QDataStream &operator<<(QDataStream &stream, const Transform &f)
+inline QDataStream &operator<<(QDataStream &stream, Transform &f)
 {
     f.store(stream);
     return stream;

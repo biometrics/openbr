@@ -1303,7 +1303,7 @@ Transform *Transform::make(QString str, QObject *parent)
 
 Transform *Transform::clone() const
 {
-    Transform * temp = (Transform *) this;
+    Transform *temp = (Transform *) this;
     Transform *clone = Factory<Transform>::make("."+temp->description(false));
     return clone;
 }

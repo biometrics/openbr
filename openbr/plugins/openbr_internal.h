@@ -213,7 +213,7 @@ public:
         return false;
     }
 
-    Transform * smartCopy(bool & newTransform)
+    Transform *smartCopy(bool &newTransform)
     {
         if (!timeVarying()) {
             newTransform = false;
@@ -240,7 +240,7 @@ public:
             qFatal("Dynamic cast failed!");
 
         bool newItem = false;
-        Transform * maybe_copy = transform->smartCopy(newItem);
+        Transform *maybe_copy = transform->smartCopy(newItem);
         if (newItem)
             maybe_copy->setParent(output);
         output->transform = maybe_copy;

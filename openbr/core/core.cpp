@@ -52,7 +52,7 @@ struct AlgorithmCore
         CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
         if (downcast == NULL)
             qFatal("downcast failed?");
-        downcast->transforms.append(this->transform.data());
+        downcast->transforms.append(transform.data());
 
         downcast->init();
 
@@ -149,7 +149,7 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        Transform * enroll = this->transform.data();
+        Transform *enroll = transform.data();
         if (multiProcess)
             enroll = wrapTransform(enroll, "ProcessWrapper");
 
@@ -430,7 +430,7 @@ struct AlgorithmCore
         if (needEnrollRows)
             enrollCompare.prepend(this->transform.data());
 
-        Transform * compareRegionBase = pipeTransforms(enrollCompare);
+        Transform *compareRegionBase = pipeTransforms(enrollCompare);
         // If in multi-process mode, wrap the enroll+compare structure in a ProcessWrapper.
         if (multiProcess)
             compareRegionBase = wrapTransform(compareRegionBase, "ProcessWrapper");
@@ -460,7 +460,7 @@ struct AlgorithmCore
 
         // With this, we have set up a transform which (optionally) enrolls templates, compares them
         // against a gallery, and outputs them.
-        Transform * pipeline = br::pipeTransforms(compareOutput);
+        Transform *pipeline = br::pipeTransforms(compareOutput);
 
         // Now, we will give that base transform to a stream, which will incrementally read the row gallery
         // and pass the transforms it reads through the base algorithm.
