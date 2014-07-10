@@ -15,9 +15,9 @@ class StopWatchTransform : public TimeVaryingTransform
     Q_PROPERTY(br::Transform* child READ get_child WRITE set_child RESET reset_child)
     BR_PROPERTY(br::Transform*, child, NULL)
 
-    mutable long timeElapsed;
-    mutable long numImgs;
-    mutable long numPixels;
+    long timeElapsed;
+    long numImgs;
+    long numPixels;
 
 public:
     StopWatchTransform() : TimeVaryingTransform(false, false)
