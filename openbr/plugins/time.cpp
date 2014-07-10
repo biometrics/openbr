@@ -50,9 +50,9 @@ private:
     {
         (void)output;
 
-        printf("\n\nProfiled %lu images:\n"
-        "\tavg time per image: %f ms\n"
-        "\tavg time per pixel: %f ms\n",numImgs, (double)timeElapsed / numImgs, (double)timeElapsed / numPixels);
+        qDebug() << "\n\nProfiled " << numImgs << " images:\n" <<
+                    "\tavg time per image: " << (double)timeElapsed / numImgs << " ms\n" <<
+                    "\tavg time per pixel: " << (double)timeElapsed / numPixels << " ms\n";
 
         timeElapsed = 0;
         numImgs = 0;
