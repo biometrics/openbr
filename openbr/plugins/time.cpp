@@ -11,6 +11,16 @@ class StopWatchTransform : public UntrainableTransform
     BR_PROPERTY(br::Transform*, child, NULL)
 
     mutable QMutex watchLock;
+    mutable long timeElapsed;
+    mutable long numImgs;
+    mutable long numPixels;
+
+    ~StopWatchTransform() {
+        printf("Profiled %lu images:\n"
+               "\tavg time per image: %f ms\n"
+               "\tavg time per pixel: %f ms\n",
+               numImgs, (double) timeElapsed / numImgs, (double) timeElapsed / numPixels);
+    }
 
     void project(const Template &src, Template &dst) const
     {
@@ -27,7 +37,9 @@ class StopWatchTransform : public UntrainableTransform
         int time = watch.elapsed();
         watchLock.unlock();
 
-        dst.file.set("time", QVariant::fromValue(time));
+        timeElapsed += time;
+        numImgs++;
+        numPixels += (src.m().rows * src.m().cols);
     }
 
     void project(const TemplateList &src, TemplateList &dst) const
@@ -43,62 +55,15 @@ class StopWatchTransform : public UntrainableTransform
             int time = watch.elapsed();
             watchLock.unlock();
 
-            u.file.set("time", QVariant::fromValue(time));
+            timeElapsed += time;
+            numImgs++;
+            numPixels += (t.m().rows * t.m().cols);
+
             dst << u;
         }
     }
 };
 BR_REGISTER(Transform, StopWatchTransform)
-
-class StopWatchProfiler : public TimeVaryingTransform
-{
-    Q_OBJECT
-
-    TemplateList buffer;
-
-public:
-    StopWatchProfiler() : TimeVaryingTransform(false, false) {}
-
-private:
-    void train(const TemplateList &data)
-    {
-       (void) data;
-    }
-    void projectUpdate(const Template &src, Template &dst)
-    {
-        dst = src;
-        buffer.append(src);
-    } 
-    void projectUpdate(const TemplateList &src, TemplateList &dst)
-    {
-        dst = src;
-        buffer.append(src);
-    }
-
-    void finalize(TemplateList &output) {
-    printf("\n\nProfiling data....\n\n");
-
-	output = buffer;
-
-        if (buffer.isEmpty())
-            qFatal("Empty buffer! Something must have gone wrong.");
-        
-        if (!buffer.first().file.contains("time"))
-            qFatal("No time attribute in the metadata! Did you forget your StopWatch?");
-
-        unsigned long imgs = buffer.length();
-        unsigned long totalTime = 0;
-
-        foreach(const Template &t, buffer) {
-            totalTime += t.file.value("time").toUInt();
-        }
-
-        printf("Profiled %lu images:\n"
-               "\tavg time per image: %f ms\n",
-               imgs, (double)totalTime / imgs);
-    }
-};
-BR_REGISTER(Transform, StopWatchProfiler)
 
 } //namespace br
 
