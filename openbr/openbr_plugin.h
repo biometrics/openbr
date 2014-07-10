@@ -213,6 +213,7 @@ struct BR_EXPORT File
     QString resolved() const; /*!< \brief Returns name prepended with Globals->path if name does not exist. */
 
     bool contains(const QString &key) const; /*!< \brief Returns \c true if the key has an associated value, \c false otherwise. */
+    bool contains(const QStringList &keys) const; /*!< \brief Returns \c true if all keys have associated values, \c false otherwise. */
     QVariant value(const QString &key) const; /*!< \brief Returns the value for the specified key. */
     static QVariant parse(const QString &value); /*!< \brief Try to convert the QString to a QPointF or QRectF if possible. */
     inline void set(const QString &key, const QVariant &value) { m_metadata.insert(key, value); } /*!< \brief Insert or overwrite the metadata key with the specified value. */
