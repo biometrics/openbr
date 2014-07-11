@@ -353,7 +353,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
                                 QString(", xlab=\"Percentage of False Accepts Per Image\", ylab=\"True Accept Rate\") + theme_minimal()") +
                                 (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                                 (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                                QString(" + scale_x_log10(labels=percent) + scale_y_continuous(labels=percent, limits=c(0,1)) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\") + theme(legend.position=\"bottom\"")\n\n").arg(type)));
+                                QString(" + scale_x_log10(labels=percent) + scale_y_continuous(labels=percent, limits=c(0,1)) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\") + theme(legend.position=\"bottom\")\n\n").arg(type)));
 
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
         p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
