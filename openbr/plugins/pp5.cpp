@@ -510,9 +510,9 @@ class PP5GalleryTransform: public UntrainableMetaTransform
         gallery = data;
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        br::Object::store(stream, force);
+        br::Object::store(stream);
         stream << gallery;
     }
 

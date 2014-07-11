@@ -99,7 +99,7 @@ class HistEqQuantizationTransform : public Transform
         }
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << thresholds;
     }
@@ -174,7 +174,7 @@ class BayesianQuantizationDistance : public Distance
         return likelihood;
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << loglikelihoods;
     }
@@ -527,7 +527,7 @@ private:
             dst.m().at<uchar>(0,sizeof(quint16)+i) = getIndex(m.colRange(max(0, i*step-offset), (i+1)*step-offset), centers[i]);
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << index << centers << ProductQuantizationLUTs[index];
     }

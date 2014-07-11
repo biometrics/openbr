@@ -62,9 +62,9 @@ class ImpostorUniquenessMeasureTransform : public Transform
         dst.file.set("Impostor_Uniqueness_Measure_Bin", ium < mean-stddev ? 0 : (ium < mean+stddev ? 1 : 2));
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        distance->store(stream, force);
+        distance->store(stream);
         stream << mean << stddev << impostors;
     }
 
@@ -199,9 +199,9 @@ class MatchProbabilityDistance : public Distance
         return mp(score, gaussian);
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        distance->store(stream, force);
+        distance->store(stream);
         stream << mp;
     }
 
@@ -264,9 +264,9 @@ class ZScoreDistance : public Distance
         return score;
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        distance->store(stream, force);
+        distance->store(stream);
         stream << min << max << mean << stddev;
     }
 
@@ -335,11 +335,11 @@ class HeatMapDistance : public Distance
         }
      }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << distances.size();
         foreach (Distance *distance, distances)
-            distance->store(stream, force);
+            distance->store(stream);
     }
 
     void load(QDataStream &stream)

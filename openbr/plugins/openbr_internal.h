@@ -19,7 +19,7 @@ protected:
 private:
     Transform *clone() const { return const_cast<UntrainableTransform*>(this); }
     void train(const TemplateList &data) { (void) data; }
-    void store(QDataStream &stream, bool force) const { (void) stream; (void) force; }
+    void store(QDataStream &stream) const { (void) stream; }
     void load(QDataStream &stream) { (void) stream; }
 };
 
@@ -201,6 +201,33 @@ public:
             this->trainable = transform->trainable;
     }
 
+    virtual Transform * simplify(bool & newTransform)
+    {
+        newTransform = false;
+        bool newChild = false;
+        Transform * temp = transform->simplify(newTransform);
+        if (temp == transform)
+            return this;
+
+        if (!temp)
+            return NULL;
+
+        // else make a copy to point at the new transform
+        Transform * child = transform;
+        transform = NULL;
+        WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(description(), NULL));
+        transform = child;
+
+        output->transform = temp;
+
+        if (newChild)
+            temp->setParent(output);
+
+        newTransform = true;
+        return output;
+    }
+
+
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
         if (br::Object::setPropertyRecursive(name, value))
@@ -220,21 +247,10 @@ public:
             return this;
         }
         newTransform = true;
-
-        QString name = metaObject()->className();
-        name.replace("Transform","");
-        name += "(Identity";
-
-        QStringList arguments = this->arguments();
-        if (!arguments.isEmpty()) {
-            name += ",";
-            name += this->arguments().join(",");
-        }
-
-        name += ")";
-        name.replace("br::","");
-
-        WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(name, NULL));
+        Transform * temp = transform;
+        transform = NULL;
+        WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(description(), NULL));
+        transform = temp;
 
         if (output == NULL)
             qFatal("Dynamic cast failed!");
@@ -309,21 +325,10 @@ public:
         }
         newTransform = true;
 
-        QString name = metaObject()->className();
-
-        name.replace("Transform","");
-        name += "([]";
-
-        QStringList arguments = this->arguments();
-        if (!arguments.isEmpty()) {
-            name += ",";
-            name += this->arguments().join(",");
-        }
-
-        name += ")";
-        name.replace("br::","");
-
-        CompositeTransform *output = dynamic_cast<CompositeTransform *>(Transform::make(name, NULL));
+        QList<Transform *> temp = transforms;
+        transforms = QList<Transform *>();
+        CompositeTransform *output = dynamic_cast<CompositeTransform *>(Transform::make(description(), NULL));
+        transforms = temp;
 
         if (output == NULL)
             qFatal("Dynamic cast failed!");
@@ -339,6 +344,51 @@ public:
         output->file = this->file;
         output->init();
 
+        return output;
+    }
+
+    virtual Transform * simplify(bool & newTransform)
+    {
+        newTransform = false;
+        QList<Transform *> newTransforms;
+        bool anyNew = false;
+
+        QList<bool> newChildren;
+        for (int i=0; i < transforms.size();i++)
+        {
+            bool newChild = false;
+            Transform * temp = transforms[i]->simplify(newChild);
+            if (temp == NULL) {
+                anyNew = true;
+                continue;
+            }
+            newTransforms.append(temp);
+            newChildren.append(newChild);
+            if (temp != transforms[i])
+                anyNew = true;
+        }
+
+        if (newTransforms.empty() )
+            return NULL;
+
+        if (!anyNew)
+            return this;
+
+        // make a copy of the current object, with empty transforms
+        QList<Transform *> children = transforms;
+        transforms = QList<Transform *> ();
+        CompositeTransform *output = dynamic_cast<CompositeTransform *>(Transform::make(description(false), NULL));
+        transforms = children;
+
+        output->transforms = newTransforms;
+        for (int i=0;i < newChildren.size();i++)
+        {
+            if (newChildren[i])
+                output->transforms[i]->setParent(output);
+        }
+        output->init();
+
+        newTransform = true;
         return output;
     }
 

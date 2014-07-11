@@ -578,6 +578,7 @@ class ProcessWrapperTransform : public WrapperTransform
 
         QStringList argumentList;
         // We serialize and transmit the transform directly, so algorithm doesn't matter.
+        argumentList.append("-quiet");
         argumentList.append("-algorithm");
         argumentList.append("Identity");
         if (!Globals->path.isEmpty()) {

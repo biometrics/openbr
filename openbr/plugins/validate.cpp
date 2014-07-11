@@ -114,11 +114,11 @@ class CrossValidateTransform : public MetaTransform
         transforms[partition]->project(src, dst);
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << transforms.size();
         foreach (Transform *transform, transforms)
-            transform->store(stream, force);
+            transform->store(stream);
     }
 
     void load(QDataStream &stream)

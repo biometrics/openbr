@@ -33,6 +33,7 @@ struct AlgorithmCore
     };
 
     QSharedPointer<Transform> transform;
+    QSharedPointer<Transform> simplifiedTransform;
     QSharedPointer<Transform> comparison;
     QSharedPointer<Distance> distance;
     QSharedPointer<Transform> progressCounter;
@@ -82,6 +83,8 @@ struct AlgorithmCore
         }
 
         qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
+        bool junk;
+        simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
     }
 
     void store(const QString &model) const
@@ -167,7 +170,8 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        Transform *enroll = transform.data();
+        Transform *enroll = simplifiedTransform.data();
+
         if (multiProcess)
             enroll = wrapTransform(enroll, "ProcessWrapper");
 
@@ -443,9 +447,10 @@ struct AlgorithmCore
         QString compareRegionDesc;
         QList<Transform *> enrollCompare;
         enrollCompare.append(comparison.data());
+
         // if we have to enroll the row gallery, add that transform to the list
         if (needEnrollRows)
-            enrollCompare.prepend(this->transform.data());
+            enrollCompare.prepend(simplifiedTransform.data());
 
         Transform *compareRegionBase = pipeTransforms(enrollCompare);
         // If in multi-process mode, wrap the enroll+compare structure in a ProcessWrapper.
@@ -523,13 +528,18 @@ private:
 
     void init(const QString &description)
     {
-        if (loadOrExpand(description))
+        bool junk;
+
+        if (loadOrExpand(description)) {
+            simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
             return;
+        }
 
         // check if the description is an abbreviation or model file with additional arguments supplied
         File parsed("."+description);
         if (loadOrExpand(parsed.suffix())) {
             applyAdditionalProperties(parsed, transform.data());
+            simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
             return;
         }
 
@@ -541,6 +551,8 @@ private:
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
+        simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
+
         if (words.size() > 1) {
             if (!compareTransform) {
                 distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));

@@ -649,7 +649,7 @@ QString Object::description(bool expanded)
     return objectName() + (argumentString.isEmpty() ? "" : ("(" + argumentString + ")"));
 }
 
-void Object::store(QDataStream &stream, bool force) const
+void Object::store(QDataStream &stream) const
 {
     // Start from 1 to skip QObject::objectName
     for (int i=1; i<metaObject()->propertyCount(); i++) {
@@ -660,14 +660,14 @@ void Object::store(QDataStream &stream, bool force) const
         const QString type = property.typeName();
         if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, property.read(this).value< QList<Transform*> >())
-                transform->store(stream, force);
+                transform->store(stream);
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
-                distance->store(stream, force);
+                distance->store(stream);
         } else if (type == "br::Transform*") {
-            property.read(this).value<Transform*>()->store(stream, force);
+            property.read(this).value<Transform*>()->store(stream);
         } else if (type == "br::Distance*") {
-            property.read(this).value<Distance*>()->store(stream, force);
+            property.read(this).value<Distance*>()->store(stream);
         } else if (type == "bool") {
             stream << property.read(this).toBool();
         } else if (type == "int") {

@@ -78,7 +78,7 @@ class RndSubspaceTransform : public Transform
         remap(src, dst, map, Mat(), INTER_NEAREST);
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << fraction << weighted << map;
     }

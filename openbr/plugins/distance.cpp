@@ -251,13 +251,14 @@ private:
           default:
             qFatal("Invalid operation.");
         }
+        return 0;
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << distances.size();
         foreach (Distance *distance, distances)
-            distance->store(stream, force);
+            distance->store(stream);
     }
 
     void load(QDataStream &stream)
@@ -328,9 +329,9 @@ class NegativeLogPlusOneDistance : public Distance
         return -log(distance->compare(a,b)+1);
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        distance->store(stream, force);
+        distance->store(stream);
     }
 
     void load(QDataStream &stream)
@@ -488,9 +489,9 @@ class GalleryCompareTransform : public Transform
         gallery = data;
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        br::Object::store(stream, force);
+        br::Object::store(stream);
         stream << gallery;
     }
 

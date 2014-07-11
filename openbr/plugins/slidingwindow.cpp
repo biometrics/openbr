@@ -79,9 +79,9 @@ private:
         }
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        transform->store(stream, force);
+        transform->store(stream);
         stream << windowHeight;
     }
 
@@ -289,9 +289,9 @@ private:
         }
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
-        transform->store(stream, force);
+        transform->store(stream);
         stream << aspectRatio << windowHeight;
     }
     void load(QDataStream &stream)

@@ -125,7 +125,7 @@ class ProcrustesTransform : public Transform
         }
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << meanShape;
     }
@@ -299,7 +299,7 @@ class ProcrustesAlignTransform : public Transform
         dst.file.set("ProcrustesBound", QRectF(0, 0, width + 2 * padding, (qRound(width / aspectRatio) + 2 * padding)));
     }
 
-    void store(QDataStream &stream, bool force) const
+    void store(QDataStream &stream) const
     {
         stream << referenceShape;
         stream << minX;

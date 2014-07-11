@@ -487,10 +487,10 @@ class LoadStoreTransform : public MetaTransform
     BR_PROPERTY(QString, description2, "Identity")
     BR_PROPERTY(QString, fileName, QString())
 
+public:
     Transform *transform;
     QString baseName;
 
-public:
     LoadStoreTransform() : transform(NULL) {}
 
     QString description(bool expanded = false)
@@ -498,6 +498,12 @@ public:
         if (expanded)
             return transform->description(expanded);
         return br::Object::description(expanded);
+    }
+
+    Transform * simplify(bool & newTForm)
+    {
+        Transform * res = transform->simplify(newTForm);
+        return res;
     }
 
     bool setPropertyRecursive(const QString &name, QVariant value)
@@ -508,22 +514,15 @@ public:
     }
 private:
 
-    virtual void store(QDataStream &stream, bool force = false) const
-    {
-        if (force) {
-            transform->store(stream, force);
-        }
-        
-        br::Object::store(stream, false);
-    }
-
     void init()
     {
         if (transform != NULL) return;
         if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description2) ? description2 : QtUtils::shortTextHash(description2);
         else baseName = fileName;
-        if (!tryLoad()) transform = make(description2);
-        else            trainable = false;
+        if (!tryLoad())
+            transform = make(description2);
+        else
+            trainable = false;
     }
 
     bool timeVarying() const

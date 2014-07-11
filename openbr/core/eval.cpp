@@ -81,6 +81,8 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
     // otherwise, we fail
     else
         qFatal("Unable to construct mask for %d by %d score matrix from %d element query set, and %d element target set ", scores.rows, scores.cols, query.length(), target.length());
+
+    return cv::Mat();
 }
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
