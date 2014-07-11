@@ -96,7 +96,7 @@ class DownsampleTrainingTransform : public Transform
 
     Transform *simplify(bool &newTForm)
     {
-        Transform * res = transform->simplify(newTForm);
+        Transform *res = transform->simplify(newTForm);
         return res;
     }
 
@@ -151,11 +151,11 @@ class IndependentTransform : public MetaTransform
         return true;
     }
 
-    Transform * simplify(bool & newTransform)
+    Transform *simplify(bool &newTransform)
     {
         newTransform = false;
         bool newChild = false;
-        Transform * temp = transform->simplify(newChild);
+        Transform *temp = transform->simplify(newChild);
         if (temp == transform) {
             return this;
         }
@@ -163,14 +163,14 @@ class IndependentTransform : public MetaTransform
         indep->transform = temp;
 
         bool subInd = false;
-        IndependentTransform * test = dynamic_cast<IndependentTransform *> (temp);
+        IndependentTransform *test = dynamic_cast<IndependentTransform *> (temp);
         if (test) {
             // child was independent? this changes things...
             subInd = true;
             indep->transform = test->transform;
             for (int i=0; i < transforms.size(); i++) {
                 bool newThing = false;
-                IndependentTransform * probe = dynamic_cast<IndependentTransform *> (transforms[i]->simplify(newThing));
+                IndependentTransform *probe = dynamic_cast<IndependentTransform *> (transforms[i]->simplify(newThing));
                 indep->transforms.append(probe->transform);
                 if (newThing)
                     probe->setParent(indep);

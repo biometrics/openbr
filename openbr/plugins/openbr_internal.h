@@ -201,11 +201,11 @@ public:
             this->trainable = transform->trainable;
     }
 
-    virtual Transform * simplify(bool & newTransform)
+    virtual Transform *simplify(bool &newTransform)
     {
         newTransform = false;
         bool newChild = false;
-        Transform * temp = transform->simplify(newTransform);
+        Transform *temp = transform->simplify(newTransform);
         if (temp == transform)
             return this;
 
@@ -213,7 +213,7 @@ public:
             return NULL;
 
         // else make a copy to point at the new transform
-        Transform * child = transform;
+        Transform *child = transform;
         transform = NULL;
         WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(description(), NULL));
         transform = child;
@@ -247,7 +247,7 @@ public:
             return this;
         }
         newTransform = true;
-        Transform * temp = transform;
+        Transform *temp = transform;
         transform = NULL;
         WrapperTransform *output = dynamic_cast<WrapperTransform *>(Transform::make(description(), NULL));
         transform = temp;
@@ -347,7 +347,7 @@ public:
         return output;
     }
 
-    virtual Transform * simplify(bool & newTransform)
+    virtual Transform *simplify(bool &newTransform)
     {
         newTransform = false;
         QList<Transform *> newTransforms;
@@ -357,7 +357,7 @@ public:
         for (int i=0; i < transforms.size();i++)
         {
             bool newChild = false;
-            Transform * temp = transforms[i]->simplify(newChild);
+            Transform *temp = transforms[i]->simplify(newChild);
             if (temp == NULL) {
                 anyNew = true;
                 continue;

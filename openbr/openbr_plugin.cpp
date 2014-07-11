@@ -669,7 +669,6 @@ QString Object::argument(int index, bool expanded) const
 
 QString Object::description(bool expanded) const
 {
-    (void) expanded;
     QString argumentString = prunedArguments(expanded).join(",");
     if (argumentString.endsWith(","))
         argumentString.chop(1);

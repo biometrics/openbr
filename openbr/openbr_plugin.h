@@ -594,9 +594,9 @@ public:
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
     /*!< \brief Serialize an object created via the plugin system, including the string used to build the base object, allowing re-creation of the object without knowledge of its base string*/
-    virtual void serialize(QDataStream &stream, bool force)
+    virtual void serialize(QDataStream &stream) const
     {
-        stream << description(force);
+        stream << description();
         store(stream);
     }
 

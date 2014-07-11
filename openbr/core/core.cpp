@@ -23,6 +23,11 @@
 
 namespace br {
 
+void noDelete(Transform *target)
+{
+    (void) target;
+}
+
 struct AlgorithmCore
 {
     enum CompareMode
@@ -33,8 +38,7 @@ struct AlgorithmCore
     };
 
     QSharedPointer<Transform> transform;
-    Transform *simplifiedTransform;
-    QSharedPointer<Transform> deleteSimplifiedTransform;
+    QSharedPointer<Transform> simplifiedTransform;
     QSharedPointer<Transform> comparison;
     QSharedPointer<Distance> distance;
     QSharedPointer<Transform> progressCounter;
@@ -84,10 +88,18 @@ struct AlgorithmCore
         }
 
         qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
+
+        simplifyTransform();
+    }
+
+    void simplifyTransform()
+    {
         bool newTForm = false;
-        simplifiedTransform = transform->simplify(newTForm);
+        Transform *temp = transform->simplify(newTForm);
         if (newTForm)
-            deleteSimplifiedTransform.reset(simplifiedTransform);
+            simplifiedTransform = QSharedPointer<Transform>(temp);
+        else
+            simplifiedTransform = QSharedPointer<Transform>(temp, noDelete);
     }
 
     void store(const QString &model) const
@@ -97,7 +109,7 @@ struct AlgorithmCore
         QDataStream out(&data, QFile::WriteOnly);
 
         // Serialize algorithm to stream
-        transform->serialize(out, false);
+        transform->serialize(out);
 
         qint32 mode = None;
         if (!distance.isNull())
@@ -108,10 +120,10 @@ struct AlgorithmCore
         out << mode;
 
         if (mode == DistanceCompare)
-            distance->serialize(out, false);
+            distance->serialize(out);
 
         if (mode == TransformCompare)
-            comparison->serialize(out, false);
+            comparison->serialize(out);
 
         // Compress and save to file
         QtUtils::writeFile(model, data, -1);
@@ -173,7 +185,7 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        Transform *enroll = simplifiedTransform;
+        Transform *enroll = simplifiedTransform.data();
 
         if (multiProcess)
             enroll = wrapTransform(enroll, "ProcessWrapper");
@@ -453,7 +465,7 @@ struct AlgorithmCore
 
         // if we have to enroll the row gallery, add that transform to the list
         if (needEnrollRows)
-            enrollCompare.prepend(simplifiedTransform);
+            enrollCompare.prepend(simplifiedTransform.data());
 
         Transform *compareRegionBase = pipeTransforms(enrollCompare);
         // If in multi-process mode, wrap the enroll+compare structure in a ProcessWrapper.
@@ -534,9 +546,7 @@ private:
         bool newTForm = false;
 
         if (loadOrExpand(description)) {
-            simplifiedTransform = transform->simplify(newTForm);
-            if (newTForm)
-                deleteSimplifiedTransform.reset(simplifiedTransform);
+            simplifyTransform();
             return;
         }
 
@@ -544,9 +554,7 @@ private:
         File parsed("."+description);
         if (loadOrExpand(parsed.suffix())) {
             applyAdditionalProperties(parsed, transform.data());
-            simplifiedTransform = transform->simplify(newTForm);
-            if (newTForm)
-                deleteSimplifiedTransform.reset(simplifiedTransform);
+            simplifyTransform();
             return;
         }
 
@@ -558,9 +566,7 @@ private:
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
-        simplifiedTransform = transform->simplify(newTForm);
-        if (newTForm)
-            deleteSimplifiedTransform.reset(simplifiedTransform);
+        simplifyTransform();
 
         if (words.size() > 1) {
             if (!compareTransform) {

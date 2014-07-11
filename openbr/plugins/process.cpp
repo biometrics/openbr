@@ -555,7 +555,7 @@ class ProcessWrapperTransform : public WrapperTransform
         serialized.clear();
         if (transform) {
             QDataStream out(&serialized, QFile::WriteOnly);
-            transform->serialize(out, true);
+            transform->serialize(out);
         }
     }
 

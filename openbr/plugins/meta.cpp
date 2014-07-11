@@ -502,9 +502,9 @@ public:
         return br::Object::description(expanded);
     }
 
-    Transform * simplify(bool & newTForm)
+    Transform *simplify(bool &newTForm)
     {
-        Transform * res = transform->simplify(newTForm);
+        Transform *res = transform->simplify(newTForm);
         return res;
     }
 

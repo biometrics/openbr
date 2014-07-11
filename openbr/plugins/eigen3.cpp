@@ -634,7 +634,7 @@ class SparseLDATransform : public Transform
     void store(QDataStream &stream) const
     {
         stream << pcaKeep;
-        ldaSparse.store(stream);
+        stream << ldaSparse;
         stream << dimsOut;
         stream << selections;
     }
