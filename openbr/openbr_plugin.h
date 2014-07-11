@@ -590,7 +590,7 @@ public:
     File file; /*!< \brief The file used to construct the plugin. */
 
     virtual void init() {} /*!< \brief Overload this function instead of the default constructor to initialize the derived class. It should be safe to call this function multiple times. */
-    virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. If force is true, classes must serialize directly on the stream not to e.g. a separate file. */
+    virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
     /*!< \brief Serialize an object created via the plugin system, including the string used to build the base object, allowing re-creation of the object without knowledge of its base string*/
@@ -601,7 +601,7 @@ public:
     }
 
     QStringList parameters() const; /*!< \brief A string describing the parameters the object takes. */
-    QStringList arguments(bool expanded = false); /*!< \brief A string describing the values the object has. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
+    QStringList prunedArguments(bool expanded = false); /*!< \brief A string describing the values the object has, default valued parameters will not be listed. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
     QString argument(int index, bool expanded) const; /*!< \brief A string value for the argument at the specified index. */
     virtual QString description(bool expanded = false); /*!< \brief Returns a string description of the object. */
     
@@ -1291,6 +1291,10 @@ public:
         return res;
     }
 
+     /*!
+     * \brief Return a pointer to a simplified version of this transform (if possible). Transforms which are only active during training should remove
+     * themselves by either returning their child transforms (where relevant) or returning NULL. Set newTransform to true if the transform returned is newly allocated.
+     */
     virtual Transform * simplify(bool & newTransform) { newTransform = false; return this; }
 
 protected:
@@ -1319,7 +1323,7 @@ inline TemplateList &operator>>(TemplateList &srcdst, const Transform &f)
 /*!
  * \brief Convenience function equivalent to store().
  */
-inline QDataStream &operator<<(QDataStream &stream, Transform &f)
+inline QDataStream &operator<<(QDataStream &stream, const Transform &f)
 {
     f.store(stream);
     return stream;

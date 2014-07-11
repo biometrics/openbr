@@ -585,7 +585,7 @@ QStringList Object::parameters() const
     return parameters;
 }
 
-QStringList Object::arguments(bool expanded)
+QStringList Object::prunedArguments(bool expanded)
 {
     QStringList arguments;
     
@@ -650,7 +650,7 @@ QString Object::argument(int index, bool expanded) const
 QString Object::description(bool expanded)
 {
     (void) expanded;
-    QString argumentString = arguments(expanded).join(",");
+    QString argumentString = prunedArguments(expanded).join(",");
     if (argumentString.endsWith(","))
         argumentString.chop(1);
 
