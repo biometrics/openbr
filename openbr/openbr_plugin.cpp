@@ -126,6 +126,14 @@ bool File::contains(const QString &key) const
     return m_metadata.contains(key) || Globals->contains(key) || key == "name";
 }
 
+bool File::contains(const QStringList &keys) const
+{
+    foreach (const QString &key, keys)
+        if (!contains(key))
+            return false;
+    return true;
+}
+
 QVariant File::value(const QString &key) const
 {
     return m_metadata.contains(key) ? m_metadata.value(key) : (key == "name" ? name : Globals->property(qPrintable(key)));

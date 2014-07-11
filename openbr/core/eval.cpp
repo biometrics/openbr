@@ -605,10 +605,10 @@ struct ResolvedDetection
 
 struct DetectionOperatingPoint
 {
-    float Recall, FalsePositives, Precision;
-    DetectionOperatingPoint() : Recall(-1), FalsePositives(-1), Precision(-1) {}
+    float Recall, FalsePositiveRate, Precision;
+    DetectionOperatingPoint() : Recall(-1), FalsePositiveRate(-1), Precision(-1) {}
     DetectionOperatingPoint(float TP, float FP, float totalPositives)
-        : Recall(TP/totalPositives), FalsePositives(FP), Precision(TP/(TP+FP)) {}
+        : Recall(TP/totalPositives), FalsePositiveRate(FP/totalPositives), Precision(TP/(TP+FP)) {}
 };
 
 static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, bool discrete)
@@ -639,12 +639,12 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     QStringList lines; lines.reserve(keep);
     if (keep == 1) {
         const DetectionOperatingPoint &point = points[0];
-        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
+        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
         lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
     } else {
         for (int i=0; i<keep; i++) {
             const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
-            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
+            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
             lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
         }
     }

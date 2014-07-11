@@ -25,6 +25,11 @@
 extern "C" {
 #endif
 
+// Disable 'nonstandard extension used : zero-sized array in struct/union' warning
+#ifdef _MSC_VER
+#  pragma warning(disable: 4200)
+#endif // _MSC_VER
+
 /*!
  * \brief A flat template format for representing arbitrary feature vectors.
  */

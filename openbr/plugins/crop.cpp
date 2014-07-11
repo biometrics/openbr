@@ -65,14 +65,19 @@ class ROITransform : public UntrainableTransform
         if (!propName.isEmpty()) {
             QRectF rect = src.file.get<QRectF>(propName);
             dst += src.m()(OpenCVUtils::toRect(rect));
-        }
-        else if (src.file.rects().empty()) {
-            dst = src;
-            if (Globals->verbose) qWarning("No rects present in file.");
-        }
-        else
+        } else if (!src.file.rects().empty()) {
             foreach (const QRectF &rect, src.file.rects())
                 dst += src.m()(OpenCVUtils::toRect(rect));
+        } else if (src.file.contains(QStringList() << "X" << "Y" << "Width" << "Height")) {
+            dst += src.m()(Rect(src.file.get<int>("X"),
+                                src.file.get<int>("Y"),
+                                src.file.get<int>("Width"),
+                                src.file.get<int>("Height")));
+        } else {
+            dst = src;
+            if (Globals->verbose)
+                qWarning("No rects present in file.");
+        }
     }
 };
 
