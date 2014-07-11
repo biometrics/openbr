@@ -601,9 +601,9 @@ public:
     }
 
     QStringList parameters() const; /*!< \brief A string describing the parameters the object takes. */
-    QStringList prunedArguments(bool expanded = false); /*!< \brief A string describing the values the object has, default valued parameters will not be listed. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
+    QStringList prunedArguments(bool expanded = false) const; /*!< \brief A string describing the values the object has, default valued parameters will not be listed. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
     QString argument(int index, bool expanded) const; /*!< \brief A string value for the argument at the specified index. */
-    virtual QString description(bool expanded = false); /*!< \brief Returns a string description of the object. */
+    virtual QString description(bool expanded = false) const; /*!< \brief Returns a string description of the object. */
     
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */

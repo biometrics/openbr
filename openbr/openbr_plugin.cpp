@@ -585,25 +585,45 @@ QStringList Object::parameters() const
     return parameters;
 }
 
-QStringList Object::prunedArguments(bool expanded)
+QStringList Object::prunedArguments(bool expanded) const
 {
     QStringList arguments;
-    
+    QString className = this->metaObject()->className();
+    QScopedPointer<Object> shellObject;
+
+    if (className.startsWith("br::"))
+        className = className.mid(4);
+    if (!className.startsWith("."))
+        className = "." + className;
+
+    if (className.endsWith("Distance")) {
+        className.chop(QString("Distance").size());
+        shellObject.reset(Factory<Distance>::make(className));
+    }
+    else if (className.endsWith("Transform")) {
+        className.chop(QString("Transform").size());
+        shellObject.reset(Factory<Transform>::make(className));
+    }
+    else if (className.endsWith("Format")) {
+        className.chop(QString("Format").size());
+        shellObject.reset(Factory<Format>::make(className));
+    }
+    else if (className.endsWith("Initializer")) {
+        className.chop(QString("Initializer").size());
+        shellObject.reset(Factory<Initializer>::make(className));
+    }
+    else if (className.endsWith("Output")) {
+        className.chop(QString("Output").size());
+        shellObject.reset(Factory<Output>::make(className));
+    }
+
     for (int i=firstAvailablePropertyIdx; i<metaObject()->propertyCount(); i++) {
         const char *name = metaObject()->property(i).name();
 
-        QVariant oldVal = property(name);
-        QVariant defaultVal = oldVal;
-
-        if (metaObject()->property(i).isResettable()) {
-            metaObject()->property(i).reset(this);
-            defaultVal = property(name);
-        }
+        QVariant defaultVal = shellObject->property(name);
         
-        if (defaultVal != oldVal) {
-            metaObject()->property(i).write(this, oldVal);
+        if (defaultVal != property(name))
             arguments.append(name + QString("=") + argument(i, expanded));
-        }
     }
 
     return arguments;
@@ -647,7 +667,7 @@ QString Object::argument(int index, bool expanded) const
     return variant.toString();
 }
 
-QString Object::description(bool expanded)
+QString Object::description(bool expanded) const
 {
     (void) expanded;
     QString argumentString = prunedArguments(expanded).join(",");
@@ -1311,8 +1331,7 @@ Transform *Transform::make(QString str, QObject *parent)
 
 Transform *Transform::clone() const
 {
-    Transform *temp = (Transform *) this;
-    Transform *clone = Factory<Transform>::make("."+temp->description(false));
+   Transform *clone = Factory<Transform>::make("."+description(false));
     return clone;
 }
 

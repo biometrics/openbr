@@ -132,7 +132,7 @@ class IndependentTransform : public MetaTransform
 
     QList<Transform*> transforms;
 
-    QString description(bool expanded)
+    QString description(bool expanded) const
     {
         return transform->description(expanded);
     }

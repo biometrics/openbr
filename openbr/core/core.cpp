@@ -33,7 +33,8 @@ struct AlgorithmCore
     };
 
     QSharedPointer<Transform> transform;
-    QSharedPointer<Transform> simplifiedTransform;
+    Transform *simplifiedTransform;
+    QSharedPointer<Transform> deleteSimplifiedTransform;
     QSharedPointer<Transform> comparison;
     QSharedPointer<Distance> distance;
     QSharedPointer<Transform> progressCounter;
@@ -83,8 +84,10 @@ struct AlgorithmCore
         }
 
         qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
-        bool junk;
-        simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
+        bool newTForm = false;
+        simplifiedTransform = transform->simplify(newTForm);
+        if (newTForm)
+            deleteSimplifiedTransform.reset(simplifiedTransform);
     }
 
     void store(const QString &model) const
@@ -170,7 +173,7 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        Transform *enroll = simplifiedTransform.data();
+        Transform *enroll = simplifiedTransform;
 
         if (multiProcess)
             enroll = wrapTransform(enroll, "ProcessWrapper");
@@ -450,7 +453,7 @@ struct AlgorithmCore
 
         // if we have to enroll the row gallery, add that transform to the list
         if (needEnrollRows)
-            enrollCompare.prepend(simplifiedTransform.data());
+            enrollCompare.prepend(simplifiedTransform);
 
         Transform *compareRegionBase = pipeTransforms(enrollCompare);
         // If in multi-process mode, wrap the enroll+compare structure in a ProcessWrapper.
@@ -528,10 +531,12 @@ private:
 
     void init(const QString &description)
     {
-        bool junk;
+        bool newTForm = false;
 
         if (loadOrExpand(description)) {
-            simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
+            simplifiedTransform = transform->simplify(newTForm);
+            if (newTForm)
+                deleteSimplifiedTransform.reset(simplifiedTransform);
             return;
         }
 
@@ -539,7 +544,9 @@ private:
         File parsed("."+description);
         if (loadOrExpand(parsed.suffix())) {
             applyAdditionalProperties(parsed, transform.data());
-            simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
+            simplifiedTransform = transform->simplify(newTForm);
+            if (newTForm)
+                deleteSimplifiedTransform.reset(simplifiedTransform);
             return;
         }
 
@@ -551,7 +558,9 @@ private:
 
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
-        simplifiedTransform = QSharedPointer<Transform>(transform->simplify(junk));
+        simplifiedTransform = transform->simplify(newTForm);
+        if (newTForm)
+            deleteSimplifiedTransform.reset(simplifiedTransform);
 
         if (words.size() > 1) {
             if (!compareTransform) {

@@ -482,9 +482,9 @@ BR_REGISTER(Transform, CacheTransform)
 class LoadStoreTransform : public MetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QString description2 READ get_description2 WRITE set_description2 RESET reset_description2 STORED false)
+    Q_PROPERTY(QString transformString READ get_transformString WRITE set_transformString RESET reset_transformString STORED false)
     Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
-    BR_PROPERTY(QString, description2, "Identity")
+    BR_PROPERTY(QString, transformString, "Identity")
     BR_PROPERTY(QString, fileName, QString())
 
 public:
@@ -493,10 +493,12 @@ public:
 
     LoadStoreTransform() : transform(NULL) {}
 
-    QString description(bool expanded = false)
+    QString description(bool expanded = false) const
     {
-        if (expanded)
-            return transform->description(expanded);
+        if (expanded) {
+            QString res = transform->description(expanded);
+            return res;
+        }
         return br::Object::description(expanded);
     }
 
@@ -517,10 +519,10 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(description2) ? description2 : QtUtils::shortTextHash(description2);
+        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
         else baseName = fileName;
         if (!tryLoad())
-            transform = make(description2);
+            transform = make(transformString);
         else
             trainable = false;
     }
@@ -586,8 +588,8 @@ private:
         QByteArray data;
         QtUtils::readFile(file, data, true);
         QDataStream stream(&data, QFile::ReadOnly);
-        stream >> description2;
-        transform = Transform::make(description2);
+        stream >> transformString;
+        transform = Transform::make(transformString);
         transform->load(stream);
         return true;
     }
