@@ -225,6 +225,13 @@ class utGallery : public BinaryGallery
             if (ut.algorithmID == 5) {
                 QDataStream stream(&data, QIODevice::ReadOnly);
                 stream >> t;
+            } else if (ut.algorithmID == 7) {
+                uint32_t *roi = (uint32_t*) data.data();
+                t.file.set("X", roi[0]);
+                t.file.set("Y", roi[1]);
+                t.file.set("Width", roi[2]);
+                t.file.set("Height", roi[3]);
+                t.append(cv::Mat(1, data.size()-4*sizeof(uint32_t), CV_8UC1, data.data()+4*sizeof(uint32_t)).clone() /* We don't want a shallow copy! */);
             } else {
                 t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()).clone() /* We don't want a shallow copy! */);
             }
