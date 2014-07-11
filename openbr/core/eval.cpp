@@ -815,11 +815,27 @@ static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QL
     return totalTrueDetections;
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
     QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
+    
+    // Remove any bounding boxes with a side smaller than minSize
+    if (minSize > 0) {
+        foreach(QString key, allDetections.keys()) {
+            for (int i = 0; i < allDetections[key].predicted.length(); i++) {
+                QRectF box = allDetections[key].predicted[i].boundingBox;
+                if (min(box.width(), box.height()) < minSize)
+                    allDetections[key].predicted.removeAt(i);
+            }
+            for (int i = 0; i < allDetections[key].truth.length(); i++) {
+                QRectF box = allDetections[key].truth[i].boundingBox;
+                if (min(box.width(), box.height()) < minSize)
+                    allDetections[key].truth.removeAt(i);
+            }
+        }         
+    }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     QRectF normalizations(0, 0, 0, 0);
