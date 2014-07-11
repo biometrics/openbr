@@ -357,7 +357,7 @@ class jsonGallery : public BinaryGallery
         QJsonParseError error;
         File file = QJsonDocument::fromJson(gallery.readLine(), &error).object().toVariantMap();
         if (error.error != QJsonParseError::NoError)
-            qDebug() << error.errorString();
+            qFatal("%s\n", qPrintable(error.errorString()));
         return file;
     }
 
