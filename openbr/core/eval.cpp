@@ -603,10 +603,10 @@ struct ResolvedDetection
 
 struct DetectionOperatingPoint
 {
-    float Recall, FalsePositiveRate, Precision;
-    DetectionOperatingPoint() : Recall(-1), FalsePositiveRate(-1), Precision(-1) {}
+    float Recall, FalsePositives, Precision;
+    DetectionOperatingPoint() : Recall(-1), FalsePositives(-1), Precision(-1) {}
     DetectionOperatingPoint(float TP, float FP, float totalPositives)
-        : Recall(TP/totalPositives), FalsePositiveRate(FP/totalPositives), Precision(TP/(TP+FP)) {}
+        : Recall(TP/totalPositives), FalsePositives(FP), Precision(TP/(TP+FP)) {}
 };
 
 static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, bool discrete)
@@ -637,12 +637,12 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
     QStringList lines; lines.reserve(keep);
     if (keep == 1) {
         const DetectionOperatingPoint &point = points[0];
-        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
+        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
         lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
     } else {
         for (int i=0; i<keep; i++) {
             const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
-            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
+            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositives), QString::number(point.Recall)));
             lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
         }
     }
@@ -813,11 +813,30 @@ static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QL
     return totalTrueDetections;
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int filter)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
     QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
+
+    // If there is a filter filter out all boundingBoxes with one side smaller than it
+    if (filter > 0) {
+        qDebug("Filter out bounding boxes smaller than %d", filter);
+        foreach(QString key, allDetections.keys()) {
+            QMutableListIterator<Detection> p(allDetections[key].predicted);
+            QMutableListIterator<Detection> t(allDetections[key].truth);
+            for (int i = 0; i < allDetections[key].predicted.length(); i++) {
+                QRectF box = allDetections[key].predicted[i].boundingBox;    
+                if (min(box.width(), box.height()) < filter)
+                    allDetections[key].predicted.removeAt(i);
+            }
+            for (int i = 0; i < allDetections[key].truth.length(); i++) {
+                QRectF box = allDetections[key].truth[i].boundingBox;    
+                if (min(box.width(), box.height()) < filter)
+                    allDetections[key].truth.removeAt(i);
+            }
+        }
+    }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     QRectF normalizations(0, 0, 0, 0);

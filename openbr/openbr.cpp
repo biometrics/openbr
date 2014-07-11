@@ -124,9 +124,9 @@ void br_eval_clustering(const char *csv, const char *gallery, const char * truth
     EvalClustering(csv, gallery, truth_property);
 }
 
-float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv, bool normalize)
+float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv, bool normalize, int filter)
 {
-    return EvalDetection(predicted_gallery, truth_gallery, csv, normalize);
+    return EvalDetection(predicted_gallery, truth_gallery, csv, normalize, filter);
 }
 
 float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv, int normalization_index_a, int normalization_index_b)
