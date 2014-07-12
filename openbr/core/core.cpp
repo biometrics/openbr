@@ -23,24 +23,36 @@
 
 namespace br {
 
+void noDelete(Transform *target)
+{
+    (void) target;
+}
+
 struct AlgorithmCore
 {
-    QSharedPointer<Transform> transform;
-    QSharedPointer<Distance> distance;
-    QString galleryCompareString;
+    enum CompareMode
+    {
+        None,
+        DistanceCompare,
+        TransformCompare,
+    };
 
-    QString transformString;
-    QString distanceString;
+    QSharedPointer<Transform> transform;
+    QSharedPointer<Transform> simplifiedTransform;
+    QSharedPointer<Transform> comparison;
+    QSharedPointer<Distance> distance;
+    QSharedPointer<Transform> progressCounter;
 
     AlgorithmCore(const QString &name)
     {
         this->name = name;
         init(name);
+        progressCounter = QSharedPointer<Transform>(Transform::make("ProgressCounter", NULL));
     }
 
     bool isClassifier() const
     {
-        return distance.isNull();
+        return comparison.isNull();
     }
 
     void train(const File &input, const QString &model)
@@ -48,15 +60,7 @@ struct AlgorithmCore
         qDebug("Training on %s%s", qPrintable(input.flat()),
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
-        QScopedPointer<Transform> trainingWrapper(Transform::make("DirectStream(readMode=DistributeFrames)", NULL));
-
-        CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(trainingWrapper.data());
-        if (downcast == NULL)
-            qFatal("downcast failed?");
-        downcast->transforms.append(this->transform.data());
-
-        downcast->init();
-
+        QScopedPointer<Transform> trainingWrapper(br::wrapTransform(transform.data(), "Stream(readMode=DistributeFrames)"));
         TemplateList data(TemplateList::fromGallery(input));
 
         if (transform.isNull()) qFatal("Null transform.");
@@ -65,14 +69,14 @@ struct AlgorithmCore
         Globals->startTime.start();
 
         qDebug("Training Enrollment");
-        downcast->train(data);
+        trainingWrapper->train(data);
 
         if (!distance.isNull()) {
             if (Globals->crossValidate > 0)
                 for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
 
             qDebug("Projecting Enrollment");
-            downcast->projectUpdate(data,data);
+            trainingWrapper->projectUpdate(data,data);
 
             qDebug("Training Comparison");
             distance->train(data);
@@ -84,6 +88,18 @@ struct AlgorithmCore
         }
 
         qDebug("Training Time: %s", qPrintable(QtUtils::toTime(Globals->startTime.elapsed()/1000.0f)));
+
+        simplifyTransform();
+    }
+
+    void simplifyTransform()
+    {
+        bool newTForm = false;
+        Transform *temp = transform->simplify(newTForm);
+        if (newTForm)
+            simplifiedTransform = QSharedPointer<Transform>(temp);
+        else
+            simplifiedTransform = QSharedPointer<Transform>(temp, noDelete);
     }
 
     void store(const QString &model) const
@@ -93,11 +109,21 @@ struct AlgorithmCore
         QDataStream out(&data, QFile::WriteOnly);
 
         // Serialize algorithm to stream
-        out << name;
-        transform->store(out);
-        const bool hasComparer = !distance.isNull();
-        out << hasComparer;
-        if (hasComparer) distance->store(out);
+        transform->serialize(out);
+
+        qint32 mode = None;
+        if (!distance.isNull())
+            mode = DistanceCompare;
+        else if (!comparison.isNull())
+            mode = TransformCompare;
+
+        out << mode;
+
+        if (mode == DistanceCompare)
+            distance->serialize(out);
+
+        if (mode == TransformCompare)
+            comparison->serialize(out);
 
         // Compress and save to file
         QtUtils::writeFile(model, data, -1);
@@ -113,10 +139,21 @@ struct AlgorithmCore
         QDataStream in(&data, QFile::ReadOnly);
 
         // Load algorithm
-        in >> name; init(Globals->abbreviations.contains(name) ? Globals->abbreviations[name] : name);
-        transform->load(in);
-        bool hasDistance; in >> hasDistance;
-        if (hasDistance) distance->load(in);
+        transform = QSharedPointer<Transform>(Transform::deserialize(in));
+
+        qint32 mode;
+        in >> mode;
+
+        if (mode == DistanceCompare) {
+            QString distanceDescription;
+            in >> distanceDescription;
+            distance = QSharedPointer<Distance>(Distance::make(distanceDescription, NULL));
+            distance->load(in);
+            comparison = QSharedPointer<Transform>(Transform::make("GalleryCompare", NULL));
+            comparison->setPropertyRecursive("distance", QVariant::fromValue(distance.data()));
+        }
+        if (mode == TransformCompare)
+            comparison = QSharedPointer<Transform>(Transform::deserialize(in));
     }
 
     File getMemoryGallery(const File &file) const
@@ -148,53 +185,37 @@ struct AlgorithmCore
         Gallery *temp = Gallery::make(input);
         qint64 total = temp->totalSize();
 
-        QScopedPointer<Transform> basePipe;
+        Transform *enroll = simplifiedTransform.data();
 
-        QString pipeDesc = "GalleryOutput("+gallery.flat()+")+ProgressCounter("+QString::number(total)+")+Discard";
+        if (multiProcess)
+            enroll = wrapTransform(enroll, "ProcessWrapper");
 
-        if (!multiProcess) {
-            basePipe.reset(Transform::make(pipeDesc,NULL));
-            CompositeTransform *downcast = dynamic_cast<CompositeTransform *>(basePipe.data());
+        QList<Transform *> stages;
+        stages.append(enroll);
 
-            if (downcast == NULL) qFatal("downcast failed?");
+        QString outputDesc;
+        if (fileExclusion)
+            outputDesc = "FileExclusion(" + gallery.flat() + ")+";
+        outputDesc.append("GalleryOutput("+gallery.flat()+")");
+        QScopedPointer<Transform> outputTform(Transform::make(outputDesc, NULL));
+        stages.append(outputTform.data());
+        stages.append(progressCounter.data());
+        QScopedPointer<Transform> discard(Transform::make("Discard",NULL));
+        stages.append(discard.data());
 
-            downcast->transforms.prepend(this->transform.data());
-            if (fileExclusion) {
-                Transform *temp = Transform::make("FileExclusion(" + gallery.flat() + ")", downcast);
-                downcast->transforms.prepend(temp);
-            }
+        QScopedPointer<Transform> pipeline(br::pipeTransforms(stages));
 
-            // call init on the pipe to collapse the algorithm (if its top level is a pipe)
-            downcast->init();
-        }
-        else {
-            pipeDesc = "ProcessWrapper("+transformString+")+"+pipeDesc;
-            if (fileExclusion)
-                pipeDesc = "FileExclusion(" + gallery.flat() +")+" + pipeDesc;
-
-            basePipe.reset(Transform::make(pipeDesc,NULL));
-        }
-
-        // Next, we make a Stream (with placeholder transform)
-        QString streamDesc = "Stream(readMode=StreamGallery)";
-        QScopedPointer<Transform> baseStream(Transform::make(streamDesc, NULL));
-        WrapperTransform *wrapper = dynamic_cast<WrapperTransform *> (baseStream.data());
-
-        // replace that placeholder with the pipe we built
-        wrapper->transform = basePipe.data();
-
-        // and get the final stream's stages by reinterpreting the pipe. Perfectly straightforward.
-        wrapper->init();
-
-        Globals->startTime.start();
-        Globals->currentStep = 0;
-        Globals->totalSteps = total;
+        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery)"));
 
         TemplateList data, output;
         data.append(input);
-        wrapper->projectUpdate(data, output);
+        progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
+        stream->projectUpdate(data, output);
 
         files.append(output.files());
+
+        if (multiProcess)
+            delete enroll;
 
         return files;
     }
@@ -364,7 +385,6 @@ struct AlgorithmCore
         targetMetadata = FileList::fromGallery(targetGallery, true);
         queryMetadata  = FileList::fromGallery(queryGallery, true);
 
-
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
         transposeMode = targetMetadata.size() > queryMetadata.size();
 
@@ -389,12 +409,12 @@ struct AlgorithmCore
         // simple make sure the enrolled data is stored in a memGallery, but in multi-process mode we save the enrolled
         // data to disk (as a .gal file) so that each worker process can read it without re-doing enrollment.
         File colEnrolledGallery = colGallery;
-        QString targetExtension = multiProcess ? "gal" : "mem";
+        QString targetExtension = "mem";
 
         // If the column gallery is not already of the appropriate type, we need to do something
         if (colGallery.suffix() != targetExtension) {
             // Build the name of a gallery containing the enrolled data, of the appropriate type.
-            colEnrolledGallery = colGallery.baseName() + colGallery.hash() + (multiProcess ? ".gal" : ".mem");
+            colEnrolledGallery = colGallery.baseName() + colGallery.hash() + '.' + targetExtension;
 
             // Check if we have to do real enrollment, and not just convert the gallery's type.
             if (!(QStringList() << "gal" << "template" << "mem").contains(colGallery.suffix()))
@@ -435,37 +455,24 @@ struct AlgorithmCore
         // The actual comparison step is done by a GalleryCompare transform, which has a Distance, and a gallery as data.
         // Incoming templates are compared against the templates in the gallery, and the output is the resulting score
         // vector.
+        TemplateList tlist = TemplateList::fromGallery(colEnrolledGallery);
+        comparison->train(tlist);
+        comparison->setPropertyRecursive("galleryName","");
+
         QString compareRegionDesc;
+        QList<Transform *> enrollCompare;
+        enrollCompare.append(comparison.data());
 
-        if (this->galleryCompareString.isEmpty() )
-            compareRegionDesc = "Pipe([GalleryCompare("+Globals->algorithm+",galleryName="+colEnrolledGallery.flat()+")])";
-        else
-            compareRegionDesc = "Pipe(["+galleryCompareString+"(galleryName="+colEnrolledGallery.flat()+")])";
+        // if we have to enroll the row gallery, add that transform to the list
+        if (needEnrollRows)
+            enrollCompare.prepend(simplifiedTransform.data());
 
-        QScopedPointer<Transform> compareRegion;
-        // If we need to enroll the row set, we add the current algorithm's enrollment transform before the
-        // GalleryCompare in a pipe.
-        if (needEnrollRows) {
-            if (!multiProcess) {
-                compareRegionDesc = compareRegionDesc;
-                compareRegion.reset(Transform::make(compareRegionDesc,NULL));
-                CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (compareRegion.data());
-                if (downcast == NULL)
-                    qFatal("Pipe downcast failed in compare");
+        Transform *compareRegionBase = pipeTransforms(enrollCompare);
+        // If in multi-process mode, wrap the enroll+compare structure in a ProcessWrapper.
+        if (multiProcess)
+            compareRegionBase = wrapTransform(compareRegionBase, "ProcessWrapper");
 
-                downcast->transforms.prepend(this->transform.data());
-                downcast->init();
-            }
-            else {
-                compareRegionDesc = "ProcessWrapper(" + this->transformString + "+" + compareRegionDesc + ")";
-                compareRegion.reset(Transform::make(compareRegionDesc, NULL));
-            }
-        }
-        else {
-            if (multiProcess)
-                compareRegionDesc = "ProcessWrapper(" + compareRegionDesc + ")";
-            compareRegion.reset(Transform::make(compareRegionDesc,NULL));
-        }
+        QScopedPointer<Transform> compareRegion(compareRegionBase);
 
         // At this point, compareRegion is a transform, which optionally does enrollment, then compares the row
         // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a 
@@ -473,47 +480,36 @@ struct AlgorithmCore
 
         // We also need to add Output and progress counting to the algorithm we are building, so we will assign them to
         // two stages of a pipe.
-        QString joinDesc = "Pipe()";
-        QScopedPointer<Transform> join(Transform::make(joinDesc, NULL));
+        QList<Transform *> compareOutput;
+        compareOutput.append(compareRegion.data());
 
         // The output transform takes the metadata memGalleries we set up previously as input, along with the
         // output specification we were passed. Gallery metadata is necessary for some Outputs to function correctly.
         QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
         QString outputRegionDesc = "Output("+ outputString +"," + targetGallery.flat() +"," + queryGallery.flat() + ","+ QString::number(transposeMode ? 1 : 0) + ")";
-        // The ProgressCounter transform will simply provide a display about the number of rows completed.
-        outputRegionDesc += "+ProgressCounter("+QString::number(rowSize)+")+Discard";
-        QScopedPointer<Transform> outputTform(Transform::make(outputRegionDesc, NULL));
+        QScopedPointer<Transform> outputTForm(Transform::make(outputRegionDesc,NULL));
+        compareOutput.append(outputTForm.data());
 
-        // Assign the comparison transform we previously built, and the output transform  we just built to
-        // two stages of a pipe.
-        CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (join.data());
-        downcast->transforms.append(compareRegion.data());
-        downcast->transforms.append(outputTform.data());
+        // The ProgressCounter transform will simply provide a display about the number of rows completed.
+        compareOutput.append(progressCounter.data());
+        QScopedPointer<Transform> discard(Transform::make("Discard",NULL));
+        compareOutput.append(discard.data());
 
         // With this, we have set up a transform which (optionally) enrolls templates, compares them
         // against a gallery, and outputs them.
-        join->init();
+        Transform *pipeline = br::pipeTransforms(compareOutput);
 
         // Now, we will give that base transform to a stream, which will incrementally read the row gallery
         // and pass the transforms it reads through the base algorithm.
-        QString streamDesc = "Stream(readMode=StreamGallery)";
-        QScopedPointer<Transform> streamBase(Transform::make(streamDesc, NULL));
-        WrapperTransform *streamWrapper = dynamic_cast<WrapperTransform *> (streamBase.data());
-        streamWrapper->transform = join.data();
-
-        // The transform we will use is now complete.
-        streamWrapper->init();
+        QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery)"));
 
         // We set up a template containing the rowGallery we want to compare. 
         TemplateList rowGalleryTemplate;
         rowGalleryTemplate.append(Template(rowGallery));
         TemplateList outputGallery;
 
-        // Set up progress counting variables
-        Globals->currentStep = 0;
-        Globals->currentProgress = 0;
-        Globals->totalSteps = rowSize;
-        Globals->startTime.start();
+        // initialize the progress counter
+        progressCounter->setPropertyRecursive("totalProgress", QString::number(rowSize));
 
         // Do the actual comparisons
         streamWrapper->projectUpdate(rowGalleryTemplate, outputGallery);
@@ -547,37 +543,39 @@ private:
 
     void init(const QString &description)
     {
-        if (loadOrExpand(description))
+        bool newTForm = false;
+
+        if (loadOrExpand(description)) {
+            simplifyTransform();
             return;
+        }
 
         // check if the description is an abbreviation or model file with additional arguments supplied
         File parsed("."+description);
         if (loadOrExpand(parsed.suffix())) {
             applyAdditionalProperties(parsed, transform.data());
+            simplifyTransform();
             return;
         }
 
+        //! [Parsing the algorithm description]
         const bool compareTransform = description.contains('!');
         QStringList words = QtUtils::parse(description, compareTransform ? '!' : ':');
 
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
 
-        //! [Parsing the algorithm description]
-        transformString = words[0];
-
         //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
+        simplifyTransform();
+
         if (words.size() > 1) {
             if (!compareTransform) {
                 distance = QSharedPointer<Distance>(Distance::make(words[1], NULL));
-                distanceString = words[1];
-                galleryCompareString.clear();
+                comparison = QSharedPointer<Transform>(Transform::make("GalleryCompare", NULL));
+                comparison->setPropertyRecursive("distance", QVariant::fromValue(distance.data()));
             }
-            else {
-                galleryCompareString = words[1];
-                distanceString.clear();
-            }
-            
+            else
+                comparison = QSharedPointer<Transform>(Transform::make(words[1], NULL));
         }
         //! [Creating the template generation and comparison methods]
     }

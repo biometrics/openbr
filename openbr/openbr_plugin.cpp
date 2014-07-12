@@ -585,16 +585,51 @@ QStringList Object::parameters() const
     return parameters;
 }
 
-QStringList Object::arguments() const
+QStringList Object::prunedArguments(bool expanded) const
 {
     QStringList arguments;
-    for (int i=metaObject()->propertyOffset(); i<metaObject()->propertyCount(); i++)
-        arguments.append(argument(i));
+    QString className = this->metaObject()->className();
+    QScopedPointer<Object> shellObject;
+
+    if (className.startsWith("br::"))
+        className = className.mid(4);
+    if (!className.startsWith("."))
+        className = "." + className;
+
+    if (className.endsWith("Distance")) {
+        className.chop(QString("Distance").size());
+        shellObject.reset(Factory<Distance>::make(className));
+    }
+    else if (className.endsWith("Transform")) {
+        className.chop(QString("Transform").size());
+        shellObject.reset(Factory<Transform>::make(className));
+    }
+    else if (className.endsWith("Format")) {
+        className.chop(QString("Format").size());
+        shellObject.reset(Factory<Format>::make(className));
+    }
+    else if (className.endsWith("Initializer")) {
+        className.chop(QString("Initializer").size());
+        shellObject.reset(Factory<Initializer>::make(className));
+    }
+    else if (className.endsWith("Output")) {
+        className.chop(QString("Output").size());
+        shellObject.reset(Factory<Output>::make(className));
+    }
+
+    for (int i=firstAvailablePropertyIdx; i<metaObject()->propertyCount(); i++) {
+        const char *name = metaObject()->property(i).name();
+
+        QVariant defaultVal = shellObject->property(name);
+        
+        if (defaultVal != property(name))
+            arguments.append(name + QString("=") + argument(i, expanded));
+    }
 
     return arguments;
 }
 
-QString Object::argument(int index) const
+QString Object::argument(int index, bool expanded) const
 {
     if ((index < 0) || (index > metaObject()->propertyCount())) return "";
     const QMetaProperty property = metaObject()->property(index);
@@ -612,19 +647,19 @@ QString Object::argument(int index) const
                 strings.append(QString::number(value));
         } else if (type == "QList<br::Transform*>") {
             foreach (Transform *transform, variant.value< QList<Transform*> >())
-                strings.append(transform->description());
+                strings.append(transform->description(expanded));
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, variant.value< QList<Distance*> >())
-                strings.append(distance->description());
+                strings.append(distance->description(expanded));
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
 
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
-        return variant.value<Transform*>()->description();
+        return variant.value<Transform*>()->description(expanded);
     } else if (type == "br::Distance*") {
-        return variant.value<Distance*>()->description();
+        return variant.value<Distance*>()->description(expanded);
     } else if (type == "QStringList") {
         return "[" + variant.toStringList().join(",") + "]";
     }
@@ -632,9 +667,12 @@ QString Object::argument(int index) const
     return variant.toString();
 }
 
-QString Object::description() const
+QString Object::description(bool expanded) const
 {
-    QString argumentString = arguments().join(",");
+    QString argumentString = prunedArguments(expanded).join(",");
+    if (argumentString.endsWith(","))
+        argumentString.chop(1);
+
     return objectName() + (argumentString.isEmpty() ? "" : ("(" + argumentString + ")"));
 }
 
@@ -1292,7 +1330,7 @@ Transform *Transform::make(QString str, QObject *parent)
 
 Transform *Transform::clone() const
 {
-    Transform *clone = Factory<Transform>::make(file.flat());
+   Transform *clone = Factory<Transform>::make("."+description(false));
     return clone;
 }
 
@@ -1460,4 +1498,18 @@ void br::applyAdditionalProperties(const File &temp, Transform *target)
 
         target->setPropertyRecursive(i.key(), i.value() );
     }
+}
+
+Transform *br::wrapTransform(Transform *base, const QString &target)
+{
+    Transform *res = Transform::make(target, NULL);
+    res->setPropertyRecursive("transform", QVariant::fromValue(base));
+    return res;
+}
+
+Transform *br::pipeTransforms(QList<Transform *> &transforms)
+{
+    Transform *res = Transform::make("Pipe",NULL);
+    res->setPropertyRecursive("transforms", QVariant::fromValue(transforms));
+    return res;
 }

@@ -251,6 +251,7 @@ private:
           default:
             qFatal("Invalid operation.");
         }
+        return 0;
     }
 
     void store(QDataStream &stream) const
@@ -460,13 +461,12 @@ BR_REGISTER(Distance, SumDistance)
 class GalleryCompareTransform : public Transform
 {
     Q_OBJECT
-    Q_PROPERTY(QString distanceAlgorithm READ get_distanceAlgorithm WRITE set_distanceAlgorithm RESET reset_distanceAlgorithm STORED false)
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED true)
     Q_PROPERTY(QString galleryName READ get_galleryName WRITE set_galleryName RESET reset_galleryName STORED false)
-    BR_PROPERTY(QString, distanceAlgorithm, "")
+    BR_PROPERTY(br::Distance*, distance, NULL)
     BR_PROPERTY(QString, galleryName, "")
 
     TemplateList gallery;
-    QSharedPointer<Distance> distance;
 
     void project(const Template &src, Template &dst) const
     {
@@ -480,16 +480,29 @@ class GalleryCompareTransform : public Transform
 
     void init()
     {
-        if (!galleryName.isEmpty()) {
+        if (!galleryName.isEmpty())
             gallery = TemplateList::fromGallery(galleryName);
-        }
-        if (!distanceAlgorithm.isEmpty())
-        {
-            distance = Distance::fromAlgorithm(distanceAlgorithm);
-        }
     }
+
+    void train(const TemplateList &data)
+    {
+        gallery = data;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        br::Object::store(stream);
+        stream << gallery;
+    }
+
+    void load(QDataStream &stream)
+    {
+        br::Object::load(stream);
+        stream >> gallery;
+    }
+
 public:
-    GalleryCompareTransform() : Transform(false, false) {}
+    GalleryCompareTransform() : Transform(false, true) {}
 };
 
 BR_REGISTER(Transform, GalleryCompareTransform)

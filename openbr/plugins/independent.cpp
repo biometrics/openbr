@@ -94,6 +94,12 @@ class DownsampleTrainingTransform : public Transform
     BR_PROPERTY(QStringList, subjects, QStringList())
 
 
+    Transform *simplify(bool &newTForm)
+    {
+        Transform *res = transform->simplify(newTForm);
+        return res;
+    }
+
     void project(const Template &src, Template &dst) const
     {
        transform->project(src,dst);      
@@ -126,6 +132,10 @@ class IndependentTransform : public MetaTransform
 
     QList<Transform*> transforms;
 
+    QString description(bool expanded) const
+    {
+        return transform->description(expanded);
+    }
 
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
@@ -139,6 +149,54 @@ class IndependentTransform : public MetaTransform
             transforms[i]->setPropertyRecursive(name, value);
 
         return true;
+    }
+
+    Transform *simplify(bool &newTransform)
+    {
+        newTransform = false;
+        bool newChild = false;
+        Transform *temp = transform->simplify(newChild);
+        if (temp == transform) {
+            return this;
+        }
+        IndependentTransform* indep = new IndependentTransform();
+        indep->transform = temp;
+
+        bool subInd = false;
+        IndependentTransform *test = dynamic_cast<IndependentTransform *> (temp);
+        if (test) {
+            // child was independent? this changes things...
+            subInd = true;
+            indep->transform = test->transform;
+            for (int i=0; i < transforms.size(); i++) {
+                bool newThing = false;
+                IndependentTransform *probe = dynamic_cast<IndependentTransform *> (transforms[i]->simplify(newThing));
+                indep->transforms.append(probe->transform);
+                if (newThing)
+                    probe->setParent(indep);
+            }
+            indep->file = indep->transform->file;
+            indep->trainable = indep->transform->trainable;
+            indep->setObjectName(indep->transform->objectName());
+
+            return indep;
+        }
+
+        if (newChild)
+            indep->transform->setParent(indep);
+
+        for (int i=0; i < transforms.size();i++) {
+            bool subTform = false;
+            indep->transforms.append(transforms[i]->simplify(subTform));
+            if (subTform)
+                indep->transforms[i]->setParent(indep);
+        }
+
+        indep->file = indep->transform->file;
+        indep->trainable = indep->transform->trainable;
+        indep->setObjectName(indep->transform->objectName());
+
+        return indep;
     }
 
     void init()

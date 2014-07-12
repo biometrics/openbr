@@ -593,10 +593,18 @@ public:
     virtual void store(QDataStream &stream) const; /*!< \brief Serialize the object. */
     virtual void load(QDataStream &stream); /*!< \brief Deserialize the object. Default implementation calls init() after deserialization. */
 
+    /*!< \brief Serialize an object created via the plugin system, including the string used to build the base object, allowing re-creation of the object without knowledge of its base string*/
+    virtual void serialize(QDataStream &stream) const
+    {
+        stream << description();
+        store(stream);
+    }
+
     QStringList parameters() const; /*!< \brief A string describing the parameters the object takes. */
-    QStringList arguments() const; /*!< \brief A string describing the values the object has. */
-    QString argument(int index) const; /*!< \brief A string value for the argument at the specified index. */
-    QString description() const; /*!< \brief Returns a string description of the object. */
+    QStringList prunedArguments(bool expanded = false) const; /*!< \brief A string describing the values the object has, default valued parameters will not be listed. If expanded is true, all abbreviations and model file names should be replaced with a description of the object generated from those names. */
+    QString argument(int index, bool expanded) const; /*!< \brief A string value for the argument at the specified index. */
+    virtual QString description(bool expanded = false) const; /*!< \brief Returns a string description of the object. */
+    
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
 
@@ -1273,6 +1281,21 @@ public:
      * any transforms stored as properties of this transform.
      */
     QList<Transform *> getChildren() const;
+
+    static Transform *deserialize(QDataStream &stream)
+    {
+        QString desc;
+        stream >> desc;
+        Transform *res = Transform::make(desc, NULL);
+        res->load(stream);
+        return res;
+    }
+
+     /*!
+     * \brief Return a pointer to a simplified version of this transform (if possible). Transforms which are only active during training should remove
+     * themselves by either returning their child transforms (where relevant) or returning NULL. Set newTransform to true if the transform returned is newly allocated.
+     */
+    virtual Transform * simplify(bool & newTransform) { newTransform = false; return this; }
 
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */

@@ -450,8 +450,9 @@ class PP5GalleryTransform: public UntrainableMetaTransform
 
     ppr_gallery_type target;
     QList<int> targetIDs;
+    TemplateList gallery;
 
-    void project(const Template & src, Template & dst) const
+    void project(const Template &src, Template &dst) const
     {
         TemplateList temp, output;
         temp.append(src);
@@ -460,7 +461,7 @@ class PP5GalleryTransform: public UntrainableMetaTransform
            dst = output[0];
     }
 
-    void project(const TemplateList & src, TemplateList & dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
         dst.clear();
         QList<int> queryIDs;
@@ -495,11 +496,33 @@ class PP5GalleryTransform: public UntrainableMetaTransform
 
     void init()
     {
-        // set up the gallery
-        ppr_create_gallery(context, &target);
-        TemplateList templates = TemplateList::fromGallery(galleryName);
-        enroll(templates,&target, targetIDs);
+        if (!galleryName.isEmpty() || !gallery.isEmpty()) {
+            // set up the gallery
+            ppr_create_gallery(context, &target);
+            if (gallery.isEmpty() )
+                gallery = TemplateList::fromGallery(galleryName);
+            enroll(gallery, &target, targetIDs);
+        }
     }
+
+    void train(const TemplateList &data)
+    {
+        gallery = data;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        br::Object::store(stream);
+        stream << gallery;
+    }
+
+    void load(QDataStream &stream)
+    {
+        br::Object::load(stream);
+        stream >> gallery;
+        init();
+    }
+
 };
 
 BR_REGISTER(Transform, PP5GalleryTransform)

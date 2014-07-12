@@ -617,8 +617,8 @@ class ProgressCounterTransform : public TimeVaryingTransform
 {
     Q_OBJECT
 
-    Q_PROPERTY(int totalTemplates READ get_totalTemplates WRITE set_totalTemplates RESET reset_totalTemplates STORED false)
-    BR_PROPERTY(int, totalTemplates, 1)
+    Q_PROPERTY(int totalProgress READ get_totalProgress WRITE set_totalProgress RESET reset_totalProgress STORED false)
+    BR_PROPERTY(int, totalProgress, 1)
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
@@ -658,16 +658,20 @@ class ProgressCounterTransform : public TimeVaryingTransform
         (void) data;
         float p = br_progress();
         qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
+        timer.start();
+        Globals->startTime.start();
         Globals->currentStep = 0;
         Globals->currentProgress = 0;
-        Globals->totalSteps = 0;
+        Globals->totalSteps = totalProgress;
     }
 
     void init()
     {
         timer.start();
+        Globals->startTime.start();
         Globals->currentStep = 0;
         Globals->currentProgress = 0;
+        Globals->totalSteps = totalProgress;
     }
 
 public:

@@ -37,7 +37,7 @@ private:
         dst.append(out);
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         (void) output;
         buffer.clear();
