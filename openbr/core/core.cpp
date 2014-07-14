@@ -543,8 +543,6 @@ private:
 
     void init(const QString &description)
     {
-        bool newTForm = false;
-
         if (loadOrExpand(description)) {
             simplifyTransform();
             return;
