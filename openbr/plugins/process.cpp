@@ -527,6 +527,10 @@ class ProcessWrapperTransform : public WrapperTransform
         return this;
     }
 
+    // make clang shut up? what a great compiler
+    using WrapperTransform::project;
+    using WrapperTransform::train;
+
     void project(const TemplateList &src, TemplateList &dst) const
     {
         if (src.empty())
@@ -544,7 +548,7 @@ class ProcessWrapperTransform : public WrapperTransform
         processes.release(data);
     }
 
-    void train(const TemplateList& data)
+    void train(const TemplateList &data)
     {
         (void) data;
     }
