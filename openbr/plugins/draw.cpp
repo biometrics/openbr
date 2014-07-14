@@ -554,11 +554,57 @@ class WriteImageTransform : public TimeVaryingTransform
     {
         dst = src;
         OpenCVUtils::saveImage(dst.m(), QString("%1/%2_%3.%4").arg(outputDirectory).arg(imageName).arg(cnt++, 5, QChar('0')).arg(imgExtension));
-qDebug() << "AT " << cnt;
     }
 
 };
 BR_REGISTER(Transform, WriteImageTransform)
+
+
+/**
+ * @brief The MeanImageTransform class computes the average template/image
+ * and save the result as an encoded image.
+ */
+class MeanImageTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString imgname READ get_imgname WRITE set_imgname RESET reset_imgname STORED false)
+    Q_PROPERTY(QString ext READ get_ext WRITE set_ext RESET reset_ext STORED false)
+
+    BR_PROPERTY(QString, imgname, "average")
+    BR_PROPERTY(QString, ext, "jpg")
+
+    Mat average;
+    int cnt;
+
+    void init()
+    {
+        cnt = 0;
+    }
+
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        dst = src;
+        if (cnt == 0)
+            average = Mat::zeros(dst.m().size(),dst.m().type());
+        average += dst;
+        cnt++;
+    }
+
+    virtual void finalize(TemplateList & output)
+    {
+        average /= cnt;
+        imwrite(QString("%1.%2").arg(imgname).arg(ext).toStdString(), average);
+        output = TemplateList();
+    }
+
+
+public:
+    MeanImageTransform() : TimeVaryingTransform(true, false) {}
+};
+
+BR_REGISTER(Transform, MeanImageTransform)
+
 
 // TODO: re-implement EditTransform using Qt
 #if 0
