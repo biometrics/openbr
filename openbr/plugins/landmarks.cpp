@@ -144,6 +144,9 @@ BR_REGISTER(Transform, ProcrustesTransform)
  * \brief Improved procrustes alignment of points, to include a post processing scaling of points
  * to faciliate subsequent texture mapping.
  * \author Brendan Klare \cite bklare
+ * \param width Width of output coordinate space (before padding)
+ * \param padding Amount of padding around the coordinate space
+ * \param useFirst whether or not to use the first instance as the reference object
  */
 class ProcrustesAlignTransform : public Transform
 {
@@ -151,8 +154,11 @@ class ProcrustesAlignTransform : public Transform
 
     Q_PROPERTY(float width READ get_width WRITE set_width RESET reset_width STORED false)
     Q_PROPERTY(float padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
+    Q_PROPERTY(bool useFirst READ get_useFirst WRITE set_useFirst RESET reset_useFirst STORED false)
     BR_PROPERTY(float, width, 80)
     BR_PROPERTY(float, padding, 8)
+    BR_PROPERTY(bool, useFirst, false)
+
 
     Eigen::MatrixXf referenceShape;
     float minX;
@@ -170,9 +176,9 @@ class ProcrustesAlignTransform : public Transform
     }
 
     static MatrixXf getRotation(MatrixXf ref, MatrixXf sample) {
-        MatrixXf R = ref.transpose() * sample;
+        MatrixXf R = sample.transpose() * ref;
         JacobiSVD<MatrixXf> svd(R, ComputeFullU | ComputeFullV);
-        R = svd.matrixU() * svd.matrixV();
+        R = svd.matrixU() * svd.matrixV().transpose();
         return R;
     }
 
@@ -229,23 +235,31 @@ class ProcrustesAlignTransform : public Transform
             points.col(i) = points.col(i) / points.col(i).norm();
 
         //Normalize rotation
-        MatrixXf refPrev;
-        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-        float diff = FLT_MAX;
-        while (diff > 1e-5) {//iterate until reference shape is stable
-            refPrev = referenceShape;
-
-            for (int j = 0; j < points.cols(); j++) {
-                MatrixXf p = vectorToMatrix(points.col(j));
-                MatrixXf R = getRotation(referenceShape, p);
-                p = p * R.transpose();
-                points.col(j) = matrixToVector(p);
-            }
+        if (!useFirst) {
+            MatrixXf refPrev;
             referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-            diff = (matrixToVector(referenceShape) - matrixToVector(refPrev)).norm();
-        }
+            float diff = FLT_MAX;
+            float diffDelta = FLT_MAX;
+            while (diff > 1e-5 && diffDelta > 1e-5) {//iterate until reference shape is stable
+                refPrev = referenceShape;
 
-        referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+                for (int j = 0; j < points.cols(); j++) {
+                    MatrixXf p = vectorToMatrix(points.col(j));
+                    MatrixXf R = getRotation(referenceShape, p);
+                    p = p * R;
+                    points.col(j) = matrixToVector(p);
+                }
+                referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+                float temp = diff;
+                diff = (matrixToVector(referenceShape) - matrixToVector(refPrev)).norm();
+                diffDelta = abs(diff - temp);
+            }
+
+            referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+        } else {
+            referenceShape = vectorToMatrix(points.col(0));
+            referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+        }
 
         //Choose crop boundaries and adjustments that captures all data
         for (int i = 0; i < points.rows(); i++) {
@@ -285,7 +299,7 @@ class ProcrustesAlignTransform : public Transform
 
         //Normalize rotation
         MatrixXf R = getRotation(referenceShape, p);
-        p = p * R.transpose();
+        p = p * R;
 
         //Translate and scale into output space and store in output list
         QList<QPointF> procrustesPoints;
@@ -474,7 +488,7 @@ class TextureMapTransform : public UntrainableTransform
 {
     Q_OBJECT
 
-    static QRectF getBounds(QList<QPointF> points, int padding) {
+    static QRectF getBounds(QList<QPointF> points) {
         float srcMinX = FLT_MAX;
         float srcMinY = FLT_MAX;
         float srcMaxX = -FLT_MAX;
@@ -485,24 +499,35 @@ class TextureMapTransform : public UntrainableTransform
             if (points[i].x() > srcMaxX)	srcMaxX = points[i].x();
             if (points[i].y() > srcMaxY)	srcMaxY = points[i].y();
         }
+
+        float padding = (srcMaxX - srcMinX) / 80 * 14;
         return QRectF(qRound(srcMinX - padding), qRound(srcMinY - padding), qRound(srcMaxX - srcMinX + 2 * padding), qRound(srcMaxY - srcMinY + 2 * padding));
     }
 
-    static int getVertexIndex(QPointF trianglePts, QList<QPointF> pts) {
+    static int getVertexIndex(QPointF trianglePts, QList<QPointF> pts)
+    {
         for (int i = 0; i < pts.size(); i++)
             if (trianglePts.x() == pts[i].x() && trianglePts.y() == pts[i].y())
                 return i;
         return -1;
     }
 
-    QList<QList<int> > getTriangulation(const QList<QPointF> _points, const QRectF bound) const {
+    static QList<QPointF> addBounds(const QList<QPointF> _points, const QRectF bound)
+    {
         QList<QPointF> points(_points);
-
-        /*
         points.append(bound.topLeft());
         points.append(QPointF(bound.right() - 1, bound.top()));
         points.append(QPointF(bound.left(), bound.bottom() - 1));
         points.append(QPointF(bound.right() - 1, bound.bottom() - 1));
+        return points;
+    }
+
+    static QList<QList<int> > getTriangulation(const QList<QPointF> _points, const QRectF bound)
+    {
+        QList<QPointF> points(_points);
+
+        //points = addBounds(points, bound);
+        /*
         points.append(QPointF(bound.left() + bound.width() / 2, bound.top()));
         points.append(QPointF(bound.left() + bound.width() / 2, bound.bottom() - 1));
         points.append(QPointF(bound.left(), bound.top() + bound.height() / 2));
@@ -541,25 +566,23 @@ class TextureMapTransform : public UntrainableTransform
     {
         QList<QPointF> dstPoints = dst.file.getList<QPointF>("ProcrustesPoints");
         QList<QPointF> srcPoints = dst.file.points();
-        QRectF dstBound  = getBounds(dstPoints, 8);
-        QRectF srcBound  = getBounds(srcPoints, 8);
+        QRectF dstBound  = dst.file.get<QRectF>("ProcrustesBound");// getBounds(dstPoints, 8);
+        QRectF srcBound  = getBounds(srcPoints);
         if (dstPoints.empty() || srcPoints.empty()) {
             dst = src;
             if (Globals->verbose) qWarning("Delauney triangulation failed because points or rects are empty.");
             return;
         }
 
-        QList<QList<int> > triIndices = getTriangulation(srcPoints, srcBound);
+        dstPoints = addBounds(dstPoints, dstBound);
+        srcPoints = addBounds(srcPoints, srcBound);
 
-        //QList<QPointF> dstTri = getTriangulation(dstPoints, dstBound);
-        //QList<QPointF> srcTri = getTriangulation(srcPoints, srcBound);
+        QList<QList<int> > triIndices = getTriangulation(srcPoints, srcBound);
 
         int dstWidth = dstBound.width() + dstBound.x();
         int dstHeight = dstBound.height() + dstBound.y();
         dst.m() = Mat::zeros(dstHeight, dstWidth, src.m().type());
-static int SCNT = 0;
         for (int i = 0; i < triIndices.size(); i++) {
-qDebug() << i;
             Point2f srcPoint1[3];
             Point2f dstPoint1[3];
             for (int j = 0; j < 3; j++) {
@@ -593,7 +616,6 @@ qDebug() << i;
                         else
                             qFatal("Unsupported pixel format.");
                     }
-                        //dst.m().at<src.m().type()>i,j) = 255;
                 }
             }
 
@@ -610,12 +632,7 @@ qDebug() << i;
             //bitwise_and(buffer,mask,output);
             //dst.m() += output;
         }
-        /*
-qDebug() <<  dst.m().rows << dst.m().cols << dstBound;
-Eigen::Map<const Eigen::VectorXf> M(dst.m().ptr<float>(), dst.m().rows*dst.m().cols);
-writeEigen((MatrixXf)M, QString("Temp/img%1.bin").arg(SCNT++));
-OpenCVUtils::saveImage(dst.m(), QString("Temp/img%1.jpg").arg(SCNT));
-*/
+
         dst.file.clearPoints();
         dst.file.clearRects();
         dst.file.setPoints(dstPoints);
