@@ -820,21 +820,23 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
     QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
-    
+
     // Remove any bounding boxes with a side smaller than minSize
     if (minSize > 0) {
+        qDebug("Removing boxes smaller than %d\n", minSize);
         foreach(QString key, allDetections.keys()) {
-            for (int i = 0; i < allDetections[key].predicted.length(); i++) {
-                QRectF box = allDetections[key].predicted[i].boundingBox;
+            Detections detections = allDetections[key];
+            for (int i = 0; i < detections.predicted.length(); i++) {
+                QRectF box = detections.predicted[i].boundingBox;
                 if (min(box.width(), box.height()) < minSize)
-                    allDetections[key].predicted.removeAt(i);
+                    detections.predicted.removeAt(i);
             }
-            for (int i = 0; i < allDetections[key].truth.length(); i++) {
-                QRectF box = allDetections[key].truth[i].boundingBox;
+            for (int i = 0; i < detections.truth.length(); i++) {
+                QRectF box = detections.truth[i].boundingBox;
                 if (min(box.width(), box.height()) < minSize)
-                    allDetections[key].truth.removeAt(i);
+                    detections.truth.removeAt(i);
             }
-        }         
+        }
     }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
