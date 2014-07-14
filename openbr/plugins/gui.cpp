@@ -602,7 +602,7 @@ public:
         displayBuffer = new QPixmap();
 
         if (window)
-            delete window;
+            window->deleteLater();
 
         window = creator.getItem<WindowType>();
         // Connect our signals to the window's slots
