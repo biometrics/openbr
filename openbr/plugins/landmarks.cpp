@@ -168,10 +168,6 @@ class ProcrustesAlignTransform : public Transform
     float aspectRatio;
 
     void init() {
-        minX = FLT_MAX,
-        minY = FLT_MAX,
-        maxX = -FLT_MAX,
-        maxY = -FLT_MAX;
         aspectRatio = 0;
     }
 
@@ -261,22 +257,40 @@ class ProcrustesAlignTransform : public Transform
             referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
         }
 
-        //Choose crop boundaries and adjustments that captures all data
-        for (int i = 0; i < points.rows(); i++) {
-            for (int j = 0; j < points.cols(); j++) {
+        //Choose crop boundaries and adjustments that captures most data
+        MatrixXf minXs(points.cols(),1);
+        MatrixXf minYs(points.cols(),1);
+        MatrixXf maxXs(points.cols(),1);
+        MatrixXf maxYs(points.cols(),1);
+        for (int j = 0; j < points.cols(); j++) {
+            minX = FLT_MAX,
+            minY = FLT_MAX,
+            maxX = -FLT_MAX,
+            maxY = -FLT_MAX;
+            for (int i = 0; i < points.rows(); i++) {
                 if (i % 2 == 0) {
-                if (points(i,j) > maxX)
-                    maxX = points(i, j);
-                if (points(i,j) < minX)
-                    minX = points(i, j);
+                    if (points(i,j) > maxX)
+                        maxX = points(i, j);
+                    if (points(i,j) < minX)
+                        minX = points(i, j);
                 } else {
-                if (points(i,j) > maxY)
-                    maxY = points(i, j);
-                if (points(i,j) < minY)
-                    minY = points(i, j);
+                    if (points(i,j) > maxY)
+                        maxY = points(i, j);
+                    if (points(i,j) < minY)
+                        minY = points(i, j);
                 }
             }
+
+            minXs(j) = minX;
+            maxXs(j) = maxX;
+            minYs(j) = minY;
+            maxYs(j) = maxY;
         }
+
+        minX = eigMean(minXs) - 1 * eigStd(minXs);
+        minY = eigMean(minYs) - 1 * eigStd(minYs);
+        maxX = eigMean(maxXs) + 1 * eigStd(maxXs);
+        maxY = eigMean(maxYs) + 1 * eigStd(maxYs);
         aspectRatio = (maxX - minX) / (maxY - minY);
     }
 
@@ -500,7 +514,8 @@ class TextureMapTransform : public UntrainableTransform
             if (points[i].y() > srcMaxY)	srcMaxY = points[i].y();
         }
 
-        float padding = (srcMaxX - srcMinX) / 80 * 14;
+        float padding = (srcMaxX - srcMinX) / 80 * 16;
+        //padding = 8;
         return QRectF(qRound(srcMinX - padding), qRound(srcMinY - padding), qRound(srcMaxX - srcMinX + 2 * padding), qRound(srcMaxY - srcMinY + 2 * padding));
     }
 
@@ -594,7 +609,6 @@ class TextureMapTransform : public UntrainableTransform
             warpAffine(src.m(), buffer, getAffineTransform(srcPoint1, dstPoint1), Size(dstBound.width(), dstBound.height()));
 
             Mat mask = Mat::zeros(dstHeight, dstWidth, CV_8UC1);
-            //Mat mask = Mat::zeros(dstHeight, dstWidth, src.m().type());
             Point maskPoints[1][3];
             maskPoints[0][0] = dstPoint1[0];
             maskPoints[0][1] = dstPoint1[1];
@@ -602,8 +616,6 @@ class TextureMapTransform : public UntrainableTransform
             const Point* ppt = { maskPoints[0] };
             fillConvexPoly(mask, ppt, 3, Scalar(255, 255, 255), 8);
 
-            //dst.m().setTo(buffer, mask);
-            //bitwise_and(buffer, mask, dst.m(), mask);
             for (int i = 0; i < dstHeight; i++) {
                 for (int j = 0; j < dstWidth; j++) {
                     if (mask.at<uchar>(i,j) == 255) {
@@ -619,31 +631,11 @@ class TextureMapTransform : public UntrainableTransform
                 }
             }
 
-            //Mat output(dstBound.height(), dstBound.width(), src.m().type());
-
-            /*
-            if (i > 0) {
-                Mat overlap;
-                bitwise_and(dst.m(), mask, overlap);
-                mask.setTo(0, overlap != 0);
-            }
-            */
-
-            //bitwise_and(buffer,mask,output);
-            //dst.m() += output;
         }
 
         dst.file.clearPoints();
         dst.file.clearRects();
         dst.file.setPoints(dstPoints);
-        /*
-        qDebug() << "\nSRC=\n" <<srcPoints;
-        qDebug() << "DST=\n" <<dstPoints;
-        qDebug() << "file=\n" <<dst.file.points();
-        char a;
-        cin >> a;
-        */
-
     }
 };
 
