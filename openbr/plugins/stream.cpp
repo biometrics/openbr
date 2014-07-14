@@ -1535,21 +1535,21 @@ public:
 
     void project(const Template &src, Template &dst) const
     {
-        basis.project(src,dst);
+        basis->project(src,dst);
     }
 
     void projectUpdate(const Template &src, Template &dst)
     {
-        basis.projectUpdate(src,dst);
+        basis->projectUpdate(src,dst);
     }
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
-        basis.projectUpdate(src,dst);
+        basis->projectUpdate(src,dst);
     }
 
     void train(const QList<TemplateList> &data)
     {
-        basis.train(data);
+        basis->train(data);
     }
 
     virtual void finalize(TemplateList &output)
@@ -1567,10 +1567,10 @@ public:
 
         trainable = transform->trainable;
 
-        basis.setParent(this->parent());
-        basis.transforms.clear();
-        basis.activeFrames = this->activeFrames;
-        basis.readMode = this->readMode;
+        basis = QSharedPointer<DirectStreamTransform>((DirectStreamTransform *) Transform::make("DirectStream",this));
+        basis->transforms.clear();
+        basis->activeFrames = this->activeFrames;
+        basis->readMode = this->readMode;
 
         // We need at least a CompositeTransform * to acess transform's children.
         CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (transform);
@@ -1579,14 +1579,14 @@ public:
         // basis with 1 stage.
         if (!downcast || QString(transform->metaObject()->className()) != "br::PipeTransform")
         {
-            basis.transforms.append(transform);
-            basis.init();
+            basis->transforms.append(transform);
+            basis->init();
             return;
         }
         if (downcast->transforms.empty())
         {
             qWarning("Trying to set up empty stream");
-            basis.init();
+            basis->init();
             return;
         }
 
@@ -1634,21 +1634,21 @@ public:
             }
         }
 
-        basis.transforms = transform_set;
-        basis.init();
+        basis->transforms = transform_set;
+        basis->init();
     }
 
     Transform *smartCopy(bool &newTransform)
     {
         // We just want the DirectStream to begin with, so just return a copy of that.
-        DirectStreamTransform *res = (DirectStreamTransform *) basis.smartCopy(newTransform);
+        DirectStreamTransform *res = (DirectStreamTransform *) basis->smartCopy(newTransform);
         res->activeFrames = this->activeFrames;
         return res;
     }
 
 
 private:
-    DirectStreamTransform basis;
+    QSharedPointer<DirectStreamTransform> basis;
 };
 
 BR_REGISTER(Transform, StreamTransform)
