@@ -541,13 +541,6 @@ class TextureMapTransform : public UntrainableTransform
     {
         QList<QPointF> points(_points);
 
-        //points = addBounds(points, bound);
-        /*
-        points.append(QPointF(bound.left() + bound.width() / 2, bound.top()));
-        points.append(QPointF(bound.left() + bound.width() / 2, bound.bottom() - 1));
-        points.append(QPointF(bound.left(), bound.top() + bound.height() / 2));
-        points.append(QPointF(bound.right() - 1, bound.top() + bound.height() / 2));
-        */
         Subdiv2D subdiv(OpenCVUtils::toRect(bound));
         for (int i = 0; i < points.size(); i++)
             subdiv.insert(OpenCVUtils::toPoint(points[i]));
