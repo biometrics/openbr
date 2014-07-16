@@ -585,22 +585,38 @@ class MeanImageTransform : public TimeVaryingTransform
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
-        if (cnt == 0)
-            average = Mat::zeros(dst.m().size(),dst.m().type());
-        average += dst;
+        if (cnt == 0) {
+            if (src.m().channels() == 1)
+                average = Mat::zeros(dst.m().size(),CV_64FC1);
+            else if (src.m().channels() == 3)
+                average = Mat::zeros(dst.m().size(),CV_64FC3);
+            else
+                qFatal("Unsupported number of channels");
+        }
+
+        Mat temp;
+        if (src.m().channels() == 1) {
+            src.m().convertTo(temp, CV_64FC1);
+            average += temp;
+        } else if (src.m().channels() == 3) {
+            src.m().convertTo(temp, CV_64FC3);
+            average += temp;
+        } else
+            qFatal("Unsupported number of channels");
+
         cnt++;
     }
 
     virtual void finalize(TemplateList & output)
     {
-        average /= cnt;
+        average /= float(cnt);
         imwrite(QString("%1.%2").arg(imgname).arg(ext).toStdString(), average);
         output = TemplateList();
     }
 
 
 public:
-    MeanImageTransform() : TimeVaryingTransform(true, false) {}
+    MeanImageTransform() : TimeVaryingTransform(false, false) {}
 };
 
 BR_REGISTER(Transform, MeanImageTransform)
