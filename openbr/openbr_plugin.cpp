@@ -790,6 +790,9 @@ void Object::setProperty(const QString &name, QVariant value)
         QVariantList elements;
         if (value.canConvert<QVariantList>()) {
             elements = value.value<QVariantList>();
+        } else if (value.canConvert< QList<Transform*> >()) {
+            foreach (Transform *transform, value.value< QList<Transform*> >())
+                elements.append(QVariant::fromValue(transform));
         } else if (value.canConvert<QString>()) {
             QString string = value.value<QString>();
             if (!string.startsWith('[') || !string.endsWith(']'))
