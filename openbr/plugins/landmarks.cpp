@@ -232,29 +232,15 @@ class ProcrustesAlignTransform : public Transform
 
         //Normalize rotation
         if (!useFirst) {
-            MatrixXf refPrev;
-            referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-            float diff = FLT_MAX;
-            float diffDelta = FLT_MAX;
-            while (diff > 1e-5 && diffDelta > 1e-5) {//iterate until reference shape is stable
-                refPrev = referenceShape;
-
-                for (int j = 0; j < points.cols(); j++) {
-                    MatrixXf p = vectorToMatrix(points.col(j));
-                    MatrixXf R = getRotation(referenceShape, p);
-                    p = p * R;
-                    points.col(j) = matrixToVector(p);
-                }
-                referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
-                float temp = diff;
-                diff = (matrixToVector(referenceShape) - matrixToVector(refPrev)).norm();
-                diffDelta = abs(diff - temp);
-            }
-
             referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
         } else {
             referenceShape = vectorToMatrix(points.col(0));
-            referenceShape = vectorToMatrix(points.rowwise().sum() / points.cols());
+        }
+
+        for (int i = 0; i < points.cols(); i++) {
+            MatrixXf p = vectorToMatrix(points.col(i));
+            MatrixXf R = getRotation(referenceShape, p);
+            points.col(i) = matrixToVector(p * R);
         }
 
         //Choose crop boundaries and adjustments that captures most data
@@ -287,10 +273,10 @@ class ProcrustesAlignTransform : public Transform
             maxYs(j) = maxY;
         }
 
-        minX = eigMean(minXs) - 1 * eigStd(minXs);
-        minY = eigMean(minYs) - 1 * eigStd(minYs);
-        maxX = eigMean(maxXs) + 1 * eigStd(maxXs);
-        maxY = eigMean(maxYs) + 1 * eigStd(maxYs);
+        minX = eigMean(minXs) - 0 * eigStd(minXs);
+        minY = eigMean(minYs) - 0 * eigStd(minYs);
+        maxX = eigMean(maxXs) + 0 * eigStd(maxXs);
+        maxY = eigMean(maxYs) + 0 * eigStd(maxYs);
         aspectRatio = (maxX - minX) / (maxY - minY);
     }
 
@@ -325,6 +311,7 @@ class ProcrustesAlignTransform : public Transform
         dst = src;
         dst.file.setList<QPointF>("ProcrustesPoints", procrustesPoints);
         dst.file.set("ProcrustesBound", QRectF(0, 0, width + 2 * padding, (qRound(width / aspectRatio) + 2 * padding)));
+        dst.file.set("ProcrustesPadding", padding);
     }
 
     void store(QDataStream &stream) const
@@ -502,7 +489,7 @@ class TextureMapTransform : public UntrainableTransform
 {
     Q_OBJECT
 
-    static QRectF getBounds(QList<QPointF> points) {
+    static QRectF getBounds(QList<QPointF> points, int dstPadding) {
         float srcMinX = FLT_MAX;
         float srcMinY = FLT_MAX;
         float srcMaxX = -FLT_MAX;
@@ -514,8 +501,7 @@ class TextureMapTransform : public UntrainableTransform
             if (points[i].y() > srcMaxY)	srcMaxY = points[i].y();
         }
 
-        float padding = (srcMaxX - srcMinX) / 80 * 16;
-        //padding = 8;
+        float padding = (srcMaxX - srcMinX) / 80 * dstPadding;
         return QRectF(qRound(srcMinX - padding), qRound(srcMinY - padding), qRound(srcMaxX - srcMinX + 2 * padding), qRound(srcMaxY - srcMinY + 2 * padding));
     }
 
@@ -574,8 +560,8 @@ class TextureMapTransform : public UntrainableTransform
     {
         QList<QPointF> dstPoints = dst.file.getList<QPointF>("ProcrustesPoints");
         QList<QPointF> srcPoints = dst.file.points();
-        QRectF dstBound  = dst.file.get<QRectF>("ProcrustesBound");// getBounds(dstPoints, 8);
-        QRectF srcBound  = getBounds(srcPoints);
+        QRectF dstBound  = dst.file.get<QRectF>("ProcrustesBound");
+        QRectF srcBound  = getBounds(srcPoints, dst.file.get<int>("ProcrustesPadding"));
         if (dstPoints.empty() || srcPoints.empty()) {
             dst = src;
             if (Globals->verbose) qWarning("Delauney triangulation failed because points or rects are empty.");
@@ -633,6 +619,36 @@ class TextureMapTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, TextureMapTransform)
+
+/*!
+ * \ingroup initializers
+ * \brief Initialize Procrustes croppings
+ * \author Brendan Klare \cite bklare
+ */
+class ProcrustesInitializer : public Initializer
+{
+    Q_OBJECT
+
+    void initialize() const
+    {
+        Globals->abbreviations.insert("ProcrustesStasmFace","ProcrustesAlign(padding=16)+TextureMap+Resize(48,48)");
+        Globals->abbreviations.insert("ProcrustesStasmEyes","SelectPoints([28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47])+ProcrustesAlign(padding=8)+TextureMap+Resize(24,48)");
+        Globals->abbreviations.insert("ProcrustesStasmPeriocular","SelectPoints([28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,16,17,18,19,20,21,22,23,24,25,26,27])+ProcrustesAlign(padding=8)+TextureMap+Resize(36,48)");
+        Globals->abbreviations.insert("ProcrustesStasmBrow","SelectPoints([16,17,18,19,20,21,22,23,24,25,26,27])+ProcrustesAlign(padding=8)+TextureMap+Resize(24,48)");
+        Globals->abbreviations.insert("ProcrustesStasmNose","SelectPoints([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58])+ProcrustesAlign(padding=8)+TextureMap+Resize(36,48)");
+        Globals->abbreviations.insert("ProcrustesStasmMouth","SelectPoints([59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76])+ProcrustesAlign(padding=10)+TextureMap+Resize(36,48)");
+        Globals->abbreviations.insert("ProcrustesStasmJaw", "SelectPoints([2,3,4,5,6,7,8,9,10])+ProcrustesAlign(padding=8)+TextureMap+Resize(36,48)");
+
+        Globals->abbreviations.insert("ProcrustesLargeStasmFace","ProcrustesAlign(padding=16)+TextureMap+Resize(480,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmEyes","SelectPoints([28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47])+ProcrustesAlign(padding=8)+TextureMap+Resize(240,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmPeriocular","SelectPoints([28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,16,17,18,19,20,21,22,23,24,25,26,27])+ProcrustesAlign(padding=8)+TextureMap+Resize(360,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmBrow","SelectPoints([16,17,18,19,20,21,22,23,24,25,26,27])+ProcrustesAlign(padding=8)+TextureMap+Resize(240,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmNose","SelectPoints([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58])+ProcrustesAlign(padding=8)+TextureMap+Resize(360,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmMouth","SelectPoints([59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76])+ProcrustesAlign(padding=20)+TextureMap+Resize(360,480)");
+        Globals->abbreviations.insert("ProcrustesLargeStasmJaw", "SelectPoints([2,3,4,5,6,7,8,9,10])+ProcrustesAlign(padding=8)+TextureMap+Resize(360,480)");
+    }
+};
+BR_REGISTER(Initializer, ProcrustesInitializer)
 
 /*!
  * \ingroup transforms
