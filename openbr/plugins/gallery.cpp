@@ -39,6 +39,11 @@
 #include "MatlabIOContainer.hpp"
 #endif
 
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif // _WIN32
+
 namespace br
 {
 
@@ -96,11 +101,27 @@ class BinaryGallery : public Gallery
     void init()
     {
         const QString baseName = file.baseName();
+
         if (baseName == "stdin") {
+#ifdef _WIN32
+            if(_setmode(_fileno(stdin), _O_BINARY) == -1)
+                qFatal("Failed to set stdin to binary mode!");
+#endif // _WIN32
+
             gallery.open(stdin, QFile::ReadOnly);
         } else if (baseName == "stdout") {
+#ifdef _WIN32
+            if(_setmode(_fileno(stdout), _O_BINARY) == -1)
+                qFatal("Failed to set stdout to binary mode!");
+#endif // _WIN32
+
             gallery.open(stdout, QFile::WriteOnly);
         } else if (baseName == "stderr") {
+#ifdef _WIN32
+            if(_setmode(_fileno(stderr), _O_BINARY) == -1)
+                qFatal("Failed to set stderr to binary mode!");
+#endif // _WIN32
+
             gallery.open(stderr, QFile::WriteOnly);
         } else {
             gallery.setFileName(file);
