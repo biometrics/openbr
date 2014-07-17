@@ -824,18 +824,23 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     // Remove any bounding boxes with a side smaller than minSize
     if (minSize > 0) {
         qDebug("Removing boxes smaller than %d\n", minSize);
-        foreach(QString key, allDetections.keys()) {
+        foreach (QString key, allDetections.keys()) {
             Detections detections = allDetections[key];
-            for (int i = 0; i < detections.predicted.length(); i++) {
+            Detections filteredDetections;
+            for (int i = 0; i < detections.predicted.size(); i++) {
                 QRectF box = detections.predicted[i].boundingBox;
-                if (min(box.width(), box.height()) < minSize)
-                    detections.predicted.removeAt(i);
+                if (min(box.width(), box.height()) > minSize) {
+                    filteredDetections.predicted.append(detections.predicted[i]);
+                }
             }
-            for (int i = 0; i < detections.truth.length(); i++) {
+            
+            for (int i = 0; i < detections.truth.size(); i++) {
                 QRectF box = detections.truth[i].boundingBox;
-                if (min(box.width(), box.height()) < minSize)
-                    detections.truth.removeAt(i);
+                if (min(box.width(), box.height()) > minSize) {
+                    filteredDetections.truth.append(detections.truth[i]);
+                }
             }
+            allDetections.insert(key, filteredDetections);
         }
     }
 
