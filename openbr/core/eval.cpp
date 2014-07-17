@@ -607,11 +607,11 @@ struct DetectionOperatingPoint
 {
     float Recall, FalsePositiveRate, Precision;
     DetectionOperatingPoint() : Recall(-1), FalsePositiveRate(-1), Precision(-1) {}
-    DetectionOperatingPoint(float TP, float FP, float totalPositives)
-        : Recall(TP/totalPositives), FalsePositiveRate(FP/totalPositives), Precision(TP/(TP+FP)) {}
+    DetectionOperatingPoint(float TP, float FP, float totalPositives, float numImages)
+        : Recall(TP/totalPositives), FalsePositiveRate(FP/numImages), Precision(TP/(TP+FP)) {}
 };
 
-static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, bool discrete)
+static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete)
 {
     QList<DetectionOperatingPoint> points;
     float TP = 0, FP = 0, prevFP = -1;
@@ -627,7 +627,7 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
             if (FP > prevFP || (i == detections.size()-1)) {
-                points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections));
+                points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections, numImages));
                 prevFP = FP;
             }
         }
@@ -743,6 +743,17 @@ static QMap<QString, Detections> getDetections(const File &predictedGallery, con
     foreach (const File &f, truth)
         allDetections[f.baseName()].truth.append(getDetections(truthDetectKey, f, true));
     return allDetections;
+}
+
+static int getNumberOfImages(const File &truthGallery)
+{
+    const FileList files = TemplateList::fromGallery(truthGallery).files();
+    
+    QStringList names;
+    foreach(const File file, files) 
+        if (!names.contains(file.fileName()))
+            names.append(file.fileName());
+    return names.size();
 }
 
 static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
@@ -864,8 +875,8 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     std::sort(resolvedDetections.begin(), resolvedDetections.end());
     QStringList lines;
     lines.append("Plot, X, Y");
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, true));
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, false));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(truthGallery), true));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(truthGallery), false));
 
     float averageOverlap;
     { // Overlap Density
