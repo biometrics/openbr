@@ -161,15 +161,13 @@ struct AlgorithmCore
         return name + file.baseName() + file.hash() + ".mem";
     }
 
-    FileList enroll(File input, File gallery = File())
+    void enroll(File input, File gallery = File())
     {
-        FileList files;
-
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
         if (gallery.name.isEmpty()) {
-            if (input.name.isEmpty()) return FileList();
+            if (input.name.isEmpty()) return;
             else                      gallery = getMemoryGallery(input);
         }
 
@@ -212,12 +210,8 @@ struct AlgorithmCore
         progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
         stream->projectUpdate(data, output);
 
-        files.append(output.files());
-
         if (multiProcess)
             delete enroll;
-
-        return files;
     }
 
     void project(File input, File output)
@@ -632,9 +626,9 @@ void br::Train(const File &input, const File &model)
     AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
-FileList br::Enroll(const File &input, const File &gallery)
+void br::Enroll(const File &input, const File &gallery)
 {
-    return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
+    AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
 void br::Project(const File &input, const File &output)

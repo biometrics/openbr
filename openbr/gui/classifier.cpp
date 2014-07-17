@@ -37,7 +37,13 @@ void Classifier::setClassification(const QString &key, const QString &value)
 void Classifier::_classify(File file)
 {
     QString key, value;
-    foreach (const File &f, Enroll(file.flat(), File("[algorithm=" + algorithm + "]"))) {
+    QSharedPointer<Transform> transform = Transform::fromAlgorithm(algorithm);
+
+    TemplateList input, output;
+    input.append(file);
+    transform->projectUpdate(input, output);
+
+    foreach (const File &f, output.files() ) {
         if      (algorithm == "GenderClassification") key = "Gender";
         else if (algorithm == "AgeRegression")        key = "Age";
         else                                          key = algorithm;
