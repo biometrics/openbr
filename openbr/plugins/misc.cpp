@@ -278,6 +278,23 @@ class DiscardTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, DiscardTransform)
 
+class DiscardTemplatesTransform : public UntrainableMetaTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        (void) src; (void) dst;
+        qFatal("Incorrect project called on DiscardTemplatesTransform");
+    }
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        (void) src;
+        dst.clear();
+    }
+};
+BR_REGISTER(Transform, DiscardTemplatesTransform)
+
 /*!
  * \ingroup transforms
  * \brief Removes all but the first matrix from the template.
