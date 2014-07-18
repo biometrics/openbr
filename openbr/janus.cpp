@@ -67,7 +67,7 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
     Template u;
     transform->project(t, u);
     template_->append(u);
-    return u.isEmpty() ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
+    return (u.isEmpty() || !u.first().data) ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
 }
 
 janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
