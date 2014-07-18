@@ -11,11 +11,11 @@ static void _janus_add_sample(vector<double> &samples, double sample)
     samples.push_back(sample);
 }
 
-static void _janus_create_template(const char *data_path, TemplateData templateData, janus_gallery gallery)
+static void _janus_create_template(const char *data_path, TemplateData templateData, janus_gallery gallery, bool verbose)
 {
     janus_template template_;
     janus_template_id templateID;
-    JANUS_ASSERT(TemplateIterator::create(data_path, templateData, &template_, &templateID))
+    JANUS_ASSERT(TemplateIterator::create(data_path, templateData, &template_, &templateID, verbose))
 
     static QMutex enrollLock;
     QMutexLocker enrollLocker(&enrollLock);
@@ -23,13 +23,13 @@ static void _janus_create_template(const char *data_path, TemplateData templateD
     JANUS_ASSERT(janus_enroll(template_, templateID, gallery))
 }
 
-janus_error janus_create_gallery(const char *data_path, janus_metadata metadata, janus_gallery gallery)
+janus_error janus_create_gallery(const char *data_path, janus_metadata metadata, janus_gallery gallery, bool verbose)
 {
     TemplateIterator ti(metadata, true);
     TemplateData templateData = ti.next();
     QFutureSynchronizer<void> futures;
     while (!templateData.templateIDs.empty()) {
-        futures.addFuture(QtConcurrent::run(_janus_create_template, data_path, templateData, gallery));
+        futures.addFuture(QtConcurrent::run(_janus_create_template, data_path, templateData, gallery, verbose));
         templateData = ti.next();
     }
     futures.waitForFinished();

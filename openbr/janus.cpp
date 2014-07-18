@@ -60,14 +60,14 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
         !t.file.contains("RIGHT_EYE_Y") ||
         !t.file.contains("LEFT_EYE_X") ||
         !t.file.contains("LEFT_EYE_Y"))
-        return JANUS_SUCCESS;
+        return JANUS_MISSING_ATTRIBUTES;
 
     t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X"), t.file.get<float>("RIGHT_EYE_Y")));
     t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X"), t.file.get<float>("LEFT_EYE_Y")));
     Template u;
     transform->project(t, u);
     template_->append(u);
-    return JANUS_SUCCESS;
+    return u.isEmpty() ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
 }
 
 janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
