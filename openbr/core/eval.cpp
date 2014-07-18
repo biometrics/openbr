@@ -747,12 +747,11 @@ static QMap<QString, Detections> getDetections(const File &predictedGallery, con
 
 static int getNumberOfImages(const File &truthGallery)
 {
-    const FileList files = TemplateList::fromGallery(truthGallery).files();
+    const FileList files = FileList::fromGallery(truthGallery);
     
-    QStringList names;
-    foreach(const File file, files) 
-        if (!names.contains(file.fileName()))
-            names.append(file.fileName());
+    QSet<QString> names;
+    foreach(const File &file, files)
+        names.insert(file.fileName());
     return names.size();
 }
 
