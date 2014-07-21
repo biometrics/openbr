@@ -234,8 +234,10 @@ class utGallery : public BinaryGallery
             qint64 bytesNeeded = ut.size;
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
-                if (bytesRead <= 0)
+                if (bytesRead <= 0) {
+                    qDebug() << gallery.errorString();
                     qFatal("Unexepected EOF while reading universal template data, needed: %d more of: %d bytes.", int(bytesNeeded), int(ut.size));
+                }
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
@@ -260,6 +262,8 @@ class utGallery : public BinaryGallery
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
+        } else {
+            qFatal("Failed to read universal template header!");
         }
         return t;
     }
