@@ -235,7 +235,7 @@ class utGallery : public BinaryGallery
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
                 if (bytesRead <= 0)
-                    qFatal("Unexepected EOF when reading universal template data, needed: %d more bytes.", int(bytesNeeded));
+                    qFatal("Unexepected EOF while reading universal template data, needed: %d more of: %d bytes.", int(bytesNeeded), int(ut.size));
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
