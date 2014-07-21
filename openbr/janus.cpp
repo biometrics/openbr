@@ -64,6 +64,8 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
 
     t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X"), t.file.get<float>("RIGHT_EYE_Y")));
     t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X"), t.file.get<float>("LEFT_EYE_Y")));
+    t.file.appendPoint(t.file.get<QPointF>("Affine_1"));
+    t.file.appendPoint(t.file.get<QPointF>("Affine_0"));
     Template u;
     transform->project(t, u);
     template_->append(u);
