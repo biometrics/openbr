@@ -29,8 +29,12 @@ void printEigen(Eigen::MatrixXd X);
 void printEigen(Eigen::MatrixXf X);
 void printSize(Eigen::MatrixXf X);
 
-//Remove row and column from the matrix
+//Remove row and column from the matrix:
 Eigen::MatrixXf removeRowCol(Eigen::MatrixXf X, int row, int col);
+
+//Convert a point list into a matrix:
+Eigen::MatrixXf pointsToMatrix(QList<QPointF> points);
+
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 inline QDataStream &operator<<(QDataStream &stream, const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat)
@@ -121,4 +125,5 @@ Eigen::MatrixBase<T> eigStd(const Eigen::MatrixBase<T>& x,int dim)
     }
     qFatal("A matrix can only have two dimensions");
 }
+
 #endif // EIGENUTILS_H
