@@ -83,9 +83,10 @@ void br::GalleryToolBar::_enroll(const br::File &input)
 {
     galleryLock.lock();
     this->input = input;
-    if (input.suffix() == "gal") gallery = input.name + ".mem";
-    else                         gallery = QString("%1/galleries/%2.gal[cache]").arg(br::Globals->scratchPath(), qPrintable(input.baseName()+input.hash()));
-    files = br::Enroll(input.flat(), gallery.flat());
+    gallery = input.name + ".mem";
+    br::Enroll(input.flat(), gallery.flat());
+    files = FileList::fromGallery(gallery);
+
     galleryLock.unlock();
 }
 

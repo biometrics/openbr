@@ -161,15 +161,13 @@ struct AlgorithmCore
         return name + file.baseName() + file.hash() + ".mem";
     }
 
-    FileList enroll(File input, File gallery = File())
+    void enroll(File input, File gallery = File())
     {
-        FileList files;
-
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
         if (gallery.name.isEmpty()) {
-            if (input.name.isEmpty()) return FileList();
+            if (input.name.isEmpty()) return;
             else                      gallery = getMemoryGallery(input);
         }
 
@@ -200,24 +198,18 @@ struct AlgorithmCore
         QScopedPointer<Transform> outputTform(Transform::make(outputDesc, NULL));
         stages.append(outputTform.data());
         stages.append(progressCounter.data());
-        QScopedPointer<Transform> discard(Transform::make("Discard",NULL));
-        stages.append(discard.data());
 
         QScopedPointer<Transform> pipeline(br::pipeTransforms(stages));
 
-        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery)"));
+        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint=DiscardTemplates)"));
 
         TemplateList data, output;
         data.append(input);
         progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
         stream->projectUpdate(data, output);
 
-        files.append(output.files());
-
         if (multiProcess)
             delete enroll;
-
-        return files;
     }
 
     void project(File input, File output)
@@ -492,8 +484,6 @@ struct AlgorithmCore
 
         // The ProgressCounter transform will simply provide a display about the number of rows completed.
         compareOutput.append(progressCounter.data());
-        QScopedPointer<Transform> discard(Transform::make("Discard",NULL));
-        compareOutput.append(discard.data());
 
         // With this, we have set up a transform which (optionally) enrolls templates, compares them
         // against a gallery, and outputs them.
@@ -501,7 +491,7 @@ struct AlgorithmCore
 
         // Now, we will give that base transform to a stream, which will incrementally read the row gallery
         // and pass the transforms it reads through the base algorithm.
-        QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery)"));
+        QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery, endPoint=DiscardTemplates)"));
 
         // We set up a template containing the rowGallery we want to compare. 
         TemplateList rowGalleryTemplate;
@@ -632,9 +622,9 @@ void br::Train(const File &input, const File &model)
     AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
-FileList br::Enroll(const File &input, const File &gallery)
+void br::Enroll(const File &input, const File &gallery)
 {
-    return AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
+    AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);
 }
 
 void br::Project(const File &input, const File &output)

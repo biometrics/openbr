@@ -1393,7 +1393,7 @@ BR_EXPORT void Train(const File &input, const File &model);
  * \brief High-level function for creating galleries.
  * \see br_enroll
  */
-BR_EXPORT FileList Enroll(const File &input, const File &gallery = File());
+BR_EXPORT void Enroll(const File &input, const File &gallery = File());
 
 /*!
  * \brief High-level function for enrolling templates.

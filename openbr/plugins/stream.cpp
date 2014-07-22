@@ -1085,6 +1085,32 @@ public:
 
 };
 
+class CollectOutputTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+public:
+    CollectOutputTransform() : TimeVaryingTransform(false, false) {}
+
+    TemplateList data;
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        (void) dst;
+        data.append(src);
+    }
+
+    void finalize(TemplateList & output)
+    {
+        output = data;
+        data.clear();
+    }
+    void train(const TemplateList &data)
+    {
+        (void) data;
+    }
+};
+BR_REGISTER(Transform, CollectOutputTransform)
+
 // This stage reads new frames from the data source.
 class ReadStage : public SingleThreadStage
 {
@@ -1204,11 +1230,12 @@ class DirectStreamTransform : public CompositeTransform
 {
     Q_OBJECT
 public:
-
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
+    Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     BR_PROPERTY(int, activeFrames, 100)
     BR_PROPERTY(br::Idiocy::StreamModes, readMode, br::Idiocy::Auto)
+    BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     friend class StreamTransfrom;
 
@@ -1349,22 +1376,19 @@ public:
             }
             final_output.append(output_set);
         }
+        endPoint->projectUpdate(final_output);
 
         // Clear dst, since we set it to src so that the datasource could open it
         dst.clear();
 
         // dst is set to all output received by the final stage, along
         // with anything output via the calls to finalize.
-        foreach (const TemplateList &list, collector->sets)
-            dst.append(list);
-
-        collector->sets.clear();
-
-        dst.append(final_output);
+        TemplateList output;
+        endPoint->finalize(output);
+        dst.append(output);
 
         foreach (ProcessingStage *stage, processingStages)
             stage->reset();
-
     }
 
 
@@ -1387,7 +1411,7 @@ public:
         QMutexLocker poolLock(&poolsAccess);
         QHash<QObject *, QThreadPool *>::Iterator it;
         if (!pools.contains(this->parent())) {
-            it = pools.insert(this->parent(), new QThreadPool(this->parent()));
+            it = pools.insert(this->parent(), new QThreadPool());
             it.value()->setMaxThreadCount(Globals->parallelism);
         }
         else it = pools.find(this->parent());
@@ -1440,7 +1464,7 @@ public:
         // We also have the last stage, which just puts the output of the
         // previous stages on a template list.
         collectionStage = new SingleThreadStage(prev_stage_variance);
-        collectionStage->transform = this->collector.data();
+        collectionStage->transform = this->endPoint;
 
 
         processingStages.append(collectionStage);
@@ -1454,11 +1478,6 @@ public:
         // And the collection stage points to the read stage, because this is
         // a ring buffer.
         collectionStage->nextStage = readStage;
-    }
-
-    DirectStreamTransform()
-    {
-        this->collector = QSharedPointer<CollectSets>(new CollectSets());
     }
 
     ~DirectStreamTransform()
@@ -1476,7 +1495,6 @@ protected:
 
     ReadStage *readStage;
     SingleThreadStage *collectionStage;
-    QSharedPointer<CollectSets> collector;
 
     QList<ProcessingStage *> processingStages;
 
@@ -1525,11 +1543,13 @@ public:
     {
     }
 
+    Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
 
     BR_PROPERTY(int, activeFrames, 100)
     BR_PROPERTY(br::Idiocy::StreamModes, readMode, br::Idiocy::Auto)
+    BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     bool timeVarying() const { return true; }
 
@@ -1571,6 +1591,7 @@ public:
         basis->transforms.clear();
         basis->activeFrames = this->activeFrames;
         basis->readMode = this->readMode;
+        basis->endPoint = this->endPoint;
 
         // We need at least a CompositeTransform * to acess transform's children.
         CompositeTransform *downcast = dynamic_cast<CompositeTransform *> (transform);
