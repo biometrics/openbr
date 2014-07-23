@@ -170,7 +170,7 @@ struct BR_EXPORT File
 {
     QString name; /*!< \brief Path to a file on disk. */
 
-    File() {}
+    File() { fte = false; }
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
@@ -308,7 +308,7 @@ struct BR_EXPORT File
         return result;
     }
 
-    inline bool failed() const { return getBool("FTE") || getBool("FTO"); } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
+    inline bool failed() const { return fte; } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
 
     QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
     QList<QPointF> points() const; /*!< \brief Returns the file's points list. */
@@ -327,6 +327,7 @@ struct BR_EXPORT File
     inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
+    bool fte;
 private:
     QVariantMap m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
@@ -1295,7 +1296,7 @@ public:
      * \brief Return a pointer to a simplified version of this transform (if possible). Transforms which are only active during training should remove
      * themselves by either returning their child transforms (where relevant) or returning NULL. Set newTransform to true if the transform returned is newly allocated.
      */
-    virtual Transform * simplify(bool & newTransform) { newTransform = false; return this; }
+    virtual Transform * simplify(bool &newTransform) { newTransform = false; return this; }
 
 protected:
     Transform(bool independent = true, bool trainable = true); /*!< \brief Construct a transform. */

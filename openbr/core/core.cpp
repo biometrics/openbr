@@ -195,13 +195,11 @@ struct AlgorithmCore
         if (fileExclusion)
             outputDesc = "FileExclusion(" + gallery.flat() + ")+";
         outputDesc.append("GalleryOutput("+gallery.flat()+")");
-        QScopedPointer<Transform> outputTform(Transform::make(outputDesc, NULL));
-        stages.append(outputTform.data());
         stages.append(progressCounter.data());
 
         QScopedPointer<Transform> pipeline(br::pipeTransforms(stages));
 
-        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint=DiscardTemplates)"));
+        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+"+DiscardTemplates)"));
 
         TemplateList data, output;
         data.append(input);
@@ -479,8 +477,6 @@ struct AlgorithmCore
         // output specification we were passed. Gallery metadata is necessary for some Outputs to function correctly.
         QString outputString = output.flat().isEmpty() ? "Empty" : output.flat();
         QString outputRegionDesc = "Output("+ outputString +"," + targetGallery.flat() +"," + queryGallery.flat() + ","+ QString::number(transposeMode ? 1 : 0) + ")";
-        QScopedPointer<Transform> outputTForm(Transform::make(outputRegionDesc,NULL));
-        compareOutput.append(outputTForm.data());
 
         // The ProgressCounter transform will simply provide a display about the number of rows completed.
         compareOutput.append(progressCounter.data());
@@ -491,7 +487,7 @@ struct AlgorithmCore
 
         // Now, we will give that base transform to a stream, which will incrementally read the row gallery
         // and pass the transforms it reads through the base algorithm.
-        QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery, endPoint=DiscardTemplates)"));
+        QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery, endPoint="+outputRegionDesc+"+DiscardTemplates)"));
 
         // We set up a template containing the rowGallery we want to compare. 
         TemplateList rowGalleryTemplate;

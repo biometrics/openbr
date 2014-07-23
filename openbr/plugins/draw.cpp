@@ -607,7 +607,7 @@ class MeanImageTransform : public TimeVaryingTransform
         cnt++;
     }
 
-    virtual void finalize(TemplateList & output)
+    virtual void finalize(TemplateList &output)
     {
         average /= float(cnt);
         imwrite(QString("%1.%2").arg(imgname).arg(ext).toStdString(), average);
