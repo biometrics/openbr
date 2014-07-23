@@ -39,7 +39,6 @@ static TemplateList Expanded(const TemplateList &templates)
             continue;
         }
 
-        const bool fte = t.file.get<bool>("FTE");
         const QList<QPointF> points = t.file.points();
         const QList<QRectF> rects = t.file.rects();
         if (points.size() % t.size() != 0) qFatal("Uneven point count.");
@@ -48,11 +47,9 @@ static TemplateList Expanded(const TemplateList &templates)
         const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || !enrollAll) {
-                expanded.append(Template(t.file, t[i]));
-                expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
-                expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
-            }
+            expanded.append(Template(t.file, t[i]));
+            expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
+            expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
         }
     }
     return expanded;
@@ -639,7 +636,7 @@ class FTETransform : public Transform
 
         dst = src;
         dst.file.set(transform->objectName(), val);
-        dst.file.set("FTE", (val < min) || (val > max));
+        dst.file.set("PossibleFTE", (val < min) || (val > max));
     }
 };
 
