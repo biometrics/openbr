@@ -907,17 +907,12 @@ public:
             qFatal("null input to multi-thread stage");
         }
 
-        TemplateList project;
-        TemplateList completed;
-        for (int i=0; i < input->data.size(); i++) {
-            if (input->data[i].file.fte)
-                completed.append(input->data[i]);
-            else
-                project.append(input->data[i]);
-        }
-        input->data.clear();
-        transform->project(project, input->data);
-        input->data.append(completed);
+        TemplateList ftes;
+        splitFTEs(input->data, ftes);
+        TemplateList res;
+        transform->project(input->data, res);
+        input->data = res;
+        input->data.append(ftes);
 
         should_continue = nextStage->tryAcquireNextStage(input, final);
 
@@ -994,18 +989,12 @@ public:
 
         next_target = input->sequenceNumber + 1;
 
-        TemplateList project;
-        TemplateList completed;
-        foreach (const Template &t, input->data) {
-            if (t.file.fte)
-                completed.append(t);
-            else
-                project.append(t);
-        }
-        input->data.clear();
-        // Project the input we got
-        transform->projectUpdate(project, input->data);
-        input->data.append(completed);
+        TemplateList ftes;
+        splitFTEs(input->data, ftes);
+        TemplateList res;
+        transform->projectUpdate(input->data, res);
+        input->data = res;
+        input->data.append(ftes);
 
         should_continue = nextStage->tryAcquireNextStage(input,final);
 
@@ -1305,7 +1294,11 @@ public:
 
         QList<TemplateList> output;
         for (int i=0; i < data.size(); i++) {
-            projectUpdate(data[i], data[i]);
+            TemplateList res;
+            TemplateList ftes;
+            projectUpdate(data[i], res);
+            data[i] = res;
+            splitFTEs(data[i], ftes);
             output.append(collector.sets);
             collector.sets.clear();
         }

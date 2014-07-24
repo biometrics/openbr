@@ -308,8 +308,6 @@ struct BR_EXPORT File
         return result;
     }
 
-    inline bool failed() const { return fte; } /*!< \brief Returns \c true if the file failed to open or enroll, \c false otherwise. */
-
     QList<QPointF> namedPoints() const; /*!< \brief Returns points convertible from metadata keys. */
     QList<QPointF> points() const; /*!< \brief Returns the file's points list. */
     void appendPoint(const QPointF &point); /*!< \brief Adds a point to the file's point list. */
@@ -545,7 +543,7 @@ struct TemplateList : public QList<Template>
     {
         QMap<T, int> labelCounts;
         foreach (const File &file, files())
-            if (!excludeFailures || !file.failed())
+            if (!excludeFailures || !file.fte)
                 labelCounts[file.get<T>(propName)]++;
         return labelCounts;
     }

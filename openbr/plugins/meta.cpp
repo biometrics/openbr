@@ -76,21 +76,14 @@ class PipeTransform : public CompositeTransform
 
     void _projectPartial(TemplateList *srcdst, int startIndex, int stopIndex)
     {
-        TemplateList dst = *srcdst;
-        TemplateList temp;
+        TemplateList ftes;
         for (int i=startIndex; i<stopIndex; i++) {
-            TemplateList temp;
-            transforms[i]->project(dst, temp);
+            TemplateList res;
+            transforms[i]->project(*srcdst, res);
 
-            dst.clear();
-            foreach (const Template &t, *srcdst) {
-                if (!t.file.fte)
-                    dst.append(t);
-                else
-                    srcdst->append(t);
-            }
+            splitFTEs(res, ftes);
+            *srcdst = res;
         }
-        srcdst->append(dst);
     }
 
     void train(const QList<TemplateList> &data)
@@ -112,8 +105,12 @@ class PipeTransform : public CompositeTransform
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
                 fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
-                for (int j=0; j < dataLines.size();j++)
+                for (int j=0; j < dataLines.size();j++) {
+                    TemplateList junk;
+                    splitFTEs(dataLines[j], junk);
+
                     transforms[i]->projectUpdate(dataLines[j], dataLines[j]);
+                }
 
                 // advance i since we already projected for this stage.
                 i++;
@@ -215,20 +212,15 @@ protected:
     // or if parallelism is disabled, handle them sequentially
    void _project(const TemplateList &src, TemplateList &dst) const
     {
-        TemplateList temp, output;
-        temp = src;
+        TemplateList ftes;
+        dst = src;
         foreach (const Transform *f, transforms) {
-            dst.clear();
-            f->project(temp, dst);
-            temp.clear();
-            foreach(const Template &t, dst) {
-                if (!t.file.fte)
-                    temp.append(t);
-                else output.append(t);
-            }
+            TemplateList res;
+            f->project(dst, res);
+            splitFTEs(res, ftes);
+            dst = res;
         }
-        output.append(temp);
-        dst = output;
+        dst.append(ftes);
     }
 
    // Single template const project, pass the template through each sub-transform, one after the other
