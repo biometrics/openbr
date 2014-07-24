@@ -481,6 +481,19 @@ Transform *wrapTransform(Transform *base, const QString &target);
 
 Transform *pipeTransforms(QList<Transform *> &transforms);
 
+inline void splitFTEs(TemplateList &src, TemplateList  &ftes)
+{
+    TemplateList active = src;
+    src.clear();
+
+    foreach (const Template &t, active) {
+        if (t.file.fte && !Globals->enrollAll)
+            ftes.append(t);
+        else
+            src.append(t);
+    }
+}
+
 }
 
 #endif // OPENBR_INTERNAL_H

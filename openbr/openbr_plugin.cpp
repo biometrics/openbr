@@ -261,6 +261,7 @@ void File::appendRects(const QList<cv::Rect> &rects)
 /* File - private methods */
 void File::init(const QString &file)
 {
+    fte = false;
     name = file;
 
     while (name.endsWith(']') || name.endsWith(')')) {
@@ -286,6 +287,11 @@ void File::init(const QString &file)
             }
         }
         name = name.left(index);
+    }
+
+    if (contains("FTE")) {
+        fte = getBool("FTE");
+        remove("FTE");
     }
 }
 
@@ -367,7 +373,7 @@ int FileList::failures() const
 {
     int failures = 0;
     foreach (const File &file, *this)
-        if (file.get<bool>("FTO", false) || file.get<bool>("FTE", false))
+        if (file.fte)
             failures++;
     return failures;
 }
@@ -1344,7 +1350,7 @@ static void _project(const Transform *transform, const Template *src, Template *
     } catch (...) {
         qWarning("Exception triggered when processing %s with transform %s", qPrintable(src->file.flat()), qPrintable(transform->objectName()));
         *dst = Template(src->file);
-        dst->file.set("FTE", true);
+        dst->file.fte = true;
     }
 }
 
@@ -1474,6 +1480,9 @@ float Distance::compare(const Template &a, const Template &b) const
 
 float Distance::compare(const cv::Mat &a, const cv::Mat &b) const
 {
+    if (a.empty() || b.empty() || a.rows != b.rows || a.cols != b.cols || a.elemSize() != b.elemSize())
+        return -std::numeric_limits<float>::max();
+
     return compare(a.data, b.data, a.rows * a.cols * a.elemSize());
 }
 

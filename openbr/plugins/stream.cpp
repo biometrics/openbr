@@ -907,7 +907,12 @@ public:
             qFatal("null input to multi-thread stage");
         }
 
-        input->data >> *transform;
+        TemplateList ftes;
+        splitFTEs(input->data, ftes);
+        TemplateList res;
+        transform->project(input->data, res);
+        input->data = res;
+        input->data.append(ftes);
 
         should_continue = nextStage->tryAcquireNextStage(input, final);
 
@@ -927,7 +932,7 @@ public:
     {
         // nothing to do.
     }
-    void status(){
+    void status() {
         qDebug("multi thread stage %d, nothing to worry about", this->stage_id);
     }
 };
@@ -980,13 +985,16 @@ public:
             qFatal("NULL input to stage %d", this->stage_id);
 
         if (input->sequenceNumber != next_target)
-        {
             qFatal("out of order frames for stage %d, got %d expected %d", this->stage_id, input->sequenceNumber, this->next_target);
-        }
+
         next_target = input->sequenceNumber + 1;
 
-        // Project the input we got
-        transform->projectUpdate(input->data);
+        TemplateList ftes;
+        splitFTEs(input->data, ftes);
+        TemplateList res;
+        transform->projectUpdate(input->data, res);
+        input->data = res;
+        input->data.append(ftes);
 
         should_continue = nextStage->tryAcquireNextStage(input,final);
 
@@ -1057,8 +1065,36 @@ public:
         return true;
     }
 
-    void status(){
+    void status() {
         qDebug("single thread stage %d, status starting? %d, next %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->inputBuffer->size());
+    }
+
+};
+
+class EndStage : public SingleThreadStage
+{
+public:
+    EndStage(bool input_variance) : SingleThreadStage(input_variance) {}
+
+    ~EndStage() {}
+
+    // Calledfrom a different thread than run.
+    bool tryAcquireNextStage(FrameData *& input, bool &final)
+    {
+        for (int i=0; i < input->data.size(); i++) {
+            if (input->data[i].file.fte) {
+                input->data[i].file.fte = false;
+                input->data[i].file.set("FTE",QVariant::fromValue(true));
+            }
+            else
+                input->data[i].file.set("FTE",QVariant::fromValue(false));
+        }
+        
+        return SingleThreadStage::tryAcquireNextStage(input, final);
+    }
+
+    void status() {
+        qDebug("end stage %d, status starting? %d, next %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->inputBuffer->size());
     }
 
 };
@@ -1099,7 +1135,7 @@ public:
         data.append(src);
     }
 
-    void finalize(TemplateList & output)
+    void finalize(TemplateList &output)
     {
         output = data;
         data.clear();
@@ -1198,7 +1234,7 @@ public:
         return true;
     }
 
-    void status(){
+    void status() {
         qDebug("Read stage %d, status starting? %d, next frame %d buffer size %d", this->stage_id, this->currentStatus == SingleThreadStage::STARTING, this->next_target, this->dataSource.size());
     }
 };
@@ -1258,7 +1294,11 @@ public:
 
         QList<TemplateList> output;
         for (int i=0; i < data.size(); i++) {
-            projectUpdate(data[i], data[i]);
+            TemplateList res;
+            TemplateList ftes;
+            projectUpdate(data[i], res);
+            data[i] = res;
+            splitFTEs(data[i], ftes);
             output.append(collector.sets);
             collector.sets.clear();
         }
@@ -1463,7 +1503,7 @@ public:
 
         // We also have the last stage, which just puts the output of the
         // previous stages on a template list.
-        collectionStage = new SingleThreadStage(prev_stage_variance);
+        collectionStage = new EndStage(prev_stage_variance);
         collectionStage->transform = this->endPoint;
 
 

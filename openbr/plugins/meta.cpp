@@ -39,7 +39,6 @@ static TemplateList Expanded(const TemplateList &templates)
             continue;
         }
 
-        const bool fte = t.file.get<bool>("FTE");
         const QList<QPointF> points = t.file.points();
         const QList<QRectF> rects = t.file.rects();
         if (points.size() % t.size() != 0) qFatal("Uneven point count.");
@@ -48,11 +47,9 @@ static TemplateList Expanded(const TemplateList &templates)
         const int rectStep = rects.size() / t.size();
 
         for (int i=0; i<t.size(); i++) {
-            if (!fte || !enrollAll) {
-                expanded.append(Template(t.file, t[i]));
-                expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
-                expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
-            }
+            expanded.append(Template(t.file, t[i]));
+            expanded.last().file.setRects(rects.mid(i*rectStep, rectStep));
+            expanded.last().file.setPoints(points.mid(i*pointStep, pointStep));
         }
     }
     return expanded;
@@ -79,8 +76,14 @@ class PipeTransform : public CompositeTransform
 
     void _projectPartial(TemplateList *srcdst, int startIndex, int stopIndex)
     {
-        for (int i=startIndex; i<stopIndex; i++)
-            *srcdst >> *transforms[i];
+        TemplateList ftes;
+        for (int i=startIndex; i<stopIndex; i++) {
+            TemplateList res;
+            transforms[i]->project(*srcdst, res);
+
+            splitFTEs(res, ftes);
+            *srcdst = res;
+        }
     }
 
     void train(const QList<TemplateList> &data)
@@ -102,8 +105,12 @@ class PipeTransform : public CompositeTransform
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
                 fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
-                for (int j=0; j < dataLines.size();j++)
+                for (int j=0; j < dataLines.size();j++) {
+                    TemplateList junk;
+                    splitFTEs(dataLines[j], junk);
+
                     transforms[i]->projectUpdate(dataLines[j], dataLines[j]);
+                }
 
                 // advance i since we already projected for this stage.
                 i++;
@@ -139,10 +146,13 @@ class PipeTransform : public CompositeTransform
         foreach (Transform *f, transforms) {
             try {
                 f->projectUpdate(dst);
+                if (dst.file.fte)
+                    break;
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.set("FTE", true);
+                dst.file.fte = true;
+                break;
             }
         }
     }
@@ -152,8 +162,7 @@ class PipeTransform : public CompositeTransform
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst = src;
-        foreach (Transform *f, transforms)
-        {
+        foreach (Transform *f, transforms) {
             f->projectUpdate(dst);
         }
     }
@@ -191,9 +200,7 @@ class PipeTransform : public CompositeTransform
                 continue;
             }
             for (int j=0; j < probe->transforms.size(); j++)
-            {
                 flattened.append(probe->transforms[j]);
-            }
         }
         transforms = flattened;
 
@@ -205,10 +212,15 @@ protected:
     // or if parallelism is disabled, handle them sequentially
    void _project(const TemplateList &src, TemplateList &dst) const
     {
+        TemplateList ftes;
         dst = src;
         foreach (const Transform *f, transforms) {
-            dst >> *f;
+            TemplateList res;
+            f->project(dst, res);
+            splitFTEs(res, ftes);
+            dst = res;
         }
+        dst.append(ftes);
     }
 
    // Single template const project, pass the template through each sub-transform, one after the other
@@ -218,10 +230,12 @@ protected:
        foreach (const Transform *f, transforms) {
            try {
                dst >> *f;
+               if (dst.file.fte)
+                   break;
            } catch (...) {
                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                dst = Template(src.file);
-               dst.file.set("FTE", true);
+               dst.file.fte = true;
            }
        }
    }
@@ -326,7 +340,8 @@ class ForkTransform : public CompositeTransform
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.set("FTE", true);
+                dst.file.fte = true;
+                break;
             }
         }
     }
@@ -382,7 +397,8 @@ protected:
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
-                dst.file.set("FTE", true);
+                dst.file.fte = true;
+                break;
             }
         }
     }
@@ -639,7 +655,7 @@ class FTETransform : public Transform
 
         dst = src;
         dst.file.set(transform->objectName(), val);
-        dst.file.set("FTE", (val < min) || (val > max));
+        dst.file.set("PossibleFTE", (val < min) || (val > max));
     }
 };
 

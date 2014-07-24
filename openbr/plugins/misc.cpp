@@ -52,7 +52,8 @@ class OpenTransform : public UntrainableMetaTransform
                 dst.append(t);
                 dst.file.append(t.file.localMetadata());
             }
-            dst.file.set("FTO", dst.isEmpty());
+            if (dst.isEmpty())
+                dst.file.fte = true;
         } else {
             // Propogate or decode existing matricies
             foreach (const Mat &m, src) {
@@ -610,6 +611,10 @@ class GalleryOutputTransform : public TimeVaryingTransform
         if (src.empty())
             return;
         dst = src;
+        for (int i=0; i < dst.size();i++) {
+            if (dst[i].file.getBool("FTE"))
+                dst[i].file.fte = true;
+        }
         writer->writeBlock(dst);
     }
 
@@ -725,8 +730,10 @@ class OutputTransform : public TimeVaryingTransform
 
         // we received a template, which is the next row/column in order
         foreach (const Template &t, dst) {
-            for (int i=0; i < t.m().cols; i++) {
-                output->setRelative(t.m().at<float>(0, i), currentRow, currentCol);
+            bool fte = t.file.getBool("FTE") || t.file.fte;
+
+            for (int i=0; i < scoresPerMat; i++) {
+                output->setRelative(fte ? -std::numeric_limits<float>::max() : t.m().at<float>(0, i), currentRow, currentCol);
 
                 // row-major input
                 if (!transposeMode)
@@ -794,10 +801,12 @@ class OutputTransform : public TimeVaryingTransform
             fragmentsPerRow = bufferedSize;
             // a single col contains comparisons to all query files
             fragmentsPerCol = queryFiles.size();
+            scoresPerMat = fragmentsPerCol;
         }
         else {
             // a single row contains comparisons to all target files
             fragmentsPerRow = targetFiles.size();
+            scoresPerMat = fragmentsPerRow;
             // we output rows one at a time
             fragmentsPerCol = 1;
         }
@@ -822,6 +831,8 @@ class OutputTransform : public TimeVaryingTransform
 
     int fragmentsPerRow;
     int fragmentsPerCol;
+
+    int scoresPerMat;
 
 public:
     OutputTransform() : TimeVaryingTransform(false,false) {}

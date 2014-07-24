@@ -54,7 +54,7 @@ class KeyPointDetectorTransform : public UntrainableTransform
             featureDetector->detect(src, keyPoints);
         } catch (...) {
             qWarning("Key point detection failed for file %s", qPrintable(src.file.name));
-            dst.file.set("FTE", true);
+            dst.file.fte = true;
         }
 
         QList<Rect> rects;

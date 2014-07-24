@@ -323,7 +323,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
             // No faces were detected when we were expecting one, output something with FTE set.
             if (!foundFace && !Globals->enrollAll) {
                 dstList.append(Template(src.file, detectOnly ? src.m() : cv::Mat()));
-                dstList.last().file.set("FTE", true);
+                dstList.last().file.fte = true;
             }
         }
 
