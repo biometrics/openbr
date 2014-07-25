@@ -275,6 +275,21 @@ class IndependentTransform : public MetaTransform
         dst.append(mats);
     }
 
+    void finalize(TemplateList &out)
+    {
+        if (transforms.empty())
+            return;
+
+        transforms[0]->finalize(out);
+        for (int i=1; i < transforms.size(); i++) {
+            TemplateList temp;
+            transforms[i]->finalize(temp);
+
+            for (int j=0; j < out.size(); j++)
+                out[j].append(temp[j]);
+        }
+    }
+
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
         dst.reserve(src.size());
