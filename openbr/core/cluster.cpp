@@ -25,13 +25,12 @@
 
 #include "openbr/core/bee.h"
 #include "openbr/core/cluster.h"
+#include "openbr/plugins/openbr_internal.h"
 
-typedef QPair<int,float> Neighbor; // QPair<id,similarity>
-typedef QList<Neighbor> Neighbors;
-typedef QVector<Neighbors> Neighborhood;
+using namespace br;
 
 // Compare function used to order neighbors from highest to lowest similarity
-static bool compareNeighbors(const Neighbor &a, const Neighbor &b)
+bool br::compareNeighbors(const Neighbor &a, const Neighbor &b)
 {
     if (a.second == b.second)
         return a.first < b.first;

@@ -477,9 +477,6 @@ public:
 
 void applyAdditionalProperties(const File &temp, Transform *target);
 
-Transform *wrapTransform(Transform *base, const QString &target);
-
-Transform *pipeTransforms(QList<Transform *> &transforms);
 
 inline void splitFTEs(TemplateList &src, TemplateList  &ftes)
 {
@@ -493,6 +490,12 @@ inline void splitFTEs(TemplateList &src, TemplateList  &ftes)
             src.append(t);
     }
 }
+
+typedef QPair<int,float> Neighbor; // QPair<id,similarity>
+typedef QList<Neighbor> Neighbors;
+typedef QVector<Neighbors> Neighborhood;
+
+BR_EXPORT bool compareNeighbors(const Neighbor &a, const Neighbor &b);
 
 }
 

@@ -715,6 +715,11 @@ void br::Deduplicate(const File &inputGallery, const File &outputGallery, const 
     else qFatal("Unable to convert deduplication threshold to float.");
 }
 
+QSharedPointer<br::Transform> br::Transform::fromComparison(const QString &algorithm)
+{
+    return AlgorithmManager::getAlgorithm(algorithm)->comparison;
+}
+
 QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algorithm, bool preprocess)
 {
     if (!preprocess)

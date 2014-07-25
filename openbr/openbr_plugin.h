@@ -461,9 +461,9 @@ struct TemplateList : public QList<Template>
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
-    QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
-    QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
-    QList<int> applyIndex(const QString &propName, const QHash<QString, int> &valueMap) const;
+    BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
+    BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
+    BR_EXPORT QList<int> applyIndex(const QString &propName, const QHash<QString, int> &valueMap) const;
 
     /*!
      * \brief Returns the total number of bytes in all the templates.
@@ -1163,6 +1163,7 @@ public:
     virtual ~Transform() {}
     static Transform *make(QString str, QObject *parent); /*!< \brief Make a transform from a string. */
     static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm, bool preprocess=true); /*!< \brief Retrieve an algorithm's transform. If preprocess is true, attaches a stream transform as the root of the algorithm*/
+    static QSharedPointer<Transform> fromComparison(const QString &algorithm);
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
 
@@ -1445,6 +1446,10 @@ BR_EXPORT void Cat(const QStringList &inputGalleries, const QString &outputGalle
  * \param threshold Match score threshold to determine duplicates.
  */
 BR_EXPORT void Deduplicate(const File &inputGallery, const File &outputGallery, const QString &threshold);
+
+BR_EXPORT Transform *wrapTransform(Transform *base, const QString &target);
+
+BR_EXPORT Transform *pipeTransforms(QList<Transform *> &transforms);
 
 /*! @}*/
 
