@@ -96,11 +96,44 @@ MatrixXf removeRowCol(MatrixXf X, int row, int col) {
     return Y;
 }
 
-MatrixXf pointsToMatrix(QList<QPointF> points) {
-    MatrixXf P(points.size(), 2);
+MatrixXf pointsToMatrix(QList<QPointF> points, bool isAffine) {
+    MatrixXf P(points.size(), isAffine ? 3 : 2);
     for (int i = 0; i < points.size(); i++) {
         P(i, 0) = points[i].x();
         P(i, 1) = points[i].y();
+        if (isAffine)
+            P(i, 2) = 1;
     }
     return P;
 }
+
+QList<QPointF> matrixToPoints(MatrixXf P) {
+    QList<QPointF> points;
+    for (int i = 0; i < P.rows(); i++)
+        points.append(QPointF(P(i, 0), P(i, 1)));
+    return points;
+}
+
+//Converts x y points in a single vector to two column matrix
+Eigen::MatrixXf vectorToMatrix(Eigen::MatrixXf vector) {
+    int n = vector.rows();
+    Eigen::MatrixXf matrix(n / 2, 2);
+    for (int i = 0; i < n / 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            matrix(i, j) = vector(i * 2 + j);
+        }
+    }
+    return matrix;
+}
+
+Eigen::MatrixXf matrixToVector(Eigen::MatrixXf matrix) {
+    int n2 = matrix.rows();
+    Eigen::MatrixXf vector(n2 * 2, 1);
+    for (int i = 0; i < n2; i++) {
+        for (int j = 0; j < 2; j++) {
+            vector(i * 2 + j) = matrix(i, j);
+        }
+    }
+    return vector;
+}
+

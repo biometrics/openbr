@@ -553,7 +553,7 @@ class WriteImageTransform : public TimeVaryingTransform
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
-        OpenCVUtils::saveImage(dst.m(), QString("%1/%2_%3.%4").arg(outputDirectory).arg(imageName).arg(cnt++, 5, QChar('0')).arg(imgExtension));
+        OpenCVUtils::saveImage(dst.m(), QString("%1/%2_%3.%4").arg(outputDirectory).arg(imageName).arg(cnt++, 5, 10, QChar('0')).arg(imgExtension));
     }
 
 };
