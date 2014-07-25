@@ -639,8 +639,8 @@ class ProgressCounterTransform : public TimeVaryingTransform
 {
     Q_OBJECT
 
-    Q_PROPERTY(int totalProgress READ get_totalProgress WRITE set_totalProgress RESET reset_totalProgress STORED false)
-    BR_PROPERTY(int, totalProgress, 1)
+    Q_PROPERTY(qint64 totalProgress READ get_totalProgress WRITE set_totalProgress RESET reset_totalProgress STORED false)
+    BR_PROPERTY(qint64, totalProgress, 1)
 
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
@@ -651,7 +651,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
         if (!dst.empty()) {
             for (int i=0;i < dst.size();i++) {
                 int frame = dst[i].file.get<int>("FrameNumber", -1);
-                if (frame == last_frame)
+                if (frame == last_frame && frame != -1)
                     continue;
 
                 Globals->currentProgress = dst[i].file.get<qint64>("progress",0);
