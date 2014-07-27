@@ -30,15 +30,15 @@ void printEigen(Eigen::MatrixXf X);
 void printSize(Eigen::MatrixXf X);
 
 //Converts x y points in a single vector to two column matrix
-Eigen::MatrixXf vectorToMatrix(Eigen::MatrixXf vector);
-Eigen::MatrixXf matrixToVector(Eigen::MatrixXf matrix);
+Eigen::MatrixXf vectorToMatrix(const Eigen::MatrixXf vector);
+Eigen::MatrixXf matrixToVector(const Eigen::MatrixXf matrix);
 
 //Remove row and column from the matrix:
-Eigen::MatrixXf removeRowCol(Eigen::MatrixXf X, int row, int col);
+Eigen::MatrixXf removeRowCol(const Eigen::MatrixXf X, int row, int col);
 
 //Convert a point list into a matrix:
-Eigen::MatrixXf pointsToMatrix(QList<QPointF> points, bool isAffine=false);
-QList<QPointF> matrixToPoints(Eigen::MatrixXf P);
+Eigen::MatrixXf pointsToMatrix(const QList<QPointF> points, bool isAffine=false);
+QList<QPointF> matrixToPoints(const Eigen::MatrixXf P);
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 inline QDataStream &operator<<(QDataStream &stream, const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat)
