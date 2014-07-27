@@ -53,6 +53,7 @@ private:
     Q_PROPERTY(float x3 READ get_x3 WRITE set_x3 RESET reset_x3 STORED false)
     Q_PROPERTY(float y3 READ get_y3 WRITE set_y3 RESET reset_y3 STORED false)
     Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
+    Q_PROPERTY(bool storeAffine READ get_storeAffine WRITE set_storeAffine RESET reset_storeAffine STORED false)
     BR_PROPERTY(int, width, 64)
     BR_PROPERTY(int, height, 64)
     BR_PROPERTY(float, x1, 0)
@@ -62,6 +63,7 @@ private:
     BR_PROPERTY(float, x3, -1)
     BR_PROPERTY(float, y3, -1)
     BR_PROPERTY(Method, method, Bilin)
+    BR_PROPERTY(bool, storeAffine, false)
 
     static Point2f getThirdAffinePoint(const Point2f &a, const Point2f &b)
     {
@@ -105,10 +107,17 @@ private:
         }
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
-        warpAffine(src, dst, getAffineTransform(srcPoints, dstPoints), Size(width, height), method);
+        Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
+        warpAffine(src, dst, affineTransform, Size(width, height), method);
+        if (storeAffine) {
+            QList<float> affineParams;
+            for (int i = 0 ; i < 2; i++)
+                for (int j = 0; j < 3; j++)
+                    affineParams.append(affineTransform.at<double>(i, j));
+            dst.file.setList("affineParameters", affineParams);
+        }
     }
 };
-
 BR_REGISTER(Transform, AffineTransform)
 
 /*!

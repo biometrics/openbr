@@ -77,7 +77,7 @@ float eigStd(const Eigen::MatrixXf& x) {
     return sqrt((x.array() - mean).pow(2).sum() / (x.cols() * x.rows()));
 }
 
-MatrixXf removeRowCol(MatrixXf X, int row, int col) {
+MatrixXf removeRowCol(const MatrixXf X, int row, int col) {
     MatrixXf Y(X.rows() - 1,X.cols() - 1);
 
     for (int i1 = 0, i2 = 0; i1 < X.rows(); i1++) {
@@ -96,11 +96,44 @@ MatrixXf removeRowCol(MatrixXf X, int row, int col) {
     return Y;
 }
 
-MatrixXf pointsToMatrix(QList<QPointF> points) {
-    MatrixXf P(points.size(), 2);
+MatrixXf pointsToMatrix(const QList<QPointF> points, bool isAffine) {
+    MatrixXf P(points.size(), isAffine ? 3 : 2);
     for (int i = 0; i < points.size(); i++) {
         P(i, 0) = points[i].x();
         P(i, 1) = points[i].y();
+        if (isAffine)
+            P(i, 2) = 1;
     }
     return P;
 }
+
+QList<QPointF> matrixToPoints(const Eigen::MatrixXf P) {
+    QList<QPointF> points;
+    for (int i = 0; i < P.rows(); i++)
+        points.append(QPointF(P(i, 0), P(i, 1)));
+    return points;
+}
+
+//Converts x y points in a single vector to two column matrix
+Eigen::MatrixXf vectorToMatrix(const Eigen::MatrixXf vector) {
+    int n = vector.rows();
+    Eigen::MatrixXf matrix(n / 2, 2);
+    for (int i = 0; i < n / 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            matrix(i, j) = vector(i * 2 + j);
+        }
+    }
+    return matrix;
+}
+
+Eigen::MatrixXf matrixToVector(const Eigen::MatrixXf matrix) {
+    int n2 = matrix.rows();
+    Eigen::MatrixXf vector(n2 * 2, 1);
+    for (int i = 0; i < n2; i++) {
+        for (int j = 0; j < 2; j++) {
+            vector(i * 2 + j) = matrix(i, j);
+        }
+    }
+    return vector;
+}
+
