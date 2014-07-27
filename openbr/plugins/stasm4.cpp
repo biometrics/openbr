@@ -186,10 +186,9 @@ private:
                 affine(i, j) = paramList[cnt];
         affine(2, 2) = 1;
         affine = affine.inverse();
-        affine = affine.block(0, 0, 2, 3);
+        Eigen::MatrixXf affineInv = affine.block(0, 0, 2, 3);
         Eigen::MatrixXf pointsT = points.transpose();
-        points =  affine * pointsT;
-
+        points =  affineInv * pointsT;
         dst = src;
         dst.file.clearPoints();
         dst.file.setPoints(matrixToPoints(points.transpose()));
