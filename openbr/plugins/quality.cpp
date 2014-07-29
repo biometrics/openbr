@@ -182,6 +182,11 @@ class MatchProbabilityDistance : public Distance
         mp = MP(genuineScores, impostorScores);
     }
 
+    float compare(const Template &target, const Template &query) const
+    {
+        return normalize(distance->compare(target, query));
+    }
+
     float compare(const cv::Mat &target, const cv::Mat &query) const
     {
         return normalize(distance->compare(target, query));
