@@ -242,26 +242,18 @@ class utGallery : public BinaryGallery
                 dst += bytesRead;
             }
 
-            if (QCryptographicHash::hash(data, QCryptographicHash::Md5) != QByteArray((const char*)ut.templateID, 16))
+            if (QCryptographicHash::hash(data.mid(ut.urlSize), QCryptographicHash::Md5) != QByteArray((const char*)ut.templateID, 16))
                 qFatal("MD5 hash check failure!");
-
-            if (ut.algorithmID == 5) {
-                QDataStream stream(&data, QIODevice::ReadOnly);
-                stream >> t;
-            } else if (ut.algorithmID == 7) {
-                uint32_t *roi = (uint32_t*) data.data();
-                t.file.set("X", roi[0]);
-                t.file.set("Y", roi[1]);
-                t.file.set("Width", roi[2]);
-                t.file.set("Height", roi[3]);
-                t.append(cv::Mat(1, data.size()-4*sizeof(uint32_t), CV_8UC1, data.data()+4*sizeof(uint32_t)).clone() /* We don't want a shallow copy! */);
-            } else {
-                t.append(cv::Mat(1, data.size(), CV_8UC1, data.data()).clone() /* We don't want a shallow copy! */);
-            }
 
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
+            t.file.set("X", ut.x);
+            t.file.set("Y", ut.y);
+            t.file.set("Width", ut.width);
+            t.file.set("Height", ut.height);
+            t.file.set("URL", QString(data.data()));
+            t.append(cv::Mat(1, ut.size - ut.urlSize, CV_8UC1, data.data() + ut.urlSize).clone() /* We don't want a shallow copy! */);
         } else {
             qFatal("Failed to read universal template header!");
         }
@@ -275,75 +267,45 @@ class utGallery : public BinaryGallery
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
         const int32_t algorithmID = t.isEmpty() ? 0 : t.file.get<int32_t>("AlgorithmID");
+        const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
+
+        uint32_t x = 0, y = 0, width = 0, height = 0;
         QByteArray data;
-        if (algorithmID == 5) {
-            QDataStream stream(&data, QIODevice::WriteOnly);
-            stream << t;
+        if (algorithmID == -1) {
+            const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
+            x      = frontalFace.x();
+            y      = frontalFace.y();
+            width  = frontalFace.width();
+            height = frontalFace.height();
+
+            const QPointF firstEye   = t.file.get<QPointF>("First_Eye");
+            const QPointF secondEye  = t.file.get<QPointF>("Second_Eye");
+            const uint32_t rightEyeX = firstEye.x();
+            const uint32_t rightEyeY = firstEye.y();
+            const uint32_t leftEyeX  = secondEye.x();
+            const uint32_t leftEyeY  = secondEye.y();
+
+            data.append((const char*)&rightEyeX, sizeof(uint32_t));
+            data.append((const char*)&rightEyeY, sizeof(uint32_t));
+            data.append((const char*)&leftEyeX , sizeof(uint32_t));
+            data.append((const char*)&leftEyeY , sizeof(uint32_t));
         } else {
-            if (!t.empty())
-                data = QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
-
-            if (algorithmID == -1) {
-                const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
-                const QPointF firstEye   = t.file.get<QPointF>("First_Eye");
-                const QPointF secondEye  = t.file.get<QPointF>("Second_Eye");
-                const float x         = frontalFace.x();
-                const float y         = frontalFace.y();
-                const float width     = frontalFace.width();
-                const float height    = frontalFace.height();
-                const float rightEyeX = firstEye.x();
-                const float rightEyeY = firstEye.y();
-                const float leftEyeX  = secondEye.x();
-                const float leftEyeY  = secondEye.y();
-
-                data.append((const char*)&x        , sizeof(float));
-                data.append((const char*)&y        , sizeof(float));
-                data.append((const char*)&width    , sizeof(float));
-                data.append((const char*)&height   , sizeof(float));
-                data.append((const char*)&rightEyeX, sizeof(float));
-                data.append((const char*)&rightEyeY, sizeof(float));
-                data.append((const char*)&leftEyeX , sizeof(float));
-                data.append((const char*)&leftEyeY , sizeof(float));
-            }
+            x = t.file.get<uint32_t>("X", 0);
+            y = t.file.get<uint32_t>("Y", 0);
+            width = t.file.get<uint32_t>("Width", 0);
+            height = t.file.get<uint32_t>("Height", 0);
         }
-        const QByteArray templateID = data.isEmpty() ? QByteArray(16, 0) : QCryptographicHash::hash(data, QCryptographicHash::Md5);
-        const uint32_t size = data.size();
 
-        gallery.write(imageID);
-        gallery.write(templateID);
-        gallery.write((const char*) &algorithmID, 4);
-        gallery.write((const char*) &size, 4);
-        gallery.write(data);
+        if (!t.empty())
+            data.append((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+
+        br_const_utemplate ut = br_new_utemplate((const int8_t*) imageID.data(), algorithmID, x, y, width, height, url.data(), data.data(), data.size());
+        gallery.write((const char*) ut, sizeof(br_universal_template) + ut->size);
+        br_free_utemplate(ut);
     }
 };
 
 BR_REGISTER(Gallery, utGallery)
-
-/*!
- * \ingroup galleries
- * \brief Newline-separated br_universal_template data.
- * \author Josh Klontz \cite jklontz
- */
-class utdGallery : public BinaryGallery
-{
-    Q_OBJECT
-
-    Template readTemplate()
-    {
-        qFatal("Not supported");
-        return Template();
-    }
-
-    void writeTemplate(const Template &t)
-    {
-        if (t.empty())
-            return;
-        gallery.write(QByteArray((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize()));
-        gallery.write("\n");
-    }
-};
-
-BR_REGISTER(Gallery, utdGallery)
 
 /*!
  * \ingroup galleries
