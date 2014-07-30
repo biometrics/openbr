@@ -157,7 +157,7 @@ class BinaryGallery : public Gallery
                 break;
         }
 
-        *done = stream.atEnd();
+        *done = gallery.pos() == gallery.size();
         return templates;
     }
 
