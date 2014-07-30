@@ -36,10 +36,18 @@ extern "C" {
 struct br_universal_template
 {
     unsigned char imageID[16];    /*!< MD5 hash of the undecoded origin file. */
-    unsigned char templateID[16]; /*!< MD5 hash of _data_. */
-    int32_t  algorithmID;    /*!< type of _data_. */
-    uint32_t size;           /*!< length of _data_. */
-    unsigned char data[];    /*!< _size_-byte buffer. */
+    unsigned char templateID[16]; /*!< MD5 hash of _data_ after _urlSize_. */
+    int32_t  algorithmID;         /*!< interpretation of _data_ after _urlSize_. */
+    uint32_t x;      /*!< region of interest horizontal offset (pixels). */
+    uint32_t y;      /*!< region of interest vertical offset (pixels). */
+    uint32_t width;  /*!< region of interest horizontal size (pixels). */
+    uint32_t height; /*!< region of interest vertical size (pixels). */
+    uint32_t urlSize; /*!< length of null-terminated URL at the beginning of _data_,
+                           including the null-terminator character. */
+    uint32_t size; /*!< length of _data_. */
+    unsigned char data[]; /*!< _size_-byte buffer.
+                               The first _urlSize_ bytes represent the URL.
+                               The remaining (_size_ - _urlSize_) bytes represent the template data. */
 };
 
 typedef struct br_universal_template *br_utemplate;
@@ -49,7 +57,7 @@ typedef const struct br_universal_template *br_const_utemplate;
  * \brief br_universal_template constructor.
  * \see br_free_utemplate
  */
-BR_EXPORT br_utemplate br_new_utemplate(const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data);
+BR_EXPORT br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, const char *url, const char *data, uint32_t dataSize);
 
 /*!
  * \brief br_universal_template destructor.
@@ -62,12 +70,6 @@ BR_EXPORT void br_free_utemplate(br_const_utemplate utemplate);
  * \see br_append_utemplate_contents
  */
 BR_EXPORT void br_append_utemplate(FILE *file, br_const_utemplate utemplate);
-
-/*!
- * \brief Serialize a br_universal_template to a file.
- * \see br_append_utemplate
- */
-BR_EXPORT void br_append_utemplate_contents(FILE *file, const unsigned char *imageID, const unsigned char *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data);
 
 /*!
  * \brief br_universal_template iterator callback.

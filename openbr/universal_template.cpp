@@ -8,14 +8,22 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(const int8_t *imageID, const int8_t *templateID, int32_t algorithmID, uint32_t size, const int8_t *data)
+br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, const char *url, const char *data, uint32_t dataSize)
 {
+    const uint32_t urlSize = strlen(url) + 1;
+    const uint32_t size = urlSize + dataSize;
     br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + size);
     memcpy(utemplate->imageID, imageID, 16);
-    memcpy(utemplate->templateID, templateID, 16);
+    memcpy(utemplate->templateID, QCryptographicHash::hash(QByteArray(data, dataSize), QCryptographicHash::Md5).data(), 16);
     utemplate->algorithmID = algorithmID;
+    utemplate->x = x;
+    utemplate->y = y;
+    utemplate->width = width;
+    utemplate->height = height;
+    utemplate->urlSize = urlSize;
     utemplate->size = size;
-    memcpy(utemplate+1, data, size);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + 0,       url , urlSize);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + urlSize, data, dataSize);
     return utemplate;
 }
 
@@ -26,19 +34,7 @@ void br_free_utemplate(br_const_utemplate utemplate)
 
 void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
 {
-    br_append_utemplate_contents(file, utemplate->imageID, utemplate->templateID, utemplate->algorithmID, utemplate->size, utemplate->data);
-}
-
-void br_append_utemplate_contents(FILE *file, const unsigned char *imageID, const unsigned char *templateID, int32_t algorithmID, uint32_t size, const unsigned char *data)
-{
-    static QMutex lock;
-    QMutexLocker locker(&lock);
-
-    fwrite(imageID, 16, 1, file);
-    fwrite(templateID, 16, 1, file);
-    fwrite(&algorithmID, 4, 1, file);
-    fwrite(&size, 4, 1, file);
-    fwrite(data, 1, size, file);
+    fwrite(utemplate, sizeof(br_universal_template) + utemplate->size, 1, file);
 }
 
 void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback, br_callback_context context)
