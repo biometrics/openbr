@@ -350,9 +350,12 @@ class jsonGallery : public BinaryGallery
     Template readTemplate()
     {
         QJsonParseError error;
-        File file = QJsonDocument::fromJson(gallery.readLine(), &error).object().toVariantMap();
-        if (error.error != QJsonParseError::NoError)
+        const QByteArray line = gallery.readLine();
+        File file = QJsonDocument::fromJson(line, &error).object().toVariantMap();
+        if (error.error != QJsonParseError::NoError) {
+            qWarning("Couldn't parse: %s\n", line.data());
             qFatal("%s\n", qPrintable(error.errorString()));
+        }
         return file;
     }
 
