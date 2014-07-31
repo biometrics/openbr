@@ -174,7 +174,7 @@ struct BR_EXPORT File
     File(const QString &file) { init(file); } /*!< \brief Construct a file from a string. */
     File(const QString &file, const QVariant &label) { init(file); set("Label", label); } /*!< \brief Construct a file from a string and assign a label. */
     File(const char *file) { init(file); } /*!< \brief Construct a file from a c-style string. */
-    File(const QVariantMap &metadata) : m_metadata(metadata) {} /*!< \brief Construct a file from metadata. */
+    File(const QVariantMap &metadata) : fte(false), m_metadata(metadata) {} /*!< \brief Construct a file from metadata. */
     inline operator QString() const { return name; } /*!< \brief Returns #name. */
     QString flat() const; /*!< \brief A stringified version of the file with metadata. */
     QString hash() const; /*!< \brief A hash of the file. */
