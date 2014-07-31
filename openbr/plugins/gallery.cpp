@@ -147,10 +147,10 @@ class BinaryGallery : public Gallery
         TemplateList templates;
         while ((templates.size() < readBlockSize) && !gallery.atEnd()) {
             const Template t = readTemplate();
-            if (t.isEmpty() && t.file.isNull())
-                continue;
-            templates.append(t);
-            templates.last().file.set("progress", position());
+            if (!t.isEmpty() || !t.file.isNull()) {
+                templates.append(t);
+                templates.last().file.set("progress", position());
+            }
 
             // Special case for pipes where we want to process data as soon as it is available
             if (gallery.isSequential())
@@ -350,7 +350,9 @@ class jsonGallery : public BinaryGallery
     Template readTemplate()
     {
         QJsonParseError error;
-        const QByteArray line = gallery.readLine();
+        const QByteArray line = gallery.readLine().simplified();
+        if (line.isEmpty())
+            return Template();
         File file = QJsonDocument::fromJson(line, &error).object().toVariantMap();
         if (error.error != QJsonParseError::NoError) {
             qWarning("Couldn't parse: %s\n", line.data());
