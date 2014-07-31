@@ -141,11 +141,11 @@ class BinaryGallery : public Gallery
 
     TemplateList readBlock(bool *done)
     {
-        if (stream.atEnd())
+        if (gallery.atEnd())
             gallery.seek(0);
 
         TemplateList templates;
-        while ((templates.size() < readBlockSize) && !stream.atEnd()) {
+        while ((templates.size() < readBlockSize) && !gallery.atEnd()) {
             const Template t = readTemplate();
             if (t.isEmpty() && t.file.isNull())
                 continue;
@@ -157,7 +157,7 @@ class BinaryGallery : public Gallery
                 break;
         }
 
-        *done = stream.atEnd();
+        *done = gallery.atEnd();
         return templates;
     }
 
@@ -255,7 +255,8 @@ class utGallery : public BinaryGallery
             t.file.set("URL", QString(data.data()));
             t.append(cv::Mat(1, ut.size - ut.urlSize, CV_8UC1, data.data() + ut.urlSize).clone() /* We don't want a shallow copy! */);
         } else {
-            qFatal("Failed to read universal template header!");
+            if (!gallery.atEnd())
+                qFatal("Failed to read universal template header!");
         }
         return t;
     }
