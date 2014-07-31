@@ -242,6 +242,50 @@ class CollectNNTransform : public UntrainableMetaTransform
 };
 BR_REGISTER(Transform, CollectNNTransform)
 
+class LogNNTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
+    BR_PROPERTY(QString, fileName, "")
+
+    QFile out;
+    void projectUpdate(const Template &src, Template &dst)
+    {
+        dst = src;
+
+        Neighbors neighbors = dst.file.get<Neighbors>("neighbors");
+        if (neighbors.isEmpty() )
+            return;
+
+        QString aLine;
+        aLine.append(QString::number(neighbors[0].first)+":"+QString::number(neighbors[0].second));
+        for (int i=1; i < neighbors.size();i++)
+            aLine.append(","+QString::number(neighbors[i].first)+":"+QString::number(neighbors[i].second));
+
+        aLine += "\n";
+        out.write(qPrintable(aLine));
+    }
+
+    void init()
+    {
+        if (!fileName.isEmpty()) {
+            out.setFileName(fileName);
+            out.open(QIODevice::WriteOnly);
+        }
+    }
+
+    void finalize(TemplateList &output)
+    {
+        (void) output;
+        out.close();
+    }
+
+public:
+    LogNNTransform() : TimeVaryingTransform(false, false) {}
+};
+BR_REGISTER(Transform, LogNNTransform)
+
 } // namespace br
 
 #include "cluster.moc"
