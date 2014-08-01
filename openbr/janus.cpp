@@ -40,7 +40,7 @@ janus_error janus_finalize()
 struct janus_template_type : public Template
 {};
 
-janus_error janus_initialize_template(janus_template *template_)
+janus_error janus_allocate(janus_template *template_)
 {
     *template_ = new janus_template_type();
     return JANUS_SUCCESS;
@@ -94,7 +94,11 @@ janus_error janus_finalize_template(janus_template template_, janus_flat_templat
         flat_template += templateBytes;
         *bytes += templateBytes;
     }
+    return JANUS_SUCCESS;
+}
 
+janus_error janus_free(janus_template template_)
+{
     delete template_;
     return JANUS_SUCCESS;
 }
@@ -141,7 +145,6 @@ janus_error janus_enroll(const janus_template template_, const janus_template_id
     QDataStream stream(&file);
     stream << *template_;
     file.close();
-    delete template_;
     return JANUS_SUCCESS;
 }
 
