@@ -25,13 +25,11 @@ public:
     CommunicationManager()
     {
         basis = new QThread;
-        basis->moveToThread(QCoreApplication::instance()->thread());
         moveToThread(basis);
         server.moveToThread(basis);
         outbound.moveToThread(basis);
 
         // signals for our sever
-        connect(this, SIGNAL(pulseEndThread()), basis, SLOT(quit() ));
         connect(&server, SIGNAL(newConnection()), this, SLOT(receivedConnection() ));
         connect(this, SIGNAL(pulseStartServer(QString)), this, SLOT(startServerInternal(QString)), Qt::BlockingQueuedConnection);
         connect(this, SIGNAL(pulseOutboundConnect(QString)), this, SLOT(startConnectInternal(QString) ), Qt::BlockingQueuedConnection);
@@ -62,7 +60,6 @@ public:
 
     void shutDownThread()
     {
-        emit pulseEndThread();
         basis->quit();
         basis->wait();
         delete basis;
@@ -276,8 +273,6 @@ signals:
     void pulseSendSerialized();
     void pulseShutdown();
     void pulseOutboundConnect(QString serverName);
-    void pulseEndThread();
-
 
 public:
     QByteArray readArray;
@@ -448,28 +443,39 @@ class ProcessInterface : public QObject
 {
     Q_OBJECT
 public:
+    QThread *basis;
+
+    ~ProcessInterface()
+    {
+        basis->quit();
+        basis->wait();
+        delete basis;
+    }
+
     ProcessInterface()
     {
-        this->moveToThread(QCoreApplication::instance()->thread());
-        workerProcess.moveToThread(QCoreApplication::instance()->thread());
+        basis = new QThread();
+
+        moveToThread(basis);
+        workerProcess.moveToThread(basis);
+
         connect(this, SIGNAL(pulseEnd()), this, SLOT(endProcessInternal()), Qt::BlockingQueuedConnection);
         connect(this, SIGNAL(pulseStart(QStringList)), this, SLOT(startProcessInternal(QStringList)), Qt::BlockingQueuedConnection);
+
+        basis->start();
     }
+
     QProcess workerProcess;
     void endProcess()
     {
-        if (QThread::currentThread() != QCoreApplication::instance()->thread())
-            emit pulseEnd();
-        else
-            endProcessInternal();
+        emit pulseEnd();
     }
+
     void startProcess(QStringList arguments)
     {
-        if (QThread::currentThread() != QCoreApplication::instance()->thread() )
-            emit pulseStart(arguments);
-        else
-            startProcessInternal(arguments);
+        emit pulseStart(arguments);
     }
+
 signals:
     void pulseEnd();
     void pulseStart(QStringList);
@@ -500,10 +506,12 @@ struct ProcessData
 
     ~ProcessData()
     {
-        comm.sendSignal(CommunicationManager::SHOULD_END);
-        proc.endProcess();
-        comm.shutdown();
-        comm.shutDownThread();
+        if (initialized) {
+            comm.sendSignal(CommunicationManager::SHOULD_END);
+            proc.endProcess();
+            comm.shutdown();
+            comm.shutDownThread();
+        }
     }
 };
 
