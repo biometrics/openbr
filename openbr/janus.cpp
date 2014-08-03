@@ -72,7 +72,7 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
     return (u.isEmpty() || !u.first().data) ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
 }
 
-janus_error janus_finalize_template(janus_template template_, janus_flat_template flat_template, size_t *bytes)
+janus_error janus_flatten(janus_template template_, janus_flat_template flat_template, size_t *bytes)
 {    
     *bytes = 0;
     foreach (const cv::Mat &m, *template_) {
