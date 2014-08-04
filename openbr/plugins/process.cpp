@@ -256,11 +256,6 @@ public slots:
 
             // how many bytes do we still need?
             qint64 bytes_remaining = bufferSize - arrayPosition;
-
-            if (bytes_remaining < inbound->bytesAvailable() )
-            {
-                qDebug() << key << "!!!excessive bytes received";
-            }
             arrayPosition += inbound->read(readArray.data()+arrayPosition, qMin(inbound->bytesAvailable(), bytes_remaining));
         }
         if (arrayPosition != bufferSize)
