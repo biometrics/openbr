@@ -45,6 +45,16 @@ using namespace cv;
 
 Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
 
+static const QMetaObject *getInterface(const QObject *obj)
+{
+    const QMetaObject *baseClass = obj->metaObject();
+
+    while (strcmp(baseClass->superClass()->className(), "br::Object") != 0)
+        baseClass = baseClass->superClass();
+
+    return baseClass;
+}
+
 /* File - public methods */
 // Note that the convention for displaying metadata is as follows:
 // [] for lists in which argument order does not matter (e.g. [FTO=false, Index=0]),
@@ -606,28 +616,24 @@ QStringList Object::prunedArguments(bool expanded) const
     if (!className.startsWith("."))
         className = "." + className;
 
-    if (className.endsWith("Distance")) {
-        className.chop(QString("Distance").size());
+    const QMetaObject *interface = getInterface(this);
+    QString interfaceName = QString(interface->className()).remove("br::");
+
+    if (className.endsWith(interfaceName))
+        className.chop(interfaceName.size());
+
+    if (interfaceName == "Distance")
         shellObject.reset(Factory<Distance>::make(className));
-    }
-    else if (className.endsWith("Transform")) {
-        className.chop(QString("Transform").size());
+    else if (interfaceName == "Transform")
         shellObject.reset(Factory<Transform>::make(className));
-    }
-    else if (className.endsWith("Format")) {
-        className.chop(QString("Format").size());
+    else if (interfaceName == "Format")
         shellObject.reset(Factory<Format>::make(className));
-    }
-    else if (className.endsWith("Initializer")) {
-        className.chop(QString("Initializer").size());
+    else if (interfaceName == "Initializer")
         shellObject.reset(Factory<Initializer>::make(className));
-    }
-    else if (className.endsWith("Output")) {
-        className.chop(QString("Output").size());
+    else if (interfaceName == "Output")
         shellObject.reset(Factory<Output>::make(className));
-    }
     else
-        qFatal("Object with className: %s is of unrecognized type", qPrintable(className));
+        qFatal("Object with className: %s has unrecognized interface: %s", qPrintable(className), qPrintable(interfaceName));
 
     for (int i=firstAvailablePropertyIdx; i<metaObject()->propertyCount(); i++) {
         const char *name = metaObject()->property(i).name();
@@ -876,18 +882,13 @@ void Object::init(const File &file_)
 {
     file = file_;
 
-    // Determine interfaceName and firstAvailablePropertyIdx
-    QString interfaceName;
-    const QMetaObject *baseClass = metaObject();
-    while (true) {
-        if (!strcmp(baseClass->superClass()->className(), "br::Object") /* Special case for classes that inherit directly from br::Object */ ||
-            !strcmp(baseClass->superClass()->superClass()->className(), "br::Object") /* General case for plugins that inherit indirectly from br::Object */) {
-            firstAvailablePropertyIdx = baseClass->propertyOffset();
-            interfaceName = QString(baseClass->superClass()->className()).remove("br::");
-            break;
-        }
-        baseClass = baseClass->superClass();
-    }
+    const QMetaObject *interface = getInterface(this);
+    if (strcmp(interface->className(), metaObject()->className()) != 0)
+        firstAvailablePropertyIdx = interface->propertyCount();
+    else
+        firstAvailablePropertyIdx = interface->propertyOffset();
+
+    QString interfaceName = QString(interface->className()).remove("br::");
 
     // Strip interface name from object name (e.g. PipeTransform -> Pipe)
     QString name = QString(metaObject()->className()).remove("br::");
