@@ -303,12 +303,16 @@ QDebug br::operator<<(QDebug dbg, const File &file)
 
 QDataStream &br::operator<<(QDataStream &stream, const File &file)
 {
-    return stream << file.name << file.m_metadata;
+    File temp = file;
+    temp.set("FTE",QVariant::fromValue(file.fte));
+    return stream << temp.name << temp.m_metadata;
 }
 
 QDataStream &br::operator>>(QDataStream &stream, File &file)
 {
-    return stream >> file.name >> file.m_metadata;
+    stream >> file.name >> file.m_metadata;
+    file.fte = file.getBool("FTE", false);
+    return stream;
 }
 
 /* FileList - public methods */
@@ -622,6 +626,8 @@ QStringList Object::prunedArguments(bool expanded) const
         className.chop(QString("Output").size());
         shellObject.reset(Factory<Output>::make(className));
     }
+    else
+        qFatal("Object with className: %s is of unrecognized type", qPrintable(className));
 
     for (int i=firstAvailablePropertyIdx; i<metaObject()->propertyCount(); i++) {
         const char *name = metaObject()->property(i).name();
