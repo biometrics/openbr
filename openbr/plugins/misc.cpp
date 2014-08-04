@@ -57,8 +57,13 @@ class OpenTransform : public UntrainableMetaTransform
         } else {
             // Propogate or decode existing matricies
             foreach (const Mat &m, src) {
-                if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1)) dst += m;
-                else                                                         dst += imdecode(src.m(), IMREAD_UNCHANGED);
+                if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1))
+                    dst += m;
+                else {
+                    Mat dec = imdecode(src.m(), IMREAD_UNCHANGED);
+                    if (dec.empty()) qWarning("Can't decode %s", qPrintable(src.file.flat()));
+                    else dst += dec;
+                }
             }
         }
     }
