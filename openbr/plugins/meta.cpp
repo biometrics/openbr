@@ -161,10 +161,15 @@ class PipeTransform : public CompositeTransform
     // won't work.
     void projectUpdate(const TemplateList &src, TemplateList &dst)
     {
+	TemplateList ftes;
         dst = src;
         foreach (Transform *f, transforms) {
-            f->projectUpdate(dst);
+            TemplateList res;
+            f->projectUpdate(dst, res);
+            splitFTEs(res, ftes);
+            dst = res;
         }
+        dst.append(ftes);
     }
 
     virtual void finalize(TemplateList &output)
