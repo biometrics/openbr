@@ -148,11 +148,22 @@ class SelectPointsTransform : public UntrainableMetadataTransform
 
     void projectMetadata(const File &src, File &dst) const
     {
-        dst = src;
         QList<QPointF> origPoints = src.points();
+        if (origPoints.size() == 0) {
+            dst.fte = true;
+            return;
+        }
+
+        dst = src;
         dst.clearPoints();
-        for (int i = 0; i < indices.size(); i++)
+        for (int i = 0; i < indices.size(); i++) {
+            if (indices[i] < 0 || indices[i] > origPoints.size()) {
+                qDebug() << QString("File %1: SelectPointsTransform error: index %1 out of bounds.").arg(src.name).arg(i);
+                dst.fte = true;
+                return;
+            }
             dst.appendPoint(origPoints[indices[i]]);
+        }
     }
 };
 
