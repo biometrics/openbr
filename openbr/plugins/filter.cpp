@@ -210,6 +210,7 @@ class ContrastEqTransform : public UntrainableTransform
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++)
                 m.at<float>(i, j) = fast_tanh(p[i*nCols+j]);
+                // TODO: m.at<float>(i, j) = t * fast_tanh(p[i*nCols+j] / t);
 
         dst = m;
     }
