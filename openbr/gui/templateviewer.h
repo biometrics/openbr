@@ -52,10 +52,10 @@ protected slots:
     void paintEvent(QPaintEvent *event);
 
 signals:
-    void newInput(File input);
-    void newInput(QImage input);
-    void newMousePoint(QPointF mousePoint);
-    void selectedInput(File input);
+    void newInput(File);
+    void newInput(QImage);
+    void newMousePoint(QPointF);
+    void selectedInput(File);
 };
 
 }
