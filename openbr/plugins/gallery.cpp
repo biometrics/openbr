@@ -145,7 +145,6 @@ class BinaryGallery : public Gallery
             gallery.seek(0);
 
         TemplateList templates;
-                                 qDebug() << "testing...";
         while ((templates.size() < readBlockSize) && !gallery.atEnd()) {
             const Template t = readTemplate();
             if (!t.isEmpty() || !t.file.isNull()) {
