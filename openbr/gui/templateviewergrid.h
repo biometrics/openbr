@@ -24,7 +24,7 @@ public:
     explicit TemplateViewerGrid(QWidget *parent = 0);
 
 public slots:
-    void setFiles(const br::FileList &file);
+    void setFiles(const FileList &file);
     void setFormat(const QString &format);
     void setMousePoint(const QPointF &mousePoint);
 
