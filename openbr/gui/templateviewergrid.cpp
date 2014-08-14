@@ -31,9 +31,12 @@ void TemplateViewerGrid::setFiles(const FileList &files)
     }
 
     for (int i=0; i<templateViewers.size(); i++) {
-        if (i < files.size()) {
+        if (i < size*size) {
             gridLayout.addWidget(templateViewers[i].data(), i/size, i%size, 1, 1);
             templateViewers[i]->setVisible(true);
+        }
+
+        if (i < files.size()) {
             templateViewers[i]->setFile(files[i]);
         } else {
             templateViewers[i]->setDefaultText("<b>"+ (size > 1 ? QString() : QString("Drag Photo or Folder Here")) +"</b>");

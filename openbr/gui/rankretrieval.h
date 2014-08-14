@@ -12,8 +12,9 @@ class BR_EXPORT RankRetrieval : public QWidget
 {
     Q_OBJECT
 
+    int gridPage, gridSize;
     File target, query;
-    FileList targetFiles, queryFiles;
+    FileList matches;
     QList<float> scores;
     QFutureWatcher<void> enrollWatcher;
     QFutureWatcher<void> compareWatcher;
@@ -37,16 +38,21 @@ public slots:
     void next();
     void last();
 
+    void setGridSize(const QString &size);
+
+    void compare();
+
+private slots:
     void compareDone();
 
 signals:
-    void newTargetFileList(FileList file);
-    void newQueryFile(File file);
-    void newScore(float score);
+    void newTargetFileList(FileList);
+    void newQueryFile(File);
+    void newScore(float);
 
 private:
     void enroll();
-    void compare();
+    void display();
 
 };
 

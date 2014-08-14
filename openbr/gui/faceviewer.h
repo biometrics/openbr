@@ -17,10 +17,11 @@ class BR_EXPORT FaceViewer : public TemplateViewer
 
 public:
     explicit FaceViewer(QWidget *parent = 0);
+
+public slots:
     void setFile(const File &file_);
 
 protected slots:
-    //void dropEvent(QDropEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);

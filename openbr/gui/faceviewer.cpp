@@ -5,7 +5,8 @@
 
 #include <opencv2/opencv.hpp>
 
-const int NUM_LANDMARKS = 2;
+const int numLandmarks = 2;
+const double proportionality = 0.025;
 
 using namespace br;
 using namespace cv;
@@ -60,23 +61,20 @@ FaceViewer::FaceViewer(QWidget *parent)
     update();
 }
 
-// Set file seems fine although refresh image is run concurrently
-
 void FaceViewer::setFile(const File &file_)
 {
-    qDebug() << "Setting files...";
-
     this->file = file_;
 
     // Update landmarks
     landmarks.clear();
     if (file.contains("Affine_0")) landmarks.append(file.get<QPointF>("Affine_0"));
     if (file.contains("Affine_1")) landmarks.append(file.get<QPointF>("Affine_1"));
-    while (landmarks.size() < NUM_LANDMARKS)
+    while (landmarks.size() < numLandmarks)
         landmarks.append(QPointF());
     nearestLandmark = -1;
 
-    QtConcurrent::run(this, &FaceViewer::refreshImage);
+    FaceViewer::refreshImage();
+    //QtConcurrent::run(this, &FaceViewer::refreshImage);
 }
 
 void FaceViewer::refreshImage()
@@ -91,6 +89,12 @@ void FaceViewer::refreshImage()
 
         QImage image = toQImage(dst.m());
         setImage(image, true);
+
+        double rows = dst.m().rows;
+        double cols = dst.m().cols;
+
+        // Update selection distance to be proportial to the largest image dimension
+        selectionDistance = rows > cols ? rows*proportionality : cols*proportionality;
 
         delete t;
     }
@@ -147,7 +151,7 @@ void FaceViewer::mouseMoveEvent(QMouseEvent *event)
         nearestLandmark = -1;
         if (!mousePoint.isNull()) {
             double nearestDistance = std::numeric_limits<double>::max();
-            for (int i=0; i<NUM_LANDMARKS; i++) {
+            for (int i=0; i<numLandmarks; i++) {
                 if (landmarks[i].isNull()) {
                     nearestLandmark = -1;
                     break;
@@ -192,7 +196,7 @@ void FaceViewer::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    for (int i=0; i<NUM_LANDMARKS; i++) {
+    for (int i=0; i<numLandmarks; i++) {
         if (!landmarks[i].isNull() && editable) {
             if (i == nearestLandmark) painter.setBrush(QBrush(nearest));
             else painter.setBrush(QBrush(normal));
