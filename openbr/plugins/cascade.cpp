@@ -376,16 +376,18 @@ class CascadeTransform : public MetaTransform
     void project(const TemplateList &src, TemplateList &dst) const
     {
         CascadeClassifier *cascade = cascadeResource.acquire();
-        foreach (const Template &t, src) {
-            const bool enrollAll = t.file.getBool("enrollAll");
+        foreach (const Template &tmpl, src) {
+            const bool enrollAll = tmpl.file.getBool("enrollAll");
 
             // Mirror the behavior of ExpandTransform in the special case
             // of an empty template.
-            if (t.empty() && !enrollAll) {
-                dst.append(t);
+            if (tmpl.empty() && !enrollAll) {
+                dst.append(tmpl);
                 continue;
             }
 
+            Template t;
+            OpenCVUtils::cvtUChar(tmpl.m(), t.m());
             for (int i=0; i<t.size(); i++) {
                 const Mat &m = t[i];
                 std::vector<Rect> rects;
