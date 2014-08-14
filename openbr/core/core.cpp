@@ -45,8 +45,14 @@ struct AlgorithmCore
 
     AlgorithmCore(const QString &name)
     {
-        this->name = name;
-        init(name);
+        if (name == "algorithm") {
+            this->name = Globals->algorithm;
+            init(Globals->algorithm);
+        } else {
+            this->name = name;
+            init(name);
+        }
+
         progressCounter = QSharedPointer<Transform>(Transform::make("ProgressCounter", NULL));
     }
 
