@@ -111,7 +111,7 @@ void RankRetrieval::setGridSize(const QString &size)
 
 void RankRetrieval::setIndex(int index)
 {
-
+    (void) index;
 }
 
 void RankRetrieval::compareDone()
