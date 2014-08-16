@@ -1265,6 +1265,9 @@ void BasicLoop::run()
 class DirectStreamTransform : public CompositeTransform
 {
     Q_OBJECT
+
+    using CompositeTransform::setPropertyRecursive;
+
 public:
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
@@ -1578,6 +1581,8 @@ class StreamTransform : public WrapperTransform
 {
     Q_OBJECT
 
+    using WrapperTransform::setPropertyRecursive;
+
 public:
     StreamTransform() : WrapperTransform(false)
     {
@@ -1705,6 +1710,20 @@ public:
         DirectStreamTransform *res = (DirectStreamTransform *) basis->smartCopy(newTransform);
         res->activeFrames = this->activeFrames;
         return res;
+    }
+
+    bool setPropertyRecursive(const QString &name, QVariant value)
+    {
+        if (br::Object::setPropertyRecursive(name, value))
+            return true;
+
+        for (int i=0; i < basis->transforms.size();i++) {
+            if (basis->transforms[i]->setPropertyRecursive(name, value)) {
+                basis->init();
+                return true;
+            }
+        }
+        return false;
     }
 
 
