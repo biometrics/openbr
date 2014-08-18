@@ -659,7 +659,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
                 if (frame == last_frame && frame != -1)
                     continue;
 
-                // Don't
+                // Use 1 as the starting index for progress output
                 Globals->currentProgress = dst[i].file.get<qint64>("progress",0)+1;
                 dst[i].file.remove("progress");
                 last_frame = frame;
