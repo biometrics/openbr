@@ -663,6 +663,8 @@ class ProgressCounterTransform : public TimeVaryingTransform
                 Globals->currentProgress = dst[i].file.get<qint64>("progress",0)+1;
                 dst[i].file.remove("progress");
                 last_frame = frame;
+
+                Globals->currentStep++;
             }
         }
 
@@ -684,10 +686,12 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        Globals->currentProgress = totalProgress;
-        qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g/%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentProgress, Globals->totalSteps);
+        qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
         timer.start();
         Globals->startTime.start();
+        Globals->currentStep = 0;
+        Globals->currentProgress = 0;
+        Globals->totalSteps = totalProgress;
     }
 
     void init()
@@ -695,6 +699,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
         timer.start();
         Globals->startTime.start();
         Globals->currentProgress = 0;
+        Globals->currentStep = 0;
         Globals->totalSteps = totalProgress;
     }
 
