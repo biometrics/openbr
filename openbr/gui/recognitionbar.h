@@ -45,7 +45,6 @@ class BR_EXPORT RecognitionBar : public QToolBar
     FormComboWidget *model;
 
     RangeWidget *rangeWidget;
-    PageFlipWidget *pageFlipWidget;
     SearchBoxWidget *searchBox;
     QPushButton *compareButton;
 
