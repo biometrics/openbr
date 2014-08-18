@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 
-#include <openbr/openbr_plugin.h>
+#include <openbr/openbr_export.h>
 
 namespace br {
 

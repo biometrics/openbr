@@ -10,11 +10,11 @@
 #include <QToolButton>
 #include <QCheckBox>
 
-#include "formcombowidget.h"
-#include "rangewidget.h"
-#include "pageflipwidget.h"
-#include "searchboxwidget.h"
-#include "metadata.h"
+#include <openbr/gui/formcombowidget.h>
+#include <openbr/gui/rangewidget.h>
+#include <openbr/gui/pageflipwidget.h>
+#include <openbr/gui/searchboxwidget.h>
+#include <openbr/gui/metadata.h>
 
 #include <openbr/openbr_plugin.h>
 
