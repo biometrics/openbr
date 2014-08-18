@@ -22,7 +22,6 @@ void RankRetrieval::clear()
 
 }
 
-// This should be changed to used algorithm.cpp
 void RankRetrieval::setAlgorithm(const QString &algorithm)
 {
     br_set_property("algorithm",qPrintable(algorithm));
@@ -143,26 +142,6 @@ void RankRetrieval::display()
     }
 
     emit newTargetFileList(display);
-    /*
-    if (matches.isEmpty()) return;
-
-    br::FileList displayMugshots;
-    QStringList labels;
-
-    for(int i = gridPage*gridSize; i < gridPage*gridSize+gridSize; i++) {
-        if (i >= matches.size()) {
-            break;
-        }
-
-        displayMugshots.push_back(matches[i]);
-        labels.push_back("Rank: " + QString::number(i+1) + "\nScore: " + QString::number(scores[i], 'f', 3));
-    }
-
-    if (index != -1) heatMap(index);
-
-    emit newMugshotLineup(displayMugshots, index);
-    emit newFormat(targetFormat);
-    emit newLabels(labels);*/
 }
 
 #include "moc_rankretrieval.cpp"
