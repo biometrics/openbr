@@ -738,7 +738,7 @@ QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algori
         stages.append(transform.data());
         stages.append(progressCounter.data());
 
-        QSharedPointer<Transform> pipeline(pipeTransforms(stages));
+        QScopedPointer<Transform> pipeline(pipeTransforms(stages));
         QSharedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=DistributeFrames)"));
 
         return stream;
