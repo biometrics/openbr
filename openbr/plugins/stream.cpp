@@ -1266,8 +1266,6 @@ class DirectStreamTransform : public CompositeTransform
 {
     Q_OBJECT
 
-    using CompositeTransform::setPropertyRecursive;
-
 public:
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
     Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
@@ -1580,8 +1578,6 @@ BR_REGISTER(Transform, DirectStreamTransform)
 class StreamTransform : public WrapperTransform
 {
     Q_OBJECT
-
-    using WrapperTransform::setPropertyRecursive;
 
 public:
     StreamTransform() : WrapperTransform(false)
