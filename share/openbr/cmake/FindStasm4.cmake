@@ -25,12 +25,19 @@ endforeach()
 
 find_path(Stasm_DIR stasm/stasm_lib.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
 
+set(CMAKE_ARGS "${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX:PATH=<${Stasm_DIR}")
+
+message(${CMAKE_ARGS})
+
 ExternalProject_Add(stasm
   URL ${Stasm_DIR}
-  CMAKE_ARGS ${CMAKE_ARGS}
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   )
 
 ExternalProject_Get_Property(stasm install_dir)
-include_directories(${install_dir}/src/stasm-build/Stasm_DIR/build/install/include)
 
-file(GLOB Stasm4_LIBS ${install_dir}/src/stasm-build/Stasm_DIR/build/install/lib/*)
+message(${install_dir})
+
+include_directories(${install_dir}/include/stasm)
+
+file(GLOB Stasm4_LIBS ${install_dir}/lib/*)
