@@ -696,6 +696,9 @@ public:
      * \brief Used internally to compute progress() and timeRemaining().
      */
 
+    Q_PROPERTY(double currentStep READ get_currentStep WRITE set_currentStep RESET reset_currentStep)
+    BR_PROPERTY(double, currentStep, 0)
+
     Q_PROPERTY(double currentProgress READ get_currentProgress WRITE set_currentProgress RESET reset_currentProgress)
     BR_PROPERTY(double, currentProgress, 0)
 
