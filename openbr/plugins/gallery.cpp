@@ -575,6 +575,11 @@ class DefaultGallery : public Gallery
         QScopedPointer<Format> format(Factory<Format>::make(file));
         format->write(t);
     }
+
+    qint64 totalSize()
+    {
+        return 1;
+    }
 };
 
 BR_REGISTER(Gallery, DefaultGallery)
