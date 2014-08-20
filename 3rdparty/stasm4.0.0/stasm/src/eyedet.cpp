@@ -3,7 +3,6 @@
 // Copyright (C) 2005-2013, Stephen Milborrow
 
 #include "eyedet.h"
-#include "shapemod.h"
 #include "err.h"
 
 namespace stasm
