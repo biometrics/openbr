@@ -25,15 +25,33 @@ endforeach()
 
 find_path(Stasm_DIR stasm/stasm_lib.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
 
-set(CMAKE_ARGS "${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX:PATH=<${Stasm_DIR}>")
+message(${CMAKE_ARGS})
 
-ExternalProject_Add(stasm
+set(stasm_prefix ${CMAKE_BINARY_DIR}/stasm)
+
+# Have to use a name other than stasm so it doesn't conflict with the project itself
+ExternalProject_Add(external_stasm
   URL ${Stasm_DIR}
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+  PREFIX ${stasm_prefix}
+  CMAKE_ARGS "-DCMAKE_PREFIX_PATH=~/Qt/5.3/clang_64/"
+  INSTALL_COMMAND ""
   )
 
-ExternalProject_Get_Property(stasm install_dir)
+file(GLOB HEADERS "${Stasm_DIR}/stasm/*.h")
 
+ExternalProject_Add_Step(
+    external_stasm
+    copy_stasm_headers
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${Stasm_DIR}/stasm/include" ${stasm_prefix}/include/stasm
+    COMMENT "Copying stasm headers..."
+    DEPENDERS configure
+    )
+
+# We have to fake a library being created to force external_stasm to be built
+add_library(fake_stasm UNKNOWN IMPORTED)
+add_dependencies(fake_stasm external_stasm)
+
+ExternalProject_Get_Property(external_stasm install_dir)
 include_directories(${install_dir}/include/stasm)
 
-file(GLOB Stasm4_LIBS ${install_dir}/lib/*)
+file(GLOB Stasm4_LIBS ${install_dir}/lib/stasm/*)
