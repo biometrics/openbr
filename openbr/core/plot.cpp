@@ -172,14 +172,19 @@ struct RPlot
         if ((suffix == "pdf") && isEvalFormat) {
             file.write("\n"
                        "# Write metadata table\n");
-            QString MT = "MT <- as.data.frame(recast(Metadata, %1 ~ Y, id.var=c(\"%2\",\"Y\"), measure.var=c(\"X\")))\n";
-            file.write(qPrintable(MT.arg(pivotHeaders.join(" + "), pivotHeaders.join("\",\""))));
-            QString textplot = "par(mfrow=c(4,1))\n"
+            QString textplot = "MT <- as.data.frame(Metadata[c(1,2,3,4,5),])\n"
+                               "par(mfrow=c(4,1))\n"
                                "plot.new()\n"
                                "print(title(paste(\"%1 - %2\",date(),sep=\"\\n\")))\n"
-                               "print(textplot(MT[,!(names(MT) %in% c(\"Genuine\", \"Impostor\", \"Ignored\"))], show.rownames=FALSE))\n"
+                               "mat <- matrix(MT$X[c(1,2)],ncol=2)\n"
+                               "colnames(mat) <- c(\"Gallery\", \"Probe\")\n"
+                               "imageTable <- as.table(mat)\n"
+                               "print(textplot(imageTable,show.rownames=FALSE))\n"
                                "print(title(\"Images\"))\n"
-                               "print(textplot(MT[,!(names(MT) %in% c(\"Gallery\", \"Probe\"))], show.rownames=FALSE))\n"
+                               "mat <- matrix(MT$X[c(3,4,5)],ncol=3)\n"
+                               "colnames(mat) <- c(\"Genuine\", \"Impostor\", \"Ignored\")\n"
+                               "matchTable <- as.table(mat)\n"
+                               "print(textplot(matchTable,show.rownames=FALSE))\n"
                                "print(title(\"Matches\"))\n"
                                "plot.new()\n"
                                "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n"
@@ -298,7 +303,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=ERR%1, linetype=Error").arg((p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : ", geom=\"line\"") +
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? QString(", colour=factor(%1)").arg(p.flip ? p.major.header : p.minor.header) : QString()) +
-                            QString(", xlab=\"Score%1\", ylab=\"Error Rate\") + theme_minimal()").arg((p.flip ? p.minor.size : p.major.size) > 1 ? " / " + (p.flip ? p.minor.header : p.major.header) : QString()) +
+                            QString(", xlab=\"Score\", ylab=\"Error Rate\") + theme_minimal()") +
                             ((p.flip ? p.major.size : p.minor.size) > 1 ? getScale("colour", p.flip ? "Algorithm" : "Algorithm", p.flip ? p.major.size : p.minor.size) : QString()) +
                             QString(" + scale_y_log10(labels=percent) + annotation_logticks(sides=\"l\")") +
                             ((p.flip ? p.minor.size : p.major.size) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minor.header : p.major.header) : QString()) +
