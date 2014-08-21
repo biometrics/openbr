@@ -232,6 +232,13 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPoint.score),
                                               QString::number(1-operatingPoint.TAR)));
     }
+    // Write FAR/TAR Table (FT)
+    lines.append(qPrintable(QString("FT,0.000001,%1").arg(QString::number(getTAR(operatingPoints, 0.000001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.00001,%1").arg(QString::number(getTAR(operatingPoints, 0.00001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.0001,%1").arg(QString::number(getTAR(operatingPoints, 0.0001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getTAR(operatingPoints, 0.01), 'f', 3))));    
+    lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getTAR(operatingPoints, 0.1), 'f', 3))));
 
     // Write FAR/TAR Bar Chart (BC)
     lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
