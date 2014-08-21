@@ -66,6 +66,19 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
+static float getCMC(const QVector<int> &firstGenuineReturns, int rank)
+{
+    int realizedReturns = 0, possibleReturns = 0;
+    foreach (int firstGenuineReturn, firstGenuineReturns) {
+        if (firstGenuineReturn > 0) {
+            possibleReturns++;
+            if (firstGenuineReturn <= rank) realizedReturns++;
+        }
+    }
+    const float retrievalRate = float(realizedReturns)/possibleReturns;
+    return retrievalRate;
+}
+
 // Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
 // scores with the size of the target and query lists
 static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, int partition=0)
@@ -240,6 +253,14 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getTAR(operatingPoints, 0.01), 'f', 3))));    
     lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getTAR(operatingPoints, 0.1), 'f', 3))));
 
+    //Write CMC Table (CT)
+    lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
+    lines.append(qPrintable(QString("CT,5,%1").arg(QString::number(getCMC(firstGenuineReturns, 5), 'f', 3))));
+    lines.append(qPrintable(QString("CT,10,%1").arg(QString::number(getCMC(firstGenuineReturns, 10), 'f', 3))));
+    lines.append(qPrintable(QString("CT,20,%1").arg(QString::number(getCMC(firstGenuineReturns, 20), 'f', 3))));
+    lines.append(qPrintable(QString("CT,50,%1").arg(QString::number(getCMC(firstGenuineReturns, 50), 'f', 3))));
+    lines.append(qPrintable(QString("CT,100,%1").arg(QString::number(getCMC(firstGenuineReturns, 100), 'f', 3))));
+
     // Write FAR/TAR Bar Chart (BC)
     lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
     lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getTAR(operatingPoints, 0.01), 'f', 3))));
@@ -265,23 +286,13 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 200;
     const int Report_Retrieval = 5;
-
-    float reportRetrievalRate = -1;
     for (int i=1; i<=Max_Retrieval; i++) {
-        int realizedReturns = 0, possibleReturns = 0;
-        foreach (int firstGenuineReturn, firstGenuineReturns) {
-            if (firstGenuineReturn > 0) {
-                possibleReturns++;
-                if (firstGenuineReturn <= i) realizedReturns++;
-            }
-        }
-        const float retrievalRate = float(realizedReturns)/possibleReturns;
+        const float retrievalRate = getCMC(firstGenuineReturns, i);
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
-        if (i == Report_Retrieval) reportRetrievalRate = retrievalRate;
     }
 
     QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
+    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
     return result;
 }
 

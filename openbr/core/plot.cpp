@@ -135,6 +135,7 @@ struct RPlot
                        "FRR <- data[grep(\"FRR\",data$Plot),-c(1)]\n"
                        "SD <- data[grep(\"SD\",data$Plot),-c(1)]\n"
                        "FT <- data[grep(\"FT\",data$Plot),-c(1)]\n"
+                       "CT <- data[grep(\"CT\",data$Plot),-c(1)]\n"
                        "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
                        "CMC <- data[grep(\"CMC\",data$Plot),-c(1)]\n"
                        "FAR$Error <- \"FAR\"\n"
@@ -148,6 +149,7 @@ struct RPlot
                        "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
                        "FT$Y <- as.numeric(as.character(FT$Y))\n"
+                       "CT$Y <- as.numeric(as.character(CT$Y))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
@@ -161,7 +163,13 @@ struct RPlot
                        "mat <- matrix(FT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
-                       "table <- as.table(mat)\n");
+                       "FTtable <- as.table(mat)\n"
+                       "\n"
+                       "# Code to format CMC Table\n"
+                       "mat <- matrix(CT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                       "colnames(mat) <- algs \n"
+                       "rownames(mat) <- c(\" Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
+                       "CMCtable <- as.table(mat)\n");
                        
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -189,8 +197,10 @@ struct RPlot
                                "plot.new()\n"
                                "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n"
                                "plot.new()\n"
+                               "print(textplot(FTtable,cex=1))\n"
                                "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
-                               "print(textplot(table,valign=\"top\",cex=1))\n";
+                               "print(textplot(CMCtable,cex=1))\n"
+                               "print(title(\"Table of retrieval rate at various ranks\"))\n";
             file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
         }
 
