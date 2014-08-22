@@ -5,6 +5,8 @@
 #ifndef STASM_SHAPEHACKS_H
 #define STASM_SHAPEHACKS_H
 
+#include "misc.h"
+
 namespace stasm
 {
 static const unsigned SHAPEHACKS_DEFAULT          = 0x01;

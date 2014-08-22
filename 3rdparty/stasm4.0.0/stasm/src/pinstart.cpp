@@ -2,7 +2,12 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "pinstart.h"
+#include "stasm_landmarks.h"
+#include "faceroi.h"
+#include "err.h"
+#include "landmarks.h"
+#include "print.h"
 
 namespace stasm
 {

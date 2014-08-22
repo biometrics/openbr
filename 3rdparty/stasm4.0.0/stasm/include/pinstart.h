@@ -5,6 +5,9 @@
 #ifndef STASM_PINSTART_H
 #define STASM_PINSTART_H
 
+#include "misc.h"
+#include "asm.h"
+
 namespace stasm
 {
 

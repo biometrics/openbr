@@ -27,7 +27,13 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "startshape.h"
+#include "print.h"
+#include "landmarks.h"
+#include "stasm_landmarks.h"
+#include "err.h"
+#include "faceroi.h"
+#include "eyedet.h"
 
 namespace stasm
 {

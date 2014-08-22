@@ -5,7 +5,8 @@
 // That is, we use Shape17s as a lowest common denominator.  A Shape17
 // consists of the 17 points defined by Cristinacce's "me17" measure.
 
-#include "stasm.h"
+#include "shape17.h"
+#include "err.h"
 
 namespace stasm
 {

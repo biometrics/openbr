@@ -64,6 +64,9 @@
 
 #include "stasmcascadeclassifier.h"
 
+#define TRACE_IMAGES 0        // 1 to generate debugging images
+
+static const char* const STASM_VERSION = "4.0.0";
 static const int stasm_NLANDMARKS = 77; // number of landmarks
 
 extern const char* const stasm_VERSION;

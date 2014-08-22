@@ -7,6 +7,7 @@
 
 #include "stasm_lib.h"
 #include "shapehacks.h"
+#include "misc.h"
 
 namespace stasm
 {

@@ -7,6 +7,9 @@
 
 #include <opencv2/objdetect/objdetect.hpp>
 
+#include "misc.h"
+#include "print.h"
+
 namespace stasm
 {
 class FaceDet

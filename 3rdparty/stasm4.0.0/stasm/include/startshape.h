@@ -6,6 +6,9 @@
 #define STASM_startshape_H
 
 #include "stasmcascadeclassifier.h"
+#include "misc.h"
+#include "asm.h"
+#include "facedet.h"
 
 namespace stasm
 {

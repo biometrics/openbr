@@ -2,7 +2,10 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "misc.h"
+#include "err.h"
+#include "print.h"
+#include "asm.h"
 #include <sys/stat.h>
 
 namespace stasm

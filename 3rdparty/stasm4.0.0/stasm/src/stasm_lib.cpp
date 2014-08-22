@@ -2,7 +2,17 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "stasm_lib.h"
+#include "err.h"
+#include "misc.h"
+#include "asm.h"
+#include "print.h"
+#include "initasm.h"
+#include "faceroi.h"
+#include "pinstart.h"
+#include "convshape.h"
+#include "facedet.h"
+#include "startshape.h"
 
 using namespace stasm;
 

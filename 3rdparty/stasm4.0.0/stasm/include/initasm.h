@@ -5,6 +5,8 @@
 #ifndef STASM_INITASM_H
 #define STASM_INITASM_H
 
+#include "asm.h"
+
 namespace stasm
 {
 void InitMods(

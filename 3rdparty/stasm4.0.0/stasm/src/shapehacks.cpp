@@ -9,7 +9,11 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "shapehacks.h"
+#include "print.h"
+#include "stasm_lib.h"
+#include "eyedist.h"
+#include "stasm_landmarks.h"
 
 namespace stasm
 {

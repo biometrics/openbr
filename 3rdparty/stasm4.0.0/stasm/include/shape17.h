@@ -5,6 +5,8 @@
 #ifndef STASM_SHAPE17_H
 #define STASM_SHAPE17_H
 
+#include "misc.h"
+
 namespace stasm
 {
 enum LANDMARKS_17       // the 17 points that make up a Shape17 shape

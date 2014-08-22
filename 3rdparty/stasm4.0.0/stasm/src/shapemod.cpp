@@ -2,7 +2,9 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
-#include "stasm.h"
+#include "shapemod.h"
+#include "landmarks.h"
+#include "asm.h"
 
 namespace stasm
 {
