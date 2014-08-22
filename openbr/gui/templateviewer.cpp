@@ -27,7 +27,7 @@ TemplateViewer::TemplateViewer(QWidget *parent)
     setMouseTracking(true);
     setDefaultText("<b>Drag Photo or Folder Here</b>\n");
     format = "Photo";
-    editable = true;
+    editable = false;
     setFile(File());
     update();
 }
@@ -233,9 +233,8 @@ void TemplateViewer::paintEvent(QPaintEvent *event)
 
     if (format == "Photo") {
         for (int i=0; i<NumLandmarks; i++) {
-            if (!landmarks[i].isNull()) {
-                if ((i == nearestLandmark) &&
-                    editable) painter.setBrush(QBrush(nearest));
+            if (!landmarks[i].isNull() && editable) {
+                if (i == nearestLandmark) painter.setBrush(QBrush(nearest));
                 else                  painter.setBrush(QBrush(normal));
                 painter.drawEllipse(getScreenPoint(landmarks[i]), 4, 4);
             }

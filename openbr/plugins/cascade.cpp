@@ -387,7 +387,8 @@ class CascadeTransform : public MetaTransform
             }
 
             for (int i=0; i<t.size(); i++) {
-                const Mat &m = t[i];
+                Mat m;
+                OpenCVUtils::cvtUChar(t[i], m);
                 std::vector<Rect> rects;
                 std::vector<int> rejectLevels;
                 std::vector<double> levelWeights;

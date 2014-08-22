@@ -385,9 +385,13 @@ class EmptyGallery : public Gallery
     Q_PROPERTY(QString regexp READ get_regexp WRITE set_regexp RESET reset_regexp STORED false)
     BR_PROPERTY(QString, regexp, QString())
 
+    qint64 gallerySize;
+
     void init()
     {
-        QtUtils::touchDir(QDir(file.name));
+        QDir dir(file.name);
+        QtUtils::touchDir(dir);
+        gallerySize = dir.count();
     }
 
     TemplateList readBlock(bool *done)
@@ -422,6 +426,8 @@ class EmptyGallery : public Gallery
             }
         }
 
+        for (int i = 0; i < templates.size(); i++) templates[i].file.set("progress", i);
+
         return templates;
     }
 
@@ -443,6 +449,11 @@ class EmptyGallery : public Gallery
             QScopedPointer<Format> format(Factory<Format>::make(destination));
             format->write(t);
         }
+    }
+
+    qint64 totalSize()
+    {
+        return gallerySize;
     }
 
     static TemplateList getTemplates(const QDir &dir)
@@ -563,6 +574,11 @@ class DefaultGallery : public Gallery
     {
         QScopedPointer<Format> format(Factory<Format>::make(file));
         format->write(t);
+    }
+
+    qint64 totalSize()
+    {
+        return 1;
     }
 };
 

@@ -99,16 +99,25 @@ void readFile(const QString &file, QByteArray &data, bool uncompress)
 
 void writeFile(const QString &file, const QStringList &lines)
 {
-    QFile f(file);
-    touchDir(f);
+    if (file.isEmpty()) return;
+    const QString baseName = QFileInfo(file).baseName();
 
-    if (!f.open(QFile::WriteOnly))
-        qFatal("Failed to open %s for writing.", qPrintable(file));
+    if (baseName == "terminal") {
+        printf("%s\n", qPrintable(lines.join("\n")));
+    } else if (baseName == "buffer") {
+        Globals->buffer = lines.join("\n").toStdString().c_str();
+    } else {
+        QFile f(file);
+        touchDir(f);
 
-    foreach (const QString &line, lines)
-        f.write((line+"\n").toLocal8Bit() );
+        if (!f.open(QFile::WriteOnly))
+            qFatal("Failed to open %s for writing.", qPrintable(file));
 
-    f.close();
+        foreach (const QString &line, lines)
+            f.write((line+"\n").toLocal8Bit());
+
+        f.close();
+    }
 }
 
 void writeFile(const QString &file, const QString &data)

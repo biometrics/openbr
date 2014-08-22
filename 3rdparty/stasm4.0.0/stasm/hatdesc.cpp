@@ -27,7 +27,7 @@ namespace stasm
 // (Note: an implementation with cache_g as a vector<vector VEC>> was slower.)
 
 //static hash_map<unsigned, VEC> cache_g; // cached descriptors
-static const bool TRACE_CACHE = 0;      // for checking cache hit rate
+//static const bool TRACE_CACHE = 0;      // for checking cache hit rate
 //static int ncalls_g, nhits_g;           // only used if TRACE_CACHE
 
 static unsigned Key(int x, int y) // pack x,y into 32 bits for cache key

@@ -19,13 +19,6 @@ namespace br
 class BR_EXPORT TemplateViewer : public ImageViewer
 {
     Q_OBJECT
-    File file;
-    QPointF mousePoint;
-    QString format;
-
-    bool editable;
-    QList<QPointF> landmarks;
-    int nearestLandmark;
 
 public:
     explicit TemplateViewer(QWidget *parent = 0);
@@ -36,10 +29,19 @@ public slots:
     void setMousePoint(const QPointF &mousePoint);
     void setFormat(const QString &format);
 
-private:
-    void refreshImage();
+protected:
+    File file;
+    QPointF mousePoint;
+    QString format;
+
+    bool editable;
+    QList<QPointF> landmarks;
+    int nearestLandmark;
     QPointF getImagePoint(const QPointF &sp) const;
     QPointF getScreenPoint(const QPointF &ip) const;
+
+private:
+    void refreshImage();
 
 protected slots:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -50,10 +52,10 @@ protected slots:
     void paintEvent(QPaintEvent *event);
 
 signals:
-    void newInput(File input);
-    void newInput(QImage input);
-    void newMousePoint(QPointF mousePoint);
-    void selectedInput(File input);
+    void newInput(File);
+    void newInput(QImage);
+    void newMousePoint(QPointF);
+    void selectedInput(File);
 };
 
 }

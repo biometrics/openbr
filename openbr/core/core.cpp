@@ -45,8 +45,14 @@ struct AlgorithmCore
 
     AlgorithmCore(const QString &name)
     {
-        this->name = name;
-        init(name);
+        if (name == "algorithm") {
+            this->name = Globals->algorithm;
+            init(Globals->algorithm);
+        } else {
+            this->name = name;
+            init(name);
+        }
+
         progressCounter = QSharedPointer<Transform>(Transform::make("ProgressCounter", NULL));
     }
 
@@ -197,9 +203,9 @@ struct AlgorithmCore
         outputDesc.append("GalleryOutput("+gallery.flat()+")");
         stages.append(progressCounter.data());
 
-        QScopedPointer<Transform> pipeline(br::pipeTransforms(stages));
+        QScopedPointer<Transform> pipeline(pipeTransforms(stages));
 
-        QScopedPointer<Transform> stream(br::wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+"+DiscardTemplates)"));
+        QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+"+DiscardTemplates)"));
 
         TemplateList data, output;
         data.append(input);
@@ -725,9 +731,18 @@ QSharedPointer<br::Transform> br::Transform::fromAlgorithm(const QString &algori
     if (!preprocess)
         return AlgorithmManager::getAlgorithm(algorithm)->transform;
     else {
-        QSharedPointer<Transform> orig_tform = AlgorithmManager::getAlgorithm(algorithm)->transform;
-        QSharedPointer<Transform> newRoot(wrapTransform(orig_tform.data(), "Stream(readMode=DistributeFrames)"));
-        return newRoot;
+        QSharedPointer<Transform> transform = AlgorithmManager::getAlgorithm(algorithm)->transform;
+        QSharedPointer<Transform> progressCounter = AlgorithmManager::getAlgorithm(algorithm)->progressCounter;
+
+        QList<Transform *> stages;
+        stages.append(transform.data());
+        stages.append(progressCounter.data());
+
+        Transform *pipeline(pipeTransforms(stages));
+        QSharedPointer<Transform> stream(wrapTransform(pipeline, "Stream(readMode=DistributeFrames)"));
+        pipeline->setParent(stream.data());
+
+        return stream;
     }
 }
 

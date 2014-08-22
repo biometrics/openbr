@@ -662,10 +662,12 @@ class ProgressCounterTransform : public TimeVaryingTransform
                 if (frame == last_frame && frame != -1)
                     continue;
 
-                Globals->currentProgress = dst[i].file.get<qint64>("progress",0);
+                // Use 1 as the starting index for progress output
+                Globals->currentProgress = dst[i].file.get<qint64>("progress",0)+1;
                 dst[i].file.remove("progress");
-                Globals->currentStep++;
                 last_frame = frame;
+
+                Globals->currentStep++;
             }
         }
 
@@ -699,8 +701,8 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         timer.start();
         Globals->startTime.start();
-        Globals->currentStep = 0;
         Globals->currentProgress = 0;
+        Globals->currentStep = 0;
         Globals->totalSteps = totalProgress;
     }
 
