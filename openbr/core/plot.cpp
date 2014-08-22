@@ -123,10 +123,28 @@ struct RPlot
             }
             file.write("data <- rbind(data, tmp)\n");
         }
+        for (int i=0; i<pivotItems.size(); i++) {
+            const int size = pivotItems[i].size();
+            if (size > major.size) {
+                minor = major;
+                major = Pivot(i, size, pivotHeaders[i]);
+            } else if (size > minor.size) {
+                minor = Pivot(i, size, pivotHeaders[i]);
+            }
+        }
 
+        const QString &smooth = destination.get<QString>("smooth", "");
+        major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
+        minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
+        if (major.smooth) major.size = 1;
+        if (minor.smooth) minor.size = 1;
+        if (major.size < minor.size)
+            std::swap(major, minor);
+
+        flip = minor.header == "Algorithm";
         // Format data
         if (isEvalFormat)
-            file.write("\n"
+            file.write(qPrintable(QString("\n"
                        "# Split data into individual plots\n"
                        "plot_index = which(names(data)==\"Plot\")\n"
                        "Metadata <- data[grep(\"Metadata\",data$Plot),-c(1)]\n"
@@ -158,7 +176,7 @@ struct RPlot
                        "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n"
                        "\n"
                        "# Code to format TAR@FAR table\n"
-                       "algs <- unique(FT$.)\n"
+                       "algs <- unique(FT$%1)\n"
                        "algs <- algs[!duplicated(algs)]\n"
                        "mat <- matrix(FT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
@@ -169,7 +187,7 @@ struct RPlot
                        "mat <- matrix(CT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\" Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
-                       "CMCtable <- as.table(mat)\n");
+                       "CMCtable <- as.table(mat)\n").arg(major.header)));
                        
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -197,9 +215,9 @@ struct RPlot
                                "plot.new()\n"
                                "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n"
                                "plot.new()\n"
-                               "print(textplot(FTtable,cex=1))\n"
+                               "print(textplot(FTtable))\n"
                                "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
-                               "print(textplot(CMCtable,cex=1))\n"
+                               "print(textplot(CMCtable))\n"
                                "print(title(\"Table of retrieval rate at various ranks\"))\n";
             file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
         }
@@ -207,26 +225,6 @@ struct RPlot
         // Write figures
         file.write("\n"
                    "# Write figures\n");
-
-        for (int i=0; i<pivotItems.size(); i++) {
-            const int size = pivotItems[i].size();
-            if (size > major.size) {
-                minor = major;
-                major = Pivot(i, size, pivotHeaders[i]);
-            } else if (size > minor.size) {
-                minor = Pivot(i, size, pivotHeaders[i]);
-            }
-        }
-
-        const QString &smooth = destination.get<QString>("smooth", "");
-        major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
-        minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
-        if (major.smooth) major.size = 1;
-        if (minor.smooth) minor.size = 1;
-        if (major.size < minor.size)
-            std::swap(major, minor);
-
-        flip = minor.header == "Algorithm";
     }
 
     bool finalize(bool show = false)
