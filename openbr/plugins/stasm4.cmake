@@ -6,5 +6,11 @@ if(${BR_WITH_STASM4})
   set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} plugins/stasm4.cpp)
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Stasm4_LIBS})
 
-  install(DIRECTORY ${Stasm_DIR}/data/ DESTINATION share/openbr/models/stasm)
+  if(WIN32)
+    install(FILES ${Stasm4_LIBS} DESTINATION bin)
+  else()
+    install(FILES ${Stasm4_LIBS} DESTINATION lib)
+  endif()
+
+  install(DIRECTORY ${Stasm4_DIR}/data/ DESTINATION share/openbr/models/stasm)
 endif()
