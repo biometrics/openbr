@@ -59,20 +59,18 @@ class MLPTransform : public MetaTransform
     BR_PROPERTY(QStringList, inputVariables, QStringList())
     Q_PROPERTY(QStringList outputVariables READ get_outputVariables WRITE set_outputVariables RESET reset_outputVariables STORED false)
     BR_PROPERTY(QStringList, outputVariables, QStringList())
-    Q_PROPERTY(int hiddenLayers READ get_hiddenLayers WRITE set_hiddenLayers RESET reset_hiddenLayers STORED false)
-    BR_PROPERTY(int, hiddenLayers, 1)
     Q_PROPERTY(QList<int> neuronsPerLayer READ get_neuronsPerLayer WRITE set_neuronsPerLayer RESET reset_neuronsPerLayer STORED false)
-    BR_PROPERTY(QList<int>, neuronsPerLayer, QList<int>() << 6)
+    BR_PROPERTY(QList<int>, neuronsPerLayer, QList<int>() << 1 << 1)
 
     CvANN_MLP mlp;
 
     void init()
     {
-        Mat layers = Mat(hiddenLayers, 1, CV_32SC1);
-        for (int i=0; i<hiddenLayers; i++) {
+        Mat layers = Mat(neuronsPerLayer.size(), 1, CV_32SC1);
+        for (int i=0; i<neuronsPerLayer.size(); i++) {
             layers.row(i) = Scalar(neuronsPerLayer.at(i));
         }
-        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, 1, 1);
+        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, .8, .6);
     }
 
     void train(const TemplateList &data)
@@ -88,15 +86,21 @@ class MLPTransform : public MetaTransform
             labels.col(i) += OpenCVUtils::toMat(File::get<float>(data, inputVariables.at(i)));
 
         mlp.train(_data,labels,Mat());
+
+        if (Globals->verbose)
+            for (int i=0; i<neuronsPerLayer.size(); i++) qDebug() << *mlp.get_weights(i);
     }
 
     void project(const Template &src, Template &dst) const
     {
+        dst = src;
+
         // See above for response dimensionality
         Mat response(outputVariables.size(), 1, CV_32FC1);
         mlp.predict(src.m().reshape(1,1),response);
 
-        for (int i=0; i<outputVariables.size(); i++) dst.file.set(outputVariables.at(i),response.at<float>(i,0));
+        // Apparently mlp.predict reshapes the response matrix?
+        for (int i=0; i<outputVariables.size(); i++) dst.file.set(outputVariables.at(i),response.at<float>(0,i));
     }
 
     void load(QDataStream &stream)
