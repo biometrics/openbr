@@ -166,7 +166,7 @@ BR_REGISTER(Transform, StasmTransform)
  * \ingroup transforms
  * \brief Designed for use after eye detection + Stasm, this will
  * revert the detected landmarks to the original coordinate space
- * before affine alignment to the stasm mean shape. The storeTransform
+ * before affine alignment to the stasm mean shape. The storeAffine
  * parameter must be set to true when calling AffineTransform before this.
  * \author Brendan Klare \cite bklare
  */

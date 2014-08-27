@@ -1035,7 +1035,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 
     // Search for SDK
     if (sdkPath.isEmpty()) {
-        QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();
+        QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
         checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
 
         bool foundSDK = false;
