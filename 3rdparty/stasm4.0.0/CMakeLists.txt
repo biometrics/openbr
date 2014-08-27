@@ -29,6 +29,7 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4267 /wd4307 /wd4308 /nologo")
 endif()
 
+message("********* ${PROJECT_SOURCE_DIR} ************")
 add_subdirectory(${PROJECT_SOURCE_DIR}/stasm)
 
 # Package
