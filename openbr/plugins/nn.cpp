@@ -70,7 +70,7 @@ class MLPTransform : public MetaTransform
         for (int i=0; i<neuronsPerLayer.size(); i++) {
             layers.row(i) = Scalar(neuronsPerLayer.at(i));
         }
-        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, .8, .6);
+        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, 1, 1);
     }
 
     void train(const TemplateList &data)
