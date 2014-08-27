@@ -369,12 +369,14 @@ BR_REGISTER(Transform, ReadLandmarksTransform)
 
 /*!
  * \ingroup transforms
- * \brief Name a point
+ * \brief Name a point/rect
  * \author Scott Klum \cite sklum
  */
-class NamePointsTransform : public UntrainableMetadataTransform
+class NameLandmarkTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
+    Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
+    BR_PROPERTY(bool, point, true)
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
@@ -382,29 +384,40 @@ class NamePointsTransform : public UntrainableMetadataTransform
 
     void projectMetadata(const File &src, File &dst) const
     {
-        if (indices.size() != names.size()) qFatal("Point/name size mismatch");
+        if (indices.size() != names.size()) qFatal("Index/name size mismatch");
 
         dst = src;
 
-        QList<QPointF> points = src.points();
+        if (point) {
+            QList<QPointF> points = src.points();
 
-        for (int i=0; i<indices.size(); i++) {
-            if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
-            else qFatal("Index out of range.");
+            for (int i=0; i<indices.size(); i++) {
+                if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
+                else qFatal("Index out of range.");
+            }
+        } else {
+            QList<QRectF> rects = src.rects();
+
+            for (int i=0; i<indices.size(); i++) {
+                if (indices[i] < rects.size()) dst.set(names[i], rects[indices[i]]);
+                else qFatal("Index out of range.");
+            }
         }
     }
 };
 
-BR_REGISTER(Transform, NamePointsTransform)
+BR_REGISTER(Transform, NameLandmarkTransform)
 
 /*!
  * \ingroup transforms
- * \brief Remove a name from a point
+ * \brief Remove a name from a point/rect
  * \author Scott Klum \cite sklum
  */
-class AnonymizePointsTransform : public UntrainableMetadataTransform
+class AnonymizeLandmarkTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
+    Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
+    BR_PROPERTY(bool, point, true)
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
     BR_PROPERTY(QStringList, names, QStringList())
 
@@ -412,12 +425,17 @@ class AnonymizePointsTransform : public UntrainableMetadataTransform
     {
         dst = src;
 
-        foreach (const QString &name, names)
-            if (src.contains(name)) dst.appendPoint(src.get<QPointF>(name));
+        if (point) {
+            foreach (const QString &name, names)
+                if (src.contains(name)) dst.appendPoint(src.get<QPointF>(name));
+        } else {
+            foreach (const QString &name, names)
+                if (src.contains(name)) dst.appendRect(src.get<QRectF>(name));
+        }
     }
 };
 
-BR_REGISTER(Transform, AnonymizePointsTransform)
+BR_REGISTER(Transform, AnonymizeLandmarkTransform)
 
 } // namespace br
 
