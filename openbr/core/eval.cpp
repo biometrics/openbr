@@ -292,7 +292,13 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     }
 
     QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+    qDebug("TAR @ FAR = 0.01:    %.3f",getTAR(operatingPoints, 0.01));
+    qDebug("TAR @ FAR = 0.001:   %.3f",getTAR(operatingPoints, 0.001));
+    qDebug("TAR @ FAR = 0.0001:  %.3f",getTAR(operatingPoints, 0.0001));
+    qDebug("TAR @ FAR = 0.00001: %.3f",getTAR(operatingPoints, 0.00001));
+
+    qDebug("\nRetrieval Rate @ Rank = %d: %.3f", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+
     return result;
 }
 
