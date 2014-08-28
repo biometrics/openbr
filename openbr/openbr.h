@@ -154,10 +154,11 @@ BR_EXPORT void br_project(const char *input, const char *output);
  * \param simmat The \ref simmat to use.
  * \param mask The \ref mask to use.
  * \param csv Optional \c .csv file to contain performance metrics.
+ * \param matches Optional bool flag to output top impostor matches and bottom genuine matches.
  * \return True accept rate at a false accept rate of one in one thousand.
  * \see br_plot
  */
-BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "");
+BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "", bool matches = false);
 
 /*!
  * \brief Creates a \c .csv file containing performance metrics from evaluating the similarity matrix using galleries containing ground truth labels

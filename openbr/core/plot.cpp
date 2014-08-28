@@ -148,6 +148,8 @@ struct RPlot
                        "# Split data into individual plots\n"
                        "plot_index = which(names(data)==\"Plot\")\n"
                        "Metadata <- data[grep(\"Metadata\",data$Plot),-c(1)]\n"
+                       "TI <- data[grep(\"TI\",data$Plot),-c(1)]\n"
+                       "BG <- data[grep(\"BG\",data$Plot),-c(1)]\n"
                        "DET <- data[grep(\"DET\",data$Plot),-c(1)]\n"
                        "FAR <- data[grep(\"FAR\",data$Plot),-c(1)]\n"
                        "FRR <- data[grep(\"FRR\",data$Plot),-c(1)]\n"
@@ -163,6 +165,8 @@ struct RPlot
                        "\n"
                        "# Format data\n"
                        "Metadata$Y<-factor(Metadata$Y, levels=c(\"Genuine\",\"Impostor\",\"Ignored\",\"Gallery\",\"Probe\"))\n"
+                       "TI$Y <- as.character(TI$Y)\n"
+                       "BG$Y <- as.character(BG$Y)\n"
                        "DET$Y <- as.numeric(as.character(DET$Y))\n"
                        "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
@@ -316,6 +320,25 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + scale_y_log10(labels=percent) + annotation_logticks(sides=\"l\")") +
                             ((p.flip ? p.minor.size : p.major.size) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minor.header : p.major.header) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
+
+    p.file.write(qPrintable(QString("if (nrow(TI) != 0) {\n\tlibrary(jpeg)\n\tlibrary(png)\n\tlibrary(grid)\n\t") +
+                            QString("multiplot <- function(..., plotlist=NULL, cols) {\n\t") +
+                            QString("\trequire(grid)\n\n\t\t# Make a list from the ... arguments and plotlist\n\t\tplots <- c(list(...), plotlist)\n") + 
+                            QString("\t\tnumPlots = length(plots)\n\n\t\t# Make the panel\n\t\tplotCols = cols\n\t\tplotRows = ceiling(numPlots/plotCols)\n\n") +
+                            QString("\t\t# Set up the page\n\t\tgrid.newpage()\n\t\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols)))\n\t\tvplayout <- function(x, y)\n\t\t\tviewport(layout.pos.row = x, layout.pos.col = y)\n\n") +
+                            QString("\t\t# Make each plot, in the correct location\n\t\tfor (i in 1:numPlots) {\n\t\t\tcurRow = ceiling(i/plotCols)\n\t\t\tcurCol = (i-1) %% plotCols + 1\n\t\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n\t\t}\n\t}\n\n")));
+    
+    p.file.write(qPrintable(QString("\t# Print top impostor matches\n\tfor (i in 1:nrow(TI)) {\n\t\tscore <- TI[i,1]\n\t\tfiles <- TI[i,2]\n\t\talg <- TI[i,3]\n\t\tfiles <- unlist(strsplit(files, \"[:]\"))\n\n\t\t") +
+                            QString("name1 <- files[1]\n\t\timg1 <- readJPEG(files[2])\n\t\tname2 <- files[3]\n\t\timg2 <- readJPEG(files[4])\n\n\t\tg1 <- rasterGrob(img1, interpolate=TRUE)\n\t\tg2 <- rasterGrob(img2, interpolate=TRUE)\n\n\t\t") +
+                            QString("plot1 <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(files[2]) + xlab(name1)\n\t\t") +
+                            QString("plot2 <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste(\"Impostor score =\", score)) + ylab(files[4]) + xlab(name2)\n\n\t\t") +
+                            QString("multiplot(plot1, plot2, cols=2)\n\t}")));
+
+    p.file.write(qPrintable(QString("\n\n\t# Print worst genuine matches\n\tfor (i in 1:nrow(BG)) {\n\t\tscore <- BG[i,1]\n\t\tfiles <- BG[i,2]\n\t\talg <- BG[i,3]\n\t\tfiles <- unlist(strsplit(files, \"[:]\"))\n\n\t\t") +
+                            QString("name1 <- files[1]\n\t\timg1 <- readJPEG(files[2])\n\t\tname2 <- files[3]\n\t\timg2 <- readJPEG(files[4])\n\n\t\tg1 <- rasterGrob(img1, interpolate=TRUE)\n\t\tg2 <- rasterGrob(img2, interpolate=TRUE)\n\n\t\t") +
+                            QString("plot1 <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(files[2]) + xlab(name1)\n\t\t") +
+                            QString("plot2 <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste(\"Genuine score =\", score)) + ylab(files[4]) + xlab(name2)\n\n\t\t") +
+                            QString("multiplot(plot1, plot2, cols=2)\n\t}\n}\n\n")));
 
     return p.finalize(show);
 }
