@@ -19,7 +19,7 @@ public:
     explicit FaceViewer(QWidget *parent = 0);
 
 public slots:
-    void setFile(const File &file_);
+    void setFile(const br::File &file_);
 
 protected slots:
     void mouseMoveEvent(QMouseEvent *event);
