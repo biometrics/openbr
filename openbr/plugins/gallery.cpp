@@ -267,7 +267,7 @@ class utGallery : public BinaryGallery
         if (imageID.size() != 16)
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
-        const int32_t algorithmID = t.isEmpty() ? 0 : t.file.get<int32_t>("AlgorithmID");
+        const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
         const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
 
         uint32_t x = 0, y = 0, width = 0, height = 0;
@@ -297,7 +297,7 @@ class utGallery : public BinaryGallery
             height = t.file.get<uint32_t>("Height", 0);
         }
 
-        if (!t.empty())
+        if (algorithmID != 0)
             data.append((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
 
         br_const_utemplate ut = br_new_utemplate((const int8_t*) imageID.data(), algorithmID, x, y, width, height, url.data(), data.data(), data.size());
