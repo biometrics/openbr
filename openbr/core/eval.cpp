@@ -100,10 +100,10 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), target, query, csv, true);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), target, query, csv, 10);
 }
 
-float Evaluate(const QString &simmat, const QString &mask, const QString &csv, bool matches)
+float Evaluate(const QString &simmat, const QString &mask, const QString &csv, int matches)
 {
     qDebug("Evaluating %s%s%s",
            qPrintable(simmat),
@@ -140,7 +140,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv, b
     return Evaluate(scores, truth, TemplateList::fromGallery(target).files(), TemplateList::fromGallery(query).files(), csv, matches);
 }
 
-float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const FileList &query, const QString &csv, bool matches)
+float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const FileList &query, const QString &csv, int matches)
 {
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
@@ -155,8 +155,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const
     float result = -1;
 
     // Lists of top impostors and worst genuine
-    QList<Comparison> topImpostors; topImpostors.reserve(10);
-    QList<Comparison> botGenuines; botGenuines.reserve(10);
+    QList<Comparison> topImpostors; topImpostors.reserve(matches);
+    QList<Comparison> botGenuines; botGenuines.reserve(matches);
     
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
@@ -171,23 +171,27 @@ float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const
             comparisons.append(comparison);
             if (comparison.genuine) {
                 genuineCount++;
-                if (botGenuines.size() < 10) {
-                    botGenuines.append(comparison);
-                    std::sort(botGenuines.begin(), botGenuines.end());
-                } else if (comparison.score < botGenuines.first().score) {
-                    botGenuines.removeFirst();
-                    botGenuines.append(comparison);
-                    std::sort(botGenuines.begin(), botGenuines.end());
+                if (matches != 0){
+                    if (botGenuines.size() < matches) {
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    } else if (comparison.score < botGenuines.first().score) {
+                        botGenuines.removeFirst();
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    }
                 }
             } else {
                 impostorCount++;
-                if (topImpostors.size() < 10) {
-                    topImpostors.append(comparison);
-                    std::sort(topImpostors.begin(), topImpostors.end());
-                } else if (topImpostors.last().score < comparison.score) {
-                    topImpostors.removeLast();
-                    topImpostors.append(comparison);
-                    std::sort(topImpostors.begin(), topImpostors.end());
+                if (matches != 0) {
+                    if (topImpostors.size() < matches) {
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    } else if (topImpostors.last().score < comparison.score) {
+                        topImpostors.removeLast();
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    }
                 }
 
             }                           
@@ -260,11 +264,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const
     lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
     QString filePath = Globals->path;
-    if (matches) {
+    if (matches != 0) {
         for (int i=0; i<topImpostors.size(); i++) {
             lines.append("TI,"+QString::number(topImpostors[i].score)+","+target[topImpostors[i].target].get<QString>("Label")+":"
                 +filePath+"/"+target[topImpostors[i].target].name+":"+query[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+query[topImpostors[i].query].name);
         }
+        std::reverse(botGenuines.begin(), botGenuines.end());
         for (int i=0; i<botGenuines.size(); i++) {
             lines.append("BG,"+QString::number(botGenuines[i].score)+","+target[botGenuines[i].target].get<QString>("Label")+":"
                 +filePath+"/"+target[botGenuines[i].target].name+":"+query[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+query[botGenuines[i].query].name);
