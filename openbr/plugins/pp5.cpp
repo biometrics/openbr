@@ -257,6 +257,8 @@ class PP5EnrollTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
     BR_PROPERTY(bool, detectOnly, false)
+    Q_PROPERTY(bool requireLandmarks READ get_requireLandmarks WRITE set_requireLandmarks RESET reset_requireLandmarks STORED false)
+    BR_PROPERTY(bool, requireLandmarks, false)
     Resource<PP5Context> contexts;
 
     void project(const Template &src, Template &dst) const
@@ -307,6 +309,12 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                     dst.file = src.file;
 
                     dst.file.append(PP5Context::toMetadata(face));
+                    if (requireLandmarks) {
+                        QPointF pt = dst.file.get<QPointF>("PP5_Landmark0_Right_Eye");
+                        if (std::isnan(pt.x()) && std::isnan(pt.y())){
+                            dst.file.fte = true;
+                        }
+                    }
                     dst += m;
                     dstList.append(dst);
 
