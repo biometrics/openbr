@@ -1,6 +1,8 @@
 #include "janus.h"
 #include "janus_io.h"
 #include "openbr_plugin.h"
+#include "openbr/core/opencvutils.h"
+#include "openbr/core/common.h"
 
 using namespace br;
 
@@ -17,7 +19,7 @@ janus_error janus_initialize(const char *sdk_path, const char *model_file)
     int argc = 1;
     const char *argv[1] = { "janus" };
     Context::initialize(argc, (char**)argv, sdk_path, false);
-    Globals->quiet = true;
+    Globals->quiet = false;
     const QString algorithm = model_file;
     if (algorithm.isEmpty()) {
         transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
@@ -151,6 +153,34 @@ janus_error janus_enroll(const janus_template template_, const janus_template_id
 janus_error janus_gallery_size(janus_gallery gallery, size_t *size)
 {
     *size = TemplateList::fromGallery(gallery).size();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_search(const janus_template template_, janus_gallery gallery, int requested_returns, janus_template_id *template_ids, float *similarities, int *actual_returns)
+{
+    TemplateList query;
+    query.append(*template_);
+
+    const TemplateList targets = TemplateList::fromGallery(gallery);
+
+    if (targets.size() < requested_returns) *actual_returns = targets.size();
+    else                                    *actual_returns = requested_returns;
+
+    QScopedPointer<MatrixOutput> matrix(MatrixOutput::make(targets.files(), query.files()));
+    distance->compare(targets, query, matrix.data());
+
+    typedef QPair<float,int> Pair;
+    QList<Pair> sortedSimilarities = Common::Sort(OpenCVUtils::matrixToVector<float>(matrix.data()->data.row(0)), true, *actual_returns);
+
+    FileList targetFiles;
+    for (int i=0; i<sortedSimilarities.size(); i++) {
+        matrix.data()->data.at<float>(0,i) = sortedSimilarities[i].first;
+        targetFiles.append(targets[sortedSimilarities[i].second]);
+    }
+    const QVector<janus_template_id> targetIds = File::get<janus_template_id,File>(targetFiles, "TEMPLATE_ID").toVector();
+
+    memcpy(similarities, matrix->data.data, *actual_returns * sizeof(float));
+    memcpy(template_ids, targetIds.data(), *actual_returns * sizeof(janus_template_id));
     return JANUS_SUCCESS;
 }
 
