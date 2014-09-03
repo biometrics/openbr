@@ -484,9 +484,10 @@ inline void splitFTEs(TemplateList &src, TemplateList  &ftes)
     src.clear();
 
     foreach (const Template &t, active) {
-        if (t.file.fte && !Globals->enrollAll)
-            ftes.append(t);
-        else
+        if (t.file.fte) {
+            if (!Globals->enrollAll)
+                ftes.append(t);
+        } else
             src.append(t);
     }
 }
