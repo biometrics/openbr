@@ -313,10 +313,12 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                         QPointF right = dst.file.get<QPointF>("PP5_Landmark0_Right_Eye");
                         QPointF left = dst.file.get<QPointF>("PP5_Landmark1_Left_Eye");
                         QPointF nose = dst.file.get<QPointF>("PP5_Landmark2_Nose_Base");
+                        // a number not equaling itself means it's NaN
+                        // there should be no NaNs for the 3 special landmarks
                         if (dst.file.get<int>("PP5_Face_NumLandmarks") < 3 ||
-                            std::isnan(right.x()) || std::isnan(right.y()) ||
-                            std::isnan(left.x()) || std::isnan(left.y()) ||
-                            std::isnan(nose.x()) || std::isnan(nose.y()))
+                            right.x() != right.x() || right.y() != right.y() ||
+                            left.x() != left.x() || left.y() != left.y() ||
+                            nose.x() != nose.x() || nose.y() != nose.y())
                         {
                             dst.file.fte = true;
                         }
