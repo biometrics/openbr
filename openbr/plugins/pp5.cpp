@@ -309,14 +309,21 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                     dst.file = src.file;
 
                     dst.file.append(PP5Context::toMetadata(face));
-                    if (requireLandmarks) {
-                        QPointF pt = dst.file.get<QPointF>("PP5_Landmark0_Right_Eye");
-                        if (std::isnan(pt.x()) && std::isnan(pt.y())){
-                            dst.file.fte = true;
-                        }
-                    }
                     dst += m;
-                    dstList.append(dst);
+                    if (requireLandmarks) {
+                        QPointF right = dst.file.get<QPointF>("PP5_Landmark0_Right_Eye");
+                        QPointF left = dst.file.get<QPointF>("PP5_Landmark1_Left_Eye");
+                        QPointF nose = dst.file.get<QPointF>("PP5_Landmark2_Nose_Base");
+                        if (dst.file.get<int>("PP5_Face_NumLandmarks") >= 3 &&
+                            !( std::isnan(right.x()) && std::isnan(right.y()) &&
+                               std::isnan(left.x()) && std::isnan(left.y()) &&
+                               std::isnan(nose.x()) && std::isnan(nose.y()) ))
+                        {
+                            dstList.append(dst);
+                        }
+                    } else {
+                        dstList.append(dst);
+                    }
 
                     // Found a face, nothing else to do (if we aren't trying to find multiple faces).
                     if (!Globals->enrollAll)
