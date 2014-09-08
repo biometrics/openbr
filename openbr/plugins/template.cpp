@@ -137,6 +137,24 @@ BR_REGISTER(Transform, RemoveMetadataTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Clears the points from a template
+ * \author Brendan Klare \cite bklare
+ */
+class ClearPointsTransform : public UntrainableMetadataTransform
+{
+    Q_OBJECT
+
+    void projectMetadata(const File &src, File &dst) const
+    {
+        dst = src;
+        dst.clearPoints();
+    }
+};
+
+BR_REGISTER(Transform, ClearPointsTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Retains only landmarks/points at the provided indices
  * \author Brendan Klare \cite bklare
  */

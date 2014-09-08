@@ -46,7 +46,7 @@ class PP5Initializer : public Initializer
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
         Globals->abbreviations.insert("PP5","Open+Expand+PP5Enroll!PP5Gallery");
-        Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
+        Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true,requireLandmarks=true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
         Globals->abbreviations.insert("PP5CropFace", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)+Affine(128,128,0.25,0.35)+Cvt(Gray)");
     }
 
@@ -257,6 +257,8 @@ class PP5EnrollTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
     BR_PROPERTY(bool, detectOnly, false)
+    Q_PROPERTY(bool requireLandmarks READ get_requireLandmarks WRITE set_requireLandmarks RESET reset_requireLandmarks STORED false)
+    BR_PROPERTY(bool, requireLandmarks, false)
     Resource<PP5Context> contexts;
 
     void project(const Template &src, Template &dst) const
@@ -307,6 +309,20 @@ class PP5EnrollTransform : public UntrainableMetaTransform
                     dst.file = src.file;
 
                     dst.file.append(PP5Context::toMetadata(face));
+                    if (requireLandmarks) {
+                        QPointF right = dst.file.get<QPointF>("PP5_Landmark0_Right_Eye");
+                        QPointF left = dst.file.get<QPointF>("PP5_Landmark1_Left_Eye");
+                        QPointF nose = dst.file.get<QPointF>("PP5_Landmark2_Nose_Base");
+                        // a number not equaling itself means it's NaN
+                        // there should be no NaNs for the 3 special landmarks
+                        if (dst.file.get<int>("PP5_Face_NumLandmarks") < 3 ||
+                            right.x() != right.x() || right.y() != right.y() ||
+                            left.x() != left.x() || left.y() != left.y() ||
+                            nose.x() != nose.x() || nose.y() != nose.y())
+                        {
+                            dst.file.fte = true;
+                        }
+                    }
                     dst += m;
                     dstList.append(dst);
 

@@ -104,9 +104,9 @@ void br_project(const char *input, const char *gallery)
     Project(File(input), File(gallery));
 }
 
-float br_eval(const char *simmat, const char *mask, const char *csv)
+float br_eval(const char *simmat, const char *mask, const char *csv, int matches)
 {
-    return Evaluate(simmat, mask, csv);
+    return Evaluate(simmat, mask, csv, matches);
 }
 
 float br_inplace_eval(const char *simmat, const char *target, const char *query, const char *csv)
