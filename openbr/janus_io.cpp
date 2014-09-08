@@ -23,7 +23,7 @@ static void _janus_create_template(const char *data_path, TemplateData templateD
     JANUS_ASSERT(janus_enroll(template_, templateID, gallery))
 }
 
-janus_error janus_create_gallery(const char *data_path, janus_metadata metadata, janus_gallery gallery, bool verbose)
+janus_error janus_create_gallery(const char *data_path, janus_metadata metadata, janus_gallery gallery, int verbose)
 {
     TemplateIterator ti(metadata, true);
     TemplateData templateData = ti.next();
