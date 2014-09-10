@@ -179,7 +179,7 @@ void FaceViewer::mouseReleaseEvent(QMouseEvent *event)
 
     if (dragging) {
         dragging = false;
-        //emit updateInput(landmarks);
+        emit newLandmarks(QStringList() << "Affine_0" << "Affine_1", landmarks);
     }
 
     update();

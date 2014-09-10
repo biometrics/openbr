@@ -31,6 +31,9 @@ private:
     void refreshImage();
     QRect getImageRect(const QPointF &ip, const QSize &size) const;
     QRectF getScreenRect(const QPointF &sp, int width_, int height_) const;
+
+signals:
+    void newLandmarks(QStringList, QList<QPointF>);
 };
 
 }
