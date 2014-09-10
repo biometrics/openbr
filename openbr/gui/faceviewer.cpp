@@ -73,8 +73,7 @@ void FaceViewer::setFile(const File &file_)
         landmarks.append(QPointF());
     nearestLandmark = -1;
 
-    FaceViewer::refreshImage();
-    //QtConcurrent::run(this, &FaceViewer::refreshImage);
+    QtConcurrent::run(this, &FaceViewer::refreshImage);
 }
 
 void FaceViewer::refreshImage()
