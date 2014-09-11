@@ -45,7 +45,7 @@ void TemplateViewer::setFile(const File &file_)
         landmarks.append(QPointF());
     nearestLandmark = -1;
 
-    QtConcurrent::run(this, &TemplateViewer::refreshImage);
+    TemplateViewer::refreshImage();
 }
 
 void TemplateViewer::setEditable(bool enabled)

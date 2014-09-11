@@ -25,6 +25,11 @@ public:
 public slots:
     void setFiles(const QList<br::FileList> &file);
 
+signals:
+    void newInput(br::File);
+    void newInput(QImage);
+    void newMousePoint(QPointF);
+    void selectedInput(br::File);
 };
 
 }
