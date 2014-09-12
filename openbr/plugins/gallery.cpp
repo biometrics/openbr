@@ -271,7 +271,7 @@ class utGallery : public BinaryGallery
         const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
 
         uint32_t x = 0, y = 0, width = 0, height = 0;
-        QByteArray data;
+        QByteArray header;
         if (algorithmID == -1) {
             const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
             x      = frontalFace.x();
@@ -286,10 +286,10 @@ class utGallery : public BinaryGallery
             const uint32_t leftEyeX  = secondEye.x();
             const uint32_t leftEyeY  = secondEye.y();
 
-            data.append((const char*)&rightEyeX, sizeof(uint32_t));
-            data.append((const char*)&rightEyeY, sizeof(uint32_t));
-            data.append((const char*)&leftEyeX , sizeof(uint32_t));
-            data.append((const char*)&leftEyeY , sizeof(uint32_t));
+            header.append((const char*)&rightEyeX, sizeof(uint32_t));
+            header.append((const char*)&rightEyeY, sizeof(uint32_t));
+            header.append((const char*)&leftEyeX , sizeof(uint32_t));
+            header.append((const char*)&leftEyeY , sizeof(uint32_t));
         } else {
             x = t.file.get<uint32_t>("X", 0);
             y = t.file.get<uint32_t>("Y", 0);
@@ -297,12 +297,29 @@ class utGallery : public BinaryGallery
             height = t.file.get<uint32_t>("Height", 0);
         }
 
+        QCryptographicHash templateID(QCryptographicHash::Md5);
+        templateID.addData(header);
         if (algorithmID != 0)
-            data.append((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+            templateID.addData((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
 
-        br_const_utemplate ut = br_new_utemplate((const int8_t*) imageID.data(), algorithmID, x, y, width, height, url.data(), data.data(), data.size());
-        gallery.write((const char*) ut, sizeof(br_universal_template) + ut->size);
-        br_free_utemplate(ut);
+        gallery.write(imageID);
+        gallery.write(templateID.result());
+        gallery.write((const char*) &algorithmID, sizeof(uint32_t));
+        gallery.write((const char*) &x          , sizeof(uint32_t));
+        gallery.write((const char*) &y          , sizeof(uint32_t));
+        gallery.write((const char*) &width      , sizeof(uint32_t));
+        gallery.write((const char*) &height     , sizeof(uint32_t));
+
+        const uint32_t urlSize = url.size() + 1;
+        gallery.write((const char*) &urlSize, sizeof(uint32_t));
+
+        const uint32_t size = urlSize + header.size() + (algorithmID == 0 ? 0 : t.m().rows * t.m().cols * t.m().elemSize());
+        gallery.write((const char*) &size, sizeof(uint32_t));
+
+        gallery.write((const char*) url.data(), urlSize);
+        gallery.write(header);
+        if (algorithmID != 0)
+            gallery.write((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
     }
 };
 
