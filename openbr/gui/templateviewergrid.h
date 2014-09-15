@@ -24,15 +24,15 @@ public:
     explicit TemplateViewerGrid(QWidget *parent = 0);
 
 public slots:
-    void setFiles(const FileList &file);
+    void setFiles(const br::FileList &file);
     void setFormat(const QString &format);
     void setMousePoint(const QPointF &mousePoint);
 
 signals:
-    void newInput(File);
+    void newInput(br::File);
     void newInput(QImage);
     void newMousePoint(QPointF);
-    void selectedInput(File);
+    void selectedInput(br::File);
 };
 
 } // namespace br

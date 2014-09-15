@@ -937,7 +937,7 @@ void br::Context::printStatus()
     const float p = progress();
     if (p < 1) {
         int s = timeRemaining();
-        fprintf(stderr,"\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentProgress);
+        fprintf(stderr,"\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(s).toStdString().c_str(), Globals->currentStep);
         fflush(stderr);
     }
 }
@@ -1035,7 +1035,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 
     // Search for SDK
     if (sdkPath.isEmpty()) {
-        QStringList checkPaths; checkPaths << QDir::currentPath() << QCoreApplication::applicationDirPath();
+        QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
         checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
 
         bool foundSDK = false;

@@ -18,10 +18,10 @@ void TemplateViewerGrid::setFiles(const FileList &files)
     const int size = std::max(1, (int)ceil(sqrt((float)files.size())));
     while (templateViewers.size() < size*size) {
         templateViewers.append(QSharedPointer<TemplateViewer>(new TemplateViewer()));
-        connect(templateViewers.last().data(), SIGNAL(newInput(File)), this, SIGNAL(newInput(File)));
+        connect(templateViewers.last().data(), SIGNAL(newInput(br::File)), this, SIGNAL(newInput(br::File)));
         connect(templateViewers.last().data(), SIGNAL(newInput(QImage)), this, SIGNAL(newInput(QImage)));
         connect(templateViewers.last().data(), SIGNAL(newMousePoint(QPointF)), this, SIGNAL(newMousePoint(QPointF)));
-        connect(templateViewers.last().data(), SIGNAL(selectedInput(File)), this, SIGNAL(selectedInput(File)));
+        connect(templateViewers.last().data(), SIGNAL(selectedInput(br::File)), this, SIGNAL(selectedInput(br::File)));
     }
 
     { // Clear layout

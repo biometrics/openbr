@@ -66,6 +66,19 @@ static float getTAR(const QList<OperatingPoint> &operatingPoints, float FAR)
     return m * FAR + b;
 }
 
+static float getCMC(const QVector<int> &firstGenuineReturns, int rank)
+{
+    int realizedReturns = 0, possibleReturns = 0;
+    foreach (int firstGenuineReturn, firstGenuineReturns) {
+        if (firstGenuineReturn > 0) {
+            possibleReturns++;
+            if (firstGenuineReturn <= rank) realizedReturns++;
+        }
+    }
+    const float retrievalRate = float(realizedReturns)/possibleReturns;
+    return retrievalRate;
+}
+
 // Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
 // scores with the size of the target and query lists
 static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, int partition=0)
@@ -87,10 +100,10 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), target, query, csv, 10);
 }
 
-float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
+float Evaluate(const QString &simmat, const QString &mask, const QString &csv, int matches)
 {
     qDebug("Evaluating %s%s%s",
            qPrintable(simmat),
@@ -124,10 +137,10 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         truth = format->read();
     }
 
-    return Evaluate(scores, truth, csv);
+    return Evaluate(scores, truth, TemplateList::fromGallery(target).files(), TemplateList::fromGallery(query).files(), csv, matches);
 }
 
-float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
+float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const FileList &query, const QString &csv, int matches)
 {
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
@@ -141,6 +154,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 
     float result = -1;
 
+    // Lists of top impostors and worst genuine
+    QList<Comparison> topImpostors; topImpostors.reserve(matches);
+    QList<Comparison> botGenuines; botGenuines.reserve(matches);
+    
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
@@ -150,9 +167,34 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
             const BEE::SimmatValue simmat_val = simmat.at<BEE::SimmatValue>(i,j);
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
-            comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
-            if (comparisons.last().genuine) genuineCount++;
-            else                            impostorCount++;
+            Comparison comparison(simmat_val, j, i, mask_val == BEE::Match);
+            comparisons.append(comparison);
+            if (comparison.genuine) {
+                genuineCount++;
+                if (matches != 0){
+                    if (botGenuines.size() < matches) {
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    } else if (comparison.score < botGenuines.first().score) {
+                        botGenuines.removeFirst();
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    }
+                }
+            } else {
+                impostorCount++;
+                if (matches != 0) {
+                    if (topImpostors.size() < matches) {
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    } else if (topImpostors.last().score < comparison.score) {
+                        topImpostors.removeLast();
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    }
+                }
+
+            }                           
         }
     }
 
@@ -221,6 +263,19 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     lines.append("Metadata,"+QString::number(impostorCount)+",Impostor");
     lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
+    QString filePath = Globals->path;
+    if (matches != 0) {
+        for (int i=0; i<topImpostors.size(); i++) {
+            lines.append("TI,"+QString::number(topImpostors[i].score)+","+target[topImpostors[i].target].get<QString>("Label")+":"
+                +filePath+"/"+target[topImpostors[i].target].name+":"+query[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+query[topImpostors[i].query].name);
+        }
+        std::reverse(botGenuines.begin(), botGenuines.end());
+        for (int i=0; i<botGenuines.size(); i++) {
+            lines.append("BG,"+QString::number(botGenuines[i].score)+","+target[botGenuines[i].target].get<QString>("Label")+":"
+                +filePath+"/"+target[botGenuines[i].target].name+":"+query[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+query[botGenuines[i].query].name);
+        }
+    }
+
     // Write Detection Error Tradeoff (DET), PRE, REC
     int points = qMin(operatingPoints.size(), Max_Points);
     for (int i=0; i<points; i++) {
@@ -232,6 +287,21 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
         lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPoint.score),
                                               QString::number(1-operatingPoint.TAR)));
     }
+    // Write FAR/TAR Table (FT)
+    lines.append(qPrintable(QString("FT,0.000001,%1").arg(QString::number(getTAR(operatingPoints, 0.000001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.00001,%1").arg(QString::number(getTAR(operatingPoints, 0.00001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.0001,%1").arg(QString::number(getTAR(operatingPoints, 0.0001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getTAR(operatingPoints, 0.01), 'f', 3))));    
+    lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getTAR(operatingPoints, 0.1), 'f', 3))));
+
+    //Write CMC Table (CT)
+    lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
+    lines.append(qPrintable(QString("CT,5,%1").arg(QString::number(getCMC(firstGenuineReturns, 5), 'f', 3))));
+    lines.append(qPrintable(QString("CT,10,%1").arg(QString::number(getCMC(firstGenuineReturns, 10), 'f', 3))));
+    lines.append(qPrintable(QString("CT,20,%1").arg(QString::number(getCMC(firstGenuineReturns, 20), 'f', 3))));
+    lines.append(qPrintable(QString("CT,50,%1").arg(QString::number(getCMC(firstGenuineReturns, 50), 'f', 3))));
+    lines.append(qPrintable(QString("CT,100,%1").arg(QString::number(getCMC(firstGenuineReturns, 100), 'f', 3))));
 
     // Write FAR/TAR Bar Chart (BC)
     lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getTAR(operatingPoints, 0.001), 'f', 3))));
@@ -258,23 +328,19 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 200;
     const int Report_Retrieval = 5;
-
-    float reportRetrievalRate = -1;
     for (int i=1; i<=Max_Retrieval; i++) {
-        int realizedReturns = 0, possibleReturns = 0;
-        foreach (int firstGenuineReturn, firstGenuineReturns) {
-            if (firstGenuineReturn > 0) {
-                possibleReturns++;
-                if (firstGenuineReturn <= i) realizedReturns++;
-            }
-        }
-        const float retrievalRate = float(realizedReturns)/possibleReturns;
+        const float retrievalRate = getCMC(firstGenuineReturns, i);
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
-        if (i == Report_Retrieval) reportRetrievalRate = retrievalRate;
     }
 
     QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, reportRetrievalRate);
+    qDebug("TAR @ FAR = 0.01:    %.3f",getTAR(operatingPoints, 0.01));
+    qDebug("TAR @ FAR = 0.001:   %.3f",getTAR(operatingPoints, 0.001));
+    qDebug("TAR @ FAR = 0.0001:  %.3f",getTAR(operatingPoints, 0.0001));
+    qDebug("TAR @ FAR = 0.00001: %.3f",getTAR(operatingPoints, 0.00001));
+
+    qDebug("\nRetrieval Rate @ Rank = %d: %.3f", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+
     return result;
 }
 

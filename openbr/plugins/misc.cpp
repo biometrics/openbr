@@ -189,7 +189,8 @@ class PrintTransform : public UntrainableMetaTransform
         QStringList matricies;
         foreach (const Mat &m, src)
             matricies.append(QString::number(m.rows) + "x" + QString::number(m.cols) + "_" + OpenCVUtils::typeToString(m));
-        fprintf(error ? stderr : stdout, "%s\n  %s\n%s", qPrintable(nameString), qPrintable(matricies.join(",")), qPrintable(dataString));
+        QString fteString = src.file.fte ? "\n  FTE=true" : QString();
+        fprintf(error ? stderr : stdout, "%s%s\n  %s\n%s", qPrintable(nameString), qPrintable(fteString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 };
 
@@ -376,15 +377,18 @@ class RenameTransform : public UntrainableMetadataTransform
     Q_OBJECT
     Q_PROPERTY(QString find READ get_find WRITE set_find RESET reset_find STORED false)
     Q_PROPERTY(QString replace READ get_replace WRITE set_replace RESET reset_replace STORED false)
+    Q_PROPERTY(bool keepOldKey READ get_keepOldKey WRITE set_keepOldKey RESET reset_keepOldKey STORED false)
     BR_PROPERTY(QString, find, "")
     BR_PROPERTY(QString, replace, "")
+    BR_PROPERTY(bool, keepOldKey, false)
 
     void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         if (dst.localKeys().contains(find)) {
             dst.set(replace, dst.value(find));
-            dst.remove(find);
+            if (!keepOldKey)
+               dst.remove(find);
         }
     }
 };
@@ -659,9 +663,12 @@ class ProgressCounterTransform : public TimeVaryingTransform
                 if (frame == last_frame && frame != -1)
                     continue;
 
-                Globals->currentProgress = dst[i].file.get<qint64>("progress",0);
+                // Use 1 as the starting index for progress output
+                Globals->currentProgress = dst[i].file.get<qint64>("progress",0)+1;
                 dst[i].file.remove("progress");
                 last_frame = frame;
+
+                Globals->currentStep++;
             }
         }
 
@@ -683,10 +690,11 @@ class ProgressCounterTransform : public TimeVaryingTransform
     {
         (void) data;
         float p = br_progress();
-        qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentProgress);
+        qDebug("\r%05.2f%%  ELAPSED=%s  REMAINING=%s  COUNT=%g", p*100, QtUtils::toTime(Globals->startTime.elapsed()/1000.0f).toStdString().c_str(), QtUtils::toTime(0).toStdString().c_str(), Globals->currentStep);
         timer.start();
         Globals->startTime.start();
-        Globals->currentProgress = totalProgress;
+        Globals->currentStep = 0;
+        Globals->currentProgress = 0;
         Globals->totalSteps = totalProgress;
     }
 
@@ -695,6 +703,7 @@ class ProgressCounterTransform : public TimeVaryingTransform
         timer.start();
         Globals->startTime.start();
         Globals->currentProgress = 0;
+        Globals->currentStep = 0;
         Globals->totalSteps = totalProgress;
     }
 

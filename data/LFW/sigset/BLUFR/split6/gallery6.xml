@@ -1,0 +1,3003 @@
+<?xml version="1.0" ?>
+<biometric-signature-set>
+	<biometric-signature name="Abdel_Nasser_Assidi">
+		<presentation file-name="Abdel_Nasser_Assidi/Abdel_Nasser_Assidi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Abdoulaye_Wade">
+		<presentation file-name="Abdoulaye_Wade/Abdoulaye_Wade_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Abdullah_Gul">
+		<presentation file-name="Abdullah_Gul/Abdullah_Gul_0010.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Abid_Hamid_Mahmud_Al-Tikriti">
+		<presentation file-name="Abid_Hamid_Mahmud_Al-Tikriti/Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Adam_Sandler">
+		<presentation file-name="Adam_Sandler/Adam_Sandler_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Adam_Scott">
+		<presentation file-name="Adam_Scott/Adam_Scott_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Adolfo_Aguilar_Zinser">
+		<presentation file-name="Adolfo_Aguilar_Zinser/Adolfo_Aguilar_Zinser_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Adrian_Nastase">
+		<presentation file-name="Adrian_Nastase/Adrian_Nastase_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Adrien_Brody">
+		<presentation file-name="Adrien_Brody/Adrien_Brody_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ahmad_Masood">
+		<presentation file-name="Ahmad_Masood/Ahmad_Masood_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ahmed_Chalabi">
+		<presentation file-name="Ahmed_Chalabi/Ahmed_Chalabi_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Aicha_El_Ouafi">
+		<presentation file-name="Aicha_El_Ouafi/Aicha_El_Ouafi_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Akhmed_Zakayev">
+		<presentation file-name="Akhmed_Zakayev/Akhmed_Zakayev_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alan_Ball">
+		<presentation file-name="Alan_Ball/Alan_Ball_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alan_Greenspan">
+		<presentation file-name="Alan_Greenspan/Alan_Greenspan_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alastair_Campbell">
+		<presentation file-name="Alastair_Campbell/Alastair_Campbell_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alberto_Fujimori">
+		<presentation file-name="Alberto_Fujimori/Alberto_Fujimori_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alberto_Ruiz_Gallardon">
+		<presentation file-name="Alberto_Ruiz_Gallardon/Alberto_Ruiz_Gallardon_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Albert_Costa">
+		<presentation file-name="Albert_Costa/Albert_Costa_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Albrecht_Mentz">
+		<presentation file-name="Albrecht_Mentz/Albrecht_Mentz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Aldo_Paredes">
+		<presentation file-name="Aldo_Paredes/Aldo_Paredes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alejandro_Atchugarry">
+		<presentation file-name="Alejandro_Atchugarry/Alejandro_Atchugarry_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Aleksander_Kwasniewski">
+		<presentation file-name="Aleksander_Kwasniewski/Aleksander_Kwasniewski_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alexander_Losyukov">
+		<presentation file-name="Alexander_Losyukov/Alexander_Losyukov_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alexandra_Stevenson">
+		<presentation file-name="Alexandra_Stevenson/Alexandra_Stevenson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alex_Barros">
+		<presentation file-name="Alex_Barros/Alex_Barros_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alex_Sink">
+		<presentation file-name="Alex_Sink/Alex_Sink_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alicia_Silverstone">
+		<presentation file-name="Alicia_Silverstone/Alicia_Silverstone_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alimzhan_Tokhtakhounov">
+		<presentation file-name="Alimzhan_Tokhtakhounov/Alimzhan_Tokhtakhounov_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alison_Lohman">
+		<presentation file-name="Alison_Lohman/Alison_Lohman_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ali_Abbas">
+		<presentation file-name="Ali_Abbas/Ali_Abbas_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ali_Naimi">
+		<presentation file-name="Ali_Naimi/Ali_Naimi_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Allyson_Felix">
+		<presentation file-name="Allyson_Felix/Allyson_Felix_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Alvaro_Noboa">
+		<presentation file-name="Alvaro_Noboa/Alvaro_Noboa_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Al_Gore">
+		<presentation file-name="Al_Gore/Al_Gore_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Al_Pacino">
+		<presentation file-name="Al_Pacino/Al_Pacino_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Al_Sharpton">
+		<presentation file-name="Al_Sharpton/Al_Sharpton_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amanda_Beard">
+		<presentation file-name="Amanda_Beard/Amanda_Beard_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amanda_Bynes">
+		<presentation file-name="Amanda_Bynes/Amanda_Bynes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amanda_Coetzer">
+		<presentation file-name="Amanda_Coetzer/Amanda_Coetzer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amber_Tamblyn">
+		<presentation file-name="Amber_Tamblyn/Amber_Tamblyn_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amelia_Vega">
+		<presentation file-name="Amelia_Vega/Amelia_Vega_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Amelie_Mauresmo">
+		<presentation file-name="Amelie_Mauresmo/Amelie_Mauresmo_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ana_Guevara">
+		<presentation file-name="Ana_Guevara/Ana_Guevara_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anders_Ebbeson">
+		<presentation file-name="Anders_Ebbeson/Anders_Ebbeson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anders_Fogh_Rasmussen">
+		<presentation file-name="Anders_Fogh_Rasmussen/Anders_Fogh_Rasmussen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Andrew_Niccol">
+		<presentation file-name="Andrew_Niccol/Andrew_Niccol_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Andrew_Weissmann">
+		<presentation file-name="Andrew_Weissmann/Andrew_Weissmann_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Andre_Agassi">
+		<presentation file-name="Andre_Agassi/Andre_Agassi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Andy_Hebb">
+		<presentation file-name="Andy_Hebb/Andy_Hebb_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Angela_Lansbury">
+		<presentation file-name="Angela_Lansbury/Angela_Lansbury_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Angela_Merkel">
+		<presentation file-name="Angela_Merkel/Angela_Merkel_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Angelina_Jolie">
+		<presentation file-name="Angelina_Jolie/Angelina_Jolie_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anibal_Ibarra">
+		<presentation file-name="Anibal_Ibarra/Anibal_Ibarra_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anna_Kournikova">
+		<presentation file-name="Anna_Kournikova/Anna_Kournikova_0010.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anna_Nicole_Smith">
+		<presentation file-name="Anna_Nicole_Smith/Anna_Nicole_Smith_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Annette_Bening">
+		<presentation file-name="Annette_Bening/Annette_Bening_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Annette_Lu">
+		<presentation file-name="Annette_Lu/Annette_Lu_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anne_Krueger">
+		<presentation file-name="Anne_Krueger/Anne_Krueger_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ann_Veneman">
+		<presentation file-name="Ann_Veneman/Ann_Veneman_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anthony_Fauci">
+		<presentation file-name="Anthony_Fauci/Anthony_Fauci_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anthony_Hopkins">
+		<presentation file-name="Anthony_Hopkins/Anthony_Hopkins_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Anthony_LaPaglia">
+		<presentation file-name="Anthony_LaPaglia/Anthony_LaPaglia_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Antonio_Palocci">
+		<presentation file-name="Antonio_Palocci/Antonio_Palocci_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Antony_Leung">
+		<presentation file-name="Antony_Leung/Antony_Leung_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ari_Fleischer">
+		<presentation file-name="Ari_Fleischer/Ari_Fleischer_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arlen_Specter">
+		<presentation file-name="Arlen_Specter/Arlen_Specter_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arminio_Fraga">
+		<presentation file-name="Arminio_Fraga/Arminio_Fraga_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arnaud_Clement">
+		<presentation file-name="Arnaud_Clement/Arnaud_Clement_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arnoldo_Aleman">
+		<presentation file-name="Arnoldo_Aleman/Arnoldo_Aleman_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arnold_Palmer">
+		<presentation file-name="Arnold_Palmer/Arnold_Palmer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Aron_Ralston">
+		<presentation file-name="Aron_Ralston/Aron_Ralston_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arsinee_Khanjian">
+		<presentation file-name="Arsinee_Khanjian/Arsinee_Khanjian_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arturo_Gatti">
+		<presentation file-name="Arturo_Gatti/Arturo_Gatti_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Art_Hoffmann">
+		<presentation file-name="Art_Hoffmann/Art_Hoffmann_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Art_Howe">
+		<presentation file-name="Art_Howe/Art_Howe_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Arye_Mekel">
+		<presentation file-name="Arye_Mekel/Arye_Mekel_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ashton_Kutcher">
+		<presentation file-name="Ashton_Kutcher/Ashton_Kutcher_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Atal_Bihari_Vajpayee">
+		<presentation file-name="Atal_Bihari_Vajpayee/Atal_Bihari_Vajpayee_0009.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Azra_Akin">
+		<presentation file-name="Azra_Akin/Azra_Akin_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Barbara_Brezigar">
+		<presentation file-name="Barbara_Brezigar/Barbara_Brezigar_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Barbara_Walters">
+		<presentation file-name="Barbara_Walters/Barbara_Walters_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bashar_Assad">
+		<presentation file-name="Bashar_Assad/Bashar_Assad_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Begum_Khaleda_Zia">
+		<presentation file-name="Begum_Khaleda_Zia/Begum_Khaleda_Zia_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Benjamin_Netanyahu">
+		<presentation file-name="Benjamin_Netanyahu/Benjamin_Netanyahu_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ben_Affleck">
+		<presentation file-name="Ben_Affleck/Ben_Affleck_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ben_Curtis">
+		<presentation file-name="Ben_Curtis/Ben_Curtis_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ben_Glisan">
+		<presentation file-name="Ben_Glisan/Ben_Glisan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ben_Howland">
+		<presentation file-name="Ben_Howland/Ben_Howland_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bernardo_Segura">
+		<presentation file-name="Bernardo_Segura/Bernardo_Segura_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bernard_Law">
+		<presentation file-name="Bernard_Law/Bernard_Law_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bertie_Ahern">
+		<presentation file-name="Bertie_Ahern/Bertie_Ahern_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Beth_Jones">
+		<presentation file-name="Beth_Jones/Beth_Jones_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Billy_Graham">
+		<presentation file-name="Billy_Graham/Billy_Graham_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_Belichick">
+		<presentation file-name="Bill_Belichick/Bill_Belichick_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_Clinton">
+		<presentation file-name="Bill_Clinton/Bill_Clinton_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_Gates">
+		<presentation file-name="Bill_Gates/Bill_Gates_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_Graham">
+		<presentation file-name="Bill_Graham/Bill_Graham_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_McBride">
+		<presentation file-name="Bill_McBride/Bill_McBride_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bill_Paxton">
+		<presentation file-name="Bill_Paxton/Bill_Paxton_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Binyamin_Ben-Eliezer">
+		<presentation file-name="Binyamin_Ben-Eliezer/Binyamin_Ben-Eliezer_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Blythe_Hartley">
+		<presentation file-name="Blythe_Hartley/Blythe_Hartley_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bobby_Goldwater">
+		<presentation file-name="Bobby_Goldwater/Bobby_Goldwater_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bobby_Robson">
+		<presentation file-name="Bobby_Robson/Bobby_Robson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Beauprez">
+		<presentation file-name="Bob_Beauprez/Bob_Beauprez_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Dole">
+		<presentation file-name="Bob_Dole/Bob_Dole_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Geldof">
+		<presentation file-name="Bob_Geldof/Bob_Geldof_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Graham">
+		<presentation file-name="Bob_Graham/Bob_Graham_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Hope">
+		<presentation file-name="Bob_Hope/Bob_Hope_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Huggins">
+		<presentation file-name="Bob_Huggins/Bob_Huggins_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bob_Stoops">
+		<presentation file-name="Bob_Stoops/Bob_Stoops_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Boris_Becker">
+		<presentation file-name="Boris_Becker/Boris_Becker_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Boris_Berezovsky">
+		<presentation file-name="Boris_Berezovsky/Boris_Berezovsky_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bo_Ryan">
+		<presentation file-name="Bo_Ryan/Bo_Ryan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brad_Garrett">
+		<presentation file-name="Brad_Garrett/Brad_Garrett_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Branko_Crvenkovski">
+		<presentation file-name="Branko_Crvenkovski/Branko_Crvenkovski_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brendan_Hansen">
+		<presentation file-name="Brendan_Hansen/Brendan_Hansen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brian_Cowen">
+		<presentation file-name="Brian_Cowen/Brian_Cowen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brian_Griese">
+		<presentation file-name="Brian_Griese/Brian_Griese_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brian_Heidik">
+		<presentation file-name="Brian_Heidik/Brian_Heidik_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brian_Mulroney">
+		<presentation file-name="Brian_Mulroney/Brian_Mulroney_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bridgette_Wilson-Sampras">
+		<presentation file-name="Bridgette_Wilson-Sampras/Bridgette_Wilson-Sampras_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Brigitte_Boisselier">
+		<presentation file-name="Brigitte_Boisselier/Brigitte_Boisselier_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bruce_Van_De_Velde">
+		<presentation file-name="Bruce_Van_De_Velde/Bruce_Van_De_Velde_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bruce_Weber">
+		<presentation file-name="Bruce_Weber/Bruce_Weber_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Bud_Selig">
+		<presentation file-name="Bud_Selig/Bud_Selig_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Butch_Davis">
+		<presentation file-name="Butch_Davis/Butch_Davis_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cameron_Diaz">
+		<presentation file-name="Cameron_Diaz/Cameron_Diaz_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Candice_Bergen">
+		<presentation file-name="Candice_Bergen/Candice_Bergen_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Candie_Kung">
+		<presentation file-name="Candie_Kung/Candie_Kung_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carla_Myers">
+		<presentation file-name="Carla_Myers/Carla_Myers_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Ghosn">
+		<presentation file-name="Carlos_Ghosn/Carlos_Ghosn_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Manuel_Pruneda">
+		<presentation file-name="Carlos_Manuel_Pruneda/Carlos_Manuel_Pruneda_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Menem">
+		<presentation file-name="Carlos_Menem/Carlos_Menem_0019.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Ortega">
+		<presentation file-name="Carlos_Ortega/Carlos_Ortega_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Quintanilla_Schmidt">
+		<presentation file-name="Carlos_Quintanilla_Schmidt/Carlos_Quintanilla_Schmidt_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Ruiz">
+		<presentation file-name="Carlos_Ruiz/Carlos_Ruiz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlos_Vives">
+		<presentation file-name="Carlos_Vives/Carlos_Vives_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carlo_Ancelotti">
+		<presentation file-name="Carlo_Ancelotti/Carlo_Ancelotti_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carl_Reiner">
+		<presentation file-name="Carl_Reiner/Carl_Reiner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carmen_Electra">
+		<presentation file-name="Carmen_Electra/Carmen_Electra_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carolina_Moraes">
+		<presentation file-name="Carolina_Moraes/Carolina_Moraes_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carolyn_Dawn_Johnson">
+		<presentation file-name="Carolyn_Dawn_Johnson/Carolyn_Dawn_Johnson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carol_Moseley_Braun">
+		<presentation file-name="Carol_Moseley_Braun/Carol_Moseley_Braun_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carrie-Anne_Moss">
+		<presentation file-name="Carrie-Anne_Moss/Carrie-Anne_Moss_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Carson_Daly">
+		<presentation file-name="Carson_Daly/Carson_Daly_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cate_Blanchett">
+		<presentation file-name="Cate_Blanchett/Cate_Blanchett_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Catherine_Deneuve">
+		<presentation file-name="Catherine_Deneuve/Catherine_Deneuve_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cathy_Freeman">
+		<presentation file-name="Cathy_Freeman/Cathy_Freeman_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cecilia_Bolocco">
+		<presentation file-name="Cecilia_Bolocco/Cecilia_Bolocco_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Celine_Dion">
+		<presentation file-name="Celine_Dion/Celine_Dion_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chakib_Khelil">
+		<presentation file-name="Chakib_Khelil/Chakib_Khelil_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chanda_Rubin">
+		<presentation file-name="Chanda_Rubin/Chanda_Rubin_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chang_Dae-whan">
+		<presentation file-name="Chang_Dae-whan/Chang_Dae-whan_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Charles_Bronson">
+		<presentation file-name="Charles_Bronson/Charles_Bronson_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Charles_Schumer">
+		<presentation file-name="Charles_Schumer/Charles_Schumer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Charles_Taylor">
+		<presentation file-name="Charles_Taylor/Charles_Taylor_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Charlie_Zaa">
+		<presentation file-name="Charlie_Zaa/Charlie_Zaa_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Charlton_Heston">
+		<presentation file-name="Charlton_Heston/Charlton_Heston_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chen_Liang_Yu">
+		<presentation file-name="Chen_Liang_Yu/Chen_Liang_Yu_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chen_Shui-bian">
+		<presentation file-name="Chen_Shui-bian/Chen_Shui-bian_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chita_Rivera">
+		<presentation file-name="Chita_Rivera/Chita_Rivera_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chok_Tong_Goh">
+		<presentation file-name="Chok_Tong_Goh/Chok_Tong_Goh_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christian_Longo">
+		<presentation file-name="Christian_Longo/Christian_Longo_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christian_Wulff">
+		<presentation file-name="Christian_Wulff/Christian_Wulff_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christina_Aguilera">
+		<presentation file-name="Christina_Aguilera/Christina_Aguilera_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christine_Baumgartner">
+		<presentation file-name="Christine_Baumgartner/Christine_Baumgartner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christine_Ebersole">
+		<presentation file-name="Christine_Ebersole/Christine_Ebersole_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christine_Todd_Whitman">
+		<presentation file-name="Christine_Todd_Whitman/Christine_Todd_Whitman_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Christopher_Patten">
+		<presentation file-name="Christopher_Patten/Christopher_Patten_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chris_Bell">
+		<presentation file-name="Chris_Bell/Chris_Bell_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chris_Byrd">
+		<presentation file-name="Chris_Byrd/Chris_Byrd_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chris_Cooper">
+		<presentation file-name="Chris_Cooper/Chris_Cooper_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chris_Rock">
+		<presentation file-name="Chris_Rock/Chris_Rock_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chuck_Amato">
+		<presentation file-name="Chuck_Amato/Chuck_Amato_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chuck_Yeager">
+		<presentation file-name="Chuck_Yeager/Chuck_Yeager_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Chung_Mong-hun">
+		<presentation file-name="Chung_Mong-hun/Chung_Mong-hun_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cindy_Crawford">
+		<presentation file-name="Cindy_Crawford/Cindy_Crawford_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Claire_Danes">
+		<presentation file-name="Claire_Danes/Claire_Danes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Claire_Hentzen">
+		<presentation file-name="Claire_Hentzen/Claire_Hentzen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Claire_Leger">
+		<presentation file-name="Claire_Leger/Claire_Leger_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Clare_Short">
+		<presentation file-name="Clare_Short/Clare_Short_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Claudia_Pechstein">
+		<presentation file-name="Claudia_Pechstein/Claudia_Pechstein_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Clay_Aiken">
+		<presentation file-name="Clay_Aiken/Clay_Aiken_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Colin_Farrell">
+		<presentation file-name="Colin_Farrell/Colin_Farrell_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Colin_Jackson">
+		<presentation file-name="Colin_Jackson/Colin_Jackson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Colin_Montgomerie">
+		<presentation file-name="Colin_Montgomerie/Colin_Montgomerie_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Colin_Powell">
+		<presentation file-name="Colin_Powell/Colin_Powell_0232.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Conchita_Martinez">
+		<presentation file-name="Conchita_Martinez/Conchita_Martinez_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Condoleezza_Rice">
+		<presentation file-name="Condoleezza_Rice/Condoleezza_Rice_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Coretta_Scott_King">
+		<presentation file-name="Coretta_Scott_King/Coretta_Scott_King_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cristina_Saralegui">
+		<presentation file-name="Cristina_Saralegui/Cristina_Saralegui_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Cruz_Bustamante">
+		<presentation file-name="Cruz_Bustamante/Cruz_Bustamante_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dalai_Lama">
+		<presentation file-name="Dalai_Lama/Dalai_Lama_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Daniela_Hantuchova">
+		<presentation file-name="Daniela_Hantuchova/Daniela_Hantuchova_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dan_Morales">
+		<presentation file-name="Dan_Morales/Dan_Morales_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dan_Wheldon">
+		<presentation file-name="Dan_Wheldon/Dan_Wheldon_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Darrell_Issa">
+		<presentation file-name="Darrell_Issa/Darrell_Issa_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Darrell_Porter">
+		<presentation file-name="Darrell_Porter/Darrell_Porter_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Daryl_Hannah">
+		<presentation file-name="Daryl_Hannah/Daryl_Hannah_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Bell">
+		<presentation file-name="David_Bell/David_Bell_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Caraway">
+		<presentation file-name="David_Caraway/David_Caraway_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Caruso">
+		<presentation file-name="David_Caruso/David_Caruso_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Dodge">
+		<presentation file-name="David_Dodge/David_Dodge_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Hyde_Pierce">
+		<presentation file-name="David_Hyde_Pierce/David_Hyde_Pierce_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Kelley">
+		<presentation file-name="David_Kelley/David_Kelley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Leahy">
+		<presentation file-name="David_Leahy/David_Leahy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Myers">
+		<presentation file-name="David_Myers/David_Myers_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Nalbandian">
+		<presentation file-name="David_Nalbandian/David_Nalbandian_0012.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Spade">
+		<presentation file-name="David_Spade/David_Spade_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Trimble">
+		<presentation file-name="David_Trimble/David_Trimble_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="David_Wolf">
+		<presentation file-name="David_Wolf/David_Wolf_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dean_Barkley">
+		<presentation file-name="Dean_Barkley/Dean_Barkley_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Debbie_Reynolds">
+		<presentation file-name="Debbie_Reynolds/Debbie_Reynolds_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Debra_Messing">
+		<presentation file-name="Debra_Messing/Debra_Messing_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Denise_Johnson">
+		<presentation file-name="Denise_Johnson/Denise_Johnson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dennis_Hastert">
+		<presentation file-name="Dennis_Hastert/Dennis_Hastert_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dennis_Kucinich">
+		<presentation file-name="Dennis_Kucinich/Dennis_Kucinich_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dennis_Powell">
+		<presentation file-name="Dennis_Powell/Dennis_Powell_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Derek_Lowe">
+		<presentation file-name="Derek_Lowe/Derek_Lowe_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Desiree_Lemosi">
+		<presentation file-name="Desiree_Lemosi/Desiree_Lemosi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dexter_Jackson">
+		<presentation file-name="Dexter_Jackson/Dexter_Jackson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Diana_Munz">
+		<presentation file-name="Diana_Munz/Diana_Munz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Diana_Taurasi">
+		<presentation file-name="Diana_Taurasi/Diana_Taurasi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Diane_Green">
+		<presentation file-name="Diane_Green/Diane_Green_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dick_Cheney">
+		<presentation file-name="Dick_Cheney/Dick_Cheney_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dick_Clark">
+		<presentation file-name="Dick_Clark/Dick_Clark_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dick_Latessa">
+		<presentation file-name="Dick_Latessa/Dick_Latessa_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dick_Vermeil">
+		<presentation file-name="Dick_Vermeil/Dick_Vermeil_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dolly_Parton">
+		<presentation file-name="Dolly_Parton/Dolly_Parton_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dolma_Tsering">
+		<presentation file-name="Dolma_Tsering/Dolma_Tsering_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Donald_Evans">
+		<presentation file-name="Donald_Evans/Donald_Evans_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Donatella_Versace">
+		<presentation file-name="Donatella_Versace/Donatella_Versace_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Doris_Roberts">
+		<presentation file-name="Doris_Roberts/Doris_Roberts_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dorthy_Moxley">
+		<presentation file-name="Dorthy_Moxley/Dorthy_Moxley_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Doug_Duncan">
+		<presentation file-name="Doug_Duncan/Doug_Duncan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Dwayne_Johnson">
+		<presentation file-name="Dwayne_Johnson/Dwayne_Johnson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eddie_Sutton">
+		<presentation file-name="Eddie_Sutton/Eddie_Sutton_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edie_Falco">
+		<presentation file-name="Edie_Falco/Edie_Falco_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edmund_Hillary">
+		<presentation file-name="Edmund_Hillary/Edmund_Hillary_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edmund_Stoiber">
+		<presentation file-name="Edmund_Stoiber/Edmund_Stoiber_0010.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eduard_Shevardnadze">
+		<presentation file-name="Eduard_Shevardnadze/Eduard_Shevardnadze_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edward_James_Olmos">
+		<presentation file-name="Edward_James_Olmos/Edward_James_Olmos_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edward_Kennedy">
+		<presentation file-name="Edward_Kennedy/Edward_Kennedy_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edward_Lu">
+		<presentation file-name="Edward_Lu/Edward_Lu_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edward_Norton">
+		<presentation file-name="Edward_Norton/Edward_Norton_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edwina_Currie">
+		<presentation file-name="Edwina_Currie/Edwina_Currie_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Edwin_Edwards">
+		<presentation file-name="Edwin_Edwards/Edwin_Edwards_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eileen_Coparropa">
+		<presentation file-name="Eileen_Coparropa/Eileen_Coparropa_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elena_Bovina">
+		<presentation file-name="Elena_Bovina/Elena_Bovina_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eliane_Karp">
+		<presentation file-name="Eliane_Karp/Eliane_Karp_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elijah_Wood">
+		<presentation file-name="Elijah_Wood/Elijah_Wood_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elinor_Caplan">
+		<presentation file-name="Elinor_Caplan/Elinor_Caplan_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elin_Nordegren">
+		<presentation file-name="Elin_Nordegren/Elin_Nordegren_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elizabeth_Dole">
+		<presentation file-name="Elizabeth_Dole/Elizabeth_Dole_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elizabeth_Hurley">
+		<presentation file-name="Elizabeth_Hurley/Elizabeth_Hurley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elizabeth_Shue">
+		<presentation file-name="Elizabeth_Shue/Elizabeth_Shue_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elizabeth_Taylor">
+		<presentation file-name="Elizabeth_Taylor/Elizabeth_Taylor_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elsa_Zylberstein">
+		<presentation file-name="Elsa_Zylberstein/Elsa_Zylberstein_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Elvis_Presley">
+		<presentation file-name="Elvis_Presley/Elvis_Presley_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Emanuel_Ginobili">
+		<presentation file-name="Emanuel_Ginobili/Emanuel_Ginobili_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Emma_Thompson">
+		<presentation file-name="Emma_Thompson/Emma_Thompson_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Emma_Watson">
+		<presentation file-name="Emma_Watson/Emma_Watson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Emmit_Smith">
+		<presentation file-name="Emmit_Smith/Emmit_Smith_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Enrique_Bolanos">
+		<presentation file-name="Enrique_Bolanos/Enrique_Bolanos_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eric_Clapton">
+		<presentation file-name="Eric_Clapton/Eric_Clapton_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eric_Rosser">
+		<presentation file-name="Eric_Rosser/Eric_Rosser_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Erika_Christensen">
+		<presentation file-name="Erika_Christensen/Erika_Christensen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Erika_Harold">
+		<presentation file-name="Erika_Harold/Erika_Harold_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Erik_Morales">
+		<presentation file-name="Erik_Morales/Erik_Morales_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ernesto_Zedillo">
+		<presentation file-name="Ernesto_Zedillo/Ernesto_Zedillo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ernie_Els">
+		<presentation file-name="Ernie_Els/Ernie_Els_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ernie_Fletcher">
+		<presentation file-name="Ernie_Fletcher/Ernie_Fletcher_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ethan_Hawke">
+		<presentation file-name="Ethan_Hawke/Ethan_Hawke_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eunice_Barber">
+		<presentation file-name="Eunice_Barber/Eunice_Barber_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Evan_Rachel_Wood">
+		<presentation file-name="Evan_Rachel_Wood/Evan_Rachel_Wood_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Eva_Dimas">
+		<presentation file-name="Eva_Dimas/Eva_Dimas_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Federico_Trillo">
+		<presentation file-name="Federico_Trillo/Federico_Trillo_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Felix_Mantilla">
+		<presentation file-name="Felix_Mantilla/Felix_Mantilla_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Fernando_Gonzalez">
+		<presentation file-name="Fernando_Gonzalez/Fernando_Gonzalez_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Fernando_Vargas">
+		<presentation file-name="Fernando_Vargas/Fernando_Vargas_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Fidel_Castro">
+		<presentation file-name="Fidel_Castro/Fidel_Castro_0014.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Filippo_Inzaghi">
+		<presentation file-name="Filippo_Inzaghi/Filippo_Inzaghi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Flor_Montulo">
+		<presentation file-name="Flor_Montulo/Flor_Montulo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Francis_Ford_Coppola">
+		<presentation file-name="Francis_Ford_Coppola/Francis_Ford_Coppola_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Francis_Mer">
+		<presentation file-name="Francis_Mer/Francis_Mer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Franco_Dragone">
+		<presentation file-name="Franco_Dragone/Franco_Dragone_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Frank_Cassell">
+		<presentation file-name="Frank_Cassell/Frank_Cassell_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Frank_Griswold">
+		<presentation file-name="Frank_Griswold/Frank_Griswold_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Frank_Solich">
+		<presentation file-name="Frank_Solich/Frank_Solich_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Franz_Beckenbauer">
+		<presentation file-name="Franz_Beckenbauer/Franz_Beckenbauer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Franz_Fischler">
+		<presentation file-name="Franz_Fischler/Franz_Fischler_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Franz_Muentefering">
+		<presentation file-name="Franz_Muentefering/Franz_Muentefering_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Freddy_Garcia">
+		<presentation file-name="Freddy_Garcia/Freddy_Garcia_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Fred_Eckhard">
+		<presentation file-name="Fred_Eckhard/Fred_Eckhard_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Fred_Thompson">
+		<presentation file-name="Fred_Thompson/Fred_Thompson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Garry_Kasparov">
+		<presentation file-name="Garry_Kasparov/Garry_Kasparov_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gary_Bergeron">
+		<presentation file-name="Gary_Bergeron/Gary_Bergeron_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gary_Doer">
+		<presentation file-name="Gary_Doer/Gary_Doer_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gary_Forsee">
+		<presentation file-name="Gary_Forsee/Gary_Forsee_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gary_Williams">
+		<presentation file-name="Gary_Williams/Gary_Williams_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gene_Robinson">
+		<presentation file-name="Gene_Robinson/Gene_Robinson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Foreman">
+		<presentation file-name="George_Foreman/George_Foreman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Galloway">
+		<presentation file-name="George_Galloway/George_Galloway_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_HW_Bush">
+		<presentation file-name="George_HW_Bush/George_HW_Bush_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Karl">
+		<presentation file-name="George_Karl/George_Karl_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Robertson">
+		<presentation file-name="George_Robertson/George_Robertson_0013.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Roy_Hill">
+		<presentation file-name="George_Roy_Hill/George_Roy_Hill_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Ryan">
+		<presentation file-name="George_Ryan/George_Ryan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Tenet">
+		<presentation file-name="George_Tenet/George_Tenet_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_Voinovich">
+		<presentation file-name="George_Voinovich/George_Voinovich_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="George_W_Bush">
+		<presentation file-name="George_W_Bush/George_W_Bush_0374.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Georgi_Parvanov">
+		<presentation file-name="Georgi_Parvanov/Georgi_Parvanov_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Geraldine_Chaplin">
+		<presentation file-name="Geraldine_Chaplin/Geraldine_Chaplin_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gerardo_Gambala">
+		<presentation file-name="Gerardo_Gambala/Gerardo_Gambala_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gerard_Depardieu">
+		<presentation file-name="Gerard_Depardieu/Gerard_Depardieu_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gerry_Adams">
+		<presentation file-name="Gerry_Adams/Gerry_Adams_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gerry_Parsky">
+		<presentation file-name="Gerry_Parsky/Gerry_Parsky_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gian_Marco">
+		<presentation file-name="Gian_Marco/Gian_Marco_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gilberto_Rodriguez_Orejuela">
+		<presentation file-name="Gilberto_Rodriguez_Orejuela/Gilberto_Rodriguez_Orejuela_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gillian_Anderson">
+		<presentation file-name="Gillian_Anderson/Gillian_Anderson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gil_de_Ferran">
+		<presentation file-name="Gil_de_Ferran/Gil_de_Ferran_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Glafcos_Clerides">
+		<presentation file-name="Glafcos_Clerides/Glafcos_Clerides_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gloria_Allred">
+		<presentation file-name="Gloria_Allred/Gloria_Allred_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gloria_Trevi">
+		<presentation file-name="Gloria_Trevi/Gloria_Trevi_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="GL_Peiris">
+		<presentation file-name="GL_Peiris/GL_Peiris_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Goldie_Hawn">
+		<presentation file-name="Goldie_Hawn/Goldie_Hawn_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Goran_Persson">
+		<presentation file-name="Goran_Persson/Goran_Persson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gordon_Brown">
+		<presentation file-name="Gordon_Brown/Gordon_Brown_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gordon_Campbell">
+		<presentation file-name="Gordon_Campbell/Gordon_Campbell_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Grady_Irvin_Jr">
+		<presentation file-name="Grady_Irvin_Jr/Grady_Irvin_Jr_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Grant_Hackett">
+		<presentation file-name="Grant_Hackett/Grant_Hackett_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gray_Davis">
+		<presentation file-name="Gray_Davis/Gray_Davis_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gregory_Hines">
+		<presentation file-name="Gregory_Hines/Gregory_Hines_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Greg_Gilbert">
+		<presentation file-name="Greg_Gilbert/Greg_Gilbert_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Greg_Owen">
+		<presentation file-name="Greg_Owen/Greg_Owen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Greg_Rusedski">
+		<presentation file-name="Greg_Rusedski/Greg_Rusedski_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gro_Harlem_Brundtland">
+		<presentation file-name="Gro_Harlem_Brundtland/Gro_Harlem_Brundtland_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Guido_Westerwelle">
+		<presentation file-name="Guido_Westerwelle/Guido_Westerwelle_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Guillermo_Coria">
+		<presentation file-name="Guillermo_Coria/Guillermo_Coria_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Guillermo_Ortiz">
+		<presentation file-name="Guillermo_Ortiz/Guillermo_Ortiz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gunter_Pleuger">
+		<presentation file-name="Gunter_Pleuger/Gunter_Pleuger_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gustavo_Kuerten">
+		<presentation file-name="Gustavo_Kuerten/Gustavo_Kuerten_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gwendal_Peizerat">
+		<presentation file-name="Gwendal_Peizerat/Gwendal_Peizerat_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Gwyneth_Paltrow">
+		<presentation file-name="Gwyneth_Paltrow/Gwyneth_Paltrow_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Habib_Rizieq">
+		<presentation file-name="Habib_Rizieq/Habib_Rizieq_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Halle_Berry">
+		<presentation file-name="Halle_Berry/Halle_Berry_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hamzah_Haz">
+		<presentation file-name="Hamzah_Haz/Hamzah_Haz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hannah_Stockbauer">
+		<presentation file-name="Hannah_Stockbauer/Hannah_Stockbauer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hans_Eichel">
+		<presentation file-name="Hans_Eichel/Hans_Eichel_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Harbhajan_Singh">
+		<presentation file-name="Harbhajan_Singh/Harbhajan_Singh_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Harrison_Ford">
+		<presentation file-name="Harrison_Ford/Harrison_Ford_0009.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Harvey_Weinstein">
+		<presentation file-name="Harvey_Weinstein/Harvey_Weinstein_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hassan_Wirajuda">
+		<presentation file-name="Hassan_Wirajuda/Hassan_Wirajuda_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Heather_Mills">
+		<presentation file-name="Heather_Mills/Heather_Mills_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Heath_Ledger">
+		<presentation file-name="Heath_Ledger/Heath_Ledger_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hee-Won_Han">
+		<presentation file-name="Hee-Won_Han/Hee-Won_Han_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Heidi_Klum">
+		<presentation file-name="Heidi_Klum/Heidi_Klum_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Helen_Clark">
+		<presentation file-name="Helen_Clark/Helen_Clark_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Henrique_Meirelles">
+		<presentation file-name="Henrique_Meirelles/Henrique_Meirelles_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hermann_Maier">
+		<presentation file-name="Hermann_Maier/Hermann_Maier_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Herta_Daeubler-Gmelin">
+		<presentation file-name="Herta_Daeubler-Gmelin/Herta_Daeubler-Gmelin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hichiro_Naemura">
+		<presentation file-name="Hichiro_Naemura/Hichiro_Naemura_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hideki_Matsui">
+		<presentation file-name="Hideki_Matsui/Hideki_Matsui_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hillary_Clinton">
+		<presentation file-name="Hillary_Clinton/Hillary_Clinton_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hilmi_Ozkok">
+		<presentation file-name="Hilmi_Ozkok/Hilmi_Ozkok_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hipolito_Mejia">
+		<presentation file-name="Hipolito_Mejia/Hipolito_Mejia_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hisao_Oguchi">
+		<presentation file-name="Hisao_Oguchi/Hisao_Oguchi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hitomi_Soga">
+		<presentation file-name="Hitomi_Soga/Hitomi_Soga_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Holly_Hunter">
+		<presentation file-name="Holly_Hunter/Holly_Hunter_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hootie_Johnson">
+		<presentation file-name="Hootie_Johnson/Hootie_Johnson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Horst_Koehler">
+		<presentation file-name="Horst_Koehler/Horst_Koehler_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hosni_Mubarak">
+		<presentation file-name="Hosni_Mubarak/Hosni_Mubarak_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Howard_Schultz">
+		<presentation file-name="Howard_Schultz/Howard_Schultz_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hugo_Chavez">
+		<presentation file-name="Hugo_Chavez/Hugo_Chavez_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hun_Sen">
+		<presentation file-name="Hun_Sen/Hun_Sen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Hu_Jintao">
+		<presentation file-name="Hu_Jintao/Hu_Jintao_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ian_Thorpe">
+		<presentation file-name="Ian_Thorpe/Ian_Thorpe_0010.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ibrahim_Jaafari">
+		<presentation file-name="Ibrahim_Jaafari/Ibrahim_Jaafari_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ilan_Ramon">
+		<presentation file-name="Ilan_Ramon/Ilan_Ramon_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Imad_Moustapha">
+		<presentation file-name="Imad_Moustapha/Imad_Moustapha_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Inocencio_Arias">
+		<presentation file-name="Inocencio_Arias/Inocencio_Arias_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Intisar_Ajouri">
+		<presentation file-name="Intisar_Ajouri/Intisar_Ajouri_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Isabelle_Huppert">
+		<presentation file-name="Isabelle_Huppert/Isabelle_Huppert_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ishaq_Shahryar">
+		<presentation file-name="Ishaq_Shahryar/Ishaq_Shahryar_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ismail_Merchant">
+		<presentation file-name="Ismail_Merchant/Ismail_Merchant_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Iva_Majoli">
+		<presentation file-name="Iva_Majoli/Iva_Majoli_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jackie_Chan">
+		<presentation file-name="Jackie_Chan/Jackie_Chan_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jack_Grubman">
+		<presentation file-name="Jack_Grubman/Jack_Grubman_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jacques_Chirac">
+		<presentation file-name="Jacques_Chirac/Jacques_Chirac_0023.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jacques_Rogge">
+		<presentation file-name="Jacques_Rogge/Jacques_Rogge_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jada_Pinkett_Smith">
+		<presentation file-name="Jada_Pinkett_Smith/Jada_Pinkett_Smith_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Blake">
+		<presentation file-name="James_Blake/James_Blake_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Caan">
+		<presentation file-name="James_Caan/James_Caan_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Cameron">
+		<presentation file-name="James_Cameron/James_Cameron_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Cunningham">
+		<presentation file-name="James_Cunningham/James_Cunningham_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Gandolfini">
+		<presentation file-name="James_Gandolfini/James_Gandolfini_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Ivory">
+		<presentation file-name="James_Ivory/James_Ivory_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Jones">
+		<presentation file-name="James_Jones/James_Jones_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Kelly">
+		<presentation file-name="James_Kelly/James_Kelly_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Kopp">
+		<presentation file-name="James_Kopp/James_Kopp_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Maguire">
+		<presentation file-name="James_Maguire/James_Maguire_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_McGreevey">
+		<presentation file-name="James_McGreevey/James_McGreevey_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Parker">
+		<presentation file-name="James_Parker/James_Parker_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Schultz">
+		<presentation file-name="James_Schultz/James_Schultz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Smith">
+		<presentation file-name="James_Smith/James_Smith_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="James_Traficant">
+		<presentation file-name="James_Traficant/James_Traficant_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jamie_Villafane">
+		<presentation file-name="Jamie_Villafane/Jamie_Villafane_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jamling_Norgay">
+		<presentation file-name="Jamling_Norgay/Jamling_Norgay_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jan-Michael_Gambill">
+		<presentation file-name="Jan-Michael_Gambill/Jan-Michael_Gambill_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Janet_Napolitano">
+		<presentation file-name="Janet_Napolitano/Janet_Napolitano_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Janica_Kostelic">
+		<presentation file-name="Janica_Kostelic/Janica_Kostelic_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jan_Ullrich">
+		<presentation file-name="Jan_Ullrich/Jan_Ullrich_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jason_Alexander">
+		<presentation file-name="Jason_Alexander/Jason_Alexander_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jason_Jennings">
+		<presentation file-name="Jason_Jennings/Jason_Jennings_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jason_Kidd">
+		<presentation file-name="Jason_Kidd/Jason_Kidd_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Javier_Solana">
+		<presentation file-name="Javier_Solana/Javier_Solana_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Javier_Weber">
+		<presentation file-name="Javier_Weber/Javier_Weber_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jay_Garner">
+		<presentation file-name="Jay_Garner/Jay_Garner_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jay_Leno">
+		<presentation file-name="Jay_Leno/Jay_Leno_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jay_Rasulo">
+		<presentation file-name="Jay_Rasulo/Jay_Rasulo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-Claude_Braquet">
+		<presentation file-name="Jean-Claude_Braquet/Jean-Claude_Braquet_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-Claude_Juncker">
+		<presentation file-name="Jean-Claude_Juncker/Jean-Claude_Juncker_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-David_Levitte">
+		<presentation file-name="Jean-David_Levitte/Jean-David_Levitte_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-Francois_Pontal">
+		<presentation file-name="Jean-Francois_Pontal/Jean-Francois_Pontal_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-Marc_de_La_Sabliere">
+		<presentation file-name="Jean-Marc_de_La_Sabliere/Jean-Marc_de_La_Sabliere_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean-Pierre_Raffarin">
+		<presentation file-name="Jean-Pierre_Raffarin/Jean-Pierre_Raffarin_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeanne_Moreau">
+		<presentation file-name="Jeanne_Moreau/Jeanne_Moreau_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean_Brumley">
+		<presentation file-name="Jean_Brumley/Jean_Brumley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean_Carnahan">
+		<presentation file-name="Jean_Carnahan/Jean_Carnahan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean_Charest">
+		<presentation file-name="Jean_Charest/Jean_Charest_0017.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jean_Chretien">
+		<presentation file-name="Jean_Chretien/Jean_Chretien_0027.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeb_Bush">
+		<presentation file-name="Jeb_Bush/Jeb_Bush_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeffrey_Archer">
+		<presentation file-name="Jeffrey_Archer/Jeffrey_Archer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeffrey_Immelt">
+		<presentation file-name="Jeffrey_Immelt/Jeffrey_Immelt_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeff_Van_Gundy">
+		<presentation file-name="Jeff_Van_Gundy/Jeff_Van_Gundy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jelena_Dokic">
+		<presentation file-name="Jelena_Dokic/Jelena_Dokic_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Aniston">
+		<presentation file-name="Jennifer_Aniston/Jennifer_Aniston_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Capriati">
+		<presentation file-name="Jennifer_Capriati/Jennifer_Capriati_0022.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Connelly">
+		<presentation file-name="Jennifer_Connelly/Jennifer_Connelly_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Garner">
+		<presentation file-name="Jennifer_Garner/Jennifer_Garner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Keller">
+		<presentation file-name="Jennifer_Keller/Jennifer_Keller_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jennifer_Thompson">
+		<presentation file-name="Jennifer_Thompson/Jennifer_Thompson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeremy_Greenstock">
+		<presentation file-name="Jeremy_Greenstock/Jeremy_Greenstock_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jeremy_Shockey">
+		<presentation file-name="Jeremy_Shockey/Jeremy_Shockey_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jerry_Falwell">
+		<presentation file-name="Jerry_Falwell/Jerry_Falwell_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jerry_Springer">
+		<presentation file-name="Jerry_Springer/Jerry_Springer_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jesse_Harris">
+		<presentation file-name="Jesse_Harris/Jesse_Harris_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jesse_Jackson">
+		<presentation file-name="Jesse_Jackson/Jesse_Jackson_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jesse_James_Leija">
+		<presentation file-name="Jesse_James_Leija/Jesse_James_Leija_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jesse_Ventura">
+		<presentation file-name="Jesse_Ventura/Jesse_Ventura_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jessica_Alba">
+		<presentation file-name="Jessica_Alba/Jessica_Alba_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jessica_Lange">
+		<presentation file-name="Jessica_Lange/Jessica_Lange_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jessica_Lynch">
+		<presentation file-name="Jessica_Lynch/Jessica_Lynch_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jimmy_Carter">
+		<presentation file-name="Jimmy_Carter/Jimmy_Carter_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jimmy_Kimmel">
+		<presentation file-name="Jimmy_Kimmel/Jimmy_Kimmel_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jim_Carrey">
+		<presentation file-name="Jim_Carrey/Jim_Carrey_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jim_Furyk">
+		<presentation file-name="Jim_Furyk/Jim_Furyk_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jiri_Novak">
+		<presentation file-name="Jiri_Novak/Jiri_Novak_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="JJ_Redick">
+		<presentation file-name="JJ_Redick/JJ_Redick_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="JK_Rowling">
+		<presentation file-name="JK_Rowling/JK_Rowling_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joan_Claybrook">
+		<presentation file-name="Joan_Claybrook/Joan_Claybrook_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joan_Laporta">
+		<presentation file-name="Joan_Laporta/Joan_Laporta_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Job_Cohen">
+		<presentation file-name="Job_Cohen/Job_Cohen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jodie_Foster">
+		<presentation file-name="Jodie_Foster/Jodie_Foster_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joerg_Haider">
+		<presentation file-name="Joerg_Haider/Joerg_Haider_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joe_Calzaghe">
+		<presentation file-name="Joe_Calzaghe/Joe_Calzaghe_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joe_Gatti">
+		<presentation file-name="Joe_Gatti/Joe_Gatti_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joe_Mantello">
+		<presentation file-name="Joe_Mantello/Joe_Mantello_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joe_Nichols">
+		<presentation file-name="Joe_Nichols/Joe_Nichols_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joe_Torre">
+		<presentation file-name="Joe_Torre/Joe_Torre_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Johnny_Carson">
+		<presentation file-name="Johnny_Carson/Johnny_Carson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Johnny_Depp">
+		<presentation file-name="Johnny_Depp/Johnny_Depp_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Abizaid">
+		<presentation file-name="John_Abizaid/John_Abizaid_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Ashcroft">
+		<presentation file-name="John_Ashcroft/John_Ashcroft_0018.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Blaney">
+		<presentation file-name="John_Blaney/John_Blaney_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Bolton">
+		<presentation file-name="John_Bolton/John_Bolton_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Brady">
+		<presentation file-name="John_Brady/John_Brady_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Edwards">
+		<presentation file-name="John_Edwards/John_Edwards_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_F_Kennedy_Jr">
+		<presentation file-name="John_F_Kennedy_Jr/John_F_Kennedy_Jr_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Garamendi">
+		<presentation file-name="John_Garamendi/John_Garamendi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Howard">
+		<presentation file-name="John_Howard/John_Howard_0009.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Jumper">
+		<presentation file-name="John_Jumper/John_Jumper_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Malkovich">
+		<presentation file-name="John_Malkovich/John_Malkovich_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_McCain">
+		<presentation file-name="John_McCain/John_McCain_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_McCallum">
+		<presentation file-name="John_McCallum/John_McCallum_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_McCormack">
+		<presentation file-name="John_McCormack/John_McCormack_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_McEnroe">
+		<presentation file-name="John_McEnroe/John_McEnroe_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Negroponte">
+		<presentation file-name="John_Negroponte/John_Negroponte_0024.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Reilly">
+		<presentation file-name="John_Reilly/John_Reilly_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Rowland">
+		<presentation file-name="John_Rowland/John_Rowland_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Ruiz">
+		<presentation file-name="John_Ruiz/John_Ruiz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Spencer">
+		<presentation file-name="John_Spencer/John_Spencer_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Stallworth">
+		<presentation file-name="John_Stallworth/John_Stallworth_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Stockton">
+		<presentation file-name="John_Stockton/John_Stockton_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Swofford">
+		<presentation file-name="John_Swofford/John_Swofford_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Taylor">
+		<presentation file-name="John_Taylor/John_Taylor_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Walsh">
+		<presentation file-name="John_Walsh/John_Walsh_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Warner">
+		<presentation file-name="John_Warner/John_Warner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="John_Wolf">
+		<presentation file-name="John_Wolf/John_Wolf_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jolanta_Kwasniewski">
+		<presentation file-name="Jolanta_Kwasniewski/Jolanta_Kwasniewski_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jonathan_Edwards">
+		<presentation file-name="Jonathan_Edwards/Jonathan_Edwards_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jong_Wook_Lee">
+		<presentation file-name="Jong_Wook_Lee/Jong_Wook_Lee_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jon_Corzine">
+		<presentation file-name="Jon_Corzine/Jon_Corzine_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jon_Gruden">
+		<presentation file-name="Jon_Gruden/Jon_Gruden_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jon_Voight">
+		<presentation file-name="Jon_Voight/Jon_Voight_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jorge_Batlle">
+		<presentation file-name="Jorge_Batlle/Jorge_Batlle_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jorge_Castaneda">
+		<presentation file-name="Jorge_Castaneda/Jorge_Castaneda_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jorge_Valdano">
+		<presentation file-name="Jorge_Valdano/Jorge_Valdano_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joschka_Fischer">
+		<presentation file-name="Joschka_Fischer/Joschka_Fischer_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joseph_Biden">
+		<presentation file-name="Joseph_Biden/Joseph_Biden_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joseph_Deiss">
+		<presentation file-name="Joseph_Deiss/Joseph_Deiss_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Joseph_Ralston">
+		<presentation file-name="Joseph_Ralston/Joseph_Ralston_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jose_Dirceu">
+		<presentation file-name="Jose_Dirceu/Jose_Dirceu_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jose_Sarney">
+		<presentation file-name="Jose_Sarney/Jose_Sarney_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jo_Dee_Messina">
+		<presentation file-name="Jo_Dee_Messina/Jo_Dee_Messina_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Juan_Carlos_Ferrero">
+		<presentation file-name="Juan_Carlos_Ferrero/Juan_Carlos_Ferrero_0028.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Juan_Ignacio_Chela">
+		<presentation file-name="Juan_Ignacio_Chela/Juan_Ignacio_Chela_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Juan_Pablo_Montoya">
+		<presentation file-name="Juan_Pablo_Montoya/Juan_Pablo_Montoya_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Jude_Law">
+		<presentation file-name="Jude_Law/Jude_Law_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Judy_Genshaft">
+		<presentation file-name="Judy_Genshaft/Judy_Genshaft_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julianna_Margulies">
+		<presentation file-name="Julianna_Margulies/Julianna_Margulies_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julianne_Moore">
+		<presentation file-name="Julianne_Moore/Julianne_Moore_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julia_Tymoshenko">
+		<presentation file-name="Julia_Tymoshenko/Julia_Tymoshenko_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julie_Gerberding">
+		<presentation file-name="Julie_Gerberding/Julie_Gerberding_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julie_Taymor">
+		<presentation file-name="Julie_Taymor/Julie_Taymor_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Julio_Iglesias_Jr">
+		<presentation file-name="Julio_Iglesias_Jr/Julio_Iglesias_Jr_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Junichiro_Koizumi">
+		<presentation file-name="Junichiro_Koizumi/Junichiro_Koizumi_0036.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Justin_Guarini">
+		<presentation file-name="Justin_Guarini/Justin_Guarini_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Justin_Timberlake">
+		<presentation file-name="Justin_Timberlake/Justin_Timberlake_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kate_Capshaw">
+		<presentation file-name="Kate_Capshaw/Kate_Capshaw_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kate_Winslet">
+		<presentation file-name="Kate_Winslet/Kate_Winslet_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kathryn_Bigelow">
+		<presentation file-name="Kathryn_Bigelow/Kathryn_Bigelow_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kathy_Winters">
+		<presentation file-name="Kathy_Winters/Kathy_Winters_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Keith_Bogans">
+		<presentation file-name="Keith_Bogans/Keith_Bogans_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kelly_Clarkson">
+		<presentation file-name="Kelly_Clarkson/Kelly_Clarkson_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kemal_Dervis">
+		<presentation file-name="Kemal_Dervis/Kemal_Dervis_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kenneth_Branagh">
+		<presentation file-name="Kenneth_Branagh/Kenneth_Branagh_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kenneth_Evans">
+		<presentation file-name="Kenneth_Evans/Kenneth_Evans_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ken_Macha">
+		<presentation file-name="Ken_Macha/Ken_Macha_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kevin_Costner">
+		<presentation file-name="Kevin_Costner/Kevin_Costner_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kevin_Stallings">
+		<presentation file-name="Kevin_Stallings/Kevin_Stallings_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kieran_Prendergast">
+		<presentation file-name="Kieran_Prendergast/Kieran_Prendergast_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kimi_Raikkonen">
+		<presentation file-name="Kimi_Raikkonen/Kimi_Raikkonen_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Clijsters">
+		<presentation file-name="Kim_Clijsters/Kim_Clijsters_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Dae-jung">
+		<presentation file-name="Kim_Dae-jung/Kim_Dae-jung_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Jin-sun">
+		<presentation file-name="Kim_Jin-sun/Kim_Jin-sun_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Jong-Il">
+		<presentation file-name="Kim_Jong-Il/Kim_Jong-Il_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Ryong-sung">
+		<presentation file-name="Kim_Ryong-sung/Kim_Ryong-sung_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kim_Yong-il">
+		<presentation file-name="Kim_Yong-il/Kim_Yong-il_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="King_Abdullah_II">
+		<presentation file-name="King_Abdullah_II/King_Abdullah_II_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kirk_Ferentz">
+		<presentation file-name="Kirk_Ferentz/Kirk_Ferentz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kjell_Magne_Bondevik">
+		<presentation file-name="Kjell_Magne_Bondevik/Kjell_Magne_Bondevik_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Klaus_Zwickel">
+		<presentation file-name="Klaus_Zwickel/Klaus_Zwickel_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kristin_Davis">
+		<presentation file-name="Kristin_Davis/Kristin_Davis_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kurt_Busch">
+		<presentation file-name="Kurt_Busch/Kurt_Busch_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kurt_Russell">
+		<presentation file-name="Kurt_Russell/Kurt_Russell_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kurt_Warner">
+		<presentation file-name="Kurt_Warner/Kurt_Warner_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Kwon_Yang-sook">
+		<presentation file-name="Kwon_Yang-sook/Kwon_Yang-sook_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Laila_Ali">
+		<presentation file-name="Laila_Ali/Laila_Ali_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lana_Clarkson">
+		<presentation file-name="Lana_Clarkson/Lana_Clarkson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lance_Armstrong">
+		<presentation file-name="Lance_Armstrong/Lance_Armstrong_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lance_Bass">
+		<presentation file-name="Lance_Bass/Lance_Bass_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Larry_Coker">
+		<presentation file-name="Larry_Coker/Larry_Coker_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Larry_Ellison">
+		<presentation file-name="Larry_Ellison/Larry_Ellison_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Larry_Lindsey">
+		<presentation file-name="Larry_Lindsey/Larry_Lindsey_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Larry_Lucchino">
+		<presentation file-name="Larry_Lucchino/Larry_Lucchino_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Latrell_Sprewell">
+		<presentation file-name="Latrell_Sprewell/Latrell_Sprewell_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Laura_Linney">
+		<presentation file-name="Laura_Linney/Laura_Linney_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Laurent_Jalabert">
+		<presentation file-name="Laurent_Jalabert/Laurent_Jalabert_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lauren_Killian">
+		<presentation file-name="Lauren_Killian/Lauren_Killian_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Leander_Paes">
+		<presentation file-name="Leander_Paes/Leander_Paes_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lea_Fastow">
+		<presentation file-name="Lea_Fastow/Lea_Fastow_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="LeBron_James">
+		<presentation file-name="LeBron_James/LeBron_James_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lee_Hoi-chang">
+		<presentation file-name="Lee_Hoi-chang/Lee_Hoi-chang_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lee_Jun">
+		<presentation file-name="Lee_Jun/Lee_Jun_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Leonid_Kuchma">
+		<presentation file-name="Leonid_Kuchma/Leonid_Kuchma_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Leon_LaPorte">
+		<presentation file-name="Leon_LaPorte/Leon_LaPorte_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lesley_McCulloch">
+		<presentation file-name="Lesley_McCulloch/Lesley_McCulloch_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Leslie_Ann_Woodward">
+		<presentation file-name="Leslie_Ann_Woodward/Leslie_Ann_Woodward_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lili_Taylor">
+		<presentation file-name="Lili_Taylor/Lili_Taylor_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lily_Tomlin">
+		<presentation file-name="Lily_Tomlin/Lily_Tomlin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lina_Krasnoroutskaya">
+		<presentation file-name="Lina_Krasnoroutskaya/Lina_Krasnoroutskaya_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lindsay_Davenport">
+		<presentation file-name="Lindsay_Davenport/Lindsay_Davenport_0021.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lino_Oviedo">
+		<presentation file-name="Lino_Oviedo/Lino_Oviedo_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lisa_Ling">
+		<presentation file-name="Lisa_Ling/Lisa_Ling_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lisa_Marie_Presley">
+		<presentation file-name="Lisa_Marie_Presley/Lisa_Marie_Presley_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lisa_Raymond">
+		<presentation file-name="Lisa_Raymond/Lisa_Raymond_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Liza_Minnelli">
+		<presentation file-name="Liza_Minnelli/Liza_Minnelli_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="LK_Advani">
+		<presentation file-name="LK_Advani/LK_Advani_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lleyton_Hewitt">
+		<presentation file-name="Lleyton_Hewitt/Lleyton_Hewitt_0031.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lloyd_Ward">
+		<presentation file-name="Lloyd_Ward/Lloyd_Ward_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lou_Piniella">
+		<presentation file-name="Lou_Piniella/Lou_Piniella_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lucy_Liu">
+		<presentation file-name="Lucy_Liu/Lucy_Liu_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ludivine_Sagnier">
+		<presentation file-name="Ludivine_Sagnier/Ludivine_Sagnier_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Luis_Ernesto_Derbez_Bautista">
+		<presentation file-name="Luis_Ernesto_Derbez_Bautista/Luis_Ernesto_Derbez_Bautista_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Luis_Gonzalez_Macchi">
+		<presentation file-name="Luis_Gonzalez_Macchi/Luis_Gonzalez_Macchi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Luiz_Felipe_Scolari">
+		<presentation file-name="Luiz_Felipe_Scolari/Luiz_Felipe_Scolari_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lynne_Cheney">
+		<presentation file-name="Lynne_Cheney/Lynne_Cheney_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Lynn_Redgrave">
+		<presentation file-name="Lynn_Redgrave/Lynn_Redgrave_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mack_Brown">
+		<presentation file-name="Mack_Brown/Mack_Brown_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Madeleine_Albright">
+		<presentation file-name="Madeleine_Albright/Madeleine_Albright_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Maggie_Smith">
+		<presentation file-name="Maggie_Smith/Maggie_Smith_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Magui_Serna">
+		<presentation file-name="Magui_Serna/Magui_Serna_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mahathir_Mohamad">
+		<presentation file-name="Mahathir_Mohamad/Mahathir_Mohamad_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mahmoud_Abbas">
+		<presentation file-name="Mahmoud_Abbas/Mahmoud_Abbas_0022.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Manfred_Stolpe">
+		<presentation file-name="Manfred_Stolpe/Manfred_Stolpe_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Manuel_Poggiali">
+		<presentation file-name="Manuel_Poggiali/Manuel_Poggiali_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marcelo_Ebrard">
+		<presentation file-name="Marcelo_Ebrard/Marcelo_Ebrard_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marcelo_Rios">
+		<presentation file-name="Marcelo_Rios/Marcelo_Rios_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marcelo_Salas">
+		<presentation file-name="Marcelo_Salas/Marcelo_Salas_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marco_Antonio_Barrera">
+		<presentation file-name="Marco_Antonio_Barrera/Marco_Antonio_Barrera_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marcus_Gronholm">
+		<presentation file-name="Marcus_Gronholm/Marcus_Gronholm_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marc_Grossman">
+		<presentation file-name="Marc_Grossman/Marc_Grossman_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Margaret_Thatcher">
+		<presentation file-name="Margaret_Thatcher/Margaret_Thatcher_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mariah_Carey">
+		<presentation file-name="Mariah_Carey/Mariah_Carey_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mariangel_Ruiz_Torrealba">
+		<presentation file-name="Mariangel_Ruiz_Torrealba/Mariangel_Ruiz_Torrealba_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Maria_Luisa_Mendonca">
+		<presentation file-name="Maria_Luisa_Mendonca/Maria_Luisa_Mendonca_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Maria_Soledad_Alvear_Valenzuela">
+		<presentation file-name="Maria_Soledad_Alvear_Valenzuela/Maria_Soledad_Alvear_Valenzuela_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marie-Reine_Le_Gougne">
+		<presentation file-name="Marie-Reine_Le_Gougne/Marie-Reine_Le_Gougne_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mario_Cipollini">
+		<presentation file-name="Mario_Cipollini/Mario_Cipollini_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mario_Dumont">
+		<presentation file-name="Mario_Dumont/Mario_Dumont_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mario_Kreutzberger">
+		<presentation file-name="Mario_Kreutzberger/Mario_Kreutzberger_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marissa_Jaret_Winokur">
+		<presentation file-name="Marissa_Jaret_Winokur/Marissa_Jaret_Winokur_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Cuban">
+		<presentation file-name="Mark_Cuban/Mark_Cuban_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Dacey">
+		<presentation file-name="Mark_Dacey/Mark_Dacey_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Geragos">
+		<presentation file-name="Mark_Geragos/Mark_Geragos_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Gottfried">
+		<presentation file-name="Mark_Gottfried/Mark_Gottfried_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Hamister">
+		<presentation file-name="Mark_Hamister/Mark_Hamister_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Heller">
+		<presentation file-name="Mark_Heller/Mark_Heller_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Hurlbert">
+		<presentation file-name="Mark_Hurlbert/Mark_Hurlbert_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Richt">
+		<presentation file-name="Mark_Richt/Mark_Richt_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mark_Schweiker">
+		<presentation file-name="Mark_Schweiker/Mark_Schweiker_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Marlene_Weingartner">
+		<presentation file-name="Marlene_Weingartner/Marlene_Weingartner_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martha_Beatriz_Roque">
+		<presentation file-name="Martha_Beatriz_Roque/Martha_Beatriz_Roque_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martha_Bowen">
+		<presentation file-name="Martha_Bowen/Martha_Bowen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martha_Burk">
+		<presentation file-name="Martha_Burk/Martha_Burk_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martina_McBride">
+		<presentation file-name="Martina_McBride/Martina_McBride_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martin_Brodeur">
+		<presentation file-name="Martin_Brodeur/Martin_Brodeur_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martin_Cauchon">
+		<presentation file-name="Martin_Cauchon/Martin_Cauchon_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martin_Hoellwarth">
+		<presentation file-name="Martin_Hoellwarth/Martin_Hoellwarth_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martin_McGuinness">
+		<presentation file-name="Martin_McGuinness/Martin_McGuinness_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Martin_Sheen">
+		<presentation file-name="Martin_Sheen/Martin_Sheen_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mary_Landrieu">
+		<presentation file-name="Mary_Landrieu/Mary_Landrieu_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Masahiko_Nagasawa">
+		<presentation file-name="Masahiko_Nagasawa/Masahiko_Nagasawa_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Masum_Turker">
+		<presentation file-name="Masum_Turker/Masum_Turker_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Matthew_Perry">
+		<presentation file-name="Matthew_Perry/Matthew_Perry_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Matt_Damon">
+		<presentation file-name="Matt_Damon/Matt_Damon_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Matt_Dillon">
+		<presentation file-name="Matt_Dillon/Matt_Dillon_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Matt_Doherty">
+		<presentation file-name="Matt_Doherty/Matt_Doherty_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Maureen_Fanning">
+		<presentation file-name="Maureen_Fanning/Maureen_Fanning_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Max_Mayfield">
+		<presentation file-name="Max_Mayfield/Max_Mayfield_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Megan_Mullally">
+		<presentation file-name="Megan_Mullally/Megan_Mullally_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Megawati_Sukarnoputri">
+		<presentation file-name="Megawati_Sukarnoputri/Megawati_Sukarnoputri_0017.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Meghann_Shaughnessy">
+		<presentation file-name="Meghann_Shaughnessy/Meghann_Shaughnessy_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Melanie_Griffith">
+		<presentation file-name="Melanie_Griffith/Melanie_Griffith_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Melissa_Etheridge">
+		<presentation file-name="Melissa_Etheridge/Melissa_Etheridge_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mian_Khursheed_Mehmood_Kasuri">
+		<presentation file-name="Mian_Khursheed_Mehmood_Kasuri/Mian_Khursheed_Mehmood_Kasuri_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Ballack">
+		<presentation file-name="Michael_Ballack/Michael_Ballack_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Bloomberg">
+		<presentation file-name="Michael_Bloomberg/Michael_Bloomberg_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Douglas">
+		<presentation file-name="Michael_Douglas/Michael_Douglas_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Jordan">
+		<presentation file-name="Michael_Jordan/Michael_Jordan_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Leavitt">
+		<presentation file-name="Michael_Leavitt/Michael_Leavitt_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Moore">
+		<presentation file-name="Michael_Moore/Michael_Moore_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Patrick_King">
+		<presentation file-name="Michael_Patrick_King/Michael_Patrick_King_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Phelps">
+		<presentation file-name="Michael_Phelps/Michael_Phelps_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Powell">
+		<presentation file-name="Michael_Powell/Michael_Powell_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michael_Schumacher">
+		<presentation file-name="Michael_Schumacher/Michael_Schumacher_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michelle_Branch">
+		<presentation file-name="Michelle_Branch/Michelle_Branch_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michelle_Collins">
+		<presentation file-name="Michelle_Collins/Michelle_Collins_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michelle_Kwan">
+		<presentation file-name="Michelle_Kwan/Michelle_Kwan_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michelle_Pfeiffer">
+		<presentation file-name="Michelle_Pfeiffer/Michelle_Pfeiffer_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michelle_Rodriguez">
+		<presentation file-name="Michelle_Rodriguez/Michelle_Rodriguez_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Michel_Temer">
+		<presentation file-name="Michel_Temer/Michel_Temer_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mick_Jagger">
+		<presentation file-name="Mick_Jagger/Mick_Jagger_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Miguel_Contreras">
+		<presentation file-name="Miguel_Contreras/Miguel_Contreras_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Miguel_Estrada">
+		<presentation file-name="Miguel_Estrada/Miguel_Estrada_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Brey">
+		<presentation file-name="Mike_Brey/Mike_Brey_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Krzyzewski">
+		<presentation file-name="Mike_Krzyzewski/Mike_Krzyzewski_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Martz">
+		<presentation file-name="Mike_Martz/Mike_Martz_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Miller">
+		<presentation file-name="Mike_Miller/Mike_Miller_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Montgomery">
+		<presentation file-name="Mike_Montgomery/Mike_Montgomery_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Myers">
+		<presentation file-name="Mike_Myers/Mike_Myers_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Price">
+		<presentation file-name="Mike_Price/Mike_Price_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mike_Tyson">
+		<presentation file-name="Mike_Tyson/Mike_Tyson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mikhail_Gorbachev">
+		<presentation file-name="Mikhail_Gorbachev/Mikhail_Gorbachev_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mikhail_Wehbe">
+		<presentation file-name="Mikhail_Wehbe/Mikhail_Wehbe_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Milo_Maestrecampo">
+		<presentation file-name="Milo_Maestrecampo/Milo_Maestrecampo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Minnie_Driver">
+		<presentation file-name="Minnie_Driver/Minnie_Driver_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mireya_Moscoso">
+		<presentation file-name="Mireya_Moscoso/Mireya_Moscoso_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Miyako_Miyazaki">
+		<presentation file-name="Miyako_Miyazaki/Miyako_Miyazaki_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mohamed_Benaissa">
+		<presentation file-name="Mohamed_Benaissa/Mohamed_Benaissa_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mohammed_Al-Douri">
+		<presentation file-name="Mohammed_Al-Douri/Mohammed_Al-Douri_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Mohammed_Baqir_al-Hakim">
+		<presentation file-name="Mohammed_Baqir_al-Hakim/Mohammed_Baqir_al-Hakim_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Monica_Bellucci">
+		<presentation file-name="Monica_Bellucci/Monica_Bellucci_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Monica_Lewinsky">
+		<presentation file-name="Monica_Lewinsky/Monica_Lewinsky_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Monique_Garbrecht-Enfeldt">
+		<presentation file-name="Monique_Garbrecht-Enfeldt/Monique_Garbrecht-Enfeldt_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Morgan_Freeman">
+		<presentation file-name="Morgan_Freeman/Morgan_Freeman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Moshe_Katsav">
+		<presentation file-name="Moshe_Katsav/Moshe_Katsav_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Muammar_Gaddafi">
+		<presentation file-name="Muammar_Gaddafi/Muammar_Gaddafi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Muhammad_Saeed_al-Sahhaf">
+		<presentation file-name="Muhammad_Saeed_al-Sahhaf/Muhammad_Saeed_al-Sahhaf_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nabil_Shaath">
+		<presentation file-name="Nabil_Shaath/Nabil_Shaath_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nancy_Demme">
+		<presentation file-name="Nancy_Demme/Nancy_Demme_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nancy_Pelosi">
+		<presentation file-name="Nancy_Pelosi/Nancy_Pelosi_0015.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nancy_Reagan">
+		<presentation file-name="Nancy_Reagan/Nancy_Reagan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nancy_Sinatra">
+		<presentation file-name="Nancy_Sinatra/Nancy_Sinatra_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nan_Wang">
+		<presentation file-name="Nan_Wang/Nan_Wang_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Naoto_Kan">
+		<presentation file-name="Naoto_Kan/Naoto_Kan_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Natasha_McElhone">
+		<presentation file-name="Natasha_McElhone/Natasha_McElhone_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nebojsa_Pavkovic">
+		<presentation file-name="Nebojsa_Pavkovic/Nebojsa_Pavkovic_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nelson_Mandela">
+		<presentation file-name="Nelson_Mandela/Nelson_Mandela_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Neri_Marcore">
+		<presentation file-name="Neri_Marcore/Neri_Marcore_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nestor_Kirchner">
+		<presentation file-name="Nestor_Kirchner/Nestor_Kirchner_0022.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nia_Vardalos">
+		<presentation file-name="Nia_Vardalos/Nia_Vardalos_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nicholas_Byron">
+		<presentation file-name="Nicholas_Byron/Nicholas_Byron_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nicholas_Tse">
+		<presentation file-name="Nicholas_Tse/Nicholas_Tse_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Nick_Nolte">
+		<presentation file-name="Nick_Nolte/Nick_Nolte_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Noah_Wyle">
+		<presentation file-name="Noah_Wyle/Noah_Wyle_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Noelle_Bush">
+		<presentation file-name="Noelle_Bush/Noelle_Bush_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Norah_Jones">
+		<presentation file-name="Norah_Jones/Norah_Jones_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Norman_Jewison">
+		<presentation file-name="Norman_Jewison/Norman_Jewison_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Norm_Coleman">
+		<presentation file-name="Norm_Coleman/Norm_Coleman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Olesya_Bonabarenko">
+		<presentation file-name="Olesya_Bonabarenko/Olesya_Bonabarenko_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Omar_Sharif">
+		<presentation file-name="Omar_Sharif/Omar_Sharif_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Orlando_Bloom">
+		<presentation file-name="Orlando_Bloom/Orlando_Bloom_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Orrin_Hatch">
+		<presentation file-name="Orrin_Hatch/Orrin_Hatch_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Osama_bin_Laden">
+		<presentation file-name="Osama_bin_Laden/Osama_bin_Laden_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Oscar_De_La_Hoya">
+		<presentation file-name="Oscar_De_La_Hoya/Oscar_De_La_Hoya_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Oscar_Elias_Biscet">
+		<presentation file-name="Oscar_Elias_Biscet/Oscar_Elias_Biscet_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Oswaldo_Paya">
+		<presentation file-name="Oswaldo_Paya/Oswaldo_Paya_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Owen_Wilson">
+		<presentation file-name="Owen_Wilson/Owen_Wilson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Padraig_Harrington">
+		<presentation file-name="Padraig_Harrington/Padraig_Harrington_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pamela_Anderson">
+		<presentation file-name="Pamela_Anderson/Pamela_Anderson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paradorn_Srichaphan">
+		<presentation file-name="Paradorn_Srichaphan/Paradorn_Srichaphan_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pascal_Lamy">
+		<presentation file-name="Pascal_Lamy/Pascal_Lamy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pascal_Quignard">
+		<presentation file-name="Pascal_Quignard/Pascal_Quignard_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patrice_Chereau">
+		<presentation file-name="Patrice_Chereau/Patrice_Chereau_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patricia_Clarkson">
+		<presentation file-name="Patricia_Clarkson/Patricia_Clarkson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patricia_Heaton">
+		<presentation file-name="Patricia_Heaton/Patricia_Heaton_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patrick_Ewing">
+		<presentation file-name="Patrick_Ewing/Patrick_Ewing_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patrick_Leahy">
+		<presentation file-name="Patrick_Leahy/Patrick_Leahy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patrick_McEnroe">
+		<presentation file-name="Patrick_McEnroe/Patrick_McEnroe_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patrick_Roy">
+		<presentation file-name="Patrick_Roy/Patrick_Roy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patti_Labelle">
+		<presentation file-name="Patti_Labelle/Patti_Labelle_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Patty_Schnyder">
+		<presentation file-name="Patty_Schnyder/Patty_Schnyder_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pat_Cox">
+		<presentation file-name="Pat_Cox/Pat_Cox_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul-Henri_Mathieu">
+		<presentation file-name="Paul-Henri_Mathieu/Paul-Henri_Mathieu_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paula_Radcliffe">
+		<presentation file-name="Paula_Radcliffe/Paula_Radcliffe_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paulo_Cesar_Pinheiro">
+		<presentation file-name="Paulo_Cesar_Pinheiro/Paulo_Cesar_Pinheiro_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Bremer">
+		<presentation file-name="Paul_Bremer/Paul_Bremer_0018.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Burrell">
+		<presentation file-name="Paul_Burrell/Paul_Burrell_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Coppin">
+		<presentation file-name="Paul_Coppin/Paul_Coppin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Hogan">
+		<presentation file-name="Paul_Hogan/Paul_Hogan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_McCartney">
+		<presentation file-name="Paul_McCartney/Paul_McCartney_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Patton">
+		<presentation file-name="Paul_Patton/Paul_Patton_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Sarbanes">
+		<presentation file-name="Paul_Sarbanes/Paul_Sarbanes_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Shanley">
+		<presentation file-name="Paul_Shanley/Paul_Shanley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Tagliabue">
+		<presentation file-name="Paul_Tagliabue/Paul_Tagliabue_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Paul_Wolfowitz">
+		<presentation file-name="Paul_Wolfowitz/Paul_Wolfowitz_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pedro_Almodovar">
+		<presentation file-name="Pedro_Almodovar/Pedro_Almodovar_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pedro_Malan">
+		<presentation file-name="Pedro_Malan/Pedro_Malan_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pedro_Solbes">
+		<presentation file-name="Pedro_Solbes/Pedro_Solbes_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Penelope_Ann_Miller">
+		<presentation file-name="Penelope_Ann_Miller/Penelope_Ann_Miller_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Penelope_Cruz">
+		<presentation file-name="Penelope_Cruz/Penelope_Cruz_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Peter_Bacanovic">
+		<presentation file-name="Peter_Bacanovic/Peter_Bacanovic_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Peter_Harrison">
+		<presentation file-name="Peter_Harrison/Peter_Harrison_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Peter_Hillary">
+		<presentation file-name="Peter_Hillary/Peter_Hillary_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Peter_Struck">
+		<presentation file-name="Peter_Struck/Peter_Struck_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pete_Carroll">
+		<presentation file-name="Pete_Carroll/Pete_Carroll_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pete_Rose">
+		<presentation file-name="Pete_Rose/Pete_Rose_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Petria_Thomas">
+		<presentation file-name="Petria_Thomas/Petria_Thomas_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Petro_Symonenko">
+		<presentation file-name="Petro_Symonenko/Petro_Symonenko_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Philippe_Noiret">
+		<presentation file-name="Philippe_Noiret/Philippe_Noiret_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Phil_Gramm">
+		<presentation file-name="Phil_Gramm/Phil_Gramm_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Phil_Vassar">
+		<presentation file-name="Phil_Vassar/Phil_Vassar_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pierce_Brosnan">
+		<presentation file-name="Pierce_Brosnan/Pierce_Brosnan_0015.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pierre_Pettigrew">
+		<presentation file-name="Pierre_Pettigrew/Pierre_Pettigrew_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Placido_Domingo">
+		<presentation file-name="Placido_Domingo/Placido_Domingo_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Princess_Aiko">
+		<presentation file-name="Princess_Aiko/Princess_Aiko_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Princess_Anne">
+		<presentation file-name="Princess_Anne/Princess_Anne_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Princess_Caroline">
+		<presentation file-name="Princess_Caroline/Princess_Caroline_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Princess_Elisabeth">
+		<presentation file-name="Princess_Elisabeth/Princess_Elisabeth_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Princess_Masako">
+		<presentation file-name="Princess_Masako/Princess_Masako_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Prince_Charles">
+		<presentation file-name="Prince_Charles/Prince_Charles_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Prince_Claus">
+		<presentation file-name="Prince_Claus/Prince_Claus_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Prince_Edward">
+		<presentation file-name="Prince_Edward/Prince_Edward_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Prince_Naruhito">
+		<presentation file-name="Prince_Naruhito/Prince_Naruhito_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Priscilla_Owen">
+		<presentation file-name="Priscilla_Owen/Priscilla_Owen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Priscilla_Presley">
+		<presentation file-name="Priscilla_Presley/Priscilla_Presley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Pupi_Avati">
+		<presentation file-name="Pupi_Avati/Pupi_Avati_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rachel_Hunter">
+		<presentation file-name="Rachel_Hunter/Rachel_Hunter_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Raghad_Saddam_Hussein">
+		<presentation file-name="Raghad_Saddam_Hussein/Raghad_Saddam_Hussein_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rainer_Schuettler">
+		<presentation file-name="Rainer_Schuettler/Rainer_Schuettler_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ralph_Firman">
+		<presentation file-name="Ralph_Firman/Ralph_Firman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Raquel_Welch">
+		<presentation file-name="Raquel_Welch/Raquel_Welch_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ray_Allen">
+		<presentation file-name="Ray_Allen/Ray_Allen_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ray_Nagin">
+		<presentation file-name="Ray_Nagin/Ray_Nagin_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rebecca_Romijn-Stamos">
+		<presentation file-name="Rebecca_Romijn-Stamos/Rebecca_Romijn-Stamos_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rebekah_Chantay_Revels">
+		<presentation file-name="Rebekah_Chantay_Revels/Rebekah_Chantay_Revels_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Recep_Tayyip_Erdogan">
+		<presentation file-name="Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Reese_Witherspoon">
+		<presentation file-name="Reese_Witherspoon/Reese_Witherspoon_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ricardo_Maduro">
+		<presentation file-name="Ricardo_Maduro/Ricardo_Maduro_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ricardo_Monasterio">
+		<presentation file-name="Ricardo_Monasterio/Ricardo_Monasterio_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Armitage">
+		<presentation file-name="Richard_Armitage/Richard_Armitage_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Branson">
+		<presentation file-name="Richard_Branson/Richard_Branson_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Gere">
+		<presentation file-name="Richard_Gere/Richard_Gere_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Haass">
+		<presentation file-name="Richard_Haass/Richard_Haass_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Krajicek">
+		<presentation file-name="Richard_Krajicek/Richard_Krajicek_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Myers">
+		<presentation file-name="Richard_Myers/Richard_Myers_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Norton-Taylor">
+		<presentation file-name="Richard_Norton-Taylor/Richard_Norton-Taylor_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Shelby">
+		<presentation file-name="Richard_Shelby/Richard_Shelby_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Richard_Virenque">
+		<presentation file-name="Richard_Virenque/Richard_Virenque_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ricky_Barnes">
+		<presentation file-name="Ricky_Barnes/Ricky_Barnes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ricky_Ponting">
+		<presentation file-name="Ricky_Ponting/Ricky_Ponting_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rick_Barnes">
+		<presentation file-name="Rick_Barnes/Rick_Barnes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rick_Romley">
+		<presentation file-name="Rick_Romley/Rick_Romley_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rick_Santorum">
+		<presentation file-name="Rick_Santorum/Rick_Santorum_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rick_Wagoner">
+		<presentation file-name="Rick_Wagoner/Rick_Wagoner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rio_Ferdinand">
+		<presentation file-name="Rio_Ferdinand/Rio_Ferdinand_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rita_Moreno">
+		<presentation file-name="Rita_Moreno/Rita_Moreno_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rita_Wilson">
+		<presentation file-name="Rita_Wilson/Rita_Wilson_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roberto_Benigni">
+		<presentation file-name="Roberto_Benigni/Roberto_Benigni_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roberto_Marinho">
+		<presentation file-name="Roberto_Marinho/Roberto_Marinho_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Blake">
+		<presentation file-name="Robert_Blake/Robert_Blake_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Bonner">
+		<presentation file-name="Robert_Bonner/Robert_Bonner_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Bullock">
+		<presentation file-name="Robert_Bullock/Robert_Bullock_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_DeFraites">
+		<presentation file-name="Robert_DeFraites/Robert_DeFraites_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_De_Niro">
+		<presentation file-name="Robert_De_Niro/Robert_De_Niro_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Duvall">
+		<presentation file-name="Robert_Duvall/Robert_Duvall_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Evans">
+		<presentation file-name="Robert_Evans/Robert_Evans_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Fico">
+		<presentation file-name="Robert_Fico/Robert_Fico_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Redford">
+		<presentation file-name="Robert_Redford/Robert_Redford_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Torricelli">
+		<presentation file-name="Robert_Torricelli/Robert_Torricelli_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robert_Zoellick">
+		<presentation file-name="Robert_Zoellick/Robert_Zoellick_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Robinson_Stevenin">
+		<presentation file-name="Robinson_Stevenin/Robinson_Stevenin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rob_Lowe">
+		<presentation file-name="Rob_Lowe/Rob_Lowe_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rob_Marshall">
+		<presentation file-name="Rob_Marshall/Rob_Marshall_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rob_Schneider">
+		<presentation file-name="Rob_Schneider/Rob_Schneider_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rod_Blagojevich">
+		<presentation file-name="Rod_Blagojevich/Rod_Blagojevich_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roger_Clemens">
+		<presentation file-name="Roger_Clemens/Roger_Clemens_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roger_Federer">
+		<presentation file-name="Roger_Federer/Roger_Federer_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roger_Moore">
+		<presentation file-name="Roger_Moore/Roger_Moore_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roh_Moo-hyun">
+		<presentation file-name="Roh_Moo-hyun/Roh_Moo-hyun_0024.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rolf_Eckrodt">
+		<presentation file-name="Rolf_Eckrodt/Rolf_Eckrodt_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roman_Polanski">
+		<presentation file-name="Roman_Polanski/Roman_Polanski_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ronald_Reagan">
+		<presentation file-name="Ronald_Reagan/Ronald_Reagan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ron_Dittemore">
+		<presentation file-name="Ron_Dittemore/Ron_Dittemore_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rosemarie_Stack">
+		<presentation file-name="Rosemarie_Stack/Rosemarie_Stack_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roy_Jones_Jr">
+		<presentation file-name="Roy_Jones_Jr/Roy_Jones_Jr_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Roy_Williams">
+		<presentation file-name="Roy_Williams/Roy_Williams_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Rubens_Barrichello">
+		<presentation file-name="Rubens_Barrichello/Rubens_Barrichello_0011.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ruben_Studdard">
+		<presentation file-name="Ruben_Studdard/Ruben_Studdard_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Russell_Crowe">
+		<presentation file-name="Russell_Crowe/Russell_Crowe_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ruth_Dreifuss">
+		<presentation file-name="Ruth_Dreifuss/Ruth_Dreifuss_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Ruth_Harlow">
+		<presentation file-name="Ruth_Harlow/Ruth_Harlow_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Saburo_Kawabuchi">
+		<presentation file-name="Saburo_Kawabuchi/Saburo_Kawabuchi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sachiko_Yamada">
+		<presentation file-name="Sachiko_Yamada/Sachiko_Yamada_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sadie_Frost">
+		<presentation file-name="Sadie_Frost/Sadie_Frost_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sally_Kirkland">
+		<presentation file-name="Sally_Kirkland/Sally_Kirkland_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sally_Ride">
+		<presentation file-name="Sally_Ride/Sally_Ride_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Salman_Rushdie">
+		<presentation file-name="Salman_Rushdie/Salman_Rushdie_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Salma_Hayek">
+		<presentation file-name="Salma_Hayek/Salma_Hayek_0013.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Samira_Makhmalbaf">
+		<presentation file-name="Samira_Makhmalbaf/Samira_Makhmalbaf_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Samuel_Waksal">
+		<presentation file-name="Samuel_Waksal/Samuel_Waksal_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sam_Mendes">
+		<presentation file-name="Sam_Mendes/Sam_Mendes_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Saparmurat_Niyazov">
+		<presentation file-name="Saparmurat_Niyazov/Saparmurat_Niyazov_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sarah_Hughes">
+		<presentation file-name="Sarah_Hughes/Sarah_Hughes_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sarah_Michelle_Gellar">
+		<presentation file-name="Sarah_Michelle_Gellar/Sarah_Michelle_Gellar_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Scott_McNealy">
+		<presentation file-name="Scott_McNealy/Scott_McNealy_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Scott_Rudin">
+		<presentation file-name="Scott_Rudin/Scott_Rudin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Scott_Sullivan">
+		<presentation file-name="Scott_Sullivan/Scott_Sullivan_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Scott_Wolf">
+		<presentation file-name="Scott_Wolf/Scott_Wolf_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sean_Astin">
+		<presentation file-name="Sean_Astin/Sean_Astin_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sean_OKeefe">
+		<presentation file-name="Sean_OKeefe/Sean_OKeefe_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sean_Patrick_OMalley">
+		<presentation file-name="Sean_Patrick_OMalley/Sean_Patrick_OMalley_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sean_Penn">
+		<presentation file-name="Sean_Penn/Sean_Penn_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sebastian_Saja">
+		<presentation file-name="Sebastian_Saja/Sebastian_Saja_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sepp_Blatter">
+		<presentation file-name="Sepp_Blatter/Sepp_Blatter_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Serena_Williams">
+		<presentation file-name="Serena_Williams/Serena_Williams_0016.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sergey_Lavrov">
+		<presentation file-name="Sergey_Lavrov/Sergey_Lavrov_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sergio_Garcia">
+		<presentation file-name="Sergio_Garcia/Sergio_Garcia_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sergio_Vieira_De_Mello">
+		<presentation file-name="Sergio_Vieira_De_Mello/Sergio_Vieira_De_Mello_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shane_Mosley">
+		<presentation file-name="Shane_Mosley/Shane_Mosley_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shannon_OBrien">
+		<presentation file-name="Shannon_OBrien/Shannon_OBrien_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sharon_Davis">
+		<presentation file-name="Sharon_Davis/Sharon_Davis_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sharon_Frey">
+		<presentation file-name="Sharon_Frey/Sharon_Frey_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sharon_Osbourne">
+		<presentation file-name="Sharon_Osbourne/Sharon_Osbourne_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sharon_Stone">
+		<presentation file-name="Sharon_Stone/Sharon_Stone_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shaukat_Aziz">
+		<presentation file-name="Shaukat_Aziz/Shaukat_Aziz_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shaul_Mofaz">
+		<presentation file-name="Shaul_Mofaz/Shaul_Mofaz_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sheila_Copps">
+		<presentation file-name="Sheila_Copps/Sheila_Copps_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sheila_Wellstone">
+		<presentation file-name="Sheila_Wellstone/Sheila_Wellstone_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sheryl_Crow">
+		<presentation file-name="Sheryl_Crow/Sheryl_Crow_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shia_LaBeouf">
+		<presentation file-name="Shia_LaBeouf/Shia_LaBeouf_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Shimon_Peres">
+		<presentation file-name="Shimon_Peres/Shimon_Peres_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sila_Calderon">
+		<presentation file-name="Sila_Calderon/Sila_Calderon_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Silvia_Farina_Elia">
+		<presentation file-name="Silvia_Farina_Elia/Silvia_Farina_Elia_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Slobodan_Milosevic">
+		<presentation file-name="Slobodan_Milosevic/Slobodan_Milosevic_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sonia_Gandhi">
+		<presentation file-name="Sonia_Gandhi/Sonia_Gandhi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sophia_Loren">
+		<presentation file-name="Sophia_Loren/Sophia_Loren_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sourav_Ganguly">
+		<presentation file-name="Sourav_Ganguly/Sourav_Ganguly_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Spencer_Abraham">
+		<presentation file-name="Spencer_Abraham/Spencer_Abraham_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Stacy_Dragila">
+		<presentation file-name="Stacy_Dragila/Stacy_Dragila_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steffi_Graf">
+		<presentation file-name="Steffi_Graf/Steffi_Graf_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Stellan_Skarsgard">
+		<presentation file-name="Stellan_Skarsgard/Stellan_Skarsgard_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Stephen_Friedman">
+		<presentation file-name="Stephen_Friedman/Stephen_Friedman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steven_Hatfill">
+		<presentation file-name="Steven_Hatfill/Steven_Hatfill_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steven_Spielberg">
+		<presentation file-name="Steven_Spielberg/Steven_Spielberg_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steve_Backley">
+		<presentation file-name="Steve_Backley/Steve_Backley_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steve_Ballmer">
+		<presentation file-name="Steve_Ballmer/Steve_Ballmer_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steve_Mariucci">
+		<presentation file-name="Steve_Mariucci/Steve_Mariucci_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steve_Nash">
+		<presentation file-name="Steve_Nash/Steve_Nash_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Steve_Waugh">
+		<presentation file-name="Steve_Waugh/Steve_Waugh_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Stockard_Channing">
+		<presentation file-name="Stockard_Channing/Stockard_Channing_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Sue_Wicks">
+		<presentation file-name="Sue_Wicks/Sue_Wicks_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Surakait_Sathirathai">
+		<presentation file-name="Surakait_Sathirathai/Surakait_Sathirathai_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Susan_Sarandon">
+		<presentation file-name="Susan_Sarandon/Susan_Sarandon_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Susie_Castillo">
+		<presentation file-name="Susie_Castillo/Susie_Castillo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Taha_Yassin_Ramadan">
+		<presentation file-name="Taha_Yassin_Ramadan/Taha_Yassin_Ramadan_0015.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Takashi_Sorimachi">
+		<presentation file-name="Takashi_Sorimachi/Takashi_Sorimachi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tamara_Brooks">
+		<presentation file-name="Tamara_Brooks/Tamara_Brooks_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tammy_Lynn_Michaels">
+		<presentation file-name="Tammy_Lynn_Michaels/Tammy_Lynn_Michaels_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tang_Jiaxuan">
+		<presentation file-name="Tang_Jiaxuan/Tang_Jiaxuan_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tassos_Papadopoulos">
+		<presentation file-name="Tassos_Papadopoulos/Tassos_Papadopoulos_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Taufik_Hidayat">
+		<presentation file-name="Taufik_Hidayat/Taufik_Hidayat_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Terrell_Suggs">
+		<presentation file-name="Terrell_Suggs/Terrell_Suggs_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Terry_Stotts">
+		<presentation file-name="Terry_Stotts/Terry_Stotts_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Theodore_Tweed_Roosevelt">
+		<presentation file-name="Theodore_Tweed_Roosevelt/Theodore_Tweed_Roosevelt_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Theresa_May">
+		<presentation file-name="Theresa_May/Theresa_May_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Thierry_Falise">
+		<presentation file-name="Thierry_Falise/Thierry_Falise_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Thomas_Bjorn">
+		<presentation file-name="Thomas_Bjorn/Thomas_Bjorn_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Thomas_Fargo">
+		<presentation file-name="Thomas_Fargo/Thomas_Fargo_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Thomas_Wyman">
+		<presentation file-name="Thomas_Wyman/Thomas_Wyman_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tiger_Woods">
+		<presentation file-name="Tiger_Woods/Tiger_Woods_0021.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tim_Allen">
+		<presentation file-name="Tim_Allen/Tim_Allen_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tim_Chapman">
+		<presentation file-name="Tim_Chapman/Tim_Chapman_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tim_Robbins">
+		<presentation file-name="Tim_Robbins/Tim_Robbins_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tippi_Hedren">
+		<presentation file-name="Tippi_Hedren/Tippi_Hedren_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Todd_Haynes">
+		<presentation file-name="Todd_Haynes/Todd_Haynes_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tommy_Franks">
+		<presentation file-name="Tommy_Franks/Tommy_Franks_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tommy_Robredo">
+		<presentation file-name="Tommy_Robredo/Tommy_Robredo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tomoko_Hagiwara">
+		<presentation file-name="Tomoko_Hagiwara/Tomoko_Hagiwara_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Craddick">
+		<presentation file-name="Tom_Craddick/Tom_Craddick_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Crean">
+		<presentation file-name="Tom_Crean/Tom_Crean_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Cruise">
+		<presentation file-name="Tom_Cruise/Tom_Cruise_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Daschle">
+		<presentation file-name="Tom_Daschle/Tom_Daschle_0008.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Harkin">
+		<presentation file-name="Tom_Harkin/Tom_Harkin_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Jones">
+		<presentation file-name="Tom_Jones/Tom_Jones_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tom_Ridge">
+		<presentation file-name="Tom_Ridge/Tom_Ridge_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Toni_Braxton">
+		<presentation file-name="Toni_Braxton/Toni_Braxton_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tony_Blair">
+		<presentation file-name="Tony_Blair/Tony_Blair_0033.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tony_Shalhoub">
+		<presentation file-name="Tony_Shalhoub/Tony_Shalhoub_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tony_Stewart">
+		<presentation file-name="Tony_Stewart/Tony_Stewart_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Trent_Lott">
+		<presentation file-name="Trent_Lott/Trent_Lott_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tung_Chee-hwa">
+		<presentation file-name="Tung_Chee-hwa/Tung_Chee-hwa_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Tyron_Garner">
+		<presentation file-name="Tyron_Garner/Tyron_Garner_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vaclav_Havel">
+		<presentation file-name="Vaclav_Havel/Vaclav_Havel_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vaclav_Klaus">
+		<presentation file-name="Vaclav_Klaus/Vaclav_Klaus_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Valdas_Adamkus">
+		<presentation file-name="Valdas_Adamkus/Valdas_Adamkus_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Valerie_Harper">
+		<presentation file-name="Valerie_Harper/Valerie_Harper_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vanessa_Incontrada">
+		<presentation file-name="Vanessa_Incontrada/Vanessa_Incontrada_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vanessa_Redgrave">
+		<presentation file-name="Vanessa_Redgrave/Vanessa_Redgrave_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vanessa_Williams">
+		<presentation file-name="Vanessa_Williams/Vanessa_Williams_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vicente_Fernandez">
+		<presentation file-name="Vicente_Fernandez/Vicente_Fernandez_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vicente_Fox">
+		<presentation file-name="Vicente_Fox/Vicente_Fox_0006.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vicki_Zhao_Wei">
+		<presentation file-name="Vicki_Zhao_Wei/Vicki_Zhao_Wei_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vince_Carter">
+		<presentation file-name="Vince_Carter/Vince_Carter_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vitali_Klitschko">
+		<presentation file-name="Vitali_Klitschko/Vitali_Klitschko_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vladimiro_Montesinos">
+		<presentation file-name="Vladimiro_Montesinos/Vladimiro_Montesinos_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vladimir_Putin">
+		<presentation file-name="Vladimir_Putin/Vladimir_Putin_0042.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Vladimir_Voltchkov">
+		<presentation file-name="Vladimir_Voltchkov/Vladimir_Voltchkov_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Walter_Mondale">
+		<presentation file-name="Walter_Mondale/Walter_Mondale_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Warren_Buffett">
+		<presentation file-name="Warren_Buffett/Warren_Buffett_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Wayne_Ferreira">
+		<presentation file-name="Wayne_Ferreira/Wayne_Ferreira_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Wen_Jiabao">
+		<presentation file-name="Wen_Jiabao/Wen_Jiabao_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="William_Bratton">
+		<presentation file-name="William_Bratton/William_Bratton_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="William_Donaldson">
+		<presentation file-name="William_Donaldson/William_Donaldson_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="William_Ford_Jr">
+		<presentation file-name="William_Ford_Jr/William_Ford_Jr_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="William_Hochul">
+		<presentation file-name="William_Hochul/William_Hochul_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="William_Martin">
+		<presentation file-name="William_Martin/William_Martin_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Winona_Ryder">
+		<presentation file-name="Winona_Ryder/Winona_Ryder_0007.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Woody_Allen">
+		<presentation file-name="Woody_Allen/Woody_Allen_0003.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Wu_Yi">
+		<presentation file-name="Wu_Yi/Wu_Yi_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Xanana_Gusmao">
+		<presentation file-name="Xanana_Gusmao/Xanana_Gusmao_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Xavier_Malisse">
+		<presentation file-name="Xavier_Malisse/Xavier_Malisse_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yao_Ming">
+		<presentation file-name="Yao_Ming/Yao_Ming_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yasar_Yakis">
+		<presentation file-name="Yasar_Yakis/Yasar_Yakis_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yashwant_Sinha">
+		<presentation file-name="Yashwant_Sinha/Yashwant_Sinha_0005.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yevgeny_Kafelnikov">
+		<presentation file-name="Yevgeny_Kafelnikov/Yevgeny_Kafelnikov_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yoriko_Kawaguchi">
+		<presentation file-name="Yoriko_Kawaguchi/Yoriko_Kawaguchi_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yukiko_Okudo">
+		<presentation file-name="Yukiko_Okudo/Yukiko_Okudo_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yuri_Fedotov">
+		<presentation file-name="Yuri_Fedotov/Yuri_Fedotov_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yuri_Malenchenko">
+		<presentation file-name="Yuri_Malenchenko/Yuri_Malenchenko_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Yu_Shyi-kun">
+		<presentation file-name="Yu_Shyi-kun/Yu_Shyi-kun_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zafarullah_Khan_Jamali">
+		<presentation file-name="Zafarullah_Khan_Jamali/Zafarullah_Khan_Jamali_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zarai_Toledo">
+		<presentation file-name="Zarai_Toledo/Zarai_Toledo_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zhang_Wenkang">
+		<presentation file-name="Zhang_Wenkang/Zhang_Wenkang_0001.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zhu_Rongji">
+		<presentation file-name="Zhu_Rongji/Zhu_Rongji_0004.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zico">
+		<presentation file-name="Zico/Zico_0002.jpg"/>
+	</biometric-signature>
+	<biometric-signature name="Zoran_Djindjic">
+		<presentation file-name="Zoran_Djindjic/Zoran_Djindjic_0002.jpg"/>
+	</biometric-signature>
+</biometric-signature-set>

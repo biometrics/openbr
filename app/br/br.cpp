@@ -98,14 +98,27 @@ public:
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "eval")) {
-                check((parc >= 1) && (parc <= 3), "Incorrect parameter count for 'eval'.");
+                check((parc >= 1) && (parc <= 4), "Incorrect parameter count for 'eval'.");
                 if (parc == 1) {
-                    br_eval(parv[0], "", "");
+                    br_eval(parv[0], "", "", 0);
                 } else if (parc == 2) {
-                    if (br::File(parv[1]).suffix() == "csv") br_eval(parv[0], "", parv[1]);
-                    else                                     br_eval(parv[0], parv[1], "");
+                    if (br::File(parv[1]).suffix() == "csv") {
+                        br_eval(parv[0], "", parv[1], 0);
+                    } else if (br::File(parv[1]).suffix() == "mask") {
+                        br_eval(parv[0], parv[1], "", 0);
+                    } else {
+                        br_eval(parv[0], "", "", atoi(parv[1]));
+                    }
+                } else if (parc == 3) {
+                    if (br::File(parv[2]).suffix() == "csv") {
+                        br_eval(parv[0], parv[1], parv[2], 0);
+                    } else if ( br::File(parv[1]).suffix() == "csv") {
+                        br_eval(parv[0], "", parv[1], atoi(parv[2]));
+                    } else {
+                        br_eval(parv[0], parv[1], "", atoi(parv[2]));
+                    }
                 } else {
-                    br_eval(parv[0], parv[1], parv[2]);
+                    br_eval(parv[0], parv[1], parv[2], atoi(parv[3]));
                 }
             } else if (!strcmp(fun, "inplaceEval")) {
                 check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
@@ -235,7 +248,7 @@ private:
                "-train <gallery> ... <gallery> [{model}]\n"
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
-               "-eval <simmat> [<mask>] [{csv}]\n"
+               "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
                "-plot <file> ... <file> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
