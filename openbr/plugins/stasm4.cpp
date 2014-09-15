@@ -1,5 +1,5 @@
-#include <stasm_lib.h>
-#include <stasmcascadeclassifier.h>
+#include <stasm/stasm_lib.h>
+#include <stasm/stasmcascadeclassifier.h>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Dense>
 #include "openbr_internal.h"
