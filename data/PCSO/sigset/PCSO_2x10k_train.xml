@@ -5237,10 +5237,10 @@
 	<biometric-signature name="PCSO_0000878">
 		<presentation eyeLx="179.9381" eyeLy="313.2219" eyeRx="304.8747" eyeRy="303.2729" file-name="DIR_142/210522758.jpg"/>
 	</biometric-signature>
-	<biometric-signature name="PCSO_0000879">
+	<biometric-signature name="PCSO_0000979">
 		<presentation eyeLx="184.0237" eyeLy="312.9469" eyeRx="301.136" eyeRy="306.8563" file-name="DIR_082/14341099.jpg"/>
 	</biometric-signature>
-	<biometric-signature name="PCSO_0000879">
+	<biometric-signature name="PCSO_0000979">
 		<presentation eyeLx="180.5296" eyeLy="306.8429" eyeRx="303.5423" eyeRy="306.2265" file-name="DIR_089/14574169.jpg"/>
 	</biometric-signature>
 	<biometric-signature name="PCSO_0000880">
@@ -5830,12 +5830,6 @@
 	</biometric-signature>
 	<biometric-signature name="PCSO_0000978">
 		<presentation eyeLx="179.3605" eyeLy="305.3915" eyeRx="302.4191" eyeRy="312.9879" file-name="DIR_053/13317499.jpg"/>
-	</biometric-signature>
-	<biometric-signature name="PCSO_0000979">
-		<presentation eyeLx="150.4497" eyeLy="334.6443" eyeRx="262.6244" eyeRy="328.8014" file-name="DIR_000/12009500.jpg"/>
-	</biometric-signature>
-	<biometric-signature name="PCSO_0000979">
-		<presentation eyeLx="171.2138" eyeLy="331.359" eyeRx="272.39" eyeRy="327.318" file-name="DIR_002/12024205.jpg"/>
 	</biometric-signature>
 	<biometric-signature name="PCSO_0000980">
 		<presentation eyeLx="180.0879" eyeLy="307.7916" eyeRx="302.951" eyeRy="303.734" file-name="DIR_142/210512550.jpg"/>
