@@ -62,6 +62,20 @@
 #ifndef STASM_LIB_H
 #define STASM_LIB_H
 
+#if defined STASM_LIBRARY
+#  if defined _WIN32 || defined __CYGWIN__
+#    define STASM_EXPORT __declspec(dllexport)
+#  else
+#    define STASM_EXPORT __attribute__((visibility("default")))
+#  endif
+#else
+#  if defined _WIN32 || defined __CYGWIN__
+#    define STASM_EXPORT __declspec(dllimport)
+#  else
+#    define STASM_EXPORT
+#  endif
+#endif
+
 #include "stasmcascadeclassifier.h"
 
 #define TRACE_IMAGES 0        // 1 to generate debugging images
@@ -71,13 +85,13 @@ static const int stasm_NLANDMARKS = 77; // number of landmarks
 
 extern const char* const stasm_VERSION;
 
-extern "C"
-int stasm_init(              // call once, at bootup
+
+STASM_EXPORT int stasm_init(              // call once, at bootup
     const char*  datadir,    // in: directory of face detector files
     int          trace);     // in: 0 normal use, 1 trace to stdout and stasm.log
 
-extern "C"
-int stasm_open_image(        // call once per image, detect faces
+
+STASM_EXPORT int stasm_open_image(        // call once per image, detect faces
     const char*  img,        // in: gray image data, top left corner at 0,0
     int          width,      // in: image width
     int          height,     // in: image height
@@ -85,8 +99,8 @@ int stasm_open_image(        // call once per image, detect faces
     int          multiface,  // in: 0=return only one face, 1=allow multiple faces
     int          minwidth);  // in: min face width as percentage of img width
 
-extern "C"
-int stasm_search_auto(       // call repeatedly to find all faces
+
+STASM_EXPORT int stasm_search_auto(       // call repeatedly to find all faces
     int*         foundface,  // out: 0=no more faces, 1=found face
     float*       landmarks,  // out: x0, y0, x1, y1, ..., caller must allocate
     const char*  data,
@@ -94,8 +108,8 @@ int stasm_search_auto(       // call repeatedly to find all faces
     const int    height,
     StasmCascadeClassifier cascade);
 
-extern "C"
-int stasm_search_single(     // wrapper for stasm_search_auto and friends
+
+STASM_EXPORT int stasm_search_single(     // wrapper for stasm_search_auto and friends
     int*         foundface,  // out: 0=no face, 1=found face
     float*       landmarks,  // out: x0, y0, x1, y1, ..., caller must allocate
     const char*  img,        // in: gray image data, top left corner at 0,0
@@ -105,8 +119,8 @@ int stasm_search_single(     // wrapper for stasm_search_auto and friends
     const char*  imgpath,    // in: image path, used only for err msgs and debug
     const char*  datadir);   // in: directory of face detector files
 
-extern "C"                   // find landmarks, no OpenCV face detect
-int stasm_search_pinned(     // call after the user has pinned some points
+                   // find landmarks, no OpenCV face detect
+STASM_EXPORT int stasm_search_pinned(     // call after the user has pinned some points
     float*       landmarks,  // out: x0, y0, x1, y1, ..., caller must allocate
     const float* pinned,     // in: pinned landmarks (0,0 points not pinned)
     const char*  img,        // in: gray image data, top left corner at 0,0
@@ -114,17 +128,17 @@ int stasm_search_pinned(     // call after the user has pinned some points
     int          height,     // in: image height
     const char*  imgpath);   // in: image path, used only for err msgs and debug
 
-extern "C"
-const char* stasm_lasterr(void); // return string describing last error
 
-extern "C"
-void stasm_force_points_into_image( // force landmarks into image boundary
+STASM_EXPORT const char* stasm_lasterr(void); // return string describing last error
+
+
+STASM_EXPORT void stasm_force_points_into_image( // force landmarks into image boundary
     float*       landmarks,         // io
     int          ncols,             // in
     int          nrows);            // in
 
-extern "C"
-void stasm_convert_shape( // convert stasm 77 points to given number of points
+
+STASM_EXPORT void stasm_convert_shape( // convert stasm 77 points to given number of points
     float* landmarks,     // io: return all points zero if can't do conversion
     int    nlandmarks);   // in: 77=nochange 76=stasm3 68=xm2vts 22=ar 20=bioid 17=me17
 
@@ -133,7 +147,7 @@ void stasm_convert_shape( // convert stasm 77 points to given number of points
 // trace=1.  This function was added primarily for the programs that test
 // the stasm library.
 
-extern "C"
-void stasm_printf(const char* format, ...); // print to stdout and stasm.log
+
+STASM_EXPORT void stasm_printf(const char* format, ...); // print to stdout and stasm.log
 
 #endif // STASM_LIB_H

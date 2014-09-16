@@ -1,6 +1,10 @@
 project(stasm)
 cmake_minimum_required(VERSION 2.8.6)
 
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
+  cmake_policy(SET CMP0020 NEW)
+endif()
+
 # Global Settings
 set(CPACK_PACKAGE_NAME "Stasm")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
@@ -29,7 +33,6 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS /wd4267 /wd4307 /wd4308 /nologo")
 endif()
 
-message("********* ${PROJECT_SOURCE_DIR} ************")
 add_subdirectory(${PROJECT_SOURCE_DIR}/stasm)
 
 # Package

@@ -25,6 +25,8 @@
 //
 // Copyright (C) 2005-2013, Stephen Milborrow
 
+#include <stdarg.h>
+
 #include "err.h"
 #include "misc.h"
 

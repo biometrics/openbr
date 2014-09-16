@@ -23,7 +23,7 @@ if(${CMAKE_VERSION} VERSION_EQUAL 2.8.11)
   cmake_policy(SET CMP0020 OLD)
 endif()
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
-  cmake_policy(SET CMP0020 OLD)
+  cmake_policy(SET CMP0020 NEW)
 endif()
 
 if(${CMAKE_VERSION} VERSION_EQUAL 2.8.12)
@@ -31,6 +31,9 @@ if(${CMAKE_VERSION} VERSION_EQUAL 2.8.12)
 endif()
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.12)
   cmake_policy(SET CMP0022 OLD)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
+  cmake_policy(SET CMP0043 NEW)
 endif()
 
 if(${CMAKE_SIZEOF_VOID_P} MATCHES 8)
@@ -85,7 +88,7 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
-set(OPENCV_DEPENDENCIES opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video)
+set(OPENCV_DEPENDENCIES opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video opencv_ocl)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum
