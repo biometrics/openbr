@@ -15,6 +15,6 @@ if(${BR_WITH_STASM4})
     install(DIRECTORY ${STASM4_DIR}/lib/ DESTINATION lib)
   endif()
 
-  install(DIRECTORY ${STASM4_INCLUDE_DIR}/ DESTINATION include)
+  install(DIRECTORY ${STASM4_DIR}/include/ DESTINATION include)
   install(DIRECTORY ${STASM4_DATA_DIR} DESTINATION share/openbr/models/stasm)
 endif()
