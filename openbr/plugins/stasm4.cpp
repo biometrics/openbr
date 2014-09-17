@@ -56,7 +56,7 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \brief Wraps STASM key point detector
  * \author Scott Klum \cite sklum
  */
-class StasmTransform : public UntrainableTransform
+class StasmTransform : public Transform
 {
     Q_OBJECT
 
@@ -75,13 +75,24 @@ class StasmTransform : public UntrainableTransform
         stasmCascadeResource.setResourceMaker(new StasmResourceMaker());
     }
 
+    void train(const TemplateList &data)
+    {
+        // Check constants in stasm_lib and landmarks
+        // Check options for initasm
+        // Convert shape from one format to another (convshape.cpp)
+        // A, d, and e are the MUCT frontals
+
+        // Build model using TASM
+
+        // Read in shape file? Or maybe this should be done via a format
+
+    }
+
     void project(const Template &src, Template &dst) const
     {
-        Mat stasmSrc(src);
-        if (src.m().channels() == 3)
-            cvtColor(src, stasmSrc, CV_BGR2GRAY);
-        else if (src.m().channels() != 1)
+        if (src.m().channels() != 1)
             qFatal("Stasm expects single channel matrices.");
+
         dst = src;
 
         StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
@@ -122,14 +133,14 @@ class StasmTransform : public UntrainableTransform
                     else if (i == 39)  /*Stasm Left Eye*/ { eyes[2*i] = leftEye.x(); eyes[2*i+1] = leftEye.y(); }
                     else { eyes[2*i] = 0; eyes[2*i+1] = 0; }
                 }
-                stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
+                stasm_search_pinned(landmarks, eyes, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
 
                 // The ASM in Stasm is guaranteed to converge in this case
                 foundFace = 1;
             }
         }
 
-        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, NULL, NULL);
+        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
 
         if (stasm3Format) {
             nLandmarks = 76;
