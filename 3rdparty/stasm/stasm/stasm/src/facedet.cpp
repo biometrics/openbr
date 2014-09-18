@@ -5,6 +5,8 @@
 #include "facedet.h"
 #include "stasm_lib.h"
 
+#include <QDebug>
+
 namespace stasm
 {
 typedef vector<DetPar> vec_DetPar;
@@ -182,25 +184,16 @@ void FaceDet::DetectFaces_( // call once per image to find all the faces
     void*        user,      // in: unused (match virt func signature)
     cv::CascadeClassifier cascade)
 {
-    CV_Assert(user == NULL);
-
     DetectFaces(detpars_, img, minwidth, cascade);
-    char tracepath[SLEN];
-    sprintf(tracepath, "%s_00_unsortedfacedet.bmp", Base(imgpath));
-    TraceFaces(detpars_, img, tracepath);
-    DiscardMissizedFaces(detpars_);
+
     if (multiface) // order faces on increasing distance from left margin
     {
         sort(detpars_.begin(), detpars_.end(), IncreasingLeftMargin);
-        sprintf(tracepath, "%s_05_facedet.bmp", Base(imgpath));
-        TraceFaces(detpars_, img, tracepath);
     }
     else
     {
         // order faces on decreasing width, keep only the first (the largest face)
         sort(detpars_.begin(), detpars_.end(), DecreasingWidth);
-        sprintf(tracepath, "%s_05_sortedfaces.bmp", Base(imgpath));
-        TraceFaces(detpars_, img, tracepath);
         if (NSIZE(detpars_))
             detpars_.resize(1);
     }

@@ -14,6 +14,8 @@
 #include "facedet.h"
 #include "startshape.h"
 
+#include <QDebug>
+
 using namespace stasm;
 
 static vec_Mod mods_g;    // the ASM model(s)
@@ -72,7 +74,7 @@ int stasm_init_ext(        // extended version of stasm_init
     (void) detparams;
 
     int returnval = 1;     // assume success
-    CatchOpenCvErrs();
+    //CatchOpenCvErrs();
     try
     {
         print_g = (trace != 0);
@@ -98,7 +100,7 @@ int stasm_init_ext(        // extended version of stasm_init
     {
         returnval = 0; // a call was made to Err or a CV_Assert failed
     }
-    UncatchOpenCvErrs();
+    //UncatchOpenCvErrs();
     return returnval;
 }
 
@@ -125,7 +127,7 @@ int stasm_open_image_ext(  // extended version of stasm_open_image
     (void) user;
 
     int returnval = 1;     // assume success
-    CatchOpenCvErrs();
+    //CatchOpenCvErrs();
     try
     {
         //CV_Assert(imgpath && STRNLEN(imgpath, SLEN) < SLEN);
@@ -143,7 +145,7 @@ int stasm_open_image_ext(  // extended version of stasm_open_image
     {
         returnval = 0; // a call was made to Err or a CV_Assert failed
     }
-    UncatchOpenCvErrs();
+    //UncatchOpenCvErrs();
     return returnval;
 }
 
@@ -170,11 +172,9 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
 {
     int returnval = 1;     // assume success
     *foundface = 0;        // but assume no face found
-    CatchOpenCvErrs();
+    //CatchOpenCvErrs();
     try
     {
-        CheckStasmInit();
-
         Shape shape;       // the shape with landmarks
         Image face_roi;    // cropped to area around startshape and possibly rotated
         DetPar detpar_roi; // detpar translated to ROI frame
@@ -195,9 +195,6 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
         {
             // now working with maybe flipped ROI and start shape in ROI frame
             *foundface = 1;
-            if (trace_g)   // show start shape?
-                LogShape(RoiShapeToImgFrame(shape, face_roi, detpar_roi, detpar),
-                         "auto_start");
 
             // select an ASM model based on the face's yaw
             const int imod = ABS(EyawAsModIndex(detpar.eyaw, mods_g));

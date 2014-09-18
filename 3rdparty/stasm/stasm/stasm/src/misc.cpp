@@ -87,7 +87,7 @@ void splitpath(
     char*       base,  // out: can be NULL
     char*       ext)   // out: can be NULL, includes dot
 {
-    CV_Assert(path && STRNLEN(path, _MAX_PATH) < _MAX_PATH);
+    //CV_Assert(path && STRNLEN(path, _MAX_PATH) < _MAX_PATH);
 
     if (drive)
     {
