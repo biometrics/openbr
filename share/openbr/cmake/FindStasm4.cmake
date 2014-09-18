@@ -22,14 +22,13 @@ foreach(CACHE_VAR ${CACHE_VARS})
     else()
       set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
     endif()
-
 	if(CACHE_VAR STREQUAL "CMAKE_PREFIX_PATH")
 		set(CMAKE_PREFIX_PATH "\"${${CACHE_VAR}}\"")
 	endif()
   endif()
 endforeach()
 
-find_path(STASM4_SOURCE_DIR stasm/include/stasm_lib.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
+find_path(STASM4_SOURCE_DIR stasm/stasm/include/stasm_lib.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
 
 set(STASM4_PREFIX "${CMAKE_BINARY_DIR}/stasm")
 set(STASM4_INSTALL_DIR "${CMAKE_BINARY_DIR}/stasm")

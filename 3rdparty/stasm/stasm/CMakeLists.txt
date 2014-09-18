@@ -19,6 +19,6 @@ set_target_properties(stasm PROPERTIES
 target_link_libraries(stasm ${OpenCV_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 install(DIRECTORY stasm/include/ DESTINATION include/stasm)
-install(DIRECTORY tasm/include/ DESTINATION include/tasm)
+#install(DIRECTORY tasm/include/ DESTINATION include/tasm)
 
 install(TARGETS stasm RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)

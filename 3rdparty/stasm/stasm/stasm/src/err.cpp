@@ -28,6 +28,8 @@
 #include "err.h"
 #include "misc.h"
 
+#include <stdarg.h>
+
 namespace stasm
 {
 static char err_g[SBIG]; // err msg saved for retrieval by LastErr and stasm_lasterr
