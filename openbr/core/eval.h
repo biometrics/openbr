@@ -25,7 +25,7 @@ namespace br
 {
     float Evaluate(const QString &simmat, const QString &mask = "", const QString &csv = "", int matches = 0); // Returns TAR @ FAR = 0.001
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv = "", int parition = 0);
-    float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const FileList &target, const FileList &query, const QString &csv = "", int matches = 0);
+    float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const QString &target = "", const QString &query = "", const QString &csv = "", int matches = 0);
     float InplaceEval(const QString & simmat, const QString & target, const QString & query, const QString & csv = "");
 
     void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");

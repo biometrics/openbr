@@ -100,7 +100,7 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), target, query, csv, 10);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), QString(), QString(), csv, 0);
 }
 
 float Evaluate(const QString &simmat, const QString &mask, const QString &csv, int matches)
@@ -137,10 +137,10 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv, i
         truth = format->read();
     }
 
-    return Evaluate(scores, truth, TemplateList::fromGallery(target).files(), TemplateList::fromGallery(query).files(), csv, matches);
+    return Evaluate(scores, truth, target, query, csv, matches);
 }
 
-float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const FileList &query, const QString &csv, int matches)
+float Evaluate(const Mat &simmat, const Mat &mask, const QString &target, const QString &query, const QString &csv, int matches)
 {
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
@@ -265,14 +265,16 @@ float Evaluate(const Mat &simmat, const Mat &mask, const FileList &target, const
 
     QString filePath = Globals->path;
     if (matches != 0) {
+        FileList targetFiles = TemplateList::fromGallery(target).files();
+        FileList queryFiles = TemplateList::fromGallery(query).files();
         for (int i=0; i<topImpostors.size(); i++) {
-            lines.append("TI,"+QString::number(topImpostors[i].score)+","+target[topImpostors[i].target].get<QString>("Label")+":"
-                +filePath+"/"+target[topImpostors[i].target].name+":"+query[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+query[topImpostors[i].query].name);
+            lines.append("TI,"+QString::number(topImpostors[i].score)+","+targetFiles[topImpostors[i].target].get<QString>("Label")+":"
+                +filePath+"/"+targetFiles[topImpostors[i].target].name+":"+queryFiles[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[topImpostors[i].query].name);
         }
         std::reverse(botGenuines.begin(), botGenuines.end());
         for (int i=0; i<botGenuines.size(); i++) {
-            lines.append("BG,"+QString::number(botGenuines[i].score)+","+target[botGenuines[i].target].get<QString>("Label")+":"
-                +filePath+"/"+target[botGenuines[i].target].name+":"+query[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+query[botGenuines[i].query].name);
+            lines.append("BG,"+QString::number(botGenuines[i].score)+","+targetFiles[botGenuines[i].target].get<QString>("Label")+":"
+                +filePath+"/"+targetFiles[botGenuines[i].target].name+":"+queryFiles[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[botGenuines[i].query].name);
         }
     }
 
