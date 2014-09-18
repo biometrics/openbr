@@ -142,6 +142,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv, i
 
 float Evaluate(const Mat &simmat, const Mat &mask, const QString &target, const QString &query, const QString &csv, int matches)
 {
+    if ((target.isEmpty() || query.isEmpty()) && matches != 0) matches = 0;
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
