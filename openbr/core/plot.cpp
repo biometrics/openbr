@@ -157,6 +157,7 @@ struct RPlot
                        "FT <- data[grep(\"FT\",data$Plot),-c(1)]\n"
                        "CT <- data[grep(\"CT\",data$Plot),-c(1)]\n"
                        "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
+                       "TS <- data[grep(\"TS\",data$Plot),-c(1)]\n"
                        "CMC <- data[grep(\"CMC\",data$Plot),-c(1)]\n"
                        "FAR$Error <- \"FAR\"\n"
                        "FRR$Error <- \"FRR\"\n"
@@ -173,6 +174,7 @@ struct RPlot
                        "FT$Y <- as.numeric(as.character(FT$Y))\n"
                        "CT$Y <- as.numeric(as.character(CT$Y))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
+                       "TS$Y <- as.character(TS$Y)\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
                        "# Code to format FAR values\n"
@@ -191,7 +193,13 @@ struct RPlot
                        "mat <- matrix(CT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\" Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
-                       "CMCtable <- as.table(mat)\n").arg(major.header)));
+                       "CMCtable <- as.table(mat)\n"
+                       "\n"
+                       "# Code to format Template Size Table\n"
+                       "mat <- matrix(TS$Y,nrow=1,ncol=length(algs),byrow=FALSE)\n"
+                       "colnames(mat) <- algs\n"
+                       "rownames(mat) <- c(\"Template Size (bytes):\")\n"
+                       "TStable <- as.table(mat)\n").arg(major.header)));
                        
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -222,7 +230,9 @@ struct RPlot
                                "print(textplot(FTtable))\n"
                                "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
                                "print(textplot(CMCtable))\n"
-                               "print(title(\"Table of retrieval rate at various ranks\"))\n";
+                               "print(title(\"Table of retrieval rate at various ranks\"))\n"
+                               "print(textplot(TStable, cex=1.15))\n"
+                               "print(title(\"Template Size by Algorithm\"))\n";
             file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
         }
 
