@@ -56,7 +56,7 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \brief Wraps STASM key point detector
  * \author Scott Klum \cite sklum
  */
-class StasmTransform : public Transform
+class StasmTransform : public UntrainableTransform
 {
     Q_OBJECT
 
@@ -73,19 +73,6 @@ class StasmTransform : public Transform
     {
         if (!stasm_init(qPrintable(Globals->sdkPath + "/share/openbr/models/stasm"), 0)) qFatal("Failed to initalize stasm.");
         stasmCascadeResource.setResourceMaker(new StasmResourceMaker());
-    }
-
-    void train(const TemplateList &data)
-    {
-        // Check constants in stasm_lib and landmarks
-        // Check options for initasm
-        // Convert shape from one format to another (convshape.cpp)
-        // A, d, and e are the MUCT frontals
-
-        // Build model using TASM
-
-        // Read in shape file? Or maybe this should be done via a format
-
     }
 
     void project(const Template &src, Template &dst) const
