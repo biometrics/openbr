@@ -248,12 +248,30 @@ class utGallery : public BinaryGallery
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
-            t.file.set("X", ut.x);
-            t.file.set("Y", ut.y);
-            t.file.set("Width", ut.width);
-            t.file.set("Height", ut.height);
             t.file.set("URL", QString(data.data()));
-            t.append(cv::Mat(1, ut.size - ut.urlSize, CV_8UC1, data.data() + ut.urlSize).clone() /* We don't want a shallow copy! */);
+            char *dataStart = data.data() + ut.urlSize;
+            uint32_t dataSize = ut.size - ut.urlSize;
+            if (ut.algorithmID == -1) {
+                t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
+                uint32_t *rightEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *rightEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                dataSize -= sizeof(uint32_t)*4;
+                t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
+                t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
+            }
+            else {
+                t.file.set("X", ut.x);
+                t.file.set("Y", ut.y);
+                t.file.set("Width", ut.width);
+                t.file.set("Height", ut.height);
+            }
+            t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
             if (!gallery.atEnd())
                 qFatal("Failed to read universal template header!");
