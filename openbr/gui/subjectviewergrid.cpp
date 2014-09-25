@@ -6,6 +6,7 @@ SubjectViewerGrid::SubjectViewerGrid(QWidget *parent) :
     QWidget(parent)
 {
     setLayout(&gridLayout);
+    setFiles(QList<FileList>());
 }
 
 void SubjectViewerGrid::setFiles(const QList<FileList> &files)
@@ -34,10 +35,10 @@ void SubjectViewerGrid::setFiles(const QList<FileList> &files)
         if (i < files.size()) {
             subjectViewers[i]->setFiles(files[i]);
         } else {
-            subjectViewers[i]->setDefaultText("<b>"+ (size > 1 ? QString() : QString("Drag Photo or Folder Here")) +"</b>");
+            subjectViewers[i]->viewer.setDefaultText("<b>"+ (size > 1 ? QString() : QString("Drag Photo or Folder Here")) +"</b>");
             subjectViewers[i]->setFiles(FileList());
         }
 
-        subjectViewers[i]->setEditable(files.size() == 1);
+        subjectViewers[i]->viewer.setEditable(files.size() == 1);
     }
 }
