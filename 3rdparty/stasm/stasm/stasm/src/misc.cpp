@@ -851,6 +851,8 @@ EYAW DegreesAsEyaw( // this determines what model is best for a given yaw
     double yaw,     // in: yaw in degrees, negative if left facing
     int    nmods)   // in
 {
+    (void) yaw;
+    (void) nmods;
 #if MOD_3 || MOD_A || MOD_A_EMU // experimental versions
     CV_Assert(nmods == 3);
     if (yaw < -EYAW_TO_USE_DET45)

@@ -410,6 +410,8 @@ static void TraceEyesMouth(
     Image&  face_roi,           // out: ROI around face, possibly rotated upright
     DetPar& detpar_roi)         // out: detpar wrt to face_roi
 {
+    (void) face_roi;
+    (void) detpar_roi;
 #if TRACE_IMAGES // will be 0 unless debugging (defined in stasm.h)
 
     CImage cimg; cvtColor(face_roi, cimg, CV_GRAY2BGR); // color image

@@ -143,6 +143,8 @@ static void DiscardMissizedFaces(
     }
 }
 
+#if TRACE_IMAGES // will be 0 unless debugging (defined in stasm.h)
+
 static void TraceFaces(        // write image showing detected face rects
     const vec_DetPar& detpars, // in
     const Image&      img,     // in
@@ -151,8 +153,6 @@ static void TraceFaces(        // write image showing detected face rects
     (void) detpars;
     (void) img;
     (void) path;
-
-#if TRACE_IMAGES // will be 0 unless debugging (defined in stasm.h)
 
     CImage cimg; cvtColor(img, cimg, CV_GRAY2BGR); // color image
     for (int iface = 0; iface < NSIZE(detpars); iface++)
@@ -173,8 +173,9 @@ static void TraceFaces(        // write image showing detected face rects
     lprintf("%s\n", path);
     if (!cv::imwrite(path, cimg))
         Err("Cannot write %s", path);
-#endif
 }
+
+#endif
 
 void FaceDet::DetectFaces_( // call once per image to find all the faces
     const Image& img,       // in: the image (grayscale)
@@ -184,7 +185,10 @@ void FaceDet::DetectFaces_( // call once per image to find all the faces
     void*        user,      // in: unused (match virt func signature)
     cv::CascadeClassifier cascade)
 {
+    (void) imgpath;
+    (void) user;
     DetectFaces(detpars_, img, minwidth, cascade);
+    DiscardMissizedFaces(detpars_);
 
     if (multiface) // order faces on increasing distance from left margin
     {
