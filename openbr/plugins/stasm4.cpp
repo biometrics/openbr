@@ -77,7 +77,10 @@ class StasmTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() != 1)
+        Mat stasmSrc(src);
+        if (src.m().channels() == 3)
+            cvtColor(src, stasmSrc, CV_BGR2GRAY);
+        else if (src.m().channels() != 1)
             qFatal("Stasm expects single channel matrices.");
 
         dst = src;
