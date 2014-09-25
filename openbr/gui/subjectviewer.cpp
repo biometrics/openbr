@@ -25,13 +25,16 @@ SubjectViewer::SubjectViewer(QWidget *parent)
 
 void SubjectViewer::setFiles(const FileList &files)
 {
-    if (files.isEmpty()) return;
-
     currentIndex = 0;
     this->files = files;
 
-    info.setText(QString::number(currentIndex+1) + "/" + QString::number(files.size()));
-    viewer.setFile(this->files[currentIndex]);
+    if (!files.empty()) {
+        info.setText(QString::number(currentIndex+1) + "/" + QString::number(files.size()));
+        viewer.setFile(this->files[currentIndex]);
+    } else {
+        info.setText("-");
+        viewer.setFile(File());
+    }
 }
 
 void SubjectViewer::wheelEvent(QWheelEvent *event)
