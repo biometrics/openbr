@@ -32,7 +32,8 @@ endif()
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.12)
   cmake_policy(SET CMP0022 OLD)
 endif()
-if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
+
+if(${CMAKE_VERSION} VERSION_GREATER 3)
   cmake_policy(SET CMP0043 NEW)
 endif()
 
