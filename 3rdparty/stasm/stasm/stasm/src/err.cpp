@@ -28,6 +28,7 @@
 #include "err.h"
 #include "misc.h"
 
+#include <stdio.h>
 #include <stdarg.h>
 
 namespace stasm

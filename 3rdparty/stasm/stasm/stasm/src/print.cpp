@@ -6,6 +6,7 @@
 #include "err.h"
 #include "misc.h"
 
+#include <stdio.h>
 #include <sys/stat.h>
 #include <stdarg.h>
 
