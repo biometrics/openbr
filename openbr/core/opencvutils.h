@@ -24,6 +24,8 @@
 #include <opencv2/core/core.hpp>
 #include <assert.h>
 
+#include <Eigen/Core>
+
 namespace OpenCVUtils
 {
     // Test/write/display image
@@ -91,6 +93,7 @@ namespace OpenCVUtils
     bool overlaps(const QList<cv::Rect> &posRects, const cv::Rect &negRect, double overlap);
     float overlap(const cv::Rect &rect1, const cv::Rect &rect2);
     float overlap(const QRectF &rect1, const QRectF &rect2);
+    Eigen::MatrixXf toEigen(cv::Mat m);
 
     int getFourcc();
 }
