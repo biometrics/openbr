@@ -248,12 +248,30 @@ class utGallery : public BinaryGallery
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
-            t.file.set("X", ut.x);
-            t.file.set("Y", ut.y);
-            t.file.set("Width", ut.width);
-            t.file.set("Height", ut.height);
             t.file.set("URL", QString(data.data()));
-            t.append(cv::Mat(1, ut.size - ut.urlSize, CV_8UC1, data.data() + ut.urlSize).clone() /* We don't want a shallow copy! */);
+            char *dataStart = data.data() + ut.urlSize;
+            uint32_t dataSize = ut.size - ut.urlSize;
+            if (ut.algorithmID == -1) {
+                t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
+                uint32_t *rightEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *rightEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                dataSize -= sizeof(uint32_t)*4;
+                t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
+                t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
+            }
+            else {
+                t.file.set("X", ut.x);
+                t.file.set("Y", ut.y);
+                t.file.set("Width", ut.width);
+                t.file.set("Height", ut.height);
+            }
+            t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
             if (!gallery.atEnd())
                 qFatal("Failed to read universal template header!");
@@ -1587,6 +1605,79 @@ class landmarksGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, landmarksGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief MUCT format for specifying a shape for a file
+ * \author Scott Klum
+ *
+ * http://www.milbo.org/muct/
+ */
+class shapeGallery : public Gallery
+{
+    Q_OBJECT
+
+    QMap<unsigned long, QString> attributes;
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        TemplateList templates;
+        QStringList lines = QtUtils::readLines(file);
+        for (int i=0; i<lines.size(); i++) {
+            if (lines[i].at(0) == '#' || lines[i].at(0) == '}') continue;
+
+            // First non-comment line should be "attributes filename"
+            QStringList values = lines[i].split(' ');
+
+            // Assume jpg
+            File file(values.back()+".jpg");
+
+            bool ok;
+            unsigned long attributeKey = values.front().toULong(&ok,16);
+
+            if (attributeKey >= 2147483648) /* Don't use face detection results for now */ {
+                i+=2; continue;
+            } else if (ok && attributes.contains(attributeKey)) {
+                file.set(attributes[attributeKey],true);
+            }
+
+            // Next line should be "{ numLandmarks dimensions"
+            // We don't current support more than two dimensions for landmarks
+            values = lines[++i].split(' ');
+            int numLandmarks = values.at(1).toInt(&ok);
+            if (ok) {
+                QList<QPointF> points; points.reserve(numLandmarks);
+                for (int j=0; j<numLandmarks; j++) {
+                    const QList<float> vals = QtUtils::toFloats(lines[++i].split(' '));
+                    points.append(QPointF(vals[0], vals[1]));
+                }
+                file.setPoints(points);
+            }
+            templates.append(file);
+        }
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        qFatal("Not implemented.");
+    }
+
+    void init()
+    {
+        // attribute codes
+        attributes[4] = "Glasses";
+        attributes[8] = "Beard";
+        attributes[16] = "Mustache";
+        attributes[256] = "BadImg";
+        attributes[512] = "Cropped";
+        attributes[2048] = "BadEye";
+    }
+};
+
+BR_REGISTER(Gallery, shapeGallery)
 
 #ifdef CVMATIO
 
