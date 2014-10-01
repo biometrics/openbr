@@ -84,6 +84,7 @@ namespace OpenCVUtils
     QPointF fromPoint(const cv::Point2f &cvPoint);
     QList<cv::Point2f> toPoints(const QList<QPointF> &qPoints);
     QList<QPointF> fromPoints(const QList<cv::Point2f> &cvPoints);
+    cv::Mat pointsToMatrix(const QList<QPointF> &qPoints);
     cv::Rect toRect(const QRectF &qRect);
     QRectF fromRect(const cv::Rect &cvRect);
     QList<cv::Rect> toRects(const QList<QRectF> &qRects);
