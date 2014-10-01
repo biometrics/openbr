@@ -79,7 +79,7 @@ QString File::hash() const
     return QtUtils::shortTextHash(flat());
 }
 
-void File::append(const QMap<QString,QVariant> &metadata)
+void File::append(const QVariantMap &metadata)
 {
     foreach (const QString &key, metadata.keys())
         set(key, metadata[key]);

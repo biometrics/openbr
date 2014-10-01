@@ -548,13 +548,11 @@ private:
             return;
         }
 
-        //! [Parsing the algorithm description]
         const bool compareTransform = description.contains('!');
         QStringList words = QtUtils::parse(description, compareTransform ? '!' : ':');
 
         if ((words.size() < 1) || (words.size() > 2)) qFatal("Invalid algorithm format.");
 
-        //! [Creating the template generation and comparison methods]
         transform = QSharedPointer<Transform>(Transform::make(words[0], NULL));
         simplifyTransform();
 
@@ -567,7 +565,6 @@ private:
             else
                 comparison = QSharedPointer<Transform>(Transform::make(words[1], NULL));
         }
-        //! [Creating the template generation and comparison methods]
     }
 };
 
