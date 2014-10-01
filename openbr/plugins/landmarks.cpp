@@ -437,6 +437,54 @@ class AnonymizeLandmarksTransform : public UntrainableMetadataTransform
 
 BR_REGISTER(Transform, AnonymizeLandmarksTransform)
 
+class PointsToMatrixTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, QString())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        if (inputVariable.isEmpty()) {
+            dst.m() = OpenCVUtils::pointsToMatrix(dst.file.points());
+        } else {
+            if (src.file.contains(inputVariable))
+                dst.m() = OpenCVUtils::pointsToMatrix(dst.file.get<QList<QPointF> >(inputVariable));
+        }
+    }
+};
+
+BR_REGISTER(Transform, PointsToMatrixTransform)
+
+class NormalizePointsTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int index READ get_index WRITE set_index RESET reset_index STORED false)
+    BR_PROPERTY(int, index, 0)
+;
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        QList<QPointF> points = dst.file.points();
+        QPointF normPoint = points.at(index);
+
+        QList<QPointF> normalizedPoints;
+        normalizedPoints.append(normPoint);
+        for (int i=0; i<points.size(); i++)
+            if (i!=index)
+                normalizedPoints.append(normPoint-points[i]);
+
+        dst.file.setPoints(normalizedPoints);
+    }
+};
+
+BR_REGISTER(Transform, NormalizePointsTransform)
+
 } // namespace br
 
 #include "landmarks.moc"
