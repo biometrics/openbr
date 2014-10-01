@@ -993,12 +993,14 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
-        float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
+        if (predicted[i].file.contains(predictedProperty) && truth[i].file.contains(truthProperty)) {
+            float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
 
-        rmsError += pow(difference, 2.f);
-        maeError += fabsf(difference);
-        truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
-        predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
+            rmsError += pow(difference, 2.f);
+            maeError += fabsf(difference);
+            truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
+            predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
+        }
     }
 
     QStringList rSource;

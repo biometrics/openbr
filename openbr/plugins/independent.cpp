@@ -118,6 +118,40 @@ class DownsampleTrainingTransform : public Transform
 };
 BR_REGISTER(Transform, DownsampleTrainingTransform)
 
+class DownsampleMetadataTransform : public Transform
+{
+    Q_OBJECT
+    Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED true)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(br::Transform*, transform, NULL)
+    BR_PROPERTY(QString, inputVariable, "Label")
+
+    Transform *simplify(bool &newTForm)
+    {
+        Transform *res = transform->simplify(newTForm);
+        return res;
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+       transform->project(src,dst);
+    }
+
+    void train(const TemplateList &data)
+    {
+        if (!transform || !transform->trainable)
+            return;
+
+        TemplateList downsampled = data;
+        for (int i=downsampled.size()-1; i>=0; i--)
+            if (!downsampled[i].file.contains(inputVariable))
+                downsampled.removeAt(i);
+
+        transform->train(downsampled);
+    }
+};
+BR_REGISTER(Transform, DownsampleMetadataTransform)
+
 /*!
  * \ingroup transforms
  * \brief Clones the transform so that it can be applied independently.
