@@ -55,6 +55,7 @@
  *
  * \section installation_from_source From Source
  * Installation from source is the recommended method for getting OpenBR on your machine.
+ * <b>If you are interested in our off-the-shelf algorithms, please use the latest tagged release instead of the master branch.</b>
  * If you need a little help getting started, choose from the list of build instructions for free C++ compilers below:
  * - \subpage windows_msvc
  * - \subpage osx_clang
@@ -121,6 +122,7 @@ $ br -help
  $ cd /c
  $ git clone https://github.com/biometrics/openbr.git
  $ cd openbr
+ $ git checkout 0.5
  $ git submodule init
  $ git submodule update
  \endcode
@@ -189,6 +191,7 @@ $ br -help
  \code
  $ git clone https://github.com/biometrics/openbr.git
  $ cd openbr
+ $ git checkout 0.5
  $ git submodule init
  $ git submodule update
  \endcode
@@ -275,6 +278,7 @@ $ br -help
  \code
  $ git clone https://github.com/biometrics/openbr.git
  $ cd openbr
+ $ git checkout 0.5
  $ git submodule init
  $ git submodule update
  \endcode
@@ -363,6 +367,7 @@ $ br -help
  \code
  $ git clone https://github.com/biometrics/openbr.git
  $ cd openbr
+ $ git checkout 0.5
  $ git submodule init
  $ git submodule update
  \endcode
@@ -383,11 +388,11 @@ $ br -help
  \endcode
 */
 
- /*!
-  * \page help Help
-  * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev@googlegroups.com</a>
-  * - IRC Channel: <a href="http://webchat.freenode.net/?channels=openbr">irc.freenode.net\#openbr</a>
-  */
+/*!
+ * \page help Help
+ * - Developer mailing list: <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">openbr-dev@googlegroups.com</a>
+ * - IRC Channel: <a href="http://webchat.freenode.net/?channels=openbr">irc.freenode.net\#openbr</a>
+ */
 
 /*!
  * \page qmake_integration QMake Integration
