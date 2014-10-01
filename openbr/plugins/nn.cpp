@@ -20,7 +20,7 @@ static void storeMLP(const CvANN_MLP &mlp, QDataStream &stream)
     tempFile.open();
     tempFile.close();
 
-    // Save SVM to local file
+    // Save MLP to local file
     mlp.save(qPrintable(tempFile.fileName()));
 
     // Copy local file contents to stream
@@ -42,7 +42,7 @@ static void loadMLP(CvANN_MLP &mlp, QDataStream &stream)
     tempFile.write(data);
     tempFile.close();
 
-    // Load SVM from local file
+    // Load MLP from local file
     mlp.load(qPrintable(tempFile.fileName()));
 }
 
