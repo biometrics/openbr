@@ -290,7 +290,7 @@ class utGallery : public BinaryGallery
 
         uint32_t x = 0, y = 0, width = 0, height = 0;
         QByteArray header;
-        if (algorithmID == -1) {
+        if (algorithmID == -1 || algorithmID == -2) {
             const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
             x      = frontalFace.x();
             y      = frontalFace.y();
