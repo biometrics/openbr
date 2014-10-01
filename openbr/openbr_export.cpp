@@ -16,7 +16,7 @@
 
 /*!
  * \mainpage
- * \page overview Overview
+ * \section overview Overview
  * OpenBR \cite klontz2013open is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
  * The project is designed to facilitate rapid algorithm prototyping, and features a mature core framework, flexible plugin system, and support for open and closed source development.
  * Off-the-shelf algorithms are also available for specific modalities including \ref cpp_face_recognition, \ref cpp_age_estimation, and \ref cpp_gender_estimation.
@@ -433,11 +433,8 @@ $ br -help
  *
  * Let's look at some of the important parts of the code base that make this possible!
  *
- * In <tt>AlgorithmCore::init()</tt> in <tt>openbr/core/core.cpp</tt> you can see the code for splitting the algorithm description at the colon:
- * \snippet openbr/core/core.cpp Parsing the algorithm description
- *
- * Shortly thereafter in this function we <i>make</i> the template generation and comparison methods:
- * \snippet openbr/core/core.cpp Creating the template generation and comparison methods
+ * In <tt>AlgorithmCore::init()</tt> in <tt>openbr/core/core.cpp</tt> you can see the code for splitting the algorithm description at the colon.
+ * Shortly thereafter in this function we <i>make</i> the template generation and comparison methods.
  * These make calls are defined in the public \ref cpp_plugin_sdk and can also be called from end user code.
  *
  * Below we discuss some of the source code for \ref br::Transform::make in <tt>openbr/openbr_plugin.cpp</tt>.
