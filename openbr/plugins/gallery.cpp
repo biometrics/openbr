@@ -251,7 +251,7 @@ class utGallery : public BinaryGallery
             t.file.set("URL", QString(data.data()));
             char *dataStart = data.data() + ut.urlSize;
             uint32_t dataSize = ut.size - ut.urlSize;
-            if (ut.algorithmID == -1) {
+            if (ut.algorithmID == -1 || ut.algorithmID == -2) {
                 t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
                 uint32_t *rightEyeX = reinterpret_cast<uint32_t*>(dataStart);
                 dataStart += sizeof(uint32_t);
