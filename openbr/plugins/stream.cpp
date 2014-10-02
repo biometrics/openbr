@@ -1531,11 +1531,6 @@ public:
         processingStages.clear();
     }
 
-    DirectStreamTransform()
-    {
-        readStage = NULL;
-    }
-
 protected:
     QList<bool> stage_variance;
 
