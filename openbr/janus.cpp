@@ -1,5 +1,5 @@
-#include "iarpa_janus.h"
-#include "iarpa_janus_io.h"
+#include "janus.h"
+#include "janus_io.h"
 #include "openbr_plugin.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/common.h"
@@ -12,21 +12,6 @@ static QSharedPointer<Distance> distance;
 size_t janus_max_template_size()
 {
     return 33554432; // 32 MB
-}
-
-janus_error janus_flatten_gallery(const janus_gallery gallery, janus_flat_gallery flat_gallery, size_t *bytes)
-{
-
-}
-
-janus_error janus_compare(const janus_flat_gallery target, const size_t target_bytes, const janus_flat_gallery query, const size_t query_bytes, float *similarity_matrix, janus_template_id *target_ids, janus_template_id *query_ids)
-{
-
-}
-
-janus_error janus_flatten_template(const janus_template template_, janus_flat_template flat_template, size_t *bytes)
-{
-
 }
 
 janus_error janus_initialize(const char *sdk_path, const char *model_file)
