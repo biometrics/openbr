@@ -64,8 +64,8 @@ class StasmTransform : public UntrainableTransform
     BR_PROPERTY(bool, stasm3Format, false)
     Q_PROPERTY(bool clearLandmarks READ get_clearLandmarks WRITE set_clearLandmarks RESET reset_clearLandmarks STORED false)
     BR_PROPERTY(bool, clearLandmarks, false)
-    Q_PROPERTY(QStringList pinEyes READ get_pinEyes WRITE set_pinEyes RESET reset_pinEyes STORED false)
-    BR_PROPERTY(QStringList, pinEyes, QStringList())
+    Q_PROPERTY(QVariantList pinEyes READ get_pinEyes WRITE set_pinEyes RESET reset_pinEyes STORED false)
+    BR_PROPERTY(QVariantList, pinEyes, QVariantList())
 
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
@@ -102,15 +102,19 @@ class StasmTransform : public UntrainableTransform
             QPointF leftEye;
 
             if (src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
-                rightEye = QtUtils::toPoint(pinEyes.at(0),&ok);
-                leftEye = QtUtils::toPoint(pinEyes.at(1),&ok);
+                rightEye = pinEyes.at(0).toPointF();
+                leftEye = pinEyes.at(1).toPointF();
+                if (!rightEye.isNull() && !leftEye.isNull())
+                    ok = true;
             }
 
             if (!ok) {
-                if (src.file.contains(pinEyes.at(0)) && src.file.contains(pinEyes.at(1)))
+                QString r = pinEyes.at(0).toString();
+                QString l = pinEyes.at(1).toString();
+                if (!r.isNull() && !l.isNull() && src.file.contains(r) && src.file.contains(l))
                 {
-                    rightEye = src.file.get<QPointF>(pinEyes.at(0), QPointF());
-                    leftEye = src.file.get<QPointF>(pinEyes.at(1), QPointF());
+                    rightEye = src.file.get<QPointF>(pinEyes.at(0).toString(), QPointF());
+                    leftEye = src.file.get<QPointF>(pinEyes.at(1).toString(), QPointF());
                     ok = true;
                 }
             }
