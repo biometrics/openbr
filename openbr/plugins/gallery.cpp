@@ -248,12 +248,30 @@ class utGallery : public BinaryGallery
             t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("TemplateID", QVariant(QByteArray((const char*)ut.templateID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
-            t.file.set("X", ut.x);
-            t.file.set("Y", ut.y);
-            t.file.set("Width", ut.width);
-            t.file.set("Height", ut.height);
             t.file.set("URL", QString(data.data()));
-            t.append(cv::Mat(1, ut.size - ut.urlSize, CV_8UC1, data.data() + ut.urlSize).clone() /* We don't want a shallow copy! */);
+            char *dataStart = data.data() + ut.urlSize;
+            uint32_t dataSize = ut.size - ut.urlSize;
+            if (ut.algorithmID == -1 || ut.algorithmID == -2) {
+                t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
+                uint32_t *rightEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *rightEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeX = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                uint32_t *leftEyeY = reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+                dataSize -= sizeof(uint32_t)*4;
+                t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
+                t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
+            }
+            else {
+                t.file.set("X", ut.x);
+                t.file.set("Y", ut.y);
+                t.file.set("Width", ut.width);
+                t.file.set("Height", ut.height);
+            }
+            t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
             if (!gallery.atEnd())
                 qFatal("Failed to read universal template header!");
@@ -267,12 +285,12 @@ class utGallery : public BinaryGallery
         if (imageID.size() != 16)
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
-        const int32_t algorithmID = t.isEmpty() ? 0 : t.file.get<int32_t>("AlgorithmID");
+        const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
         const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
 
         uint32_t x = 0, y = 0, width = 0, height = 0;
-        QByteArray data;
-        if (algorithmID == -1) {
+        QByteArray header;
+        if (algorithmID == -1 || algorithmID == -2) {
             const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
             x      = frontalFace.x();
             y      = frontalFace.y();
@@ -286,10 +304,10 @@ class utGallery : public BinaryGallery
             const uint32_t leftEyeX  = secondEye.x();
             const uint32_t leftEyeY  = secondEye.y();
 
-            data.append((const char*)&rightEyeX, sizeof(uint32_t));
-            data.append((const char*)&rightEyeY, sizeof(uint32_t));
-            data.append((const char*)&leftEyeX , sizeof(uint32_t));
-            data.append((const char*)&leftEyeY , sizeof(uint32_t));
+            header.append((const char*)&rightEyeX, sizeof(uint32_t));
+            header.append((const char*)&rightEyeY, sizeof(uint32_t));
+            header.append((const char*)&leftEyeX , sizeof(uint32_t));
+            header.append((const char*)&leftEyeY , sizeof(uint32_t));
         } else {
             x = t.file.get<uint32_t>("X", 0);
             y = t.file.get<uint32_t>("Y", 0);
@@ -297,12 +315,29 @@ class utGallery : public BinaryGallery
             height = t.file.get<uint32_t>("Height", 0);
         }
 
-        if (!t.empty())
-            data.append((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+        QCryptographicHash templateID(QCryptographicHash::Md5);
+        templateID.addData(header);
+        if (algorithmID != 0)
+            templateID.addData((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
 
-        br_const_utemplate ut = br_new_utemplate((const int8_t*) imageID.data(), algorithmID, x, y, width, height, url.data(), data.data(), data.size());
-        gallery.write((const char*) ut, sizeof(br_universal_template) + ut->size);
-        br_free_utemplate(ut);
+        gallery.write(imageID);
+        gallery.write(templateID.result());
+        gallery.write((const char*) &algorithmID, sizeof(uint32_t));
+        gallery.write((const char*) &x          , sizeof(uint32_t));
+        gallery.write((const char*) &y          , sizeof(uint32_t));
+        gallery.write((const char*) &width      , sizeof(uint32_t));
+        gallery.write((const char*) &height     , sizeof(uint32_t));
+
+        const uint32_t urlSize = url.size() + 1;
+        gallery.write((const char*) &urlSize, sizeof(uint32_t));
+
+        const uint32_t size = urlSize + header.size() + (algorithmID == 0 ? 0 : t.m().rows * t.m().cols * t.m().elemSize());
+        gallery.write((const char*) &size, sizeof(uint32_t));
+
+        gallery.write((const char*) url.data(), urlSize);
+        gallery.write(header);
+        if (algorithmID != 0)
+            gallery.write((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
     }
 };
 
@@ -1570,6 +1605,79 @@ class landmarksGallery : public Gallery
 };
 
 BR_REGISTER(Gallery, landmarksGallery)
+
+/*!
+ * \ingroup galleries
+ * \brief MUCT format for specifying a shape for a file
+ * \author Scott Klum
+ *
+ * http://www.milbo.org/muct/
+ */
+class shapeGallery : public Gallery
+{
+    Q_OBJECT
+
+    QMap<unsigned long, QString> attributes;
+
+    TemplateList readBlock(bool *done)
+    {
+        *done = true;
+        TemplateList templates;
+        QStringList lines = QtUtils::readLines(file);
+        for (int i=0; i<lines.size(); i++) {
+            if (lines[i].at(0) == '#' || lines[i].at(0) == '}') continue;
+
+            // First non-comment line should be "attributes filename"
+            QStringList values = lines[i].split(' ');
+
+            // Assume jpg
+            File file(values.back()+".jpg");
+
+            bool ok;
+            unsigned long attributeKey = values.front().toULong(&ok,16);
+
+            if (attributeKey >= 2147483648) /* Don't use face detection results for now */ {
+                i+=2; continue;
+            } else if (ok && attributes.contains(attributeKey)) {
+                file.set(attributes[attributeKey],true);
+            }
+
+            // Next line should be "{ numLandmarks dimensions"
+            // We don't current support more than two dimensions for landmarks
+            values = lines[++i].split(' ');
+            int numLandmarks = values.at(1).toInt(&ok);
+            if (ok) {
+                QList<QPointF> points; points.reserve(numLandmarks);
+                for (int j=0; j<numLandmarks; j++) {
+                    const QList<float> vals = QtUtils::toFloats(lines[++i].split(' '));
+                    points.append(QPointF(vals[0], vals[1]));
+                }
+                file.setPoints(points);
+            }
+            templates.append(file);
+        }
+        return templates;
+    }
+
+    void write(const Template &t)
+    {
+        (void) t;
+        qFatal("Not implemented.");
+    }
+
+    void init()
+    {
+        // attribute codes
+        attributes[4] = "Glasses";
+        attributes[8] = "Beard";
+        attributes[16] = "Mustache";
+        attributes[256] = "BadImg";
+        attributes[512] = "Cropped";
+        attributes[2048] = "BadEye";
+    }
+};
+
+BR_REGISTER(Gallery, shapeGallery)
 
 #ifdef CVMATIO
 

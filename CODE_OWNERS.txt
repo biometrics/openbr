@@ -1,0 +1,12 @@
+Scott Klum <scott.klum@gmail.com>
+	openbr/gui
+
+Charles Otto <ottochar@gmail.com>
+	openbr/core/core
+
+Ben Klein <benhunter1990@gmail.com>
+	openbr/core/eval
+	openbr/core/plot
+
+Josh Klontz <josh.klontz@gmail.com>
+	*

@@ -122,7 +122,7 @@ private:
     BR_PROPERTY(Type, type, C_SVC)
     BR_PROPERTY(float, C, -1)
     BR_PROPERTY(float, gamma, -1)
-    BR_PROPERTY(QString, inputVariable, "")
+    BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "")
     BR_PROPERTY(bool, returnDFVal, false)
 
@@ -187,18 +187,6 @@ private:
 
     void init()
     {
-        // Since SVM can do regression or classification, we have to check the problem type before
-        // specifying target variable names
-        if (inputVariable.isEmpty())
-        {
-            if (type == EPS_SVR || type == NU_SVR) {
-                inputVariable = "Regressor";
-                if (outputVariable.isEmpty())
-                    outputVariable = "Regressand";
-            }
-            else
-                inputVariable = "Label";
-        }
         if (outputVariable.isEmpty())
             outputVariable = inputVariable;
     }

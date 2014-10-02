@@ -530,7 +530,7 @@ BR_REGISTER(Transform, DrawSegmentation)
 /*!
  * \ingroup transforms
  * \brief Write all mats to disk as images.
- * \author Brendan Klare \bklare
+ * \author Brendan Klare \cite bklare
  */
 class WriteImageTransform : public TimeVaryingTransform
 {

@@ -1735,6 +1735,11 @@ public:
         return false;
     }
 
+    // Stream acts as a shallow interface to DirectStream, so it's fine to remove ourselves here
+    Transform *simplify(bool &newTransform)
+    {
+        return basis->simplify(newTransform);
+    }
 
 private:
     QSharedPointer<DirectStreamTransform> basis;

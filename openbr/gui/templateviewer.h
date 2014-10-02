@@ -24,7 +24,7 @@ public:
     explicit TemplateViewer(QWidget *parent = 0);
 
 public slots:
-    void setFile(const File &file);
+    void setFile(const br::File &file);
     void setEditable(bool enabled);
     void setMousePoint(const QPointF &mousePoint);
     void setFormat(const QString &format);
@@ -52,10 +52,10 @@ protected slots:
     void paintEvent(QPaintEvent *event);
 
 signals:
-    void newInput(File);
+    void newInput(br::File);
     void newInput(QImage);
     void newMousePoint(QPointF);
-    void selectedInput(File);
+    void selectedInput(br::File);
 };
 
 }

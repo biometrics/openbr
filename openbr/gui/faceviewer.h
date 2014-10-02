@@ -19,7 +19,7 @@ public:
     explicit FaceViewer(QWidget *parent = 0);
 
 public slots:
-    void setFile(const File &file_);
+    void setFile(const br::File &file_);
 
 protected slots:
     void mouseMoveEvent(QMouseEvent *event);
@@ -31,6 +31,9 @@ private:
     void refreshImage();
     QRect getImageRect(const QPointF &ip, const QSize &size) const;
     QRectF getScreenRect(const QPointF &sp, int width_, int height_) const;
+
+signals:
+    void newLandmarks(QStringList, QList<QPointF>);
 };
 
 }

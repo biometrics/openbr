@@ -137,6 +137,24 @@ BR_REGISTER(Transform, RemoveMetadataTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Clears the points from a template
+ * \author Brendan Klare \cite bklare
+ */
+class ClearPointsTransform : public UntrainableMetadataTransform
+{
+    Q_OBJECT
+
+    void projectMetadata(const File &src, File &dst) const
+    {
+        dst = src;
+        dst.clearPoints();
+    }
+};
+
+BR_REGISTER(Transform, ClearPointsTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Retains only landmarks/points at the provided indices
  * \author Brendan Klare \cite bklare
  */
@@ -157,6 +175,37 @@ class SelectPointsTransform : public UntrainableMetadataTransform
 };
 
 BR_REGISTER(Transform, SelectPointsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Removes duplicate templates based on a unique metadata key
+ * \author Austin Blanton \cite imaus10
+ */
+class FilterDupeMetadataTransform : public TimeVaryingTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    BR_PROPERTY(QString, key, "TemplateID")
+
+    QSet<QString> excluded;
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        foreach (const Template &t, src) {
+            QString id = t.file.get<QString>(key);
+            if (!excluded.contains(id)) {
+                dst.append(t);
+                excluded.insert(id);
+            }
+        }
+    }
+
+public:
+    FilterDupeMetadataTransform() : TimeVaryingTransform(false,false) {}
+};
+
+BR_REGISTER(Transform, FilterDupeMetadataTransform)
 
 } // namespace br
 

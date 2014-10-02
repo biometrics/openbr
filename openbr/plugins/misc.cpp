@@ -189,7 +189,8 @@ class PrintTransform : public UntrainableMetaTransform
         QStringList matricies;
         foreach (const Mat &m, src)
             matricies.append(QString::number(m.rows) + "x" + QString::number(m.cols) + "_" + OpenCVUtils::typeToString(m));
-        fprintf(error ? stderr : stdout, "%s\n  %s\n%s", qPrintable(nameString), qPrintable(matricies.join(",")), qPrintable(dataString));
+        QString fteString = src.file.fte ? "\n  FTE=true" : QString();
+        fprintf(error ? stderr : stdout, "%s%s\n  %s\n%s", qPrintable(nameString), qPrintable(fteString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 };
 

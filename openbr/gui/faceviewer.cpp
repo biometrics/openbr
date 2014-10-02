@@ -73,8 +73,7 @@ void FaceViewer::setFile(const File &file_)
         landmarks.append(QPointF());
     nearestLandmark = -1;
 
-    FaceViewer::refreshImage();
-    //QtConcurrent::run(this, &FaceViewer::refreshImage);
+    QtConcurrent::run(this, &FaceViewer::refreshImage);
 }
 
 void FaceViewer::refreshImage()
@@ -179,7 +178,7 @@ void FaceViewer::mouseReleaseEvent(QMouseEvent *event)
 
     if (dragging) {
         dragging = false;
-        //emit updateInput(landmarks);
+        emit newLandmarks(QStringList() << "Affine_0" << "Affine_1", landmarks);
     }
 
     update();

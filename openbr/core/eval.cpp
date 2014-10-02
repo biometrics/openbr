@@ -100,10 +100,10 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QString(), QString(), 0);
 }
 
-float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
+float Evaluate(const QString &simmat, const QString &mask, const QString &csv, unsigned int matches)
 {
     qDebug("Evaluating %s%s%s",
            qPrintable(simmat),
@@ -137,11 +137,12 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv)
         truth = format->read();
     }
 
-    return Evaluate(scores, truth, csv);
+    return Evaluate(scores, truth, csv, target, query, matches);
 }
 
-float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
+float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QString &target, const QString &query, unsigned int matches)
 {
+    if (target.isEmpty() || query.isEmpty()) matches = 0;
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
@@ -154,6 +155,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
 
     float result = -1;
 
+    // Lists of top impostors and worst genuine
+    QList<Comparison> topImpostors; topImpostors.reserve(matches);
+    QList<Comparison> botGenuines; botGenuines.reserve(matches);
+    
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
@@ -163,9 +168,34 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
             const BEE::SimmatValue simmat_val = simmat.at<BEE::SimmatValue>(i,j);
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
-            comparisons.append(Comparison(simmat_val, j, i, mask_val == BEE::Match));
-            if (comparisons.last().genuine) genuineCount++;
-            else                            impostorCount++;
+            Comparison comparison(simmat_val, j, i, mask_val == BEE::Match);
+            comparisons.append(comparison);
+            if (comparison.genuine) {
+                genuineCount++;
+                if (matches != 0){
+                    if (botGenuines.size() < (int)matches) {
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    } else if (comparison.score < botGenuines.first().score) {
+                        botGenuines.removeFirst();
+                        botGenuines.append(comparison);
+                        std::sort(botGenuines.begin(), botGenuines.end());
+                    }
+                }
+            } else {
+                impostorCount++;
+                if (matches != 0) {
+                    if (topImpostors.size() < (int)matches) {
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    } else if (topImpostors.last().score < comparison.score) {
+                        topImpostors.removeLast();
+                        topImpostors.append(comparison);
+                        std::sort(topImpostors.begin(), topImpostors.end());
+                    }
+                }
+
+            }                           
         }
     }
 
@@ -234,6 +264,21 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     lines.append("Metadata,"+QString::number(impostorCount)+",Impostor");
     lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
+    QString filePath = Globals->path;
+    if (matches != 0) {
+        const FileList targetFiles = TemplateList::fromGallery(target).files();
+        const FileList queryFiles = TemplateList::fromGallery(query).files();
+        for (int i=0; i<topImpostors.size(); i++) {
+            lines.append("TI,"+QString::number(topImpostors[i].score)+","+targetFiles[topImpostors[i].target].get<QString>("Label")+":"
+                +filePath+"/"+targetFiles[topImpostors[i].target].name+":"+queryFiles[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[topImpostors[i].query].name);
+        }
+        std::reverse(botGenuines.begin(), botGenuines.end());
+        for (int i=0; i<botGenuines.size(); i++) {
+            lines.append("BG,"+QString::number(botGenuines[i].score)+","+targetFiles[botGenuines[i].target].get<QString>("Label")+":"
+                +filePath+"/"+targetFiles[botGenuines[i].target].name+":"+queryFiles[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[botGenuines[i].query].name);
+        }
+    }
+
     // Write Detection Error Tradeoff (DET), PRE, REC
     int points = qMin(operatingPoints.size(), Max_Points);
     for (int i=0; i<points; i++) {
@@ -292,7 +337,13 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv)
     }
 
     QtUtils::writeFile(csv, lines);
-    qDebug("TAR @ FAR = 0.01: %.3f\nRetrieval Rate @ Rank = %d: %.3f", result, Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+    qDebug("TAR @ FAR = 0.01:    %.3f",getTAR(operatingPoints, 0.01));
+    qDebug("TAR @ FAR = 0.001:   %.3f",getTAR(operatingPoints, 0.001));
+    qDebug("TAR @ FAR = 0.0001:  %.3f",getTAR(operatingPoints, 0.0001));
+    qDebug("TAR @ FAR = 0.00001: %.3f",getTAR(operatingPoints, 0.00001));
+
+    qDebug("\nRetrieval Rate @ Rank = %d: %.3f", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+
     return result;
 }
 
