@@ -113,8 +113,8 @@ class StasmTransform : public UntrainableTransform
                 QString l = pinEyes.at(1).toString();
                 if (!r.isNull() && !l.isNull() && src.file.contains(r) && src.file.contains(l))
                 {
-                    rightEye = src.file.get<QPointF>(pinEyes.at(0).toString(), QPointF());
-                    leftEye = src.file.get<QPointF>(pinEyes.at(1).toString(), QPointF());
+                    rightEye = src.file.get<QPointF>(r, QPointF());
+                    leftEye = src.file.get<QPointF>(l, QPointF());
                     ok = true;
                 }
             }
