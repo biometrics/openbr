@@ -1,4 +1,4 @@
-set(BR_WITH_PP4 ON CACHE BOOL "Build with PittPatt 4")
+set(BR_WITH_PP4 OFF CACHE BOOL "Build with PittPatt 4")
 
 if(${BR_WITH_PP4})
   find_package(PP4 REQUIRED)
