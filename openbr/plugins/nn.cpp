@@ -67,10 +67,10 @@ class MLPTransform : public MetaTransform
     void init()
     {
         Mat layers = Mat(neuronsPerLayer.size(), 1, CV_32SC1);
-        for (int i=0; i<neuronsPerLayer.size(); i++) {
+        for (int i=0; i<neuronsPerLayer.size(); i++)
             layers.row(i) = Scalar(neuronsPerLayer.at(i));
-        }
-        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, 1, 1);
+
+        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, 1, 1);        
     }
 
     void train(const TemplateList &data)

@@ -38,8 +38,6 @@ class OpenTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        qDebug() << "here";
-
         dst.file = src.file;
         if (src.empty()) {
             if (Globals->verbose)
@@ -485,7 +483,6 @@ class SaveMatTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-                                    qDebug() << "saving mat";
         dst = src;
         dst.file.set(propName, QVariant::fromValue(dst.m()));
     }

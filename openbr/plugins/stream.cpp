@@ -1531,6 +1531,11 @@ public:
         processingStages.clear();
     }
 
+    DirectStreamTransform()
+    {
+        readStage = NULL;
+    }
+
 protected:
     QList<bool> stage_variance;
 
@@ -1593,6 +1598,14 @@ public:
     BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     bool timeVarying() const { return true; }
+
+                                   // Stream acts as a shallow interface to DirectStream, so it's fine to remove ourselves here
+                                      Transform *simplify(bool &newTransform)
+                                      {
+                                          newTransform = false;
+
+                                          return basis->simplify(newTransform);
+                                      }
 
     void project(const Template &src, Template &dst) const
     {

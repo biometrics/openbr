@@ -465,7 +465,7 @@ class NormalizePointsTransform : public UntrainableTransform
 
     Q_PROPERTY(int index READ get_index WRITE set_index RESET reset_index STORED false)
     BR_PROPERTY(int, index, 0)
-;
+
     void project(const Template &src, Template &dst) const
     {
         dst = src;
@@ -474,7 +474,9 @@ class NormalizePointsTransform : public UntrainableTransform
         QPointF normPoint = points.at(index);
 
         QList<QPointF> normalizedPoints;
-        normalizedPoints.append(normPoint);
+        // We have nose and two eyes and I want a feature vector like:
+        // (nose.x-right_eye.x,nose.y-right_eye.y),(nose.x-left_eye.x,nose.y-left_eye.y),(0,0) because we're centering on the nose
+
         for (int i=0; i<points.size(); i++)
             if (i!=index)
                 normalizedPoints.append(normPoint-points[i]);
@@ -484,6 +486,32 @@ class NormalizePointsTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, NormalizePointsTransform)
+
+class PointDisplacementTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        QList<QPointF> points = dst.file.points();
+        QList<QPointF> normalizedPoints;
+
+        for (int i=0; i<points.size(); i++)
+            for (int j=0; j<points.size(); j++)
+                if (j!=i) {
+                    QPointF normalizedPoint = points[i]-points[j];
+                    normalizedPoint.setX(pow(normalizedPoint.x(),2));
+                    normalizedPoint.setY(pow(normalizedPoint.y(),2));
+                    normalizedPoints.append(normalizedPoint);
+                }
+
+        dst.file.setPoints(normalizedPoints);
+    }
+};
+
+BR_REGISTER(Transform, PointDisplacementTransform)
 
 } // namespace br
 
