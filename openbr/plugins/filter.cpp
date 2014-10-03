@@ -45,7 +45,8 @@ class GammaTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        LUT(src, lut, dst);
+        if (src.m().depth() == CV_8U) LUT(src, lut, dst);
+        else                          pow(src, gamma, dst);
     }
 };
 
