@@ -31,6 +31,7 @@
 
 #include "alphanum.hpp"
 #include "qtutils.h"
+#include "opencvutils.h"
 
 using namespace br;
 
@@ -429,7 +430,7 @@ QString toString(const QVariant &variant)
                                             QString::number(rect.y()),
                                             QString::number(rect.width()),
                                             QString::number(rect.height()));
-    }
+    } else if (variant.canConvert<cv::Mat>()) return OpenCVUtils::matrixToString(variant.value<cv::Mat>());
 
     return QString();
 }
@@ -440,6 +441,21 @@ QString toString(const QVariantList &variantList)
 
     foreach (const QVariant &variant, variantList)
         variants.append(toString(variant));
+
+    if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
+
+    return QString();
+}
+
+QString toString(const QMap<QString,QVariant> &variantMap)
+{
+    QStringList variants;
+
+    QMapIterator<QString, QVariant> i(variantMap);
+    while (i.hasNext()) {
+        i.next();
+        variants.append(i.key() + "=" + toString(i.value()));
+    }
 
     if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
 
