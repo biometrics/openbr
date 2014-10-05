@@ -804,7 +804,7 @@ void Object::setProperty(const QString &name, QVariant value)
         int v = value.toInt(&ok);
         if (ok)
             value = v;
-    } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList")) {
+    } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList") || (type == "QVariantList")) {
         QVariantList elements;
         if (value.canConvert<QVariantList>()) {
             elements = value.value<QVariantList>();
@@ -821,7 +821,9 @@ void Object::setProperty(const QString &name, QVariant value)
             qFatal("Expected a list.");
         }
 
-        if ((type == "QList<QString>") || (type == "QStringList")) {
+        if ((type == "QList<QVariant>") || (type == "QVariantList")) {
+            value.setValue(elements);
+        } else if ((type == "QList<QString>") || (type == "QStringList")) {
             QStringList parsedValues;
             foreach (const QVariant &element, elements)
                 parsedValues.append(element.toString());
