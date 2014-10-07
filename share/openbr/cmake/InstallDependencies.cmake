@@ -88,6 +88,8 @@ function(install_qt_misc)
     file(GLOB d3dcomp ${_qt5Core_install_prefix}/bin/d3dcompiler_*.dll)
     install(FILES ${d3dcomp} DESTINATION bin)
     install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin/platforms)
+  elseif(CMAKE_HOST_APPLE)
+    install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqcocoa${CMAKE_SHARED_LIBRARY_SUFFIX}  DESTINATION bin/platforms)
   endif()
 endfunction()
 
