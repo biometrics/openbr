@@ -16,7 +16,7 @@ set_target_properties(stasm PROPERTIES
                                    LINK_INTERFACE_LIBRARIES ""
                                    AUTOMOC TRUE)
 
-target_link_libraries(stasm ${OpenCV_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
+target_link_libraries(stasm ${OPENCV_DEPENDENCIES} ${Qt5Core_QTMAIN_LIBRARIES})
 
 file(GLOB STASM_HEADERS stasm/include/*.h)
 install(FILES ${STASM_HEADERS} DESTINATION include/stasm)
