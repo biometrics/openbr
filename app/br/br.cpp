@@ -14,8 +14,10 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QRunnable>
+#include <QString>
 #include <QThreadPool>
 #include <stdio.h>
 #include <stdlib.h>
@@ -284,6 +286,12 @@ private:
 
 int main(int argc, char *argv[])
 {
+    QString s(argv[0]);
+    s.truncate(s.lastIndexOf("/"));
+    QDir dir(s);
+    QApplication::addLibraryPath(dir.absolutePath());
+    QCoreApplication::addLibraryPath(dir.absolutePath());
+
     const bool gui         = (argc >= 2) && !strcmp(argv[1], "-gui");
     const bool noEventLoop = (argc >= 2) && !strcmp(argv[1], "-noEventLoop");
     br_initialize(argc, argv, "", gui);

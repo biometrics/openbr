@@ -1032,7 +1032,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals->init(File());
     Globals->useGui = useGui;
     Globals->algorithm = "Identity";
-
     Common::seedRNG();
 
     // Search for SDK

@@ -21,8 +21,8 @@ foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
 endforeach()
 
-set(OPENCV_DEPENDENCIES calib3d core features2d flann gpu highgui imgproc ml nonfree objdetect photo video)
-find_package( OpenCV REQUIRED )
+set(OPENCV_DEPENDENCIES opencv_core opencv_objdetect opencv_photo)
+find_package(OpenCV REQUIRED)
 
 # Compiler flags
 if(UNIX)
