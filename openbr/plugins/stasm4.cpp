@@ -101,16 +101,17 @@ class StasmTransform : public UntrainableTransform
             QPointF rightEye;
             QPointF leftEye;
 
+            QString r = pinEyes.at(0).toString();
+            QString l = pinEyes.at(1).toString();
+
             if (src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
-                rightEye = pinEyes.at(0).toPointF();
-                leftEye = pinEyes.at(1).toPointF();
+                rightEye = QtUtils::toPoint(r);
+                leftEye = QtUtils::toPoint(l);
                 if (!rightEye.isNull() && !leftEye.isNull())
                     ok = true;
             }
 
             if (!ok) {
-                QString r = pinEyes.at(0).toString();
-                QString l = pinEyes.at(1).toString();
                 if (!r.isNull() && !l.isNull() && src.file.contains(r) && src.file.contains(l))
                 {
                     rightEye = src.file.get<QPointF>(r, QPointF());
