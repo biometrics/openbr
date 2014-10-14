@@ -93,27 +93,27 @@ class StasmTransform : public UntrainableTransform
         int nLandmarks = stasm_NLANDMARKS;
         float landmarks[2 * stasm_NLANDMARKS];
 
-	bool searchPinned = false;
+        bool searchPinned = false;
 
-	QPointF rightEye, leftEye;
-         /* Two use cases are accounted for:
-         *  1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
-         *  2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
-	 *     Currently, we only support normalization with a transformation such that the src file contains Affine_0 and Affine_1.  Checking for
-	 *     these keys prevents us from pinning eyes on a face that wasn't actually transformed (see AffineTransform).
-         *  If both cases fail, we default to stasm_search_single. */
+        QPointF rightEye, leftEye;
+        /* Two use cases are accounted for:
+         * 1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
+         * 2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
+         * Currently, we only support normalization with a transformation such that the src file contains Affine_0 and Affine_1.  Checking for
+         * these keys prevents us from pinning eyes on a face that wasn't actually transformed (see AffineTransform).
+         * If both cases fail, we default to stasm_search_single. */
 
         if (!pinPoints.isEmpty() && src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
             rightEye = QPointF(pinPoints.at(0), pinPoints.at(1));
             leftEye = QPointF(pinPoints.at(2), pinPoints.at(3));
-	    searchPinned = true;
-	} else if (!pinLabels.isEmpty()) {
+            searchPinned = true;
+        } else if (!pinLabels.isEmpty()) {
             rightEye = src.file.get<QPointF>(pinLabels.at(0), QPointF());
             leftEye = src.file.get<QPointF>(pinLabels.at(1), QPointF());
-	    searchPinned = true;
-	}
+            searchPinned = true;
+        }
 	
-	if (searchPinned) {
+        if (searchPinned) {
 	    float pins[2 * stasm_NLANDMARKS];
 
             for (int i = 0; i < nLandmarks; i++) {
@@ -122,13 +122,13 @@ class StasmTransform : public UntrainableTransform
                 else { pins[2*i] = 0; pins[2*i+1] = 0; }
             }
 
-	    stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, NULL);
+        stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
 
             // The ASM in Stasm is guaranteed to converge in this case
             foundFace = 1;
         }
 
-        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(src.m().data), src.m().cols, src.m().rows, *stasmCascade, NULL, NULL);
+        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, NULL, NULL);
 
         if (stasm3Format) {
             nLandmarks = 76;
