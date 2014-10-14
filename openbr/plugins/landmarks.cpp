@@ -437,6 +437,11 @@ class AnonymizeLandmarkTransform : public UntrainableMetadataTransform
 
 BR_REGISTER(Transform, AnonymizeLandmarkTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Converts either the file::points() list or a QList<QPointF> metadata item to be the template's matrix
+ * \author Scott Klum \cite sklum
+ */
 class PointsToMatrixTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -459,6 +464,11 @@ class PointsToMatrixTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, PointsToMatrixTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Normalize points to be relative to a single point
+ * \author Scott Klum \cite sklum
+ */
 class NormalizePointsTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -474,8 +484,6 @@ class NormalizePointsTransform : public UntrainableTransform
         QPointF normPoint = points.at(index);
 
         QList<QPointF> normalizedPoints;
-        // We have nose and two eyes and I want a feature vector like:
-        // (nose.x-right_eye.x,nose.y-right_eye.y),(nose.x-left_eye.x,nose.y-left_eye.y),(0,0) because we're centering on the nose
 
         for (int i=0; i<points.size(); i++)
             if (i!=index)
@@ -487,6 +495,11 @@ class NormalizePointsTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, NormalizePointsTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Normalize points to be relative to a single point
+ * \author Scott Klum \cite sklum
+ */
 class PointDisplacementTransform : public UntrainableTransform
 {
     Q_OBJECT
@@ -500,6 +513,7 @@ class PointDisplacementTransform : public UntrainableTransform
 
         for (int i=0; i<points.size(); i++)
             for (int j=0; j<points.size(); j++)
+                // There is redundant information here
                 if (j!=i) {
                     QPointF normalizedPoint = points[i]-points[j];
                     normalizedPoint.setX(pow(normalizedPoint.x(),2));
