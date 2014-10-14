@@ -49,24 +49,6 @@ class CropTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, CropTransform)
 
-
-static QRectF constrainRect(int height, int width, const QRectF &rect)
-{
-    QRectF newRect = rect;
-
-    // roi.x + roi.width <= m.cols && roi.y + roi.height <= m.rows
-
-    if (rect.x() < 0) newRect.setX(0);
-    if (rect.y() < 0) newRect.setY(0);
-
-    if ((newRect.y() + rect.width()) > width) newRect.setWidth(width-newRect.y());
-    if ((newRect.x() + rect.height()) > height) newRect.setHeight(height-newRect.x());
-
-    qDebug() << ((newRect.x() + newRect.width()) <= width) << ((newRect.y() + newRect.height()) <= height);
-
-    return newRect;
-}
-
 /*!
  * \ingroup transforms
  * \brief Crops the rectangular regions of interest.
@@ -81,13 +63,11 @@ class ROITransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         if (!propName.isEmpty()) {
-            QRectF rect = constrainRect(src.m().rows, src.m().cols, src.file.get<QRectF>(propName));
+            QRectF rect = src.file.get<QRectF>(propName);
             dst += src.m()(OpenCVUtils::toRect(rect));
         } else if (!src.file.rects().empty()) {
-            foreach (const QRectF &rect, src.file.rects()) {
-                QRectF newRect = constrainRect(src.m().rows, src.m().cols, rect);
-                dst += src.m()(OpenCVUtils::toRect(newRect));
-            }
+            foreach (const QRectF &rect, src.file.rects())
+                dst += src.m()(OpenCVUtils::toRect(rect));
         } else if (src.file.contains(QStringList() << "X" << "Y" << "Width" << "Height")) {
             dst += src.m()(Rect(src.file.get<int>("X"),
                                 src.file.get<int>("Y"),
