@@ -372,7 +372,7 @@ BR_REGISTER(Transform, ReadLandmarksTransform)
  * \brief Name a point/rect
  * \author Scott Klum \cite sklum
  */
-class NameLandmarkTransform : public UntrainableMetadataTransform
+class NameLandmarksTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
@@ -406,14 +406,14 @@ class NameLandmarkTransform : public UntrainableMetadataTransform
     }
 };
 
-BR_REGISTER(Transform, NameLandmarkTransform)
+BR_REGISTER(Transform, NameLandmarksTransform)
 
 /*!
  * \ingroup transforms
  * \brief Remove a name from a point/rect
  * \author Scott Klum \cite sklum
  */
-class AnonymizeLandmarkTransform : public UntrainableMetadataTransform
+class AnonymizeLandmarksTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
@@ -435,7 +435,7 @@ class AnonymizeLandmarkTransform : public UntrainableMetadataTransform
     }
 };
 
-BR_REGISTER(Transform, AnonymizeLandmarkTransform)
+BR_REGISTER(Transform, AnonymizeLandmarksTransform)
 
 /*!
  * \ingroup transforms
