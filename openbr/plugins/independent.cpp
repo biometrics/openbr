@@ -93,6 +93,7 @@ class DownsampleTrainingTransform : public Transform
     BR_PROPERTY(QStringList, gallery, QStringList())
     BR_PROPERTY(QStringList, subjects, QStringList())
 
+
     Transform *simplify(bool &newTForm)
     {
         Transform *res = transform->simplify(newTForm);
