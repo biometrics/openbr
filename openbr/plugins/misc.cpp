@@ -890,7 +890,8 @@ class TransposeTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        dst.m() = src.m().t();
+        for (int i=0; i<src.size(); i++)
+            dst.append(src[i].t());
     }
 };
 
