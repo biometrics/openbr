@@ -416,8 +416,6 @@ BR_REGISTER(Transform, NameLandmarksTransform)
 class AnonymizeLandmarksTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
-    Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
-    BR_PROPERTY(bool, point, true)
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
     BR_PROPERTY(QStringList, names, QStringList())
 
@@ -425,12 +423,17 @@ class AnonymizeLandmarksTransform : public UntrainableMetadataTransform
     {
         dst = src;
 
-        if (point) {
-            foreach (const QString &name, names)
-                if (src.contains(name)) dst.appendPoint(src.get<QPointF>(name));
-        } else {
-            foreach (const QString &name, names)
-                if (src.contains(name)) dst.appendRect(src.get<QRectF>(name));
+        foreach (const QString &name, names) {
+            if (src.contains(name)) {
+                QVariant variant = src.value(name);
+                if (variant.canConvert(QMetaType::QPointF)) {
+                    dst.appendPoint(variant.toPointF());
+                } else if (variant.canConvert(QMetaType::QRectF)) {
+                    dst.appendRect(variant.toRectF());
+                } else {
+                    qFatal("Cannot convert landmark to point or rect.");
+                }
+            }
         }
     }
 };
