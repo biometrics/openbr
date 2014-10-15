@@ -50,27 +50,46 @@ static void loadMLP(CvANN_MLP &mlp, QDataStream &stream)
  * \ingroup transforms
  * \brief Wraps OpenCV's multi-layer perceptron framework
  * \author Scott Klum \cite sklum
+ * \brief http://docs.opencv.org/modules/ml/doc/neural_networks.html
  */
 class MLPTransform : public MetaTransform
 {
     Q_OBJECT
 
+    Q_ENUMS(Kernel)
+    Q_PROPERTY(Kernel kernel READ get_kernel WRITE set_kernel RESET reset_kernel STORED false)
+    Q_PROPERTY(float alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
+    Q_PROPERTY(float beta READ get_beta WRITE set_beta RESET reset_beta STORED false)
     Q_PROPERTY(QStringList inputVariables READ get_inputVariables WRITE set_inputVariables RESET reset_inputVariables STORED false)
-    BR_PROPERTY(QStringList, inputVariables, QStringList())
     Q_PROPERTY(QStringList outputVariables READ get_outputVariables WRITE set_outputVariables RESET reset_outputVariables STORED false)
-    BR_PROPERTY(QStringList, outputVariables, QStringList())
     Q_PROPERTY(QList<int> neuronsPerLayer READ get_neuronsPerLayer WRITE set_neuronsPerLayer RESET reset_neuronsPerLayer STORED false)
+
+public:
+
+    enum Kernel { Identity = CvANN_MLP::IDENTITY,
+                  Sigmoid = CvANN_MLP::SIGMOID_SYM,
+                  Gaussian = CvANN_MLP::GAUSSIAN};
+
+private:
+    BR_PROPERTY(Kernel, kernel, Sigmoid)
+    BR_PROPERTY(float, alpha, 1)
+    BR_PROPERTY(float, beta, 1)
+    BR_PROPERTY(QStringList, inputVariables, QStringList())
+    BR_PROPERTY(QStringList, outputVariables, QStringList())
     BR_PROPERTY(QList<int>, neuronsPerLayer, QList<int>() << 1 << 1)
 
     CvANN_MLP mlp;
 
     void init()
     {
+        if (kernel == Gaussian)
+            qWarning("The OpenCV documentation warns that the Gaussian kernel, \"is not completely supported at the moment\"");
+
         Mat layers = Mat(neuronsPerLayer.size(), 1, CV_32SC1);
         for (int i=0; i<neuronsPerLayer.size(); i++)
             layers.row(i) = Scalar(neuronsPerLayer.at(i));
 
-        mlp.create(layers,CvANN_MLP::SIGMOID_SYM, 1, 1);        
+        mlp.create(layers,kernel, alpha, beta);
     }
 
     void train(const TemplateList &data)
