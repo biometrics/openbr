@@ -121,6 +121,17 @@ Mat OpenCVUtils::toMat(const QList<float> &src, int rows)
     return dst;
 }
 
+Mat OpenCVUtils::pointsToMatrix(const QList<QPointF> &qPoints)
+{
+    QList<float> points;
+    foreach(const QPointF &point, qPoints) {
+        points.append(point.x());
+        points.append(point.y());
+    }
+
+    return toMat(points);
+}
+
 Mat OpenCVUtils::toMat(const QList<QList<float> > &srcs, int rows)
 {
     QList<float> flat;

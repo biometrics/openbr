@@ -369,12 +369,14 @@ BR_REGISTER(Transform, ReadLandmarksTransform)
 
 /*!
  * \ingroup transforms
- * \brief Name a point
+ * \brief Name a point/rect
  * \author Scott Klum \cite sklum
  */
-class NamePointsTransform : public UntrainableMetadataTransform
+class NameLandmarksTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
+    Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
+    BR_PROPERTY(bool, point, true)
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
@@ -382,27 +384,36 @@ class NamePointsTransform : public UntrainableMetadataTransform
 
     void projectMetadata(const File &src, File &dst) const
     {
-        if (indices.size() != names.size()) qFatal("Point/name size mismatch");
+        if (indices.size() != names.size()) qFatal("Index/name size mismatch");
 
         dst = src;
 
-        QList<QPointF> points = src.points();
+        if (point) {
+            QList<QPointF> points = src.points();
 
-        for (int i=0; i<indices.size(); i++) {
-            if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
-            else qFatal("Index out of range.");
+            for (int i=0; i<indices.size(); i++) {
+                if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
+                else qFatal("Index out of range.");
+            }
+        } else {
+            QList<QRectF> rects = src.rects();
+
+            for (int i=0; i<indices.size(); i++) {
+                if (indices[i] < rects.size()) dst.set(names[i], rects[indices[i]]);
+                else qFatal("Index out of range.");
+            }
         }
     }
 };
 
-BR_REGISTER(Transform, NamePointsTransform)
+BR_REGISTER(Transform, NameLandmarksTransform)
 
 /*!
  * \ingroup transforms
- * \brief Remove a name from a point
+ * \brief Remove a name from a point/rect
  * \author Scott Klum \cite sklum
  */
-class AnonymizePointsTransform : public UntrainableMetadataTransform
+class AnonymizeLandmarksTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList names READ get_names WRITE set_names RESET reset_names STORED false)
@@ -412,12 +423,112 @@ class AnonymizePointsTransform : public UntrainableMetadataTransform
     {
         dst = src;
 
-        foreach (const QString &name, names)
-            if (src.contains(name)) dst.appendPoint(src.get<QPointF>(name));
+        foreach (const QString &name, names) {
+            if (src.contains(name)) {
+                QVariant variant = src.value(name);
+                if (variant.canConvert(QMetaType::QPointF)) {
+                    dst.appendPoint(variant.toPointF());
+                } else if (variant.canConvert(QMetaType::QRectF)) {
+                    dst.appendRect(variant.toRectF());
+                } else {
+                    qFatal("Cannot convert landmark to point or rect.");
+                }
+            }
+        }
     }
 };
 
-BR_REGISTER(Transform, AnonymizePointsTransform)
+BR_REGISTER(Transform, AnonymizeLandmarksTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Converts either the file::points() list or a QList<QPointF> metadata item to be the template's matrix
+ * \author Scott Klum \cite sklum
+ */
+class PointsToMatrixTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, QString())
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        if (inputVariable.isEmpty()) {
+            dst.m() = OpenCVUtils::pointsToMatrix(dst.file.points());
+        } else {
+            if (src.file.contains(inputVariable))
+                dst.m() = OpenCVUtils::pointsToMatrix(dst.file.get<QList<QPointF> >(inputVariable));
+        }
+    }
+};
+
+BR_REGISTER(Transform, PointsToMatrixTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Normalize points to be relative to a single point
+ * \author Scott Klum \cite sklum
+ */
+class NormalizePointsTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int index READ get_index WRITE set_index RESET reset_index STORED false)
+    BR_PROPERTY(int, index, 0)
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        QList<QPointF> points = dst.file.points();
+        QPointF normPoint = points.at(index);
+
+        QList<QPointF> normalizedPoints;
+
+        for (int i=0; i<points.size(); i++)
+            if (i!=index)
+                normalizedPoints.append(normPoint-points[i]);
+
+        dst.file.setPoints(normalizedPoints);
+    }
+};
+
+BR_REGISTER(Transform, NormalizePointsTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Normalize points to be relative to a single point
+ * \author Scott Klum \cite sklum
+ */
+class PointDisplacementTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        QList<QPointF> points = dst.file.points();
+        QList<QPointF> normalizedPoints;
+
+        for (int i=0; i<points.size(); i++)
+            for (int j=0; j<points.size(); j++)
+                // There is redundant information here
+                if (j!=i) {
+                    QPointF normalizedPoint = points[i]-points[j];
+                    normalizedPoint.setX(pow(normalizedPoint.x(),2));
+                    normalizedPoint.setY(pow(normalizedPoint.y(),2));
+                    normalizedPoints.append(normalizedPoint);
+                }
+
+        dst.file.setPoints(normalizedPoints);
+    }
+};
+
+BR_REGISTER(Transform, PointDisplacementTransform)
 
 } // namespace br
 

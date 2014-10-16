@@ -937,6 +937,18 @@ class FileExclusionTransform : public UntrainableMetaTransform
 
 BR_REGISTER(Transform, FileExclusionTransform)
 
+class TransposeTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst.m() = src.m().t();
+    }
+};
+
+BR_REGISTER(Transform, TransposeTransform)
+
 }
 
 #include "misc.moc"
