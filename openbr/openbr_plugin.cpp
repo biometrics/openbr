@@ -166,10 +166,10 @@ QVariant File::parse(const QString &value)
 void File::set(const QString &key, const QString &value)
 {
     if (value.startsWith('[') && value.endsWith(']')) {
-        QList<QVariant> variants;
+        QVariantList variants;
         foreach (const QString &value, QtUtils::parse(value.mid(1, value.size()-2)))
             variants.append(parse(value));
-        set(key, QVariant(variants));
+        set(key, variants);
     } else {
         set(key, QVariant(parse(value)));
     }
@@ -806,9 +806,7 @@ void Object::setProperty(const QString &name, QVariant value)
             value = v;
     } else if ((type.startsWith("QList<") && type.endsWith(">")) || (type == "QStringList") || (type == "QVariantList")) {
         QVariantList elements;
-        if (value.canConvert<QVariantList>()) {
-            elements = value.value<QVariantList>();
-        } else if (value.canConvert< QList<Transform*> >()) {
+        if (value.canConvert< QList<Transform*> >()) {
             foreach (Transform *transform, value.value< QList<Transform*> >())
                 elements.append(QVariant::fromValue(transform));
         } else if (value.canConvert<QString>()) {
@@ -817,6 +815,8 @@ void Object::setProperty(const QString &name, QVariant value)
                 qFatal("Expected a list to start with '[' and end with 'brackets']'.");
             foreach (const QString &element, parse(string.mid(1, string.size()-2)))
                 elements.append(element);
+        } else if (value.canConvert<QVariantList>()) {
+            elements = value.value<QVariantList>();
         } else {
             qFatal("Expected a list.");
         }
@@ -825,8 +825,19 @@ void Object::setProperty(const QString &name, QVariant value)
             value.setValue(elements);
         } else if ((type == "QList<QString>") || (type == "QStringList")) {
             QStringList parsedValues;
-            foreach (const QVariant &element, elements)
-                parsedValues.append(element.toString());
+            foreach (const QVariant &element, elements) {
+                if (element.canConvert<QString>()) {
+                    parsedValues.append(element.toString());
+                } else if (element.canConvert<QPointF>()) {
+                    const QPointF point = element.toPointF();
+                    parsedValues.push_back(QString("(%1,%2)").arg(QString::number(point.x()), QString::number(point.y())));
+                } else if (element.canConvert<QRectF>()) {
+                    const QRectF rect = element.toRectF();
+                    parsedValues.push_back(QString("(%1,%2,%3,%4)").arg(QString::number(rect.x()), QString::number(rect.y()), QString::number(rect.width()), QString::number(rect.height())));
+                } else {
+                    qFatal("Can't convert variant to string.");
+                }
+            }
             value.setValue(parsedValues);
         } else if (type == "QList<float>") {
             QList<float> parsedValues; bool ok;
