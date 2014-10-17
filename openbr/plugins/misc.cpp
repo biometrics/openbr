@@ -106,7 +106,13 @@ public:
 private:
     BR_PROPERTY(Mode, mode, Encoded)
 
-    mutable QThreadStorage<QNetworkAccessManager*> nam;
+    // The reasons for this data structure are as follows:
+    // 1) The QNetworkAccessManager must be used in the thread that _created_ it,
+    //    hence the use of `QThreadStorage`.
+    // 2) The QThreadStorage must be deleted _after_ the threads that added QNetworkAccessManager
+    //    to it are deleted, hence the `static` ensuring that `nam` is deleted at program termination,
+    //    long after the threads that created QNetworkAccessManager are deleted.
+    static QThreadStorage<QNetworkAccessManager*> nam;
 
     void project(const Template &src, Template &dst) const
     {
@@ -165,6 +171,7 @@ private:
         }
     }
 };
+QThreadStorage<QNetworkAccessManager*> DownloadTransform::nam;
 
 BR_REGISTER(Transform, DownloadTransform)
 
