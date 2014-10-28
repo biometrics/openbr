@@ -137,3 +137,11 @@ Eigen::MatrixXf matrixToVector(const Eigen::MatrixXf matrix) {
     return vector;
 }
 
+Eigen::MatrixXf toEigen(const Mat m) {
+    if (m.type() != CV_32F)
+        qFatal("Mat to Eigen Converstation only supports CV_32F");
+
+    Eigen::MatrixXf data(m.rows, m.cols);
+    return Eigen::Map<const Eigen::MatrixXf>(m.ptr<float>(), m.rows, m.cols);
+}
+
