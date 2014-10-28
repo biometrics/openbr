@@ -336,14 +336,6 @@ bool OpenCVUtils::overlaps(const QList<Rect> &posRects, const Rect &negRect, dou
     return false;
 }
 
-Eigen::MatrixXf OpenCVUtils::toEigen(Mat m) {
-    if (m.type() != CV_32F)
-        qFatal("Mat to Eigen Converstation only supports CV_32F");
-
-    Eigen::MatrixXf data(m.rows, m.cols);
-    return Eigen::Map<const Eigen::MatrixXf>(m.ptr<float>(), m.rows, m.cols);
-}
-
 QDataStream &operator<<(QDataStream &stream, const Mat &m)
 {
     // Write header
