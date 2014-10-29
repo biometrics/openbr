@@ -513,15 +513,15 @@ private:
     // Check if description is either an abbreviation or a model file, if so load it
     bool loadOrExpand(const QString &description)
     {
-        // Check if a trained binary already exists for this algorithm
-        QString file = Globals->sdkPath + "/share/openbr/models/algorithms/" + description;
-        QFileInfo eFile(file);
-        file = eFile.exists() && !eFile.isDir() ? file : description;
-
-        QFileInfo dFile(file);
-        if (dFile.exists() && !dFile.isDir()) {
-            qDebug("Loading %s", qPrintable(dFile.canonicalFilePath()));
-            load(file);
+        // Check if a trained binary already exists for this algorithm,
+        // giving priority to local files before defaulting to openbr/share/models/algorithms.
+        QFileInfo fileInfo(description);
+        if (!fileInfo.exists() || fileInfo.isDir())
+            fileInfo = QFileInfo(Globals->sdkPath + "/share/openbr/models/algorithms/" + description);
+        if (fileInfo.exists() && !fileInfo.isDir()) {
+            const QString filePath = fileInfo.canonicalFilePath();
+            qDebug("Loading %s", qPrintable(filePath));
+            load(filePath);
             return true;
         }
 
