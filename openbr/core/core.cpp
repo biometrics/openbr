@@ -520,7 +520,7 @@ private:
 
         QFileInfo dFile(file);
         if (dFile.exists() && !dFile.isDir()) {
-            qDebug("Loading %s", qPrintable(dFile.fileName()));
+            qDebug("Loading %s", qPrintable(dFile.canonicalFilePath()));
             load(file);
             return true;
         }

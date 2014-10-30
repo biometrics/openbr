@@ -605,7 +605,7 @@ private:
         const QString file = getFileName();
         if (file.isEmpty()) return false;
 
-        if (Globals->verbose) qDebug("Loading %s", qPrintable(baseName));
+        if (Globals->verbose) qDebug("Loading %s", qPrintable(file));
         QByteArray data;
         QtUtils::readFile(file, data, true);
         QDataStream stream(&data, QFile::ReadOnly);
