@@ -109,6 +109,11 @@ float br_eval(const char *simmat, const char *mask, const char *csv, int matches
     return Evaluate(simmat, mask, csv, matches);
 }
 
+void br_assert_eval(const char *simmat, const char *mask, const float accuracy)
+{
+    assertEval(simmat, mask, accuracy);
+}
+
 float br_inplace_eval(const char *simmat, const char *target, const char *query, const char *csv)
 {
     return InplaceEval(simmat, target, query, csv);
