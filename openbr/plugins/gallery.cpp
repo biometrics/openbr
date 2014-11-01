@@ -791,7 +791,7 @@ FileList FileList::fromGallery(const File &file, bool cache)
 
     TemplateList templates;
     // OK we read the data in some form, does the gallery type containing matrices?
-    if ((QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
+    if ((QStringList() << "gal" << "mem" << "template" << "ut").contains(file.suffix())) {
         // Retrieve it block by block, dropping matrices from read templates.
         QScopedPointer<Gallery> gallery(Gallery::make(file));
         gallery->set_readBlockSize(10);
