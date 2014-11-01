@@ -331,13 +331,13 @@ class utGallery : public BinaryGallery
         const uint32_t urlSize = url.size() + 1;
         gallery.write((const char*) &urlSize, sizeof(uint32_t));
 
-        const uint32_t size = urlSize + header.size() + (algorithmID == 0 ? 0 : t.m().rows * t.m().cols * t.m().elemSize());
+        const uint32_t fvSize = t.m().rows * t.m().cols * t.m().elemSize();
+        const uint32_t size = urlSize + header.size() + (algorithmID == 0 ? 0 : fvSize);
         gallery.write((const char*) &size, sizeof(uint32_t));
-
         gallery.write((const char*) url.data(), urlSize);
         gallery.write(header);
         if (algorithmID != 0)
-            gallery.write((const char*) t.m().data, t.m().rows * t.m().cols * t.m().elemSize());
+            gallery.write((const char*) t.m().data, fvSize);
     }
 };
 
