@@ -242,7 +242,7 @@ struct AlgorithmCore
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
-        if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template").contains(file.suffix())) {
+        if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template" << "ut").contains(file.suffix())) {
             // Retrieve it
             gallery.reset(Gallery::make(file));
             galleryFiles = gallery->files();
