@@ -89,6 +89,9 @@ namespace QtUtils
 
     /**** Point Utilities ****/
     float euclideanLength(const QPointF &point);
+
+    /**** Rect Utilities ****/
+    float overlap(const QRectF &r, const QRectF &s);
 }
 
 #endif // QTUTILS_QTUTILS_H

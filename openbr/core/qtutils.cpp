@@ -478,5 +478,11 @@ float euclideanLength(const QPointF &point)
     return sqrt(pow(point.x(), 2) + pow(point.y(), 2));
 }
 
+float overlap(const QRectF &r, const QRectF &s) {
+    QRectF intersection = r & s;
+
+    return (intersection.width()*intersection.height())/(r.width()*r.height());
+}
+
 }  // namespace QtUtils
 
