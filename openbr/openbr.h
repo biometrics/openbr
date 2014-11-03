@@ -161,6 +161,14 @@ BR_EXPORT void br_project(const char *input, const char *output);
 BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "", int matches = 0);
 
 /*!
+ * \brief Evaluates the similarity matrix using the mask matrix.  Function aborts ff TAR @ FAR = 0.001 does not meet an expected performance value
+ * \param simmat The \ref simmat to use.
+ * \param mask The \ref mask to use.
+ * \param accuracy Desired true accept rate at false accept rate of one in one thousand.
+ */
+ BR_EXPORT void br_assert_eval(const char *simmat, const char *mask, const float accuracy);
+
+/*!
  * \brief Creates a \c .csv file containing performance metrics from evaluating the similarity matrix using galleries containing ground truth labels
  * \param simmat The \ref simmat to use.
  * \param target the name of a gallery containing metadata for the target set.

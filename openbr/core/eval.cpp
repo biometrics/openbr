@@ -356,6 +356,17 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     return result;
 }
 
+void assertEval(const QString &simmat, const QString &mask, float accuracy)
+{
+    float result = Evaluate(simmat, mask, "", 0);
+    // Round result to nearest thousandth for comparison against input accuracy.  Input is expected to be from previous
+    // results of br -eval.
+    result = floor(result*1000+0.5)/1000;
+    if (result < accuracy) {
+        qFatal("TAR @ FAR = 0.01 does not meet required accuracy: %.3f < %.3f", result, accuracy);
+    }
+}
+
 struct GenImpCounts
 {
     GenImpCounts()
