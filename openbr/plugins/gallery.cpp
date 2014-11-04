@@ -209,7 +209,10 @@ class galGallery : public BinaryGallery
     {
         if (t.isEmpty() && t.file.isNull())
             return;
-        stream << t;
+        else if (t.file.fte)
+            stream << Template(t.file); // only write metadata for failure to enroll
+        else
+            stream << t;
     }
 };
 
