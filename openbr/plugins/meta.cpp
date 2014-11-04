@@ -146,8 +146,10 @@ class PipeTransform : public CompositeTransform
         foreach (Transform *f, transforms) {
             try {
                 f->projectUpdate(dst);
-                if (dst.file.fte)
+                if (dst.file.fte) {
+                    dst.clear();
                     break;
+                }
             } catch (...) {
                 qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                 dst = Template(src.file);
@@ -235,8 +237,10 @@ protected:
        foreach (const Transform *f, transforms) {
            try {
                dst >> *f;
-               if (dst.file.fte)
+               if (dst.file.fte) {
+                   dst.clear();
                    break;
+               }
            } catch (...) {
                qWarning("Exception triggered when processing %s with transform %s", qPrintable(src.file.flat()), qPrintable(f->objectName()));
                dst = Template(src.file);
