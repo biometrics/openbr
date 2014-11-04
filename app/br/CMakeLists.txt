@@ -7,7 +7,5 @@ target_link_libraries(br openbr ${CMAKE_THREAD_LIBS_INIT})
 qt5_use_modules(br ${QT_DEPENDENCIES})
 
 install(TARGETS br RUNTIME DESTINATION bin)
-
 add_test(NAME br_initialize WORKING_DIRECTORY ${CMAKE_BINARY_DIR} COMMAND br)
-add_test(NAME br_objects WORKING_DIRECTORY ${CMAKE_BINARY_DIR} COMMAND br -objects)
-add_test(NAME br_draw_face_detection WORKING_DIRECTORY ${CMAKE_BINARY_DIR} COMMAND br -algorithm DrawFaceDetection -enroll ../data/family.jpg)
+
