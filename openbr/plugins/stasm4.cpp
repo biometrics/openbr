@@ -85,9 +85,12 @@ class StasmTransform : public UntrainableTransform
         else if (src.m().channels() != 1)
             qFatal("Stasm expects single channel matrices.");
 
-        dst = src;
+        // Because we pass stasmSrc.data as a pointer to a function that has no
+        // knowledge of OpenCV regions of interest.
+        if (!stasmSrc.isContinuous())
+            qFatal("Stasm expects continuous matrix data.");
 
-        StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
+        dst = src;
 
         int foundFace = 0;
         int nLandmarks = stasm_NLANDMARKS;
@@ -114,28 +117,30 @@ class StasmTransform : public UntrainableTransform
         }
 	
         if (searchPinned) {
-	    float pins[2 * stasm_NLANDMARKS];
+            float pins[2 * stasm_NLANDMARKS];
 
             for (int i = 0; i < nLandmarks; i++) {
-                if (i == 38) /*Stasm Right Eye*/ { pins[2*i] = rightEye.x(); pins[2*i+1] = rightEye.y(); }
-                else if (i == 39)  /*Stasm Left Eye*/ { pins[2*i] = leftEye.x(); pins[2*i+1] = leftEye.y(); }
+                if      (i == 38) /* Stasm Right Eye */ { pins[2*i] = rightEye.x(); pins[2*i+1] = rightEye.y(); }
+                else if (i == 39) /* Stasm Left Eye  */ { pins[2*i] = leftEye.x();  pins[2*i+1] = leftEye.y(); }
                 else { pins[2*i] = 0; pins[2*i+1] = 0; }
             }
 
-        stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
+            stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
 
             // The ASM in Stasm is guaranteed to converge in this case
             foundFace = 1;
         }
 
-        if (!foundFace) stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, NULL, NULL);
+        if (!foundFace) {
+            StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
+            stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, NULL, NULL);
+            stasmCascadeResource.release(stasmCascade);
+        }
 
         if (stasm3Format) {
             nLandmarks = 76;
             stasm_convert_shape(landmarks, nLandmarks);
         }
-
-        stasmCascadeResource.release(stasmCascade);
 
         // For convenience, if these are the only points/rects we want to deal with as the algorithm progresses
         if (clearLandmarks) {
