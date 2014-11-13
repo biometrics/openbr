@@ -8,22 +8,21 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, const char *url, const char *data, uint32_t dataSize)
+br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, double label, const char *url, const char *fv, uint32_t fvSize)
 {
     const uint32_t urlSize = strlen(url) + 1;
-    const uint32_t size = urlSize + dataSize;
-    br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + size);
+    br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + urlSize + fvSize);
     memcpy(utemplate->imageID, imageID, 16);
-    memcpy(utemplate->templateID, QCryptographicHash::hash(QByteArray(data, dataSize), QCryptographicHash::Md5).data(), 16);
     utemplate->algorithmID = algorithmID;
     utemplate->x = x;
     utemplate->y = y;
     utemplate->width = width;
     utemplate->height = height;
+    utemplate->label = label;
     utemplate->urlSize = urlSize;
-    utemplate->size = size;
+    utemplate->fvSize = fvSize;
     memcpy(reinterpret_cast<char*>(utemplate+1) + 0,       url , urlSize);
-    memcpy(reinterpret_cast<char*>(utemplate+1) + urlSize, data, dataSize);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + urlSize, fv, fvSize);
     return utemplate;
 }
 
@@ -34,14 +33,14 @@ void br_free_utemplate(br_const_utemplate utemplate)
 
 void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
 {
-    fwrite(utemplate, sizeof(br_universal_template) + utemplate->size, 1, file);
+    fwrite(utemplate, sizeof(br_universal_template) + utemplate->urlSize + utemplate->fvSize, 1, file);
 }
 
 void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback, br_callback_context context)
 {
     while (begin != end) {
         callback(begin, context);
-        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_universal_template) + begin->size);
+        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_universal_template) + begin->urlSize + begin->fvSize);
         if (begin > end)
             qFatal("Overshot end of buffer");
     }
@@ -86,8 +85,8 @@ void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_c
             return;
         }
 
-        t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->size);
-        read_buffer(file, (char*) &t->data, t->size, false);
+        t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->urlSize + t->fvSize);
+        read_buffer(file, (char*) &t->data, t->urlSize + t->fvSize, false);
 
         if (parallel) futures.addFuture(QtConcurrent::run(callAndFree, callback, t, context));
         else          callAndFree(callback, t, context);
