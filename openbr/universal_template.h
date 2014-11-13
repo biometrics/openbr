@@ -41,8 +41,7 @@ struct br_universal_template
     uint32_t y;      /*!< region of interest vertical offset (pixels). */
     uint32_t width;  /*!< region of interest horizontal size (pixels). */
     uint32_t height; /*!< region of interest vertical size (pixels). */
-    double label; /*!< classification/regression supervised training class,
-                       or manually annotated ground truth. */
+    uint32_t label; /*!< supervised training class or manually annotated ground truth. */
     uint32_t urlSize; /*!< length of null-terminated URL at the beginning of _data_,
                            including the null-terminator character. */
     uint32_t fvSize; /*!< length of the feature vector after the URL in _data_. */
@@ -58,7 +57,7 @@ typedef const struct br_universal_template *br_const_utemplate;
  * \brief br_universal_template constructor.
  * \see br_free_utemplate
  */
-BR_EXPORT br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, double label, const char *url, const char *fv, uint32_t fvSize);
+BR_EXPORT br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize);
 
 /*!
  * \brief br_universal_template destructor.

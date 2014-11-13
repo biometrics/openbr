@@ -313,15 +313,15 @@ class utGallery : public BinaryGallery
             width = t.file.get<uint32_t>("Width", 0);
             height = t.file.get<uint32_t>("Height", 0);
         }
-        const double label = t.file.get<double>("Label", 0);
+        const uint32_t label = t.file.get<uint32_t>("Label", 0);
 
         gallery.write(imageID);
-        gallery.write((const char*) &algorithmID, sizeof(uint32_t));
+        gallery.write((const char*) &algorithmID, sizeof(int32_t));
         gallery.write((const char*) &x          , sizeof(uint32_t));
         gallery.write((const char*) &y          , sizeof(uint32_t));
         gallery.write((const char*) &width      , sizeof(uint32_t));
         gallery.write((const char*) &height     , sizeof(uint32_t));
-        gallery.write((const char*) &label      , sizeof(double));
+        gallery.write((const char*) &label      , sizeof(uint32_t));
 
         const uint32_t urlSize = url.size() + 1;
         gallery.write((const char*) &urlSize, sizeof(uint32_t));

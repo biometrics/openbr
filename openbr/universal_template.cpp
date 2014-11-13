@@ -8,7 +8,7 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(const int8_t *imageID, int32_t algorithmID, size_t x, size_t y, size_t width, size_t height, double label, const char *url, const char *fv, uint32_t fvSize)
+br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize)
 {
     const uint32_t urlSize = strlen(url) + 1;
     br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + urlSize + fvSize);
