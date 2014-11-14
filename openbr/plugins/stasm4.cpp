@@ -1,5 +1,5 @@
-#include <stasm/stasm_lib.h>
-#include <stasm/stasmcascadeclassifier.h>
+#include <stasm_lib.h>
+#include <stasmcascadeclassifier.h>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Dense>
 #include "openbr_internal.h"
@@ -85,11 +85,8 @@ class StasmTransform : public UntrainableTransform
         else if (src.m().channels() != 1)
             qFatal("Stasm expects single channel matrices.");
 
-        // Because we pass stasmSrc.data as a pointer to a function that has no
-        // knowledge of OpenCV regions of interest.
         if (!stasmSrc.isContinuous())
             qFatal("Stasm expects continuous matrix data.");
-
         dst = src;
 
         int foundFace = 0;
