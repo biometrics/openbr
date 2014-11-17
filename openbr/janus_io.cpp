@@ -2,6 +2,7 @@
 
 #define JANUS_CUSTOM_ADD_SAMPLE
 #define JANUS_CUSTOM_CREATE_GALLERY
+#define JANUS_CUSTOM_CREATE_TEMPLATES
 #include "janus/src/janus_io.cpp"
 
 static void _janus_add_sample(vector<double> &samples, double sample)
@@ -33,5 +34,31 @@ janus_error janus_create_gallery(const char *data_path, janus_metadata metadata,
         templateData = ti.next();
     }
     futures.waitForFinished();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_create_templates(const char *data_path, janus_metadata metadata, const char *gallery_file, int verbose)
+{
+    TemplateIterator ti(metadata, true);
+    TemplateData templateData = ti.next();
+    unsigned int num_templates = 1;
+
+    janus_gallery gallery;
+    JANUS_ASSERT(janus_allocate_gallery(&gallery))
+    QFutureSynchronizer<void> futures;
+    while (!templateData.templateIDs.empty()) {
+        futures.addFuture(QtConcurrent::run(_janus_create_template, data_path, templateData, gallery, verbose));
+        templateData = ti.next();
+        num_templates++;
+    }
+    futures.waitForFinished();
+    janus_flat_gallery flat_gallery = new janus_data[num_templates*janus_max_template_size()];
+    size_t bytes;
+    JANUS_ASSERT(janus_flatten_gallery(gallery, flat_gallery, &bytes))
+
+    std::ofstream file;
+    file.open(gallery_file, std::ios::out | std::ios::binary | std::ios::ate);
+    file.write((char*)flat_gallery, bytes);
+    file.close();
     return JANUS_SUCCESS;
 }
