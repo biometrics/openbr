@@ -51,23 +51,41 @@ janus_error janus_allocate_template(janus_template *template_)
 janus_error janus_augment(const janus_image image, const janus_attribute_list attributes, janus_template template_)
 {
     Template t;
-    t.append(cv::Mat(image.height,
-                     image.width,
-                     image.color_space == JANUS_GRAY8 ? CV_8UC1 : CV_8UC3,
-                     image.data));
     for (size_t i=0; i<attributes.size; i++)
         t.file.set(janus_attribute_to_string(attributes.attributes[i]), attributes.values[i]);
 
-    if (!t.file.contains("RIGHT_EYE_X") ||
-        !t.file.contains("RIGHT_EYE_Y") ||
-        !t.file.contains("LEFT_EYE_X") ||
-        !t.file.contains("LEFT_EYE_Y"))
+    if (!t.file.contains("FACE_X") ||
+        !t.file.contains("FACE_Y") ||
+        !t.file.contains("FACE_WIDTH") ||
+        !t.file.contains("FACE_HEIGHT"))
         return JANUS_MISSING_ATTRIBUTES;
 
-    t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X"), t.file.get<float>("RIGHT_EYE_Y")));
-    t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X"), t.file.get<float>("LEFT_EYE_Y")));
-    t.file.appendPoint(t.file.get<QPointF>("Affine_1"));
-    t.file.appendPoint(t.file.get<QPointF>("Affine_0"));
+    QRectF rect(t.file.get<float>("FACE_X"),
+                t.file.get<float>("FACE_Y"),
+                t.file.get<float>("FACE_WIDTH"),
+                t.file.get<float>("FACE_HEIGHT"));
+
+    if (rect.x() < 0) rect.setX(0);
+    if (rect.y() < 0) rect.setY(0);
+    if (rect.x() + rect.width() > image.width) rect.setWidth(image.width - rect.x());
+    if (rect.y() + rect.height() > image.height) rect.setHeight(image.height - rect.y());
+
+    cv::Mat input(image.height,
+                  image.width,
+                  image.color_space == JANUS_GRAY8 ? CV_8UC1 : CV_8UC3,
+                  image.data);
+
+    input = input(cv::Rect(rect.x(), rect.y(), rect.width(), rect.height())).clone();
+    t.append(input);
+    if (t.file.contains("RIGHT_EYE_X") &&
+        t.file.contains("RIGHT_EYE_Y") &&
+        t.file.contains("LEFT_EYE_X") &&
+        t.file.contains("LEFT_EYE_Y")) {
+        t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X") - rect.x(), t.file.get<float>("RIGHT_EYE_Y") - rect.y()));
+        t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X") - rect.x(), t.file.get<float>("LEFT_EYE_Y") - rect.y()));
+        t.file.appendPoint(t.file.get<QPointF>("Affine_0"));
+        t.file.appendPoint(t.file.get<QPointF>("Affine_1"));
+    }
     Template u;
     transform->project(t, u);
     template_->append(u);
