@@ -57,8 +57,9 @@ janus_error janus_create_templates(const char *data_path, janus_metadata metadat
     JANUS_ASSERT(janus_flatten_gallery(gallery, flat_gallery, &bytes))
 
     std::ofstream file;
-    file.open(gallery_file, std::ios::out | std::ios::binary | std::ios::ate);
+    file.open(gallery_file, std::ios::out | std::ios::binary);
     file.write((char*)flat_gallery, bytes);
     file.close();
+    delete[] flat_gallery;
     return JANUS_SUCCESS;
 }
