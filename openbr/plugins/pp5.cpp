@@ -261,7 +261,7 @@ class PP5EnrollTransform : public UntrainableMetaTransform
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
     Q_PROPERTY(bool requireLandmarks READ get_requireLandmarks WRITE set_requireLandmarks RESET reset_requireLandmarks STORED false)
     Q_PROPERTY(float adaptiveMinSize READ get_adaptiveMinSize WRITE set_adaptiveMinSize RESET reset_adaptiveMinSize STORED false)
-    Q_PROPERTY(float minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+    Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(LandmarkRange landmarkRange READ get_landmarkRange WRITE set_landmarkRange RESET reset_landmarkRange STORED false)
     Q_PROPERTY(int searchPruningAggressiveness READ get_searchPruningAggressiveness WRITE set_searchPruningAggressiveness RESET reset_searchPruningAggressiveness STORED false)
 
@@ -279,7 +279,7 @@ private:
     BR_PROPERTY(bool, detectOnly, false)
     BR_PROPERTY(bool, requireLandmarks, false)
     BR_PROPERTY(float, adaptiveMinSize, 0.01f)
-    BR_PROPERTY(float, minSize, 4)
+    BR_PROPERTY(int, minSize, 4)
     BR_PROPERTY(LandmarkRange, landmarkRange, Comprehensive)
     BR_PROPERTY(int, searchPruningAggressiveness, 0)
 
