@@ -67,24 +67,24 @@ struct PP5Context
 {
     ppr_context_type context;
 
-    PP5Context()
+    PP5Context(bool detectOnly = false, float adaptiveMinSize = 0.01f, int minSize = 4, ppr_landmark_range_type landmarkRange = PPR_LANDMARK_RANGE_COMPREHENSIVE)
     {
         ppr_settings_type default_settings = ppr_get_default_settings();
 
         default_settings.detection.adaptive_max_size = 1.f;
-        default_settings.detection.adaptive_min_size = 0.01f;
+        default_settings.detection.adaptive_min_size = adaptiveMinSize;
         default_settings.detection.detect_best_face_only = !Globals->enrollAll;
         default_settings.detection.enable = 1;
-        default_settings.detection.min_size = 4;
+        default_settings.detection.min_size = minSize;
         default_settings.detection.use_serial_face_detection = 1;
 
         default_settings.landmarks.enable = 1;
-        default_settings.landmarks.landmark_range = PPR_LANDMARK_RANGE_COMPREHENSIVE;
+        default_settings.landmarks.landmark_range = landmarkRange;
         default_settings.landmarks.manually_detect_landmarks = 0;
 
-        default_settings.recognition.automatically_extract_templates = 1;
-        default_settings.recognition.enable_comparison = 1;
-        default_settings.recognition.enable_extraction = 1;
+        default_settings.recognition.automatically_extract_templates = !detectOnly;
+        default_settings.recognition.enable_comparison = !detectOnly;
+        default_settings.recognition.enable_extraction = !detectOnly;
         default_settings.recognition.num_comparison_threads = 1;
         default_settings.recognition.recognizer = PPR_RECOGNIZER_MULTI_POSE;
         TRY(ppr_initialize_context(default_settings, &context))
@@ -256,10 +256,48 @@ class PP5EnrollTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(bool detectOnly READ get_detectOnly WRITE set_detectOnly RESET reset_detectOnly STORED false)
-    BR_PROPERTY(bool, detectOnly, false)
     Q_PROPERTY(bool requireLandmarks READ get_requireLandmarks WRITE set_requireLandmarks RESET reset_requireLandmarks STORED false)
+    Q_PROPERTY(float adaptiveMinSize READ get_adaptiveMinSize WRITE set_adaptiveMinSize RESET reset_adaptiveMinSize STORED false)
+    Q_PROPERTY(float minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+    Q_PROPERTY(LandmarkRange landmarkRange READ get_landmarkRange WRITE set_landmarkRange RESET reset_landmarkRange STORED false)
+
+    enum LandmarkRange
+    {
+        Frontal       = PPR_LANDMARK_RANGE_FRONTAL,
+        Extended      = PPR_LANDMARK_RANGE_EXTENDED,
+        Full          = PPR_LANDMARK_RANGE_FULL,
+        Comprehensive = PPR_LANDMARK_RANGE_COMPREHENSIVE
+    };
+
+    BR_PROPERTY(bool, detectOnly, false)
     BR_PROPERTY(bool, requireLandmarks, false)
+    BR_PROPERTY(float, adaptiveMinSize, 0.01f)
+    BR_PROPERTY(float, minSize, 4)
+    BR_PROPERTY(LandmarkRange, landmarkRange, Comprehensive)
+
     Resource<PP5Context> contexts;
+
+    struct PP5ContextMaker : public ResourceMaker<PP5Context>
+    {
+        PP5ContextMaker(PP5EnrollTransform *pp5EnrollTransform)
+            : pp5EnrollTransform(pp5EnrollTransform) {}
+
+    private:
+        PP5EnrollTransform *pp5EnrollTransform;
+
+        PP5Context *make() const
+        {
+            return new PP5Context(pp5EnrollTransform->detectOnly,
+                                  pp5EnrollTransform->adaptiveMinSize,
+                                  pp5EnrollTransform->minSize,
+                                  (ppr_landmark_range_type) pp5EnrollTransform->landmarkRange);
+        }
+    };
+
+    void init()
+    {
+        contexts.setResourceMaker(new PP5ContextMaker(this));
+    }
 
     void project(const Template &src, Template &dst) const
     {
@@ -293,10 +331,13 @@ class PP5EnrollTransform : public UntrainableMetaTransform
 
                 for (int i=0; i<face_list.length; i++) {
                     ppr_face_type face = face_list.faces[i];
-                    int extractable;
-                    TRY(ppr_is_template_extractable(context->context, face, &extractable))
-                    if (!extractable && !detectOnly) continue;
-                    else foundFace = true;
+                    if (!detectOnly) {
+                        int extractable;
+                        TRY(ppr_is_template_extractable(context->context, face, &extractable))
+                        if (!extractable)
+                            continue;
+                    }
+                    foundFace = true;
 
                     cv::Mat m;
                     if (detectOnly) {
