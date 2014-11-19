@@ -250,6 +250,8 @@ struct PP5Context
 /*!
  * \ingroup transforms
  * \brief Enroll faces in PP5
+ *
+ * See PittPatt documentation for the relationship between minSize and pixel IPD.
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
  */
