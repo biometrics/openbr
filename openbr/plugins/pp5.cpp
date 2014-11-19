@@ -46,7 +46,7 @@ class PP5Initializer : public Initializer
     {
         TRY(ppr_initialize_sdk(qPrintable(Globals->sdkPath + "/share/openbr/models/pp5/"), my_license_id, my_license_key))
         Globals->abbreviations.insert("PP5","Open+Expand+PP5Enroll!PP5Gallery");
-        Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true,requireLandmarks=true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
+        Globals->abbreviations.insert("PP5Register", "Open+PP5Enroll(true,true,0.02,5,Frontal,1)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)");
         Globals->abbreviations.insert("PP5CropFace", "Open+PP5Enroll(true)+RenameFirst([eyeL,PP5_Landmark0_Right_Eye],Affine_0)+RenameFirst([eyeR,PP5_Landmark1_Left_Eye],Affine_1)+Affine(128,128,0.25,0.35)+Cvt(Gray)");
     }
 
@@ -67,7 +67,7 @@ struct PP5Context
 {
     ppr_context_type context;
 
-    PP5Context(bool detectOnly = false, float adaptiveMinSize = 0.01f, int minSize = 4, ppr_landmark_range_type landmarkRange = PPR_LANDMARK_RANGE_COMPREHENSIVE)
+    PP5Context(bool detectOnly = false, float adaptiveMinSize = 0.01f, int minSize = 4, ppr_landmark_range_type landmarkRange = PPR_LANDMARK_RANGE_COMPREHENSIVE, int searchPruningAggressiveness = 0)
     {
         ppr_settings_type default_settings = ppr_get_default_settings();
 
@@ -76,6 +76,7 @@ struct PP5Context
         default_settings.detection.detect_best_face_only = !Globals->enrollAll;
         default_settings.detection.enable = 1;
         default_settings.detection.min_size = minSize;
+        default_settings.detection.search_pruning_aggressiveness = searchPruningAggressiveness;
         default_settings.detection.use_serial_face_detection = 1;
 
         default_settings.landmarks.enable = 1;
@@ -260,7 +261,9 @@ class PP5EnrollTransform : public UntrainableMetaTransform
     Q_PROPERTY(float adaptiveMinSize READ get_adaptiveMinSize WRITE set_adaptiveMinSize RESET reset_adaptiveMinSize STORED false)
     Q_PROPERTY(float minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(LandmarkRange landmarkRange READ get_landmarkRange WRITE set_landmarkRange RESET reset_landmarkRange STORED false)
+    Q_PROPERTY(int searchPruningAggressiveness READ get_searchPruningAggressiveness WRITE set_searchPruningAggressiveness RESET reset_searchPruningAggressiveness STORED false)
 
+public:
     enum LandmarkRange
     {
         Frontal       = PPR_LANDMARK_RANGE_FRONTAL,
@@ -268,12 +271,15 @@ class PP5EnrollTransform : public UntrainableMetaTransform
         Full          = PPR_LANDMARK_RANGE_FULL,
         Comprehensive = PPR_LANDMARK_RANGE_COMPREHENSIVE
     };
+    Q_ENUMS(LandmarkRange)
 
+private:
     BR_PROPERTY(bool, detectOnly, false)
     BR_PROPERTY(bool, requireLandmarks, false)
     BR_PROPERTY(float, adaptiveMinSize, 0.01f)
     BR_PROPERTY(float, minSize, 4)
     BR_PROPERTY(LandmarkRange, landmarkRange, Comprehensive)
+    BR_PROPERTY(int, searchPruningAggressiveness, 0)
 
     Resource<PP5Context> contexts;
 
@@ -290,7 +296,8 @@ class PP5EnrollTransform : public UntrainableMetaTransform
             return new PP5Context(pp5EnrollTransform->detectOnly,
                                   pp5EnrollTransform->adaptiveMinSize,
                                   pp5EnrollTransform->minSize,
-                                  (ppr_landmark_range_type) pp5EnrollTransform->landmarkRange);
+                                  (ppr_landmark_range_type) pp5EnrollTransform->landmarkRange,
+                                  pp5EnrollTransform->searchPruningAggressiveness);
         }
     };
 
