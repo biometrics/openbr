@@ -24,7 +24,10 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
     if (algorithm.isEmpty()) {
         transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
-    } else {
+    } else if (algorithm.compare("Component") == 0) {
+        transform = Transform::fromAlgorithm(algorithm);
+        distance = Distance::fromAlgorithm(algorithm);
+     } else {
         transform.reset(Transform::make(algorithm + "Enroll", NULL));
         distance.reset(Distance::make(algorithm + "Compare", NULL));
     }
