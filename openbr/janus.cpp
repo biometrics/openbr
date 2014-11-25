@@ -25,7 +25,7 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
         transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
     } else if (algorithm.compare("Component") == 0) {
-        transform = Transform::fromAlgorithm(algorithm);
+        transform.reset(Transform::make("LandmarksAffine+Cvt(Gray)+<ComponentEnroll>", NULL));
         distance = Distance::fromAlgorithm(algorithm);
      } else {
         transform.reset(Transform::make(algorithm + "Enroll", NULL));
@@ -91,6 +91,7 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
     }
     Template u;
     transform->project(t, u);
+    if (u.file.fte) u.m() = cv::Mat();
     template_->append(u);
     return (u.isEmpty() || !u.first().data) ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
 }
