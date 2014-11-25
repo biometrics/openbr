@@ -25,7 +25,7 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
         transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
     } else if (algorithm.compare("Component") == 0) {
-        transform.reset(Transform::make("LandmarksAffine+Cvt(Gray)+<ComponentEnroll>", NULL));
+        transform.reset(Transform::make("StasmManual+Cvt(Gray)+<ComponentEnroll>", NULL));
         distance = Distance::fromAlgorithm(algorithm);
      } else {
         transform.reset(Transform::make(algorithm + "Enroll", NULL));
@@ -86,6 +86,8 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
         t.file.contains("LEFT_EYE_Y")) {
         t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X") - rect.x(), t.file.get<float>("RIGHT_EYE_Y") - rect.y()));
         t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X") - rect.x(), t.file.get<float>("LEFT_EYE_Y") - rect.y()));
+        t.file.set("First_Eye", t.file.get<QPointF>("Affine_0"));
+        t.file.set("Second_Eye", t.file.get<QPointF>("Affine_1"));
         t.file.appendPoint(t.file.get<QPointF>("Affine_0"));
         t.file.appendPoint(t.file.get<QPointF>("Affine_1"));
     }
