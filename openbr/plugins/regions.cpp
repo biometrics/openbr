@@ -120,7 +120,7 @@ BR_REGISTER(Transform, CatTransform)
 class GroupTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(int size READ get_size WRITE set_size RESET reset_size)
+    Q_PROPERTY(int size READ get_size WRITE set_size RESET reset_size STORED false)
     BR_PROPERTY(int, size, 1)
 
     void project(const Template &src, Template &dst) const
@@ -134,8 +134,8 @@ class GroupTransform : public UntrainableMetaTransform
             sizes[i/size] += src[i].total();
 
         if (!src.empty())
-            foreach (int size, sizes)
-                dst.append(Mat(1, size, src.m().type()));
+            foreach (int size_, sizes)
+                dst.append(Mat(1, size_, src.m().type()));
 
         QVector<int> offsets(src.size() / size, 0);
         for (int i=0; i<src.size(); i++) {
