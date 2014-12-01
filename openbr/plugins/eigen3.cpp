@@ -177,8 +177,10 @@ protected:
                 keep = i - drop;
             }
         } else {
-            if (keep + drop > allEVals.rows())
-                qFatal("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
+            if (keep + drop > allEVals.rows()) {
+                qWarning("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
+                keep = allEVals.rows() - drop;
+            }
         }
 
         // Keep highest energy vectors
