@@ -139,10 +139,10 @@ class GroupTransform : public UntrainableMetaTransform
 
         QVector<int> offsets(src.size() / size, 0);
         for (int i=0; i<src.size(); i++) {
-            size_t size = src[i].total() * src[i].elemSize();
-            int j = i / size;
-            memcpy(&dst[j].data[offsets[j]], src[i].ptr(), size);
-            offsets[j] += size;
+            const size_t bytes = src[i].total() * src[i].elemSize();
+            const int j = i / size;
+            memcpy(&dst[j].data[offsets[j]], src[i].ptr(), bytes);
+            offsets[j] += bytes;
         }
     }
 };
