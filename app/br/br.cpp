@@ -160,8 +160,8 @@ public:
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'evalClustering'.");
                 br_eval_clustering(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "evalDetection")) {
-                check((parc >= 2) && (parc <= 5), "Incorrect parameter count for 'evalDetection'.");
-                br_eval_detection(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc == 5 ? atoi(parv[4]) : 0);
+                check((parc >= 2) && (parc <= 6), "Incorrect parameter count for 'evalDetection'.");
+                br_eval_detection(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 0, parc == 6 ? atoi(parv[5]) : 0);
             } else if (!strcmp(fun, "evalLandmarking")) {
                 check((parc >= 2) && (parc <= 5), "Incorrect parameter count for 'evalLandmarking'.");
                 br_eval_landmarking(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 1);
