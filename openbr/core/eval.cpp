@@ -646,6 +646,10 @@ struct Detection
 {
     QRectF boundingBox;
     float confidence;
+    // The ignore flag is useful when certain faces in an image should be ignored
+    // and should not effect detection performance. Predicted detections that overlap
+    // with an ignored truth detection will not count as a true positive, false positive,
+    // true negative, or false negative, it will simply be ignored.
     bool ignore;
 
     Detection() {}
