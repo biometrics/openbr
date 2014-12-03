@@ -667,6 +667,7 @@ struct SortedDetection
     SortedDetection() : truth_idx(-1), predicted_idx(-1), overlap(-1) {}
     SortedDetection(int truth_idx_, int predicted_idx_, float overlap_)
         : truth_idx(truth_idx_), predicted_idx(predicted_idx_), overlap(overlap_) {}
+    inline bool operator<(const SortedDetection &other) const { return overlap > other.overlap; }
 };
 
 struct Detections
@@ -832,14 +833,9 @@ static QMap<QString, Detections> getDetections(const File &predictedGallery, con
     return allDetections;
 }
 
-static int getNumberOfImages(const QMap<QString, Detections> detections)
+static inline int getNumberOfImages(const QMap<QString, Detections> detections)
 {   
     return detections.keys().size();
-}
-
-static bool sortedCompare(const SortedDetection &a, const SortedDetection &b)
-{
-    return a.overlap > b.overlap;
 }
 
 static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
@@ -871,7 +867,7 @@ static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QL
             }
         }
 
-        std::sort(sortedDetections.begin(), sortedDetections.end(), sortedCompare);
+        std::sort(sortedDetections.begin(), sortedDetections.end());
 
         QList<int> removedTruth;
         QList<int> removedPredicted;
