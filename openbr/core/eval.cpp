@@ -155,10 +155,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
 
     float result = -1;
 
-    // Lists of top impostors and worst genuine
-    QList<Comparison> topImpostors; topImpostors.reserve(matches);
-    QList<Comparison> botGenuines; botGenuines.reserve(matches);
-    
     // Make comparisons
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
@@ -172,29 +168,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
             comparisons.append(comparison);
             if (comparison.genuine) {
                 genuineCount++;
-                if (matches != 0){
-                    if (botGenuines.size() < (int)matches) {
-                        botGenuines.append(comparison);
-                        std::sort(botGenuines.begin(), botGenuines.end());
-                    } else if (comparison.score < botGenuines.first().score) {
-                        botGenuines.removeFirst();
-                        botGenuines.append(comparison);
-                        std::sort(botGenuines.begin(), botGenuines.end());
-                    }
-                }
             } else {
                 impostorCount++;
-                if (matches != 0) {
-                    if (topImpostors.size() < (int)matches) {
-                        topImpostors.append(comparison);
-                        std::sort(topImpostors.begin(), topImpostors.end());
-                    } else if (topImpostors.last().score < comparison.score) {
-                        topImpostors.removeLast();
-                        topImpostors.append(comparison);
-                        std::sort(topImpostors.begin(), topImpostors.end());
-                    }
-                }
-
             }                           
         }
     }
@@ -214,6 +189,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     int falsePositives = 0, previousFalsePositives = 0;
     int truePositives = 0, previousTruePositives = 0;
     int index = 0;
+    int EERIndex = 0;
     float minGenuineScore = std::numeric_limits<float>::max();
     float minImpostorScore = std::numeric_limits<float>::max();
 
@@ -246,6 +222,9 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
             operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
+            if (EERIndex == 0) {
+                if (floor(float(falsePositives)/impostorCount*1000+0.5)/1000 == floor((1-float(truePositives)/genuineCount)*1000+0.5)/1000) EERIndex = index-1;
+            }
             previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
         }
@@ -265,17 +244,24 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
     QString filePath = Globals->path;
-    if (matches != 0) {
+    if (matches != 0 && EERIndex != 0) {
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
-        for (int i=0; i<topImpostors.size(); i++) {
-            lines.append("TI,"+QString::number(topImpostors[i].score)+","+targetFiles[topImpostors[i].target].get<QString>("Label")+":"
-                +filePath+"/"+targetFiles[topImpostors[i].target].name+":"+queryFiles[topImpostors[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[topImpostors[i].query].name);
+        unsigned int count = 0;
+        for (int i = EERIndex-1; i >= 0; i--) {
+            if (comparisons[i].genuine) {
+                lines.append("GM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
+                    +filePath+"/"+targetFiles[comparisons[i].target].name+":"+queryFiles[comparisons[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[comparisons[i].query].name);
+                if (++count == matches) break;
+            }
         }
-        std::reverse(botGenuines.begin(), botGenuines.end());
-        for (int i=0; i<botGenuines.size(); i++) {
-            lines.append("BG,"+QString::number(botGenuines[i].score)+","+targetFiles[botGenuines[i].target].get<QString>("Label")+":"
-                +filePath+"/"+targetFiles[botGenuines[i].target].name+":"+queryFiles[botGenuines[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[botGenuines[i].query].name);
+        count = 0;
+        for (int i = EERIndex+1; i < comparisons.size(); i++) {
+            if (!comparisons[i].genuine) {
+                lines.append("IM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
+                    +filePath+"/"+targetFiles[comparisons[i].target].name+":"+queryFiles[comparisons[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[comparisons[i].query].name);
+                if (++count == matches) break;
+            }
         }
     }
 
