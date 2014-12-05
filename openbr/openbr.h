@@ -154,7 +154,7 @@ BR_EXPORT void br_project(const char *input, const char *output);
  * \param simmat The \ref simmat to use.
  * \param mask The \ref mask to use.
  * \param csv Optional \c .csv file to contain performance metrics.
- * \param matches Optional integer number of top impostor matches and bottom genuine matches to output defualts to 0.
+ * \param matches Optional integer number of matches to output around the EER, defualts to 0.
  * \return True accept rate at a false accept rate of one in one thousand.
  * \see br_plot
  */
@@ -324,6 +324,7 @@ BR_EXPORT int br_objects(char * buffer, int buffer_length, const char *abstracti
  * The suggested way to plot these experiments on the same graph is to create a folder named <tt>Algorithm_Dataset</tt> that contains the six <tt>.csv</tt> files produced by br_eval <tt>A_Y.csv</tt>, <tt>A_Z.csv</tt>, <tt>B_Y.csv</tt>, <tt>B_Z.csv</tt>, <tt>C_Y.csv</tt>, & <tt>C_Z.csv</tt>.
  * The '<tt>_</tt>' character plays a special role in determining the legend title(s) and value(s).
  * In this case, <tt>A</tt>, <tt>B</tt>, & <tt>C</tt> will be identified as different values of type <tt>Algorithm</tt>, and each will be assigned its own color; <tt>Y</tt> & <tt>Z</tt> will be identified as different values of type Dataset, and each will be assigned its own line style.
+ * Matches around the EER will be displayed if the matches parameter is set in \ref br_eval.
  *
  * \param num_files Number of <tt>.csv</tt> files.
  * \param files <tt>.csv</tt> files created using \ref br_eval.
@@ -331,7 +332,7 @@ BR_EXPORT int br_objects(char * buffer, int buffer_length, const char *abstracti
  * \param show Open <i>destination</i>.pdf using the system's default PDF viewer.
  * \return Returns \c true on success. Returns false on a failure to compile the figures due to a missing, out of date, or incomplete \c R installation.
  * \note This function requires a current <a href="http://www.r-project.org/">R</a> installation with the following packages:
- * \code install.packages(c("ggplot2", "gplots", "reshape", "scales")) \endcode
+ * \code install.packages(c("ggplot2", "gplots", "reshape", "scales", "jpg", "png")) \endcode
  * \see br_eval
  */
 BR_EXPORT bool br_plot(int num_files, const char *files[], const char *destination, bool show = false);

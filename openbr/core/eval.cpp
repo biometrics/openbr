@@ -223,7 +223,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
              (truePositives > previousTruePositives)) {
             operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
             if (EERIndex == 0) {
-                if (floor(float(falsePositives)/impostorCount*1000+0.5)/1000 == floor((1-float(truePositives)/genuineCount)*1000+0.5)/1000) EERIndex = index-1;
+                if (floor(float(falsePositives)/impostorCount*100+0.5)/100 == floor((1-float(truePositives)/genuineCount)*100+0.5)/100) EERIndex = index-1;
             }
             previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
@@ -249,16 +249,16 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         const FileList queryFiles = TemplateList::fromGallery(query).files();
         unsigned int count = 0;
         for (int i = EERIndex-1; i >= 0; i--) {
-            if (comparisons[i].genuine) {
-                lines.append("GM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
+            if (!comparisons[i].genuine) {
+                lines.append("IM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
                     +filePath+"/"+targetFiles[comparisons[i].target].name+":"+queryFiles[comparisons[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[comparisons[i].query].name);
                 if (++count == matches) break;
             }
         }
         count = 0;
         for (int i = EERIndex+1; i < comparisons.size(); i++) {
-            if (!comparisons[i].genuine) {
-                lines.append("IM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
+            if (comparisons[i].genuine) {
+                lines.append("GM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
                     +filePath+"/"+targetFiles[comparisons[i].target].name+":"+queryFiles[comparisons[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[comparisons[i].query].name);
                 if (++count == matches) break;
             }
