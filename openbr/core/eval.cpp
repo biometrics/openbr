@@ -222,7 +222,9 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
             operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
-            if (floor(float(falsePositives)/impostorCount*1000+0.5)/1000 == floor((1-float(truePositives)/genuineCount)*1000+0.5)/1000) EERIndex = index-1;
+            if (EERIndex == 0) {
+                if (floor(float(falsePositives)/impostorCount*1000+0.5)/1000 == floor((1-float(truePositives)/genuineCount)*1000+0.5)/1000) EERIndex = index-1;
+            }
             previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
         }
@@ -242,7 +244,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     lines.append("Metadata,"+QString::number(simmat.cols*simmat.rows-(genuineCount+impostorCount))+",Ignored");
 
     QString filePath = Globals->path;
-    if (matches != 0) {
+    if (matches != 0 && EERIndex != 0) {
         const FileList targetFiles = TemplateList::fromGallery(target).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
         unsigned int count = 0;
