@@ -58,10 +58,10 @@ private:
     BR_PROPERTY(Metric, metric, L2)
     BR_PROPERTY(bool, negLogPlusOne, true)
 
-    float compare(const Mat &a, const Mat &b) const
+    float compare(const Template &a, const Template &b) const
     {
-        if ((a.size != b.size) ||
-            (a.type() != b.type()))
+        if ((a.m().size != b.m().size) ||
+            (a.m().type() != b.m().type()))
                 return -std::numeric_limits<float>::max();
 
 // TODO: this max value is never returned based on the switch / default 
@@ -90,7 +90,7 @@ private:
           case Cosine:
             return cosine(a, b);
           case Dot:
-            return a.dot(b);
+            return a.m().dot(b);
           default:
             qFatal("Invalid metric");
         }
@@ -98,7 +98,7 @@ private:
         if (result != result)
             qFatal("NaN result.");
 
-        return negLogPlusOne ? -log(result+1) : result;
+        return negLogPlusOne ? -log(result*a.file.get<float>("DFFS")*b.file.get<float>("DFFS")+1) : result;
     }
 
     static float cosine(const Mat &a, const Mat &b)
