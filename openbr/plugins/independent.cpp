@@ -49,7 +49,7 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
         const QString selectedLabel = selectedLabels[i];
         QList<int> indices;
         for (int j=0; j<allLabels.size(); j++)
-            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)))
+            if ((allLabels[j] == selectedLabel) && (!templates.value(j).file.get<bool>("FTE", false)) && (!templates.value(j).file.get<bool>("PossibleFTE", false)))
                 indices.append(j);
 
         std::random_shuffle(indices.begin(), indices.end());
