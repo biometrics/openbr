@@ -163,11 +163,9 @@ class IndependentTransform : public MetaTransform
         IndependentTransform* indep = new IndependentTransform();
         indep->transform = temp;
 
-        bool subInd = false;
         IndependentTransform *test = dynamic_cast<IndependentTransform *> (temp);
         if (test) {
             // child was independent? this changes things...
-            subInd = true;
             indep->transform = test->transform;
             for (int i=0; i < transforms.size(); i++) {
                 bool newThing = false;
