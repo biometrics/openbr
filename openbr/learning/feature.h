@@ -9,17 +9,17 @@
 namespace br
 {
 
-class Feature
+class Feature : public Object
 {
 public:
-    Feature();
+    Feature() {}
     QList<int> get_definition() { return definition; }
 
-    virtual void randomize(int height, int width, int channels) = 0; // Initialize the feature within these dimensions
-    virtual float evaluate(const QList<cv::Mat> &img, const cv::Size &pos) const = 0; // img is a list of mats to support multiple channels
-                                                                                      // if the image is larger than the feature model (i.e
-                                                                                      // a real image instead of a training image) pos determines
-                                                                                      // the top left corner of the feature.
+    virtual void randomize(int height, int width, int channels) { return; } // Initialize the feature within these dimensions
+    virtual float evaluate(const cv::Mat &img) const { return 0.; } // returns the feature response for a given image
+
+    void load(QDataStream &stream) { stream >> definition; }
+    void store(QDataStream &stream) const { stream << definition; }
 
 protected:
     QList<int> definition; // The definition of the feature (usually these are coords)
@@ -28,17 +28,18 @@ protected:
 class FeatureEvaluator
 {
 public:
-    FeatureEvaluator(int num_features_) : num_features(num_features_) {}
-    int get_num_features() const { return num_features; }
+    FeatureEvaluator() {}
+    FeatureEvaluator(QList<Feature> features) : features(features) {}
+
+    int num_features() const { return features.size(); }
     QList<Feature> get_features() const { return features; }
 
-    virtual void generateRandomFeatures(int height, int width, int channels) = 0; // initialize num_features random features within these dimensions.
-                                                                                  // will call Feature->randomize()
-    virtual QList<float> evaluate(const QList<cv::Mat> &img, cv::Size pos) const = 0; // return the response of all features on the given image
-                                                                                      // will call Feature->evaluate()
+    virtual void generateRandomFeatures(int num_features, int height, int width, int channels) { return; } // initialize num_features random features within these dimensions.
+
+    virtual float evaluate(const cv::Mat &img, const int feature_idx) { return features[feature_idx].evaluate(img); }
+    virtual QList<float> evaluateAll(const cv::Mat &img) const { return QList<float>(); } // return the response of all features on the given image
 
 private:
-    int num_features;
     QList<Feature> features;
 };
 
