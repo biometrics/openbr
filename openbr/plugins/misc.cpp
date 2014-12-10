@@ -175,7 +175,9 @@ private:
                 nam.setLocalData(new QNetworkAccessManager());
             const QUrl qURL(url, QUrl::StrictMode);
             if (qURL.isValid() && !qURL.isRelative()) {
-                QNetworkReply *reply = nam.localData()->get(QNetworkRequest(qURL));
+                QNetworkRequest req = QNetworkRequest(qURL);
+                req.setRawHeader("User-Agent", "br");
+                QNetworkReply *reply = nam.localData()->get(req);
 
                 reply->waitForReadyRead(-1);
                 while (!reply->isFinished())
