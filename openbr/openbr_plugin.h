@@ -1376,6 +1376,28 @@ private:
         { (void) targetGallery; (void) queryGallery; (void) output; return false; }
 };
 
+class BR_EXPORT Representation : public Object
+{
+    Q_OBJECT
+
+public:
+    virtual ~Representation() {}
+
+    virtual cv::Mat init(cv::Mat &image) const;
+    virtual QList<float> evaluate(const cv::Mat &image, const QList<int> &indices) const;
+};
+
+class BR_EXPORT Classifier : public Object
+{
+    Q_OBJECT
+
+public:
+    virtual ~Classifier() {}
+
+    virtual void train(const QList<cv::Mat> &images, const QList<int> &labels);
+    virtual float classify(const QList<cv::Mat> &image) const;
+};
+
 /*!
 * \brief Returns \c true if the algorithm is a classifier, \c false otherwise.
 *
