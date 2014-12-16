@@ -1383,8 +1383,8 @@ class BR_EXPORT Representation : public Object
 public:
     virtual ~Representation() {}
 
-    virtual cv::Mat init(cv::Mat &image) const;
-    virtual QList<float> evaluate(const cv::Mat &image, const QList<int> &indices) const;
+    virtual cv::Mat preprocess(cv::Mat &image) const { return image; }
+    virtual QList<float> evaluate(const cv::Mat &image, const QList<int> &indices) const = 0;
 };
 
 class BR_EXPORT Classifier : public Object
@@ -1394,8 +1394,8 @@ class BR_EXPORT Classifier : public Object
 public:
     virtual ~Classifier() {}
 
-    virtual void train(const QList<cv::Mat> &images, const QList<int> &labels);
-    virtual float classify(const QList<cv::Mat> &image) const;
+    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
+    virtual float classify(const QList<cv::Mat> &image) const = 0;
 };
 
 /*!
