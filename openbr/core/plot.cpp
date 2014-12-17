@@ -65,6 +65,8 @@ struct RPlot
     QFile file;
     QStringList pivotHeaders;
     QVector< QSet<QString> > pivotItems;
+    float confidence;
+
     bool flip;
 
     struct Pivot
@@ -132,6 +134,12 @@ struct RPlot
             }
         }
         const QString &smooth = destination.get<QString>("smooth", "");
+        if (destination.contains(QString("confidence"))) {
+            const QString &CI = destination.get<QString>("confidence");
+            confidence = !CI.isEmpty() ? CI.toFloat()/100.0 : 0.95;
+        } else {
+            confidence = 0.95;
+        }
         major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
         minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
         if (major.smooth) major.size = 1;
@@ -175,7 +183,7 @@ struct RPlot
                        "TS$Y <- as.character(TS$Y)\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
-                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {\n\t\t"
+                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%5, .drop=TRUE) {\n\t\t"
                        "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
                        "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
                        "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
@@ -209,8 +217,9 @@ struct RPlot
                        "colnames(mat) <- algs\n\t"
                        "rownames(mat) <- c(\"Template Size (bytes):\")\n\t"
                        "TStable <- as.table(mat)\n}\n").arg(((major.smooth || minor.smooth) ? "TRUE" : "FALSE"), major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header),
-                                                            (major.smooth || minor.smooth) ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
-                                                            (major.smooth || minor.smooth) ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y")));
+                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
+                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
+                                                            QString::number(confidence))));
                        
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -297,7 +306,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=(1-Y)-ci, ymax=(1-Y)+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=(1-Y)-ci, ymax=(1-Y)+ci), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format()))") +
@@ -310,7 +319,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + theme(legend.position=%1)").arg(rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
