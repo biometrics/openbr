@@ -280,6 +280,9 @@ struct AlgorithmCore
         TemplateList queries = q->read();
         TemplateList targets = t->read();
 
+        output.set("targetGallery", targetGallery.name );
+        output.set("queryGallery", queryGallery.name );
+
         // Use a single file for one of the dimensions so that the output makes the right size file
         FileList dummyTarget;
         dummyTarget.append(targets[0]);
