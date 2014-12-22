@@ -50,6 +50,7 @@ namespace QtUtils
     void emptyDir(QDir &dir);
     void deleteDir(QDir &dir);
     QString find(const QString &file, const QString &alt);
+    QString getAbsolutePath(const QString &filename);
 
     /**** String Utilities ****/
     bool toBool(const QString &string);
