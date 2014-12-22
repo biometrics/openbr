@@ -887,20 +887,27 @@ class csvGallery : public FileGallery
         QStringList lines;
         lines.reserve(files.size()+1);
 
+        QMap<QString, int> columnCounts;
+        
         { // Make header
             QStringList words;
             words.append("File");
-            foreach (const QString &key, samples.keys())
-                words.append(getCSVElement(key, samples[key], true));
+            foreach (const QString &key, samples.keys()) {
+                int count = 0;
+                words.append(getCSVElement(key, samples[key], true, count));
+                columnCounts.insert(key, count);
+            }
             lines.append(words.join(","));
         }
-
+        
         // Make table
         foreach (const File &file, files) {
             QStringList words;
             words.append(file.name);
-            foreach (const QString &key, samples.keys())
-                words.append(getCSVElement(key, file.value(key), false));
+            foreach (const QString &key, samples.keys()) {
+                int count = columnCounts[key];
+                words.append(getCSVElement(key, file.value(key), false, count));
+            }
             lines.append(words.join(","));
         }
 
@@ -950,22 +957,50 @@ class csvGallery : public FileGallery
         files.append(t.file);
     }
 
-    static QString getCSVElement(const QString &key, const QVariant &value, bool header)
+    static QString getCSVElement(const QString &key, const QVariant &value, bool header, int & columnCount)
     {
+        if (header)
+            columnCount = 1;
+
         if (value.canConvert<QString>()) {
             if (header) return key;
-            else        return value.value<QString>();
+            else {
+                if (columnCount != 1)
+                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
+                return value.value<QString>();
+            }
         } else if (value.canConvert<QPointF>()) {
             const QPointF point = value.value<QPointF>();
-            if (header) return key+"_X,"+key+"_Y";
-            else        return QString::number(point.x())+","+QString::number(point.y());
+            if (header) {
+                columnCount = 2;
+                return key+"_X,"+key+"_Y";
+            }
+            else {
+                if (columnCount != 2)
+                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
+
+                return QString::number(point.x())+","+QString::number(point.y());
+            }
         } else if (value.canConvert<QRectF>()) {
             const QRectF rect = value.value<QRectF>();
-            if (header) return key+"_X,"+key+"_Y,"+key+"_Width,"+key+"_Height";
-            else        return QString::number(rect.x())+","+QString::number(rect.y())+","+QString::number(rect.width())+","+QString::number(rect.height());
+            if (header) {
+                columnCount = 4;
+                return key+"_X,"+key+"_Y,"+key+"_Width,"+key+"_Height";
+            }
+            else {
+                if (columnCount != 4)
+                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
+
+                return QString::number(rect.x())+","+QString::number(rect.y())+","+QString::number(rect.width())+","+QString::number(rect.height());
+            }
         } else {
             if (header) return key;
-            else        return QString::number(std::numeric_limits<float>::quiet_NaN());
+            else {
+                QString output = QString::number(std::numeric_limits<float>::quiet_NaN());
+                for (int i = 1; i < columnCount; i++)
+                    output += "," + QString::number(std::numeric_limits<float>::quiet_NaN());
+                return output;
+            }
         }
     }
 };
