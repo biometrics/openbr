@@ -124,23 +124,51 @@ class BinaryGallery : public Gallery
 
             gallery.open(stderr, QFile::WriteOnly);
         } else {
-            gallery.setFileName(file);
-            if (file.get<bool>("remove"))
-                gallery.remove();
-            QtUtils::touchDir(gallery);
-            QFile::OpenMode mode = QFile::ReadWrite;
-
-            if (file.get<bool>("append"))
-                mode |= QFile::Append;
-
-            if (!gallery.open(mode))
-                qFatal("Can't open gallery: %s", qPrintable(gallery.fileName()));
+            // Defer opening the file, in the general case we don't know if we 
+            // need read or write mode yet
+            return;
         }
         stream.setDevice(&gallery);
     }
 
+    void readOpen()
+    {
+        if (!gallery.isOpen()) {
+            gallery.setFileName(file);
+            if (!gallery.exists())
+                qFatal("File %s does not exist", qPrintable(gallery.fileName()));
+
+            QFile::OpenMode mode = QFile::ReadOnly;
+            if (!gallery.open(mode))
+                qFatal("Can't open gallery: %s for reading", qPrintable(gallery.fileName()));
+            stream.setDevice(&gallery);
+        }
+    }
+
+    void writeOpen()
+    {
+        if (!gallery.isOpen()) {
+            gallery.setFileName(file);
+
+            // Do we remove the pre-existing gallery?
+            if (file.get<bool>("remove"))
+                gallery.remove();
+            QtUtils::touchDir(gallery);
+            QFile::OpenMode mode = QFile::WriteOnly;
+
+            // Do we append? 
+            if (file.get<bool>("append"))
+                mode |= QFile::Append;
+
+            if (!gallery.open(mode))
+                qFatal("Can't open gallery: %s for writing", qPrintable(gallery.fileName()));
+            stream.setDevice(&gallery);
+        }
+    }
+
     TemplateList readBlock(bool *done)
     {
+        readOpen();
         if (gallery.atEnd())
             gallery.seek(0);
 
@@ -163,6 +191,7 @@ class BinaryGallery : public Gallery
 
     void write(const Template &t)
     {
+        writeOpen();
         writeTemplate(t);
         if (gallery.isSequential())
             gallery.flush();
@@ -174,6 +203,7 @@ protected:
 
     qint64 totalSize()
     {
+        readOpen();
         return gallery.size();
     }
 
@@ -879,6 +909,7 @@ class csvGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
+        readOpen();
         *done = false;
         TemplateList templates;
         if (!file.exists()) {
@@ -971,6 +1002,7 @@ class txtGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
+        readOpen();
         *done = false;
         if (f.atEnd())
             f.seek(0);
@@ -1000,6 +1032,7 @@ class txtGallery : public FileGallery
 
     void write(const Template &t)
     {
+        writeOpen();
         QString line = t.file.name;
         if (!label.isEmpty())
             line += " " + t.file.get<QString>(label);
@@ -1021,6 +1054,7 @@ class flatGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
+        readOpen();
         *done = false;
         if (f.atEnd())
             f.seek(0);
@@ -1047,6 +1081,7 @@ class flatGallery : public FileGallery
 
     void write(const Template &t)
     {
+        writeOpen();
         f.write((t.file.flat()+"\n").toLocal8Bit() );
     }
 };
@@ -1079,6 +1114,9 @@ class xmlGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
+        if (readOpen())
+            reader.setDevice(&f);
+
         if (reader.atEnd())
             f.seek(0);
 
@@ -1202,7 +1240,6 @@ class xmlGallery : public FileGallery
     void init()
     {
         FileGallery::init();
-        reader.setDevice(&f);
     }
 };
 
@@ -1674,13 +1711,39 @@ BR_REGISTER(Gallery, vbbGallery)
 void FileGallery::init()
 {
     f.setFileName(file);
-    QtUtils::touchDir(f);
-    if (!f.open(QFile::ReadWrite))
-        qFatal("Failed to open %s for read/write.", qPrintable(file));
-    fileSize = f.size();
 
     Gallery::init();
 }
+
+void FileGallery::writeOpen()
+{
+    if (!f.isOpen() ) {
+        QtUtils::touchDir(f);
+        if (!f.open(QFile::WriteOnly))
+            qFatal("Failed to open %s for writing.", qPrintable(file));
+    }
+}
+
+bool FileGallery::readOpen()
+{
+    if (!f.isOpen() ) {
+        if (!f.exists() ) {
+            qFatal("File %s does not exist.", qPrintable(file));
+        }
+
+        if (!f.open(QFile::ReadOnly))
+            qFatal("Failed to open %s for reading.", qPrintable(file));
+        return true;
+    }
+    return false;
+}
+
+qint64 FileGallery::totalSize()
+{
+    readOpen();
+    return f.size();
+}
+
 
 } // namespace br
 
