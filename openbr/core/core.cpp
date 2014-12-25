@@ -172,9 +172,10 @@ struct AlgorithmCore
         qDebug("Enrolling %s%s", qPrintable(input.flat()),
                gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
 
+        bool noOutput = false;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return;
-            else                      gallery = getMemoryGallery(input);
+            else                      noOutput = true;
         }
 
         bool multiProcess = Globals->file.getBool("multiProcess", false);
@@ -200,12 +201,15 @@ struct AlgorithmCore
         QString outputDesc;
         if (fileExclusion)
             outputDesc = "FileExclusion(" + gallery.flat() + ")+";
-        outputDesc.append("GalleryOutput("+gallery.flat()+")");
+        if (!noOutput)
+            outputDesc.append("GalleryOutput("+gallery.flat()+")+");
+
+        outputDesc = outputDesc + "DiscardTemplates";
         stages.append(progressCounter.data());
 
         QScopedPointer<Transform> pipeline(pipeTransforms(stages));
 
-        QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+"+DiscardTemplates)"));
+        QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+")"));
 
         TemplateList data, output;
         data.append(input);
