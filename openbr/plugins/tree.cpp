@@ -58,20 +58,28 @@ class ForestTransform : public MetaTransform
     Q_PROPERTY(int maxDepth READ get_maxDepth WRITE set_maxDepth RESET reset_maxDepth STORED true)
     Q_PROPERTY(int maxTrees READ get_maxTrees WRITE set_maxTrees RESET reset_maxTrees STORED true)
     Q_PROPERTY(float forestAccuracy READ get_forestAccuracy WRITE set_forestAccuracy RESET reset_forestAccuracy STORED true)
+    Q_PROPERTY(bool returnConfidence READ get_returnConfidence WRITE set_returnConfidence RESET reset_returnConfidence STORED true)
+    Q_PROPERTY(bool overwriteMat READ get_overwriteMat WRITE set_overwriteMat RESET reset_overwriteMat STORED true)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     BR_PROPERTY(bool, classification, true)
     BR_PROPERTY(float, splitPercentage, .01)
     BR_PROPERTY(int, maxDepth, std::numeric_limits<int>::max())
     BR_PROPERTY(int, maxTrees, 10)
     BR_PROPERTY(float, forestAccuracy, .1)
+    BR_PROPERTY(bool, returnConfidence, true)
+    BR_PROPERTY(bool, overwriteMat, true)
+    BR_PROPERTY(QString, inputVariable, "Label")
+    BR_PROPERTY(QString, outputVariable, "")
 
     CvRTrees forest;
 
     void train(const TemplateList &data)
     {
         Mat samples = OpenCVUtils::toMat(data.data());
-        Mat labels = OpenCVUtils::toMat(File::get<float>(data, "Label"));
+        Mat labels = OpenCVUtils::toMat(File::get<float>(data, inputVariable));
 
-        Mat types = Mat(samples.cols + 1, 1, CV_8U );
+        Mat types = Mat(samples.cols + 1, 1, CV_8U);
         types.setTo(Scalar(CV_VAR_NUMERICAL));
 
         if (classification) {
@@ -101,9 +109,20 @@ class ForestTransform : public MetaTransform
     {
         dst = src;
 
-        float response = forest.predict_prob(src.m().reshape(1,1));
-        dst.m() = Mat(1, 1, CV_32F);
-        dst.m().at<float>(0, 0) = response;
+        float response;
+        if (classification && returnConfidence) {
+            // Fuzzy class label
+            response = forest.predict_prob(src.m().reshape(1,1));
+        } else {
+            response = forest.predict(src.m().reshape(1,1));
+        }
+
+        if (overwriteMat) {
+            dst.m() = Mat(1, 1, CV_32F);
+            dst.m().at<float>(0, 0) = response;
+        } else {
+            dst.file.set(outputVariable, response);
+        }
     }
 
     void load(QDataStream &stream)
@@ -114,6 +133,12 @@ class ForestTransform : public MetaTransform
     void store(QDataStream &stream) const
     {
         storeForest(forest,stream);
+    }
+
+    void init()
+    {
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
     }
 };
 
