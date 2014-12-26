@@ -40,6 +40,7 @@ static void storeSVM(const SVM &svm, QDataStream &stream)
     tempFile.open();
     QByteArray data = tempFile.readAll();
     tempFile.close();
+    qDebug() << "Storing" << data.size() << "bytes for SVM";
     stream << data;
 }
 
@@ -59,7 +60,7 @@ static void loadSVM(SVM &svm, QDataStream &stream)
     svm.load(qPrintable(tempFile.fileName()));
 }
 
-static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C, float gamma)
+static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C, float gamma, int folds, bool balanceFolds, int termCriteria)
 {
     if (data.type() != CV_32FC1)
         qFatal("Expected single channel floating point training data.");
@@ -67,11 +68,18 @@ static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C,
     CvSVMParams params;
     params.kernel_type = kernel;
     params.svm_type = type;
-    params.p = 0.1;
-    params.nu = 0.5;
+    params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, termCriteria, FLT_EPSILON);
+
     if ((C == -1) || ((gamma == -1) && (kernel == CvSVM::RBF))) {
         try {
-            svm.train_auto(data, lab, Mat(), Mat(), params, 5);
+            svm.train_auto(data, lab, Mat(), Mat(), params, folds,
+                           CvSVM::get_default_grid(CvSVM::C),
+                           CvSVM::get_default_grid(CvSVM::GAMMA),
+                           CvSVM::get_default_grid(CvSVM::P),
+                           CvSVM::get_default_grid(CvSVM::NU),
+                           CvSVM::get_default_grid(CvSVM::COEF),
+                           CvSVM::get_default_grid(CvSVM::DEGREE),
+                           balanceFolds);
         } catch (...) {
             qWarning("Some classes do not contain sufficient examples or are not discriminative enough for accurate SVM classification.");
             svm.train(data, lab, Mat(), Mat(), params);
@@ -104,6 +112,9 @@ class SVMTransform : public Transform
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     Q_PROPERTY(bool returnDFVal READ get_returnDFVal WRITE set_returnDFVal RESET reset_returnDFVal STORED false)
+    Q_PROPERTY(int termCriteria READ get_termCriteria WRITE set_termCriteria RESET reset_termCriteria STORED false)
+    Q_PROPERTY(int folds READ get_folds WRITE set_folds RESET reset_folds STORED false)
+    Q_PROPERTY(bool balanceFolds READ get_balanceFolds WRITE set_balanceFolds RESET reset_balanceFolds STORED false)
 
 public:
     enum Kernel { Linear = CvSVM::LINEAR,
@@ -125,7 +136,9 @@ private:
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "")
     BR_PROPERTY(bool, returnDFVal, false)
-
+    BR_PROPERTY(int, termCriteria, 1000)
+    BR_PROPERTY(int, folds, 5)
+    BR_PROPERTY(bool, balanceFolds, false)
 
     SVM svm;
     QHash<QString, int> labelMap;
@@ -146,7 +159,8 @@ private:
             QList<int> dataLabels = _data.indexProperty(inputVariable, labelMap, reverseLookup);
             lab = OpenCVUtils::toMat(dataLabels);
         }
-        trainSVM(svm, data, lab, kernel, type, C, gamma);
+
+        trainSVM(svm, data, lab, kernel, type, C, gamma, folds, balanceFolds, termCriteria);
     }
 
     void project(const Template &src, Template &dst) const
