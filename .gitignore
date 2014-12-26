@@ -6,7 +6,6 @@ data/*/img
 data/*/vid
 data/PCSO/*
 data/lfpw
-data/lfw
 build*
 scripts/results
 

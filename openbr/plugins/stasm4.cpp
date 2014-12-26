@@ -186,7 +186,7 @@ private:
             for (int j = 0; j < 3; j++, cnt++)
                 affine(i, j) = paramList[cnt];
         affine(2, 2) = 1;
-        //affine = affine.inverse();
+        affine = affine.inverse();
         Eigen::MatrixXf affineInv = affine.block(0, 0, 2, 3);
         Eigen::MatrixXf pointsT = points.transpose();
         points =  affineInv * pointsT;
