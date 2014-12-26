@@ -81,8 +81,10 @@ QString File::hash() const
 
 void File::append(const QVariantMap &metadata)
 {
-    foreach (const QString &key, metadata.keys())
-        set(key, metadata[key]);
+    foreach (const QString &key, metadata.keys()) {
+        if (key != "Points" && key != "Rects")
+            set(key, metadata[key]);
+    }
 }
 
 void File::append(const File &other)
@@ -96,6 +98,8 @@ void File::append(const File &other)
         }
     }
     append(other.m_metadata);
+    appendPoints(other.points());
+    appendRects(other.rects());
 }
 
 QList<File> File::split() const
