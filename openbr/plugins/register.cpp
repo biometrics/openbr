@@ -126,7 +126,7 @@ BR_REGISTER(Transform, AffineTransform)
  * \author Josh Klontz \cite jklontz
  * \note In the case that you would like to flip both the image and the template's points but keep the indices for
  *       the points consistent between flipped an unflipped images, the to and from variables specify which indices
- *       to swap (i.e. points[from[0]] becomes points[to[0]]).
+ *       to swap (i.e. points[from[0]] becomes points[to[0]] and vice versa).
  */
 class FlipTransform : public UntrainableMetaTransform
 {
