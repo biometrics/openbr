@@ -125,7 +125,7 @@ BR_REGISTER(Transform, AffineTransform)
  * \brief Flips the image about an axis.
  * \author Josh Klontz \cite jklontz
  */
-class FlipTransform : public UntrainableTransform
+class FlipTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_ENUMS(Axis)
@@ -140,13 +140,61 @@ public:
 private:
     BR_PROPERTY(Axis, axis, Y)
 
-    void project(const Template &src, Template &dst) const
+    void project(const TemplateList &src, TemplateList &dst) const
     {
-        flip(src, dst, axis);
+        dst.append(src.first());
+        for (int i=0; i<src.size(); i++) {
+            Mat buffer;
+            flip(src[i], buffer, axis);
+            dst.append(Template(src[i].file,buffer));
+
+            dst.last().file.setPoints(QtUtils::flipPoints(dst.last().file.points(),src[i].m().rows,src[i].m().cols));
+        }
+    }
+
+    void project(const Template &src, Template &dst) const {
+        TemplateList temp;
+        project(TemplateList() << src, temp);
+        if (!temp.isEmpty()) dst = temp.first();
     }
 };
 
 BR_REGISTER(Transform, FlipTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Randomly rotates an image in a specified range.
+ * \author Scott Klum \cite sklum
+ */
+class RandRotateTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QList<int> range READ get_range WRITE set_range RESET reset_range STORED false)
+    BR_PROPERTY(QList<int>, range, QList<int>() << -15 << 15)
+
+    void project(const Template &src, Template &dst) const {
+        int span = range.first() - range.last();
+        int angle = (rand() % span) + range.first();
+        Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
+        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows));
+
+        QList<QPointF> points = src.file.points();
+        QList<QPointF> rotatedPoints;
+        for (int i=0; i<points.size(); i++) {
+            rotatedPoints.append(QPointF(points.at(i).x()*rotMatrix.at<double>(0,0)+
+                                         points.at(i).y()*rotMatrix.at<double>(0,1)+
+                                         rotMatrix.at<double>(0,2),
+                                         points.at(i).x()*rotMatrix.at<double>(1,0)+
+                                         points.at(i).y()*rotMatrix.at<double>(1,1)+
+                                         rotMatrix.at<double>(1,2)));
+        }
+
+        dst.file.setPoints(rotatedPoints);
+    }
+};
+
+BR_REGISTER(Transform, RandRotateTransform)
 
 } // namespace br
 
