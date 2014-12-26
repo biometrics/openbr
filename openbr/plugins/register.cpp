@@ -121,6 +121,24 @@ private:
 BR_REGISTER(Transform, AffineTransform)
 
 /*!
+ * \ingroup initializers
+ * \brief Initialize Stasm
+ * \author Scott Klum \cite sklum
+ */
+class FlipInitializer : public Initializer
+{
+    Q_OBJECT
+
+    void initialize() const
+    {
+        Globals->abbreviations.insert("FlipMUCT","Flip(from=[ 0, 1, 2, 3, 4, 5, 6, 7, 17,18,19,20,21,31,32,36,37,38,39,40,41,48,49,50,55,56,60,61,65], \
+                                                         to=[16,15,14,13,12,11,10, 9, 26,25,24,23,22,35,34,45,44,43,42,47,46,54,53,52,59,58,64,63,67])");
+    }
+};
+
+BR_REGISTER(Initializer, FlipInitializer)
+
+/*!
  * \ingroup transforms
  * \brief Flips the image about an axis.
  * \author Josh Klontz \cite jklontz
@@ -130,6 +148,8 @@ class FlipTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_ENUMS(Axis)
     Q_PROPERTY(Axis axis READ get_axis WRITE set_axis RESET reset_axis STORED false)
+    Q_PROPERTY(QList<int> from READ get_from WRITE set_from RESET reset_from STORED false)
+    Q_PROPERTY(QList<int> to READ get_to WRITE set_to RESET reset_to STORED false)
 
 public:
     /*!< */
@@ -139,6 +159,8 @@ public:
 
 private:
     BR_PROPERTY(Axis, axis, Y)
+    BR_PROPERTY(QList<int>, from, QList<int>())
+    BR_PROPERTY(QList<int>, to, QList<int>())
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
@@ -148,7 +170,23 @@ private:
             flip(src[i], buffer, axis);
             dst.append(Template(src[i].file,buffer));
 
-            dst.last().file.setPoints(QtUtils::flipPoints(dst.last().file.points(),src[i].m().rows,src[i].m().cols));
+            if (from.size() == to.size()) {
+                QList<QPointF> flippedPoints;
+                foreach(const QPointF &point, dst.last().file.points()) {
+                    if (axis == Y) {
+                        flippedPoints.append(QPointF(src[i].m().cols-point.x(),point.y()));
+                    } else if (axis == X) {
+                        flippedPoints.append(QPointF(point.x(),src[i].m().rows-point.y()));
+                    } else {
+                        flippedPoints.append(QPointF(src[i].m().cols-point.x(),src[i].m().rows-point.y()));
+                    }
+                }
+
+                for (int j=0; j<from.size(); j++)
+                    std::swap(flippedPoints[from[j]],flippedPoints[to[j]]);
+
+                dst.last().file.setPoints(flippedPoints);
+            }
         }
     }
 
