@@ -1384,7 +1384,9 @@ public:
     virtual ~Representation() {}
 
     virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
-    virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices) const = 0;
+    // By convention, an empty indices list will result in all feature responses being calculated
+    // and returned.
+    virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
 };
 
 class BR_EXPORT Classifier : public Object
