@@ -188,8 +188,11 @@ QList<QPointF> File::namedPoints() const
     QList<QPointF> landmarks;
     foreach (const QString &key, localMetadata().keys()) {
         const QVariant &variant = m_metadata[key];
-        if (variant.canConvert<QPointF>())
-            landmarks.append(variant.value<QPointF>());
+        if (variant.canConvert<QPointF>()) {
+            const QPointF point = variant.value<QPointF>();
+            if (!std::isnan(point.x()) && !std::isnan(point.y()))
+                landmarks.append(point);
+        }
     }
     return landmarks;
 }
