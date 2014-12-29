@@ -150,7 +150,7 @@ private:
             dst.append(Template(src[i].file,buffer));
 
             QList<QPointF> flippedPoints;
-            foreach(const QPointF &point, src.last().file.points()) {
+            foreach(const QPointF &point, src[i].file.points()) {
                 if (axis == Y) {
                     flippedPoints.append(QPointF(src[i].m().cols-point.x(),point.y()));
                 } else if (axis == X) {
@@ -160,7 +160,28 @@ private:
                 }
             }
 
+            QList<QRectF> flippedRects;
+            foreach(const QRectF &rect, src[i].file.rects()) {
+                if (axis == Y) {
+                    flippedRects.append(QRectF(src[i].m().cols-rect.right(),
+                                               rect.y(),
+                                               rect.width(),
+                                               rect.height()));
+                } else if (axis == X) {
+                    flippedRects.append(QRectF(rect.x(),
+                                               src[i].m().rows-rect.bottom(),
+                                               rect.width(),
+                                               rect.height()));
+                } else {
+                    flippedRects.append(QRectF(src[i].m().cols-rect.right(),
+                                               src[i].m().rows-rect.bottom(),
+                                               rect.width(),
+                                               rect.height()));
+                }
+            }
+
             dst.last().file.setPoints(flippedPoints);
+            dst.last().file.setRects(flippedRects);
             dst.last().file.set("Flipped",true);
         }
     }
