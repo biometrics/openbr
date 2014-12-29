@@ -143,10 +143,78 @@ private:
     void project(const Template &src, Template &dst) const
     {
         flip(src, dst, axis);
+
+        QList<QPointF> flippedPoints;
+        foreach(const QPointF &point, src.file.points()) {
+            if (axis == Y) {
+                flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
+            } else if (axis == X) {
+                flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
+            } else {
+                flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+            }
+        }
+
+        QList<QRectF> flippedRects;
+        foreach(const QRectF &rect, src.file.rects()) {
+            if (axis == Y) {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           rect.y(),
+                                           rect.width(),
+                                           rect.height()));
+            } else if (axis == X) {
+                flippedRects.append(QRectF(rect.x(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            } else {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            }
+        }
+
+        dst.file.setPoints(flippedPoints);
+        dst.file.setRects(flippedRects);
+    }
+};
+BR_REGISTER(Transform, FlipTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Randomly rotates an image in a specified range.
+ * \author Scott Klum \cite sklum
+ */
+class RandRotateTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QList<int> range READ get_range WRITE set_range RESET reset_range STORED false)
+    BR_PROPERTY(QList<int>, range, QList<int>() << -15 << 15)
+
+    void project(const Template &src, Template &dst) const {
+        int span = range.first() - range.last();
+        int angle = (rand() % span) + range.first();
+        Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
+        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows));
+
+        QList<QPointF> points = src.file.points();
+        QList<QPointF> rotatedPoints;
+        for (int i=0; i<points.size(); i++) {
+            rotatedPoints.append(QPointF(points.at(i).x()*rotMatrix.at<double>(0,0)+
+                                         points.at(i).y()*rotMatrix.at<double>(0,1)+
+                                         rotMatrix.at<double>(0,2),
+                                         points.at(i).x()*rotMatrix.at<double>(1,0)+
+                                         points.at(i).y()*rotMatrix.at<double>(1,1)+
+                                         rotMatrix.at<double>(1,2)));
+        }
+
+        dst.file.setPoints(rotatedPoints);
     }
 };
 
-BR_REGISTER(Transform, FlipTransform)
+BR_REGISTER(Transform, RandRotateTransform)
 
 } // namespace br
 
