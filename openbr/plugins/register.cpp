@@ -125,7 +125,7 @@ BR_REGISTER(Transform, AffineTransform)
  * \brief Flips the image about an axis.
  * \author Josh Klontz \cite jklontz
  */
-class FlipTransform : public UntrainableMetaTransform
+class FlipTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Axis)
@@ -140,59 +140,45 @@ public:
 private:
     BR_PROPERTY(Axis, axis, Y)
 
-    void project(const TemplateList &src, TemplateList &dst) const
+    void project(const Template &src, Template &dst) const
     {
-        for (int i=0; i<src.size(); i++) {
-            dst.append(src[i]);
+        flip(src, dst, axis);
 
-            Mat buffer;
-            flip(src[i], buffer, axis);
-            dst.append(Template(src[i].file,buffer));
-
-            QList<QPointF> flippedPoints;
-            foreach(const QPointF &point, src[i].file.points()) {
-                if (axis == Y) {
-                    flippedPoints.append(QPointF(src[i].m().cols-point.x(),point.y()));
-                } else if (axis == X) {
-                    flippedPoints.append(QPointF(point.x(),src[i].m().rows-point.y()));
-                } else {
-                    flippedPoints.append(QPointF(src[i].m().cols-point.x(),src[i].m().rows-point.y()));
-                }
+        QList<QPointF> flippedPoints;
+        foreach(const QPointF &point, src.file.points()) {
+            if (axis == Y) {
+                flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
+            } else if (axis == X) {
+                flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
+            } else {
+                flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
             }
-
-            QList<QRectF> flippedRects;
-            foreach(const QRectF &rect, src[i].file.rects()) {
-                if (axis == Y) {
-                    flippedRects.append(QRectF(src[i].m().cols-rect.right(),
-                                               rect.y(),
-                                               rect.width(),
-                                               rect.height()));
-                } else if (axis == X) {
-                    flippedRects.append(QRectF(rect.x(),
-                                               src[i].m().rows-rect.bottom(),
-                                               rect.width(),
-                                               rect.height()));
-                } else {
-                    flippedRects.append(QRectF(src[i].m().cols-rect.right(),
-                                               src[i].m().rows-rect.bottom(),
-                                               rect.width(),
-                                               rect.height()));
-                }
-            }
-
-            dst.last().file.setPoints(flippedPoints);
-            dst.last().file.setRects(flippedRects);
-            dst.last().file.set("Flipped",true);
         }
-    }
 
-    void project(const Template &src, Template &dst) const {
-        TemplateList temp;
-        project(TemplateList() << src, temp);
-        if (!temp.isEmpty()) dst = temp.first();
+        QList<QRectF> flippedRects;
+        foreach(const QRectF &rect, src.file.rects()) {
+            if (axis == Y) {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           rect.y(),
+                                           rect.width(),
+                                           rect.height()));
+            } else if (axis == X) {
+                flippedRects.append(QRectF(rect.x(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            } else {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            }
+        }
+
+        dst.file.setPoints(flippedPoints);
+        dst.file.setRects(flippedRects);
     }
 };
-
 BR_REGISTER(Transform, FlipTransform)
 
 /*!
