@@ -72,8 +72,8 @@ QList< QPair<T,int> > Sort(const QList<T> &vals, bool decending = false, int n =
 /*!
  * \brief Returns the minimum, maximum, minimum index, and maximum index of a vector of values.
  */
-template <typename T>
-void MinMax(const QList<T> &vals, T *min, T *max, int *min_index, int *max_index)
+template <template<class> class V, typename T>
+void MinMax(const V<T> &vals, T *min, T *max, int *min_index, int *max_index)
 {
     const int size = vals.size();
     assert(size > 0);
@@ -92,23 +92,23 @@ void MinMax(const QList<T> &vals, T *min, T *max, int *min_index, int *max_index
     }
 }
 
-template <typename T>
-void MinMax(const QList<T> &vals, T *min, T *max)
+template <template<class> class V, typename T>
+void MinMax(const V<T> &vals, T *min, T *max)
 {
     int min_index, max_index;
     MinMax(vals, min, max, &min_index, &max_index);
 }
 
-template <typename T>
-T Min(const QList<T> &vals)
+template <template<class> class V, typename T>
+T Min(const V<T> &vals)
 {
     T min, max;
     MinMax(vals, &min, &max);
     return min;
 }
 
-template <typename T>
-T Max(const QList<T> &vals)
+template <template<class> class V, typename T>
+T Max(const V<T> &vals)
 {
     T min, max;
     MinMax(vals, &min, &max);
