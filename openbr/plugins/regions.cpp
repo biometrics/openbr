@@ -246,8 +246,16 @@ class DupTransform : public UntrainableMetaTransform
 
     void project(const Template &src, Template &dst) const
     {
+        QList<QPointF> points = src.file.points();
+        QList<QRectF> rects = src.file.rects();
+
         for (int i=0; i<n; i++)
             dst.merge(src);
+
+        for (int i=1; i<n; i++) {
+            dst.file.appendPoints(points);
+            dst.file.appendRects(rects);
+        }
     }
 };
 

@@ -124,17 +124,12 @@ BR_REGISTER(Transform, AffineTransform)
  * \ingroup transforms
  * \brief Flips the image about an axis.
  * \author Josh Klontz \cite jklontz
- * \note In the case that you would like to flip both the image and the template's points but keep the indices for
- *       the points consistent between flipped an unflipped images, the to and from variables specify which indices
- *       to swap (i.e. points[from[0]] becomes points[to[0]] and vice versa).
  */
 class FlipTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_ENUMS(Axis)
     Q_PROPERTY(Axis axis READ get_axis WRITE set_axis RESET reset_axis STORED false)
-    Q_PROPERTY(QList<int> from READ get_from WRITE set_from RESET reset_from STORED false)
-    Q_PROPERTY(QList<int> to READ get_to WRITE set_to RESET reset_to STORED false)
 
 public:
     /*!< */
@@ -144,34 +139,29 @@ public:
 
 private:
     BR_PROPERTY(Axis, axis, Y)
-    BR_PROPERTY(QList<int>, from, QList<int>())
-    BR_PROPERTY(QList<int>, to, QList<int>())
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        dst.append(src.first());
         for (int i=0; i<src.size(); i++) {
+            dst.append(src[i]);
+
             Mat buffer;
             flip(src[i], buffer, axis);
             dst.append(Template(src[i].file,buffer));
 
-            if (from.size() == to.size()) {
-                QList<QPointF> flippedPoints;
-                foreach(const QPointF &point, dst.last().file.points()) {
-                    if (axis == Y) {
-                        flippedPoints.append(QPointF(src[i].m().cols-point.x(),point.y()));
-                    } else if (axis == X) {
-                        flippedPoints.append(QPointF(point.x(),src[i].m().rows-point.y()));
-                    } else {
-                        flippedPoints.append(QPointF(src[i].m().cols-point.x(),src[i].m().rows-point.y()));
-                    }
+            QList<QPointF> flippedPoints;
+            foreach(const QPointF &point, src.last().file.points()) {
+                if (axis == Y) {
+                    flippedPoints.append(QPointF(src[i].m().cols-point.x(),point.y()));
+                } else if (axis == X) {
+                    flippedPoints.append(QPointF(point.x(),src[i].m().rows-point.y()));
+                } else {
+                    flippedPoints.append(QPointF(src[i].m().cols-point.x(),src[i].m().rows-point.y()));
                 }
+            }
 
-                for (int j=0; j<from.size(); j++)
-                    std::swap(flippedPoints[from[j]],flippedPoints[to[j]]);
-
-                dst.last().file.setPoints(flippedPoints);
-            } else qFatal("Inconsistent sizes for to and from index lists.");
+            dst.last().file.setPoints(flippedPoints);
+            dst.last().file.set("Flipped",true);
         }
     }
 
