@@ -484,5 +484,22 @@ float overlap(const QRectF &r, const QRectF &s) {
     return (intersection.width()*intersection.height())/(r.width()*r.height());
 }
 
+
+QString getAbsolutePath(const QString &filename)
+{
+    // Try adding the global path, if present
+    QString withPath = (Globals->path.isEmpty() ? "" : Globals->path + "/") + filename;
+
+    // we weren't necessarily using it to begin with, so see if that file
+    // exists
+    QFileInfo wpInfo(withPath);
+    if (wpInfo.exists() )
+        return wpInfo.absoluteFilePath();
+    
+    // If no, just use the nominal filename
+    return QFileInfo(filename).absoluteFilePath();
+}
+
+
 }  // namespace QtUtils
 
