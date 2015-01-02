@@ -1376,6 +1376,30 @@ private:
         { (void) targetGallery; (void) queryGallery; (void) output; return false; }
 };
 
+class BR_EXPORT Representation : public Object
+{
+    Q_OBJECT
+
+public:
+    virtual ~Representation() {}
+
+    virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
+    // By convention, an empty indices list will result in all feature responses being calculated
+    // and returned.
+    virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
+};
+
+class BR_EXPORT Classifier : public Object
+{
+    Q_OBJECT
+
+public:
+    virtual ~Classifier() {}
+
+    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
+    virtual float classify(const cv::Mat &image) const = 0;
+};
+
 /*!
 * \brief Returns \c true if the algorithm is a classifier, \c false otherwise.
 *

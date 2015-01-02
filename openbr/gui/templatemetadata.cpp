@@ -21,7 +21,7 @@ TemplateMetadata::TemplateMetadata(QWidget *parent)
 
 void TemplateMetadata::addClassifier(const QString &classifier_, const QString algorithm)
 {
-    QSharedPointer<Classifier> classifier(new Classifier());
+    QSharedPointer<GUIClassifier> classifier(new GUIClassifier());
     classifier->setAlgorithm(classifier_);
     layout->addWidget(classifier.data());
     conditionalClassifiers.append(ConditionalClassifier(algorithm, classifier));

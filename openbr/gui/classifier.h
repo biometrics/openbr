@@ -1,5 +1,5 @@
-#ifndef BR_CLASSIFIER_H
-#define BR_CLASSIFIER_H
+#ifndef BR_GUICLASSIFIER_H
+#define BR_GUICLASSIFIER_H
 
 #include <QLabel>
 #include <QWidget>
@@ -9,13 +9,13 @@
 namespace br
 {
 
-class BR_EXPORT Classifier : public QLabel
+class BR_EXPORT GUIClassifier : public QLabel
 {
     Q_OBJECT
     QString algorithm;
 
 public:
-    explicit Classifier(QWidget *parent = 0);
+    explicit GUIClassifier(QWidget *parent = 0);
     void setAlgorithm(const QString &algorithm);
 
 public slots:
@@ -33,4 +33,4 @@ signals:
 
 } // namespace br
 
-#endif // BR_CLASSIFIER_H
+#endif // BR_GUICLASSIFIER_H

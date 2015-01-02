@@ -7,7 +7,7 @@ using namespace br;
 
 /**** CLASSIFIER ****/
 /*** PUBLIC ***/
-Classifier::Classifier(QWidget *parent)
+GUIClassifier::GUIClassifier(QWidget *parent)
     : QLabel(parent)
 {
     setAlignment(Qt::AlignCenter);
@@ -15,26 +15,26 @@ Classifier::Classifier(QWidget *parent)
     connect(this, SIGNAL(newClassification(QString,QString)), this, SLOT(setClassification(QString,QString)));
 }
 
-void Classifier::setAlgorithm(const QString &algorithm)
+void GUIClassifier::setAlgorithm(const QString &algorithm)
 {
     this->algorithm = algorithm;
 }
 
 /*** PUBLIC SLOTS ***/
-void Classifier::classify(const File &file)
+void GUIClassifier::classify(const File &file)
 {
-    QtConcurrent::run(this, &Classifier::_classify, file);
+    QtConcurrent::run(this, &GUIClassifier::_classify, file);
 }
 
 /*** PRIVATE SLOTS ***/
-void Classifier::setClassification(const QString &key, const QString &value)
+void GUIClassifier::setClassification(const QString &key, const QString &value)
 {
     if (key.isEmpty()) clear();
     else               setText(QString("%1: <b>%2</b>").arg(key, value));
 }
 
 /*** PRIVATE ***/
-void Classifier::_classify(File file)
+void GUIClassifier::_classify(File file)
 {
     QString key, value;
     QSharedPointer<Transform> transform = Transform::fromAlgorithm(algorithm);

@@ -24,10 +24,10 @@ class BR_EXPORT TemplateMetadata : public QWidget
     struct ConditionalClassifier
     {
         QString algorithm;
-        QSharedPointer<Classifier> classifier;
+        QSharedPointer<GUIClassifier> classifier;
 
         ConditionalClassifier() {}
-        ConditionalClassifier(const QString &algorithm_, const QSharedPointer<Classifier> &classifier_)
+        ConditionalClassifier(const QString &algorithm_, const QSharedPointer<GUIClassifier> &classifier_)
             : algorithm(algorithm_), classifier(classifier_) {}
     };
     QList<ConditionalClassifier> conditionalClassifiers;
