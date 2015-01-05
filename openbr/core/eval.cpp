@@ -305,7 +305,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
 
     // Attempt to read template size from enrolled gallery and write to output CSV
     size_t maxSize(0);
-    if (target.endsWith(".gal")) {
+    if (target.endsWith(".gal") && QFileInfo(target).exists()) {
         foreach (const Template &t, TemplateList::fromGallery(target)) maxSize = max(maxSize, t.bytes());
         lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
     }
