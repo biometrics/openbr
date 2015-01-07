@@ -905,13 +905,13 @@ void Object::setProperty(const QString &name, QVariant value)
         } else if (type == "QList<br::Representation*>") {
             QList<Representation*> parsedValues;
             foreach (const QVariant &element, elements)
-                if (element.canConvert<QString>()) parsedValues.append(Representation::make(element.toString()), this);
+                if (element.canConvert<QString>()) parsedValues.append(Representation::make(element.toString(), this));
                 else                               parsedValues.append(element.value<Representation*>());
             value.setValue(parsedValues);
         } else if (type == "QList<br::Classifier*>") {
             QList<Classifier*> parsedValues;
             foreach (const QVariant &element, elements)
-                if (element.canConvert<QString>()) parsedValues.append(Classifier::make(element.toString()), this);
+                if (element.canConvert<QString>()) parsedValues.append(Classifier::make(element.toString(), this));
                 else                               parsedValues.append(element.value<Classifier*>());
             value.setValue(parsedValues);
         } else {
