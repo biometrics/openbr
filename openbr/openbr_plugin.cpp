@@ -625,7 +625,11 @@ QStringList Object::prunedArguments(bool expanded) const
     if (className.endsWith(interfaceName))
         className.chop(interfaceName.size());
 
-    if (interfaceName == "Distance")
+    if (interfaceName == "Representation")
+        shellObject.reset(Factory<Representation>::make(className));
+    else if (interfaceName == "Classifier")
+        shellObject.reset(Factory<Classifier>::make(className));
+    else if (interfaceName == "Distance")
         shellObject.reset(Factory<Distance>::make(className));
     else if (interfaceName == "Transform")
         shellObject.reset(Factory<Transform>::make(className));
@@ -672,6 +676,12 @@ QString Object::argument(int index, bool expanded) const
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, variant.value< QList<Distance*> >())
                 strings.append(distance->description(expanded));
+        } else if (type == "QList<br::Representation*>") {
+            foreach (Representation *representation, variant.value< QList<Representation*> >())
+                strings.append(representation->description(expanded));
+        } else if (type == "QList<br::Classifier*>") {
+            foreach (Classifier *classifier, variant.value< QList<Classifier*> >())
+                strings.append(classifier->description(expanded));
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
@@ -681,6 +691,10 @@ QString Object::argument(int index, bool expanded) const
         return variant.value<Transform*>()->description(expanded);
     } else if (type == "br::Distance*") {
         return variant.value<Distance*>()->description(expanded);
+    } else if (type == "br::Representation*") {
+        return variant.value<Representation*>()->description(expanded);
+    } else if (type == "br::Classifier*") {
+        return variant.value<Classifier*>()->description(expanded);
     } else if (type == "QStringList") {
         return "[" + variant.toStringList().join(",") + "]";
     }
@@ -712,10 +726,20 @@ void Object::store(QDataStream &stream) const
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
                 distance->store(stream);
+        } else if (type == "QList<br::Representation*>") {
+            foreach (Representation *representation, property.read(this).value< QList<Representation*> >())
+                representation->store(stream);
+        } else if (type == "QList<br::Classifier*>") {
+            foreach (Classifier *classifier, property.read(this).value< QList<Classifier*> >())
+                classifier->store(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->store(stream);
         } else if (type == "br::Distance*") {
             property.read(this).value<Distance*>()->store(stream);
+        } else if (type == "br::Representation*") {
+            property.read(this).value<Representation*>()->store(stream);
+        } else if (type == "br::Classifier*") {
+            property.read(this).value<Classifier*>()->store(stream);
         } else if (type == "bool") {
             stream << property.read(this).toBool();
         } else if (type == "int") {
@@ -749,10 +773,20 @@ void Object::load(QDataStream &stream)
         } else if (type == "QList<br::Distance*>") {
             foreach (Distance *distance, property.read(this).value< QList<Distance*> >())
                 distance->load(stream);
+        } else if (type == "QList<br::Representation*>") {
+            foreach (Representation *representation, property.read(this).value< QList<Representation*> >())
+                representation->load(stream);
+        } else if (type == "QList<br::Classifier*>") {
+            foreach (Classifier *classifier, property.read(this).value< QList<Classifier*> >())
+                classifier->load(stream);
         } else if (type == "br::Transform*") {
             property.read(this).value<Transform*>()->load(stream);
         } else if (type == "br::Distance*") {
             property.read(this).value<Distance*>()->load(stream);
+        } else if (type == "br::Representation*") {
+            property.read(this).value<Representation*>()->load(stream);
+        } else if (type == "br::Classifier*") {
+            property.read(this).value<Classifier*>()->load(stream);
         } else if (type == "bool") {
             bool value;
             stream >> value;
@@ -868,6 +902,18 @@ void Object::setProperty(const QString &name, QVariant value)
                 if (element.canConvert<QString>()) parsedValues.append(Distance::make(element.toString(), this));
                 else                               parsedValues.append(element.value<Distance*>());
             value.setValue(parsedValues);
+        } else if (type == "QList<br::Representation*>") {
+            QList<Representation*> parsedValues;
+            foreach (const QVariant &element, elements)
+                if (element.canConvert<QString>()) parsedValues.append(Representation::make(element.toString()), this);
+                else                               parsedValues.append(element.value<Representation*>());
+            value.setValue(parsedValues);
+        } else if (type == "QList<br::Classifier*>") {
+            QList<Classifier*> parsedValues;
+            foreach (const QVariant &element, elements)
+                if (element.canConvert<QString>()) parsedValues.append(Classifier::make(element.toString()), this);
+                else                               parsedValues.append(element.value<Classifier*>());
+            value.setValue(parsedValues);
         } else {
             qFatal("Unrecognized type: %s", qPrintable(type));
         }
@@ -877,6 +923,12 @@ void Object::setProperty(const QString &name, QVariant value)
     } else if (type == "br::Distance*") {
         if (value.canConvert<QString>())
             value.setValue(Distance::make(value.toString(), this));
+    } else if (type == "br::Representation*") {
+        if (value.canConvert<QString>())
+            value.setValue(Representation::make(value.toString(), this));
+    } else if (type == "br::Classifier*") {
+        if (value.canConvert<QString>())
+            value.setValue(Classifier::make(value.toString(), this));
     } else if (type == "bool") {
         if      (value.isNull())   value = true;
         else if (value == "false") value = false;
@@ -1035,10 +1087,14 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     qRegisterMetaType<br::TemplateList>();
     qRegisterMetaType< br::Transform* >();
     qRegisterMetaType< br::Distance* >();
+    qRegisterMetaType< br::Representation* >();
+    qRegisterMetaType< br::Classifier* >();
     qRegisterMetaType< QList<int> >();
     qRegisterMetaType< QList<float> >();
     qRegisterMetaType< QList<br::Transform*> >();
     qRegisterMetaType< QList<br::Distance*> >();
+    qRegisterMetaType< QList<br::Representation* > >();
+    qRegisterMetaType< QList<br::Classifier* > >();
     qRegisterMetaType< QAbstractSocket::SocketState> ();
     qRegisterMetaType< QLocalSocket::LocalSocketState> ();
 
@@ -1145,6 +1201,15 @@ QStringList br::Context::objects(const char *abstractions, const char *implement
             if (implementationsRegExp.exactMatch(name))
                 objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
 
+    if (abstractionsRegExp.exactMatch("Representation"))
+        foreach (const QString &name, Factory<Representation>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Representation>::parameters(name) : ""));
+
+    if (abstractionsRegExp.exactMatch("Classifier"))
+        foreach (const QString &name, Factory<Classifier>::names())
+            if (implementationsRegExp.exactMatch(name))
+                objectList.append(name + (parameters ? "\t" + Factory<Classifier>::parameters(name) : ""));
 
     return objectList;
 }
@@ -1547,4 +1612,30 @@ Transform *br::pipeTransforms(QList<Transform *> &transforms)
     Transform *res = Transform::make("Pipe",NULL);
     res->setPropertyRecursive("transforms", QVariant::fromValue(transforms));
     return res;
+}
+
+Representation *Representation::make(QString str, QObject *parent)
+{
+    // Check for custom transforms
+    if (Globals->abbreviations.contains(str))
+        return make(Globals->abbreviations[str], parent);
+
+    File f = "." + str;
+    Representation *rep = Factory<Representation>::make(f);
+
+    rep->setParent(parent);
+    return rep;
+}
+
+Classifier *Classifier::make(QString str, QObject *parent)
+{
+    // Check for custom transforms
+    if (Globals->abbreviations.contains(str))
+        return make(Globals->abbreviations[str], parent);
+
+    File f = "." + str;
+    Classifier *classifier = Factory<Classifier>::make(f);
+
+    classifier->setParent(parent);
+    return classifier;
 }
