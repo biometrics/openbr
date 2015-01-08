@@ -454,30 +454,9 @@ class LDATransform : public Transform
             for (int i=0; i<space1.keep; i++) space1.eVecs.col(i) /= pow((double)space1.eVals(i),0.15);
         }
 
-        // Now we project the mean class vectors into this second
-        // subspace that minimizes the within-class scatter energy.
-        // Inside this subspace we learn a subspace projection that
-        // maximizes the between-class scatter energy.
-        Eigen::MatrixXd mean2 = Eigen::MatrixXd::Zero(dimsIn, 1);
-
-        // Remove means
-        for (int i=0; i<dimsIn; i++)     mean2(i) = classMeans.row(i).sum() / numClasses;
-        for (int i=0; i<numClasses; i++) classMeans.col(i) -= mean2;
-
-        // Project into second subspace
-        Eigen::MatrixXd data2 = space1.eVecs.transpose().cast<double>() * classMeans;
-
-        // The rank of the between-class scatter matrix is bound by numClasses - 1
-        // because each class is a vector used to compute the covariance,
-        // but one degree of freedom is lost removing the global mean.
-        int dim2 = std::min((int)space1.keep, numClasses-1);
-        PCATransform space2;
-        space2.keep = dim2;
-        space2.trainCore(data2);
-
         // Compute final projection matrix
-        projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();
-        dimsOut = dim2;
+        projection = (space1.eVecs.transpose() * pca.eVecs.transpose()).transpose();
+        dimsOut = projection.cols();
 
         stdDev = 1; // default initialize
         if (isBinary) {
