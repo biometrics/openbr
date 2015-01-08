@@ -130,11 +130,11 @@ private:
     }
 
 protected:
-    void trainCore(Eigen::MatrixXd data)
+    void trainCore(Eigen::MatrixXd data, Eigen::MatrixXi mask = Eigen::MatrixXi())
     {
         int dimsIn = data.rows();
         int instances = data.cols();
-        const bool dominantEigenEstimation = (dimsIn > instances);
+        const bool dominantEigenEstimation = (dimsIn > instances) || ((mask.rows() == instances) && (mask.cols() == instances));
 
         Eigen::MatrixXd allEVals, allEVecs;
         if (keep != 0) {
@@ -147,6 +147,9 @@ protected:
             Eigen::MatrixXd cov;
             if (dominantEigenEstimation) cov = data.transpose() * data / (instances-1.0);
             else                         cov = data * data.transpose() / (instances-1.0);
+
+            if ((mask.rows() == cov.rows()) && (mask.cols() == cov.cols()))
+                cov = cov.array() * mask.cast<double>().array();
 
             // Compute eigendecomposition. Returns eigenvectors/eigenvalues in increasing order by eigenvalue.
             Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eSolver(cov);
@@ -328,6 +331,7 @@ class LDATransform : public Transform
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(bool isBinary READ get_isBinary WRITE set_isBinary RESET reset_isBinary STORED false)
     Q_PROPERTY(bool normalize READ get_normalize WRITE set_normalize RESET reset_normalize STORED false)
+    Q_PROPERTY(float betweenClassThreshold READ get_betweenClassThreshold WRITE set_betweenClassThreshold RESET reset_betweenClassThreshold STORED false)
     BR_PROPERTY(float, pcaKeep, 0.98)
     BR_PROPERTY(bool, pcaWhiten, false)
     BR_PROPERTY(int, directLDA, 0)
@@ -335,6 +339,7 @@ class LDATransform : public Transform
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(bool, isBinary, false)
     BR_PROPERTY(bool, normalize, true)
+    BR_PROPERTY(float, betweenClassThreshold, 0)
 
     int dimsOut;
     Eigen::VectorXf mean;
@@ -454,6 +459,16 @@ class LDATransform : public Transform
             for (int i=0; i<space1.keep; i++) space1.eVecs.col(i) /= pow((double)space1.eVals(i),0.15);
         }
 
+        Eigen::MatrixXi betweenClassMask;
+        if (betweenClassThreshold != 0) {
+            Eigen::MatrixXd distances(numClasses, numClasses);
+            for (int i=0; i<numClasses; i++)
+                for (int j=0; j<numClasses; j++)
+                    distances(i, j) = (classMeans.col(i) - classMeans.col(j)).squaredNorm();
+            betweenClassMask = (distances.array() < (betweenClassThreshold * distances.mean())).cast<int>();
+            qDebug() << "Keeping " << float(betweenClassMask.sum()) / (numClasses * numClasses) << "of scatter matrix";
+        }
+
         // Now we project the mean class vectors into this second
         // subspace that minimizes the within-class scatter energy.
         // Inside this subspace we learn a subspace projection that
@@ -473,7 +488,7 @@ class LDATransform : public Transform
         int dim2 = std::min((int)space1.keep, numClasses-1);
         PCATransform space2;
         space2.keep = dim2;
-        space2.trainCore(data2);
+        space2.trainCore(data2, betweenClassMask);
 
         // Compute final projection matrix
         projection = ((space2.eVecs.transpose() * space1.eVecs.transpose()) * pca.eVecs.transpose()).transpose();
