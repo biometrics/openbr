@@ -346,18 +346,7 @@ class LDATransform : public Transform
         // creates "Label"
         TemplateList trainingSet = TemplateList::relabel(_trainingSet, inputVariable, isBinary);
         int instances = trainingSet.size();
-
-        // Perform PCA dimensionality reduction
-        PCATransform pca;
-        pca.keep = pcaKeep;
-        pca.whiten = pcaWhiten;
-        pca.train(trainingSet);
-        mean = pca.mean;
-
-        TemplateList ldaTrainingSet;
-        static_cast<Transform*>(&pca)->project(trainingSet, ldaTrainingSet);
-
-        int dimsIn = ldaTrainingSet.first().m().rows * ldaTrainingSet.first().m().cols;
+        int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols;
 
         // OpenBR ensures that class values range from 0 to numClasses-1.
         // Label exists because we created it earlier with relabel
@@ -368,7 +357,7 @@ class LDATransform : public Transform
         // Map Eigen into OpenCV
         Eigen::MatrixXd data = Eigen::MatrixXd(dimsIn, instances);
         for (int i=0; i<instances; i++)
-            data.col(i) = Eigen::Map<const Eigen::MatrixXf>(ldaTrainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
+            data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
 
         // Removing class means
         Eigen::MatrixXd classMeans = Eigen::MatrixXd::Zero(dimsIn, numClasses);
@@ -385,8 +374,9 @@ class LDATransform : public Transform
             // the mean of each class is removed (lowering degree of freedom
             // one per class), the total rank of the covariance/scatter
             // matrix that will be computed in PCA is bound by instances - numClasses.
-            space1.keep = std::min(dimsIn, instances-numClasses);
+            space1.keep = pcaKeep;
             space1.trainCore(data);
+            mean = space1.mean;
 
             // Divide each eigenvector by sqrt of eigenvalue.
             // This has the effect of whitening the within-class scatter.
@@ -455,7 +445,7 @@ class LDATransform : public Transform
         }
 
         // Compute final projection matrix
-        projection = (space1.eVecs.transpose() * pca.eVecs.transpose()).transpose();
+        projection = space1.eVecs;
         dimsOut = projection.cols();
 
         stdDev = 1; // default initialize
