@@ -214,8 +214,9 @@ BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *tru
  * \param csv Optional \c .csv file to contain performance metrics.
  * \param normalization_index_a Optional first index in the list of points to use for normalization.
  * \param normalization_index_b Optional second index in the list of points to use for normalization.
+ * \param sample_index Optional index for sample landmark image in ground truth gallery.
  */
-BR_EXPORT float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv = "", int normalization_index_a = 0, int normalization_index_b = 1);
+BR_EXPORT float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv = "", int normalization_index_a = 0, int normalization_index_b = 1, int sample_index = 0);
 
 /*!
  * \brief Evaluates regression accuracy to disk.

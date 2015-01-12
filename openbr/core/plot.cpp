@@ -472,13 +472,72 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     p.file.write("# Split data into individual plots\n"
                  "plot_index = which(names(data)==\"Plot\")\n"
                  "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
+                 "EX <- data[grep(\"EX\",data$Plot),-c(1)]\n"
+                 "EX$X <- as.character(EX$X)\n"
+                 "EX$Y <- as.character(EX$Y)\n"
                  "rm(data)\n"
                  "\n");
 
-    p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
+    // Load in the relevant libraries
+    p.file.write(qPrintable(QString("if (nrow(EX) != 0) { \
+                                    \n\tlibrary(jpeg) \
+                                    \n\tlibrary(png) \
+                                    \n\tlibrary(grid)\n\t") +
+
+                            QString("multiplot <- function(..., plotlist=NULL, cols) {") +
+                            QString("\n\t\t require(grid) \
+                                    \n\n\t\t# Make a list from the ... arguments and plotlist \
+                                    \n\t\t plots <- c(list(...), plotlist)\n") +
+
+                            QString("\t\tnumPlots = length(plots)\n\n\t\t \
+                                     # Make the panel \
+                                     \n\t\tplotCols = cols \
+                                     \n\t\tplotRows = ceiling(numPlots/plotCols) \
+                                     \n\n") +
+
+                            QString("\t\t# Set up the page \
+                                     \n\t\tgrid.newpage() \
+                                     \n\t\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols))) \
+                                     \n\t\tvplayout <- function(x, y) \
+                                     \n\t\t\tviewport(layout.pos.row = x, layout.pos.col = y)\n\n") +
+
+                            QString("\t\t# Make each plot, in the correct location \
+                                     \n\t\tfor (i in 1:numPlots) { \
+                                     \n\t\t\tcurRow = ceiling(i/plotCols)\n\t\t\tcurCol = (i-1) %% plotCols + 1 \
+                                     \n\t\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n\t\t}\n\t}\n\n")));
+
+    p.file.write(qPrintable(QString("\n\n\t# Print genuine matches below the EER \
+                                     \n\t \
+                                     for (i in 1:nrow(EX)) { \
+                                     \n\t\t path <- EX[i,1] \
+                                     \n\t\t points <- EX[i,2] \
+                                     \n\t\t file <- unlist(strsplit(path, \"[.]\"))[1] \
+                                     \n\t\t ext <- unlist(strsplit(path, \"[.]\"))[2]") +
+
+                            // These should be made into a function assuming we can return an image variable regardless of extension
+                            QString("\n\t\t\tif (ext == \"jpg\" || ext == \"JPEG\" || ext == \"jpeg\" || ext == \"JPG\") { \
+                                     \n\t\t\t img <- readJPEG(path)\n\t\t } \
+                                     else if (ext == \"PNG\" || ext == \"png\") { \
+                                     \n\t\t\t img <- readPNG(path)\n\t\t} \
+                                     else if (ext == \"TIFF\" || ext == \"tiff\" || ext == \"TIF\" || ext == \"tif\") { \
+                                     \n\t\t\t img <- readTIFF(path)\n\t\t} \
+                                     else {\n\t\t\tnext\n\t\t} ") +
+
+                            QString("\n\t\t name <- file \
+                                     \n\n\t\t g <- rasterGrob(img, interpolate=TRUE)\n\n\t\t") +
+
+                            QString("print(qplot(1:10, 1:10, geom=\"blank\") \
+                                    + annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) \
+                                    + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) \
+                                    + labs(title=\"Sample Landmarks\") + xlab(sprintf(\"Total Landmarks: %s\",points)))\n\t\t}}\n")));
+
+    p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
+                                                                    p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
                             QString(" + annotation_logticks(sides=\"b\") + stat_ecdf() + scale_x_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10)) + scale_y_continuous(\"Cumulative Density\", label=percent) + theme_minimal()\n\n")));
+
     p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
                             QString("+ annotation_logticks(sides=\"l\") + geom_boxplot(alpha=0.5) + geom_jitter(size=1, alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.01,0.1,1,10)) + theme_minimal()\n\n")));
+
     p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
                             QString("+ annotation_logticks(sides=\"l\") + geom_violin(alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10))\n\n")));
 

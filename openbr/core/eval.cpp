@@ -1032,7 +1032,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     return averageOverlap;
 }
 
-float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB)
+float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB, int sampleIndex)
 {
     qDebug("Evaluating landmarking of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
@@ -1042,6 +1042,8 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
     int skipped = 0;
     QList< QList<float> > pointErrors;
+    QList<float> normalizedLengths;
+
     for (int i=0; i<predicted.size(); i++) {
         const QString &predictedName = predictedNames[i];
         const int truthIndex = truthNames.indexOf(predictedName);
@@ -1057,20 +1059,49 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
         if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
-        for (int j=0; j<predictedPoints.size(); j++)
+        normalizedLengths.append(normalizedLength);
+        for (int j=0; j<predictedPoints.size(); j++) {
             pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
+        }
     }
-    qDebug() << "Skipped " << skipped << " files due to point size mismatch.";
+
+    qDebug() << "Skipped" << skipped << "files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
+    QList<float> medianPointErrors; medianPointErrors.reserve(pointErrors.size());
+    QList<float> stddevPointErrors; stddevPointErrors.reserve(pointErrors.size());
+
+    float normalizedErrorLimit = 1.5;
+
+    QSet<int> worstExamples;
     for (int i=0; i<pointErrors.size(); i++) {
+        if (skipped == 0) {
+            QList<QPair<float,int> > exampleIndices = Common::Sort(pointErrors[i],true);
+            for (int j=0; j<exampleIndices.size() && worstExamples.size()<(5*i+1); j++)
+                if (exampleIndices[j].first < normalizedErrorLimit)
+                    worstExamples.insert(exampleIndices[j].second);
+        }
         std::sort(pointErrors[i].begin(), pointErrors[i].end());
-        averagePointErrors.append(Common::Mean(pointErrors[i]));
+        double mean, stddev;
+        Common::MeanStdDev(pointErrors[i],&mean,&stddev);
+        averagePointErrors.append(mean);
+        stddevPointErrors.append(stddev);
+        medianPointErrors.append(Common::Median(pointErrors[i]));
     }
     const float averagePointError = Common::Mean(averagePointErrors);
+    const float medianPointError = Common::Mean(medianPointErrors);
+    const float stddevPointError = Common::Mean(stddevPointErrors);
 
     QStringList lines;
     lines.append("Plot,X,Y");
+
+    QFile exampleFile("landmarking_examples");
+    QtUtils::touchDir(exampleFile);
+    lines.append("EX,landmarking_examples/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
+
+    // Alternatively, can we just pass this through a predetermined transform and write?
+    Enroll(truth[sampleIndex],"landmarking_examples");
+
     for (int i=0; i<pointErrors.size(); i++) {
         const QList<float> &pointError = pointErrors[i];
         const int keep = qMin(Max_Points, pointError.size());
@@ -1081,7 +1112,18 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     lines.append(QString("AvgError,0,%1").arg(averagePointError));
 
     QtUtils::writeFile(csv, lines);
-    qDebug("Average Error: %.3f", averagePointError);
+
+    for (int i=0; i<averagePointErrors.size(); i++) {
+        qDebug("Average Error for point %d: %.3f", i, averagePointErrors[i]);
+        qDebug("Median Error for point %d: %.3f", i, medianPointErrors[i]);
+        qDebug("Standard Deviation of Error for point %d: %.3f", i, stddevPointErrors[i]);
+    }
+
+    qDebug("Average Error for all Points: %.3f", averagePointError);
+    qDebug("Average Median Error for all Points: %.3f", medianPointError);
+    qDebug("Average Standard Deviation of Error for all Points: %.3f", stddevPointError);
+    qDebug("Average Normalization Length (pixels): %.3f", Common::Mean(normalizedLengths));
+
     return averagePointError;
 }
 
