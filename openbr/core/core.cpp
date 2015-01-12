@@ -77,7 +77,7 @@ struct AlgorithmCore
         qDebug("Training Enrollment");
         trainingWrapper->train(data);
 
-        if (!distance.isNull()) {
+        if (!distance.isNull() && distance->trainable()) {
             if (Globals->crossValidate > 0)
                 for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
 

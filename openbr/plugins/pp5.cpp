@@ -407,7 +407,7 @@ BR_REGISTER(Transform, PP5EnrollTransform)
  * \author E. Taborsky \cite mmtaborsky
  * \note PP5 distance is known to be asymmetric
  */
-class PP5CompareDistance : public Distance
+class PP5CompareDistance : public UntrainableDistance
                          , public PP5Context
 {
     Q_OBJECT

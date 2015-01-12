@@ -138,7 +138,7 @@ BR_REGISTER(Transform, TurkClassifierTransform)
  * \brief Unmaps Turk HITs to be compared against query mats
  * \author Scott Klum \cite sklum
  */
-class TurkDistance : public Distance
+class TurkDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key)

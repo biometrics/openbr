@@ -1358,7 +1358,8 @@ public:
     static Distance *make(QString str, QObject *parent); /*!< \brief Make a distance from a string. */
 
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
-    virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
+    virtual bool trainable() { return true; } /*!< \brief \c true if The distance implements train(), false otherwise. */
+    virtual void train(const TemplateList &src) = 0; /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
     virtual float compare(const Template &a, const Template &b) const; /*!< \brief Compute the distance between two templates. */

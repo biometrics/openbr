@@ -39,7 +39,7 @@ BR_REGISTER(Transform, SentenceTransform)
  * \brief Distance between sentences
  * \author Josh Klontz \cite jklontz
  */
-class SentenceSimilarityDistance : public Distance
+class SentenceSimilarityDistance : public UntrainableDistance
 {
     Q_OBJECT
 
