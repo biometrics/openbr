@@ -657,7 +657,7 @@ BR_REGISTER(Transform, SparseLDATransform)
  * \brief L1 distance computed using eigen.
  * \author Josh Klontz \cite jklontz
  */
-class L1Distance : public Distance
+class L1Distance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -677,7 +677,7 @@ BR_REGISTER(Distance, L1Distance)
  * \brief L2 distance computed using eigen.
  * \author Josh Klontz \cite jklontz
  */
-class L2Distance : public Distance
+class L2Distance : public UntrainableDistance
 {
     Q_OBJECT
 

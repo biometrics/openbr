@@ -501,6 +501,18 @@ typedef QVector<Neighbors> Neighborhood;
 
 BR_EXPORT bool compareNeighbors(const Neighbor &a, const Neighbor &b);
 
+/*!
+ * \brief A br::Distance that does not require training data.
+ */
+class BR_EXPORT UntrainableDistance : public Distance
+{
+    Q_OBJECT
+
+private:
+    bool trainable() { return false; }
+    void train(const TemplateList &data) { (void) data; }
+};
+
 }
 
 #endif // OPENBR_INTERNAL_H
