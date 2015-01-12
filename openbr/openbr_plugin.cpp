@@ -1255,6 +1255,17 @@ void MatrixOutput::set(float value, int i, int j)
 
 BR_REGISTER(Output, MatrixOutput)
 
+/* Format - public methods */
+Template Format::read(const QString &file)
+{
+    return QScopedPointer<Format>(Factory<Format>::make(file))->read();
+}
+
+void Format::write(const QString &file, const Template &t)
+{
+    QScopedPointer<Format>(Factory<Format>::make(file))->write(t);
+}
+
 /* Gallery - public methods */
 TemplateList Gallery::read()
 {

@@ -1080,6 +1080,8 @@ public:
     virtual ~Format() {}
     virtual Template read() const = 0; /*!< \brief Returns a br::Template created by reading #br::Object::file. */
     virtual void write(const Template &t) const = 0; /*!< \brief Writes the br::Template to #br::Object::file. */
+    static Template read(const QString &file);
+    static void write(const QString &file, const Template &t);
 };
 
 /*!
