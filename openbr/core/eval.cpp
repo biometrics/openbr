@@ -1056,6 +1056,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         }
         while (pointErrors.size() < predictedPoints.size())
             pointErrors.append(QList<float>());
+
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
         if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
@@ -1068,8 +1069,6 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     qDebug() << "Skipped" << skipped << "files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
-    QList<float> medianPointErrors; medianPointErrors.reserve(pointErrors.size());
-    QList<float> stddevPointErrors; stddevPointErrors.reserve(pointErrors.size());
 
     float normalizedErrorLimit = 1.5;
 
@@ -1082,15 +1081,9 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
                     worstExamples.insert(exampleIndices[j].second);
         }
         std::sort(pointErrors[i].begin(), pointErrors[i].end());
-        double mean, stddev;
-        Common::MeanStdDev(pointErrors[i],&mean,&stddev);
-        averagePointErrors.append(mean);
-        stddevPointErrors.append(stddev);
-        medianPointErrors.append(Common::Median(pointErrors[i]));
+        averagePointErrors.append(Common::Mean(pointErrors[i]));
     }
     const float averagePointError = Common::Mean(averagePointErrors);
-    const float medianPointError = Common::Mean(medianPointErrors);
-    const float stddevPointError = Common::Mean(stddevPointErrors);
 
     QStringList lines;
     lines.append("Plot,X,Y");
@@ -1103,17 +1096,6 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     // Alternatively, can we just pass this through a predetermined transform and write?
     Enroll(truth[sampleIndex],"landmarking_examples");
 
-    // Error table
-    for (int i=0; i<averagePointErrors.size(); i++) {
-        lines.append(QString("AE,%1,%2").arg(QString::number(i),QString::number(averagePointErrors[i], 'f', 3)));
-        lines.append(QString("ME,%1,%2").arg(QString::number(i),QString::number(medianPointErrors[i], 'f', 3)));
-        lines.append(QString("SE,%1,%2").arg(QString::number(i),QString::number(stddevPointErrors[i], 'f', 3)));
-    }
-
-    lines.append(QString("AE,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(averagePointError, 'f', 3)));
-    lines.append(QString("ME,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(medianPointError, 'f', 3)));
-    lines.append(QString("SE,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(stddevPointError, 'f', 3)));
-
     for (int i=0; i<pointErrors.size(); i++) {
         const QList<float> &pointError = pointErrors[i];
         const int keep = qMin(Max_Points, pointError.size());
@@ -1122,13 +1104,11 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     }
 
     lines.append(QString("AvgError,0,%1").arg(averagePointError));
+    lines.append(QString("NormLength,0,%1").arg(Common::Mean(normalizedLengths)));
 
     QtUtils::writeFile(csv, lines);
 
     qDebug("Average Error for all Points: %.3f", averagePointError);
-    qDebug("Average Median Error for all Points: %.3f", medianPointError);
-    qDebug("Average Standard Deviation of Error for all Points: %.3f", stddevPointError);
-    qDebug("Average Normalization Length (pixels): %.3f", Common::Mean(normalizedLengths));
 
     return averagePointError;
 }

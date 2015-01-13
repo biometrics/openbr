@@ -469,15 +469,23 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination, false);
 
+    qDebug() << p.major.header << p.minor.header;
+
     p.file.write(qPrintable(QString("# Split data into individual plots\n"
                  "plot_index = which(names(data)==\"Plot\")\n"
                  "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
+                 "Box$X <- factor(Box$X, levels = Box$X, ordered = TRUE)\n"
                  "EX <- data[grep(\"EX\",data$Plot),-c(1)]\n"
-                 "AE <- data[grep(\"AE\",data$Plot),-c(1)]\n"
-                 "ME <- data[grep(\"ME\",data$Plot),-c(1)]\n"
-                 "SE <- data[grep(\"SE\",data$Plot),-c(1)]\n"
+                 "NormLength <- data[grep(\"NormLength\",data$Plot),-c(1)]\n"
                  "EX$X <- as.character(EX$X)\n"
                  "EX$Y <- as.character(EX$Y)\n"
+                                    "\n"
+                                    "\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {\n\t\t"
+                                    "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
+                                    "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
+                                    "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
+                                    "\n\t\t\tmeasurevar\n\t\t)\n\n\t\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\t\tdatac$se <- datac$sd / sqrt(datac$N)"
+                                    "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\treturn(datac)\n\t}\n\t"
                  "rm(data)\n"
                  "\n")));
 
@@ -535,22 +543,24 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
 
     p.file.write(qPrintable(QString("\n"
                  "# Code to format error table\n"
-                 "l <- list(AE$Y,ME$Y,SE$Y)\n"
-                 "mat <- matrix(do.call(rbind, l),nrow=nrow(AE),ncol=3,byrow=TRUE)\n"
-                 "colnames(mat) <- c(\"Mean\",\"Median\",\"Std. Dev.\") \n"
-                 "rownames(mat) <- c(seq(0,nrow(AE)-2),\"Average\")\n"
+                 "StatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"X\"))\n\t"
+                 "OverallStatBox <- summarySE(Box, measurevar=\"Y\")\n"
+                 "mat <- matrix(paste(as.character(round(StatBox$Y, 3)), round(StatBox$ci, 3), sep=\" \\u00b1 \"),nrow=nrow(StatBox),ncol=1,byrow=TRUE)\n"
+                 "mat <- rbind(mat, paste(as.character(round(OverallStatBox$Y, 3)), round(OverallStatBox$ci, 3), sep=\" \\u00b1 \"))\n"
+                 "colnames(mat) <- c(\"Error Rate\")\n"
+                 "rownames(mat) <- c(seq(0,nrow(StatBox)-1),\"Aggregate\")\n"
                  "ETable <- as.table(mat)\n")));
 
     p.file.write(qPrintable(QString("\n"
                        "print(textplot(ETable))\n"
-                       "print(title(expression(atop(\"Landmark Error Rates\", atop(italic(\"Average Normalization Distance: 91.419 (pixels)\"))))))\n")));
+                       "print(title(sprintf(\"Landmark Error Rates\\nAverage Normalization Distance: %.3f (pixels)\",NormLength$Y)))\n")));
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
                                                                     p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
                             QString(" + annotation_logticks(sides=\"b\") + stat_ecdf() + scale_x_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10)) + scale_y_continuous(\"Cumulative Density\", label=percent) + theme_minimal()\n\n")));
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
-                            QString("+ annotation_logticks(sides=\"l\") + geom_boxplot(alpha=0.5) + geom_jitter(size=1, alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.01,0.1,1,10)) + theme_minimal()\n\n")));
+                            QString("+ annotation_logticks(sides=\"l\") + geom_boxplot(alpha=0.5) + geom_jitter(size=1, alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10)) + theme_minimal()\n\n")));
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(factor(X), Y%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
                             QString("+ annotation_logticks(sides=\"l\") + geom_violin(alpha=0.5) + scale_x_discrete(\"Landmark\") + scale_y_log10(\"Normalized Error\", breaks=c(0.001,0.01,0.1,1,10))\n\n")));
