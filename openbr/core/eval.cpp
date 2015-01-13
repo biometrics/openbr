@@ -188,7 +188,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     if (impostorCount == 0) qFatal("No impostor scores!");
 
     // Sort comparisons by simmat_val (score)
-    std::sort(comparisons.begin(), comparisons.end());
+    std::stable_sort(comparisons.begin(), comparisons.end());
 
     QList<OperatingPoint> operatingPoints;
     QList<float> genuines; genuines.reserve(sqrt((float)comparisons.size()));
