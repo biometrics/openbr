@@ -57,6 +57,7 @@ protected slots:
 
 private slots:
     void updatePixmap(QImage image, bool async = false);
+    QSize sizeHint() const;
 };
 
 } // namespace br
