@@ -1095,12 +1095,24 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     QStringList lines;
     lines.append("Plot,X,Y");
 
+    // Sample
     QFile exampleFile("landmarking_examples");
     QtUtils::touchDir(exampleFile);
     lines.append("EX,landmarking_examples/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
 
     // Alternatively, can we just pass this through a predetermined transform and write?
     Enroll(truth[sampleIndex],"landmarking_examples");
+
+    // Error table
+    for (int i=0; i<averagePointErrors.size(); i++) {
+        lines.append(QString("AE,%1,%2").arg(QString::number(i),QString::number(averagePointErrors[i], 'f', 3)));
+        lines.append(QString("ME,%1,%2").arg(QString::number(i),QString::number(medianPointErrors[i], 'f', 3)));
+        lines.append(QString("SE,%1,%2").arg(QString::number(i),QString::number(stddevPointErrors[i], 'f', 3)));
+    }
+
+    lines.append(QString("AE,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(averagePointError, 'f', 3)));
+    lines.append(QString("ME,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(medianPointError, 'f', 3)));
+    lines.append(QString("SE,%1,%2").arg(QString::number(averagePointErrors.size()),QString::number(stddevPointError, 'f', 3)));
 
     for (int i=0; i<pointErrors.size(); i++) {
         const QList<float> &pointError = pointErrors[i];
@@ -1112,12 +1124,6 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     lines.append(QString("AvgError,0,%1").arg(averagePointError));
 
     QtUtils::writeFile(csv, lines);
-
-    for (int i=0; i<averagePointErrors.size(); i++) {
-        qDebug("Average Error for point %d: %.3f", i, averagePointErrors[i]);
-        qDebug("Median Error for point %d: %.3f", i, medianPointErrors[i]);
-        qDebug("Standard Deviation of Error for point %d: %.3f", i, stddevPointErrors[i]);
-    }
 
     qDebug("Average Error for all Points: %.3f", averagePointError);
     qDebug("Average Median Error for all Points: %.3f", medianPointError);

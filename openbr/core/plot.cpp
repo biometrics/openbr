@@ -469,16 +469,18 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination, false);
 
-    p.file.write("# Split data into individual plots\n"
+    p.file.write(qPrintable(QString("# Split data into individual plots\n"
                  "plot_index = which(names(data)==\"Plot\")\n"
                  "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
                  "EX <- data[grep(\"EX\",data$Plot),-c(1)]\n"
+                 "AE <- data[grep(\"AE\",data$Plot),-c(1)]\n"
+                 "ME <- data[grep(\"ME\",data$Plot),-c(1)]\n"
+                 "SE <- data[grep(\"SE\",data$Plot),-c(1)]\n"
                  "EX$X <- as.character(EX$X)\n"
                  "EX$Y <- as.character(EX$Y)\n"
                  "rm(data)\n"
-                 "\n");
+                 "\n")));
 
-    // Load in the relevant libraries
     p.file.write(qPrintable(QString("if (nrow(EX) != 0) { \
                                     \n\tlibrary(jpeg) \
                                     \n\tlibrary(png) \
@@ -530,6 +532,18 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
                                     + annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) \
                                     + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) \
                                     + labs(title=\"Sample Landmarks\") + xlab(sprintf(\"Total Landmarks: %s\",points)))\n\t\t}}\n")));
+
+    p.file.write(qPrintable(QString("\n"
+                 "# Code to format error table\n"
+                 "l <- list(AE$Y,ME$Y,SE$Y)\n"
+                 "mat <- matrix(do.call(rbind, l),nrow=nrow(AE),ncol=3,byrow=TRUE)\n"
+                 "colnames(mat) <- c(\"Mean\",\"Median\",\"Std. Dev.\") \n"
+                 "rownames(mat) <- c(seq(0,nrow(AE)-2),\"Average\")\n"
+                 "ETable <- as.table(mat)\n")));
+
+    p.file.write(qPrintable(QString("\n"
+                       "print(textplot(ETable))\n"
+                       "print(title(expression(atop(\"Landmark Error Rates\", atop(italic(\"Average Normalization Distance: 91.419 (pixels)\"))))))\n")));
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
                                                                     p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
