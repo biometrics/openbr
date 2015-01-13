@@ -36,7 +36,12 @@ struct Comparison
     Comparison() {}
     Comparison(float _score, int _target, int _query, bool _genuine)
         : score(_score), target(_target), query(_query), genuine(_genuine) {}
-    inline bool operator<(const Comparison &other) const { return score > other.score; }
+
+    inline bool operator<(const Comparison &other) const
+    {
+        if (score != other.score) return (score > other.score);
+        else                      return !genuine; // Tie-break favors pessimistic behavior of ranking impostors higher.
+    }
 };
 
 #undef FAR // Windows preprecessor definition conflicts with variable name
