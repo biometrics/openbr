@@ -80,7 +80,7 @@ void br::ImageViewer::updatePixmap(QImage image, bool async)
 
 QSize br::ImageViewer::sizeHint() const
 {
-    return QSize(width(), (src.height() * width() + /* round up */ src.width() - 1) / src.width());
+    return src.isNull() ? QSize() : QSize(width(), (src.height() * width() + /* round up */ src.width() - 1) / src.width());
 }
 
 /*** PROTECTED SLOTS ***/
