@@ -542,26 +542,32 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
                                     "}\n")));
 
     p.file.write(qPrintable(QString("\nsample <- readData(Sample) \n"
+                                    "rows <- sample[[1]]$value\n"
+                                    "algs <- unique(Box$%1)\n"
+                                    "algs <- algs[!duplicated(algs)]\n"
                                     "print(plotImage(sample[[1]],\"Sample Landmarks\",sprintf(\"Total Landmarks: %s\",sample[[1]]$value))) \n"
-                                    "truthSample <- readData(EXT)\n"
-                                    "predictedSample <- readData(EXP)\n"
-                                    "for (i in 1:length(predictedSample)) {\n"
-                                    "\tmultiplot(plotImage(predictedSample[[i]],\"Predicted Landmarks\",sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth Landmarks\",\"\"),cols=2)\n"
-                                    "}\n")));
+                                    "for (j in 1:length(algs)) {\n"
+                                    "truthSample <- readData(EXT[EXT$. == algs[[j]],])\n"
+                                    "predictedSample <- readData(EXP[EXP$. == algs[[j]],])\n"
+                                    "\tfor (i in 1:length(predictedSample)) {\n"
+                                    "\t\tmultiplot(plotImage(predictedSample[[i]],sprintf(\"%s\\nPredicted Landmarks\",algs[[j]]),sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth\\nLandmarks\",\"\"),cols=2)\n"
+                                    "\t}\n"
+                                    "}\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
 
     p.file.write(qPrintable(QString("\n"
                  "# Code to format error table\n"
-                 "StatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"X\"))\n\t"
-                 "OverallStatBox <- summarySE(Box, measurevar=\"Y\")\n"
-                 "mat <- matrix(paste(as.character(round(StatBox$Y, 3)), round(StatBox$ci, 3), sep=\" \\u00b1 \"),nrow=nrow(StatBox),ncol=1,byrow=TRUE)\n"
+                 "StatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"%1\",\"X\"))\n"
+                 "OverallStatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"%1\"))\n"
+                 "mat <- matrix(paste(as.character(round(StatBox$Y, 3)), round(StatBox$ci, 3), sep=\" \\u00b1 \"),nrow=rows,ncol=length(algs),byrow=FALSE)\n"
                  "mat <- rbind(mat, paste(as.character(round(OverallStatBox$Y, 3)), round(OverallStatBox$ci, 3), sep=\" \\u00b1 \"))\n"
-                 "colnames(mat) <- c(\"Error Rate\")\n"
-                 "rownames(mat) <- c(seq(0,nrow(StatBox)-1),\"Aggregate\")\n"
-                 "ETable <- as.table(mat)\n")));
+                 "mat <- rbind(mat, as.character(round(NormLength$Y, 3)))\n"
+                 "colnames(mat) <- algs\n"
+                 "rownames(mat) <- c(seq(0,rows-1),\"Aggregate\",\"Average IPD\")\n"
+                 "ETable <- as.table(mat)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
 
     p.file.write(qPrintable(QString("\n"
                        "print(textplot(ETable))\n"
-                       "print(title(sprintf(\"Landmark Error Rates\\nAverage Normalization Distance: %.3f (pixels)\",NormLength$Y)))\n")));
+                       "print(title(\"Landmarking Error Rates\"))\n")));
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
                                                                     p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +
