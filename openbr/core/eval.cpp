@@ -1097,16 +1097,16 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     for (int i=0; i<totalExamples; i++) {
         Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
         lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_prediced");
-        lines.append("EXP,landmarking_examples_prediced/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_predicted");
+        lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
 
     }
 
     for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
         Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
         lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_prediced");
-        lines.append("EXP,landmarking_examples_prediced/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_predicted");
+        lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
 
     }
 
