@@ -1035,15 +1035,15 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB, int sampleIndex)
 {
     qDebug("Evaluating landmarking of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
-    const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
-    const TemplateList truth(TemplateList::fromGallery(truthGallery));
-    const QStringList predictedNames = File::get<QString>(predicted, "name");
-    const QStringList truthNames = File::get<QString>(truth, "name");
+    TemplateList predicted(TemplateList::fromGallery(predictedGallery));
+    TemplateList truth(TemplateList::fromGallery(truthGallery));
+    QStringList predictedNames = File::get<QString>(predicted, "name");
+    QStringList truthNames = File::get<QString>(truth, "name");
 
     int skipped = 0;
     QList< QList<float> > pointErrors;
+    QList<float> imageErrors;
     QList<float> normalizedLengths;
-
     for (int i=0; i<predicted.size(); i++) {
         const QString &predictedName = predictedNames[i];
         const int truthIndex = truthNames.indexOf(predictedName);
@@ -1051,57 +1051,75 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         const QList<QPointF> predictedPoints = predicted[i].file.points();
         const QList<QPointF> truthPoints = truth[truthIndex].file.points();
         if (predictedPoints.size() != truthPoints.size()) {
-            skipped++;
+            predicted.removeAt(i);
+            predictedNames.removeAt(i);
+            truth.removeAt(i);
+            truthNames.removeAt(i);
+            i--; skipped++;
             continue;
         }
+
         while (pointErrors.size() < predictedPoints.size())
             pointErrors.append(QList<float>());
+
+        // Want to know error for every image.
 
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
         if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
         normalizedLengths.append(normalizedLength);
+        float totalError = 0;
         for (int j=0; j<predictedPoints.size(); j++) {
-            pointErrors[j].append(QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength);
+            float error = QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength;
+            totalError += error;
+            pointErrors[j].append(error);
         }
+        imageErrors.append(totalError/predictedPoints.size());
     }
 
     qDebug() << "Skipped" << skipped << "files due to point size mismatch.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
 
-    float normalizedErrorLimit = 1.5;
-
-    QSet<int> worstExamples;
-    for (int i=0; i<pointErrors.size(); i++) {
-        if (skipped == 0) {
-            QList<QPair<float,int> > exampleIndices = Common::Sort(pointErrors[i],true);
-            for (int j=0; j<exampleIndices.size() && worstExamples.size()<(5*i+1); j++)
-                if (exampleIndices[j].first < normalizedErrorLimit)
-                    worstExamples.insert(exampleIndices[j].second);
-        }
-        std::sort(pointErrors[i].begin(), pointErrors[i].end());
-        averagePointErrors.append(Common::Mean(pointErrors[i]));
-    }
-    const float averagePointError = Common::Mean(averagePointErrors);
-
     QStringList lines;
     lines.append("Plot,X,Y");
 
-    // Sample
-    QFile exampleFile("landmarking_examples");
-    QtUtils::touchDir(exampleFile);
-    lines.append("EX,landmarking_examples/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
+    // Example
+    lines.append("Sample,landmarking_examples_truth/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
 
     // Alternatively, can we just pass this through a predetermined transform and write?
-    Enroll(truth[sampleIndex],"landmarking_examples");
+    Enroll(truth[sampleIndex],"landmarking_examples_truth");
+
+    // Get best and worst performing examples
+    QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
+
+    const int totalExamples = 10;
+    for (int i=0; i<totalExamples; i++) {
+        Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
+        lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_prediced");
+        lines.append("EXP,landmarking_examples_prediced/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+
+    }
+
+    for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
+        Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
+        lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_prediced");
+        lines.append("EXP,landmarking_examples_prediced/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+
+    }
 
     for (int i=0; i<pointErrors.size(); i++) {
+        std::sort(pointErrors[i].begin(), pointErrors[i].end());
+        averagePointErrors.append(Common::Mean(pointErrors[i]));
         const QList<float> &pointError = pointErrors[i];
         const int keep = qMin(Max_Points, pointError.size());
         for (int j=0; j<keep; j++)
             lines.append(QString("Box,%1,%2").arg(QString::number(i), QString::number(pointError[j*(pointError.size()-1)/(keep-1)])));
     }
+
+    const float averagePointError = Common::Mean(averagePointErrors);
 
     lines.append(QString("AvgError,0,%1").arg(averagePointError));
     lines.append(QString("NormLength,0,%1").arg(Common::Mean(normalizedLengths)));

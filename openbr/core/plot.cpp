@@ -469,77 +469,85 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination, false);
 
-    qDebug() << p.major.header << p.minor.header;
-
     p.file.write(qPrintable(QString("# Split data into individual plots\n"
-                 "plot_index = which(names(data)==\"Plot\")\n"
-                 "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
-                 "Box$X <- factor(Box$X, levels = Box$X, ordered = TRUE)\n"
-                 "EX <- data[grep(\"EX\",data$Plot),-c(1)]\n"
-                 "NormLength <- data[grep(\"NormLength\",data$Plot),-c(1)]\n"
-                 "EX$X <- as.character(EX$X)\n"
-                 "EX$Y <- as.character(EX$Y)\n"
-                                    "\n"
-                                    "\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {\n\t\t"
-                                    "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
-                                    "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
-                                    "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
-                                    "\n\t\t\tmeasurevar\n\t\t)\n\n\t\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\t\tdatac$se <- datac$sd / sqrt(datac$N)"
-                                    "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\treturn(datac)\n\t}\n\t"
-                 "rm(data)\n"
-                 "\n")));
+                                    "plot_index = which(names(data)==\"Plot\")\n"
+                                    "Box <- data[grep(\"Box\",data$Plot),-c(1)]\n"
+                                    "Box$X <- factor(Box$X, levels = Box$X, ordered = TRUE)\n"
+                                    "Sample <- data[grep(\"Sample\",data$Plot),-c(1)]\n"
+                                    "Sample$X <- as.character(Sample$X)\n"
+                                    "EXT <- data[grep(\"EXT\",data$Plot),-c(1)]\n"
+                                    "EXT$X <- as.character(EXT$X)\n"
+                                    "EXP <- data[grep(\"EXP\",data$Plot),-c(1)]\n"
+                                    "EXP$X <- as.character(EXP$X)\n"
+                                    "NormLength <- data[grep(\"NormLength\",data$Plot),-c(1)]\n"
+                                    "rm(data)\n"
+                                    "\n")));
 
-    p.file.write(qPrintable(QString("if (nrow(EX) != 0) { \
-                                    \n\tlibrary(jpeg) \
-                                    \n\tlibrary(png) \
-                                    \n\tlibrary(grid)\n\t") +
+    p.file.write(qPrintable(QString("summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {\n\t"
+                                    "require(plyr)\n\n\tlength2 <- function (x, na.rm=FALSE) {\n\t\tif (na.rm) sum(!is.na(x))\n\t\telse       length(x)"
+                                    "\n\t}\n\n\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t"
+                                    "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t},"
+                                    "\n\t\tmeasurevar\n\t)\n\n\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\tdatac$se <- datac$sd / sqrt(datac$N)"
+                                    "\n\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\tdatac$ci <- datac$se * ciMult\n\n\treturn(datac)\n}\n")));
 
-                            QString("multiplot <- function(..., plotlist=NULL, cols) {") +
-                            QString("\n\t\t require(grid) \
-                                    \n\n\t\t# Make a list from the ... arguments and plotlist \
-                                    \n\t\t plots <- c(list(...), plotlist)\n") +
 
-                            QString("\t\tnumPlots = length(plots)\n\n\t\t \
-                                     # Make the panel \
-                                     \n\t\tplotCols = cols \
-                                     \n\t\tplotRows = ceiling(numPlots/plotCols) \
-                                     \n\n") +
+    p.file.write(qPrintable(QString("\nreadData <- function(data) {\n\texamples <- list()\n"
+                                    "\tfor (i in 1:nrow(data)) {\n"
+                                    "\t\tpath <- data[i,1]\n"
+                                    "\t\tvalue <- data[i,2]\n"
+                                    "\t\tfile <- unlist(strsplit(path, \"[.]\"))[1]\n"
+                                    "\t\text <- unlist(strsplit(path, \"[.]\"))[2]\n"
+                                    "\t\tif (ext == \"jpg\" || ext == \"JPEG\" || ext == \"jpeg\" || ext == \"JPG\") {\n"
+                                    "\t\t\timg <- readJPEG(path)\n"
+                                    "\t\t} else if (ext == \"PNG\" || ext == \"png\") {\n"
+                                    "\t\t\timg <- readPNG(path)\n"
+                                    "\t\t} else if (ext == \"TIFF\" || ext == \"tiff\" || ext == \"TIF\" || ext == \"tif\") { \n"
+                                    "\t\t\timg <- readTIFF(path)\n"
+                                    "}else {\n"
+                                    "\t\t\tnext\n"
+                                    "\t\t}\n"
+                                    "\t\texample <- list(file = file, value = value, image = img)\n"
+                                    "\t\texamples[[i]] <- example\n"
+                                    "\t}\n"
+                                    "\treturn(examples)\n"
+                                    "}\n")));
 
-                            QString("\t\t# Set up the page \
-                                     \n\t\tgrid.newpage() \
-                                     \n\t\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols))) \
-                                     \n\t\tvplayout <- function(x, y) \
-                                     \n\t\t\tviewport(layout.pos.row = x, layout.pos.col = y)\n\n") +
+    p.file.write(qPrintable(QString("\nlibrary(jpeg)\n"
+                                    "library(png)\n"
+                                    "library(grid)\n"
+                                    "multiplot <- function(..., plotlist=NULL, cols) {\n"
+                                    "\trequire(grid)\n"
+                                    "\t# Make a list from the ... arguments and plotlist\n"
+                                    "\tplots <- c(list(...), plotlist)\n"
+                                    "\tnumPlots = length(plots)\n"
+                                    "\t# Make the panel\n"
+                                    "\tplotCols = cols\n"
+                                    "\tplotRows = ceiling(numPlots/plotCols)\n"
+                                    "\t# Set up the page\n"
+                                    "\tgrid.newpage()\n"
+                                    "\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols)))\n"
+                                    "\tvplayout <- function(x, y)\n"
+                                    "\tviewport(layout.pos.row = x, layout.pos.col = y)\n"
+                                    "\t# Make each plot, in the correct location\n"
+                                    "\tfor (i in 1:numPlots) {\n"
+                                    "\t\tcurRow = ceiling(i/plotCols)\n"
+                                    "\t\tcurCol = (i-1) %% plotCols + 1\n"
+                                    "\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n"
+                                    "\t}\n"
+                                    "}\n")));
 
-                            QString("\t\t# Make each plot, in the correct location \
-                                     \n\t\tfor (i in 1:numPlots) { \
-                                     \n\t\t\tcurRow = ceiling(i/plotCols)\n\t\t\tcurCol = (i-1) %% plotCols + 1 \
-                                     \n\t\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n\t\t}\n\t}\n\n")));
+    p.file.write(qPrintable(QString("\nplotImage <- function(image, title=NULL, label=NULL) { \n"
+                                    "\tp <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(rasterGrob(image$image), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=title) + xlab(label)\n"
+                                    "\treturn(p)"
+                                    "}\n")));
 
-    p.file.write(qPrintable(QString("\n\n\t# Print genuine matches below the EER \
-                                     \n\t \
-                                     for (i in 1:nrow(EX)) { \
-                                     \n\t\t path <- EX[i,1] \
-                                     \n\t\t points <- EX[i,2] \
-                                     \n\t\t file <- unlist(strsplit(path, \"[.]\"))[1] \
-                                     \n\t\t ext <- unlist(strsplit(path, \"[.]\"))[2]") +
-
-                            // These should be made into a function assuming we can return an image variable regardless of extension
-                            QString("\n\t\t\tif (ext == \"jpg\" || ext == \"JPEG\" || ext == \"jpeg\" || ext == \"JPG\") { \
-                                     \n\t\t\t img <- readJPEG(path)\n\t\t } \
-                                     else if (ext == \"PNG\" || ext == \"png\") { \
-                                     \n\t\t\t img <- readPNG(path)\n\t\t} \
-                                     else if (ext == \"TIFF\" || ext == \"tiff\" || ext == \"TIF\" || ext == \"tif\") { \
-                                     \n\t\t\t img <- readTIFF(path)\n\t\t} \
-                                     else {\n\t\t\tnext\n\t\t} ") +
-
-                            QString("\n\t\t name <- file \
-                                     \n\n\t\t g <- rasterGrob(img, interpolate=TRUE)\n\n\t\t") +
-
-                            QString("print(qplot(1:10, 1:10, geom=\"blank\") \
-                                    + annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) \
-                                    + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) \
-                                    + labs(title=\"Sample Landmarks\") + xlab(sprintf(\"Total Landmarks: %s\",points)))\n\t\t}}\n")));
+    p.file.write(qPrintable(QString("\nsample <- readData(Sample) \n"
+                                    "print(plotImage(sample[[1]],\"Sample Landmarks\",sprintf(\"Total Landmarks: %s\",sample[[1]]$value))) \n"
+                                    "truthSample <- readData(EXT)\n"
+                                    "predictedSample <- readData(EXP)\n"
+                                    "for (i in 1:length(predictedSample)) {\n"
+                                    "\tmultiplot(plotImage(predictedSample[[i]],\"Predicted Landmarks\",sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth Landmarks\",\"\"),cols=2)\n"
+                                    "}\n")));
 
     p.file.write(qPrintable(QString("\n"
                  "# Code to format error table\n"
