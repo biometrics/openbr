@@ -19,6 +19,7 @@
 #include <QFutureSynchronizer>
 #include <QLocalSocket>
 #include <QMetaProperty>
+#include <qnumeric.h>
 #include <QPointF>
 #include <QProcess>
 #include <QRect>
@@ -190,7 +191,7 @@ QList<QPointF> File::namedPoints() const
         const QVariant &variant = m_metadata[key];
         if (variant.canConvert<QPointF>()) {
             const QPointF point = variant.value<QPointF>();
-            if (!std::isnan(point.x()) && !std::isnan(point.y()))
+            if (!qIsNaN(point.x()) && !qIsNaN(point.y()))
                 landmarks.append(point);
         }
     }
