@@ -447,12 +447,9 @@ BR_EXPORT QDataStream &operator>>(QDataStream &stream, Template &t);
  */
 struct TemplateList : public QList<Template>
 {
-    bool uniform; /*!< \brief Reserved for internal use. True if all templates are aligned and of the same size and type. */
-    QVector<uchar> alignedData; /*!< \brief Reserved for internal use. */
-
-    TemplateList() : uniform(false) {}
-    TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
-    TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
+    TemplateList() {}
+    TemplateList(const QList<Template> &templates) { append(templates); } /*!< \brief Initialize the template list from another template list. */
+    TemplateList(const QList<File> &files) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
     /*!< \brief Create a template list from a memory buffer of individual templates. Compatible with '.gal' galleries. */
