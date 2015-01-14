@@ -7,56 +7,78 @@ namespace br
  * \ingroup transforms
  * \brief Gives time elapsed over a specified transform as a function of both images (or frames) and pixels.
  * \author Jordan Cheney \cite JordanCheney
+ * \author Josh Klontz \cite jklontz
  */
-class StopWatchTransform : public TimeVaryingTransform
+class StopWatchTransform : public MetaTransform
 {
     Q_OBJECT
+    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description)
+    BR_PROPERTY(QString, description, "Identity")
 
-    Q_PROPERTY(br::Transform* child READ get_child WRITE set_child RESET reset_child)
-    BR_PROPERTY(br::Transform*, child, NULL)
-
-    long timeElapsed;
-    long numImgs;
-    long numPixels;
+    br::Transform *transform;
+    mutable QMutex mutex;
+    mutable long miliseconds;
+    mutable long images;
+    mutable long pixels;
 
 public:
-    StopWatchTransform() : TimeVaryingTransform(false, false)
+    StopWatchTransform()
     {
-        timeElapsed = 0;
-        numImgs = 0;
-        numPixels = 0;
+        reset();
     }
 
 private:
-    void projectUpdate(const Template &src, Template &dst)
+    void reset()
     {
-        QTime watch;
-
-        if (child == NULL)
-            qFatal("Can't find child transform! Command line syntax is StopWatch(name of transform to profile)");
-
-        watch.start();
-
-        child->project(src, dst);
-
-        int time = watch.elapsed();
-
-        timeElapsed += time;
-        numImgs++;
-        numPixels += (src.m().rows * src.m().cols);
+        miliseconds = 0;
+        images = 0;
+        pixels = 0;
     }
 
-    void finalize(TemplateList &output)
+    void init()
     {
-        (void)output;
+        transform = Transform::make(description);
+    }
 
-        qDebug() << "\n\nProfiled " << numImgs << " images:\n" <<
-                    "\tavg time per image: " << (double)timeElapsed / numImgs << " ms\n" <<
-                    "\tavg time per pixel: " << (double)timeElapsed / numPixels << " ms\n";
+    void train(const QList<TemplateList> &data)
+    {
+        transform->train(data);
+    }
 
-        timeElapsed = 0;
-        numImgs = 0;
-        numPixels = 0;
+    void project(const Template &src, Template &dst) const
+    {
+        QTime watch;
+        watch.start();
+        transform->project(src, dst);
+
+        QMutexLocker locker(&mutex);
+        miliseconds += watch.elapsed();
+        images++;
+        foreach (const cv::Mat &m, src)
+            pixels += (m.rows * m.cols);
+    }
+
+    void finalize(TemplateList &)
+    {
+        qDebug("\nProfile for \"%s\"\n"
+               "\tSeconds: %g\n"
+               "\tTemplates/s: %g\n"
+               "\tPixels/s: %g\n",
+               qPrintable(description),
+               miliseconds / 1000.0,
+               images * 1000.0 / miliseconds,
+               pixels * 1000.0 / miliseconds);
+        reset();
+    }
+
+    void store(QDataStream &stream) const
+    {
+        transform->store(stream);
+    }
+
+    void load(QDataStream &stream)
+    {
+        transform->load(stream);
     }
 };
 
