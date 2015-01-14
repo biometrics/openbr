@@ -18,6 +18,7 @@
 #include "eval.h"
 #include "openbr/core/common.h"
 #include "openbr/core/qtutils.h"
+#include "openbr/core/opencvutils.h"
 #include <QMapIterator>
 
 using namespace cv;
@@ -1084,30 +1085,43 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     QStringList lines;
     lines.append("Plot,X,Y");
 
-    // Example
-    lines.append("Sample,landmarking_examples_truth/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
+    QtUtils::touchDir(QDir("landmarking_examples_truth"));
+    QtUtils::touchDir(QDir("landmarking_examples_predicted"));
 
-    // Alternatively, can we just pass this through a predetermined transform and write?
-    Enroll(truth[sampleIndex],"landmarking_examples_truth");
+    // Example
+    Transform *t = Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL);
+
+    Template drawn;
+    t->project(truth[sampleIndex],drawn);
+    OpenCVUtils::saveImage(drawn.m(),"landmarking_examples_truth/"+drawn.file.fileName());
+    lines.append("Sample,landmarking_examples_truth/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
 
     // Get best and worst performing examples
     QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
 
+    Transform *t2 = Transform::make("Open+Draw(rects=false)",NULL);
+
     const int totalExamples = 10;
     for (int i=0; i<totalExamples; i++) {
-        Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
+        Template truthDrawn;
+        t2->project(truth[exampleIndices[i].second],truthDrawn);
+        OpenCVUtils::saveImage(truthDrawn.m(),"landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName());
         lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_predicted");
+        Template predictedDrawn;
+        t2->project(predicted[exampleIndices[i].second],predictedDrawn);
+        OpenCVUtils::saveImage(predictedDrawn.m(),"landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName());
         lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-
     }
 
     for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
-        Enroll(truth[exampleIndices[i].second],"landmarking_examples_truth");
+        Template truthDrawn;
+        t2->project(truth[exampleIndices[i].second],truthDrawn);
+        OpenCVUtils::saveImage(truthDrawn.m(),"landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName());
         lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Enroll(predicted[exampleIndices[i].second],"landmarking_examples_predicted");
+        Template predictedDrawn;
+        t2->project(predicted[exampleIndices[i].second],predictedDrawn);
+        OpenCVUtils::saveImage(predictedDrawn.m(),"landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName());
         lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-
     }
 
     for (int i=0; i<pointErrors.size(); i++) {
