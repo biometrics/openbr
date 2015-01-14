@@ -407,6 +407,9 @@ struct AlgorithmCore
         rowSize = temp->totalSize();
         delete temp;
 
+        if (selfCompare)
+            rowSize = queryMetadata.size();
+
         // Is the column gallery already enrolled? We keep the enrolled column gallery in memory, and in multi-process
         // mode, every worker process retains a copy of this gallery in memory. When not in multi-process mode, we can
         // simple make sure the enrolled data is stored in a memGallery, but in multi-process mode we save the enrolled
