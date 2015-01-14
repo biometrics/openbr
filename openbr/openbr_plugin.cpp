@@ -1307,8 +1307,13 @@ void Gallery::init()
 {
     if (file.exists() && file.contains("append"))
     {
-        TemplateList data = this->read();
-        this->writeBlock(data);
+        File rFile = file;
+        rFile.remove("append");
+        Gallery *reader = Gallery::make(rFile);
+        TemplateList data = reader->read();
+        delete reader;
+
+        writeBlock(data);
     }
 }
 

@@ -766,8 +766,11 @@ class memGallery : public Gallery
 
 BR_REGISTER(Gallery, memGallery)
 
-FileList FileList::fromGallery(const File &file, bool cache)
+FileList FileList::fromGallery(const File &rFile, bool cache)
 {
+    File file = rFile;
+    file.remove("append");
+
     File targetMeta = file;
     targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
 
