@@ -169,9 +169,6 @@ struct AlgorithmCore
 
     void enroll(File input, File gallery = File())
     {
-        qDebug("Enrolling %s%s", qPrintable(input.flat()),
-               gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
-
         bool noOutput = false;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return;
@@ -186,9 +183,6 @@ struct AlgorithmCore
             FileList::fromGallery(gallery,true);
             fileExclusion = true;
         }
-
-        Gallery *temp = Gallery::make(input);
-        qint64 total = temp->totalSize();
 
         Transform *enroll = simplifiedTransform.data();
 
@@ -208,13 +202,23 @@ struct AlgorithmCore
         stages.append(progressCounter.data());
 
         QScopedPointer<Transform> pipeline(pipeTransforms(stages));
-
         QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+")"));
 
-        TemplateList data, output;
-        data.append(input);
-        progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
-        stream->projectUpdate(data, output);
+        foreach (const br::File &file, input.split()) {
+            qDebug("Enrolling %s%s", qPrintable(file.name),
+                    gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
+
+            Gallery *temp = Gallery::make(file);
+            qint64 total = temp->totalSize();
+            delete temp;
+
+            progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
+
+            TemplateList data, output;
+            data.append(file);
+
+            stream->projectUpdate(data, output);
+        }
 
         if (multiProcess)
             delete enroll;
