@@ -264,7 +264,7 @@ private:
                "-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth proprty name>\n"
                "-evalClustering <clusters> <gallery>\n"
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}]\n"
-               "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>]]\n"
+               "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-assertEval <simmat> <mask> <accuracy>\n"
                "-plotDetection <file> ... <file> {destination}\n"
