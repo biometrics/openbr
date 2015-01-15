@@ -19,17 +19,6 @@ using namespace std;
 namespace br
 {
 
-class Idiocy : public QObject
-{
-    Q_OBJECT
-public:
-    enum StreamModes { DistributeFrames,
-                       StreamGallery
-    };
-
-    Q_ENUMS(StreamModes)
-};
-
 class FrameData
 {
 public:
@@ -194,21 +183,9 @@ private:
     QList<FrameData *> buffer2;
 };
 
-// Given a template as input, return N templates as output, one at a time on subsequent
-// calls to getNext
-class TemplateProcessor
-{
-public:
-    virtual ~TemplateProcessor() {}
-    virtual bool open(Template &input)=0;
-    virtual bool isOpen()=0;
-    virtual void close()=0;
-    virtual bool getNextTemplate(Template &output)=0;
-protected:
-    Template basis;
-};
-
-struct StreamGallery : public TemplateProcessor
+// Given a template as input, open the file contained as a gallery, and return templates one at a time on
+// calls to getNextTemplate
+struct StreamGallery
 {
     bool open(Template &input)
     {
@@ -265,45 +242,6 @@ protected:
 
     TemplateList currentData;
     int nextIdx;
-
-};
-
-class DirectReturn : public TemplateProcessor
-{
-public:
-    DirectReturn()
-    {
-        data_ok = false;
-    }
-
-    // We don't do anything, just prepare to return input when getNext is called.
-    bool open(Template &input)
-    {
-        basis = input;
-        data_ok =true;
-        return data_ok;
-    }
-
-    bool isOpen() { return data_ok; }
-
-    void close()
-    {
-        data_ok = false;
-        basis.clear();
-    }
-
-    bool getNextTemplate(Template &output)
-    {
-        if (!data_ok)
-            return false;
-        output = basis;
-        data_ok = false;
-        return true;
-    }
-
-protected:
-    // Have we sent our template yet?
-    bool data_ok;
 };
 
 // Interface for sequentially getting data from some data source.
@@ -320,7 +258,6 @@ public:
         {
             allFrames.addItem(new FrameData());
         }
-        frameSource = NULL;
     }
 
     virtual ~DataSource()
@@ -336,12 +273,7 @@ public:
 
     void close()
     {
-        if (this->frameSource)
-        {
-            frameSource->close();
-            delete frameSource;
-            frameSource = NULL;
-        }
+        frameSource.close();
     }
 
     int size()
@@ -349,12 +281,11 @@ public:
         return this->templates.size();
     }
 
-    bool open(const TemplateList &input, br::Idiocy::StreamModes _mode)
+    bool open(const TemplateList &input)
     {
         // Set up variables specific to us
         current_template_idx = 0;
         templates = input;
-        mode = _mode;
 
         is_broken = false;
         allReturned = false;
@@ -465,21 +396,11 @@ protected:
         bool open_res = false;
         while (!open_res)
         {
-            if (frameSource)
-                frameSource->close();
+            frameSource.close();
 
             Template curr = this->templates[current_template_idx];
-            if (mode == br::Idiocy::DistributeFrames)
-            {
-                if (!frameSource)
-                    frameSource = new DirectReturn();
-            }
-            else if (mode == br::Idiocy::StreamGallery)
-            {
-                if (!frameSource)
-                    frameSource = new StreamGallery();
-            }
-            open_res = frameSource->open(curr);
+
+            open_res = frameSource.open(curr);
             if (!open_res)
             {
                 current_template_idx++;
@@ -498,7 +419,7 @@ protected:
 
         while (!got_frame)
         {
-            got_frame = frameSource->getNextTemplate(aTemplate);
+            got_frame = frameSource.getNextTemplate(aTemplate);
 
             // OK we got a frame
             if (got_frame) {
@@ -529,14 +450,11 @@ protected:
     // Index of the template in the templatelist we are currently reading from
     int current_template_idx;
 
-    // What do we do to each template
-    br::Idiocy::StreamModes mode;
-
     // list of templates we are workign from
     TemplateList templates;
 
     // processor for the current template
-    TemplateProcessor *frameSource;
+    StreamGallery frameSource;
 
     int next_sequence_number;
     int final_frame;
@@ -972,10 +890,8 @@ class DirectStreamTransform : public CompositeTransform
 
 public:
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
-    Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
     Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     BR_PROPERTY(int, activeFrames, 100)
-    BR_PROPERTY(br::Idiocy::StreamModes, readMode, br::Idiocy::StreamGallery)
     BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     friend class StreamTransfrom;
@@ -1079,7 +995,7 @@ public:
         if (src.empty())
             return;
 
-        bool res = readStage->dataSource.open(src,readMode);
+        bool res = readStage->dataSource.open(src);
         if (!res) {
             qDebug("stream failed to open %s", qPrintable(dst[0].file.name));
             return;
@@ -1290,10 +1206,8 @@ public:
 
     Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
-    Q_PROPERTY(br::Idiocy::StreamModes readMode READ get_readMode WRITE set_readMode RESET reset_readMode)
 
     BR_PROPERTY(int, activeFrames, 100)
-    BR_PROPERTY(br::Idiocy::StreamModes, readMode, br::Idiocy::StreamGallery)
     BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     bool timeVarying() const { return true; }
@@ -1335,7 +1249,6 @@ public:
         basis = QSharedPointer<DirectStreamTransform>((DirectStreamTransform *) Transform::make("DirectStream",this));
         basis->transforms.clear();
         basis->activeFrames = this->activeFrames;
-        basis->readMode = this->readMode;
         basis->endPoint = this->endPoint;
 
         // We need at least a CompositeTransform * to acess transform's children.
