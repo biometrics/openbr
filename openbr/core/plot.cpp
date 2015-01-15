@@ -546,11 +546,13 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
                                     "algs <- unique(Box$%1)\n"
                                     "algs <- algs[!duplicated(algs)]\n"
                                     "print(plotImage(sample[[1]],\"Sample Landmarks\",sprintf(\"Total Landmarks: %s\",sample[[1]]$value))) \n"
-                                    "for (j in 1:length(algs)) {\n"
-                                    "truthSample <- readData(EXT[EXT$. == algs[[j]],])\n"
-                                    "predictedSample <- readData(EXP[EXP$. == algs[[j]],])\n"
-                                    "\tfor (i in 1:length(predictedSample)) {\n"
-                                    "\t\tmultiplot(plotImage(predictedSample[[i]],sprintf(\"%s\\nPredicted Landmarks\",algs[[j]]),sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth\\nLandmarks\",\"\"),cols=2)\n"
+                                    "if (nrow(EXT) != 0 && nrow(EXP)) {\n"
+                                    "\tfor (j in 1:length(algs)) {\n"
+                                    "\ttruthSample <- readData(EXT[EXT$. == algs[[j]],])\n"
+                                    "\tpredictedSample <- readData(EXP[EXP$. == algs[[j]],])\n"
+                                    "\t\tfor (i in 1:length(predictedSample)) {\n"
+                                    "\t\t\tmultiplot(plotImage(predictedSample[[i]],sprintf(\"%s\\nPredicted Landmarks\",algs[[j]]),sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth\\nLandmarks\",\"\"),cols=2)\n"
+                                    "\t\t}\n"
                                     "\t}\n"
                                     "}\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
 

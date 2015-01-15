@@ -1040,7 +1040,7 @@ static void projectAndWrite(Transform *t, const Template &src, const QString &fi
     OpenCVUtils::saveImage(dst.m(),filePath);
 }
 
-float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB, int sampleIndex)
+float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB, int sampleIndex, int totalExamples)
 {
     qDebug("Evaluating landmarking of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     TemplateList predicted(TemplateList::fromGallery(predictedGallery));
@@ -1109,7 +1109,6 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
     QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)",NULL));
 
-    const int totalExamples = 10;
     for (int i=0; i<totalExamples; i++) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
