@@ -1033,6 +1033,13 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     return averageOverlap;
 }
 
+static void projectAndWrite(Transform *t, const Template &src, const QString &filePath)
+{
+    Template dst;
+    t->project(src,dst);
+    OpenCVUtils::saveImage(dst.m(),filePath);
+}
+
 float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv, int normalizationIndexA, int normalizationIndexB, int sampleIndex)
 {
     qDebug("Evaluating landmarking of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
@@ -1089,39 +1096,38 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     QtUtils::touchDir(QDir("landmarking_examples_predicted"));
 
     // Example
-    Transform *t = Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL);
+    {
+        QScopedPointer<Transform> t(Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL));
 
-    Template drawn;
-    t->project(truth[sampleIndex],drawn);
-    OpenCVUtils::saveImage(drawn.m(),"landmarking_examples_truth/"+drawn.file.fileName());
-    lines.append("Sample,landmarking_examples_truth/"+truth[sampleIndex].file.fileName()+","+QString::number(truth[sampleIndex].file.points().size()));
+        QString filePath = "landmarking_examples_truth/"+truth[sampleIndex].file.fileName();
+        projectAndWrite(t.data(), truth[sampleIndex],filePath);
+        lines.append("Sample,"+filePath+","+QString::number(truth[sampleIndex].file.points().size()));
+    }
 
     // Get best and worst performing examples
     QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
 
-    Transform *t2 = Transform::make("Open+Draw(rects=false)",NULL);
+    QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)",NULL));
 
     const int totalExamples = 10;
     for (int i=0; i<totalExamples; i++) {
-        Template truthDrawn;
-        t2->project(truth[exampleIndices[i].second],truthDrawn);
-        OpenCVUtils::saveImage(truthDrawn.m(),"landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName());
-        lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Template predictedDrawn;
-        t2->project(predicted[exampleIndices[i].second],predictedDrawn);
-        OpenCVUtils::saveImage(predictedDrawn.m(),"landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName());
-        lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
+        projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
+        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+
+        filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
+        projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
+        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
-        Template truthDrawn;
-        t2->project(truth[exampleIndices[i].second],truthDrawn);
-        OpenCVUtils::saveImage(truthDrawn.m(),"landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName());
-        lines.append("EXT,landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
-        Template predictedDrawn;
-        t2->project(predicted[exampleIndices[i].second],predictedDrawn);
-        OpenCVUtils::saveImage(predictedDrawn.m(),"landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName());
-        lines.append("EXP,landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName()+","+QString::number(exampleIndices[i].first));
+        QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
+        projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
+        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+
+        filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
+        projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
+        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=0; i<pointErrors.size(); i++) {
