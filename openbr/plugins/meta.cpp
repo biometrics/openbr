@@ -540,7 +540,7 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
+        if (fileName.isEmpty()) baseName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
         else baseName = fileName;
         if (!tryLoad())
             transform = make(transformString);

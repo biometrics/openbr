@@ -1413,6 +1413,13 @@ Transform *Transform::make(QString str, QObject *parent)
     if (str.startsWith('(') && str.endsWith(')'))
         return make(str.mid(1, str.size()-2), parent);
 
+    // Base name not found? Try constructing it via LoadStore
+    if (!Factory<Transform>::names().contains(parsed.suffix())) {
+        Transform *tform = make("<"+parsed.suffix()+">", parent);
+        applyAdditionalProperties(parsed, tform);
+        return tform;
+    }
+
     //! [Construct the root transform]
     Transform *transform = Factory<Transform>::make("." + str);
     //! [Construct the root transform]
