@@ -529,11 +529,11 @@ public:
         return res;
     }
 
-    bool setPropertyRecursive(const QString &name, QVariant value)
+    QList<Object *> getChildren() const
     {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-        return transform->setPropertyRecursive(name, value);
+        QList<Object *> rval;
+        rval.append(transform);
+        return rval;
     }
 private:
 

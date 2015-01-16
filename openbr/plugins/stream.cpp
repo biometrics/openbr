@@ -1325,9 +1325,10 @@ public:
         return res;
     }
 
+    // can't use general setPropertyRecursive due to special handling of basis
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
-        if (br::Object::setPropertyRecursive(name, value))
+        if (br::Object::setExistingProperty(name, value))
             return true;
 
         for (int i=0; i < basis->transforms.size();i++) {
@@ -1336,6 +1337,12 @@ public:
                 return true;
             }
         }
+
+        if (basis->endPoint->setPropertyRecursive(name, value)) {
+            basis->endPoint->init();
+            return true;
+        }
+
         return false;
     }
 

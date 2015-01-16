@@ -138,9 +138,10 @@ class IndependentTransform : public MetaTransform
         return transform->description(expanded);
     }
 
+    // can't use general setPropertyRecursive because of transforms oddness
     bool setPropertyRecursive(const QString &name, QVariant value)
     {
-        if (br::Object::setPropertyRecursive(name, value))
+        if (br::Object::setExistingProperty(name, value))
             return true;
 
         if (!transform->setPropertyRecursive(name, value))

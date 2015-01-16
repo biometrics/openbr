@@ -227,19 +227,6 @@ public:
         return output;
     }
 
-
-    bool setPropertyRecursive(const QString &name, QVariant value)
-    {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-
-        if (transform->setPropertyRecursive(name, value)) {
-            init();
-            return true;
-        }
-        return false;
-    }
-
     Transform *smartCopy(bool &newTransform)
     {
         if (!timeVarying()) {
@@ -391,21 +378,6 @@ public:
         newTransform = true;
         return output;
     }
-
-    bool setPropertyRecursive(const QString &name, QVariant value)
-    {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-
-        for (int i=0; i < this->transforms.size();i++) {
-            if (transforms[i]->setPropertyRecursive(name, value)) {
-                init();
-                return true;
-            }
-        }
-        return false;
-    }
-
 
 protected:
     bool isTimeVarying;

@@ -603,6 +603,22 @@ public:
     
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
+    bool setExistingProperty(const QString &name, QVariant value); /*! <\brief attempt to set property 'name' on this object. If name is not a pre-declared property, return false */
+
+    virtual QList<Object *> getChildren() const; /*!< \brief retrieve children of this object, default version scans properties, subclasses which do not sotre their children as properties must overload. */
+
+    template<typename T>
+    QList<T *> getChildren() const
+    {
+        QList<Object *> children = getChildren();
+        QList<T *> output;
+        foreach(Object *obj, children) {
+            T *temp = dynamic_cast<T *>(obj);
+            if (temp != NULL)
+                output.append(temp);
+        }
+        return output;
+    }
 
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
@@ -1275,12 +1291,6 @@ public:
      * \brief Recursively retrieve a named event, returns NULL if an event is not found.
      */
     virtual TemplateEvent *getEvent(const QString &name);
-
-    /*!
-     * \brief Get a list of child transforms of this transform, child transforms are considered to be
-     * any transforms stored as properties of this transform.
-     */
-    QList<Transform *> getChildren() const;
 
     static Transform *deserialize(QDataStream &stream)
     {
