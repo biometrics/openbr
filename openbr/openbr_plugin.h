@@ -1401,7 +1401,9 @@ public:
 
     static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
-    virtual float classify(const cv::Mat &image, bool returnSum = false) const = 0;
+    // By convention, classify should return a value normalized such that the threshold is 0. Negative values
+    // can be interpreted as negative samples while positives values are positive samples.
+    virtual float classify(const cv::Mat &image) const = 0;
 };
 
 /*!
