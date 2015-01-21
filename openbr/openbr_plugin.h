@@ -1385,6 +1385,7 @@ public:
 
     static Representation *make(QString str, QObject *parent); /*!< \brief Make a representation from a string. */
     virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
+    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) { (void) images; (void)labels; }
     // By convention, an empty indices list will result in all feature responses being calculated
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
@@ -1400,7 +1401,7 @@ public:
 
     static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
-    virtual float classify(const cv::Mat &image) const = 0;
+    virtual float classify(const cv::Mat &image, bool returnSum = false) const = 0;
 };
 
 /*!
