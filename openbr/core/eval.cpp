@@ -53,7 +53,7 @@ struct OperatingPoint
         : score(_score), FAR(_FAR), TAR(_TAR) {}
 };
 
-static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPoints, float FAR)
+static OperatingPoint getOperatingPointGivenFAR(const QList<OperatingPoint> &operatingPoints, float FAR)
 {
     int index = 0;
     while (operatingPoints[index].FAR < FAR) {
@@ -74,6 +74,32 @@ static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPo
     const float bScore = score1 - mScore*FAR1;
     return OperatingPoint(mScore * FAR + bScore,FAR, mTAR * FAR + bTAR);
 }
+
+static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &operatingPoints, float TAR)
+{
+    int index = 0;
+    while (operatingPoints[index].TAR < TAR) {
+      index++;
+      if (index == operatingPoints.size())
+	return OperatingPoint(operatingPoints.last().score, operatingPoints.last().FAR, TAR);
+    }
+
+
+    const float FAR1 = (index == 0 ? 0 : operatingPoints[index-1].FAR);
+    const float TAR1 = (index == 0 ? 0 : operatingPoints[index-1].TAR);
+    const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index-1].score);
+    const float FAR2 = operatingPoints[index].FAR;
+    const float TAR2 = operatingPoints[index].TAR;
+    const float score2 = operatingPoints[index].score;
+    const float mTAR = (TAR2 - TAR1) / (FAR2 - FAR1);
+    const float bTAR = TAR1 - mTAR*FAR1;
+    const float mScore = (score2 - score1) / (FAR2 - FAR1);
+    const float bScore = score1 - mScore*FAR1;
+
+    const float FAR = (TAR - bTAR) / mTAR;
+    return OperatingPoint(mScore * FAR + bScore,FAR, TAR);
+}
+
 
 static float getCMC(const QVector<int> &firstGenuineReturns, int rank)
 {
@@ -231,6 +257,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
             operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
+
             if (EERIndex == 0) {
                 if (floor(float(falsePositives)/impostorCount*100+0.5)/100 == floor((1-float(truePositives)/genuineCount)*100+0.5)/100) EERIndex = index-1;
             }
@@ -277,7 +304,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     // Write Detection Error Tradeoff (DET), PRE, REC
     float FAR=0.000001;
     for (int i=0; i<Max_Points; i++) {
-        OperatingPoint operatingPoint = getOperatingPoint(operatingPoints, FAR);
+        OperatingPoint operatingPoint = getOperatingPointGivenFAR(operatingPoints, FAR);
         lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
                                               QString::number(1-operatingPoint.TAR)));
         lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPoint.score),
@@ -288,13 +315,21 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         FAR *=1.02807;
     }
 
-    // Write FAR/TAR Table (FT)
-    lines.append(qPrintable(QString("FT,0.000001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.000001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("FT,0.00001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.00001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("FT,0.0001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.0001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("FT,0.001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.01).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.1).TAR, 'f', 3))));
+    // Write TAR@FAR Table (FT)
+    lines.append(qPrintable(QString("FT,0.000001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.000001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.00001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.0001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.1).TAR, 'f', 3))));
+
+    // Write FAR@TAR Table (FatT)
+    lines.append(qPrintable(QString("FatT,0.95,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.95).FAR, 'f', 3))));
+    lines.append(qPrintable(QString("FatT,0.85,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.85).FAR, 'f', 3))));
+    lines.append(qPrintable(QString("FatT,0.75,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.75).FAR, 'f', 3))));
+    lines.append(qPrintable(QString("FatT,0.65,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.65).FAR, 'f', 3))));
+    lines.append(qPrintable(QString("FatT,0.50,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.50).FAR, 'f', 3))));
+    lines.append(qPrintable(QString("FatT,0.40,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.40).FAR, 'f', 3))));
 
     //Write CMC Table (CT)
     lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
@@ -305,8 +340,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     lines.append(qPrintable(QString("CT,100,%1").arg(QString::number(getCMC(firstGenuineReturns, 100), 'f', 3))));
 
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, 0.01).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
 
     // Attempt to read template size from enrolled gallery and write to output CSV
     size_t maxSize(0);
@@ -343,10 +378,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
 
     QtUtils::writeFile(csv, lines);
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
-    qDebug("TAR @ FAR = 0.01:    %.3f",getOperatingPoint(operatingPoints, 0.01).TAR);
-    qDebug("TAR @ FAR = 0.001:   %.3f",getOperatingPoint(operatingPoints, 0.001).TAR);
-    qDebug("TAR @ FAR = 0.0001:  %.3f",getOperatingPoint(operatingPoints, 0.0001).TAR);
-    qDebug("TAR @ FAR = 0.00001: %.3f",getOperatingPoint(operatingPoints, 0.00001).TAR);
+    qDebug("TAR @ FAR = 0.01:    %.3f",getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
+    qDebug("TAR @ FAR = 0.001:   %.3f",getOperatingPointGivenFAR(operatingPoints, 0.001).TAR);
+    qDebug("TAR @ FAR = 0.0001:  %.3f",getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR);
+    qDebug("TAR @ FAR = 0.00001: %.3f",getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR);
 
     qDebug("\nRetrieval Rate @ Rank = %d: %.3f", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
 
@@ -571,8 +606,8 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
 
     float result;
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPoint(operatingPoints, 0.001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, 0.01).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
 
     qDebug("TAR @ FAR = 0.01: %.3f", result);
     QtUtils::writeFile(csv, lines);
