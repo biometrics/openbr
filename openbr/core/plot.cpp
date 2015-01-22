@@ -215,8 +215,6 @@ struct RPlot
                        "rownames(mat) <- c(\"TAR = 0.95\", \"TAR = 0.85\", \"TAR = 0.75\", \"TAR = 0.65\", \"TAR = 0.50\", \"TAR = 0.40\")\n"
                        "F_at_Ttable <- as.table(mat)\n"
                        "\n"
-
-                       "\n"
                        "# Code to format CMC Table\n"
                        "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
@@ -261,7 +259,7 @@ struct RPlot
                                "plot.new()\n"
                                "print(textplot(FTtable))\n"
                                "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
-	                       "print(textplot(F_at_Ttable))\n"
+                               "print(textplot(F_at_Ttable))\n"
                                "print(title(\"Table  of False Accept Rates at various True Accept Rates\"))\n"
                                "print(textplot(CMCtable))\n"
                                "print(title(\"Table of retrieval rate at various ranks\"))\n"
