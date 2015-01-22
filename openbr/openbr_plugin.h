@@ -1393,10 +1393,13 @@ class BR_EXPORT Representation : public Object
 public:
     virtual ~Representation() {}
 
+    static Representation *make(QString str, QObject *parent); /*!< \brief Make a representation from a string. */
     virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
+    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) { (void) images; (void)labels; }
     // By convention, an empty indices list will result in all feature responses being calculated
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
+    virtual int numFeatures() const = 0;
 };
 
 class BR_EXPORT Classifier : public Object
@@ -1406,7 +1409,10 @@ class BR_EXPORT Classifier : public Object
 public:
     virtual ~Classifier() {}
 
+    static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
+    // By convention, classify should return a value normalized such that the threshold is 0. Negative values
+    // can be interpreted as a negative classification and positive values as a positive classification.
     virtual float classify(const cv::Mat &image) const = 0;
 };
 
@@ -1497,10 +1503,14 @@ Q_DECLARE_METATYPE(br::Template)
 Q_DECLARE_METATYPE(br::TemplateList)
 Q_DECLARE_METATYPE(br::Transform*)
 Q_DECLARE_METATYPE(br::Distance*)
+Q_DECLARE_METATYPE(br::Representation*)
+Q_DECLARE_METATYPE(br::Classifier*)
 Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(QList<float>)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
 Q_DECLARE_METATYPE(QList<br::Distance*>)
+Q_DECLARE_METATYPE(QList<br::Representation*>)
+Q_DECLARE_METATYPE(QList<br::Classifier*>)
 
 #endif // __cplusplus
 
