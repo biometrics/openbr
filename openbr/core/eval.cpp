@@ -321,25 +321,11 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
 						      QString::number(far, 'f'),
 						      QString::number(getOperatingPointGivenFAR(operatingPoints, far).TAR, 'f', 3))));
 
-//    lines.append(qPrintable(QString("FT,0.000001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.000001).TAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FT,0.00001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FT,0.0001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FT,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FT,0.01,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FT,0.1,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.1).TAR, 'f', 3))));
-
     // Write FAR@TAR Table (FatT)
     foreach (float tar, QList<float>() << 0.95 << 0.85 << 0.75 << 0.65 << 0.5 << 0.4)
       lines.append(qPrintable(QString("FatT,%1,%2").arg(
                          QString::number(tar, 'f', 2),
                          QString::number(getOperatingPointGivenTAR(operatingPoints, tar).FAR, 'f', 3))));
-
-//    lines.append(qPrintable(QString("FatT,0.95,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.95).FAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FatT,0.85,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.85).FAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FatT,0.75,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.75).FAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FatT,0.65,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.65).FAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FatT,0.50,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.50).FAR, 'f', 3))));
-//    lines.append(qPrintable(QString("FatT,0.40,%1").arg(QString::number(getOperatingPointGivenTAR(operatingPoints, 0.40).FAR, 'f', 3))));
 
     //Write CMC Table (CT)
     lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
