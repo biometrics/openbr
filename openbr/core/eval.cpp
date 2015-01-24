@@ -40,7 +40,7 @@ struct Comparison
     inline bool operator<(const Comparison &other) const
     {
         if (score != other.score) return (score > other.score);
-        else                      return !genuine; // Tie-break favors pessimistic behavior of ranking impostors higher.
+        else                      return !genuine && other.genuine; // Tie-break favors pessimistic behavior of ranking impostors higher.
     }
 };
 
