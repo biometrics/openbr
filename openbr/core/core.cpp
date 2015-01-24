@@ -261,7 +261,7 @@ struct AlgorithmCore
             if (!galleryFiles.isEmpty()) return;
 
             // Enroll it
-            enroll(file);
+            enroll(file, getMemoryGallery(file));
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
         }
