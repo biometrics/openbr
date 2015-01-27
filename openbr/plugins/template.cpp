@@ -1,6 +1,7 @@
 #include <QtCore>
 
 #include "openbr_internal.h"
+#include "openbr/core/common.h"
 
 namespace br
 {
@@ -229,7 +230,8 @@ class ReorderPointsTransform : public UntrainableMetadataTransform
     {
         if (from.size() == to.size()) {
             QList<QPointF> points = src.points();
-            if (!points.contains(QPointF(-1,-1))) {
+            int size = src.points().size();
+            if (!points.contains(QPointF(-1,-1)) && Common::Max(from) < size && Common::Max(to) < size) {
                 for (int i=0; i<from.size(); i++) {
                     std::swap(points[from[i]],points[to[i]]);
                 }
