@@ -37,29 +37,39 @@ janus_error janus_create_gallery(const char *data_path, janus_metadata metadata,
     return JANUS_SUCCESS;
 }
 
+typedef QPair<janus_template_id, FlatTemplate> TemplatePair;
+
+TemplatePair _janus_create_flat_template(const char *data_path, TemplateData templateData, bool verbose)
+{
+    janus_template template_;
+    janus_template_id templateID;
+    JANUS_ASSERT(TemplateIterator::create(data_path, templateData, &template_, &templateID, verbose))
+    return TemplatePair(templateID, FlatTemplate(template_));
+}
+
 janus_error janus_create_templates(const char *data_path, janus_metadata metadata, const char *gallery_file, int verbose)
 {
     TemplateIterator ti(metadata, true);
     TemplateData templateData = ti.next();
-    unsigned int num_templates = 1;
 
-    janus_gallery gallery;
-    JANUS_ASSERT(janus_allocate_gallery(&gallery))
-    QFutureSynchronizer<void> futures;
+    QFutureSynchronizer<TemplatePair> futures;
     while (!templateData.templateIDs.empty()) {
-        futures.addFuture(QtConcurrent::run(_janus_create_template, data_path, templateData, gallery, verbose));
+        futures.addFuture(QtConcurrent::run(_janus_create_flat_template, data_path, templateData, verbose));
         templateData = ti.next();
-        num_templates++;
     }
     futures.waitForFinished();
-    janus_flat_gallery flat_gallery = new janus_data[num_templates*janus_max_template_size()];
-    size_t bytes;
-    JANUS_ASSERT(janus_flatten_gallery(gallery, flat_gallery, &bytes))
+    QList< QFuture<TemplatePair> > flat_templates = futures.futures();
 
     std::ofstream file;
     file.open(gallery_file, std::ios::out | std::ios::binary);
-    file.write((char*)flat_gallery, bytes);
+    foreach (const QFuture<TemplatePair> &future, flat_templates) {
+        janus_template_id templateID = future.result().first;
+        FlatTemplate flatTemplate = future.result().second;
+        file.write((char*)&templateID, sizeof(templateID));
+        file.write((char*)&flatTemplate.data->bytes, sizeof(flatTemplate.data->bytes));
+        file.write((char*)flatTemplate.data->flat_template, flatTemplate.data->bytes);
+    }
+
     file.close();
-    delete[] flat_gallery;
     return JANUS_SUCCESS;
 }
