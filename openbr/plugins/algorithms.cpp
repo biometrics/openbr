@@ -79,9 +79,9 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("RegisterAffine", "Open+Affine(256,256,0.37,0.45)");
         Globals->abbreviations.insert("ContrastEnhanced", "Open+Affine(256,256,0.37,0.45)+Cvt(Gray)+Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)");
         Globals->abbreviations.insert("ColoredLBP", "Open+Affine(128,128,0.37,0.45)+Cvt(Gray)+Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+ColoredU2");
-        Globals->abbreviations.insert("FlipMUCT","Flip+ReorderPoints([ 0, 1, 2, 3, 4, 5, 6, 7, 17,18,19,20,21,31,32,36,37,38,39,40,41,48,49,50,55,56,60,61,65], \
+        Globals->abbreviations.insert("FlipiBug","Flip+ReorderPoints([ 0, 1, 2, 3, 4, 5, 6, 7, 17,18,19,20,21,31,32,36,37,38,39,40,41,48,49,50,55,56,60,61,65], \
                                                                      [16,15,14,13,12,11,10, 9, 26,25,24,23,22,35,34,45,44,43,42,47,46,54,53,52,59,58,64,63,67],true)");
-        Globals->abbreviations.insert("FlipMUCTNoJaw","Flip+ReorderPoints([0,1,2,3,4,14,15,19,20,21,22,23,24,31,32,33,38,39,43,44,48], \
+        Globals->abbreviations.insert("FlipiBugNoJaw","Flip+ReorderPoints([0,1,2,3,4,14,15,19,20,21,22,23,24,31,32,33,38,39,43,44,48], \
                                                                           [9,8,7,6,5,18,17,28,27,26,25,30,29,37,36,35,42,41,47,46,50],true)");
 
         // Transforms
