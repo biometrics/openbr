@@ -229,9 +229,12 @@ class ReorderPointsTransform : public UntrainableMetadataTransform
     {
         if (from.size() == to.size()) {
             QList<QPointF> points = src.points();
-            for (int i=0; i<from.size(); i++)
-                std::swap(points[from[i]],points[to[i]]);
-            dst.setPoints(points);
+            if (!points.contains(QPointF(-1,-1))) {
+                for (int i=0; i<from.size(); i++) {
+                    std::swap(points[from[i]],points[to[i]]);
+                }
+                dst.setPoints(points);
+            }
         } else qFatal("Inconsistent sizes for to and from index lists.");
     }
 };

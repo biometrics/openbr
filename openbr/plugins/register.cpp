@@ -146,12 +146,15 @@ private:
 
         QList<QPointF> flippedPoints;
         foreach(const QPointF &point, src.file.points()) {
-            if (axis == Y) {
-                flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
-            } else if (axis == X) {
-                flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
-            } else {
-                flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+            // Check for missing data using the QPointF(-1,-1) convention
+            if (point != QPointF(-1,-1)) {
+                if (axis == Y) {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
+                } else if (axis == X) {
+                    flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
+                } else {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+                }
             }
         }
 
