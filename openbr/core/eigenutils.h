@@ -78,9 +78,6 @@ namespace EigenUtils
 
     // Compute the element-wise standard deviation
     float eigStd(const Eigen::MatrixXf& x);
-
-    // Convert cv::Mat to Eigen
-    Eigen::MatrixXf toEigen(const cv::Mat m);
 }
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
