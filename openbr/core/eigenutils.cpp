@@ -8,7 +8,7 @@ void EigenUtils::printSize(Eigen::MatrixXf X) {
     qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
 }
 
-float EigenUtils::eigStd(const Eigen::MatrixXf& x) {
+float EigenUtils::stddev(const Eigen::MatrixXf& x) {
     return sqrt((x.array() - x.mean()).pow(2).sum() / (x.cols() * x.rows()));
 }
 

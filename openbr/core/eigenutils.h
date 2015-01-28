@@ -77,7 +77,7 @@ namespace EigenUtils
     QList<QPointF> matrixToPoints(const Eigen::MatrixXf P);
 
     // Compute the element-wise standard deviation
-    float eigStd(const Eigen::MatrixXf& x);
+    float stddev(const Eigen::MatrixXf& x);
 }
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
