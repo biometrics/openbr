@@ -45,25 +45,6 @@ void EigenUtils::writeEigen(VectorXf X, QString filename) {
     format->write(br::Template(m));
 }
 
-void EigenUtils::printEigen(Eigen::MatrixXd X) {
-    for (int i = 0; i < X.rows(); i++) {
-        QString str;
-        for (int j = 0; j < X.cols(); j++) {
-            str.append(QString::number(X(i,j)) + " ");
-        }
-        qDebug() << str;
-    }
-}
-void EigenUtils::printEigen(Eigen::MatrixXf X) {
-    for (int i = 0; i < X.rows(); i++) {
-        QString str;
-        for (int j = 0; j < X.cols(); j++) {
-            str.append(QString::number(X(i,j)) + " ");
-        }
-        qDebug() << str;
-    }
-}
-
 void EigenUtils::printSize(Eigen::MatrixXf X) {
     qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
 }

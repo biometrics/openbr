@@ -18,6 +18,7 @@
 #define EIGENUTILS_H
 
 #include <QDataStream>
+#include <QDebug>
 #include <Eigen/Core>
 #include <assert.h>
 
@@ -25,12 +26,29 @@
 
 namespace EigenUtils
 {
+    template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+    QString matrixToString(const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat)
+    {
+        QString result;
+        if (mat.rows() > 1) result += "{ ";
+        for (int r=0; r<mat.rows(); r++) {
+            if ((mat.rows() > 1) && (r > 0)) result += "  ";
+            if (mat.cols() > 1) result += "[";
+            for (int c=0; c<mat.cols(); c++) {
+                result += QString::number(mat(r, c));
+                if (c < mat.cols() - 1) result += ", ";
+            }
+            if (mat.cols() > 1) result += "]";
+            if (r < mat.rows()-1) result += "\n";
+        }
+        if (mat.rows() > 1) result += " }";
+        return result;
+    }
+
     void writeEigen(Eigen::MatrixXf X, QString filename);
     void writeEigen(Eigen::MatrixXd X, QString filename);
     void writeEigen(Eigen::VectorXd X, QString filename);
     void writeEigen(Eigen::VectorXf X, QString filename);
-    void printEigen(Eigen::MatrixXd X);
-    void printEigen(Eigen::MatrixXf X);
     void printSize(Eigen::MatrixXf X);
 
     // Converts x y points in a single vector to two column matrix
@@ -49,6 +67,13 @@ namespace EigenUtils
 
     // Convert cv::Mat to Eigen
     Eigen::MatrixXf toEigen(const cv::Mat m);
+}
+
+template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+inline QDebug operator<<(QDebug dbg, const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat)
+{
+    dbg.nospace() << EigenUtils::matrixToString(mat);
+    return dbg.space();
 }
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
