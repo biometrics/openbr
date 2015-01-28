@@ -764,7 +764,8 @@ public:
                         }
                         else
                         {
-                            dst[i].file.set(labelSet[idx], rectSet[idx]);
+                            if (labels.isEmpty()) dst[i].file.appendRect(rectSet[idx]);
+                            else dst[i].file.set(labelSet[idx], rectSet[idx]);
                         }
                     }
                 }
