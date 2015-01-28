@@ -600,7 +600,7 @@ class SparseLDATransform : public Transform
 
         //Only works on binary class problems for now
         assert(ldaOrig.projection.cols() == 1);
-        float ldaStd = eigStd(ldaOrig.projection);
+        float ldaStd = EigenUtils::eigStd(ldaOrig.projection);
         for (int i = 0; i < ldaOrig.projection.rows(); i++)
             if (abs(ldaOrig.projection(i)) > varThreshold * ldaStd)
                 selections.append(i);

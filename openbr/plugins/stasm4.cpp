@@ -180,7 +180,7 @@ private:
     void project(const Template &src, Template &dst) const
     {
         QList<float> paramList = src.file.getList<float>("affineParameters");
-        Eigen::MatrixXf points = pointsToMatrix(src.file.points(), true);
+        Eigen::MatrixXf points = EigenUtils::pointsToMatrix(src.file.points(), true);
         Eigen::MatrixXf affine = Eigen::MatrixXf::Zero(3, 3);
         for (int i = 0, cnt = 0; i < 2; i++)
             for (int j = 0; j < 3; j++, cnt++)
@@ -192,7 +192,7 @@ private:
         points =  affineInv * pointsT;
         dst = src;
         dst.file.clearPoints();
-        dst.file.setPoints(matrixToPoints(points.transpose()));
+        dst.file.setPoints(EigenUtils::matrixToPoints(points.transpose()));
     }
 };
 

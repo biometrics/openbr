@@ -5,7 +5,7 @@ using namespace Eigen;
 using namespace cv;
 
 //Helper function to quickly write eigen matrix to disk. Not efficient.
-void writeEigen(MatrixXf X, QString filename) {
+void EigenUtils::writeEigen(MatrixXf X, QString filename) {
     Mat m(X.rows(),X.cols(),CV_32FC1);
     for (int i = 0; i < X.rows(); i++) {
         for (int j = 0; j < X.cols(); j++) {
@@ -16,7 +16,7 @@ void writeEigen(MatrixXf X, QString filename) {
     format->write(br::Template(m));
 }
 
-void writeEigen(MatrixXd X, QString filename) {
+void EigenUtils::writeEigen(MatrixXd X, QString filename) {
     Mat m(X.rows(),X.cols(),CV_32FC1);
     for (int i = 0; i < X.rows(); i++) {
         for (int j = 0; j < X.cols(); j++) {
@@ -27,7 +27,7 @@ void writeEigen(MatrixXd X, QString filename) {
     format->write(br::Template(m));
 }
 
-void writeEigen(VectorXd X, QString filename) {
+void EigenUtils::writeEigen(VectorXd X, QString filename) {
     Mat m(X.size(),1,CV_32FC1);
     for (int i = 0; i < X.rows(); i++) {
         m.at<float>(i,0) = (float)X(i);
@@ -36,7 +36,7 @@ void writeEigen(VectorXd X, QString filename) {
     format->write(br::Template(m));
 }
 
-void writeEigen(VectorXf X, QString filename) {
+void EigenUtils::writeEigen(VectorXf X, QString filename) {
     Mat m(X.size(),1,CV_32FC1);
     for (int i = 0; i < X.rows(); i++) {
         m.at<float>(i,0) = X(i);
@@ -45,7 +45,7 @@ void writeEigen(VectorXf X, QString filename) {
     format->write(br::Template(m));
 }
 
-void printEigen(Eigen::MatrixXd X) {
+void EigenUtils::printEigen(Eigen::MatrixXd X) {
     for (int i = 0; i < X.rows(); i++) {
         QString str;
         for (int j = 0; j < X.cols(); j++) {
@@ -54,7 +54,7 @@ void printEigen(Eigen::MatrixXd X) {
         qDebug() << str;
     }
 }
-void printEigen(Eigen::MatrixXf X) {
+void EigenUtils::printEigen(Eigen::MatrixXf X) {
     for (int i = 0; i < X.rows(); i++) {
         QString str;
         for (int j = 0; j < X.cols(); j++) {
@@ -64,20 +64,15 @@ void printEigen(Eigen::MatrixXf X) {
     }
 }
 
-void printSize(Eigen::MatrixXf X) {
+void EigenUtils::printSize(Eigen::MatrixXf X) {
     qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
 }
 
-float eigMean(const Eigen::MatrixXf& x) {
-    return x.array().sum() / (x.rows() * x.cols());
+float EigenUtils::eigStd(const Eigen::MatrixXf& x) {
+    return sqrt((x.array() - x.mean()).pow(2).sum() / (x.cols() * x.rows()));
 }
 
-float eigStd(const Eigen::MatrixXf& x) {
-    float mean = eigMean(x);
-    return sqrt((x.array() - mean).pow(2).sum() / (x.cols() * x.rows()));
-}
-
-MatrixXf removeRowCol(const MatrixXf X, int row, int col) {
+MatrixXf EigenUtils::removeRowCol(const MatrixXf X, int row, int col) {
     MatrixXf Y(X.rows() - 1,X.cols() - 1);
 
     for (int i1 = 0, i2 = 0; i1 < X.rows(); i1++) {
@@ -96,7 +91,7 @@ MatrixXf removeRowCol(const MatrixXf X, int row, int col) {
     return Y;
 }
 
-MatrixXf pointsToMatrix(const QList<QPointF> points, bool isAffine) {
+MatrixXf EigenUtils::pointsToMatrix(const QList<QPointF> points, bool isAffine) {
     MatrixXf P(points.size(), isAffine ? 3 : 2);
     for (int i = 0; i < points.size(); i++) {
         P(i, 0) = points[i].x();
@@ -107,7 +102,7 @@ MatrixXf pointsToMatrix(const QList<QPointF> points, bool isAffine) {
     return P;
 }
 
-QList<QPointF> matrixToPoints(const Eigen::MatrixXf P) {
+QList<QPointF> EigenUtils::matrixToPoints(const Eigen::MatrixXf P) {
     QList<QPointF> points;
     for (int i = 0; i < P.rows(); i++)
         points.append(QPointF(P(i, 0), P(i, 1)));
@@ -115,7 +110,7 @@ QList<QPointF> matrixToPoints(const Eigen::MatrixXf P) {
 }
 
 //Converts x y points in a single vector to two column matrix
-Eigen::MatrixXf vectorToMatrix(const Eigen::MatrixXf vector) {
+Eigen::MatrixXf EigenUtils::vectorToMatrix(const Eigen::MatrixXf vector) {
     int n = vector.rows();
     Eigen::MatrixXf matrix(n / 2, 2);
     for (int i = 0; i < n / 2; i++) {
@@ -126,7 +121,7 @@ Eigen::MatrixXf vectorToMatrix(const Eigen::MatrixXf vector) {
     return matrix;
 }
 
-Eigen::MatrixXf matrixToVector(const Eigen::MatrixXf matrix) {
+Eigen::MatrixXf EigenUtils::matrixToVector(const Eigen::MatrixXf matrix) {
     int n2 = matrix.rows();
     Eigen::MatrixXf vector(n2 * 2, 1);
     for (int i = 0; i < n2; i++) {
@@ -137,7 +132,7 @@ Eigen::MatrixXf matrixToVector(const Eigen::MatrixXf matrix) {
     return vector;
 }
 
-Eigen::MatrixXf toEigen(const Mat m) {
+Eigen::MatrixXf EigenUtils::toEigen(const Mat m) {
     if (m.type() != CV_32F)
         qFatal("Mat to Eigen Converstation only supports CV_32F");
 
