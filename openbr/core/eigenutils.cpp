@@ -4,47 +4,6 @@
 using namespace Eigen;
 using namespace cv;
 
-//Helper function to quickly write eigen matrix to disk. Not efficient.
-void EigenUtils::writeEigen(MatrixXf X, QString filename) {
-    Mat m(X.rows(),X.cols(),CV_32FC1);
-    for (int i = 0; i < X.rows(); i++) {
-        for (int j = 0; j < X.cols(); j++) {
-            m.at<float>(i,j) = X(i,j);
-        }
-    }
-    QScopedPointer<br::Format> format(br::Factory<br::Format>::make(filename));
-    format->write(br::Template(m));
-}
-
-void EigenUtils::writeEigen(MatrixXd X, QString filename) {
-    Mat m(X.rows(),X.cols(),CV_32FC1);
-    for (int i = 0; i < X.rows(); i++) {
-        for (int j = 0; j < X.cols(); j++) {
-            m.at<float>(i,j) = (float)X(i,j);
-        }
-    }
-    QScopedPointer<br::Format> format(br::Factory<br::Format>::make(filename));
-    format->write(br::Template(m));
-}
-
-void EigenUtils::writeEigen(VectorXd X, QString filename) {
-    Mat m(X.size(),1,CV_32FC1);
-    for (int i = 0; i < X.rows(); i++) {
-        m.at<float>(i,0) = (float)X(i);
-    }
-    QScopedPointer<br::Format> format(br::Factory<br::Format>::make(filename));
-    format->write(br::Template(m));
-}
-
-void EigenUtils::writeEigen(VectorXf X, QString filename) {
-    Mat m(X.size(),1,CV_32FC1);
-    for (int i = 0; i < X.rows(); i++) {
-        m.at<float>(i,0) = X(i);
-    }
-    QScopedPointer<br::Format> format(br::Factory<br::Format>::make(filename));
-    format->write(br::Template(m));
-}
-
 void EigenUtils::printSize(Eigen::MatrixXf X) {
     qDebug() << "Rows=" << X.rows() << "\tCols=" << X.cols();
 }

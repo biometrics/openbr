@@ -22,7 +22,10 @@
 #include <Eigen/Core>
 #include <assert.h>
 
+#include <opencv2/core/eigen.hpp>
 #include <opencv2/core/core.hpp>
+
+#include "openbr/core/qtutils.h"
 
 namespace EigenUtils
 {
@@ -45,10 +48,21 @@ namespace EigenUtils
         return result;
     }
 
-    void writeEigen(Eigen::MatrixXf X, QString filename);
-    void writeEigen(Eigen::MatrixXd X, QString filename);
-    void writeEigen(Eigen::VectorXd X, QString filename);
-    void writeEigen(Eigen::VectorXf X, QString filename);
+    template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+    void writeMatrix(const Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > &mat, const QString &filename)
+    {
+        int r = mat.rows();
+        int c = mat.cols();
+
+        _Scalar *data = new _Scalar[r*c];
+        for (int i=0; i<r; i++)
+            for (int j=0; j<c; j++)
+                data[i*c+j] = mat(i, j);
+        int bytes = r*c*sizeof(_Scalar);
+        QByteArray byteArray((const char*)data,bytes);
+        QtUtils::writeFile(filename,byteArray);
+    }
+
     void printSize(Eigen::MatrixXf X);
 
     // Converts x y points in a single vector to two column matrix
