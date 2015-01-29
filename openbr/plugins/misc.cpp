@@ -130,7 +130,7 @@ private:
             }
         }
         if (dst.file.fte)
-            qWarning("Error opening %s from %s", qPrintable(file.flat()), qPrintable(QDir::currentPath()));
+            qWarning("Error opening %s", qPrintable(src.file.flat()));
     }
 };
 BR_REGISTER(Transform, ReadTransform)
