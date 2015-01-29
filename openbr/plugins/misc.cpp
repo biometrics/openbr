@@ -1008,7 +1008,6 @@ class TransposeTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, TransposeTransform)
 
-
 }
 
 #include "misc.moc"
