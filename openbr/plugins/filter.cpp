@@ -38,15 +38,26 @@ class GammaTransform : public UntrainableTransform
 
     void init()
     {
-        lut.create(256, 1, CV_32FC1);
-        if (gamma == 0) for (int i=0; i<256; i++) lut.at<float>(i,0) = log((float)i);
-        else            for (int i=0; i<256; i++) lut.at<float>(i,0) = pow(i, gamma);
+        lut.create(256, 1, CV_8UC1);
+        if (gamma == 0) for (int i=0; i<256; i++) {
+            lut.at<unsigned char>(i,0) = log((float)i);
+        }
+        else {
+            for (int i=0; i<256; i++){
+                float val = pow(i, gamma);
+                if (val > 255)
+                    val = 255;
+                lut.at<unsigned char>(i,0) = val;
+            }
+        }
     }
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().depth() == CV_8U) LUT(src, lut, dst);
-        else                          pow(src, gamma, dst);
+        if (src.m().depth() == CV_8U)
+            LUT(src, lut, dst);
+        else
+            pow(src, gamma, dst);
     }
 };
 
