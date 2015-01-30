@@ -349,7 +349,7 @@ public:
         QByteArray data = readArray;
         QDataStream deserializer(data);
         Transform *res = Transform::deserialize(deserializer);
-        sendSignal(SignalType::OUTPUT_AVAILABLE);
+        sendSignal(CommunicationManager::OUTPUT_AVAILABLE);
         return res;
     }
 
