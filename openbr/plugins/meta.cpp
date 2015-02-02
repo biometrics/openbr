@@ -96,17 +96,15 @@ class PipeTransform : public CompositeTransform
 
         int i = 0;
         while (i < transforms.size()) {
-            fprintf(stderr, "\n%s", qPrintable(transforms[i]->objectName()));
-
             // Conditional statement covers likely case that first transform is untrainable
             if (transforms[i]->trainable) {
-                fprintf(stderr, " training...");
+                qDebug() << "Training " << transforms[i]->description() << "\n...";
                 transforms[i]->train(dataLines);
             }
 
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
-                fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
+                qDebug() << "Projecting " << transforms[i]->description() << "\n...";
                 for (int j=0; j < dataLines.size();j++) {
                     TemplateList junk;
                     splitFTEs(dataLines[j], junk);
@@ -132,7 +130,16 @@ class PipeTransform : public CompositeTransform
                    !transforms[nextTrainableTransform]->timeVarying())
                 nextTrainableTransform++;
 
-            fprintf(stderr, " projecting...");
+            // No more trainable transforms? Don't need any more projects then
+            if (nextTrainableTransform == transforms.size())
+                break;
+
+            fprintf(stderr, "Projecting %s", qPrintable(transforms[i]->description()));
+            for (int j=i+1; j < nextTrainableTransform; j++)
+                fprintf(stderr,"+%s", qPrintable(transforms[j]->description()));
+            fprintf(stderr, "\n...\n");
+            fflush(stderr);
+
             QFutureSynchronizer<void> futures;
             for (int j=0; j < dataLines.size(); j++)
                 futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j], i, nextTrainableTransform));
@@ -512,7 +519,6 @@ class LoadStoreTransform : public MetaTransform
 
 public:
     Transform *transform;
-    QString baseName;
 
     LoadStoreTransform() : transform(NULL) {}
 
@@ -542,8 +548,8 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) baseName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
-        else baseName = fileName;
+        if (fileName.isEmpty()) fileName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
+
         if (!tryLoad())
             transform = make(transformString);
         else
@@ -562,9 +568,9 @@ private:
 
         transform->train(data);
 
-        qDebug("Storing %s", qPrintable(baseName));
+        qDebug("Storing %s", qPrintable(fileName));
         QtUtils::BlockCompression compressedOut;
-        QFile fout(baseName);
+        QFile fout(fileName);
         QtUtils::touchDir(fout);
         compressedOut.setBasis(&fout);
 
@@ -606,8 +612,8 @@ private:
 
     QString getFileName() const
     {
-        if (QFileInfo(baseName).exists()) return baseName;
-        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
+        if (QFileInfo(fileName).exists()) return fileName;
+        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + fileName;
         return QFileInfo(file).exists() ? file : QString();
     }
 
