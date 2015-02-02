@@ -543,10 +543,8 @@ void BlockCompression::close()
 {
     // flush output buffer
     if ((openMode() & QIODevice::WriteOnly) && precompressedBlockWriter) {
-        qDebug() << "Serializing final block";
         QByteArray compressedBlock = qCompress(precompressedBlockWriter->buffer(), -1);
         blockWriter << compressedBlock;
-        qDebug() << "Done";
     }
     basis->close();
 }
