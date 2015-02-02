@@ -17,6 +17,8 @@
 #include <QFutureSynchronizer>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
+#include <qbuffer.h>
+
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -553,7 +555,7 @@ private:
         return transform->timeVarying();
     }
 
-    void train(const TemplateList &data)
+    void train(const QList<TemplateList> &data)
     {
         if (QFileInfo(getFileName()).exists())
             return;
@@ -561,11 +563,20 @@ private:
         transform->train(data);
 
         qDebug("Storing %s", qPrintable(baseName));
-        QByteArray byteArray;
-        QDataStream stream(&byteArray, QFile::WriteOnly);
-        stream << transform->description();
+        QtUtils::BlockCompression compressedOut;
+        QFile fout(baseName);
+        QtUtils::touchDir(fout);
+        compressedOut.setBasis(&fout);
+
+        QDataStream stream(&compressedOut);
+        QString desc = transform->description();
+
+        if (!compressedOut.open(QFile::WriteOnly))
+            qFatal("Failed to open %s for writing.", qPrintable(file));
+
+        stream << desc;
         transform->store(stream);
-        QtUtils::writeFile(baseName, byteArray, -1);
+        compressedOut.close();
     }
 
     void project(const Template &src, Template &dst) const
@@ -606,12 +617,19 @@ private:
         if (file.isEmpty()) return false;
 
         qDebug("Loading %s", qPrintable(file));
-        QByteArray data;
-        QtUtils::readFile(file, data, true);
-        QDataStream stream(&data, QFile::ReadOnly);
+        QFile fin(file);
+        QtUtils::BlockCompression reader(&fin);
+        if (!reader.open(QIODevice::ReadOnly)) {
+            if (QFileInfo(file).exists()) qFatal("Unable to open %s for reading. Check file permissions.", qPrintable(file));
+            else            qFatal("Unable to open %s for reading. File does not exist.", qPrintable(file));
+        }
+
+        QDataStream stream(&reader);
         stream >> transformString;
+
         transform = Transform::make(transformString);
         transform->load(stream);
+
         return true;
     }
 };
