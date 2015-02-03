@@ -16,7 +16,7 @@
 
 #include "common.h"
 #include <QMutex>
-#include <RandomLib\Random.hpp>
+#include <RandomLib/Random.hpp>
 
 using namespace std;
 
