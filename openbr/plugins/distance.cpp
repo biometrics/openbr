@@ -35,7 +35,7 @@ namespace br
  * \brief Standard distance metrics
  * \author Josh Klontz \cite jklontz
  */
-class DistDistance : public Distance
+class DistDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_ENUMS(Metric)
@@ -128,7 +128,7 @@ BR_REGISTER(Distance, DistDistance)
  * \brief DistDistance wrapper.
  * \author Josh Klontz \cite jklontz
  */
-class DefaultDistance : public Distance
+class DefaultDistance : public UntrainableDistance
 {
     Q_OBJECT
     Distance *distance;
@@ -279,7 +279,7 @@ BR_REGISTER(Distance, FuseDistance)
  * \brief Fast 8-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class ByteL1Distance : public Distance
+class ByteL1Distance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -296,7 +296,7 @@ BR_REGISTER(Distance, ByteL1Distance)
  * \brief Fast 4-bit L1 distance
  * \author Josh Klontz \cite jklontz
  */
-class HalfByteL1Distance : public Distance
+class HalfByteL1Distance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -313,7 +313,7 @@ BR_REGISTER(Distance, HalfByteL1Distance)
  * \brief Returns -log(distance(a,b)+1)
  * \author Josh Klontz \cite jklontz
  */
-class NegativeLogPlusOneDistance : public Distance
+class NegativeLogPlusOneDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
@@ -347,7 +347,7 @@ BR_REGISTER(Distance, NegativeLogPlusOneDistance)
  * \brief Returns \c true if the templates are identical, \c false otherwise.
  * \author Josh Klontz \cite jklontz
  */
-class IdenticalDistance : public Distance
+class IdenticalDistance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -368,7 +368,7 @@ BR_REGISTER(Distance, IdenticalDistance)
  * \brief Online distance metric to attenuate match scores across multiple frames
  * \author Brendan klare \cite bklare
  */
-class OnlineDistance : public Distance
+class OnlineDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
@@ -395,7 +395,7 @@ BR_REGISTER(Distance, OnlineDistance)
  * \brief Attenuation function based distance from attributes
  * \author Scott Klum \cite sklum
  */
-class AttributeDistance : public Distance
+class AttributeDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(QString attribute READ get_attribute WRITE set_attribute RESET reset_attribute STORED false)
@@ -421,7 +421,7 @@ BR_REGISTER(Distance, AttributeDistance)
  * \brief Sum match scores across multiple distances
  * \author Scott Klum \cite sklum
  */
-class SumDistance : public Distance
+class SumDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)

@@ -707,11 +707,9 @@ class MemoryGalleries : public Initializer
 
 public:
     static QHash<File, TemplateList> galleries; /*!< TODO */
-    static QHash<File, bool> aligned; /*!< TODO */
 };
 
 QHash<File, TemplateList> MemoryGalleries::galleries;
-QHash<File, bool> MemoryGalleries::aligned;
 
 BR_REGISTER(Initializer, MemoryGalleries)
 
@@ -733,19 +731,12 @@ class memGallery : public Gallery
         if ((galleryFile.suffix() == "gal") && galleryFile.exists() && !MemoryGalleries::galleries.contains(file)) {
             QSharedPointer<Gallery> gallery(Factory<Gallery>::make(galleryFile));
             MemoryGalleries::galleries[file] = gallery->read();
-            align(MemoryGalleries::galleries[file]);
-            MemoryGalleries::aligned[file] = true;
             gallerySize = MemoryGalleries::galleries[file].size();
         }
     }
 
     TemplateList readBlock(bool *done)
     {
-        if (!MemoryGalleries::aligned[file]) {
-            align(MemoryGalleries::galleries[file]);
-            MemoryGalleries::aligned[file] = true;
-        }
-
         TemplateList templates = MemoryGalleries::galleries[file].mid(block*readBlockSize, readBlockSize);
         for (qint64 i = 0; i < templates.size();i++) {
             templates[i].file.set("progress", i + block * readBlockSize);
@@ -759,36 +750,6 @@ class memGallery : public Gallery
     void write(const Template &t)
     {
         MemoryGalleries::galleries[file].append(t);
-        MemoryGalleries::aligned[file] = false;
-    }
-
-    static void align(TemplateList &templates)
-    {
-        if (!templates.empty() && templates[0].size() > 1) return;
-
-        bool uniform = true;
-        QVector<uchar> alignedData(templates.bytes<size_t>());
-        size_t offset = 0;
-        for (int i=0; i<templates.size(); i++) {
-            Template &t = templates[i];
-            if (t.size() > 1) qFatal("Can't handle multi-matrix template %s.", qPrintable(t.file.flat()));
-
-            cv::Mat &m = t;
-            if (m.data) {
-                const size_t size = m.total() * m.elemSize();
-                if (!m.isContinuous()) qFatal("Requires continuous matrix data of size %d for %s.", (int)size, qPrintable(t.file.flat()));
-                memcpy(&(alignedData.data()[offset]), m.ptr(), size);
-                m = cv::Mat(m.rows, m.cols, m.type(), &(alignedData.data()[offset]));
-                offset += size;
-            }
-            uniform = uniform &&
-                      (m.rows == templates.first().m().rows) &&
-                      (m.cols == templates.first().m().cols) &&
-                      (m.type() == templates.first().m().type());
-        }
-
-        templates.uniform = uniform;
-        templates.alignedData = alignedData;
     }
 
     qint64 totalSize()
@@ -805,8 +766,11 @@ class memGallery : public Gallery
 
 BR_REGISTER(Gallery, memGallery)
 
-FileList FileList::fromGallery(const File &file, bool cache)
+FileList FileList::fromGallery(const File &rFile, bool cache)
 {
+    File file = rFile;
+    file.remove("append");
+
     File targetMeta = file;
     targetMeta.name = targetMeta.path() + targetMeta.baseName() + "_meta" + targetMeta.hash() + ".mem";
 

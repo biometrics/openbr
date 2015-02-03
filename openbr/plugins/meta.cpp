@@ -529,18 +529,18 @@ public:
         return res;
     }
 
-    bool setPropertyRecursive(const QString &name, QVariant value)
+    QList<Object *> getChildren() const
     {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-        return transform->setPropertyRecursive(name, value);
+        QList<Object *> rval;
+        rval.append(transform);
+        return rval;
     }
 private:
 
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) baseName = QRegExp("^[a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
+        if (fileName.isEmpty()) baseName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
         else baseName = fileName;
         if (!tryLoad())
             transform = make(transformString);

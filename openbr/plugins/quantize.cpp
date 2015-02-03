@@ -251,7 +251,7 @@ QVector<Mat> ProductQuantizationLUTs;
  * \brief Distance in a product quantized space \cite jegou11
  * \author Josh Klontz \cite jklontz
  */
-class ProductQuantizationDistance : public Distance
+class ProductQuantizationDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(bool bayesian READ get_bayesian WRITE set_bayesian RESET reset_bayesian STORED false)
@@ -291,7 +291,7 @@ BR_REGISTER(Distance, ProductQuantizationDistance)
  * \brief Recurively computed distance in a product quantized space
  * \author Josh Klontz \cite jklontz
  */
-class RecursiveProductQuantizationDistance : public Distance
+class RecursiveProductQuantizationDistance : public UntrainableDistance
 {
     Q_OBJECT
     Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)

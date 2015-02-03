@@ -161,6 +161,7 @@ struct RPlot
                        "FRR <- data[grep(\"FRR\",data$Plot),-c(1)]\n"
                        "SD <- data[grep(\"SD\",data$Plot),-c(1)]\n"
                        "FT <- data[grep(\"FT\",data$Plot),-c(1)]\n"
+                       "FatT <- data[grep(\"FatT\",data$Plot),-c(1)]\n"
                        "CT <- data[grep(\"CT\",data$Plot),-c(1)]\n"
                        "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
                        "TS <- data[grep(\"TS\",data$Plot),-c(1)]\n"
@@ -178,6 +179,7 @@ struct RPlot
                        "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
                        "FT$Y <- as.numeric(as.character(FT$Y))\n"
+                       "FatT$Y <- as.numeric(as.character(FatT$Y))\n"
                        "CT$Y <- as.numeric(as.character(CT$Y))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
                        "TS$Y <- as.character(TS$Y)\n"
@@ -204,6 +206,14 @@ struct RPlot
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
                        "FTtable <- as.table(mat)\n"
+                       "\n"
+                       "# Code to format TAR@FAR table\n"
+                       "algs <- unique(FT$%2)\n"
+                       "algs <- algs[!duplicated(algs)]\n"
+                       "mat <- matrix(FatT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                       "colnames(mat) <- algs \n"
+                       "rownames(mat) <- c(\"TAR = 0.95\", \"TAR = 0.85\", \"TAR = 0.75\", \"TAR = 0.65\", \"TAR = 0.50\", \"TAR = 0.40\")\n"
+                       "F_at_Ttable <- as.table(mat)\n"
                        "\n"
                        "# Code to format CMC Table\n"
                        "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
@@ -249,6 +259,8 @@ struct RPlot
                                "plot.new()\n"
                                "print(textplot(FTtable))\n"
                                "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
+                               "print(textplot(F_at_Ttable))\n"
+                               "print(title(\"Table  of False Accept Rates at various True Accept Rates\"))\n"
                                "print(textplot(CMCtable))\n"
                                "print(title(\"Table of retrieval rate at various ranks\"))\n"
                                "if (nrow(TS) != 0) {\n\t"
@@ -322,7 +334,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + theme(legend.position=%1)").arg(rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
+                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
+                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()\n\n")));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +

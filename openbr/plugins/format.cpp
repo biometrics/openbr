@@ -293,7 +293,11 @@ class mtxFormat : public Format
 
     Template read() const
     {
-        return BEE::readMatrix(file);
+        QString target, query;
+        Template result = BEE::readMatrix(file, &target, &query);
+        result.file.set("Target", target);
+        result.file.set("Query", query);
+        return result;
     }
 
     void write(const Template &t) const

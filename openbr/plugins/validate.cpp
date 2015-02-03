@@ -139,7 +139,7 @@ BR_REGISTER(Transform, CrossValidateTransform)
  * \brief Cross validate a distance metric.
  * \author Josh Klontz \cite jklontz
  */
-class CrossValidateDistance : public Distance
+class CrossValidateDistance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -159,7 +159,7 @@ BR_REGISTER(Distance, CrossValidateDistance)
  * \brief Checks target metadata against filters.
  * \author Josh Klontz \cite jklontz
  */
-class FilterDistance : public Distance
+class FilterDistance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -190,7 +190,7 @@ BR_REGISTER(Distance, FilterDistance)
  * \brief Checks target metadata against query metadata.
  * \author Scott Klum \cite sklum
  */
-class MetadataDistance : public Distance
+class MetadataDistance : public UntrainableDistance
 {
     Q_OBJECT
 
@@ -241,7 +241,7 @@ BR_REGISTER(Distance, MetadataDistance)
  * \brief Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
  * \author Scott Klum \cite sklum
  */
-class RejectDistance : public Distance
+class RejectDistance : public UntrainableDistance
 {
     Q_OBJECT
 

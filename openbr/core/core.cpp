@@ -77,7 +77,7 @@ struct AlgorithmCore
         qDebug("Training Enrollment");
         trainingWrapper->train(data);
 
-        if (!distance.isNull()) {
+        if (!distance.isNull() && distance->trainable()) {
             if (Globals->crossValidate > 0)
                 for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
 
@@ -169,9 +169,6 @@ struct AlgorithmCore
 
     void enroll(File input, File gallery = File())
     {
-        qDebug("Enrolling %s%s", qPrintable(input.flat()),
-               gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
-
         bool noOutput = false;
         if (gallery.name.isEmpty()) {
             if (input.name.isEmpty()) return;
@@ -186,9 +183,6 @@ struct AlgorithmCore
             FileList::fromGallery(gallery,true);
             fileExclusion = true;
         }
-
-        Gallery *temp = Gallery::make(input);
-        qint64 total = temp->totalSize();
 
         Transform *enroll = simplifiedTransform.data();
 
@@ -208,13 +202,23 @@ struct AlgorithmCore
         stages.append(progressCounter.data());
 
         QScopedPointer<Transform> pipeline(pipeTransforms(stages));
-
         QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+")"));
 
-        TemplateList data, output;
-        data.append(input);
-        progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
-        stream->projectUpdate(data, output);
+        foreach (const br::File &file, input.split()) {
+            qDebug("Enrolling %s%s", qPrintable(file.name),
+                    gallery.isNull() ? "" : qPrintable(" to " + gallery.flat()));
+
+            Gallery *temp = Gallery::make(file);
+            qint64 total = temp->totalSize();
+            delete temp;
+
+            progressCounter->setPropertyRecursive("totalProgress", QString::number(total));
+
+            TemplateList data, output;
+            data.append(file);
+
+            stream->projectUpdate(data, output);
+        }
 
         if (multiProcess)
             delete enroll;
@@ -257,7 +261,7 @@ struct AlgorithmCore
             if (!galleryFiles.isEmpty()) return;
 
             // Enroll it
-            enroll(file);
+            enroll(file, getMemoryGallery(file));
             gallery.reset(Gallery::make(getMemoryGallery(file)));
             galleryFiles = gallery->files();
         }
@@ -406,6 +410,9 @@ struct AlgorithmCore
 
         rowSize = temp->totalSize();
         delete temp;
+
+        if (selfCompare)
+            rowSize = queryMetadata.size();
 
         // Is the column gallery already enrolled? We keep the enrolled column gallery in memory, and in multi-process
         // mode, every worker process retains a copy of this gallery in memory. When not in multi-process mode, we can

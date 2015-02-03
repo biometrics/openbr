@@ -447,12 +447,9 @@ BR_EXPORT QDataStream &operator>>(QDataStream &stream, Template &t);
  */
 struct TemplateList : public QList<Template>
 {
-    bool uniform; /*!< \brief Reserved for internal use. True if all templates are aligned and of the same size and type. */
-    QVector<uchar> alignedData; /*!< \brief Reserved for internal use. */
-
-    TemplateList() : uniform(false) {}
-    TemplateList(const QList<Template> &templates) : uniform(false) { append(templates); } /*!< \brief Initialize the template list from another template list. */
-    TemplateList(const QList<File> &files) : uniform(false) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
+    TemplateList() {}
+    TemplateList(const QList<Template> &templates) { append(templates); } /*!< \brief Initialize the template list from another template list. */
+    TemplateList(const QList<File> &files) { foreach (const File &file, files) append(file); } /*!< \brief Initialize the template list from a file list. */
     BR_EXPORT static TemplateList fromGallery(const File &gallery); /*!< \brief Create a template list from a br::Gallery. */
 
     /*!< \brief Create a template list from a memory buffer of individual templates. Compatible with '.gal' galleries. */
@@ -606,6 +603,22 @@ public:
     
     void setProperty(const QString &name, QVariant value); /*!< \brief Overload of QObject::setProperty to handle OpenBR data types. */
     virtual bool setPropertyRecursive(const QString &name, QVariant value); /*!< \brief Recursive version of setProperty, try to set the property on this object, or its children, returns true if successful. */
+    bool setExistingProperty(const QString &name, QVariant value); /*! <\brief attempt to set property 'name' on this object. If name is not a pre-declared property, return false */
+
+    virtual QList<Object *> getChildren() const; /*!< \brief retrieve children of this object, default version scans properties, subclasses which do not sotre their children as properties must overload. */
+
+    template<typename T>
+    QList<T *> getChildren() const
+    {
+        QList<Object *> children = getChildren();
+        QList<T *> output;
+        foreach(Object *obj, children) {
+            T *temp = dynamic_cast<T *>(obj);
+            if (temp != NULL)
+                output.append(temp);
+        }
+        return output;
+    }
 
     static QStringList parse(const QString &string, char split = ','); /*!< \brief Splits the string while respecting lexical scoping of <tt>()</tt>, <tt>[]</tt>, <tt>\<\></tt>, and <tt>{}</tt>. */
 
@@ -1080,6 +1093,8 @@ public:
     virtual ~Format() {}
     virtual Template read() const = 0; /*!< \brief Returns a br::Template created by reading #br::Object::file. */
     virtual void write(const Template &t) const = 0; /*!< \brief Writes the br::Template to #br::Object::file. */
+    static Template read(const QString &file);
+    static void write(const QString &file, const Template &t);
 };
 
 /*!
@@ -1277,12 +1292,6 @@ public:
      */
     virtual TemplateEvent *getEvent(const QString &name);
 
-    /*!
-     * \brief Get a list of child transforms of this transform, child transforms are considered to be
-     * any transforms stored as properties of this transform.
-     */
-    QList<Transform *> getChildren() const;
-
     static Transform *deserialize(QDataStream &stream)
     {
         QString desc;
@@ -1358,7 +1367,8 @@ public:
     static Distance *make(QString str, QObject *parent); /*!< \brief Make a distance from a string. */
 
     static QSharedPointer<Distance> fromAlgorithm(const QString &algorithm); /*!< \brief Retrieve an algorithm's distance. */
-    virtual void train(const TemplateList &src) { (void) src; } /*!< \brief Train the distance. */
+    virtual bool trainable() { return true; } /*!< \brief \c true if The distance implements train(), false otherwise. */
+    virtual void train(const TemplateList &src) = 0; /*!< \brief Train the distance. */
     virtual void compare(const TemplateList &target, const TemplateList &query, Output *output) const; /*!< \brief Compare two template lists. */
     virtual QList<float> compare(const TemplateList &targets, const Template &query) const; /*!< \brief Compute the normalized distance between a template and a template list. */
     virtual float compare(const Template &a, const Template &b) const; /*!< \brief Compute the distance between two templates. */
@@ -1383,10 +1393,13 @@ class BR_EXPORT Representation : public Object
 public:
     virtual ~Representation() {}
 
+    static Representation *make(QString str, QObject *parent); /*!< \brief Make a representation from a string. */
     virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
+    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) { (void) images; (void)labels; }
     // By convention, an empty indices list will result in all feature responses being calculated
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
+    virtual int numFeatures() const = 0;
 };
 
 class BR_EXPORT Classifier : public Object
@@ -1396,7 +1409,10 @@ class BR_EXPORT Classifier : public Object
 public:
     virtual ~Classifier() {}
 
+    static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
+    // By convention, classify should return a value normalized such that the threshold is 0. Negative values
+    // can be interpreted as a negative classification and positive values as a positive classification.
     virtual float classify(const cv::Mat &image) const = 0;
 };
 
@@ -1487,10 +1503,14 @@ Q_DECLARE_METATYPE(br::Template)
 Q_DECLARE_METATYPE(br::TemplateList)
 Q_DECLARE_METATYPE(br::Transform*)
 Q_DECLARE_METATYPE(br::Distance*)
+Q_DECLARE_METATYPE(br::Representation*)
+Q_DECLARE_METATYPE(br::Classifier*)
 Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(QList<float>)
 Q_DECLARE_METATYPE(QList<br::Transform*>)
 Q_DECLARE_METATYPE(QList<br::Distance*>)
+Q_DECLARE_METATYPE(QList<br::Representation*>)
+Q_DECLARE_METATYPE(QList<br::Classifier*>)
 
 #endif // __cplusplus
 

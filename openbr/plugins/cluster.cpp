@@ -19,6 +19,7 @@
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
+#include <fstream>
 
 using namespace cv;
 
@@ -225,6 +226,7 @@ class CollectNNTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         dst.file = src.file;
+        dst.clear();
         dst.m() = cv::Mat();
         Neighbors neighbors;
         for (int i=0; i < src.m().cols;i++) {
@@ -249,36 +251,41 @@ class LogNNTransform : public TimeVaryingTransform
     Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
     BR_PROPERTY(QString, fileName, "")
 
-    QFile out;
+    std::fstream fout;
+
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
 
-        Neighbors neighbors = dst.file.get<Neighbors>("neighbors");
-        if (neighbors.isEmpty() )
+        if (!dst.file.contains("neighbors")) {
+            fout << std::endl;
             return;
+        }
+
+        Neighbors neighbors = dst.file.get<Neighbors>("neighbors");
+        if (neighbors.isEmpty() ) {
+            fout << std::endl;
+            return;
+        }
 
         QString aLine;
         aLine.append(QString::number(neighbors[0].first)+":"+QString::number(neighbors[0].second));
         for (int i=1; i < neighbors.size();i++)
             aLine.append(","+QString::number(neighbors[i].first)+":"+QString::number(neighbors[i].second));
 
-        aLine += "\n";
-        out.write(qPrintable(aLine));
+        fout << qPrintable(aLine) << std::endl;
     }
 
     void init()
     {
-        if (!fileName.isEmpty()) {
-            out.setFileName(fileName);
-            out.open(QIODevice::WriteOnly);
-        }
+        if (!fileName.isEmpty())
+            fout.open(qPrintable(fileName), std::ios_base::out);
     }
 
     void finalize(TemplateList &output)
     {
         (void) output;
-        out.close();
+        fout.close();
     }
 
 public:

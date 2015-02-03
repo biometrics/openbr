@@ -227,19 +227,6 @@ public:
         return output;
     }
 
-
-    bool setPropertyRecursive(const QString &name, QVariant value)
-    {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-
-        if (transform->setPropertyRecursive(name, value)) {
-            init();
-            return true;
-        }
-        return false;
-    }
-
     Transform *smartCopy(bool &newTransform)
     {
         if (!timeVarying()) {
@@ -392,21 +379,6 @@ public:
         return output;
     }
 
-    bool setPropertyRecursive(const QString &name, QVariant value)
-    {
-        if (br::Object::setPropertyRecursive(name, value))
-            return true;
-
-        for (int i=0; i < this->transforms.size();i++) {
-            if (transforms[i]->setPropertyRecursive(name, value)) {
-                init();
-                return true;
-            }
-        }
-        return false;
-    }
-
-
 protected:
     bool isTimeVarying;
 
@@ -500,6 +472,18 @@ typedef QList<Neighbor> Neighbors;
 typedef QVector<Neighbors> Neighborhood;
 
 BR_EXPORT bool compareNeighbors(const Neighbor &a, const Neighbor &b);
+
+/*!
+ * \brief A br::Distance that does not require training data.
+ */
+class BR_EXPORT UntrainableDistance : public Distance
+{
+    Q_OBJECT
+
+private:
+    bool trainable() { return false; }
+    void train(const TemplateList &data) { (void) data; }
+};
 
 }
 

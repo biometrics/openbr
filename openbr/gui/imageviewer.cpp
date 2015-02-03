@@ -78,6 +78,11 @@ void br::ImageViewer::updatePixmap(QImage image, bool async)
     }
 }
 
+QSize br::ImageViewer::sizeHint() const
+{
+    return src.isNull() ? QSize() : QSize(width(), (src.height() * width() + /* round up */ src.width() - 1) / src.width());
+}
+
 /*** PROTECTED SLOTS ***/
 void br::ImageViewer::keyPressEvent(QKeyEvent *event)
 {

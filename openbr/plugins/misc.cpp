@@ -981,7 +981,10 @@ class FileExclusionTransform : public UntrainableMetaTransform
     {
         if (exclusionGallery.isEmpty())
             return;
-        FileList temp = FileList::fromGallery(exclusionGallery);
+        File rFile(exclusionGallery);
+        rFile.remove("append");
+
+        FileList temp = FileList::fromGallery(rFile);
         excluded = QSet<QString>::fromList(temp.names());
     }
 };
