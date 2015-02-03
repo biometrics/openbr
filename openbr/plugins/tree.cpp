@@ -72,11 +72,51 @@ class ForestTransform : public Transform
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "")
 
-    CvRTrees forest;
-    int totalSize;
-    QList< QList<const CvDTreeNode*> > nodes;
-
     void train(const TemplateList &data)
+    {
+        trainForest(data);
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        float response;
+        if (classification && returnConfidence) {
+            // Fuzzy class label
+            response = forest.predict_prob(src.m().reshape(1,1));
+        } else {
+            response = forest.predict(src.m().reshape(1,1));
+        }
+
+        if (overwriteMat) {
+            dst.m() = Mat(1, 1, CV_32F);
+            dst.m().at<float>(0, 0) = response;
+        } else {
+            dst.file.set(outputVariable, response);
+        }
+    }
+
+    void load(QDataStream &stream)
+    {
+        loadModel(forest,stream);
+    }
+
+    void store(QDataStream &stream) const
+    {
+        storeModel(forest,stream);
+    }
+
+    void init()
+    {
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
+    }
+
+protected:
+    CvRTrees forest;
+
+    void trainForest(const TemplateList &data)
     {
         Mat samples = OpenCVUtils::toMat(data.data());
         Mat labels = OpenCVUtils::toMat(File::get<float>(data, inputVariable));
@@ -102,9 +142,30 @@ class ForestTransform : public Transform
                                0,
                                maxTrees,
                                forestAccuracy,
-                               CV_TERMCRIT_ITER));
+                               CV_TERMCRIT_ITER | CV_TERMCRIT_EPS));
 
         qDebug() << "Number of trees:" << forest.get_tree_count();
+    }
+};
+
+BR_REGISTER(Transform, ForestTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Wraps OpenCV's random trees framework to induce features
+ * \author Scott Klum \cite sklum
+ * \brief https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf
+ */
+class ForestInductionTransform : public ForestTransform
+{
+    Q_OBJECT
+
+    int totalSize;
+    QList< QList<const CvDTreeNode*> > nodes;
+
+    void train(const TemplateList &data)
+    {
+        trainForest(data);
 
         for (int i=0; i<forest.get_tree_count(); i++) {
             nodes.append(QList<const CvDTreeNode*>());
@@ -141,20 +202,6 @@ class ForestTransform : public Transform
     {
         dst = src;
 
-        /*
-        float response;
-        if (classification && returnConfidence) {
-            // Fuzzy class label
-            response = forest.predict_prob(src.m().reshape(1,1));
-        } else {
-            response = forest.predict(src.m().reshape(1,1));
-        }*/
-
-       // QTime timer;
-       // timer.start();
-
-        //qDebug() << forest.get_tree(0)->get_var_count();
-
         Mat responses = Mat::zeros(totalSize,1,CV_32F);
 
         int offset = 0;
@@ -164,15 +211,7 @@ class ForestTransform : public Transform
             offset += nodes[i].size();
         }
 
-        if (overwriteMat) {
-            dst.m() = responses;
-            //dst.m() = Mat(1, 1, CV_32F);
-            //dst.m().at<float>(0, 0) = response;
-        } else {
-            //dst.file.set(outputVariable, response);
-        }
-
-        //qDebug() << timer.elapsed();
+        dst.m() = responses;
     }
 
     void load(QDataStream &stream)
@@ -213,17 +252,9 @@ class ForestTransform : public Transform
     {
         storeModel(forest,stream);
     }
-
-    void init()
-    {
-        totalSize = 0;
-
-        if (outputVariable.isEmpty())
-            outputVariable = inputVariable;
-    }
 };
 
-BR_REGISTER(Transform, ForestTransform)
+BR_REGISTER(Transform, ForestInductionTransform)
 
 /*!
  * \ingroup transforms
