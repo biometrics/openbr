@@ -185,7 +185,7 @@ BR_REGISTER(Transform, SelectPointsTransform)
  * \brief Averages a set of landmarks into a new landmark
  * \author Brendan Klare \cite bklare
  */
-class AveragePointsTransform : public MetadataTransform
+class AveragePointsTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
@@ -199,6 +199,7 @@ class AveragePointsTransform : public MetadataTransform
 
     void projectMetadata(const File &src, File &dst) const
     {
+        dst = src;
         if (src.points().size() != nLandmarks) {
             if (Globals->verbose)
                 qDebug() << "Warning: Face has " << src.points().size() << "points; should be " << nLandmarks;
