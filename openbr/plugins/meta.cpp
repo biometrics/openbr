@@ -17,8 +17,6 @@
 #include <QFutureSynchronizer>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
-#include <qbuffer.h>
-
 #include "openbr_internal.h"
 #include "openbr/core/common.h"
 #include "openbr/core/opencvutils.h"
@@ -96,15 +94,17 @@ class PipeTransform : public CompositeTransform
 
         int i = 0;
         while (i < transforms.size()) {
+            fprintf(stderr, "\n%s", qPrintable(transforms[i]->objectName()));
+
             // Conditional statement covers likely case that first transform is untrainable
             if (transforms[i]->trainable) {
-                qDebug() << "Training " << transforms[i]->description() << "\n...";
+                fprintf(stderr, " training...");
                 transforms[i]->train(dataLines);
             }
 
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
-                qDebug() << "Projecting " << transforms[i]->description() << "\n...";
+                fprintf(stderr, "\n%s projecting...", qPrintable(transforms[i]->objectName()));
                 for (int j=0; j < dataLines.size();j++) {
                     TemplateList junk;
                     splitFTEs(dataLines[j], junk);
@@ -130,16 +130,7 @@ class PipeTransform : public CompositeTransform
                    !transforms[nextTrainableTransform]->timeVarying())
                 nextTrainableTransform++;
 
-            // No more trainable transforms? Don't need any more projects then
-            if (nextTrainableTransform == transforms.size())
-                break;
-
-            fprintf(stderr, "Projecting %s", qPrintable(transforms[i]->description()));
-            for (int j=i+1; j < nextTrainableTransform; j++)
-                fprintf(stderr,"+%s", qPrintable(transforms[j]->description()));
-            fprintf(stderr, "\n...\n");
-            fflush(stderr);
-
+            fprintf(stderr, " projecting...");
             QFutureSynchronizer<void> futures;
             for (int j=0; j < dataLines.size(); j++)
                 futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j], i, nextTrainableTransform));
@@ -519,6 +510,7 @@ class LoadStoreTransform : public MetaTransform
 
 public:
     Transform *transform;
+    QString baseName;
 
     LoadStoreTransform() : transform(NULL) {}
 
@@ -548,8 +540,8 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) fileName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
-
+        if (fileName.isEmpty()) baseName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
+        else baseName = fileName;
         if (!tryLoad())
             transform = make(transformString);
         else
@@ -561,28 +553,19 @@ private:
         return transform->timeVarying();
     }
 
-    void train(const QList<TemplateList> &data)
+    void train(const TemplateList &data)
     {
         if (QFileInfo(getFileName()).exists())
             return;
 
         transform->train(data);
 
-        qDebug("Storing %s", qPrintable(fileName));
-        QtUtils::BlockCompression compressedOut;
-        QFile fout(fileName);
-        QtUtils::touchDir(fout);
-        compressedOut.setBasis(&fout);
-
-        QDataStream stream(&compressedOut);
-        QString desc = transform->description();
-
-        if (!compressedOut.open(QFile::WriteOnly))
-            qFatal("Failed to open %s for writing.", qPrintable(file));
-
-        stream << desc;
+        qDebug("Storing %s", qPrintable(baseName));
+        QByteArray byteArray;
+        QDataStream stream(&byteArray, QFile::WriteOnly);
+        stream << transform->description();
         transform->store(stream);
-        compressedOut.close();
+        QtUtils::writeFile(baseName, byteArray, -1);
     }
 
     void project(const Template &src, Template &dst) const
@@ -612,8 +595,8 @@ private:
 
     QString getFileName() const
     {
-        if (QFileInfo(fileName).exists()) return fileName;
-        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + fileName;
+        if (QFileInfo(baseName).exists()) return baseName;
+        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + baseName;
         return QFileInfo(file).exists() ? file : QString();
     }
 
@@ -623,19 +606,12 @@ private:
         if (file.isEmpty()) return false;
 
         qDebug("Loading %s", qPrintable(file));
-        QFile fin(file);
-        QtUtils::BlockCompression reader(&fin);
-        if (!reader.open(QIODevice::ReadOnly)) {
-            if (QFileInfo(file).exists()) qFatal("Unable to open %s for reading. Check file permissions.", qPrintable(file));
-            else            qFatal("Unable to open %s for reading. File does not exist.", qPrintable(file));
-        }
-
-        QDataStream stream(&reader);
+        QByteArray data;
+        QtUtils::readFile(file, data, true);
+        QDataStream stream(&data, QFile::ReadOnly);
         stream >> transformString;
-
         transform = Transform::make(transformString);
         transform->load(stream);
-
         return true;
     }
 };

@@ -110,11 +110,9 @@ struct AlgorithmCore
 
     void store(const QString &model) const
     {
-        QtUtils::BlockCompression compressedWrite;
-        QFile outFile(model);
-        compressedWrite.setBasis(&outFile);
-        QDataStream out(&compressedWrite);
-        compressedWrite.open(QFile::WriteOnly);
+        // Create stream
+        QByteArray data;
+        QDataStream out(&data, QFile::WriteOnly);
 
         // Serialize algorithm to stream
         transform->serialize(out);
@@ -133,16 +131,18 @@ struct AlgorithmCore
         if (mode == TransformCompare)
             comparison->serialize(out);
 
-        compressedWrite.close();
+        // Compress and save to file
+        QtUtils::writeFile(model, data, -1);
     }
 
     void load(const QString &model)
     {
-        QtUtils::BlockCompression compressedRead;
-        QFile inFile(model);
-        compressedRead.setBasis(&inFile);
-        QDataStream in(&compressedRead);
-        compressedRead.open(QFile::ReadOnly);
+        // Load from file and decompress
+        QByteArray data;
+        QtUtils::readFile(model, data, true);
+
+        // Create stream
+        QDataStream in(&data, QFile::ReadOnly);
 
         // Load algorithm
         transform = QSharedPointer<Transform>(Transform::deserialize(in));

@@ -17,7 +17,6 @@
 #ifndef QTUTILS_QTUTILS_H
 #define QTUTILS_QTUTILS_H
 
-#include <QBuffer>
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
@@ -94,38 +93,6 @@ namespace QtUtils
 
     /**** Rect Utilities ****/
     float overlap(const QRectF &r, const QRectF &s);
-
-    
-    class BlockCompression : public QIODevice
-    {
-    public:
-        BlockCompression(QIODevice *_basis);
-        BlockCompression();
-        int blockSize;
-        QIODevice *basis;
-
-        bool open(QIODevice::OpenMode mode);
-
-        void close();
-
-        void setBasis(QIODevice *_basis);
-
-        QDataStream blockReader;
-        QByteArray decompressedBlock;
-        QBuffer decompressedBlockReader;
-
-        // read from current decompressed block, if out of space, read and decompress another
-        // block from basis
-        qint64 readData(char *data, qint64 remaining);
-
-        bool isSequential() const;
-
-        // write to a QByteArray, when max block sized is reached, compress and write
-        // it to basis
-        QBuffer * precompressedBlockWriter;
-        QDataStream blockWriter;
-        qint64 writeData(const char *data, qint64 remaining);
-    };
 }
 
 #endif // QTUTILS_QTUTILS_H

@@ -220,9 +220,6 @@ double KernelDensityEstimation(const V<T> &vals, double x, double h)
     return y / (vals.size() * h);
 }
 
-// Return a random number, uniformly distributed over 0,1
-double randN();
-
 /*!
  * \brief Returns a vector of n integers sampled in the range <min, max].
  *
@@ -239,14 +236,19 @@ QList<int> RandSample(int n, const QSet<int> &values, bool unique = false);
 template <typename T>
 QList<int> RandSample(int n, const QList<T> &weights, bool unique = false)
 {
+    static bool seeded = false;
+    if (!seeded) {
+        srand(time(NULL));
+        seeded = true;
+    }
+
     QList<T> cdf = CumSum(weights);
     for (int i=0; i<cdf.size(); i++) // Normalize cdf
         cdf[i] = cdf[i] / cdf.last();
 
     QList<int> samples; samples.reserve(n);
     while (samples.size() < n) {
-        T r = randN();
-
+        T r = (T)rand() / (T)RAND_MAX;
         for (int j=0; j<weights.size(); j++) {
             if ((r >= cdf[j]) && (r <= cdf[j+1])) {
                 if (!unique || !samples.contains(j))

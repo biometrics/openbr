@@ -16,30 +16,19 @@
 
 #include "common.h"
 #include <QMutex>
-#include <RandomLib/Random.hpp>
 
 using namespace std;
 
-static RandomLib::Random g_rand;
-static QMutex rngLock;
-
 /**** GLOBAL ****/
 void Common::seedRNG() {
-    QMutexLocker lock(&rngLock);
+    static QMutex seedControl;
+    QMutexLocker lock(&seedControl);
 
     static bool seeded = false;
     if (!seeded) {
         srand(0); // We seed with 0 instead of time(NULL) to have reproducible randomness
         seeded = true;
-        g_rand.Reseed(0);
     }
-}
-
-double Common::randN()
-{
-    QMutexLocker lock(&rngLock);
-
-    return g_rand.FloatN();
 }
 
 QList<int> Common::RandSample(int n, int max, int min, bool unique)
