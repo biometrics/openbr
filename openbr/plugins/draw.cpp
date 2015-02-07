@@ -44,6 +44,7 @@ class DrawTransform : public UntrainableTransform
     Q_PROPERTY(int lineThickness READ get_lineThickness WRITE set_lineThickness RESET reset_lineThickness STORED false)
     Q_PROPERTY(bool named READ get_named WRITE set_named RESET reset_named STORED false)
     Q_PROPERTY(bool location READ get_location WRITE set_location RESET reset_location STORED false)
+    Q_PROPERTY(bool eyes READ get_eyes WRITE set_eyes RESET reset_eyes STORED false)
     BR_PROPERTY(bool, verbose, false)
     BR_PROPERTY(bool, points, true)
     BR_PROPERTY(bool, rects, true)
@@ -51,6 +52,7 @@ class DrawTransform : public UntrainableTransform
     BR_PROPERTY(int, lineThickness, 1)
     BR_PROPERTY(bool, named, true)
     BR_PROPERTY(bool, location, true)
+    BR_PROPERTY(bool, eyes, true)
 
     void project(const Template &src, Template &dst) const
     {
@@ -70,6 +72,13 @@ class DrawTransform : public UntrainableTransform
         if (rects) {
             foreach (const Rect &rect, OpenCVUtils::toRects(src.file.namedRects() + src.file.rects()))
                 rectangle(dst, rect, color, lineThickness);
+        }
+        if (eyes && src.file.contains("First_Eye") && src.file.contains("Second_Eye")) {
+            const Point2f &point1 = OpenCVUtils::toPoint(src.file.get<QPointF>("First_Eye"));
+            const Point2f &point2 = OpenCVUtils::toPoint(src.file.get<QPointF>("Second_Eye"));
+            const Scalar eyeColor(255, 0, 0);
+            circle(dst, point1, 3, eyeColor, -1);
+            circle(dst, point2, 3, eyeColor, -1);
         }
     }
 };
