@@ -96,6 +96,7 @@ class ForestTransform : public Transform
     }
 
 protected:
+    Q_ENUMS(TerminationCriteria)
     Q_PROPERTY(bool classification READ get_classification WRITE set_classification RESET reset_classification STORED false)
     Q_PROPERTY(float splitPercentage READ get_splitPercentage WRITE set_splitPercentage RESET reset_splitPercentage STORED false)
     Q_PROPERTY(int maxDepth READ get_maxDepth WRITE set_maxDepth RESET reset_maxDepth STORED false)
@@ -106,6 +107,14 @@ protected:
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     Q_PROPERTY(bool weight READ get_weight WRITE set_weight RESET reset_weight STORED false)
+    Q_PROPERTY(TerminationCriteria termCrit READ get_termCrit WRITE set_termCrit RESET reset_termCrit STORED false)
+
+public:
+    enum TerminationCriteria { Iter = CV_TERMCRIT_ITER,
+                EPS = CV_TERMCRIT_EPS,
+                Both = CV_TERMCRIT_EPS | CV_TERMCRIT_ITER};
+
+protected:
     BR_PROPERTY(bool, classification, true)
     BR_PROPERTY(float, splitPercentage, .01)
     BR_PROPERTY(int, maxDepth, std::numeric_limits<int>::max())
@@ -116,6 +125,7 @@ protected:
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "")
     BR_PROPERTY(bool, weight, false)
+    BR_PROPERTY(TerminationCriteria, termCrit, Iter)
 
     CvRTrees forest;
 
@@ -139,7 +149,6 @@ protected:
             int nonZero = countNonZero(labels);
             priors[0] = 1;
             priors[1] = (float)(samples.rows-nonZero)/nonZero;
-            qDebug() << priors[0] << priors[1] << (samples.rows-nonZero)/nonZero;
         }
 
         int minSamplesForSplit = data.size()*splitPercentage;
@@ -149,12 +158,12 @@ protected:
                                0,
                                false,
                                2,
-                               usePrior ? priors : 0, //priors
+                               usePrior ? priors : 0,
                                false,
                                0,
                                maxTrees,
                                forestAccuracy,
-                               CV_TERMCRIT_ITER));
+                               termCrit));
 
         if (Globals->verbose) {
             qDebug() << "Number of trees:" << forest.get_tree_count();
