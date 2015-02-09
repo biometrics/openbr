@@ -339,10 +339,6 @@ private:
         Mat samples = OpenCVUtils::toMat(data.data());
         Mat labels = OpenCVUtils::toMat(File::get<float>(data, inputVariable));
 
-        for (int i=0; i<labels.rows; i++) {
-            if (labels.at<float>(i,0) != 1) labels.at<float>(i,0) = 0;
-        }
-
         Mat types = Mat(samples.cols + 1, 1, CV_8U);
         types.setTo(Scalar(CV_VAR_NUMERICAL));
         types.at<char>(samples.cols, 0) = CV_VAR_CATEGORICAL;
@@ -357,17 +353,6 @@ private:
 
         boost.train( samples, CV_ROW_SAMPLE, labels, Mat(), Mat(), types, Mat(),
                     params);
-
-        QTime timer;
-        timer.start();
-        int correct = 0;
-        for (int i=0; i<samples.rows; i++) {
-            float prediction = boost.predict(samples.row(i));
-            if (prediction == labels.at<float>(i,0))
-                correct++;
-        }
-
-        qDebug("Time to classify %d samples: %d ms\nAccuracy: %f\nSample dimensionality: %d",samples.rows,timer.elapsed(),(float)correct/samples.rows,samples.cols);
     }
 
     void project(const Template &src, Template &dst) const
