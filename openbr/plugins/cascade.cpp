@@ -252,6 +252,8 @@ class CascadeTransform : public MetaTransform
     void init()
     {
         cascadeResource.setResourceMaker(new CascadeResourceMaker(model));
+        if (model == "Ear" || model == "Eye" || model == "FrontalFace" || model == "ProfileFace")
+            this->trainable = false;
     }
     
     // Train transform
