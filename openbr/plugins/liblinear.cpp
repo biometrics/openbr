@@ -6,7 +6,6 @@
 #include "openbr/core/opencvutils.h"
 
 #include <linear.h>
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 using namespace cv;
 
