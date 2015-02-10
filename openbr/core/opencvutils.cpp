@@ -23,6 +23,8 @@
 #include "opencvutils.h"
 #include "qtutils.h"
 
+#include <QTemporaryFile>
+
 using namespace cv;
 using namespace std;
 
@@ -259,6 +261,39 @@ QStringList OpenCVUtils::matrixToStringList(const Mat &m)
             for (int j=0; j<mc.cols; j++)
                 results.append(elemToString(mc, i, j));
     return results;
+}
+
+void OpenCVUtils::storeModel(const CvStatModel &model, QDataStream &stream)
+{
+    // Create local file
+    QTemporaryFile tempFile;
+    tempFile.open();
+    tempFile.close();
+
+    // Save MLP to local file
+    model.save(qPrintable(tempFile.fileName()));
+
+    // Copy local file contents to stream
+    tempFile.open();
+    QByteArray data = tempFile.readAll();
+    tempFile.close();
+    stream << data;
+}
+
+void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
+{
+    // Copy local file contents from stream
+    QByteArray data;
+    stream >> data;
+
+    // Create local file
+    QTemporaryFile tempFile(QDir::tempPath()+"/model");
+    tempFile.open();
+    tempFile.write(data);
+    tempFile.close();
+
+    // Load MLP from local file
+    model.load(qPrintable(tempFile.fileName()));
 }
 
 Point2f OpenCVUtils::toPoint(const QPointF &qPoint)

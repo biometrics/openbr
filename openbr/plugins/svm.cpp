@@ -26,39 +26,6 @@ using namespace cv;
 namespace br
 {
 
-static void storeSVM(const SVM &svm, QDataStream &stream)
-{
-    // Create local file
-    QTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.close();
-
-    // Save SVM to local file
-    svm.save(qPrintable(tempFile.fileName()));
-
-    // Copy local file contents to stream
-    tempFile.open();
-    QByteArray data = tempFile.readAll();
-    tempFile.close();
-    stream << data;
-}
-
-static void loadSVM(SVM &svm, QDataStream &stream)
-{
-    // Copy local file contents from stream
-    QByteArray data;
-    stream >> data;
-
-    // Create local file
-    QTemporaryFile tempFile(QDir::tempPath()+"/SVM");
-    tempFile.open();
-    tempFile.write(data);
-    tempFile.close();
-
-    // Load SVM from local file
-    svm.load(qPrintable(tempFile.fileName()));
-}
-
 static void trainSVM(SVM &svm, Mat data, Mat lab, int kernel, int type, float C, float gamma, int folds, bool balanceFolds, int termCriteria)
 {
     if (data.type() != CV_32FC1)
@@ -190,13 +157,13 @@ private:
 
     void store(QDataStream &stream) const
     {
-        storeSVM(svm, stream);
+        OpenCVUtils::storeModel(svm, stream);
         stream << labelMap << reverseLookup;
     }
 
     void load(QDataStream &stream)
     {
-        loadSVM(svm, stream);
+        OpenCVUtils::loadModel(svm, stream);
         stream >> labelMap >> reverseLookup;
     }
 
@@ -281,12 +248,12 @@ private:
 
     void store(QDataStream &stream) const
     {
-        storeSVM(svm, stream);
+        OpenCVUtils::storeModel(svm, stream);
     }
 
     void load(QDataStream &stream)
     {
-        loadSVM(svm, stream);
+        OpenCVUtils::loadModel(svm, stream);
     }
 };
 

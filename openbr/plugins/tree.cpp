@@ -1,48 +1,11 @@
-#include <opencv2/ml/ml.hpp>
-
 #include "openbr_internal.h"
 #include "openbr/core/opencvutils.h"
-#include <QString>
-#include <QTemporaryFile>
 
 using namespace std;
 using namespace cv;
 
 namespace br
 {
-
-static void storeModel(const CvStatModel &model, QDataStream &stream)
-{
-    // Create local file
-    QTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.close();
-
-    // Save MLP to local file
-    model.save(qPrintable(tempFile.fileName()));
-
-    // Copy local file contents to stream
-    tempFile.open();
-    QByteArray data = tempFile.readAll();
-    tempFile.close();
-    stream << data;
-}
-
-static void loadModel(CvStatModel &model, QDataStream &stream)
-{
-    // Copy local file contents from stream
-    QByteArray data;
-    stream >> data;
-
-    // Create local file
-    QTemporaryFile tempFile(QDir::tempPath()+"/"+QString::number(rand()));
-    tempFile.open();
-    tempFile.write(data);
-    tempFile.close();
-
-    // Load MLP from local file
-    model.load(qPrintable(tempFile.fileName()));
-}
 
 /*!
  * \ingroup transforms
@@ -81,12 +44,12 @@ class ForestTransform : public Transform
 
     void load(QDataStream &stream)
     {
-        loadModel(forest,stream);
+        OpenCVUtils::loadModel(forest,stream);
     }
 
     void store(QDataStream &stream) const
     {
-        storeModel(forest,stream);
+        OpenCVUtils::storeModel(forest,stream);
     }
 
     void init()
@@ -274,13 +237,14 @@ class ForestInductionTransform : public ForestTransform
 
     void load(QDataStream &stream)
     {
-        loadModel(forest,stream);
+        OpenCVUtils::loadModel(forest,stream);
         if (!useRegressionValue) fillNodes();
+
     }
 
     void store(QDataStream &stream) const
     {
-        storeModel(forest,stream);
+        OpenCVUtils::storeModel(forest,stream);
     }
 };
 
@@ -375,12 +339,12 @@ private:
 
     void load(QDataStream &stream)
     {
-        loadModel(boost,stream);
+        OpenCVUtils::loadModel(boost,stream);
     }
 
     void store(QDataStream &stream) const
     {
-        storeModel(boost,stream);
+        OpenCVUtils::storeModel(boost,stream);
     }
 
 

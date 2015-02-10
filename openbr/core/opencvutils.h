@@ -22,6 +22,7 @@
 #include <QString>
 #include <QStringList>
 #include <opencv2/core/core.hpp>
+#include <opencv2/ml/ml.hpp>
 #include <assert.h>
 
 namespace OpenCVUtils
@@ -48,6 +49,10 @@ namespace OpenCVUtils
     QString elemToString(const cv::Mat &m, int r, int c);
     QString matrixToString(const cv::Mat &m);
     QStringList matrixToStringList(const cv::Mat &m);
+
+    // Model storage
+    void storeModel(const CvStatModel &model, QDataStream &stream);
+    void loadModel(CvStatModel &model, QDataStream &stream);
 
     template <typename T>
     T getElement(const cv::Mat &m, int r, int c)
