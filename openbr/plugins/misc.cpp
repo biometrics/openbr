@@ -103,7 +103,7 @@ public:
     enum Mode
     {
         Unchanged = IMREAD_UNCHANGED,
-        Grayscale = IMREAD_GRAYSCALE,
+        Gray      = IMREAD_GRAYSCALE,
         Color     = IMREAD_COLOR,
         AnyDepth  = IMREAD_ANYDEPTH,
         AnyColor  = IMREAD_ANYCOLOR
