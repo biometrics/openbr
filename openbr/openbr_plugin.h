@@ -1178,7 +1178,7 @@ public:
 
     virtual ~Transform() {}
     static Transform *make(QString str, QObject *parent); /*!< \brief Make a transform from a string. */
-    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm, bool preprocess=true); /*!< \brief Retrieve an algorithm's transform. If preprocess is true, attaches a stream transform as the root of the algorithm*/
+    static QSharedPointer<Transform> fromAlgorithm(const QString &algorithm, bool preprocess=false); /*!< \brief Retrieve an algorithm's transform. If preprocess is true, attaches a stream transform as the root of the algorithm*/
     static QSharedPointer<Transform> fromComparison(const QString &algorithm);
 
     virtual Transform *clone() const; /*!< \brief Copy the transform. */
