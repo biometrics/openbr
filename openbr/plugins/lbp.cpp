@@ -46,8 +46,6 @@ class LBPTransform : public UntrainableTransform
     uchar lut[256];
     uchar null;
 
-    friend class ColoredU2Transform;
-
     /* Returns the number of 0->1 or 1->0 transitions in i */
     static int numTransitions(int i)
     {
@@ -124,74 +122,6 @@ class LBPTransform : public UntrainableTransform
 };
 
 BR_REGISTER(Transform, LBPTransform)
-
-/*!
- * \ingroup transforms
- * \brief For visualization of LBP patterns.
- * \author Josh Klontz \cite jklontz
- */
-class ColoredU2Transform : public UntrainableTransform
-{
-    Q_OBJECT
-
-    /* Returns the number of 1 bits in i */
-    static int bitCount(int i)
-    {
-        int count = 0;
-        for (int j=0; j<8; j++)
-            count += (i>>j)%2;
-        return count;
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        static Mat hueLUT, saturationLUT, valueLUT;
-
-        if (!hueLUT.data) {
-            const int NUM_COLORS = 10;
-            hueLUT.create(1, 256, CV_8UC1);
-            hueLUT.setTo(0);
-
-            uchar uid = 0;
-            for (int i=0; i<256; i++) {
-                const int transitions = LBPTransform::numTransitions(i);
-                int u2;
-                if   (transitions <= 2) u2 = uid++;
-                else                    u2 = 58;
-
-                // Assign hue based on bit count
-                int color = bitCount(i);
-                if (transitions > 2) color = NUM_COLORS-1;
-                hueLUT.at<uchar>(0, u2) = 255*color/NUM_COLORS;
-            }
-
-            saturationLUT.create(1, 256, CV_8UC1);
-            saturationLUT.setTo(255);
-
-            valueLUT.create(1, 256, CV_8UC1);
-            valueLUT.setTo(255*3/4);
-        }
-
-        if (src.m().type() != CV_8UC1)
-            qFatal("Expected 8UC1 source type.");
-
-        Mat hue, saturation, value;
-        LUT(src, hueLUT, hue);
-        LUT(src, saturationLUT, saturation);
-        LUT(src, valueLUT, value);
-
-        std::vector<Mat> mv;
-        mv.push_back(hue);
-        mv.push_back(saturation);
-        mv.push_back(value);
-
-        Mat coloredU2;
-        merge(mv, coloredU2);
-        cvtColor(coloredU2, dst, CV_HSV2BGR);
-    }
-};
-
-BR_REGISTER(Transform, ColoredU2Transform)
 
 } // namespace br
 

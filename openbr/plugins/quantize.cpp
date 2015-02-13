@@ -287,56 +287,6 @@ class ProductQuantizationDistance : public UntrainableDistance
 BR_REGISTER(Distance, ProductQuantizationDistance)
 
 /*!
- * \ingroup distances
- * \brief Recurively computed distance in a product quantized space
- * \author Josh Klontz \cite jklontz
- */
-class RecursiveProductQuantizationDistance : public UntrainableDistance
-{
-    Q_OBJECT
-    Q_PROPERTY(float t READ get_t WRITE set_t RESET reset_t STORED false)
-    BR_PROPERTY(float, t, -std::numeric_limits<float>::max())
-
-    float compare(const Template &a, const Template &b) const
-    {
-        return compareRecursive(a, b, 0, a.size(), 0);
-    }
-
-    float compareRecursive(const QList<cv::Mat> &a, const QList<cv::Mat> &b, int i, int size, float evidence) const
-    {
-        float similarity = 0;
-
-        const int elements = a[i].total()-sizeof(quint16);
-        uchar *aData = a[i].data;
-        uchar *bData = b[i].data;
-        quint16 index = *reinterpret_cast<quint16*>(aData);
-        aData += sizeof(quint16);
-        bData += sizeof(quint16);
-
-        const float *lut = (const float*)ProductQuantizationLUTs[index].data;
-        for (int j=0; j<elements; j++) {
-            const int aj = aData[j];
-            const int bj = bData[j];
-            // http://stackoverflow.com/questions/4803180/mapping-elements-in-2d-upper-triangle-and-lower-triangle-to-linear-structure
-            const int y = max(aj, bj);
-            const int x = min(aj, bj);
-            similarity += lut[j*256*(256+1)/2 + x + (y+1)*y/2];
-        }
-
-        evidence += similarity;
-        const int subSize = (size-1)/4;
-        if ((evidence < t) || (subSize == 0)) return similarity;
-        return similarity
-               + compareRecursive(a, b, i+1+0*subSize, subSize, evidence)
-               + compareRecursive(a, b, i+1+1*subSize, subSize, evidence)
-               + compareRecursive(a, b, i+1+2*subSize, subSize, evidence)
-               + compareRecursive(a, b, i+1+3*subSize, subSize, evidence);
-    }
-};
-
-BR_REGISTER(Distance, RecursiveProductQuantizationDistance)
-
-/*!
  * \ingroup transforms
  * \brief Product quantization \cite jegou11
  * \author Josh Klontz \cite jklontz

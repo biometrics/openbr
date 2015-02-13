@@ -374,8 +374,12 @@ class RectFromPointsTransform : public UntrainableTransform
 
         QList<QPointF> points;
 
-        foreach (int index, indices) {
+        int numPoints = (indices.empty() ? src.file.points().size() : indices.size());
+        for (int idx = 0; idx < numPoints; idx++) {
+            int index = indices.empty() ? idx : indices[idx];
             if (src.file.points().size() > index) {
+                if (src.file.points()[index].x() <= 0 ||
+                    src.file.points()[index].y() <= 0)   continue;
                 if (src.file.points()[index].x() < minX) minX = src.file.points()[index].x();
                 if (src.file.points()[index].x() > maxX) maxX = src.file.points()[index].x();
                 if (src.file.points()[index].y() < minY) minY = src.file.points()[index].y();
@@ -390,8 +394,9 @@ class RectFromPointsTransform : public UntrainableTransform
         width += deltaWidth;
 
         double height = maxY-minY;
-        double deltaHeight = width/aspectRatio - height;
-        height += deltaHeight;                                       
+        //double deltaHeight = width/aspectRatio - height;
+        double deltaHeight = height*padding;
+        height += deltaHeight;
 
         const int x = std::max(0.0, minX - deltaWidth/2.0);
         const int y = std::max(0.0, minY - deltaHeight/2.0);

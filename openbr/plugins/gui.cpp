@@ -928,6 +928,54 @@ public:
 
 BR_REGISTER(Transform, SurveyTransform)
 
+class FilterTransform : public ShowTransform
+{
+    Q_OBJECT
+
+    void projectUpdate(const TemplateList &src, TemplateList &dst)
+    {
+        if (Globals->parallelism > 1)
+            qFatal("FilterTransform cannot execute in parallel.");
+
+        if (src.empty())
+            return;
+
+        foreach (const Template &t, src) {
+            Template u(t.file);
+            foreach (const cv::Mat &m, t) {
+                qImageBuffer = toQImage(m);
+                displayBuffer->convertFromImage(qImageBuffer);
+
+                emit updateImage(displayBuffer->copy(displayBuffer->rect()));
+
+                // Blocking wait for a key-press
+                if (this->waitInput) {
+                    QString answer = p_window->waitForKeyPress();
+                    qDebug() << answer;
+                    if (answer == "y")
+                        u.append(m);
+                }
+            }
+            if (!u.empty())
+                dst.append(u);
+        }
+    }
+    PromptWindow *p_window;
+
+
+    void init()
+    {
+        if (!Globals->useGui)
+            return;
+
+        initActual<PromptWindow>();
+        p_window = (PromptWindow *) window;
+
+        emit changeTitle("Keep: y Discard: n");
+    }
+};
+
+BR_REGISTER(Transform, FilterTransform)
 
 /*!
  * \ingroup transforms

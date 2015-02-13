@@ -96,38 +96,61 @@ BR_REGISTER(Transform, RndSubspaceTransform)
 
 /*!
  * \ingroup transforms
- * \brief Selects a random region.
- * \author Josh Klontz \cite jklontz
+ * \brief Selects a number of random regions from a negative image.
+ * \author Jordan Cheney \cite JordanCheney
  */
-class RndRegionTransform : public Transform
+class RndNegSampleTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(float x READ get_x WRITE set_x RESET reset_x)
-    Q_PROPERTY(float y READ get_y WRITE set_y RESET reset_y)
-    Q_PROPERTY(float width READ get_width WRITE set_width RESET reset_width)
-    Q_PROPERTY(float height READ get_height WRITE set_height RESET reset_height)
-    BR_PROPERTY(float, x, -1)
-    BR_PROPERTY(float, y, -1)
-    BR_PROPERTY(float, width, -1)
-    BR_PROPERTY(float, height, -1)
-
-    void train(const TemplateList &data)
-    {
-        (void) data;
-
-        RNG &rng = theRNG();
-        width = rng.uniform(0.f, 1.f);
-        height = rng.uniform(0.f, 1.f);
-        x = rng.uniform(0.f, 1.f-width);
-        y = rng.uniform(0.f, 1.f-height);
-    }
+    Q_PROPERTY(int numSamples READ get_numSamples WRITE set_numSamples RESET reset_numSamples STORED false)
+    Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
+    Q_PROPERTY(int height READ get_height WRITE set_height RESET reset_height STORED false)
+    Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
+    Q_PROPERTY(float negVal READ get_negVal WRITE set_negVal RESET reset_negVal STORED false)
+    BR_PROPERTY(int, numSamples, 1)
+    BR_PROPERTY(int, width, 24)
+    BR_PROPERTY(int, height, 24)
+    BR_PROPERTY(QString, propName, "Label")
+    BR_PROPERTY(float, negVal, 0)
 
     void project(const Template &src, Template &dst) const
     {
+        dst = src;
+
+        if (src.file.get<float>(propName, negVal+1) == negVal)
+            return;
+
+        RNG &rng = theRNG();
+        for (int n = 0; n < numSamples; n++) {
+            int x = rng.uniform(0, src.m().cols - width - 1);
+            int y = rng.uniform(0, src.m().rows - height - 1);
+            dst.file.appendRect(Rect(x, y, width, height));
+        }
+    }
+};
+
+BR_REGISTER(Transform, RndNegSampleTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Selects a random region.
+ * \author Josh Klontz \cite jklontz
+ */
+class RndRegionTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        RNG &rng = theRNG();
+        float size = rng.uniform(0.2f, 1.f);
+        float x = rng.uniform(0.f, 1.f-size);
+        float y = rng.uniform(0.f, 1.f-size);
+
         dst = src.m()(Rect(src.m().cols * x,
                            src.m().rows * y,
-                           src.m().cols * width,
-                           src.m().rows * height));
+                           src.m().cols * size,
+                           src.m().rows * size));
     }
 };
 

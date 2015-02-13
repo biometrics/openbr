@@ -498,6 +498,30 @@ class NormalizePointsTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, NormalizePointsTransform)
 
+class SetPointsInRectTransform : public UntrainableMetadataTransform
+{
+    Q_OBJECT
+
+    void projectMetadata(const File &src, File &dst) const
+    {
+        dst  = src;
+
+        QList<QRectF> rects = src.rects();
+        if (rects.size() != 1)
+            qFatal("Must have one and only one rect per template");
+        QRectF rect = rects.first();
+
+        QList<QPointF> srcPoints = src.points();
+        QList<QPointF> dstPoints;
+        foreach (const QPointF &point, srcPoints)
+            dstPoints.append(QPointF(point.x() - rect.x(), point.y() - rect.y()));
+
+        dst.setPoints(dstPoints);
+    }
+};
+
+BR_REGISTER(Transform, SetPointsInRectTransform)
+
 /*!
  * \ingroup transforms
  * \brief Normalize points to be relative to a single point
