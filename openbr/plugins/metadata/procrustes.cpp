@@ -1,6 +1,9 @@
 #include <Eigen/Dense>
 
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
+
+using namespace cv;
 
 namespace br
 {
@@ -69,10 +72,10 @@ class ProcrustesTransform : public MetadataTransform
         }
     }
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
-        QList<QPointF> points = src.file.points();
-        QList<QRectF> rects = src.file.rects();
+        QList<QPointF> points = src.points();
+        QList<QRectF> rects = src.rects();
 
         if (points.empty() || rects.empty()) {
             dst = src;
@@ -106,12 +109,12 @@ class ProcrustesTransform : public MetadataTransform
         // R(0,0), R(1,0), R(1,1), R(0,1), mean_x, mean_y, norm
         QList<float> procrustesStats;
         procrustesStats << R(0,0) << R(1,0) << R(1,1) << R(0,1) << mean[0] << mean[1] << norm;
-        dst.file.setList<float>("ProcrustesStats",procrustesStats);
+        dst.setList<float>("ProcrustesStats",procrustesStats);
 
         if (warp) {
             Eigen::MatrixXf dstMat = srcMat*R;
             for (int i = 0; i < dstMat.rows(); i++) {
-                dst.file.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
+                dst.appendPoint(QPointF(dstMat(i,0),dstMat(i,1)));
             }
         }
     }
