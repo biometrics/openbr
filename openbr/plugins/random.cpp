@@ -17,6 +17,7 @@
 #include <numeric>
 
 #include <opencv2/imgproc/imgproc.hpp>
+
 #include "openbr_internal.h"
 
 #include "openbr/core/common.h"
@@ -164,7 +165,7 @@ class RndSampleTransform : public UntrainableMetaTransform
     void project(const TemplateList &src, TemplateList &dst) const
     {
         foreach(const Template &t, src) {
-            QPointF point = t.file.points()[0];
+            QPointF point = t.file.points()[pointIndex];
             QRectF region(point.x()-sampleRadius, point.y()-sampleRadius, sampleRadius*2, sampleRadius*2);
 
             if (region.x() < 0 ||
@@ -184,6 +185,7 @@ class RndSampleTransform : public UntrainableMetaTransform
                 labelCount << 0;
 
             while (std::accumulate(labelCount.begin(),labelCount.end(),0.0) < (sampleOverlapBands.size()-1)*samplesPerOverlapBand) {
+
                 float x = rand() % (sampleFactor*sampleRadius) + region.x() - sampleFactor/2*sampleRadius;
                 float y = rand() % (sampleFactor*sampleRadius) + region.y() - sampleFactor/2*sampleRadius;
 
@@ -192,13 +194,13 @@ class RndSampleTransform : public UntrainableMetaTransform
 
                 QRectF negativeLocation = QRectF(x, y, sampleRadius*2, sampleRadius*2);
 
-                float overlap = QtUtils::overlap(region, negativeLocation);
+                float overlap = pow(QtUtils::overlap(region, negativeLocation),overlapPower);
 
                 for (int k = 0; k<sampleOverlapBands.size()-1; k++) {
                     if (overlap >= sampleOverlapBands.at(k) && overlap < sampleOverlapBands.at(k+1) && labelCount[k] < samplesPerOverlapBand) {
                         Mat m(t.m(),OpenCVUtils::toRect(negativeLocation));
                         dst.append(Template(t.file,  m));
-                        float label = classification ? 0 : pow(overlap,overlapPower);
+                        float label = classification ? 0 : overlap;
                         dst.last().file.set(inputVariable, label);
                         labelCount[k]++;
                     }

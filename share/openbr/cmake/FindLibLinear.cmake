@@ -1,6 +1,5 @@
 find_path(LibLinear_DIR linear.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
 
-message(${LibLinear_DIR})
 mark_as_advanced(LibLinear_DIR)
 include_directories(${LibLinear_DIR})
 include_directories(${LibLinear_DIR}/blas)
