@@ -3,10 +3,8 @@
 #include "openbr/core/eigenutils.h"
 
 #include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/image_processing/render_face_detections.h>
 #include <dlib/svm_threaded.h>
 #include <dlib/image_processing.h>
-#include <dlib/gui_widgets.h>
 #include <dlib/image_io.h>
 #include <dlib/opencv.h>
 
@@ -104,6 +102,9 @@ private:
                 boxes.push_back(b);
             }
         }
+
+        if (samples.size() == 0)
+            qFatal("Training data has no bounding boxes.");
 
         add_image_left_right_flips(samples, boxes);
 
