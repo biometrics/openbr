@@ -1,4 +1,4 @@
-set(BR_WITH_DLIB OFF CACHE BOOL "Build with LibLinear")
+set(BR_WITH_DLIB OFF CACHE BOOL "Build with DLib")
 
 message(${BR_WITH_DLIB})
 
