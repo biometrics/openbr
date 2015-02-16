@@ -4,6 +4,5 @@ message(${DLib_DIR})
 
 mark_as_advanced(DLib_DIR)
 include_directories(${DLib_DIR})
-link_directories(${DLib_DIR}/examples/build/dlib_build)
 
 set(DLib_LIBS dlib)
