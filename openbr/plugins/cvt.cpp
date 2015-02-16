@@ -115,7 +115,18 @@ class ScaleTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-         resize(src, dst, Size(src.m().cols*scaleFactor,src.m().rows*scaleFactor));
+        resize(src, dst, Size(src.m().cols*scaleFactor,src.m().rows*scaleFactor));
+
+        QList<QRectF> rects = src.file.rects();
+        for (int i=0; i<rects.size(); i++)
+            rects[i] = QRectF(rects[i].topLeft()*scaleFactor,rects[i].bottomRight()*scaleFactor);
+        dst.file.setRects(rects);
+
+        QList<QPointF> points = src.file.points();
+        for (int i=0; i<points.size(); i++)
+            points[i] = points[i] * scaleFactor;
+        dst.file.setPoints(points);
+
     }
 };
 
