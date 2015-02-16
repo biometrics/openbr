@@ -1,4 +1,4 @@
-set(BR_WITH_DLIB OFF CACHE BOOL "Build with LibLinear")
+set(BR_WITH_DLIB OFF CACHE BOOL "Build with DLib")
 
 if(${BR_WITH_DLIB})
   find_package(DLib REQUIRED)
