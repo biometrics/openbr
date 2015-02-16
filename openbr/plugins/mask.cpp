@@ -183,6 +183,76 @@ BR_REGISTER(Transform, LargestConvexAreaTransform)
 
 /*!
  * \ingroup transforms
+ * \brief Wraps OpenCV's adaptive thresholding.
+ * \author Scott Klum \cite sklum
+ */
+class AdaptiveThresholdTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    Q_ENUMS(Method)
+    Q_ENUMS(Type)
+    Q_PROPERTY(int maxValue READ get_maxValue WRITE set_maxValue RESET reset_maxValue STORED false)
+    Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
+    Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
+    Q_PROPERTY(int blockSize READ get_blockSize WRITE set_blockSize RESET reset_blockSize STORED false)
+    Q_PROPERTY(int C READ get_C WRITE set_C RESET reset_C STORED false)
+
+    public:
+    enum Method { Mean = ADAPTIVE_THRESH_MEAN_C,
+                  Gaussian = ADAPTIVE_THRESH_GAUSSIAN_C };
+
+    enum Type { Binary = THRESH_BINARY,
+                Binary_Inv = THRESH_BINARY_INV };
+
+    BR_PROPERTY(int, maxValue, 255)
+    BR_PROPERTY(Method, method, Mean)
+    BR_PROPERTY(Type, type, Binary)
+    BR_PROPERTY(int, blockSize, 3)
+    BR_PROPERTY(int, C, 0)
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        Mat mask;
+        adaptiveThreshold(src, mask, maxValue, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
+
+        dst.file.set("Mask",QVariant::fromValue(mask));
+    }
+};
+BR_REGISTER(Transform, AdaptiveThresholdTransform)
+
+/*!
+ * \ingroup transforms
+ * \brief Samples pixels from a mask.
+ * \author Scott Klum \cite sklum
+ */
+class SampleFromMaskTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        Mat mask = src.file.get<Mat>("Mask");
+        const int count = countNonZero(mask);
+        dst.m() = Mat(1,count,src.m().type());
+
+        Mat masked;
+        src.m().copyTo(masked, mask);
+
+        Mat indices;
+        findNonZero(masked,indices);
+
+        for (int j=0; j<indices.total(); j++)
+            dst.m().at<uchar>(0,j) = masked.at<uchar>(indices.at<Point>(j).y,indices.at<Point>(j).x);
+    }
+};
+
+BR_REGISTER(Transform, SampleFromMaskTransform)
+
+/*!
+ * \ingroup transforms
  * \brief Applies a mask from the metadata.
  * \author Austin Blanton \cite imaus10
  */
@@ -190,10 +260,13 @@ class ApplyMaskTransform : public UntrainableTransform
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    BR_PROPERTY(QString, key, "Mask")
+
     void project(const Template &src, Template &dst) const
     {
-        if (src.file.contains("Mask"))
-            src.m().copyTo(dst, src.file.get<Mat>("Mask"));
+        if (src.file.contains(key))
+            src.m().copyTo(dst, src.file.get<Mat>(key));
         else
             dst = src;
     }
