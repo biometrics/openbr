@@ -58,4 +58,4 @@ BR_REGISTER(Transform, DrawTransform)
 
 } // namespace br
 
-#include "draw.moc"
+#include "gui/draw.moc"

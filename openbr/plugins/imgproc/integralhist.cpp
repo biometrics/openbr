@@ -43,4 +43,4 @@ BR_REGISTER(Transform, IntegralHistTransform)
 
 } // namespace br
 
-#include "integralhist.moc"
+#include "imgproc/integralhist.moc"

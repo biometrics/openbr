@@ -58,4 +58,4 @@ BR_REGISTER(Transform, AggregateFrames)
 
 } // namespace br
 
-#include "aggregate.moc"
+#include "video/aggregate.moc"

@@ -33,4 +33,4 @@ BR_REGISTER(Transform, GridTransform)
 
 } // namespace br
 
-#include "grid.moc"
+#include "metadata/grid.moc"

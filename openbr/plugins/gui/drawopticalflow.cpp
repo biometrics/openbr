@@ -37,4 +37,4 @@ BR_REGISTER(Transform, DrawOpticalFlow)
 
 } // namespace br
 
-#include "drawopticalflow.moc"
+#include "gui/drawopticalflow.moc"

@@ -32,4 +32,4 @@ BR_REGISTER(Transform, DropFrames)
 
 } // namespace br
 
-#include "drop.moc"
+#include "video/drop.moc"

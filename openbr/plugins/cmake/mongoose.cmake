@@ -1,0 +1,8 @@
+set(BR_WITH_MONGOOSE OFF CACHE BOOL "Build with Mongoose")
+if(${BR_WITH_MONGOOSE})
+  find_package(Mongoose)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${MONGOOSE_SRC})
+  install(FILES ${MONGOOSE_LICENSE} RENAME mongoose DESTINATION share/openbr/licenses)
+else()
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/metadata/mongoose.cpp)
+endif()

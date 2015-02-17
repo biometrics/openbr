@@ -28,4 +28,4 @@ BR_REGISTER(Distance, DefaultDistance)
 
 } // namespace br
 
-#include "default.moc"
+#include "distance/default.moc"

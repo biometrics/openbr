@@ -65,4 +65,4 @@ BR_REGISTER(Transform, RandomCentroidsTransform)
 
 } //namespace br
 
-#include "randomcentroids.moc"
+#include "cluster/randomcentroids.moc"

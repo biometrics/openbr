@@ -51,4 +51,4 @@ BR_REGISTER(Transform, HistTransform)
 
 } // namespace br
 
-#include "hist.moc"
+#include "imgproc/hist.moc"

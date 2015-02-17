@@ -48,4 +48,4 @@ BR_REGISTER(Transform, NLMeansDenoisingTransform)
 
 } // namespace br
 
-#include "denoising.moc"
+#include "imgproc/denoising.moc"

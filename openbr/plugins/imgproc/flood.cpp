@@ -33,4 +33,4 @@ BR_REGISTER(Transform, FloodTransform)
 
 } // namespace br
 
-#include "flood.moc"
+#include "imgproc/flood.moc"

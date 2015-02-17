@@ -39,4 +39,4 @@ BR_REGISTER(Transform, CollectNNTransform)
 
 } // namespace br
 
-#include "collectnn.moc"
+#include "cluster/collectnn.moc"

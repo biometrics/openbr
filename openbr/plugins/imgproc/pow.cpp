@@ -29,4 +29,4 @@ BR_REGISTER(Transform, PowTransform)
 
 } // namespace br
 
-#include "pow.moc"
+#include "imgproc/pow.moc"

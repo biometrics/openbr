@@ -62,4 +62,4 @@ BR_REGISTER(Transform, KMeansTransform)
 
 } // namespace br
 
-#include "kmeans.moc"
+#include "cluster/kmeans.moc"

@@ -159,4 +159,4 @@ BR_REGISTER(Transform, RecursiveIntegralSamplerTransform)
 
 } // namespace br
 
-#include "recursiveintegralsampler.moc"
+#include "imgproc/recursiveintegralsampler.moc"

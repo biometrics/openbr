@@ -26,4 +26,4 @@ BR_REGISTER(Transform, MAddTransform)
 
 } // namespace br
 
-#include "madd.moc"
+#include "imgproc/madd.moc"

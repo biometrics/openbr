@@ -62,4 +62,4 @@ BR_REGISTER(Format, scoresFormat)
 
 } // namespace br
 
-#include "scores.moc"
+#include "format/scores.moc"

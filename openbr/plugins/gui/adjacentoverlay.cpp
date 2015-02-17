@@ -214,4 +214,4 @@ BR_REGISTER(Transform, AdjacentOverlayTransform)
 
 } // namespace br
 
-#include "adjacentoverlay.moc"
+#include "gui/adjacentoverlay.moc"

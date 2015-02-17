@@ -32,4 +32,4 @@ BR_REGISTER(Transform, KeyToRectTransform)
 
 } // namespace br
 
-#include "keytorect.moc"
+#include "metadata/keytorect.moc"

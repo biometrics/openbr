@@ -32,4 +32,4 @@ BR_REGISTER(Transform, ROIFromPtsTransform)
 
 } // namespace br
 
-#include "roifrompoints.moc"
+#include "imgproc/roifrompoints.moc"

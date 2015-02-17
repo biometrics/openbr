@@ -25,4 +25,4 @@ BR_REGISTER(Transform, MeanFillTransform)
 
 } // namespace br
 
-#include "meanfill.moc"
+#include "imgproc/meanfill.moc"

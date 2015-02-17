@@ -63,4 +63,4 @@ BR_REGISTER(Transform, HistBinTransform)
 
 } // namespace br
 
-#include "histbin.moc"
+#include "imgproc/histbin.moc"

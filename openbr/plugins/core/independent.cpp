@@ -210,4 +210,4 @@ BR_REGISTER(Transform, IndependentTransform)
 
 } // namespace br
 
-#include "independent.moc"
+#include "core/independent.moc"

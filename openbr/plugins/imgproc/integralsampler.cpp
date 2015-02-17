@@ -103,4 +103,4 @@ BR_REGISTER(Transform, IntegralSamplerTransform)
 
 } // namespace br
 
-#include "integralsampler.moc"
+#include "imgproc/integralsampler.moc"

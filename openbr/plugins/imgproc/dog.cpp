@@ -51,4 +51,4 @@ BR_REGISTER(Transform, DoGTransform)
 
 } // namespace br
 
-#include "dog.moc"
+#include "imgproc/dog.moc"

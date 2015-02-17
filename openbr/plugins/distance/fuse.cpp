@@ -98,4 +98,4 @@ BR_REGISTER(Distance, FuseDistance)
 
 } // namespace br
 
-#include "fuse.moc"
+#include "distance/fuse.moc"

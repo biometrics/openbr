@@ -62,4 +62,4 @@ BR_REGISTER(Transform, LogNNTransform)
 
 } // namespace br
 
-#include "lognn.moc"
+#include "cluster/lognn.moc"

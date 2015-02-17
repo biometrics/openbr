@@ -33,4 +33,4 @@ BR_REGISTER(Format, lffsFormat)
 
 } // namespace br
 
-#include "lffs.moc"
+#include "format/lffs.moc"

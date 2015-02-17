@@ -2,6 +2,7 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
+#include <openbr/core/eigenutils.h>
 
 using namespace cv;
 
@@ -135,4 +136,4 @@ BR_REGISTER(Transform, ProcrustesTransform)
 
 } // namespace br
 
-#include "procrustes.moc"
+#include "metadata/procrustes.moc"

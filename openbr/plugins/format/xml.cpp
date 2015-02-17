@@ -99,4 +99,4 @@ BR_REGISTER(Format, xmlFormat)
 
 } // namespace br
 
-#include "xml.moc"
+#include "format/xml.moc"

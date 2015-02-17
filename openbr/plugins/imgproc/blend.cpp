@@ -27,4 +27,4 @@ BR_REGISTER(Transform, BlendTransform)
 
 } // namespace br
 
-#include "blend.moc"
+#include "imgproc/blend.moc"

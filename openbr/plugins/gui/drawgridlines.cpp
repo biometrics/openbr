@@ -44,4 +44,4 @@ BR_REGISTER(Transform, DrawGridLinesTransform)
 
 } // namespace br
 
-#include "drawgridlines.moc"
+#include "gui/drawgridlines.moc"

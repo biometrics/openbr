@@ -70,4 +70,4 @@ BR_REGISTER(Transform, SingletonTransform)
 
 } // namespace br
 
-#include "singleton.moc"
+#include "core/singleton.moc"

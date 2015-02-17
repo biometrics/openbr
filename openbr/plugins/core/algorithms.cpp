@@ -108,4 +108,4 @@ BR_REGISTER(Initializer, AlgorithmsInitializer)
 
 } // namespace br
 
-#include "algorithms.moc"
+#include "core/algorithms.moc"

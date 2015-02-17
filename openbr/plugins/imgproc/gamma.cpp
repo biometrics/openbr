@@ -36,4 +36,4 @@ BR_REGISTER(Transform, GammaTransform)
 
 } // namespace br
 
-#include "gamma.moc"
+#include "imgproc/gamma.moc"

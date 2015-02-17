@@ -28,4 +28,4 @@ BR_REGISTER(Distance, IdenticalDistance)
 
 } // namespace br
 
-#include "identical.moc"
+#include "distance/identical.moc"

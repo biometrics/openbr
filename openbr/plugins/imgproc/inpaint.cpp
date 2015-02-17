@@ -42,4 +42,4 @@ private:
 
 } // namespace br
 
-#include "inpaint.moc"
+#include "imgproc/inpaint.moc"

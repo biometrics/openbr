@@ -32,4 +32,4 @@ BR_REGISTER(Transform, CropTransform)
 
 } // namespace br
 
-#include "crop.moc"
+#include "imgproc/crop.moc"

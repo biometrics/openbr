@@ -43,4 +43,4 @@ BR_REGISTER(Transform, ROITransform)
 
 } // namespace br
 
-#include "roi.moc"
+#include "imgproc/roi.moc"

@@ -23,4 +23,4 @@ BR_REGISTER(Distance, ByteL1Distance)
 
 } // namespace br
 
-#include "byteL1.moc"
+#include "distance/byteL1.moc"

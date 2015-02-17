@@ -67,4 +67,4 @@ BR_REGISTER(Format, rawFormat)
 
 } // namespace br
 
-#include "raw.moc"
+#include "format/raw.moc"

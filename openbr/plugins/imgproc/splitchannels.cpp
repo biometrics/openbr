@@ -29,4 +29,4 @@ BR_REGISTER(Transform, SplitChannelsTransform)
 
 } // namespace br
 
-#include "splitchannels.moc"
+#include "imgproc/splitchannels.moc"

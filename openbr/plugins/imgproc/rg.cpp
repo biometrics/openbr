@@ -48,4 +48,4 @@ BR_REGISTER(Transform, RGTransform)
 
 } // namespace br
 
-#include "rg.moc"
+#include "imgproc/rg.moc"

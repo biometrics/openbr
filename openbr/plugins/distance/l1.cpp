@@ -27,4 +27,4 @@ BR_REGISTER(Distance, L1Distance)
 
 } // namespace br
 
-#include "L1.moc"
+#include "distance/L1.moc"

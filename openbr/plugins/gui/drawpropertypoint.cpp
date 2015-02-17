@@ -60,4 +60,4 @@ BR_REGISTER(Transform, DrawPropertyPointTransform)
 
 } // namespace br
 
-#include "drawpropertypoint.moc"
+#include "gui/drawpropertypoint.moc"

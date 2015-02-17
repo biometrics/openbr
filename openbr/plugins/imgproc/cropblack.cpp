@@ -52,4 +52,4 @@ BR_REGISTER(Transform, CropBlackTransform)
 
 } // namespace br
 
-#include "cropblack.moc"
+#include "imgproc/cropblack.moc"

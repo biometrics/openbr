@@ -40,4 +40,4 @@ BR_REGISTER(Transform, BlurTransform)
 
 } // namespace br
 
-#include "blur.moc"
+#include "imgproc/blur.moc"

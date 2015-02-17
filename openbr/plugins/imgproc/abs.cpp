@@ -22,4 +22,4 @@ BR_REGISTER(Transform, AbsTransform)
 
 } // namespace br
 
-#include "abs.moc"
+#include "imgproc/abs.moc"

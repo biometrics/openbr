@@ -39,4 +39,4 @@ BR_REGISTER(Distance, NegativeLogPlusOneDistance)
 
 } // namespace br
 
-#include "neglogplusone.moc"
+#include "distance/neglogplusone.moc"

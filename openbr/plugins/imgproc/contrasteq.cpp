@@ -67,4 +67,4 @@ BR_REGISTER(Transform, ContrastEqTransform)
 
 } // namespace br
 
-#include "contrasteq.moc"
+#include "imgproc/contrasteq.moc"

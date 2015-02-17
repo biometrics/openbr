@@ -67,4 +67,4 @@ BR_REGISTER(Format, binaryFormat)
 
 } // namespace br
 
-#include "binary.moc"
+#include "format/binary.moc"

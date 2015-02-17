@@ -101,4 +101,4 @@ BR_REGISTER(Distance, DistDistance)
 
 } // namespace br
 
-#include "dist.moc"
+#include "distance/dist.moc"

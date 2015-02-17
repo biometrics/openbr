@@ -26,4 +26,4 @@ BR_REGISTER(Transform, CropSquareTransform)
 
 } // namespace br
 
-#include "cropsquare.moc"
+#include "imgproc/cropsquare.moc"

@@ -52,4 +52,4 @@ BR_REGISTER(Transform, CvtColorTransform)
 
 } // namespace br
 
-#include "cvtcolor.moc"
+#include "imgproc/cvtcolor.moc"

@@ -27,4 +27,4 @@ BR_REGISTER(Format, nullFormat)
 
 } // namespace br
 
-#include "null.moc"
+#include "format/null.moc"

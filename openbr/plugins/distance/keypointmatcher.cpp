@@ -55,4 +55,4 @@ BR_REGISTER(Distance, KeyPointMatcherDistance)
 
 } // namespace br
 
-#include "keypointmatcher.moc"
+#include "distance/keypointmatcher.moc"

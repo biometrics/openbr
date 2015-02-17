@@ -128,4 +128,4 @@ BR_REGISTER(Transform, EBIFTransform)
 
 } // namespace br
 
-#include "ebif.moc"
+#include "classification/ebif.moc"

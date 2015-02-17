@@ -55,4 +55,4 @@ BR_REGISTER(Transform, CSDNTransform)
 
 } // namespace br
 
-#include "csdn.moc"
+#include "imgproc/csdn.moc"

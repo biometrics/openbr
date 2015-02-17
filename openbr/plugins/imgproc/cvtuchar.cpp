@@ -23,4 +23,4 @@ BR_REGISTER(Transform, CvtUCharTransform)
 
 } // namespace br
 
-#include "cvtuchar.moc"
+#include "imgproc/cvtuchar.moc"

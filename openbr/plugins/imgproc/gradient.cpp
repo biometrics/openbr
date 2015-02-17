@@ -47,4 +47,4 @@ BR_REGISTER(Transform, GradientTransform)
 
 } // namespace br
 
-#include "gradient.moc"
+#include "imgproc/gradient.moc"

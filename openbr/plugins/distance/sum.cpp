@@ -43,4 +43,4 @@ BR_REGISTER(Distance, SumDistance)
 
 } // namespace br
 
-#include "sum.moc"
+#include "distance/sum.moc"

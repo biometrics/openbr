@@ -29,4 +29,4 @@ BR_REGISTER(Transform, ScaleTransform)
 
 } // namespace br
 
-#include "scale.moc"
+#include "imgproc/scale.moc"

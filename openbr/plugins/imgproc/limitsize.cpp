@@ -34,4 +34,4 @@ BR_REGISTER(Transform, LimitSizeTransform)
 
 } // namespace br
 
-#include "limitsize.moc"
+#include "imgproc/limitsize.moc"

@@ -81,4 +81,4 @@ BR_REGISTER(Transform, KNNTransform)
 
 } // namespace br
 
-#include "knn.moc"
+#include "cluster/knn.moc"

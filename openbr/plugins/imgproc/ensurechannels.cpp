@@ -48,4 +48,4 @@ BR_REGISTER(Transform, EnsureChannelsTransform)
 
 } // namespace br
 
-#include "ensurechannels.moc"
+#include "imgproc/ensurechannels.moc"

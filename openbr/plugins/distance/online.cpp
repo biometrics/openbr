@@ -32,4 +32,4 @@ BR_REGISTER(Distance, OnlineDistance)
 
 } // namespace br
 
-#include "online.moc"
+#include "distance/online.moc"

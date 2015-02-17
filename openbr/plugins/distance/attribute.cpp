@@ -31,4 +31,4 @@ BR_REGISTER(Distance, AttributeDistance)
 
 } // namespace br
 
-#include "attribute.moc"
+#include "distance/attribute.moc"

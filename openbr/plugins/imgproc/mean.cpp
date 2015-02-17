@@ -42,4 +42,4 @@ BR_REGISTER(Transform, MeanTransform)
 
 } // namespace br
 
-#include "mean.moc"
+#include "imgproc/mean.moc"

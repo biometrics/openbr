@@ -196,4 +196,4 @@ BR_REGISTER(Format, ebtsFormat)
 
 } // namespace br
 
-#include "ebts.moc"
+#include "format/ebts.moc"

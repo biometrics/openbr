@@ -24,4 +24,4 @@ BR_REGISTER(Transform, CvtFloatTransform)
 
 } // namespace br
 
-#include "cvtfloat.moc"
+#include "imgproc/cvtfloat.moc"

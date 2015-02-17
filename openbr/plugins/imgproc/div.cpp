@@ -26,4 +26,4 @@ BR_REGISTER(Transform, DivTransform)
 
 } // namespace br
 
-#include "div.moc"
+#include "imgproc/div.moc"

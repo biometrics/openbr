@@ -24,4 +24,4 @@ BR_REGISTER(Transform, IntegralTransform)
 
 } // namespace br
 
-#include "integral.moc"
+#include "imgproc/integral.moc"

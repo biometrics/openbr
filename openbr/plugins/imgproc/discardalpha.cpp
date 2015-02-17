@@ -37,4 +37,4 @@ BR_REGISTER(Transform, DiscardAlphaTransform)
 
 } // namespace br
 
-#include "discardalpha.moc"
+#include "imgproc/discardalpha.moc"

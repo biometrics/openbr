@@ -52,4 +52,4 @@ BR_REGISTER(Transform, DrawSegmentation)
 
 } // namespace br
 
-#include "drawsegmentation.moc"
+#include "gui/drawsegmentation.moc"

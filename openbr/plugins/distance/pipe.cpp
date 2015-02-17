@@ -44,4 +44,4 @@ BR_REGISTER(Distance, PipeDistance)
 
 } // namespace br
 
-#include "pipe.moc"
+#include "distance/pipe.moc"

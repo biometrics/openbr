@@ -65,4 +65,4 @@ BR_REGISTER(Transform, ResizeTransform)
 
 } // namespace br
 
-#include "resize.moc"
+#include "imgproc/resize.moc"

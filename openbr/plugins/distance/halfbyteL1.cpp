@@ -26,4 +26,4 @@ BR_REGISTER(Distance, HalfByteL1Distance)
 
 } // namespace br
 
-#include "halfbyteL1.moc"
+#include "distance/halfbyteL1.moc"

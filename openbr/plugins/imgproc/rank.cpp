@@ -41,4 +41,4 @@ BR_REGISTER(Transform, RankTransform)
 
 } // namespace br
 
-#include "rank.moc"
+#include "imgproc/rank.moc"

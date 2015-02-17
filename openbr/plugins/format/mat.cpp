@@ -224,4 +224,4 @@ BR_REGISTER(Format, matFormat)
 
 } // namespace br
 
-#include "mat.moc"
+#include "format/mat.moc"

@@ -30,4 +30,4 @@ BR_REGISTER(Transform, SubdivideTransform)
 
 } // namespace br
 
-#include "subdivide.moc"
+#include "imgproc/subdivide.moc"
