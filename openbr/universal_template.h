@@ -37,8 +37,8 @@ struct br_universal_template
 {
     unsigned char imageID[16]; /*!< MD5 hash of the undecoded origin file. */
     int32_t  algorithmID; /*!< interpretation of _data_ after _urlSize_. */
-    uint32_t x;      /*!< region of interest horizontal offset (pixels). */
-    uint32_t y;      /*!< region of interest vertical offset (pixels). */
+    int32_t x;      /*!< region of interest horizontal offset (pixels). */
+    int32_t y;      /*!< region of interest vertical offset (pixels). */
     uint32_t width;  /*!< region of interest horizontal size (pixels). */
     uint32_t height; /*!< region of interest vertical size (pixels). */
     uint32_t label; /*!< supervised training class or manually annotated ground truth. */
@@ -57,7 +57,7 @@ typedef const struct br_universal_template *br_const_utemplate;
  * \brief br_universal_template constructor.
  * \see br_free_utemplate
  */
-BR_EXPORT br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize);
+BR_EXPORT br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize);
 
 /*!
  * \brief br_universal_template destructor.

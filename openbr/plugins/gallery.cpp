@@ -319,7 +319,8 @@ class utGallery : public BinaryGallery
         const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
         const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
 
-        uint32_t x = 0, y = 0, width = 0, height = 0;
+        int32_t x = 0, y = 0;
+        uint32_t width = 0, height = 0;
         QByteArray header;
         if ((algorithmID <= -1) && (algorithmID >= -3)) {
             const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
@@ -340,8 +341,8 @@ class utGallery : public BinaryGallery
             header.append((const char*)&leftEyeX , sizeof(uint32_t));
             header.append((const char*)&leftEyeY , sizeof(uint32_t));
         } else {
-            x = t.file.get<uint32_t>("X", 0);
-            y = t.file.get<uint32_t>("Y", 0);
+            x = t.file.get<int32_t>("X", 0);
+            y = t.file.get<int32_t>("Y", 0);
             width = t.file.get<uint32_t>("Width", 0);
             height = t.file.get<uint32_t>("Height", 0);
         }
@@ -349,8 +350,8 @@ class utGallery : public BinaryGallery
 
         gallery.write(imageID);
         gallery.write((const char*) &algorithmID, sizeof(int32_t));
-        gallery.write((const char*) &x          , sizeof(uint32_t));
-        gallery.write((const char*) &y          , sizeof(uint32_t));
+        gallery.write((const char*) &x          , sizeof(int32_t));
+        gallery.write((const char*) &y          , sizeof(int32_t));
         gallery.write((const char*) &width      , sizeof(uint32_t));
         gallery.write((const char*) &height     , sizeof(uint32_t));
         gallery.write((const char*) &label      , sizeof(uint32_t));
