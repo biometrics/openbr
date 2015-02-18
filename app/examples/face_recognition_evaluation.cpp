@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
     br_initialize(argc, argv);
 
-    // Equivalent to 'Globals->algorithm = "FaceRecognion";' in C++ API
+    // Equivalent to 'Globals->algorithm = "FaceRecognition";' in C++ API
     br_set_property("algorithm", "FaceRecognition");
 
     // Equivalent to 'Globals->path = "../data/MEDS/img/";' in C++ API
