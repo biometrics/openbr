@@ -80,6 +80,7 @@ class DObjectDetectTransform : public Transform
 private:
     typedef scan_fhog_pyramid<pyramid_down<6> > image_scanner_type;
     mutable object_detector<image_scanner_type> detector;
+    mutable QMutex mutex;
 
     void train(const TemplateList &data)
     {
@@ -88,7 +89,7 @@ private:
 
         foreach (const Template &t, data) {
             if (!t.file.rects().isEmpty()) {
-                cv_image<bgr_pixel> cimg(t.m().clone());
+                cv_image<unsigned char> cimg(t.m().clone());
 
                 array2d<unsigned char> image;
                 assign_image(image,cimg);
@@ -115,18 +116,21 @@ private:
         trainer.set_num_threads(max(1,QThread::idealThreadCount()));
         trainer.set_c(C);
         trainer.set_epsilon(epsilon);
+	trainer.be_verbose();
 
         detector = trainer.train(samples, boxes);
     }
 
     void project(const Template &src, Template &dst) const
-    {
+   {
         dst = src;
-        cv_image<bgr_pixel> cimg(src.m().clone());
+        cv_image<unsigned char> cimg(src.m().clone());
         array2d<unsigned char> image;
         assign_image(image,cimg);
 
+	QMutexLocker locker(&mutex);
         std::vector<rectangle> dets = detector(image);
+	locker.unlock();
 
         for (int i=0; i<dets.size(); i++)
             dst.file.appendRect(QRectF(QPointF(dets[i].left(),dets[i].top()),QPointF(dets[i].right(),dets[i].bottom())));
