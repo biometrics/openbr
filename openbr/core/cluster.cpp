@@ -82,7 +82,7 @@ float normalizedROD(const Neighborhood &neighborhood, int a, int b)
     return 1.f * (distanceA + distanceB) / std::min(indexA+1, indexB+1);
 }
 
-Neighborhood getNeighborhood(const QStringList &simmats)
+Neighborhood getNeighborhood(const QList<cv::Mat> &simmats)
 {
     Neighborhood neighborhood;
 
@@ -99,9 +99,7 @@ Neighborhood getNeighborhood(const QStringList &simmats)
         int currentRows = -1;
         int columnOffset = 0;
         for (int j=0; j<numGalleries; j++) {
-            QScopedPointer<br::Format> format(br::Factory<br::Format>::make(simmats[i*numGalleries+j]));
-            br::Template t = format->read();
-            cv::Mat m = t.m();
+            cv::Mat m = simmats[i * numGalleries + j];
             if (j==0) {
                 currentRows = m.rows;
                 allNeighbors.resize(currentRows);
@@ -152,12 +150,11 @@ Neighborhood getNeighborhood(const QStringList &simmats)
                 neighbor.second = (neighbor.second - globalMin) / (globalMax - globalMin);
         }
     }
-
     return neighborhood;
 }
 
 // Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
-br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv)
+br::Clusters br::ClusterGallery(const QList<cv::Mat> &simmats, float aggressiveness)
 {
     qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
 
@@ -238,6 +235,19 @@ br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness
         clusters = newClusters;
         neighborhood = newNeighborhood;
     }
+    return clusters;
+}
+
+br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv)
+{
+    QList<cv::Mat> mats;
+    foreach (const QString &simmat, simmats) {
+        QScopedPointer<br::Format> format(br::Factory<br::Format>::make(simmat));
+        br::Template t = format->read();
+        mats.append(t);
+    }
+
+    Clusters clusters = ClusterGallery(mats, aggressiveness);
 
     // Save clusters
     if (!csv.isEmpty())

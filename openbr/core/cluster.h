@@ -21,12 +21,14 @@
 #include <QString>
 #include <QStringList>
 #include <QVector>
+#include <openbr/openbr_plugin.h>
 
 namespace br
 {
     typedef QList<int> Cluster; // List of indices into galleries
     typedef QVector<Cluster> Clusters;
 
+    Clusters ClusterGallery(const QList<cv::Mat> &simmats, float aggressiveness);
     Clusters ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv);
     void EvalClustering(const QString &csv, const QString &input, QString truth_property);
 
