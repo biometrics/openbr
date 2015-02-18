@@ -11,7 +11,7 @@
 #include <pittpatt_raw_image_io.h>
 #include <pittpatt_sdk.h>
 #include <pittpatt_license.h>
-#include "openbr_internal.h"
+#include "openbr/plugins/openbr_internal.h"
 #include "openbr/core/resource.h"
 
 #define TRY(CC)                                                                                               \
