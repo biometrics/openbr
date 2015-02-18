@@ -50,12 +50,12 @@ private:
 
             cv_image<bgr_pixel> cimg(src.m().clone());
 
-            for (unsigned long j = 0; j < src.file.rects().size(); ++j)
+            for (int j=0; j<src.file.rects().size(); ++j)
             {
                 QRectF rect = src.file.rects()[j];
                 rectangle r(rect.left(),rect.top(),rect.right(),rect.bottom());
                 full_object_detection shape = (*sp)(cimg, r);
-                for (int i=0; i<shape.num_parts(); i++)
+                for (size_t i=0; i<shape.num_parts(); i++)
                     dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
             }
 
@@ -107,8 +107,6 @@ private:
         if (samples.size() == 0)
             qFatal("Training data has no bounding boxes.");
 
-        add_image_left_right_flips(samples, boxes);
-
         image_scanner_type scanner;
 
         scanner.set_detection_window_size(winSize, winSize);
@@ -116,7 +114,9 @@ private:
         trainer.set_num_threads(max(1,QThread::idealThreadCount()));
         trainer.set_c(C);
         trainer.set_epsilon(epsilon);
-	trainer.be_verbose();
+
+        if (Globals->verbose)
+            trainer.be_verbose();
 
         detector = trainer.train(samples, boxes);
     }
@@ -128,11 +128,11 @@ private:
         array2d<unsigned char> image;
         assign_image(image,cimg);
 
-	QMutexLocker locker(&mutex);
+        QMutexLocker locker(&mutex);
         std::vector<rectangle> dets = detector(image);
-	locker.unlock();
+        locker.unlock();
 
-        for (int i=0; i<dets.size(); i++)
+        for (size_t i=0; i<dets.size(); i++)
             dst.file.appendRect(QRectF(QPointF(dets[i].left(),dets[i].top()),QPointF(dets[i].right(),dets[i].bottom())));
     }
 
