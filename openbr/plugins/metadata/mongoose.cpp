@@ -1,4 +1,4 @@
-#include "openbr_internal.h"
+#include <openbr/plugins/openbr_internal.h>
 #include <mongoose.h>
 
 namespace br

@@ -20,8 +20,8 @@
 #include <Bmp.h>
 #include <NGrayscaleImage.h>
 
-#include "core/resource.h"
-#include "core/opencvutils.h"
+#include <openbr/core/resource.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 using namespace br;
