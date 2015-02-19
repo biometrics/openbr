@@ -42,7 +42,7 @@ class AdaptiveThresholdTransform : public UntrainableTransform
         dst = src;
 
         Mat mask;
-        adaptiveThreshold(src, mask, maxValue, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
+        adaptiveThreshold(src, mask, maxValue, method, type, blockSize, C);
 
         dst.file.set("Mask",QVariant::fromValue(mask));
     }
