@@ -1,4 +1,4 @@
-set(BR_WITH_STASM4 OFF CACHE BOOL "Build with Stasm")
+set(BR_WITH_STASM4 ON CACHE BOOL "Build with Stasm")
 
 if(${BR_WITH_STASM4})
   find_package(Stasm4 REQUIRED)
