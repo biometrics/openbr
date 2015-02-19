@@ -1,7 +1,6 @@
 #include "openbr/plugins/openbr_internal.h"
 #include "openbr/core/opencvutils.h"
 
-#include <opencv2/ml/ml.hpp>
 #include <opencv2/contrib/contrib.hpp>
 
 using namespace cv;
