@@ -43,4 +43,4 @@ BR_REGISTER(Transform, RevertAffineTransform)
 
 } // namespace br
 
-#include "imgproc/revertaffine.cpp"
+#include "imgproc/revertaffine.moc"
