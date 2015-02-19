@@ -28,7 +28,7 @@ namespace br
  * \brief Colorspace conversion.
  * \author Josh Klontz \cite jklontz
  */
-class CvtColorTransform : public UntrainableTransform
+class CvtTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(ColorSpace)
@@ -64,8 +64,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, CvtColorTransform)
+BR_REGISTER(Transform, CvtTransform)
 
 } // namespace br
 
-#include "imgproc/cvtcolor.moc"
+#include "imgproc/cvt.moc"
