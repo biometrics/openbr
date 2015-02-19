@@ -29,8 +29,9 @@ class AdaptiveThresholdTransform : public UntrainableTransform
                   Gaussian = ADAPTIVE_THRESH_GAUSSIAN_C };
 
     enum Type { Binary = THRESH_BINARY,
-                Binary_Inv = THRESH_BINARY_INV };
+                BinaryInv = THRESH_BINARY_INV };
 
+private:
     BR_PROPERTY(int, maxValue, 255)
     BR_PROPERTY(Method, method, Mean)
     BR_PROPERTY(Type, type, Binary)
