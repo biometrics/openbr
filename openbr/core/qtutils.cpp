@@ -532,7 +532,9 @@ bool BlockCompression::open(QIODevice::OpenMode mode)
         quint32 block_size;
         blockReader >> block_size;
         compressedBlock.resize(block_size);
-        blockReader.readRawData(compressedBlock.data(), block_size);
+        int read_count = blockReader.readRawData(compressedBlock.data(), block_size);
+        if (read_count != block_size)
+            qFatal("Failed to read initial block");
 
         decompressedBlock = qUncompress(compressedBlock);
 
@@ -589,6 +591,8 @@ qint64 BlockCompression::readData(char *data, qint64 remaining)
             // read the size of the next block
             quint32 block_size;
             blockReader >> block_size;
+            if (block_size == 0)
+                break;
 
             compressedBlock.resize(block_size);
             int actualRead = blockReader.readRawData(compressedBlock.data(), block_size);
@@ -603,8 +607,6 @@ qint64 BlockCompression::readData(char *data, qint64 remaining)
         }
     }
 
-    if (read != initial)
-        qFatal("Failed to read enough");
     bool condition = blockReader.atEnd() && !basis->isReadable() ;
     if (condition)
         qWarning("Returning -1 from read");
