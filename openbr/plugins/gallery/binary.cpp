@@ -17,6 +17,11 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif // _WIN32
+
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
 #include <openbr/universal_template.h>
