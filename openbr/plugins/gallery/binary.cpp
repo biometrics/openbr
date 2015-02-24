@@ -228,7 +228,36 @@ class utGallery : public BinaryGallery
                 dataSize -= sizeof(uint32_t)*4;
                 t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
                 t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
-            } else {
+            }
+            else if (ut.algorithmID == 7) {
+                // binary data consisting of a single channel matrix, of a supported type.
+                // 3 element header:
+                // uint32 datatype (single channel opencv datatype code)
+                // uint32 matrix rows
+                // uint32 matrix cols
+                // Followed by serialized data, in row-major order.
+                // #### NOTE! matlab's default order is col-major, so some work should
+                // be done on the matlab side to make sure that the initial serialization is correct.
+                uint32_t dataType = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+
+                uint32_t matrixRows = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+
+                uint32_t matrixCols = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+
+                // Set metadata
+                t.file.set("Label", ut.label);
+                t.file.set("X", ut.x);
+                t.file.set("Y", ut.y);
+                t.file.set("Width", ut.width);
+                t.file.set("Height", ut.height);
+
+                t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, 1), dataStart).clone() /* We don't want a shallow copy! */);
+                return t;
+            }
+            else {
                 t.file.set("X", ut.x);
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);
