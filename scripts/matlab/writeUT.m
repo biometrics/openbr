@@ -9,9 +9,13 @@ function writeUT(handle, matrix, imageID, roi_x, roi_y, roi_width, roi_height, l
 % computed values: fvSize, urlSize (url encoded as null-terminated 8-bit
 % string, urlSize includes null terminator), a null terminator will be
 % added to url by this function
+%
+% For performance reasons, handle should be opened in 'W', i.e. buffered
+% mode.
 
-if (size(matrix,3) ~= 1)
-    disp('Cannot serialize matrix, only single channel matrices are supported');
+% 512 -- max supported channels in cv::Mat
+if (size(matrix,3) > 512)
+    disp('Cannot serialize matrix, 512 is the max depth supported');
     return;
 end
 
@@ -35,11 +39,12 @@ end
 % }; 
 
 % algorithm 7 binary data format:
-% uint32 datatype code (copied from opencv, base datatype codes, single
+% uint16 datatype code (copied from opencv, base datatype codes, single
 % channel is assumed)
 % uint32 matrix rows
 % uint32 matrix cols
-% row-major serialization of matrix
+% uint16 channel count (max valid is 512)
+% channels->rows->columns
 
 % opencv data type definitions 
 % #define CV_8U   0
@@ -134,16 +139,16 @@ fwrite(handle, fvSize, 'uint32');
 % url (just writing a single null byte)
 fwrite(handle, url, 'uint8');
 
-% binary data header -- datatype code, row count, col count
-fwrite(handle, type_code,'uint32');
+% binary data header -- datatype code, row count, col count, channel count
+% (max 512). Datatype and channel count are uint16, dimensions are uint32
+fwrite(handle, type_code,'uint16');
 fwrite(handle, uint32(size(matrix,1)), 'uint32');
 fwrite(handle, uint32(size(matrix,2)), 'uint32');
+fwrite(handle, uint16(size(matrix,3)), 'uint16');
 
-% write feature vector data, explicit row-major enumeration, matrix(:) is
-% col-major
-for i = 1:size(matrix,1)
-    fwrite(handle, matrix(i,:), matlab_type);
-end
+% write data, explicit row-major enumeration, matrix(:) is col-major,
+% followed by depth. By permuting the dimensions, we can put the bytes in
+% an appropriate order:
+permuted = permute(matrix,[3,2,1]);
 
-
-
+fwrite(handle, permuted(:), matlab_type);

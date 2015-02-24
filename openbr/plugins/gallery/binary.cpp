@@ -231,21 +231,26 @@ class utGallery : public BinaryGallery
             }
             else if (ut.algorithmID == 7) {
                 // binary data consisting of a single channel matrix, of a supported type.
-                // 3 element header:
-                // uint32 datatype (single channel opencv datatype code)
+                // 4 element header:
+                // uint16 datatype (single channel opencv datatype code)
                 // uint32 matrix rows
                 // uint32 matrix cols
-                // Followed by serialized data, in row-major order.
+                // uint16 matrix depth (max 512)
+                // Followed by serialized data, in row-major order (in r/c), with depth values
+                // for each layer listed in order (i.e. rgb, rgb etc.)
                 // #### NOTE! matlab's default order is col-major, so some work should
                 // be done on the matlab side to make sure that the initial serialization is correct.
-                uint32_t dataType = *reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
+                uint16_t dataType = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint16_t);
 
                 uint32_t matrixRows = *reinterpret_cast<uint32_t*>(dataStart);
                 dataStart += sizeof(uint32_t);
 
                 uint32_t matrixCols = *reinterpret_cast<uint32_t*>(dataStart);
                 dataStart += sizeof(uint32_t);
+
+                uint16_t matrixDepth= *reinterpret_cast<uint16_t*>(dataStart);
+                dataStart += sizeof(uint16_t);
 
                 // Set metadata
                 t.file.set("Label", ut.label);
@@ -254,7 +259,7 @@ class utGallery : public BinaryGallery
                 t.file.set("Width", ut.width);
                 t.file.set("Height", ut.height);
 
-                t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, 1), dataStart).clone() /* We don't want a shallow copy! */);
+                t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, matrixDepth), dataStart).clone() /* We don't want a shallow copy! */);
                 return t;
             }
             else {
