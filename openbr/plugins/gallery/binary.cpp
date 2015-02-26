@@ -17,6 +17,11 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif // _WIN32
+
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
 #include <openbr/universal_template.h>
@@ -223,7 +228,41 @@ class utGallery : public BinaryGallery
                 dataSize -= sizeof(uint32_t)*4;
                 t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
                 t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
-            } else {
+            }
+            else if (ut.algorithmID == 7) {
+                // binary data consisting of a single channel matrix, of a supported type.
+                // 4 element header:
+                // uint16 datatype (single channel opencv datatype code)
+                // uint32 matrix rows
+                // uint32 matrix cols
+                // uint16 matrix depth (max 512)
+                // Followed by serialized data, in row-major order (in r/c), with depth values
+                // for each layer listed in order (i.e. rgb, rgb etc.)
+                // #### NOTE! matlab's default order is col-major, so some work should
+                // be done on the matlab side to make sure that the initial serialization is correct.
+                uint16_t dataType = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint16_t);
+
+                uint32_t matrixRows = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+
+                uint32_t matrixCols = *reinterpret_cast<uint32_t*>(dataStart);
+                dataStart += sizeof(uint32_t);
+
+                uint16_t matrixDepth= *reinterpret_cast<uint16_t*>(dataStart);
+                dataStart += sizeof(uint16_t);
+
+                // Set metadata
+                t.file.set("Label", ut.label);
+                t.file.set("X", ut.x);
+                t.file.set("Y", ut.y);
+                t.file.set("Width", ut.width);
+                t.file.set("Height", ut.height);
+
+                t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, matrixDepth), dataStart).clone() /* We don't want a shallow copy! */);
+                return t;
+            }
+            else {
                 t.file.set("X", ut.x);
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);

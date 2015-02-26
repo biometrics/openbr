@@ -26,7 +26,7 @@ class SampleFromMaskTransform : public UntrainableTransform
         Mat indices;
         findNonZero(masked,indices);
 
-        for (int j=0; j<indices.total(); j++)
+        for (size_t j=0; j<indices.total(); j++)
             dst.m().at<uchar>(0,j) = masked.at<uchar>(indices.at<Point>(j).y,indices.at<Point>(j).x);
     }
 };
