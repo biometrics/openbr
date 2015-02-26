@@ -52,7 +52,7 @@ static void callAndFree(br_utemplate_callback callback, br_utemplate t, br_callb
     free(t);
 }
 
-static bool read_buffer(FILE *file, char *buffer, size_t bytes, bool eofAllowed)
+static bool read_buffer(FILE *file, char *buffer, size_t bytes)
 {
     size_t bytesRemaining = bytes;
     while (bytesRemaining) {
@@ -61,7 +61,9 @@ static bool read_buffer(FILE *file, char *buffer, size_t bytes, bool eofAllowed)
         bytesRemaining -= bytesRead;
 
         if (feof(file)) {
-            if (eofAllowed && (bytesRemaining == bytes))
+            if ((bytesRemaining != bytes) && !fseek(file, bytesRemaining - bytes, SEEK_CUR)) // Try to rewind
+                bytesRemaining = bytes;
+            if (bytesRemaining == bytes)
                 return false;
             qFatal("End of file after reading %d of %d bytes.", int(bytes - bytesRemaining), int(bytes));
         }
@@ -81,13 +83,21 @@ int br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_ca
     while (true) {
         br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
 
-        if (!read_buffer(file, (char*) t, sizeof(br_universal_template), true)) {
+        if (!read_buffer(file, (char*) t, sizeof(br_universal_template))) {
             free(t);
             break;
         }
 
         t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->urlSize + t->fvSize);
-        read_buffer(file, (char*) &t->data, t->urlSize + t->fvSize, false);
+        if (!read_buffer(file, (char*) &t->data, t->urlSize + t->fvSize)) {
+            free(t);
+
+            // Try to rewind header read
+            if (fseek(file, -sizeof(br_universal_template), SEEK_CUR))
+                qFatal("Unable to recover from partial template read!");
+
+            break;
+        }
 
         if (parallel) futures.addFuture(QtConcurrent::run(callAndFree, callback, t, context));
         else          callAndFree(callback, t, context);
