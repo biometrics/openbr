@@ -74,15 +74,16 @@ static bool read_buffer(FILE *file, char *buffer, size_t bytes, bool eofAllowed)
     return true;
 }
 
-void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context, bool parallel)
+int br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_callback_context context, bool parallel)
 {
+    int count = 0;
     QFutureSynchronizer<void> futures;
     while (true) {
         br_utemplate t = (br_utemplate) malloc(sizeof(br_universal_template));
 
         if (!read_buffer(file, (char*) t, sizeof(br_universal_template), true)) {
             free(t);
-            return;
+            break;
         }
 
         t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->urlSize + t->fvSize);
@@ -90,8 +91,9 @@ void br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_c
 
         if (parallel) futures.addFuture(QtConcurrent::run(callAndFree, callback, t, context));
         else          callAndFree(callback, t, context);
+        count++;
     }
-    futures.waitForFinished();
+    return count;
 }
 
 void br_log(const char *message)
