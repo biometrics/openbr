@@ -48,6 +48,45 @@ private:
 
 BR_REGISTER(Transform, ThresholdTransform)
 
+class CropFromMaskTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+private:
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        Mat mask = dst.file.get<Mat>("Mask");
+
+        int w = mask.rows;
+        int h = mask.cols;
+        int left = w;
+        int right = 0;
+        int top = h;
+        int bottom = 0;
+        for (int i = 0 ; i < w; i++) {
+            for (int j = 0 ; j < h; j++) {
+                if (mask.at<unsigned char>(i,j)) {
+                    if (i < left)
+                        left = i;
+                    if (i > right)
+                        right = i;
+                    if (j < top)
+                        top = j;
+                    if (j > bottom)
+                        bottom = j;
+                }
+            }
+		}
+qDebug() << left << right << top << bottom;
+
+    }
+};
+
+BR_REGISTER(Transform, CropFromMaskTransform)
+
 } // namespace br
 
 #include "imgproc/threshold.moc"
