@@ -82,7 +82,7 @@ float normalizedROD(const Neighborhood &neighborhood, int a, int b)
     return 1.f * (distanceA + distanceB) / std::min(indexA+1, indexB+1);
 }
 
-Neighborhood getNeighborhood(const QList<cv::Mat> &simmats)
+Neighborhood br::knnFromSimmat(const QList<cv::Mat> &simmats, int k)
 {
     Neighborhood neighborhood;
 
@@ -130,36 +130,164 @@ Neighborhood getNeighborhood(const QList<cv::Mat> &simmats)
         // Keep the top matches
         for (int j=0; j<allNeighbors.size(); j++) {
             Neighbors &val = allNeighbors[j];
-            const int cutoff = 20; // Somewhat arbitrary number of neighbors to keep
+            const int cutoff = k; // Number of neighbors to keep
             int keep = std::min(cutoff, val.size());
             std::partial_sort(val.begin(), val.begin()+keep, val.end(), compareNeighbors);
             neighborhood.append((Neighbors)val.mid(0, keep));
         }
     }
 
-    // Normalize scores
-    for (int i=0; i<neighborhood.size(); i++) {
-        Neighbors &neighbors = neighborhood[i];
-        for (int j=0; j<neighbors.size(); j++) {
-            Neighbor &neighbor = neighbors[j];
-            if (neighbor.second == -std::numeric_limits<float>::infinity())
-                neighbor.second = 0;
-            else if (neighbor.second == std::numeric_limits<float>::infinity())
-                neighbor.second = 1;
-            else
-                neighbor.second = (neighbor.second - globalMin) / (globalMax - globalMin);
+    return neighborhood;
+}
+
+// generate k-NN graph from pre-computed similarity matrices 
+Neighborhood br::knnFromSimmat(const QStringList &simmats, int k)
+{
+    QList<cv::Mat> mats;
+    foreach (const QString &simmat, simmats) {
+        QScopedPointer<br::Format> format(br::Factory<br::Format>::make(simmat));
+        br::Template t = format->read();
+        mats.append(t);
+    }
+    return knnFromSimmat(mats, k);
+}
+
+TemplateList knnFromGallery(const QString & galleryName, bool inMemory, const QString & outFile, int k)
+{
+    QSharedPointer<Transform> comparison = Transform::fromComparison(Globals->algorithm);
+
+    Gallery *tempG = Gallery::make(galleryName);
+    qint64 total = tempG->totalSize();
+    delete tempG;
+    comparison->setPropertyRecursive("galleryName", galleryName+"[dropMetadata=true]");
+
+    bool multiProcess = Globals->file.getBool("multiProcess", false);
+    if (multiProcess)
+        comparison = QSharedPointer<Transform> (br::wrapTransform(comparison.data(), "ProcessWrapper"));
+
+    QScopedPointer<Transform> collect(Transform::make("CollectNN+ProgressCounter+Discard", NULL));
+    collect->setPropertyRecursive("totalProgress", total);
+    collect->setPropertyRecursive("keep", k);
+
+    QList<Transform *> tforms;
+    tforms.append(comparison.data());
+    tforms.append(collect.data());
+
+    QScopedPointer<Transform> compareCollect(br::pipeTransforms(tforms));
+
+    QSharedPointer <Transform> projector;
+    if (inMemory)
+        projector = QSharedPointer<Transform> (br::wrapTransform(compareCollect.data(), "Stream(readMode=StreamGallery, endPoint=Discard"));
+    else
+        projector = QSharedPointer<Transform> (br::wrapTransform(compareCollect.data(), "Stream(readMode=StreamGallery, endPoint=LogNN("+outFile+")+DiscardTemplates)"));
+
+    TemplateList input;
+    input.append(Template(galleryName));
+    TemplateList output;
+
+    projector->init();
+    projector->projectUpdate(input, output);
+
+    return output;
+}
+ 
+// Generate k-NN graph from a gallery, using the current algorithm for comparison.
+// Direct serialization to file system, k-NN graph is not retained in memory
+void br::knnFromGallery(const QString &galleryName, const QString &outFile, int k)
+{
+    knnFromGallery(galleryName, false, outFile, k);
+}
+
+// In-memory graph construction
+Neighborhood br::knnFromGallery(const QString &gallery, int k)
+{
+    // Nearest neighbor data current stored as template metadata, so retrieve it
+    TemplateList res = knnFromGallery(gallery, true, "", k);
+
+    Neighborhood neighborhood;
+    foreach (const Template &t, res) {
+        Neighbors neighbors = t.file.get<Neighbors>("neighbors");
+        neighbors.append(neighbors);
+    }
+
+    return neighborhood;
+}
+
+Neighborhood br::loadkNN(const QString &infile)
+{
+    Neighborhood neighborhood;
+    QFile file(infile);
+    bool success = file.open(QFile::ReadOnly);
+    if (!success) qFatal("Failed to open %s for reading.", qPrintable(infile));
+    QStringList lines = QString(file.readAll()).split("\n");
+    file.close();
+    int min_idx = INT_MAX;
+    int max_idx = -1;
+    int count = 0;
+
+    foreach (const QString &line, lines) {
+        Neighbors neighbors;
+        count++;
+        if (line.trimmed().isEmpty()) {
+            neighborhood.append(neighbors);
+            continue;
         }
+        bool off = false;
+        QStringList list = line.trimmed().split(",", QString::SkipEmptyParts);
+        foreach (const QString &item, list) {
+            QStringList parts = item.trimmed().split(":", QString::SkipEmptyParts);
+            bool intOK = true;
+            bool floatOK = true;
+            int idx = parts[0].toInt(&intOK);
+            float score = parts[1].toFloat(&floatOK);
+
+            if (idx > max_idx)
+                max_idx = idx;
+            if (idx  <min_idx)
+                min_idx = idx;
+
+            if (idx >= lines.size()) {
+                off = true;
+                continue;
+            }
+            neighbors.append(qMakePair(idx, score));
+
+
+            if (!intOK && floatOK)
+                qFatal("Failed to parse word: %s", qPrintable(item));
+        }
+        neighborhood.append(neighbors);
     }
     return neighborhood;
 }
 
-// Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
-br::Clusters br::ClusterGallery(const QList<cv::Mat> &simmats, float aggressiveness)
+bool br::savekNN(const Neighborhood &neighborhood, const QString &outfile)
 {
-    qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
+    QFile file(outfile);
+    bool success = file.open(QFile::WriteOnly);
+    if (!success) qFatal("Failed to open %s for writing.", qPrintable(outfile));
 
-    // Read in gallery parts, keeping top neighbors of each template
-    Neighborhood neighborhood = getNeighborhood(simmats);
+    foreach (Neighbors neighbors, neighborhood) {
+        QString aLine;
+        if (!neighbors.empty())
+        {
+            aLine.append(QString::number(neighbors[0].first)+":"+QString::number(neighbors[0].second));
+            for (int i=1; i < neighbors.size();i++) {
+                aLine.append(","+QString::number(neighbors[i].first)+":"+QString::number(neighbors[i].second));
+            }
+        }
+        aLine += "\n";
+        file.write(qPrintable(aLine));
+    }
+    file.close();
+    return true;
+}
+
+
+// Rank-order clustering on a pre-computed k-NN graph
+Clusters br::ClusterGraph(Neighborhood neighborhood, float aggressiveness, const QString &csv)
+{
+
     const int cutoff = neighborhood.first().size();
     const float threshold = 3*cutoff/4 * aggressiveness/5;
 
@@ -235,10 +363,31 @@ br::Clusters br::ClusterGallery(const QList<cv::Mat> &simmats, float aggressiven
         clusters = newClusters;
         neighborhood = newNeighborhood;
     }
+
+    if (!csv.isEmpty())
+        WriteClusters(clusters, csv);
+
     return clusters;
 }
 
-br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv)
+Clusters br::ClusterGraph(const QString & knnName, float aggressiveness, const QString &csv)
+{
+    Neighborhood neighbors = loadkNN(knnName);
+    return ClusterGraph(neighbors, aggressiveness, csv);
+}
+
+// Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
+br::Clusters br::ClusterSimmat(const QList<cv::Mat> &simmats, float aggressiveness, const QString &csv)
+{
+    qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
+
+    // Read in gallery parts, keeping top neighbors of each template
+    Neighborhood neighborhood = knnFromSimmat(simmats);
+
+    return ClusterGraph(neighborhood, aggressiveness, csv);
+}
+
+br::Clusters br::ClusterSimmat(const QStringList &simmats, float aggressiveness, const QString &csv)
 {
     QList<cv::Mat> mats;
     foreach (const QString &simmat, simmats) {
@@ -247,11 +396,7 @@ br::Clusters br::ClusterGallery(const QStringList &simmats, float aggressiveness
         mats.append(t);
     }
 
-    Clusters clusters = ClusterGallery(mats, aggressiveness);
-
-    // Save clusters
-    if (!csv.isEmpty())
-        WriteClusters(clusters, csv);
+    Clusters clusters = ClusterSimmat(mats, aggressiveness, csv);
     return clusters;
 }
 

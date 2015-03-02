@@ -22,16 +22,43 @@
 #include <QStringList>
 #include <QVector>
 #include <openbr/openbr_plugin.h>
+#include <openbr/plugins/openbr_internal.h>
 
 namespace br
 {
     typedef QList<int> Cluster; // List of indices into galleries
     typedef QVector<Cluster> Clusters;
 
-    Clusters ClusterGallery(const QList<cv::Mat> &simmats, float aggressiveness);
-    Clusters ClusterGallery(const QStringList &simmats, float aggressiveness, const QString &csv);
+    // generate k-NN graph from pre-computed similarity matrices 
+    Neighborhood knnFromSimmat(const QStringList &simmats, int k = 20);
+    Neighborhood knnFromSimmat(const QList<cv::Mat> &simmats, int k = 20);
+ 
+    // Generate k-NN graph from a gallery, using the current algorithm for comparison.
+    // direct serialization to file system.
+    void  knnFromGallery(const QString &galleryName, const QString & outFile, int k = 20);
+    // in memory graph computation
+    Neighborhood knnFromGallery(const QString &gallery, int k = 20);
+
+    // Load k-NN graph from a file
+    Neighborhood loadkNN(const QString &fname);
+
+    // Save k-NN graph to file
+    bool savekNN(const Neighborhood &neighborhood, const QString &outfile);
+
+    // Rank-order clustering on a pre-computed k-NN graph
+    Clusters ClusterGraph(Neighborhood neighbors, float aggresssiveness, const QString &csv = "");
+    Clusters ClusterGraph(const QString & knnName, float aggressiveness, const QString &csv = "");
+
+    // Given a similarity matrix, compute the k-NN graph, then perform rank-order clustering.
+    Clusters ClusterSimmat(const QList<cv::Mat> &simmats, float aggressiveness, const QString &csv = "");
+    Clusters ClusterSimmat(const QStringList &simmats, float aggressiveness, const QString &csv = "");
+
+    // evaluate clustering results in csv, reading ground truth data from gallery input, using truth_property
+    // as the key for ground truth labels.
     void EvalClustering(const QString &csv, const QString &input, QString truth_property);
 
+    // Read/write clusters from a text format, 1 line = 1 cluster, each line contains comma separated list
+    // of assigned indices.
     Clusters ReadClusters(const QString &csv);
     void WriteClusters(const Clusters &clusters, const QString &csv);
 }
