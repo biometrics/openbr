@@ -68,4 +68,4 @@ BR_REGISTER(Transform, CropFromMaskTransform)
 
 } // namespace br
 
-#include "imgproc/threshold.moc"
+#include "imgproc/cropfrommask.moc"
