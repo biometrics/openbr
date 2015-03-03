@@ -41,7 +41,7 @@ class AveragePointsTransform : public UntrainableMetadataTransform
         if (!metaName.isEmpty())
             dst.set(metaName, p);
         if (append)
-            dst.points().append(p);
+            dst.appendPoint(p);
     }
 };
 
