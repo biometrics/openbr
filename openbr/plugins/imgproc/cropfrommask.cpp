@@ -43,7 +43,7 @@ private:
                         bottom = j;
                 }
             }
-		}
+        }
 
         if (fixedAspectRatio) {
             h = bottom - top + 1;
