@@ -165,6 +165,7 @@ public:
 
             QString URL = file.get<QString>("URL", file.name);
             output.file.set("URL", URL + "#t=" + QString::number((int)(idx * time_base)) + "s");
+            output.file.set("timestamp", QString::number((int)(idx * time_base * 1000)));
             output.file.set("frame", QString::number(idx * time_base * fps));
             TemplateList dst;
             dst.append(output);
