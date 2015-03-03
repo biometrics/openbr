@@ -51,6 +51,8 @@ BR_REGISTER(Transform, ThresholdTransform)
 class CropFromMaskTransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_PROPERTY(bool fixedAspectRatio READ get_fixedAspectRatio WRITE set_fixedAspectRatio RESET reset_fixedAspectRatio STORED false)
+    BR_PROPERTY(bool, fixedAspectRatio, true)
 
 private:
 
@@ -80,7 +82,22 @@ private:
                 }
             }
 		}
-qDebug() << left << right << top << bottom;
+
+        if (fixedAspectRatio) {
+            h = bottom - top + 1;
+            w = right - left + 1;
+            if (h > w) {
+                int h2 = (h - w) / 2;
+                right += h2;
+                left -= h2;
+            } else {
+                int w2 = (w - h) / 2;
+                bottom += w2;
+                top -= w2;
+            }
+        }
+
+        dst.m() = Mat(src.m(), Rect(top, left, bottom - top + 1, right - left + 1));
 
     }
 };
