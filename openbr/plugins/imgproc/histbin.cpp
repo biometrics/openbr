@@ -26,7 +26,7 @@ namespace br
  * \brief Quantizes the values into bins.
  * \author Josh Klontz \cite jklontz
  */
-class BinTransform : public UntrainableTransform
+class HistBinTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(float min READ get_min WRITE set_min RESET reset_min STORED false)
@@ -75,8 +75,8 @@ class BinTransform : public UntrainableTransform
     }
 };
 
-BR_REGISTER(Transform, BinTransform)
+BR_REGISTER(Transform, HistBinTransform)
 
 } // namespace br
 
-#include "imgproc/bin.moc"
+#include "imgproc/histbin.moc"
