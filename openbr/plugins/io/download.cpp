@@ -57,7 +57,9 @@ private:
         if (!url.contains("://"))
             url = "file://" + url;
         dst.file.set("URL", url);
-        if (url.startsWith("file://"))
+        if (url.startsWith("file:///"))
+            url = url.mid(8);
+        else if (url.startsWith("file://"))
             url = url.mid(7);
 
         QIODevice *device = NULL;

@@ -16,6 +16,7 @@
 
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <QUrl>
 
 #ifdef _WIN32
 #include <io.h>
@@ -271,8 +272,9 @@ class utGallery : public BinaryGallery
             t.file.set("Label", ut.label);
             t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
-            if (!gallery.atEnd())
-                qFatal("Failed to read universal template header!");
+            gallery.close();
+            /*if (!gallery.atEnd())
+                qFatal("Failed to read universal template header!");*/
         }
         return t;
     }
@@ -284,7 +286,7 @@ class utGallery : public BinaryGallery
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
         const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
-        const QByteArray url = t.file.get<QString>("URL", t.file.name).toLatin1();
+        const QByteArray url = QUrl::fromUserInput(t.file.get<QString>("URL", t.file.name)).toEncoded();
 
         int32_t x = 0, y = 0;
         uint32_t width = 0, height = 0;
