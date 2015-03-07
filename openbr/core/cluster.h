@@ -39,7 +39,9 @@ namespace br
     // in memory graph computation
     Neighborhood knnFromGallery(const QString &gallery, int k = 20);
 
-    // Load k-NN graph from a file
+    // Load k-NN graph from a file with the following ascii format:
+    // One line per sample, each line lists the top k neighbors for the sample as follows:
+    // index1:score1,index2:score2,...,indexk:scorek
     Neighborhood loadkNN(const QString &fname);
 
     // Save k-NN graph to file
