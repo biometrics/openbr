@@ -129,8 +129,13 @@ private:
     QString getFileName() const
     {
         if (QFileInfo(fileName).exists()) return fileName;
-        const QString file = Globals->sdkPath + "/share/openbr/models/transforms/" + fileName;
-        return QFileInfo(file).exists() ? file : QString();
+
+        foreach(const QString &path, Globals->file.getList("modelSearch",QList<QString>())) {
+            const QString file = path + "/" + fileName;
+            if (QFileInfo(file).exists())
+                return file;
+        }
+        return QString();
     }
 
     bool tryLoad()
