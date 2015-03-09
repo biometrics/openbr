@@ -130,7 +130,7 @@ private:
     {
         if (QFileInfo(fileName).exists()) return fileName;
 
-        foreach(const QString &path, Globals->file.getList("modelSearch",QList<QString>())) {
+        foreach(const QString &path, Globals->modelSearch) {
             const QString file = path + "/" + fileName;
             if (QFileInfo(file).exists())
                 return file;

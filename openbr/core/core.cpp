@@ -142,11 +142,8 @@ struct AlgorithmCore
         // assuming it is not already present.
         QFileInfo finfo(model);
         QString path = finfo.absolutePath();
-        QList<QString> paths = Globals->file.getList("modelSearch",QList<QString>() );
-        if (!paths.contains(path)) {
-            paths.append(path);
-            Globals->file.setList("modelSearch", paths);
-        }
+        if (!Globals->modelSearch.contains(path))
+            Globals->modelSearch.append(path);
 
         QtUtils::BlockCompression compressedRead;
         QFile inFile(model);
@@ -777,9 +774,7 @@ class pathInitializer : public Initializer
     Q_OBJECT
     void initialize() const
     {
-        QList<QString> paths = Globals->file.getList("modelSearch",QList<QString>());
-        paths.append(Globals->sdkPath + "/share/openbr/models/transforms/");
-        Globals->file.setList("modelSearch", paths);
+        Globals->modelSearch.append(Globals->sdkPath + "/share/openbr/models/transforms/");
     }
 
 };
