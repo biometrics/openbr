@@ -138,6 +138,13 @@ struct AlgorithmCore
 
     void load(const QString &model)
     {
+        // since we are loading an existing model, add its path to the search list for submodels
+        // assuming it is not already present.
+        QFileInfo finfo(model);
+        QString path = finfo.absolutePath();
+        if (!Globals->modelSearch.contains(path))
+            Globals->modelSearch.append(path);
+
         QtUtils::BlockCompression compressedRead;
         QFile inFile(model);
         compressedRead.setBasis(&inFile);
@@ -762,5 +769,15 @@ QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorith
     return AlgorithmManager::getAlgorithm(algorithm)->distance;
 }
 
+class pathInitializer : public Initializer
+{
+    Q_OBJECT
+    void initialize() const
+    {
+        Globals->modelSearch.append(Globals->sdkPath + "/share/openbr/models/transforms/");
+    }
+
+};
+BR_REGISTER(Initializer, pathInitializer)
 
 #include "core.moc"

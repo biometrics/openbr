@@ -754,6 +754,12 @@ public:
     Q_PROPERTY(int crossValidate READ get_crossValidate WRITE set_crossValidate RESET reset_crossValidate)
     BR_PROPERTY(int, crossValidate, 0)
 
+    /*!
+     * \brief List of paths sub-models will be searched for on
+     */
+    Q_PROPERTY(QList<QString> modelSearch READ get_modelSearch WRITE set_modelSearch RESET reset_modelSearch)
+    BR_PROPERTY(QList<QString>, modelSearch, QList<QString>() )
+
     QHash<QString,QString> abbreviations; /*!< \brief Used by br::Transform::make() to expand abbreviated algorithms into their complete definitions. */
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
 
