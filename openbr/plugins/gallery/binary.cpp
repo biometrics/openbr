@@ -286,6 +286,9 @@ class utGallery : public BinaryGallery
             qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
 
         const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
+
+        // QUrl::fromUserInput provides some nice functionality in terms of completing URLs
+        // e.g. C:/test.jpg -> file://C:/test.jpg and google.com/image.jpg -> http://google.com/image.jpg
         const QByteArray url = QUrl::fromUserInput(t.file.get<QString>("URL", t.file.name)).toEncoded();
 
         int32_t x = 0, y = 0;
