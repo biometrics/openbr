@@ -59,7 +59,7 @@ void br_cat(int num_input_galleries, const char *input_galleries[], const char *
 
 void br_cluster(int num_simmats, const char *simmats[], float aggressiveness, const char *csv)
 {
-    ClusterGallery(QtUtils::toStringList(num_simmats, simmats), aggressiveness, csv);
+    ClusterSimmat(QtUtils::toStringList(num_simmats, simmats), aggressiveness, csv);
 }
 
 void br_combine_masks(int num_input_masks, const char *input_masks[], const char *output_mask, const char *method)
