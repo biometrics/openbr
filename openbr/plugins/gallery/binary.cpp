@@ -272,9 +272,9 @@ class utGallery : public BinaryGallery
             t.file.set("Label", ut.label);
             t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
+            if (!gallery.atEnd())
+                qWarning("Failed to read universal template header!");
             gallery.close();
-            /*if (!gallery.atEnd())
-                qFatal("Failed to read universal template header!");*/
         }
         return t;
     }
