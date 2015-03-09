@@ -58,7 +58,8 @@ private:
             url = "file://" + url;
         dst.file.set("URL", url);
 
-        QRegularExpression regExp("file:///[A-Z]:/");
+        static const QRegularExpression regExp("file:///[A-Z]:/");
+
         if (url.contains(regExp))
             url = url.mid(8);
         else if (url.startsWith("file://"))
