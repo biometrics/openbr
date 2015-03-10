@@ -57,7 +57,12 @@ private:
         if (!url.contains("://"))
             url = "file://" + url;
         dst.file.set("URL", url);
-        if (url.startsWith("file://"))
+
+        static const QRegularExpression regExp("file:///[A-Z]:/");
+
+        if (url.contains(regExp))
+            url = url.mid(8);
+        else if (url.startsWith("file://"))
             url = url.mid(7);
 
         QIODevice *device = NULL;

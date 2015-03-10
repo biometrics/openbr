@@ -40,7 +40,12 @@ class EmptyGallery : public Gallery
     {
         QDir dir(file.name);
         QtUtils::touchDir(dir);
-        gallerySize = dir.count();
+        QDirIterator it(dir.absolutePath(), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        gallerySize = 0;
+        while (it.hasNext()) {
+            it.next();
+            gallerySize++;
+        }
     }
 
     TemplateList readBlock(bool *done)
