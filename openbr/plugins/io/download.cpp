@@ -111,6 +111,9 @@ private:
 
             dst.file.set("ImageID", QVariant(QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex()));
             dst.file.set("AlgorithmID", data.isEmpty() ? 0 : (mode == Decoded ? 5 : 3));
+        } else {
+            dst.file.fte = true;
+            qWarning("Error opening %s", qPrintable(url));
         }
     }
 };
