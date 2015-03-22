@@ -5,7 +5,7 @@ if(${BR_WITH_DLIB})
 
   add_definitions(-DDLIB_NO_GUI_SUPPORT)
 
-  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} plugins/dlib.cpp)
+  set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} plugins/classification/dlib.cpp)
   set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${DLib_DIR}/dlib/all/source.cpp)
 
   #install(DIRECTORY ${DLib_DIR}/models/ DESTINATION share/openbr/models/dlib)
