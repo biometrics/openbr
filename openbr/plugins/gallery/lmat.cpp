@@ -1,6 +1,9 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+#include <likely.h>
+#include <likely/opencv.hpp>
+
 namespace br
 {
 

@@ -1,5 +1,8 @@
 #include <openbr/plugins/openbr_internal.h>
 
+#include <likely.h>
+#include <likely/opencv.hpp>
+
 namespace br
 {
 
@@ -28,11 +31,11 @@ class LikelyTransform : public UntrainableTransform
     {
         likely_release_env(env);
         const likely_ast ast = likely_lex_and_parse(qPrintable(kernel), likely_file_lisp);
-        const likely_const_env parent = likely_standard(NULL);
+        const likely_const_env parent = likely_standard(likely_jit(false), NULL);
         env = likely_eval(ast, parent, NULL, NULL);
         likely_release_env(parent);
         likely_release_ast(ast);
-        function = likely_compile(env->expr, NULL, 0);
+        function = likely_function(env->expr);
     }
 
     void project(const Template &src, Template &dst) const

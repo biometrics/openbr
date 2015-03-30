@@ -1,5 +1,8 @@
 #include <openbr/plugins/openbr_internal.h>
 
+#include <likely.h>
+#include <likely/opencv.hpp>
+
 namespace br
 {
 
@@ -16,7 +19,7 @@ class lmatFormat : public Format
 
     Template read() const
     {
-        const likely_const_mat m = likely_read(qPrintable(file.name), likely_file_guess);
+        const likely_const_mat m = likely_read(qPrintable(file.name), likely_file_guess, likely_void);
         const Template result(likelyToOpenCVMat(m));
         likely_release_mat(m);
         return result;
