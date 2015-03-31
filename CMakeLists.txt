@@ -193,6 +193,7 @@ if(${BR_INSTALL_BRPY})
 endif()
 
 # Package
+if (NOT BR_PACKAGE_THIRDPARTY)
 set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")
 set(CPACK_CREATE_DESKTOP_LINKS "OpenBR")
 if(CMAKE_HOST_WIN32)
@@ -217,3 +218,4 @@ else()
 endif()
 
 include(CPack)
+endif()
