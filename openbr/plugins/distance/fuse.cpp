@@ -31,7 +31,7 @@ class FuseDistance : public Distance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QStringList descriptions READ get_descriptions WRITE set_descriptions RESET reset_descriptions STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
     Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
 
@@ -42,9 +42,16 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QString, description, "L2")
+    BR_PROPERTY(QStringList, descriptions, QStringList() << "L2")
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
+
+    void init()
+    {
+        for (int i=0; i<descriptions.size(); i++) {
+            distances.append(make(descriptions[i]));
+        }
+    }
 
     void train(const TemplateList &src)
     {
@@ -54,12 +61,11 @@ private:
 
         QList<TemplateList> partitionedSrc = src.partition(split);
 
-        while (distances.size() < partitionedSrc.size())
-            distances.append(make(description));
-
         // Train on each of the partitions
-        for (int i=0; i<distances.size(); i++)
+        for (int i=0; i<descriptions.size(); i++) {
+            distances.append(make(descriptions[i]));
             distances[i]->train(partitionedSrc[i]);
+        }
     }
 
     float compare(const Template &a, const Template &b) const
@@ -103,10 +109,11 @@ private:
     {
         int numDistances;
         stream >> numDistances;
-        while (distances.size() < numDistances)
-            distances.append(make(description));
-        foreach (Distance *distance, distances)
-            distance->load(stream);
+        for (int i=0; i<descriptions.size(); i++) {
+            distances.append(make(descriptions[i]));
+            distances[i]->load(stream);
+        }
+
     }
 };
 
