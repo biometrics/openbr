@@ -8,8 +8,9 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Computes Earth Mover Distance
+ * \brief Computes Earth Mover's Distance
  * \author Scott Klum \cite sklum
+ * \brief https://www.cs.duke.edu/~tomasi/papers/rubner/rubnerTr98.pdf
  */
 class EMDDistance : public UntrainableDistance
 {
