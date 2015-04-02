@@ -33,7 +33,6 @@ namespace br
  * Research Lab, China), Zhong Su (IBM China Research Lab, China)
  * \author Josh Klontz \cite jklontz
  */
-
 class EBIFTransform : public UntrainableTransform
 {
     Q_OBJECT

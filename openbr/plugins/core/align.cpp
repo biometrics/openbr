@@ -477,12 +477,12 @@ QDataStream &operator>>(QDataStream &stream, TriangleIndicies &ti)
  * \brief Synthesize additional points via triangulation.
  * \author Josh Klontz \cite jklontz
  */
- class SynthesizePointsTransform : public MetadataTransform
- {
+class SynthesizePointsTransform : public MetadataTransform
+{
     Q_OBJECT
     Q_PROPERTY(float minRelativeDistance READ get_minRelativeDistance WRITE set_minRelativeDistance RESET reset_minRelativeDistance STORED false)
     BR_PROPERTY(float, minRelativeDistance, 0) // [0, 1] range controlling whether or not to nearby synthetic points.
-                                               // 0 = keep all points, 1 = keep only the most distance point.
+                       // 0 = keep all points, 1 = keep only the most distance point.
 
     QList<TriangleIndicies> triangles;
 
@@ -494,11 +494,11 @@ QDataStream &operator>>(QDataStream &stream, TriangleIndicies &ti)
 
             const QList<QPointF> points = datum.file.points();
             if (points.size() == 0)
-                    continue;
+                continue;
             const QList< QList<int> > triangulation = TextureMapTransform::getTriangulation(points, TextureMapTransform::getBounds(points, 10));
             if (triangulation.empty())
                 continue;
-            
+
             foreach (const QList<int> &indicies, triangulation)
                 counts[TriangleIndicies(indicies)]++;
         }
@@ -524,19 +524,19 @@ QDataStream &operator>>(QDataStream &stream, TriangleIndicies &ti)
                     const QPointF &point = points[points.size()-1-i];
                     float minDistance = std::numeric_limits<float>::max();
                     for (int j=0; j<points.size()-1-i; j++)
-                        minDistance = min(minDistance, sqrtf(powf(point.x() - points[j].x(), 2.f) + powf(point.y() - points[j].y(), 2.f)));
+                    minDistance = min(minDistance, sqrtf(powf(point.x() - points[j].x(), 2.f) + powf(point.y() - points[j].y(), 2.f)));
                     minDistances[triangles.size()-1-i] = minDistance;
                 }
 
                 const float maxMinDistance = Common::Max(minDistances);
                 for (int i=0; i<minDistances.size(); i++)
-                    averageMinDistances[i] += (minDistances[i] / maxMinDistance);
+                averageMinDistances[i] += (minDistances[i] / maxMinDistance);
             }
 
             const float maxAverageMinDistance = Common::Max(averageMinDistances);
             for (int i=averageMinDistances.size()-1; i>=0; i--)
-                if (averageMinDistances[i] / maxAverageMinDistance < minRelativeDistance)
-                    triangles.removeAt(i);
+            if (averageMinDistances[i] / maxAverageMinDistance < minRelativeDistance)
+            triangles.removeAt(i);
         }
 
         if (Globals->verbose)
@@ -569,8 +569,8 @@ QDataStream &operator>>(QDataStream &stream, TriangleIndicies &ti)
     {
         stream >> triangles;
     }
- };
- BR_REGISTER(Transform, SynthesizePointsTransform)
+};
+BR_REGISTER(Transform, SynthesizePointsTransform)
 
 /*!
  * \ingroup initializers

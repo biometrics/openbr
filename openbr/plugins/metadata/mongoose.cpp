@@ -31,6 +31,7 @@ static int begin_request_handler(struct mg_connection *conn) {
 /*!
  * \ingroup initializers
  * \brief Initialize mongoose server
+ * \author Unknown \cite Unknown
  */
 class MongooseInitializer : public Initializer
 {

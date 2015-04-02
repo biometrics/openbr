@@ -48,6 +48,12 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \brief Projects input into learned Principal Component Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
+ *
+ * \param keep
+ *     keep <  0: All eigenvalues are retained.
+ *     keep =  0: No PCA performed, eigenvectors form an identity matrix.
+ * 0 < keep <  1: Fraction of the variance to retain.
+ *     keep >= 1: Number of leading eigenvectors to retain.
  */
 class PCATransform : public Transform
 {
@@ -60,12 +66,6 @@ protected:
     Q_PROPERTY(int drop READ get_drop WRITE set_drop RESET reset_drop STORED false)
     Q_PROPERTY(bool whiten READ get_whiten WRITE set_whiten RESET reset_whiten STORED false)
 
-    /*!
-     *     keep <  0: All eigenvalues are retained.
-     *     keep =  0: No PCA performed, eigenvectors form an identity matrix.
-     * 0 < keep <  1: Fraction of the variance to retain.
-     *     keep >= 1: Number of leading eigenvectors to retain.
-     */
     BR_PROPERTY(float, keep, 0.95)
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
