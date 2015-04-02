@@ -15,6 +15,17 @@ class EMDDistance : public UntrainableDistance
 {
     Q_OBJECT
 
+    Q_ENUMS(Metric)
+    Q_PROPERTY(Metric metric READ get_metric WRITE set_metric RESET reset_metric STORED false)
+
+public:
+    enum Metric { L1 = CV_DIST_L1,
+                  L2 = CV_DIST_L2,
+                  C = CV_DIST_C };
+
+private:
+    BR_PROPERTY(Metric, metric, L2)
+
     float compare(const Template &a, const Template &b) const
     {
         const int dims_a = a.m().rows > 1 ? 3 : 2;
@@ -39,7 +50,7 @@ class EMDDistance : public UntrainableDistance
             }
         }
 
-        return EMD(sig_a,sig_b,CV_DIST_L2);
+        return EMD(sig_a,sig_b,metric);
     }
 };
 
