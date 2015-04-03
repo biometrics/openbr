@@ -24,11 +24,11 @@ Values are not necessarily stored as strings in the metadata table.
 The system will attempt to infer and convert them to their "native" type.
 The conversion logic is as follows:
 
-1. If the value starts with **[** and ends with **]** then it is treated as a comma separated list and represented with <a href=http://doc.qt.io/qt-5/qvariant.html#QVariantList-typedef>QVariantList</a>. Each value in the list is parsed recursively.
-2. If the value starts with **(** and ends with **)** and contains four comma separated elements, each convertable to a floating point number, then it is represented with <a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>.
-3. If the value starts with **(** and ends with **)** and contains two comma separated elements, each convertable to a floating point number, then it is represented with <a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>.
+1. If the value starts with **[** and ends with **]** then it is treated as a comma separated list and represented with [QVariantList](http://doc.qt.io/qt-5/qvariant.html#QVariantList-typedef). Each value in the list is parsed recursively.
+2. If the value starts with **(** and ends with **)** and contains four comma separated elements, each convertable to a floating point number, then it is represented with [QRectF](http://doc.qt.io/qt-4.8/qrectf.html).
+3. If the value starts with **(** and ends with **)** and contains two comma separated elements, each convertable to a floating point number, then it is represented with [QPointF](http://doc.qt.io/qt-4.8/qpointf.html).
 4. If the value is convertable to a floating point number then it is represented with <tt>float</tt>.
-5. Otherwise, it is represented with <a href=http://doc.qt.io/qt-5/QString.html>QString</a>.
+5. Otherwise, it is represented with [QString](http://doc.qt.io/qt-5/QString.html).
 
 Metadata keys fall into one of two categories:
 * camelCaseKeys are inputs that specify how to process the file.
@@ -44,11 +44,11 @@ Index           | int            | Index of a template in a template list
 Confidence      | float          | Classification/Regression quality
 FTE             | bool           | Failure to enroll
 FTO             | bool           | Failure to open
-*_X             | float          | Position
-*_Y             | float          | Position
-*_Width         | float          | Size
-*_Height        | float          | Size
-*_Radius        | float          | Size
+\*_X             | float          | Position
+\*_Y             | float          | Position
+\*_Width         | float          | Size
+\*_Height        | float          | Size
+\*_Radius        | float          | Size
 Label           | QString        | Class label
 Theta           | float          | Pose
 Roll            | float          | Pose
@@ -59,7 +59,7 @@ Rects           | QList<Rect>    | List of unnamed rects
 Age             | float          | Age used for demographic filtering
 Gender          | QString        | Subject gender
 Train           | bool           | The data is for training, as opposed to enrollment
-_*              | *              | Reserved for internal use
+_\*              | \*              | Reserved for internal use
 
 ---
 
@@ -75,7 +75,7 @@ Failed to enroll. If true this file failed to be processed somewhere in the temp
 
 ### m_metadata
 
-Map for storing metadata. It is a <a href=http://doc.qt.io/qt-5/QString.html>QString</a>, <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> key value pairing.
+Map for storing metadata. It is a [QString](http://doc.qt.io/qt-5/QString.html), [QVariant](http://doc.qt.io/qt-5/qvariant.html) key value pairing.
 
 ---
 
@@ -85,11 +85,11 @@ Map for storing metadata. It is a <a href=http://doc.qt.io/qt-5/QString.html>QSt
 
 Default constructor. Sets [FTE](#fte) to false.
 
-### File(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &file)
+### File(const [QString](http://doc.qt.io/qt-5/QString.html) &file)
 
 Initializes the file by calling the private function init.
 
-### File(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &file, const <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> &label)
+### File(const [QString](http://doc.qt.io/qt-5/QString.html) &file, const [QVariant](http://doc.qt.io/qt-5/qvariant.html) &label)
 
 Initializes the file by calling the private function init. Append label to the [metadata](#m_metadata) using the key "Label".
 
@@ -97,7 +97,7 @@ Initializes the file by calling the private function init. Append label to the [
 
 Initializes the file with a c-style string.
 
-### File(const <a href=http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef>QVariantMap</a> &metadata)
+### File(const [QVariantMap](http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef) &metadata)
 
 Sets [FTE](#file#fte) to false and sets the [file metadata](#m_metadata) to metadata.
 
@@ -106,9 +106,9 @@ Sets [FTE](#file#fte) to false and sets the [file metadata](#m_metadata) to meta
 ## Static Functions
 
 
-### static <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> parse(<a href=http://doc.qt.io/qt-5/QString.html>QString</a> &value) const
+### static [QVariant](http://doc.qt.io/qt-5/qvariant.html) parse([QString](http://doc.qt.io/qt-5/QString.html) &value) const
 
-Try to convert value to a <a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>, <a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>, int or float. If a conversion is possible it returns the converted value, otherwise it returns the unconverted string.
+Try to convert value to a [QPointF](http://doc.qt.io/qt-4.8/qpointf.html), [QRectF](http://doc.qt.io/qt-4.8/qrectf.html), int or float. If a conversion is possible it returns the converted value, otherwise it returns the unconverted string.
 
     QString point = "(1, 1)";
     QString rect = "(1, 1, 5, 5)";
@@ -122,9 +122,9 @@ Try to convert value to a <a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</
     File::parse(fp);      // returns QVariant(float, 1.0f)
     File::parse(string);  // returns QVariant(QString, "Hello World")
 
-### static <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a>&gt; values(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;U&gt; &fileList, const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key)
+### static [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QVariant](http://doc.qt.io/qt-5/qvariant.html)&gt; values(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;U&gt; &fileList, const [QString](http://doc.qt.io/qt-5/QString.html) &key)
 
-This function requires a type specification in place of U. Valid types are [File](#file) and <a href=http://doc.qt.io/qt-5/QString.html>QString</a>. Returns a list of the values of the key in each of the given files.
+This function requires a type specification in place of U. Valid types are [File](#file) and [QString](http://doc.qt.io/qt-5/QString.html). Returns a list of the values of the key in each of the given files.
 
     File f1, f2;
     f1.set("Key1", QVariant::fromValue<float>(1));
@@ -134,9 +134,9 @@ This function requires a type specification in place of U. Valid types are [File
     File::values<File>(QList<File>() << f1 << f2, "Key1"); // returns [QVariant(float, 1),
                                                            //          QVariant(float, 3)]
 
-### static <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; get(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;U&gt; &fileList, const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key)
+### static [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; get(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;U&gt; &fileList, const [QString](http://doc.qt.io/qt-5/QString.html) &key)
 
-This function requires a type specification in place of T and U. Valid types for U are [File](#file) and <a href=http://doc.qt.io/qt-5/QString.html>QString</a>. T can be any type. Returns a list of the values of the key in each of the given files. If the key doesn't exist in any of the files or the value cannot be converted to type T an error is thrown.
+This function requires a type specification in place of T and U. Valid types for U are [File](#file) and [QString](http://doc.qt.io/qt-5/QString.html). T can be any type. Returns a list of the values of the key in each of the given files. If the key doesn't exist in any of the files or the value cannot be converted to type T an error is thrown.
 
     File f1, f2;
     f1.set("Key1", QVariant::fromValue<float>(1));
@@ -147,9 +147,9 @@ This function requires a type specification in place of T and U. Valid types for
     File::get<float, File>(QList<File>() << f1 << f2, "Key2");  // Error: Key doesn't exist in f2
     File::get<QRectF, File>(QList<File>() << f1 << f2, "Key1"); // Error: float is not convertable to QRectF
 
-### static <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; get(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;U&gt; &fileList, const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const T &defaultValue)
+### static [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; get(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;U&gt; &fileList, const [QString](http://doc.qt.io/qt-5/QString.html) &key, const T &defaultValue)
 
-This function requires a type specification in place of T and U. Valid types for U are [File](#file) and <a href=http://doc.qt.io/qt-5/QString.html>QString</a>. T can be any type. Returns a list of the values of the key in each of the given files. If the key doesn't exist in any of the files or the value cannot be converted to type T the given defaultValue is returned.
+This function requires a type specification in place of T and U. Valid types for U are [File](#file) and [QString](http://doc.qt.io/qt-5/QString.html). T can be any type. Returns a list of the values of the key in each of the given files. If the key doesn't exist in any of the files or the value cannot be converted to type T the given defaultValue is returned.
 
     File f1, f2;
     f1.set("Key1", QVariant::fromValue<float>(1));
@@ -160,7 +160,7 @@ This function requires a type specification in place of T and U. Valid types for
     File::get<float, File>(QList<File>() << f1 << f2, "Key2", QList<float>() << 1);  // returns [1.]
     File::get<QRectF, File>(QList<File>() << f1 << f2, "Key1, QList<QRectF>()");     // returns []
 
-### <a href=http://doc.qt.io/qt-5/qdebug.html>QDebug</a> operator <<(<a href=http://doc.qt.io/qt-5/qdebug.html>QDebug</a> dbg, const [File](#file) &file)
+### [QDebug](http://doc.qt.io/qt-5/qdebug.html) operator <<([QDebug](http://doc.qt.io/qt-5/qdebug.html) dbg, const [File](#file) &file)
 
 Calls [flat](#qstring-flat-const) on the given file and that streams that file to stderr.
 
@@ -169,7 +169,7 @@ Calls [flat](#qstring-flat-const) on the given file and that streams that file t
 
     qDebug() << file; // "../path/to/pictures/picture.jpg[Key=Value]" streams to stderr
 
-### <a href=http://doc.qt.io/qt-5/qdatastream.html>QDataStream</a> &operator <<(<a href=http://doc.qt.io/qt-5/qdatastream.html>QDataStream</a> &stream, const [File](#file) &file)
+### [QDataStream](http://doc.qt.io/qt-5/qdatastream.html) &operator <<([QDataStream](http://doc.qt.io/qt-5/qdatastream.html) &stream, const [File](#file) &file)
 
 Serialize a file to a data stream.
 
@@ -181,7 +181,7 @@ Serialize a file to a data stream.
         stream << file; // "../path/to/pictures/picture.jpg[Key=Value]" serialized to the stream
     }
 
-### <a href=http://doc.qt.io/qt-5/qdatastream.html>QDataStream</a> &operator >>(<a href=http://doc.qt.io/qt-5/qdatastream.html>QDataStream</a> &stream, [File](#file) &file)
+### [QDataStream](http://doc.qt.io/qt-5/qdatastream.html) &operator >>([QDataStream](http://doc.qt.io/qt-5/qdatastream.html) &stream, [File](#file) &file)
 
 Deserialize a file from a data stream.
 
@@ -203,11 +203,11 @@ Deserialize a file from a data stream.
 
 ## Functions
 
-### Operator <a href=http://doc.qt.io/qt-5/QString.html>QString</a>() const
+### Operator [QString](http://doc.qt.io/qt-5/QString.html)() const
 
-returns [name](#name). Allows Files to be used as <a href=http://doc.qt.io/qt-5/QString.html>QString</a>.
+returns [name](#name). Allows Files to be used as [QString](http://doc.qt.io/qt-5/QString.html).
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> flat() const
+### [QString](http://doc.qt.io/qt-5/QString.html) flat() const
 
 Returns the [name](#name) and [metadata](#m_metadata) as string.
 
@@ -217,7 +217,7 @@ Returns the [name](#name) and [metadata](#m_metadata) as string.
 
     file.flat(); // returns "../path/to/pictures/picture.jpg[Key1=1,Key2=2]"
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> hash() const
+### [QString](http://doc.qt.io/qt-5/QString.html) hash() const
 
 Returns a hash of the file.
 
@@ -227,7 +227,7 @@ Returns a hash of the file.
 
     file.hash(); // returns "kElVwY"
 
-### <a href=http://doc.qt.io/qt-5/qstringlist.html>QStringList</a> localKeys() const
+### [QStringList](http://doc.qt.io/qt-5/qstringlist.html) localKeys() const
 
 Returns an immutable version of the local metadata keys gotten by calling [metadata](#metadata).keys().
 
@@ -237,7 +237,7 @@ Returns an immutable version of the local metadata keys gotten by calling [metad
 
     file.localKeys(); // returns [Key1, Key2]
 
-### <a href=http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef>QVariantMap</a> localMetadata() const
+### [QVariantMap](http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef) localMetadata() const
 
 returns an immutable version of the local [metadata](#m_metadata).
 
@@ -247,7 +247,7 @@ returns an immutable version of the local [metadata](#m_metadata).
 
     file.localMetadata(); // return QMap(("Key1", QVariant(float, 1)) ("Key2", QVariant(float, 2)))
 
-### void append(<a href=http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef>QVariantMap</a> &localMetadata)
+### void append([QVariantMap](http://doc.qt.io/qt-5/qvariant.html#QVariantMap-typedef) &localMetadata)
 
 Add new metadata fields to [metadata](#m_metadata).
 
@@ -277,7 +277,7 @@ Append another file using the **;** separator. The file names are combined with 
     f1.localKeys(); // returns "[Key1, Key2, Key3, separator]"
 
 
-### File &operator +=(const <a href=http://doc.qt.io/qt-5/qmap.html>QMap</a><<a href=http://doc.qt.io/qt-5/QString.html>QString</a>, <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a>> &other)
+### File &operator +=(const [QMap](http://doc.qt.io/qt-5/qmap.html)&lt;[QString](http://doc.qt.io/qt-5/QString.html), [QVariant](http://doc.qt.io/qt-5/qvariant.html)&gt; &other)
 
 Shortcut operator to call [append](#void-appendqvariantmap-localmetadata).
 
@@ -285,7 +285,7 @@ Shortcut operator to call [append](#void-appendqvariantmap-localmetadata).
 
 Shortcut operator to call [append](#void-appendconst-file-other).
 
-### <a href=http://doc.qt.io/qt-5/qlist.html>QList</a><[File](#file)> split() const
+### [QList](http://doc.qt.io/qt-5/qlist.html)&lt;[File](#file)&gt; split() const
 
 Parse [name](#name) and split on the **;** separator. Each split file has the same [metadata](#m_metadata) as the joined file.
 
@@ -302,7 +302,7 @@ Parse [name](#name) and split on the **;** separator. Each split file has the sa
     f1.split(); // returns [../path/to/pictures/picture1.jpg[Key1=1, Key2=2, Key3=3, separator=;],
                     //          ../path/to/pictures/picture2.jpg[Key1=1, Key2=2, Key3=3, separator=;]]
 
-### <a href=http://doc.qt.io/qt-5/qlist.html>QList</a><[File](#file)> split(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &separator) const
+### [QList](http://doc.qt.io/qt-5/qlist.html)&lt;[File](#file)&gt; split(const [QString](http://doc.qt.io/qt-5/QString.html) &separator) const
 
 Split the file on the given separator. Each split file has the same [metadata](#m_metadata) as the joined file.
 
@@ -313,7 +313,7 @@ Split the file on the given separator. Each split file has the same [metadata](#
     f.split(","); // returns [../path/to/pictures/picture1.jpg[Key1=1, Key2=2],
                               ../path/to/pictures/picture2.jpg[Key1=1, Key2=2]]
 
-### void setParameter(int index, const <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> &value)
+### void setParameter(int index, const [QVariant](http://doc.qt.io/qt-5/qvariant.html) &value)
 
 Insert a keyless value into the [metadata](#m_metadata).
 
@@ -397,39 +397,39 @@ Returns true if [name](#name) equals "Terminal".
 
 Returns true if the file at [name](#name) exists on disk.
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> fileName() const
+### [QString](http://doc.qt.io/qt-5/QString.html) fileName() const
 
 Returns the file's base name and extension.
 
     File file("../path/to/pictures/picture.jpg");
     file.fileName(); // returns "picture.jpg"
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> baseName() const
+### [QString](http://doc.qt.io/qt-5/QString.html) baseName() const
 
 Returns the file's base name.
 
     File file("../path/to/pictures/picture.jpg");
     file.baseName(); // returns "picture"
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> suffix() const
+### [QString](http://doc.qt.io/qt-5/QString.html) suffix() const
 
 Returns the file's extension.
 
     File file("../path/to/pictures/picture.jpg");
     file.suffix(); // returns "jpg"
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> path() const
+### [QString](http://doc.qt.io/qt-5/QString.html) path() const
 
 Return's the path of the file, excluding the name.
 
     File file("../path/to/pictures/picture.jpg");
     file.suffix(); // returns "../path/to/pictures"
 
-### <a href=http://doc.qt.io/qt-5/QString.html>QString</a> resolved() const
+### [QString](http://doc.qt.io/qt-5/QString.html) resolved() const
 
 Returns [name](#name). If name does not exist it prepends name with the path in Globals->path.
 
-### bool contains(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key) const
+### bool contains(const [QString](http://doc.qt.io/qt-5/QString.html) &key) const
 
 Returns True if the key is in the [metadata](#m_metadata) and False otherwise.
 
@@ -439,7 +439,7 @@ Returns True if the key is in the [metadata](#m_metadata) and False otherwise.
     file.contains("Key1"); // returns true
     file.contains("Key2"); // returns false
 
-### bool contains(const <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a> &keys) const
+### bool contains(const [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html) &keys) const
 
 Returns True if all of the keys are in the [metadata](#m_metadata) and False otherwise.
 
@@ -451,7 +451,7 @@ Returns True if all of the keys are in the [metadata](#m_metadata) and False oth
     file.contains(QStringList() << "Key1" << "Key2") // returns true
     file.contains(QStringList() << "Key1" << "Key3"); // returns false
 
-### <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> value(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key) const
+### [QVariant](http://doc.qt.io/qt-5/qvariant.html) value(const [QString](http://doc.qt.io/qt-5/QString.html) &key) const
 
 Returns the value associated with key in the [metadata](#m_metadata).
 
@@ -459,7 +459,7 @@ Returns the value associated with key in the [metadata](#m_metadata).
     file.set("Key1", QVariant::fromValue<float>(1));
     file.value("Key1"); // returns QVariant(float, 1)
 
-### void set(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const <a href=http://doc.qt.io/qt-5/qvariant.html>QVariant</a> &value)
+### void set(const [QString](http://doc.qt.io/qt-5/QString.html) &key, const [QVariant](http://doc.qt.io/qt-5/qvariant.html) &value)
 
 Insert or overwrite the [metadata](#m_metadata) key with the given value.
 
@@ -469,7 +469,7 @@ Insert or overwrite the [metadata](#m_metadata) key with the given value.
     f.set("Key1", QVariant::fromValue<float>(1));
     f.flat(); // returns "[Key1=1]"
 
-### void set(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &value)
+### void set(const [QString](http://doc.qt.io/qt-5/QString.html) &key, const [QString](http://doc.qt.io/qt-5/QString.html) &value)
 
 Insert or overwrite the [metadata](#m_metadata) key with the given value.
 
@@ -479,7 +479,7 @@ Insert or overwrite the [metadata](#m_metadata) key with the given value.
     f.set("Key1", QString("1"));
     f.flat(); // returns "[Key1=1]"
 
-### void setList(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const <a href=>QList</a><T> &value)
+### void setList(const [QString](http://doc.qt.io/qt-5/QString.html) &key, const [QList](http://doc.qt.io/qt-5/qlist.html)&lt;T&gt; &value)
 
 This function requires a type specification in place of T. Insert or overwrite the [metadata](#m_metadata) key with the value. The value will remain a list and should be queried with the function [getList](#qlistt-getlistconst-qstring-key-const).
 
@@ -489,7 +489,7 @@ This function requires a type specification in place of T. Insert or overwrite t
     file.setList<float>("List", list);
     file.getList<float>("List"); // return [1., 2. 3.]
 
-### void remove(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key)
+### void remove(const [QString](http://doc.qt.io/qt-5/QString.html) &key)
 
 Remove the key value pair associated with the given key from the [metadata](#metadata)
 
@@ -502,7 +502,7 @@ Remove the key value pair associated with the given key from the [metadata](#met
     f.remove("Key1");
     f.flat(); // returns "[Key2=2]"
 
-### T get(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key)
+### T get(const [QString](http://doc.qt.io/qt-5/QString.html) &key)
 
 This function requires a type specification in place of T. Try and get the value associated with the given key in the [metadata](#m_metadata). If the key does not exist or cannot be converted to the given type an error is thrown.
 
@@ -513,7 +513,7 @@ This function requires a type specification in place of T. Try and get the value
     f.get<float>("Key2");  // Error: Key2 is not in the metadata
     f.get<QRectF>("Key1"); // Error: A float can't be converted to a QRectF
 
-### T get(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const T &defaultValue)
+### T get(const [QString](http://doc.qt.io/qt-5/QString.html) &key, const T &defaultValue)
 
 This function requires a type specification in place of T. Try and get the value associated with the given key in the [metadata](#m_metadata). If the key does not exist or cannot be converted to the given type the defaultValue is returned.
 
@@ -524,7 +524,7 @@ This function requires a type specification in place of T. Try and get the value
     f.get<float>("Key2", 5);  // returns 5
     f.get<QRectF>("Key1", QRectF(0, 0, 10, 10)); // returns QRectF(0, 0, 10x10)
 
-### bool getBool(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, bool defaultValue = false)
+### bool getBool(const [QString](http://doc.qt.io/qt-5/QString.html) &key, bool defaultValue = false)
 
 This is a specialization of [get](#t-getconst-qstring-key) for the boolean type. If the key is not in the [metadata](#m_metadata) the defaultValue is returned. If the key is in the metadata but the value cannot be converted to a bool **true** is returned. If the key is found and the value can be converted to a bool the value is returned.
 
@@ -537,9 +537,9 @@ This is a specialization of [get](#t-getconst-qstring-key) for the boolean type.
     f.getBool("Key3");       // returns false (default value)
     f.getBool("Key3", true); // returns true (default value)
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; getList(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key) const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; getList(const [QString](http://doc.qt.io/qt-5/QString.html) &key) const
 
-This function requires a type specification in place of T. Similar to [get](#t-getconst-qstring-key) only this returns a list. If the key is not found or the value cannot be converted into a <a href=http://doc.qt.io/qt-5/QList.html>QList</a><T> an error is thrown.
+This function requires a type specification in place of T. Similar to [get](#t-getconst-qstring-key) only this returns a list. If the key is not found or the value cannot be converted into a [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; an error is thrown.
 
     File file;
 
@@ -550,9 +550,9 @@ This function requires a type specification in place of T. Similar to [get](#t-g
     file.getList<QRectF>("List"); // Error: float cannot be converted to QRectF
     file.getList<float>("Key");   // Error: key doesn't exist
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; getList(const <a href=http://doc.qt.io/qt-5/QString.html>QString</a> &key, const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; &defaultValue) const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; getList(const [QString](http://doc.qt.io/qt-5/QString.html) &key, const [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; &defaultValue) const
 
-This function requires a type specification in place of T. Similar to [get](#t-getconst-qstring-key-const-t-defaultvalue) only this returns a list. If the key is not found or the value cannot be converted into a <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;T&gt; the supplied defaultValue is returned.
+This function requires a type specification in place of T. Similar to [get](#t-getconst-qstring-key-const-t-defaultvalue) only this returns a list. If the key is not found or the value cannot be converted into a [QList](http://doc.qt.io/qt-5/QList.html)&lt;T&gt; the supplied defaultValue is returned.
 
     File file;
 
@@ -563,9 +563,9 @@ This function requires a type specification in place of T. Similar to [get](#t-g
     file.getList<QRectF>("List", QList<QRectF>());                // return []
     file.getList<float>("Key", QList<float>() << 1 << 2 << 3);    // return [1., 2., 3.]
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>&gt; namedPoints() const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QPointF](http://doc.qt.io/qt-4.8/qpointf.html)&gt; namedPoints() const
 
-Find all of the points that can be parsed from [metadata](#m_metadata) keys and return them. Only values that are convertable to <a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a> are found. Values that can be converted to <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>&gt; are not included.
+Find all of the points that can be parsed from [metadata](#m_metadata) keys and return them. Only values that are convertable to [QPointF](http://doc.qt.io/qt-4.8/qpointf.html) are found. Values that can be converted to [QList](http://doc.qt.io/qt-5/QList.html)>&lt;[QPointF](http://doc.qt.io/qt-4.8/qpointf.html)&gt; are not included.
 
     File file;
     file.set("Key1", QVariant::fromValue<QPointF>(QPointF(1, 1)));
@@ -577,7 +577,7 @@ Find all of the points that can be parsed from [metadata](#m_metadata) keys and 
     file.setPoints(QList<QPointF>() << QPointF(3, 3)); // changes metadata["Points"] to QList<QPointF>
     f.namedPoints(); // returns [QPointF(1, 1), QPointF(2, 2)]
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>&gt; points() const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QPointf](http://doc.qt.io/qt-4.8/qpointf.html)>&gt; points() const
 
 Returns the list of points stored in [metadata](#m_metadata)["Points"]. A list is expected and a single point not in a list will not be returned. Convenience functions [appendPoint](#void-appendpointconst-qpointf-point), [appendPoints](#void-appendpointsconst-qlistqpointf-points), [clearPoints](#void-clearpoints) and [setPoints](#void-setpointsconst-qlistqpointf-points) have been provided to manipulate the internal points list.
 
@@ -588,7 +588,7 @@ Returns the list of points stored in [metadata](#m_metadata)["Points"]. A list i
     file.setPoints(QList<QPointF>() << QPointF(2, 2));
     file.points(); // returns [QPointF(2, 2)]
 
-### void appendPoint(const <a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a> &point)
+### void appendPoint(const [QPointF](http://doc.qt.io/qt-4.8/qpointf.html) &point)
 
 Add a point to the file's points list stored in [metadata](#m_metadata)["Points"]
 
@@ -598,7 +598,7 @@ Add a point to the file's points list stored in [metadata](#m_metadata)["Points"
     file.appendPoint(QPointF(1, 1));
     file.points(); // returns [QPointF(1, 1)]
 
-### void appendPoints(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>&gt; &points)
+### void appendPoints(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QPointF](http://doc.qt.io/qt-4.8/qpointf.html)&gt; &points)
 
 Add a list of points to the file's points list stored in [metadata](#m_metadata)["Points"]
 
@@ -619,7 +619,7 @@ Clear the list of points stored in [metadata](#m_metadata)["Points"].
     file.clearPoints();
     file.points(); // returns []
 
-### void setPoints(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qpointf.html>QPointF</a>&gt; &points)
+### void setPoints(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QPointF](http://doc.qt.io/qt-4.8/qpointf.html)&gt; &points)
 
 Clears the points stored in [metadata](#m_metadata) and replaces them with points.
 
@@ -630,9 +630,9 @@ Clears the points stored in [metadata](#m_metadata) and replaces them with point
     file.setPoints(QList<QPointF>() << QPointF(3, 3) << QPointF(4, 4));
     file.points(); // returns [QPointF(3, 3), QPointF(4, 4)]
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>&gt; namedRects() const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QRectF](http://doc.qt.io/qt-4.8/qrectf.html)&gt; namedRects() const
 
-Find all of the rects that can be parsed from [metadata](#m_metadata) keys and return them. Only values that are convertable to <a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a> are found. Values that can be converted to <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>&gt; are not included.
+Find all of the rects that can be parsed from [metadata](#m_metadata) keys and return them. Only values that are convertable to [QRectF](http://doc.qt.io/qt-4.8/qrectf.html) are found. Values that can be converted to [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QRectF](http://doc.qt.io/qt-4.8/qrectf.html)&gt; are not included.
 
     File file;
     file.set("Key1", QVariant::fromValue<QRectF>(QRectF(1, 1, 5, 5)));
@@ -644,7 +644,7 @@ Find all of the rects that can be parsed from [metadata](#m_metadata) keys and r
     file.setRects(QList<QRectF>() << QRectF(3, 3, 5x5)); // changes metadata["Rects"] to QList<QRectF>
     f.namedRects(); // returns [QRectF(1, 1, 5x5), QRectF(2, 2, 5x5)]
 
-### <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>&gt; rects() const
+### [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QRectF](http://doc.qt.io/qt-4.8/qrectf.html)&gt; rects() const
 
 Returns the list of points stored in [metadata](#m_metadata)["Rects"]. A list is expected and a single rect not in a list will not be returned. Convenience functions [appendRect](#void-appendrectconst-qrectf-rect), [appendRects](#void-appendrectsconst-qlistqrectf-rects), [clearRects](#void-clearrects) and [setRects](#void-setrectsconst-qlistqrectf-rects) have been provided to manipulate the internal points list.
 
@@ -655,7 +655,7 @@ Returns the list of points stored in [metadata](#m_metadata)["Rects"]. A list is
     file.setRects(QList<QRectF>() << QRectF(2, 2, 5, 5));
     file.rects(); // returns [QRectF(2, 2, 5x5)]
 
-### void appendRect(const <a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a> &rect)
+### void appendRect(const [QRectF](http://doc.qt.io/qt-4.8/qrectf.html) &rect)
 
 Add a rect to the file's rects list stored in [metadata](#m_metadata)["Rects"].
 
@@ -665,7 +665,7 @@ Add a rect to the file's rects list stored in [metadata](#m_metadata)["Rects"].
     file.appendRect(QRectF(1, 1, 5, 5));
     file.rects(); // returns [QRectF(1, 1, 5x5)]
 
-### void appendRect(const <a href=http://docs.opencv.org/modules/core/doc/basic_structures.html#rect>Rect</a> &rect)
+### void appendRect(const [Rect](http://docs.opencv.org/modules/core/doc/basic_structures.html#rect) &rect)
 
 Add a OpenCV style rect to the file's rects list stored in [metadata](#m_metadata)["Rects"]. The rect is automatically converted to a QRectF.
 
@@ -675,7 +675,7 @@ Add a OpenCV style rect to the file's rects list stored in [metadata](#m_metadat
     file.appendRect(cv::Rect(1, 1, 5, 5)); // automatically converted to QRectF
     file.rects(); // returns [QRectF(1, 1, 5x5)]
 
-### void appendRects(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>&gt; &rects)
+### void appendRects(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QRectF](http://doc.qt.io/qt-4.8/qrectf.html)&gt; &rects)
 
 Add a list of rects to the file's rects list stored in [metadata](#m_metadata)["Rects"]
 
@@ -685,7 +685,7 @@ Add a list of rects to the file's rects list stored in [metadata](#m_metadata)["
     file.appendRects(QList<QRectF>() << QRectF(1, 1, 5, 5) << QRectF(2, 2, 5, 5));
     file.rects(); // returns [QRectF(1, 1, 5x5), QRectF(2, 2, 5x5)]
 
-### void appendRects(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://docs.opencv.org/modules/core/doc/basic_structures.html#rect>Rect</a>&gt; &rects)
+### void appendRects(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[Rect](http://docs.opencv.org/modules/core/doc/basic_structures.html#rect)&gt; &rects)
 
 Add a list of OpenCV style rects to the file's rects list stored in [metadata](#m_metadata)["Rects"]. Each rect is automatically converted to a QRectF.
 
@@ -707,7 +707,7 @@ Clear the list of rects stored in [metadata](#m_metadata)["Rects"].
     file.clearRects();
     file.rects(); // returns []
 
-### void setRects(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://doc.qt.io/qt-4.8/qrectf.html>QRectF</a>&gt; &rects)
+### void setRects(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[QRectF](http://doc.qt.io/qt-4.8/qrectf.html)&gt; &rects)
 
 Clears the rects stored in [metadata](#m_metadata)["Rects"] and replaces them with the given rects.
 
@@ -718,7 +718,7 @@ Clears the rects stored in [metadata](#m_metadata)["Rects"] and replaces them wi
     file.setRects(QList<QRectF>() << QRectF(3, 3, 5, 5) << QRectF(4, 4, 5, 5));
     file.rects(); // returns [QRectF(3, 3, 5x5), QRectF(4, 4, 5x5)]
 
-### void setRects(const <a href=http://doc.qt.io/qt-5/QList.html>QList</a>&lt;<a href=http://docs.opencv.org/modules/core/doc/basic_structures.html#rect>Rect</a>&gt; &rects)
+### void setRects(const [QList](http://doc.qt.io/qt-5/QList.html)&lt;[Rect](http://docs.opencv.org/modules/core/doc/basic_structures.html#rect)&gt; &rects)
 
 Clears the rects stored in [metadata](#m_metadata)["Rects"] and replaces them with the given OpenCV style rects.
 
@@ -745,11 +745,11 @@ Default constructor. Doesn't do anything
 
 Initialize the [FileList](#filelist) with n empty files
 
-### FileList(const <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a> &files)
+### FileList(const [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html) &files)
 
 Initialize the [FileList](#filelist) from a list of strings. Each string should have the format "filename[key1=value1, key2=value2, ... keyN=valueN]"
 
-### FileList(const <a href=http://doc.qt.io/qt-4.8/qlist.html>QList</a>&lt;[File](#file)&gt; &files)
+### FileList(const [QList](http://doc.qt.io/qt-4.8/qlist.html)&lt;[File](#file)&gt; &files)
 
 Initialize the [FileList](#filelist) from a list of [files](#file).
 
@@ -767,9 +767,9 @@ Creates a [FileList](#filelist) from a [Gallery](#gallery). Galleries store one 
 
 ## Functions
 
-### <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a> flat() const
+### [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html) flat() const
 
-Calls [flat](#qstring-flat-const) on every [File](#file) in the list and returns the resulting strings as a <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a>.
+Calls [flat](#qstring-flat-const) on every [File](#file) in the list and returns the resulting strings as a [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html).
 
     File f1("picture1.jpg"), f2("picture2.jpg");
     f1.set("Key", QString("Value"));
@@ -777,9 +777,9 @@ Calls [flat](#qstring-flat-const) on every [File](#file) in the list and returns
     FileList fList(QList<File>() << f1 << f2);
     fList.flat(); // returns ["picture1.jpg[Key=Value]", "picture2.jpg"]
 
-### <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a> names() const
+### [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html) names() const
 
-Stores the name of every [file](#file) in the list and returns the resulting strings as a <a href=http://doc.qt.io/qt-4.8/qstringlist.html>QStringList</a>.
+Stores the name of every [file](#file) in the list and returns the resulting strings as a [QStringList](http://doc.qt.io/qt-4.8/qstringlist.html).
 
     File f1("picture1.jpg"), f2("picture2.jpg");
     f1.set("Key", QString("Value"));
@@ -787,7 +787,7 @@ Stores the name of every [file](#file) in the list and returns the resulting str
     FileList fList(QList<File>() << f1 << f2);
     fList.names(); // returns ["picture1.jpg", "picture2.jpg"]
 
-### void sort(const <a href=http://doc.qt.io/qt-4.8/qstring.html>QString</a> &key)
+### void sort(const [QString](http://doc.qt.io/qt-4.8/qstring.html) &key)
 
 Sorts the [FileList](#filelist) based on the value associated with the given key in each file.
 

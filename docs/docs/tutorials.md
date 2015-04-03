@@ -3,33 +3,51 @@ Welcome to OpenBR! Here we have a series of tutorials designed to get you up to 
 
 ---
 
-# OpenBR in 10 minutes or less!
+# Quick Start
 
 This tutorial is meant to familiarize you with the ideas, objects and motivations behind OpenBR using some fun examples. **Note:** parts of this tutorial require a webcam.
 
-OpenBR is a C++ library built on top of QT and OpenCV. It can either be used from the command line using the **br** application, or from interfacing with the [C API](#c-api). The command line is the easiest and fastest way to get started and this tutorial will use it for all of the examples.
+OpenBR is a C++ library built on top of QT and OpenCV. It can either be used from the command line using the **br** application, or from interfacing with the [C API](docs/c_api.md). The command line is the easiest and fastest way to get started and this tutorial will use it for all of the examples.
 
-First, make sure that OpenBR has been installed on your system using the steps described in the [installation section](#install.md). Then open up your terminal or command prompt and enter:
+First, make sure that OpenBR has been installed on your system using the steps described in the [installation section](install.md). Then open up your terminal or command prompt and enter:
 
-    $ br -gui -algorithm "Open+Show(false)" -enroll 0.webcam
+    $ br -gui -algorithm "Show(false)" -enroll 0.webcam
 
-If everything goes well your webcam should have opened up and is streaming. Look you are using OpenBR! Let's talk about what's happening in this command. OpenBR expects flags to be prepended by a *-* and arguments to follow the flags and be separated by spaces. Flags normally require a specific number of flags. All of the possible flags and their values are [documented here](#docs/cl_api.md). Let's step through the individual arguments and values. **-gui** is the flag that tells OpenBR to open up a GUI window. Take a look at the [GUI plugins](#docs/plugins/gui.md) for other plugins that require the **-gui** flag. **-algorithm** is one of the most important flags in OpenBR. It expects one argument called the *algorithm string*. This string determines the pipeline that images and metadata propagate through. Finally, **-enroll** reads files from disk and *enrolls* them into the image pipeline. It takes one input argument (0.webcam in our example) and an optional output argument. OpenBR has a range of formats that can be enrolled into algorithms, some examples include .jpg, .png, .csv, and .xml. .webcam tells OpenBR to enroll frames from the computers webcam.
+If everything goes well your webcam should have opened up and is streaming. Look you are using OpenBR! Let's talk about what's happening in this command. OpenBR expects flags to be prepended by a *-* and arguments to follow the flags and be separated by spaces. Flags normally require a specific number of flags. All of the possible flags and their values are [documented here](docs/cl_api.md). Let's step through the individual arguments and values. **-gui** is the flag that tells OpenBR to open up a GUI window. Take a look at the [GUI plugins](docs/plugins/gui.md) for other plugins that require the **-gui** flag. **-algorithm** is one of the most important flags in OpenBR. It expects one argument called the *algorithm string*. This string determines the pipeline that images and metadata propagate through. Finally, **-enroll** reads files from disk and *enrolls* them into the image pipeline. It takes one input argument (0.webcam in our example) and an optional output argument. OpenBR has a range of formats that can be enrolled into algorithms, some examples include .jpg, .png, .csv, and .xml. .webcam tells OpenBR to enroll frames from the computers webcam.
 
-Let's try a slightly more complicated example, after all OpenBR can do way more then just open webcams! Face detection is normally the first step in a [face recognition](#face recognition) algorithm. Let's do face detection in OpenBR. Open up the terminal again and enter:
+Let's try a slightly more complicated example, after all OpenBR can do way more then just open webcams! Fire up the terminal again and enter:
 
-    $ br -gui -algorithm "Open+Cvt(Gray)+Cascade(FrontalFace)+Draw+Show(false)" -enroll 0.webcam
+    $ br -gui -algorithm "Cvt(Gray)+Show(false)" -enroll 0.webcam
 
+Hey what happened? We took our normal BGR (OpenCV's alternative to RGB) image and converted it to a grayscale image. How did we do that? Simple, by adding "Cvt(Gray)" to the algorithm string. [Cvt](docs/plugins/imgproc.md#cvttransform), short for convert, is an example of an OpenBR *plugin*. [Show](docs/plugins/gui.md#showtransform) is a plugin as well. Every algorithm string in OpenBR is just a series of plugins joined together into a pipeline. In fact the **+** symbol is shorthand for a [Pipe](docs/plugins/core.md#pipetransform), another kind of OpenBR plugin. We specify **Gray** to [Cvt](docs/plugins/imgproc.md#cvttransform) as a runtime parameter to tell the plugin which color space to convert the image to. We also could have written **Cvt(HSV)** if we wanted to convert to the HSV color space or **Cvt(Luv)** if we wanted to convert to Luv. The arguments inside of the plugins are runtime parameters that can adjust the functionality. They can be provided as key-value pairs, **Cvt(Gray)** is equivalent to **Cvt(ColorSpace=Gray)**, or as keyless values. Make sure you are supplying parameters in the proper order if you are not using keys! Try and run the code with **Show(true)** and see how changing the parameters effect the output of the command (**Hint:** hit a key to cycle through the images).
 
-It was built primarily as a platform for [face recognition](#face recognition) but has grown to do other things like [age recognition](#age recognition) and [gender recognition](#gender recognition). The different functionalities of OpenBR are specified by algorithms which are passed in as strings. The algorithm to do face recognition is
+Let's make this example a little bit more exciting and relevant to OpenBR's biometric roots. Face detection is normally the first step in a [face recognition](#face-recognition) algorithm. Let's do face detection in OpenBR. Back in the terminal enter:
 
-    $ Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(88,88,0.25,0.35)+<Mask+DenseSIFT/DenseLBP+DownsampleTraining(PCA(0.95),instances=1)+Normalize(L2)+Cat>+<Dup(12)+RndSubspace(0.05,1)+DownsampleTraining(LDA(0.98),instances=-2)+Cat+DownsampleTraining(PCA(768),instances=1)>+<Normalize(L1)+Quantize)>+SetMetadata(AlgorithmID,-1):Unit(ByteL1)
+    $ br -gui -algorithm "Cvt(Gray)+Cascade(FrontalFace)+Draw(lineThickness=3)+Show(false)" -enroll 0.webcam
 
-Woah, that's a lot! Face recognition is a pretty complicated process! We will break this whole string down in just a second, but first we can showcase one of the founding principles of OpenBR. In the face recognition algorithm there are a series of steps separated by +'s (and a few other symbols but they will all be explained); these steps are called plugins and they are the building blocks of all OpenBR algorithms. Each plugin is completely independent of all of the other plugins around it and each one can be swapped, inserted or removed at any time to form new algorithms. This makes it really easy to test new ideas as you come up with them!
+You're webcam should be open again but this time a box should have appeared around your face! We added two new plugins to our string, [Cascade](docs/plugins/metadata.md#cascadetransform) and [Draw](docs/plugins/gui.md#drawtransform). Let's walk through this plugin by plugin and see how it works:
 
-So, now lets talk about the basics of algorithms in OpenBR. We know that algorithms are just a series of plugins joined together using the + symbol. What about the : symbol right at the end of the algorithm however? :'s separate the processing part of the algorithm (also called enrollment or generation), from the evaluation part. OpenBR actually has different types of plugins to handle each part. Plugins to the left are called [transforms](docs/cpp_api.md#transform) and plugins to the right are called [distances](docs/cpp_api.md#distance). Transforms operate on the images as they pass through the algorithm and distances compare (or find the distance between) the images as they finish, usually constructing a similarity matrix in the process.
+1. [Cvt(Gray)](docs/plugins/imgproc.md#cvttransform): Convert the image from BGR to grayscale. Grayscale is required for [Cascade](docs/plugins/metadata.md#cascadetransform) to work properly.
+2. [Cascade(FrontalFace)](docs/plugins/metadata.md#cascadetransform): This is a wrapper on the OpenCV [Cascade Classification](http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html) framework. It detects frontal faces using the **FrontalFace** model.
+3. [Draw(lineThickness=3)](docs/plugins/gui.md#drawtransform): Take the rects detected by [Cascade](docs/plugins/metadata.md#cascadetransform) and draw them onto the frame from the webcam. **lineThickness** determines the thickness of the drawn rect.
+4. [Show(false)](docs/plugins/gui.md#showtransform): Show the image in a GUI window. **false** indicates the images should be shown in succession without waiting for a key press.
 
-This leads us on a small tangent to discuss how images are handled in OpenBR. OpenBR has two structures dedicated to handling data as it passes through an algorithm, [Files](docs/cpp_api.md#file) and [Templates](docs/cpp_api.md#template). Files handle metadata, the text and other information that can be associated with an image, and templates act as a container for images (we use OpenCV mats) and files. These templates are passed from transform to transform through the algorithm and are *transformed* (see, the name makes sense!) as they go.
+Pretty straightforward right? Each plugin completes one task and the passes the output on to the next plugin. You can pipe together as many plugins as you like as long as the output data from one can be the input data to the next. But wait! Output data? Input data? we haven't talked about data at all yet! How does OpenBR handle data? There are two objects that handle data is OpenBR; [Files](docs/cpp_api.md#file), which handle metadata, and [Templates](docs/cpp_api.md#template) which are containers for images and [Files](docs/cpp_api.md#file). Let's talk about [Files](docs/cpp_api.md#file) first. A file consists of file name, which is a path to a file on disk, and metadata which is a map of key-value pairs. The metadata can contain any textual information about the file. In the example above we use it to store the rectangles detected by [Cascade](docs/plugins/metadata.md#cascadetransform) and pass them along to [Draw](docs/plugins/metadata.md#drawtransform) for drawing. [Templates](docs/cpp_api.md#template) are containers for images, given as OpenCV [Mats](http://docs.opencv.org/modules/core/doc/basic_structures.html#mat), and [Files](docs/cpp_api.md#file). They can contain one image or a list of images. Plugins are either [Template](#docs/cpp_api.md#template) in, [Template](docs/cpp_api.md#template) out or [TemplateList](docs/cpp_api.md#templatelist) in, [TemplateList](docs/cpp_api.md#templatelist) out. [TemplateLists](docs/cpp_api.md#templatelist) are, of course, just a list of [Templates](docs/cpp_api.md#template) which a few functions added for your convenience.
 
-Great, you now know how data is handled in OpenBR but we still have a lot to cover in that algorithm string! Next lets talk about all of the parentheses next to each plugin. Many plugins have parameters that can be set at runtime. For example, [Cvt](docs/plugins/imgproc.md#cvttransform) (short for convert) changes the colorspace of an image. For face recognition we want to change it to gray so we pass in Gray as the parameter to Cvt. Pretty simple right? Parameters can either be passed in in the order they appear in the code, or they can use a key-value pairing. Cvt(Gray) is equivalent to Cvt(ColorSpace=Gray), check out the docs for the properties of each plugin.
+And there you go! You have gotten your quick start in OpenBR. We covered the [command line](docs/cl_api.md), plugins, and the key [data structures](docs/cpp_api.md) in OpenBR. If you want to learn more the next few tutorials will cover these fields with more depth. For even more information check out the technical overviews (#techical.md) and class documentation!
 
-The last symbol we need to cover is <>. In OpenBR <> represents i/o. Transforms within these brackets will try and load their parameters from the hard drive if they can (they also still take parameters from the command line as you can see). Plugin i/o won't be covered here because it isn't critically important to making OpenBR work for you out of the gate. Stay tuned for a later tutorial on this.
+---
+
+# Training in OpenBR
+
+---
+
+# Face Recognition
+
+---
+
+# Age Estimation
+
+---
+
+# Gender Estimation

@@ -74,3 +74,9 @@ If you are familiar with face recognition, you will likely recognize this as the
 
 As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
 Since OpenBR expects *similarity* values when comparing templates, and not *distances*, the [DistDistance](docs/plugins/distance.md#distdistance) will return *-log(distance+1)* so that larger values indicate more similarity.
+
+---
+
+# The Evaluation Harness
+
+---

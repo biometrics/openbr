@@ -34,22 +34,23 @@ OpenBR is supported on multiple operating systems. Please select yours from the 
 
 We have created a few tutorials to help teach you the basic principles of the OpenBR system. If this is your first time using OpenBR you should look at these before moving on to the more technical descriptions below.
 
-* [OpenBR in 10 minutes or less!](tutorials.md#openbr in 10 minutes or less!)
-* [Face Recognition](tutorials.md#face recognition)
-* [Age Estimation](tutorials.md#age estimation)
-* [Gender Estimation](tutorials.md#gender estimation)
+* [Quick Start](tutorials.md#quick-start)
+* [Training in OpenBR](tutorials.md#training-in-openbr)
+* [Face Recognition](tutorials.md#face-recognition)
+* [Age Estimation](tutorials.md#age-estimation)
+* [Gender Estimation](tutorials.md#gender-estimation)
 
 ---
 
 ## Additional Materials
 
-OpenBR has several parts. For a brief overview of the entire framework please see [OpenBR in 10 minutes or less!](tutorials.md#openbr in 10 minutes or less!). Below are several more technical descriptions of important parts of the system. Enjoy!
+OpenBR has several parts. Below are several more technical descriptions of important parts of the system. Enjoy!
 
-* [Algorithms in OpenBR](technical.md#algorithms in openbr)
-* [The Command Line Interface](technical.md#the command line interface)
-* [The C API](technical.md#the c api)
-* [The C++ Plugin API](technical.md#the c++ plugin api)
-* [The Evaluation Harness](technical.md#the evaluation harness)
+* [Algorithms in OpenBR](technical.md#algorithms-in-openbr)
+* [The C API](docs/c_api.md)
+* [The Command Line Interface](docs/cl_api.md)
+* [The C++ Plugin API](docs/cpp_api.md)
+* [The Evaluation Harness](technical.md#the-evaluation-harness)
 
 ---
 
