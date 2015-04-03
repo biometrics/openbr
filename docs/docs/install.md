@@ -1,10 +1,8 @@
-# Build Instructions
-
 A hacker's guide to building, editing, and running OpenBR.
 
 ---
 
-## Linux
+# Linux
 
 1. Install GCC 4.7.3
 
@@ -83,7 +81,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
 ---
 
-## OSX
+# OSX
 
 1. Download and install the latest "Xcode" and "Command Line Tools" from the <a href="https://developer.apple.com/downloads/index.action#">Apple Developer Downloads</a> page.
     1. <a href="http://www.cmake.org/files/v2.8/cmake-2.8.11.2.tar.gz">Download CMake 2.8.11.2</a>
@@ -175,7 +173,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
 ---
 
-## Windows
+# Windows
 
 1. <a href="http://www.microsoft.com/en-us/download/details.aspx?id=34673">Download Visual Studio 2012 Express Edition for Windows Desktop</a> and install.
     1. Consider the free open source program <a href="http://wincdemu.sysprogs.org">WinCDEmu</a> if you need a program to mount ISO images.
@@ -246,7 +244,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
 ---
 
-## Raspian
+# Raspian
 
 1. Install CMake 2.8.9
 

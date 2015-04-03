@@ -1,9 +1,24 @@
 site_name: OpenBR
+theme: readthedocs
+
 pages:
-- [index.md, Home]
-- [install.md, Install]
-- [tutorials.md, Tutorials]
-- [technical.md, Technical Overview]
-- [abstractions.md, Docs, Abstractions]
-- [plugins.md, Docs, Plugins]
-theme: flatly
+- [index.md, OpenBR]
+- [install.md, Home, Install]
+- [tutorials.md, Home, Tutorials]
+- [technical.md, Home, Technical Overview]
+- [contribute.md, Home, Contribute]
+- [docs/c_api.md, API Docs, C API]
+- [docs/cpp_api.md, API Docs, C++ Plugin API]
+- [docs/cl_api.md, API Docs, Command Line API]
+- [docs/plugins/classification.md, Plugin Docs, Classification]
+- [docs/plugins/cluster.md, Plugin Docs, Cluster]
+- [docs/plugins/core.md, Plugin Docs, Core]
+- [docs/plugins/distance.md, Plugin Docs, Distance]
+- [docs/plugins/format.md, Plugin Docs, Format]
+- [docs/plugins/gallery.md, Plugin Docs, Gallery]
+- [docs/plugins/gui.md, Plugin Docs, GUI]
+- [docs/plugins/imgproc.md, Plugin Docs, Image Processing]
+- [docs/plugins/io.md, Plugin Docs, I/O]
+- [docs/plugins/metadata.md, Plugin Docs, Metadata]
+- [docs/plugins/output.md, Plugin Docs, Output]
+- [docs/plugins/video.md, Plugin Docs, Video]

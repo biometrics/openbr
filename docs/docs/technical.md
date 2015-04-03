@@ -1,8 +1,4 @@
-# Technical Overview of the OpenBR System
-
----
-
-## Algorithms in OpenBR
+# Algorithms in OpenBR
 
 **So you've run `scripts/helloWorld.sh` and it generally makes sense, except you have no idea what    `'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)'` means or how it is executed.**
 
@@ -38,7 +34,7 @@ These make calls are defined in the public [C++ plugin API](#the c++ plugin api)
 Below we discuss some of the source code for `Transform::make` in `openbr/openbr_plugin.cpp`.
 Note, the make functions for other plugin types are similar in spirit and will not be covered.
 
-One of the first steps when converting the template enrollment description into a [Transform](abstractions.md#Transform) is to replace the operators, like '+', with their full form:
+One of the first steps when converting the template enrollment description into a [Transform](docs/cpp_api.md#Transform) is to replace the operators, like '+', with their full form:
 
     { // Check for use of '+' as shorthand for Pipe(...)
          QStringList words = parse(str, '+');
@@ -46,15 +42,15 @@ One of the first steps when converting the template enrollment description into 
              return make("Pipe([" + words.join(",") + "])", parent);
     }
 
-A pipe (see [PipeTransform](plugins.md#pipetransform)) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
-PipeTransform takes a list of transforms, and <i>projects</i> templates through each transform in order.
+A pipe (see [PipeTransform](docs/plugins/core.md#pipetransform)) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
+PipeTransform takes a list of transforms, and *projects* templates through each transform in order.
 
 After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recursively starting at the root of the tree:
 
     Transform *transform = Factory<Transform>::make("." + str);
 
 At this point we reach arguably the most important code in the entire framework, the *object factory* in `openbr/openbr_plugin.h`.
-The [Factory](abstractions.md#factory) class is responsible for constructing an object from a string:
+The [Factory](docs/cpp_api.md#factory) class is responsible for constructing an object from a string:
 
     static T *make(const File &file)
     {
@@ -70,11 +66,11 @@ The [Factory](abstractions.md#factory) class is responsible for constructing an 
         return object;
     }
 
-Going back to our original example, a [PipeTransform](plugins.md#pipetransform) will be created with [OpenTransform](plugins.md#opentransform), [CvtTransform](plugins.md#cvttransform), [CascadeTransform](plugins.md#cascadetransform), [ASEFEyesTransform](plugins.md#asefeyestransform), [AffineTransform](plugins.md#affinetransform), [CvtFloatTransform](plugins.md#cvtfloattransform), and [PCATransform](plugins.md#pcatransform) as its children.
+Going back to our original example, a [PipeTransform](docs/plugins/core.md#pipetransform) will be created with [OpenTransform](docs/plugins/io.md#opentransform), [CvtTransform](docs/plugins/imgproc.md#cvttransform), [CascadeTransform](docs/plugins/metadata.md#cascadetransform), [ASEFEyesTransform](docs/plugins/metadata.md#asefeyestransform), [AffineTransform](docs/plugins/imgproc.md#affinetransform), [CvtFloatTransform](docs/plugins/imgproc.md#cvtfloattransform), and [PCATransform](docs/plugins/classification.md#pcatransform) as its children.
 
-If you want all the tedious details about what exactly this algoritm does, then you should read the [project](abstractions.md#transform#project) function implemented by each of these plugins.
+If you want all the tedious details about what exactly this algoritm does, then you should read the [project](docs/cpp_api.md#project) function implemented by each of these plugins.
 The brief explanation is that it *reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images*.
 If you are familiar with face recognition, you will likely recognize this as the Eigenfaces \cite turk1991eigenfaces algorithm.
 
 As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
-Since OpenBR expects *similarity* values when comparing templates, and not *distances*, the [DistDistance](plugins.md#distdistance) will return *-log(distance+1)* so that larger values indicate more similarity.
+Since OpenBR expects *similarity* values when comparing templates, and not *distances*, the [DistDistance](docs/plugins/distance.md#distdistance) will return *-log(distance+1)* so that larger values indicate more similarity.
