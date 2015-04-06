@@ -38,14 +38,48 @@ def parse(group):
     attributes['Parent'] = clss[clss.find('public')+6:].strip()
     return attributes
 
-def parseProperties(properties):
-    output = ""
-    for prop in properties:
-        split = prop.find(' ')
-        name = prop[:split]
-        desc = prop[split:]
+def parseSees(sees):
+    if not sees:
+        return ""
 
-        output += "\t* **" + name + "**- " + desc + "\n"
+    output = "* **see:**"
+    if len(sees) > 1:
+        output += "\n\n"
+        for see in sees:
+            output += "\t* [" + see + "](" + see + ")\n"
+        output += "\n"
+    else:
+        output += " [" + sees[0] + "](" + sees[0] + ")\n"
+
+    return output
+
+def parseAuthors(authors):
+    if not authors:
+        return "* **authors:** None\n"
+
+    output = "* **author"
+    if len(authors) > 1:
+        output += "s:** " + ", ".join(authors) + "\n"
+    else:
+        output += ":** " + authors[0] + "\n"
+
+    return output
+
+def parseProperties(properties):
+    if not properties:
+        return "* **properties:** None\n\n"
+
+    output = "* **properties:**\n\n"
+    output += "Name | Type | Description\n"
+    output += "--- | --- | ---\n"
+    for prop in properties:
+        split = prop.split(' ')
+        ty = split[0]
+        name = split[1]
+        desc = ' '.join(split[2:])
+
+        output += name + " | " + ty + " | " + desc + "\n"
+
     return output
 
 def main():
@@ -58,6 +92,9 @@ def main():
 
         output_file = open(os.path.join(output_dir, module + '.md'), 'w+')
 
+        names = []
+        docs = {} # Store the strings here first so they can be alphabetized
+
         for plugin in subfiles(os.path.join(plugins_dir, module)):
             f = open(os.path.join(os.path.join(plugins_dir, module), plugin), 'r')
             content = f.read()
@@ -66,27 +103,23 @@ def main():
             it = regex.finditer(content)
             for match in it:
                 attributes = parse(match.group())
-                if not attributes:
+                if not attributes or (attributes and attributes["Parent"] == "Initializer"):
                     continue
 
-                output_file.write("---\n\n")
-                output_file.write("# " + attributes["Name"] + "\n\n")
-                output_file.write(attributes["brief"][0] + "\n\n")
-                output_file.write("* **file:** " + os.path.join(module, plugin) + "\n")
-                output_file.write("* **inherits:** [" + attributes["Parent"] + "](../cpp_api.md#" + attributes["Parent"].lower() + ")\n")
+                plugin_string = "# " + attributes["Name"] + "\n\n"
+                plugin_string += ' '.join([brief for brief in attributes["brief"]]) + "\n\n"
+                plugin_string += "* **file:** " + os.path.join(module, plugin) + "\n"
+                plugin_string += "* **inherits:** [" + attributes["Parent"] + "](../cpp_api.md#" + attributes["Parent"].lower() + ")\n"
 
-                authors = attributes["author"]
-                if len(authors) > 1:
-                    output_file.write("* **authors:** " + ", ".join(attributes["author"]) + "\n")
-                else:
-                    output_file.write("* **author:** " + attributes["author"][0] + "\n")
+                plugin_string += parseSees(attributes.get("see", None))
+                plugin_string += parseAuthors(attributes.get("author", None))
+                plugin_string += parseProperties(attributes.get("property", None))
 
-                if not 'property' in attributes.keys():
-                    output_file.write("* **properties:** None\n")
-                else:
-                    properties = attributes['property']
-                    output_file.write("* **properties:**\n\n")
-                    output_file.write(parseProperties(properties) + "\n")
+                plugin_string += "\n---\n\n"
 
-                output_file.write("\n")
+                names.append(attributes["Name"])
+                docs[attributes["Name"]] = plugin_string
+
+        for name in sorted(names):
+            output_file.write(docs[name])
 main()

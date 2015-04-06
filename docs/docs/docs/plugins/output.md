@@ -1,27 +1,3 @@
----
-
-# bestOutput
-
-The highest scoring matches.
-
-* **file:** output/best.cpp
-* **inherits:** [Output](../cpp_api.md#output)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# csvOutput
-
-Comma separated values output.
-
-* **file:** output/csv.cpp
-* **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
 # DefaultOutput
 
 Adaptor class -- write a matrix output using Format classes.
@@ -30,6 +6,7 @@ Adaptor class -- write a matrix output using Format classes.
 * **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -42,6 +19,31 @@ Output to the terminal.
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# bestOutput
+
+The highest scoring matches.
+
+* **file:** output/best.cpp
+* **inherits:** [Output](../cpp_api.md#output)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# csvOutput
+
+Comma separated values output.
+
+* **file:** output/csv.cpp
+* **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # evalOutput
@@ -52,6 +54,7 @@ Evaluate the output matrix.
 * **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -64,6 +67,7 @@ Matrix-like output for heat maps.
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # histOutput
@@ -74,6 +78,7 @@ Score histogram.
 * **inherits:** [Output](../cpp_api.md#output)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -86,6 +91,7 @@ One score per row.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # mtxOutput
@@ -96,6 +102,7 @@ One score per row.
 * **inherits:** [Output](../cpp_api.md#output)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -108,6 +115,7 @@ Discards the scores.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # rankOutput
@@ -118,6 +126,7 @@ Outputs highest ranked matches with scores.
 * **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -130,6 +139,7 @@ Rank retrieval output.
 * **authors:** Josh Klontz, Scott Klum
 * **properties:** None
 
+
 ---
 
 # tailOutput
@@ -141,6 +151,7 @@ The highest scoring matches.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # txtOutput
@@ -151,4 +162,7 @@ Text file output.
 * **inherits:** [MatrixOutput](../cpp_api.md#matrixoutput)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
 

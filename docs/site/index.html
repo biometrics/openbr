@@ -7,14 +7,15 @@
         
         
         
-        <link rel="shortcut icon" href="./img/favicon.ico">
+        <link rel="shortcut icon" href="docs/img/openbr.ico">
+        
 
-        <title>My Docs</title>
+	<title>OpenBR</title>
 
         <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="./css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="./css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="./css/highlight.css">
+        <link href="./css/base.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -25,61 +26,265 @@
         
     </head>
 
-    <body class="homepage">
+    <body data-spy="scroll" data-target="#bs-sidebar">
 
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
 
         <!-- Collapsed navigation -->
         <div class="navbar-header">
-            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
 
             <!-- Main title -->
-            <a class="navbar-brand" href=".">My Docs</a>
+            <a class="navbar-brand" href=".">OpenBR</a>
         </div>
 
         <!-- Expanded navigation -->
         <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
             
+            
+                <li class="active">
+                    <a href=".">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="install/">Install</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="tutorials/">Tutorials</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="technical/">Technical Overviews</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="contribute/">Contribute</a>
+                        </li>
+                    
+                        <li >
+                            <a href="papers/">Publications</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="docs/c_api/">C API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/cpp_api/">C++ Plugin API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/cl_api/">Command Line API</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Plugin Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="docs/plugins/classification/">Classification</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/cluster/">Cluster</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/core/">Core</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/distance/">Distance</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/format/">Format</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/gallery/">Gallery</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/gui/">GUI</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/imgproc/">Image Processing</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/io/">I/O</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/metadata/">Metadata</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/output/">Output</a>
+                        </li>
+                    
+                        <li >
+                            <a href="docs/plugins/video/">Video</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
 
-            
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li class="disabled">
+                    <a rel="next" >
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="install/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/biometrics/openbr">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
         </div>
     </div>
 </div>
 
         <div class="container">
-            
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix" role="complementary">
     <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#openbr">OpenBR</a></li>
+        
+            <li><a href="#overview">Overview</a></li>
+        
+            <li><a href="#getting-started">Getting Started</a></li>
+        
+            <li><a href="#the-basics">The Basics</a></li>
+        
+            <li><a href="#additional-materials">Additional Materials</a></li>
+        
+            <li><a href="#help">Help</a></li>
+        
     
     </ul>
 </div></div>
-                <div class="col-md-9" role="main">
+            <div class="col-md-9" role="main">
 
-<p><strong>www.openbiometrics.org</strong></p>
-<p>Identify the latest <a href="https://github.com/biometrics/openbr/releases">tagged release</a>.</p>
-<pre><code>$ git clone https://github.com/biometrics/openbr.git
-$ cd openbr
-$ git checkout &lt;tag&gt;
-$ git submodule init
-$ git submodule update
-</code></pre>
-<p><strong><a href="http://openbiometrics.org/doxygen/latest/installation.html">Build Instructions</a></strong></p>
-</div>
-            
+<h1 id="openbr">OpenBR <img alt="Overview" src="./img/openbr_48x48.png" /></h1>
+<p>Open source, industry quality biometrics.</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>OpenBR \cite klontz2013open is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
+The project is designed to facilitate rapid algorithm prototyping, and features a mature core framework, flexible plugin system, and support for open and closed source development.
+Off-the-shelf algorithms are also available for specific modalities including <a href="tutorials/#face-recognition">face recognition</a>, <a href="tutorials/#age-estimation">age estimation</a>, and <a href="tutorials/#gender-estimation">gender estimation</a>. Please see the <a href="tutorials/">Tutorials</a> section for more information.</p>
+<p>OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
+The project was later published as open source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license and is <em>free for academic and commercial use</em>.</p>
+<p><img alt="Overview" src="./img/abstraction.svg" /></p>
+<p><em>The two principal software artifacts are the shared library 'openbr' and command line application 'br'.</em></p>
+<hr />
+<h2 id="getting-started">Getting Started</h2>
+<p>OpenBR is supported on multiple operating systems. Please select yours from the list below for installation instructions. Happy Hacking!</p>
+<ul>
+<li><a href="install/#linux">Linux</a></li>
+<li><a href="install/#osx">Mac OSX</a></li>
+<li><a href="install/#windows">Windows</a></li>
+<li><a href="install/#raspian">Raspian</a></li>
+</ul>
+<hr />
+<h2 id="the-basics">The Basics</h2>
+<p>We have created a few tutorials to help teach you the basic principles of the OpenBR system. If this is your first time using OpenBR you should look at these before moving on to the more technical descriptions below.</p>
+<ul>
+<li><a href="tutorials/#quick-start">Quick Start</a></li>
+<li><a href="tutorials/#training-in-openbr">Training in OpenBR</a></li>
+<li><a href="tutorials/#face-recognition">Face Recognition</a></li>
+<li><a href="tutorials/#age-estimation">Age Estimation</a></li>
+<li><a href="tutorials/#gender-estimation">Gender Estimation</a></li>
+</ul>
+<hr />
+<h2 id="additional-materials">Additional Materials</h2>
+<p>OpenBR has several parts. Below are several more technical descriptions of important parts of the system. Enjoy!</p>
+<ul>
+<li><a href="technical/#algorithms-in-openbr">Algorithms in OpenBR</a></li>
+<li><a href="docs/c_api/">The C API</a></li>
+<li><a href="docs/cl_api/">The Command Line Interface</a></li>
+<li><a href="docs/cpp_api/">The C++ Plugin API</a></li>
+<li><a href="technical/#the-evaluation-harness">The Evaluation Harness</a></li>
+</ul>
+<hr />
+<h2 id="help">Help</h2>
+<p>Still have questions? Please reach out to us on our <a href="https://groups.google.com/forum/?fromgroups#!forum/openbr-dev">developer mailing list</a> or our <a href="http://webchat.freenode.net/?channels=openbr">IRC channel</a></p></div>
         </div>
 
-        <footer class="col-md-12">
-            <hr>
-            
-            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
+        <!-- Search modal.  Not yet supported. -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="searchModalLabel">Documentation search</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        
-
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="./js/jquery-1.10.2.min.js"></script>
         <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/prettify-1.0.min.js"></script>
         <script src="./js/highlight.pack.js"></script>
         <script src="./js/base.js"></script>
     </body>

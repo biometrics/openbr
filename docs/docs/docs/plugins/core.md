@@ -1,71 +1,3 @@
----
-
-# AlgorithmsInitializer
-
-Initializes global abbreviations with implemented algorithms
-
-* **file:** core/algorithms.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# ProcrustesAlignTransform
-
-Improved procrustes alignment of points, to include a post processing scaling of points
-
-* **file:** core/align.cpp
-* **inherits:** [Transform](../cpp_api.md#transform)
-* **author:** Brendan Klare
-* **properties:** None
-
----
-
-# TextureMapTransform
-
-Maps texture from one set of points to another. Assumes that points are rigidly transformed
-
-* **file:** core/align.cpp
-* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
-* **authors:** Brendan Klare, Scott Klum
-* **properties:** None
-
----
-
-# SynthesizePointsTransform
-
-Synthesize additional points via triangulation.
-
-* **file:** core/align.cpp
-* **inherits:** [MetadataTransform](../cpp_api.md#metadatatransform)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# ProcrustesInitializer
-
-Initialize Procrustes croppings
-
-* **file:** core/align.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Brendan Klare
-* **properties:** None
-
----
-
-# AttributeAlgorithmsInitializer
-
-Initializes global abbreviations with implemented algorithms for attributes
-
-* **file:** core/attributealgorithms.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Babatunde Ogunfemi
-* **properties:** None
-
----
-
 # CacheTransform
 
 Caches br::Transform::project() results.
@@ -74,6 +6,7 @@ Caches br::Transform::project() results.
 * **inherits:** [MetaTransform](../cpp_api.md#metatransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -86,6 +19,7 @@ It's like the opposite of ExpandTransform, but not really
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # CrossValidateTransform
@@ -97,6 +31,7 @@ Cross validate a trainable transform.
 * **authors:** Josh Klontz, Scott Klum
 * **properties:** None
 
+
 ---
 
 # DiscardTransform
@@ -105,8 +40,10 @@ Removes all template's matrices.
 
 * **file:** core/discard.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **see:** [IdentityTransform FirstTransform RestTransform RemoveTransform](IdentityTransform FirstTransform RestTransform RemoveTransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -116,30 +53,10 @@ Performs an expansion step on input templatelists
 
 * **file:** core/expand.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **see:** [PipeTransform](PipeTransform)
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# FirstTransform
-
-Removes all but the first matrix from the template.
-
-* **file:** core/first.cpp
-* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# ForkTransform
-
-Transforms in parallel.
-
-* **file:** core/fork.cpp
-* **inherits:** [CompositeTransform](../cpp_api.md#compositetransform)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -152,6 +69,33 @@ Flags images that failed to enroll based on the specified transform.
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# FirstTransform
+
+Removes all but the first matrix from the template.
+
+* **file:** core/first.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **see:** [IdentityTransform DiscardTransform RestTransform RemoveTransform](IdentityTransform DiscardTransform RestTransform RemoveTransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# ForkTransform
+
+Transforms in parallel.
+
+* **file:** core/fork.cpp
+* **inherits:** [CompositeTransform](../cpp_api.md#compositetransform)
+* **see:** [PipeTransform](PipeTransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # GalleryCompareTransform
@@ -163,6 +107,7 @@ Compare each template to a fixed gallery (with name = galleryName), using the sp
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # IdentityTransform
@@ -171,8 +116,10 @@ A no-op transform.
 
 * **file:** core/identity.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **see:** [DiscardTransform FirstTransform RestTransform RemoveTransform](DiscardTransform FirstTransform RestTransform RemoveTransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -185,16 +132,6 @@ Clones the transform so that it can be applied independently.
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# JNIInitializer
-
-Initialize JNI
-
-* **file:** core/jni.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Jordan Cheney
-* **properties:** None
 
 ---
 
@@ -207,6 +144,7 @@ Generic interface to Likely JIT compiler
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # LoadStoreTransform
@@ -218,6 +156,7 @@ Caches transform training.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # PipeTransform
@@ -226,8 +165,14 @@ Transforms in series.
 
 * **file:** core/pipe.cpp
 * **inherits:** [CompositeTransform](../cpp_api.md#compositetransform)
+* **see:**
+
+	* [ExpandTransform](ExpandTransform)
+	* [ForkTransform](ForkTransform)
+
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -240,16 +185,18 @@ Interface to a separate process
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
-# Registrar
+# ProcrustesAlignTransform
 
-Register custom objects with Qt meta object system.
+Improved procrustes alignment of points, to include a post processing scaling of points
 
-* **file:** core/registrar.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Charles Otto
+* **file:** core/align.cpp
+* **inherits:** [Transform](../cpp_api.md#transform)
+* **author:** Brendan Klare
 * **properties:** None
+
 
 ---
 
@@ -259,8 +206,10 @@ Removes the first matrix from the template.
 
 * **file:** core/rest.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **see:** [IdentityTransform DiscardTransform FirstTransform RemoveTransform](IdentityTransform DiscardTransform FirstTransform RemoveTransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -273,6 +222,7 @@ Generates two templates, one of which is passed through a transform and the othe
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # SingletonTransform
@@ -283,4 +233,31 @@ A globally shared transform.
 * **inherits:** [MetaTransform](../cpp_api.md#metatransform)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
+
+# SynthesizePointsTransform
+
+Synthesize additional points via triangulation.
+
+* **file:** core/align.cpp
+* **inherits:** [MetadataTransform](../cpp_api.md#metadatatransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# TextureMapTransform
+
+Maps texture from one set of points to another. Assumes that points are rigidly transformed
+
+* **file:** core/align.cpp
+* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
+* **authors:** Brendan Klare, Scott Klum
+* **properties:** None
+
+
+---
 

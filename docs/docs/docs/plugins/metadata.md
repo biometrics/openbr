@@ -1,3 +1,13 @@
+# ASEFEyesTransform
+
+Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;
+
+* **file:** metadata/eyes.cpp
+* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
+* **authors:** David Bolme, Josh Klontz
+* **properties:** None
+
+
 ---
 
 # AnonymizeLandmarksTransform
@@ -8,6 +18,7 @@ Remove a name from a point/rect
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -20,6 +31,7 @@ Change the br::Template::file extension
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # AveragePointsTransform
@@ -30,6 +42,7 @@ Averages a set of landmarks into a new landmark
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Brendan Klare
 * **properties:** None
+
 
 ---
 
@@ -42,6 +55,7 @@ Wraps OpenCV cascade classifier
 * **authors:** Josh Klontz, David Crouse
 * **properties:** None
 
+
 ---
 
 # CheckTransform
@@ -52,6 +66,7 @@ Checks the template for NaN values.
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -64,6 +79,7 @@ Clears the points from a template
 * **author:** Brendan Klare
 * **properties:** None
 
+
 ---
 
 # ConsolidateDetectionsTransform
@@ -74,6 +90,7 @@ Consolidate redundant/overlapping detections.
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Brendan Klare
 * **properties:** None
+
 
 ---
 
@@ -86,6 +103,7 @@ Crops the width and height of a template's rects by input width and height facto
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # DelaunayTransform
@@ -96,6 +114,7 @@ Creates a Delaunay triangulation based on a set of points
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -108,6 +127,7 @@ Expand the width and height of a template's rects by input width and height fact
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # ExtractMetadataTransform
@@ -119,16 +139,6 @@ Create matrix from metadata values.
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# ASEFEyesTransform
-
-Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;
-
-* **file:** metadata/eyes.cpp
-* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
-* **authors:** David Bolme, Josh Klontz
-* **properties:** None
 
 ---
 
@@ -141,6 +151,7 @@ Removes duplicate templates based on a unique metadata key
 * **author:** Austin Blanton
 * **properties:** None
 
+
 ---
 
 # GridTransform
@@ -151,6 +162,7 @@ Add landmarks to the template in a grid layout
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -163,6 +175,7 @@ Add any ground truth to the template using the file's base name.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # HOGPersonDetectorTransform
@@ -173,6 +186,7 @@ Detects objects with OpenCV's built-in HOG detection.
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Austin Blanton
 * **properties:** None
+
 
 ---
 
@@ -185,6 +199,7 @@ Clear templates without the required metadata.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # ImpostorUniquenessMeasureTransform
@@ -195,6 +210,7 @@ Impostor Uniqueness Measure
 * **inherits:** [Transform](../cpp_api.md#transform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -207,6 +223,7 @@ Represent the metadata as JSON template data.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # KeepMetadataTransform
@@ -217,6 +234,7 @@ Retains only the values for the keys listed, to reduce template size
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -229,6 +247,7 @@ Wraps OpenCV Key Point Detector
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # KeyToRectTransform
@@ -240,27 +259,6 @@ Convert values of key_X, key_Y, key_Width, key_Height to a rect.
 * **author:** Jordan Cheney
 * **properties:** None
 
----
-
-# MongooseInitializer
-
-Initialize mongoose server
-
-* **file:** metadata/mongoose.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Unknown
-* **properties:** None
-
----
-
-# NameTransform
-
-Sets the template's matrix data to the br::File::name.
-
-* **file:** metadata/name.cpp
-* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -273,6 +271,19 @@ Name a point/rect
 * **author:** Scott Klum
 * **properties:** None
 
+
+---
+
+# NameTransform
+
+Sets the template's matrix data to the br::File::name.
+
+* **file:** metadata/name.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # NormalizePointsTransform
@@ -283,6 +294,7 @@ Normalize points to be relative to a single point
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -295,6 +307,7 @@ Normalize points to be relative to a single point
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # PointsToMatrixTransform
@@ -305,6 +318,7 @@ Converts either the file::points() list or a QList<QPointF> metadata item to be 
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -317,6 +331,7 @@ Procrustes alignment of points
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # RectsToTemplatesTransform
@@ -327,6 +342,7 @@ For each rectangle bounding box in src, a new
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Brendan Klare
 * **properties:** None
+
 
 ---
 
@@ -339,6 +355,7 @@ Apply the input regular expression to the value of inputProperty, store the matc
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # RemoveMetadataTransform
@@ -349,6 +366,7 @@ Removes a metadata field from all templates
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Brendan Klare
 * **properties:** None
+
 
 ---
 
@@ -361,16 +379,6 @@ Remove templates with the specified file extension or metadata value.
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# RenameTransform
-
-Rename metadata key
-
-* **file:** metadata/rename.cpp
-* **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -383,6 +391,19 @@ Rename first found metadata key
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# RenameTransform
+
+Rename metadata key
+
+* **file:** metadata/rename.cpp
+* **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # ReorderPointsTransform
@@ -393,6 +414,7 @@ Reorder the points such that points[from[i]] becomes points[to[i]] and
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -405,6 +427,7 @@ Set the last matrix of the input template to a matrix stored as metadata with in
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # SaveMatTransform
@@ -415,6 +438,7 @@ Store the last matrix of the input template as a metadata key with input propert
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -427,6 +451,7 @@ Retains only landmarks/points at the provided indices
 * **author:** Brendan Klare
 * **properties:** None
 
+
 ---
 
 # SetMetadataTransform
@@ -437,6 +462,7 @@ Sets the metadata key/value pair.
 * **inherits:** [UntrainableMetadataTransform](../cpp_api.md#untrainablemetadatatransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -449,16 +475,6 @@ Set points relative to a rect
 * **author:** Jordan Cheney
 * **properties:** None
 
----
-
-# StasmInitializer
-
-Initialize Stasm
-
-* **file:** metadata/stasm4.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Scott Klum
-* **properties:** None
 
 ---
 
@@ -471,6 +487,7 @@ Wraps STASM key point detector
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # StopWatchTransform
@@ -481,4 +498,7 @@ Gives time elapsed over a specified transform as a function of both images (or f
 * **inherits:** [MetaTransform](../cpp_api.md#metatransform)
 * **authors:** Jordan Cheney, Josh Klontz
 * **properties:** None
+
+
+---
 

@@ -1,5 +1,3 @@
----
-
 # CollectNNTransform
 
 Collect nearest neighbors and append them to metadata.
@@ -8,6 +6,7 @@ Collect nearest neighbors and append them to metadata.
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -20,6 +19,7 @@ Wraps OpenCV kmeans and flann.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # KNNTransform
@@ -30,6 +30,7 @@ K nearest neighbors classifier.
 * **inherits:** [Transform](../cpp_api.md#transform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -42,6 +43,7 @@ Log nearest neighbors to specified file.
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # RandomCentroidsTransform
@@ -50,6 +52,10 @@ Chooses k random points to be centroids.
 
 * **file:** cluster/randomcentroids.cpp
 * **inherits:** [Transform](../cpp_api.md#transform)
+* **see:** [KMeansTransform](KMeansTransform)
 * **author:** Austin Blanton
 * **properties:** None
+
+
+---
 

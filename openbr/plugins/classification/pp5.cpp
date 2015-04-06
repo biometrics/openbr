@@ -250,10 +250,14 @@ struct PP5Context
 /*!
  * \ingroup transforms
  * \brief Enroll faces in PP5
- *
- * See PittPatt documentation for the relationship between minSize and pixel IPD.
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
+ * \property bool detectOnly If true, enroll all detected faces. Otherwise, only enroll faces suitable for recognition. Default is false.
+ * \property bool requireLandmarks If true, require the right eye, left eye, and nose base to be detectable by PP5. If this does not happen FTE is set to true for that template. Default is false.
+ * \property float adaptiveMinSize The minimum face size as a percentage of total image width. 0.1 corresponds to a minimum face size of 10% the total image width. Default is 0.01.
+ * \property int minSize The absolute minimum face size to search for. This is not a pixel value. Please see PittPatt documentation for the relationship between minSize and pixel IPD. Default is 4.
+ * \property enum landmarkRange Range of landmarks to search for. Options are Frontal, Extended, Full, and Comprehensive. Default is Comprehensive.
+ * \property int searchPruningAggressiveness The amount of aggressiveness involved in search for faces in images. 0 means all scales and locations are searched. 1 means fewer detectors are used in the early stages but all scales are still searched. 2-4 means that the largest faces are found first and then fewer scales are searched. Default is 0.
  */
 class PP5EnrollTransform : public UntrainableMetaTransform
 {

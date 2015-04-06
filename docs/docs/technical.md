@@ -79,4 +79,14 @@ Since OpenBR expects *similarity* values when comparing templates, and not *dist
 
 # The Evaluation Harness
 
+The *Biometric Evaluation Environment* (BEE) is a [NIST](http://www.nist.gov/index.html) standard for evaluating biometric algorithms.
+
+OpenBR implements the following portions of the BEE specification:
+
+* Signature Set- A signature set (or *sigset*) is a [Gallery](docs/cpp_api.md#gallery) compliant **XML** file-list specified on page 9 of [MBGC File Overview](MBGC_file_overview.pdf#page=9) and implemented in [xmlGallery](docs/plugins/gallery.md#xmlGallery). Sigsets are identified with a **.xml** extension.
+
+* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](docs/cpp_api.md#output) compliant binary score matrix specified on page 12 of [MBGC File Overview](MBGC_file_overview.pdf#page=12) and implemented in [mtxOutput](docs/plugins/output.md#mtxOutput). Simmats are identified with a **.mtx** extension. See [br_eval](docs/c_api.md#br_eval) for more information.
+
+* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](MBGC_file_overview.pdf#page=14) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](docs/c_api.md#br_make_mask) and [br_combine_masks](docs/c_api.md#br_combine_masks) for more information.
+
 ---

@@ -1,5 +1,3 @@
----
-
 # AdjacentOverlayTransform
 
 Load the image named in the specified property, draw it on the current matrix adjacent to the rect specified in the other property.
@@ -9,16 +7,6 @@ Load the image named in the specified property, draw it on the current matrix ad
 * **author:** Charles Otto
 * **properties:** None
 
----
-
-# DrawTransform
-
-Renders metadata onto the image.
-
-* **file:** gui/draw.cpp
-* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -31,6 +19,7 @@ Creates a Delaunay triangulation based on a set of points
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # DrawGridLinesTransform
@@ -41,6 +30,7 @@ Draws a grid on the image
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -53,6 +43,7 @@ Draw a line representing the direction and magnitude of optical flow at the spec
 * **author:** Austin Blanton
 * **properties:** None
 
+
 ---
 
 # DrawPropertiesPointTransform
@@ -63,6 +54,7 @@ Draw the values of a list of properties at the specified point on the image
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -75,6 +67,7 @@ Draw the value of the specified property at the specified point on the image
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # DrawSegmentation
@@ -86,49 +79,18 @@ Fill in the segmentations or draw a line between intersecting segments.
 * **author:** Austin Blanton
 * **properties:** None
 
----
-
-# ShowTransform
-
-Displays templates in a GUI pop-up window using QT.
-
-* **file:** gui/show.cpp
-* **inherits:** [TimeVaryingTransform](../cpp_api.md#timevaryingtransform)
-* **author:** Charles Otto
-* **properties:** None
 
 ---
 
-# ShowTrainingTransform
+# DrawTransform
 
-Show the training data
+Renders metadata onto the image.
 
-* **file:** gui/show.cpp
-* **inherits:** [Transform](../cpp_api.md#transform)
+* **file:** gui/draw.cpp
+* **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# ManualTransform
-
-Manual selection of landmark locations
-
-* **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
-* **author:** Scott Klum
-* **properties:** None
-
----
-
-# ManualRectsTransform
-
-Manual select rectangular regions on an image.
-
-* **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
-* **author:** Charles Otto
-* **properties:** None
 
 ---
 
@@ -141,16 +103,18 @@ Elicits metadata for templates in a pretty GUI
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
-# SurveyTransform
+# FPSCalc
 
-Display an image, and asks a yes/no question about it
+Calculates the average FPS of projects going through this transform, stores the result in AvgFPS
 
 * **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **inherits:** [TimeVaryingTransform](../cpp_api.md#timevaryingtransform)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -163,14 +127,66 @@ Limits the frequency of projects going through this transform to the input targe
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
-# FPSCalc
+# ManualRectsTransform
 
-Calculates the average FPS of projects going through this transform, stores the result in AvgFPS
+Manual select rectangular regions on an image.
+
+* **file:** gui/show.cpp
+* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **author:** Charles Otto
+* **properties:** None
+
+
+---
+
+# ManualTransform
+
+Manual selection of landmark locations
+
+* **file:** gui/show.cpp
+* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **author:** Scott Klum
+* **properties:** None
+
+
+---
+
+# ShowTrainingTransform
+
+Show the training data
+
+* **file:** gui/show.cpp
+* **inherits:** [Transform](../cpp_api.md#transform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# ShowTransform
+
+Displays templates in a GUI pop-up window using QT.
 
 * **file:** gui/show.cpp
 * **inherits:** [TimeVaryingTransform](../cpp_api.md#timevaryingtransform)
 * **author:** Charles Otto
 * **properties:** None
+
+
+---
+
+# SurveyTransform
+
+Display an image, and asks a yes/no question about it
+
+* **file:** gui/show.cpp
+* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **author:** Charles Otto
+* **properties:** None
+
+
+---
 

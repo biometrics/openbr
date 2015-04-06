@@ -1,4 +1,4 @@
-# OpenBR
+# OpenBR ![Overview](img/openbr_48x48.png)
 
 Open source, industry quality biometrics.
 
@@ -8,10 +8,10 @@ Open source, industry quality biometrics.
 
 OpenBR \cite klontz2013open is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.
 The project is designed to facilitate rapid algorithm prototyping, and features a mature core framework, flexible plugin system, and support for open and closed source development.
-Off-the-shelf algorithms are also available for specific modalities including **face recognition**, **age estimation**, and **gender estimation**. Please see the [Tutorials](tutorials.md) section for more information.
+Off-the-shelf algorithms are also available for specific modalities including [face recognition](tutorials.md#face-recognition), [age estimation](tutorials.md#age-estimation), and [gender estimation](tutorials.md#gender-estimation). Please see the [Tutorials](tutorials.md) section for more information.
 
 OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
-The project was later published as open source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license and is <i>free for academic and commercial use</i>.
+The project was later published as open source software under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0.html) license and is *free for academic and commercial use*.
 
 ![Overview](img/abstraction.svg)
 

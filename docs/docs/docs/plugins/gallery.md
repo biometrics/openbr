@@ -1,93 +1,3 @@
----
-
-# arffGallery
-
-Weka ARFF file format.
-
-* **file:** gallery/arff.cpp
-* **inherits:** [Gallery](../cpp_api.md#gallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# galGallery
-
-A binary gallery.
-
-* **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# utGallery
-
-A contiguous array of br_universal_template.
-
-* **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# urlGallery
-
-Newline-separated URLs.
-
-* **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# jsonGallery
-
-Newline-separated JSON objects.
-
-* **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# crawlGallery
-
-Crawl a root location for image files.
-
-* **file:** gallery/crawl.cpp
-* **inherits:** [Gallery](../cpp_api.md#gallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# csvGallery
-
-Treats each line as a file.
-
-* **file:** gallery/csv.cpp
-* **inherits:** [FileGallery](../cpp_api.md#filegallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# dbGallery
-
-Database input.
-
-* **file:** gallery/db.cpp
-* **inherits:** [Gallery](../cpp_api.md#gallery)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
 # DefaultGallery
 
 Treats the gallery as a br::Format.
@@ -96,6 +6,7 @@ Treats the gallery as a br::Format.
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -108,6 +19,7 @@ Reads/writes templates to/from folders.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # FDDBGallery
@@ -118,6 +30,56 @@ Implements the FDDB detection format.
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
+
+# arffGallery
+
+Weka ARFF file format.
+
+* **file:** gallery/arff.cpp
+* **inherits:** [Gallery](../cpp_api.md#gallery)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# crawlGallery
+
+Crawl a root location for image files.
+
+* **file:** gallery/crawl.cpp
+* **inherits:** [Gallery](../cpp_api.md#gallery)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# csvGallery
+
+Treats each line as a file.
+
+* **file:** gallery/csv.cpp
+* **inherits:** [FileGallery](../cpp_api.md#filegallery)
+* **see:** [txtGallery](txtGallery)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# dbGallery
+
+Database input.
+
+* **file:** gallery/db.cpp
+* **inherits:** [Gallery](../cpp_api.md#gallery)
+* **author:** Josh Klontz
+* **properties:** None
+
 
 ---
 
@@ -130,6 +92,19 @@ Treats each line as a call to File::flat()
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# galGallery
+
+A binary gallery.
+
+* **file:** gallery/binary.cpp
+* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # googleGallery
@@ -140,6 +115,19 @@ Input from a google image search.
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
+
+# jsonGallery
+
+Newline-separated JSON objects.
+
+* **file:** gallery/binary.cpp
+* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **author:** Josh Klontz
+* **properties:** None
+
 
 ---
 
@@ -152,16 +140,6 @@ Read key frames of a video with LibAV
 * **author:** Ben Klein
 * **properties:** None
 
----
-
-# mp4Gallery
-
-Read key frames of a .mp4 video file with LibAV
-
-* **file:** gallery/keyframes.cpp
-* **inherits:** [keyframesGallery](../cpp_api.md#keyframesgallery)
-* **author:** Ben Klein
-* **properties:** None
 
 ---
 
@@ -174,6 +152,7 @@ Text format for associating anonymous landmarks with images.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # lmatGallery
@@ -184,6 +163,7 @@ Likely matrix format
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -196,16 +176,6 @@ Combine all templates into one large matrix and process it as a br::Format
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# MemoryGalleries
-
-Initialization support for memGallery.
-
-* **file:** gallery/mem.cpp
-* **inherits:** [Initializer](../cpp_api.md#initializer)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -218,6 +188,19 @@ A gallery held in memory.
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# mp4Gallery
+
+Read key frames of a .mp4 video file with LibAV
+
+* **file:** gallery/keyframes.cpp
+* **inherits:** [keyframesGallery](../cpp_api.md#keyframesgallery)
+* **author:** Ben Klein
+* **properties:** None
+
+
 ---
 
 # postGallery
@@ -228,6 +211,7 @@ Handle POST requests
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -240,6 +224,7 @@ Print template statistics.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # templateGallery
@@ -250,6 +235,7 @@ Treat the file as a single binary template.
 * **inherits:** [Gallery](../cpp_api.md#gallery)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -262,6 +248,7 @@ For Amazon Mechanical Turk datasets
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # txtGallery
@@ -270,8 +257,34 @@ Treats each line as a file.
 
 * **file:** gallery/txt.cpp
 * **inherits:** [FileGallery](../cpp_api.md#filegallery)
+* **see:** [csvGallery](csvGallery)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
+
+# urlGallery
+
+Newline-separated URLs.
+
+* **file:** gallery/binary.cpp
+* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# utGallery
+
+A contiguous array of br_universal_template.
+
+* **file:** gallery/binary.cpp
+* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **author:** Josh Klontz
+* **properties:** None
+
 
 ---
 
@@ -283,4 +296,7 @@ A
 * **inherits:** [FileGallery](../cpp_api.md#filegallery)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
 

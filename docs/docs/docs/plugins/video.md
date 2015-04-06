@@ -1,5 +1,3 @@
----
-
 # AggregateFrames
 
 Passes along n sequential frames to the next transform.
@@ -8,6 +6,7 @@ Passes along n sequential frames to the next transform.
 * **inherits:** [TimeVaryingTransform](../cpp_api.md#timevaryingtransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -20,6 +19,7 @@ Only use one frame every n frames.
 * **author:** Austin Blanton
 * **properties:** None
 
+
 ---
 
 # OpticalFlowTransform
@@ -30,4 +30,7 @@ Gets a one-channel dense optical flow from two images
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Austin Blanton
 * **properties:** None
+
+
+---
 

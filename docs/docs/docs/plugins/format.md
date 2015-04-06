@@ -1,3 +1,13 @@
+# DefaultFormat
+
+Reads image files.
+
+* **file:** format/video.cpp
+* **inherits:** [Format](../cpp_api.md#format)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # binaryFormat
@@ -8,6 +18,7 @@ A simple binary matrix format.
 * **inherits:** [Format](../cpp_api.md#format)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -20,6 +31,7 @@ Reads a comma separated value file.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # ebtsFormat
@@ -30,6 +42,7 @@ Reads FBI EBTS transactions.
 * **inherits:** [Format](../cpp_api.md#format)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -42,6 +55,7 @@ Reads a NIST LFFS file.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # lmatFormat
@@ -53,27 +67,6 @@ Likely matrix format
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# matFormat
-
-MATLAB <tt>.mat</tt> format.
-
-* **file:** format/mat.cpp
-* **inherits:** [Format](../cpp_api.md#format)
-* **author:** Josh Klontz
-* **properties:** None
-
----
-
-# mtxFormat
-
-Reads a NIST BEE similarity matrix.
-
-* **file:** format/mtx.cpp
-* **inherits:** [Format](../cpp_api.md#format)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -86,6 +79,31 @@ Reads a NIST BEE mask matrix.
 * **author:** Josh Klontz
 * **properties:** None
 
+
+---
+
+# matFormat
+
+MATLAB <tt>.mat</tt> format.
+
+* **file:** format/mat.cpp
+* **inherits:** [Format](../cpp_api.md#format)
+* **author:** Josh Klontz
+* **properties:** None
+
+
+---
+
+# mtxFormat
+
+Reads a NIST BEE similarity matrix.
+
+* **file:** format/mtx.cpp
+* **inherits:** [Format](../cpp_api.md#format)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # nullFormat
@@ -96,6 +114,7 @@ Returns an empty matrix.
 * **inherits:** [Format](../cpp_api.md#format)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -108,6 +127,7 @@ Handle POST requests
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # rawFormat
@@ -118,6 +138,7 @@ RAW format
 * **inherits:** [Format](../cpp_api.md#format)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -130,6 +151,7 @@ Reads in scores or ground truth from a text table.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # urlFormat
@@ -140,6 +162,7 @@ Reads image files from the web.
 * **inherits:** [Format](../cpp_api.md#format)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -152,6 +175,7 @@ Read all frames of a video using OpenCV
 * **author:** Charles Otto
 * **properties:** None
 
+
 ---
 
 # webcamFormat
@@ -163,16 +187,6 @@ Retrieves an image from a webcam.
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# DefaultFormat
-
-Reads image files.
-
-* **file:** format/video.cpp
-* **inherits:** [Format](../cpp_api.md#format)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -184,4 +198,7 @@ Decodes images from Base64 xml
 * **inherits:** [Format](../cpp_api.md#format)
 * **authors:** Scott Klum, Josh Klontz
 * **properties:** None
+
+
+---
 

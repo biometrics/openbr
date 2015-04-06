@@ -1,5 +1,3 @@
----
-
 # DecodeTransform
 
 Decodes images
@@ -8,6 +6,7 @@ Decodes images
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -20,6 +19,7 @@ Downloads an image from a URL
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # IncrementalOutputTransform
@@ -30,6 +30,7 @@ Incrementally output templates received to a gallery, based on the current filen
 * **inherits:** [TimeVaryingTransform](../cpp_api.md#timevaryingtransform)
 * **author:** Charles Otto
 * **properties:** None
+
 
 ---
 
@@ -42,6 +43,7 @@ Applies br::Format to br::Template::file::name and appends results.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # PrintTransform
@@ -53,16 +55,6 @@ Prints the template's file to stdout or stderr.
 * **author:** Josh Klontz
 * **properties:** None
 
----
-
-# ReadTransform
-
-Read images
-
-* **file:** io/read.cpp
-* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **author:** Josh Klontz
-* **properties:** None
 
 ---
 
@@ -75,6 +67,19 @@ Read landmarks from a file and associate them with the correct templates.
 * **author:** Scott Klum
 * **properties:** None
 
+
+---
+
+# ReadTransform
+
+Read images
+
+* **file:** io/read.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # WriteTransform
@@ -86,6 +91,7 @@ Write all mats to disk as images.
 * **author:** Brendan Klare
 * **properties:** None
 
+
 ---
 
 # YouTubeFacesDBTransform
@@ -96,4 +102,7 @@ Implements the YouTubesFaceDB
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
 

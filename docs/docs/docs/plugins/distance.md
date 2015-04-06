@@ -1,5 +1,3 @@
----
-
 # AttributeDistance
 
 Attenuation function based distance from attributes
@@ -8,6 +6,7 @@ Attenuation function based distance from attributes
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -20,6 +19,7 @@ Bayesian quantization distance
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # ByteL1Distance
@@ -30,6 +30,7 @@ Fast 8-bit L1 distance
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -42,6 +43,7 @@ Cross validate a distance metric.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # DefaultDistance
@@ -52,6 +54,7 @@ DistDistance wrapper.
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -64,6 +67,7 @@ Standard distance metrics
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # FilterDistance
@@ -74,6 +78,7 @@ Checks target metadata against filters.
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -86,6 +91,7 @@ Fuses similarity scores across multiple matrices of compared templates
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # HalfByteL1Distance
@@ -96,6 +102,7 @@ Fast 4-bit L1 distance
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -108,6 +115,7 @@ Fast 4-bit L1 distance
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # IdenticalDistance
@@ -118,6 +126,7 @@ Returns
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -130,6 +139,7 @@ Wraps OpenCV Key Point Matcher
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # L1Distance
@@ -140,6 +150,7 @@ L1 distance computed using eigen.
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -152,6 +163,7 @@ L2 distance computed using eigen.
 * **author:** Josh Klontz
 * **properties:** None
 
+
 ---
 
 # MatchProbabilityDistance
@@ -162,6 +174,7 @@ Match Probability
 * **inherits:** [Distance](../cpp_api.md#distance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -174,6 +187,7 @@ Checks target metadata against query metadata.
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # NegativeLogPlusOneDistance
@@ -184,6 +198,7 @@ Returns -log(distance(a,b)+1)
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -196,6 +211,7 @@ Online distance metric to attenuate match scores across multiple frames
 * **author:** Brendan klare
 * **properties:** None
 
+
 ---
 
 # PipeDistance
@@ -206,6 +222,7 @@ Distances in series.
 * **inherits:** [Distance](../cpp_api.md#distance)
 * **author:** Josh Klontz
 * **properties:** None
+
 
 ---
 
@@ -218,6 +235,19 @@ Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
 * **author:** Scott Klum
 * **properties:** None
 
+
+---
+
+# SVMDistance
+
+SVM Regression on template absolute differences.
+
+* **file:** distance/svm.cpp
+* **inherits:** [Distance](../cpp_api.md#distance)
+* **author:** Josh Klontz
+* **properties:** None
+
+
 ---
 
 # SumDistance
@@ -228,6 +258,7 @@ Sum match scores across multiple distances
 * **inherits:** [UntrainableDistance](../cpp_api.md#untrainabledistance)
 * **author:** Scott Klum
 * **properties:** None
+
 
 ---
 
@@ -240,6 +271,7 @@ Unmaps Turk HITs to be compared against query mats
 * **author:** Scott Klum
 * **properties:** None
 
+
 ---
 
 # UnitDistance
@@ -250,4 +282,7 @@ Linear normalizes of a distance so the mean impostor score is 0 and the mean gen
 * **inherits:** [Distance](../cpp_api.md#distance)
 * **author:** Josh Klontz
 * **properties:** None
+
+
+---
 

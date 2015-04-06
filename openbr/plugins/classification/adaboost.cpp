@@ -26,7 +26,17 @@ namespace br
  * \ingroup transforms
  * \brief Wraps OpenCV's Ada Boost framework
  * \author Scott Klum \cite sklum
- * \brief http://docs.opencv.org/modules/ml/doc/boosting.html
+ * \see http://docs.opencv.org/modules/ml/doc/boosting.html
+ * \property enum type Type of Adaboost to perform. Options are Discrete, Real, Logit, and Gentle. Default is Real.
+ * \property enum splitCriteria Splitting criteria used to choose optimal splits during a weak tree construction. Options are Default, Gini, Misclass, Sqerr. Default is Default.
+ * \property int weakCount Maximum number of weak classifiers per stage. Default is 100.
+ * \property float trimRate A threshold between 0 and 1 used to save computational time. Samples with summary weight \leq 1 - weight\_trim\_rate do not participate in the next iteration of training. Set this parameter to 0 to turn off this functionality. Default is 0.95.
+ * \property int folds OpenCV parameter variable. Default value is 0.
+ * \property int maxDepth Maximum height of each weak classifier tree. Default is 1 (stumps).
+ * \property bool returnConfidence Return the confidence value of the classification or the class value of the classification. Default is true (return confidence value).
+ * \property bool overwriteMat If true, the output template will be a 1x1 matrix with value equal to the confidence or classification (depending on returnConfidence). If false the output template will be the same as the input template. Default is true.
+ * \property QString inputVariable Metadata variable storing the label for each template. Default is "Label".
+ * \property QString outputVariable Metadata variable to store the confidence or classification of each template (depending on returnConfidence). If overwriteMat is true nothing will be written here. Default is "".
  */
 class AdaBoostTransform : public Transform
 {

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/openbr.ico">
+        
+
+	<title>Distance - OpenBR</title>
+
+        <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../css/highlight.css">
+        <link href="../../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body data-spy="scroll" data-target="#bs-sidebar">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../..">OpenBR</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../install/">Install</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../tutorials/">Tutorials</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../technical/">Technical Overviews</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../../contribute/">Contribute</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../../papers/">Publications</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../c_api/">C API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../cpp_api/">C++ Plugin API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../cl_api/">Command Line API</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Plugin Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../classification/">Classification</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../cluster/">Cluster</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../core/">Core</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Distance</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../format/">Format</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../gallery/">Gallery</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../gui/">GUI</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../imgproc/">Image Processing</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../io/">I/O</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../metadata/">Metadata</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../output/">Output</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../video/">Video</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../core/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../format/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/biometrics/openbr">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#attributedistance">AttributeDistance</a></li>
+        
+    
+        <li class="main "><a href="#bayesianquantizationdistance">BayesianQuantizationDistance</a></li>
+        
+    
+        <li class="main "><a href="#bytel1distance">ByteL1Distance</a></li>
+        
+    
+        <li class="main "><a href="#crossvalidatedistance">CrossValidateDistance</a></li>
+        
+    
+        <li class="main "><a href="#defaultdistance">DefaultDistance</a></li>
+        
+    
+        <li class="main "><a href="#distdistance">DistDistance</a></li>
+        
+    
+        <li class="main "><a href="#filterdistance">FilterDistance</a></li>
+        
+    
+        <li class="main "><a href="#fusedistance">FuseDistance</a></li>
+        
+    
+        <li class="main "><a href="#halfbytel1distance">HalfByteL1Distance</a></li>
+        
+    
+        <li class="main "><a href="#heatmapdistance">HeatMapDistance</a></li>
+        
+    
+        <li class="main "><a href="#identicaldistance">IdenticalDistance</a></li>
+        
+    
+        <li class="main "><a href="#keypointmatcherdistance">KeyPointMatcherDistance</a></li>
+        
+    
+        <li class="main "><a href="#l1distance">L1Distance</a></li>
+        
+    
+        <li class="main "><a href="#l2distance">L2Distance</a></li>
+        
+    
+        <li class="main "><a href="#matchprobabilitydistance">MatchProbabilityDistance</a></li>
+        
+    
+        <li class="main "><a href="#metadatadistance">MetadataDistance</a></li>
+        
+    
+        <li class="main "><a href="#negativelogplusonedistance">NegativeLogPlusOneDistance</a></li>
+        
+    
+        <li class="main "><a href="#onlinedistance">OnlineDistance</a></li>
+        
+    
+        <li class="main "><a href="#pipedistance">PipeDistance</a></li>
+        
+    
+        <li class="main "><a href="#rejectdistance">RejectDistance</a></li>
+        
+    
+        <li class="main "><a href="#sumdistance">SumDistance</a></li>
+        
+    
+        <li class="main "><a href="#turkdistance">TurkDistance</a></li>
+        
+    
+        <li class="main "><a href="#unitdistance">UnitDistance</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="attributedistance">AttributeDistance</h1>
+<p>Attenuation function based distance from attributes</p>
+<ul>
+<li><strong>file:</strong> distance/attribute.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="bayesianquantizationdistance">BayesianQuantizationDistance</h1>
+<p>Bayesian quantization distance</p>
+<ul>
+<li><strong>file:</strong> distance/bayesianquantization.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="bytel1distance">ByteL1Distance</h1>
+<p>Fast 8-bit L1 distance</p>
+<ul>
+<li><strong>file:</strong> distance/byteL1.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="crossvalidatedistance">CrossValidateDistance</h1>
+<p>Cross validate a distance metric.</p>
+<ul>
+<li><strong>file:</strong> distance/crossvalidate.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="defaultdistance">DefaultDistance</h1>
+<p>DistDistance wrapper.</p>
+<ul>
+<li><strong>file:</strong> distance/default.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="distdistance">DistDistance</h1>
+<p>Standard distance metrics</p>
+<ul>
+<li><strong>file:</strong> distance/dist.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="filterdistance">FilterDistance</h1>
+<p>Checks target metadata against filters.</p>
+<ul>
+<li><strong>file:</strong> distance/filter.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="fusedistance">FuseDistance</h1>
+<p>Fuses similarity scores across multiple matrices of compared templates</p>
+<ul>
+<li><strong>file:</strong> distance/fuse.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="halfbytel1distance">HalfByteL1Distance</h1>
+<p>Fast 4-bit L1 distance</p>
+<ul>
+<li><strong>file:</strong> distance/halfbyteL1.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="heatmapdistance">HeatMapDistance</h1>
+<p>1v1 heat map comparison</p>
+<ul>
+<li><strong>file:</strong> distance/heatmap.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="identicaldistance">IdenticalDistance</h1>
+<p>Returns</p>
+<ul>
+<li><strong>file:</strong> distance/identical.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="keypointmatcherdistance">KeyPointMatcherDistance</h1>
+<p>Wraps OpenCV Key Point Matcher</p>
+<ul>
+<li><strong>file:</strong> distance/keypointmatcher.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="l1distance">L1Distance</h1>
+<p>L1 distance computed using eigen.</p>
+<ul>
+<li><strong>file:</strong> distance/L1.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="l2distance">L2Distance</h1>
+<p>L2 distance computed using eigen.</p>
+<ul>
+<li><strong>file:</strong> distance/L2.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="matchprobabilitydistance">MatchProbabilityDistance</h1>
+<p>Match Probability</p>
+<ul>
+<li><strong>file:</strong> distance/matchprobability.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="metadatadistance">MetadataDistance</h1>
+<p>Checks target metadata against query metadata.</p>
+<ul>
+<li><strong>file:</strong> distance/metadata.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="negativelogplusonedistance">NegativeLogPlusOneDistance</h1>
+<p>Returns -log(distance(a,b)+1)</p>
+<ul>
+<li><strong>file:</strong> distance/neglogplusone.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="onlinedistance">OnlineDistance</h1>
+<p>Online distance metric to attenuate match scores across multiple frames</p>
+<ul>
+<li><strong>file:</strong> distance/online.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Brendan klare</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="pipedistance">PipeDistance</h1>
+<p>Distances in series.</p>
+<ul>
+<li><strong>file:</strong> distance/pipe.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="rejectdistance">RejectDistance</h1>
+<p>Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.</p>
+<ul>
+<li><strong>file:</strong> distance/reject.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="sumdistance">SumDistance</h1>
+<p>Sum match scores across multiple distances</p>
+<ul>
+<li><strong>file:</strong> distance/sum.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="turkdistance">TurkDistance</h1>
+<p>Unmaps Turk HITs to be compared against query mats</p>
+<ul>
+<li><strong>file:</strong> distance/turk.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#untrainabledistance">UntrainableDistance</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="unitdistance">UnitDistance</h1>
+<p>Linear normalizes of a distance so the mean impostor score is 0 and the mean genuine score is 1.</p>
+<ul>
+<li><strong>file:</strong> distance/unit.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#distance">Distance</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr /></div>
+        </div>
+
+        <!-- Search modal.  Not yet supported. -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="searchModalLabel">Documentation search</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <script src="../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../js/highlight.pack.js"></script>
+        <script src="../../../js/base.js"></script>
+    </body>
+</html>

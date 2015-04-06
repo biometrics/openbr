@@ -1,12 +1,18 @@
 site_name: OpenBR
-theme: readthedocs
+repo_url: https://github.com/biometrics/openbr
+site_favicon: docs/img/openbr.ico
+copyright: 2012 The MITRE Corporation
+
+theme: readly
+theme_dir: themes/spacelab/
 
 pages:
-- [index.md, OpenBR]
-- [install.md, Home, Install]
-- [tutorials.md, Home, Tutorials]
-- [technical.md, Home, Technical Overview]
-- [contribute.md, Home, Contribute]
+- [index.md, Home]
+- [install.md, Install]
+- [tutorials.md, Tutorials]
+- [technical.md, Technical Overviews]
+- [contribute.md, More, Contribute]
+- [papers.md, More, Publications]
 - [docs/c_api.md, API Docs, C API]
 - [docs/cpp_api.md, API Docs, C++ Plugin API]
 - [docs/cl_api.md, API Docs, Command Line API]

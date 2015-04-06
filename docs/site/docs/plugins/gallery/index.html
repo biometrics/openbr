@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/openbr.ico">
+        
+
+	<title>Gallery - OpenBR</title>
+
+        <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../css/highlight.css">
+        <link href="../../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body data-spy="scroll" data-target="#bs-sidebar">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../..">OpenBR</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../install/">Install</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../tutorials/">Tutorials</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../technical/">Technical Overviews</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../../contribute/">Contribute</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../../papers/">Publications</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../c_api/">C API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../cpp_api/">C++ Plugin API</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../cl_api/">Command Line API</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Plugin Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../classification/">Classification</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../cluster/">Cluster</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../core/">Core</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../distance/">Distance</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../format/">Format</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Gallery</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../gui/">GUI</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../imgproc/">Image Processing</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../io/">I/O</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../metadata/">Metadata</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../output/">Output</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../video/">Video</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../format/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../gui/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/biometrics/openbr">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#arffgallery">arffGallery</a></li>
+        
+    
+        <li class="main "><a href="#galgallery">galGallery</a></li>
+        
+    
+        <li class="main "><a href="#utgallery">utGallery</a></li>
+        
+    
+        <li class="main "><a href="#urlgallery">urlGallery</a></li>
+        
+    
+        <li class="main "><a href="#jsongallery">jsonGallery</a></li>
+        
+    
+        <li class="main "><a href="#crawlgallery">crawlGallery</a></li>
+        
+    
+        <li class="main "><a href="#csvgallery">csvGallery</a></li>
+        
+    
+        <li class="main "><a href="#dbgallery">dbGallery</a></li>
+        
+    
+        <li class="main "><a href="#defaultgallery">DefaultGallery</a></li>
+        
+    
+        <li class="main "><a href="#emptygallery">EmptyGallery</a></li>
+        
+    
+        <li class="main "><a href="#fddbgallery">FDDBGallery</a></li>
+        
+    
+        <li class="main "><a href="#flatgallery">flatGallery</a></li>
+        
+    
+        <li class="main "><a href="#googlegallery">googleGallery</a></li>
+        
+    
+        <li class="main "><a href="#keyframesgallery">keyframesGallery</a></li>
+        
+    
+        <li class="main "><a href="#mp4gallery">mp4Gallery</a></li>
+        
+    
+        <li class="main "><a href="#landmarksgallery">landmarksGallery</a></li>
+        
+    
+        <li class="main "><a href="#lmatgallery">lmatGallery</a></li>
+        
+    
+        <li class="main "><a href="#matrixgallery">matrixGallery</a></li>
+        
+    
+        <li class="main "><a href="#memorygalleries">MemoryGalleries</a></li>
+        
+    
+        <li class="main "><a href="#memgallery">memGallery</a></li>
+        
+    
+        <li class="main "><a href="#postgallery">postGallery</a></li>
+        
+    
+        <li class="main "><a href="#statgallery">statGallery</a></li>
+        
+    
+        <li class="main "><a href="#templategallery">templateGallery</a></li>
+        
+    
+        <li class="main "><a href="#turkgallery">turkGallery</a></li>
+        
+    
+        <li class="main "><a href="#txtgallery">txtGallery</a></li>
+        
+    
+        <li class="main "><a href="#xmlgallery">xmlGallery</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="arffgallery">arffGallery</h1>
+<p>Weka ARFF file format.</p>
+<ul>
+<li><strong>file:</strong> gallery/arff.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="galgallery">galGallery</h1>
+<p>A binary gallery.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="utgallery">utGallery</h1>
+<p>A contiguous array of br_universal_template.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="urlgallery">urlGallery</h1>
+<p>Newline-separated URLs.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="jsongallery">jsonGallery</h1>
+<p>Newline-separated JSON objects.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="crawlgallery">crawlGallery</h1>
+<p>Crawl a root location for image files.</p>
+<ul>
+<li><strong>file:</strong> gallery/crawl.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="csvgallery">csvGallery</h1>
+<p>Treats each line as a file.</p>
+<ul>
+<li><strong>file:</strong> gallery/csv.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#filegallery">FileGallery</a></li>
+<li><strong>see:</strong> <a href="../txtGallery">txtGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="dbgallery">dbGallery</h1>
+<p>Database input.</p>
+<ul>
+<li><strong>file:</strong> gallery/db.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="defaultgallery">DefaultGallery</h1>
+<p>Treats the gallery as a br::Format.</p>
+<ul>
+<li><strong>file:</strong> gallery/default.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="emptygallery">EmptyGallery</h1>
+<p>Reads/writes templates to/from folders.</p>
+<ul>
+<li><strong>file:</strong> gallery/empty.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="fddbgallery">FDDBGallery</h1>
+<p>Implements the FDDB detection format.</p>
+<ul>
+<li><strong>file:</strong> gallery/fddb.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="flatgallery">flatGallery</h1>
+<p>Treats each line as a call to File::flat()</p>
+<ul>
+<li><strong>file:</strong> gallery/flat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#filegallery">FileGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="googlegallery">googleGallery</h1>
+<p>Input from a google image search.</p>
+<ul>
+<li><strong>file:</strong> gallery/google.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="keyframesgallery">keyframesGallery</h1>
+<p>Read key frames of a video with LibAV</p>
+<ul>
+<li><strong>file:</strong> gallery/keyframes.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Ben Klein</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="mp4gallery">mp4Gallery</h1>
+<p>Read key frames of a .mp4 video file with LibAV</p>
+<ul>
+<li><strong>file:</strong> gallery/keyframes.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#keyframesgallery">keyframesGallery</a></li>
+<li><strong>author:</strong> Ben Klein</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="landmarksgallery">landmarksGallery</h1>
+<p>Text format for associating anonymous landmarks with images.</p>
+<ul>
+<li><strong>file:</strong> gallery/landmarks.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="lmatgallery">lmatGallery</h1>
+<p>Likely matrix format</p>
+<ul>
+<li><strong>file:</strong> gallery/lmat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="matrixgallery">matrixGallery</h1>
+<p>Combine all templates into one large matrix and process it as a br::Format</p>
+<ul>
+<li><strong>file:</strong> gallery/matrix.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="memorygalleries">MemoryGalleries</h1>
+<p>Initialization support for memGallery.</p>
+<ul>
+<li><strong>file:</strong> gallery/mem.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#initializer">Initializer</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="memgallery">memGallery</h1>
+<p>A gallery held in memory.</p>
+<ul>
+<li><strong>file:</strong> gallery/mem.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="postgallery">postGallery</h1>
+<p>Handle POST requests</p>
+<ul>
+<li><strong>file:</strong> gallery/post.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="statgallery">statGallery</h1>
+<p>Print template statistics.</p>
+<ul>
+<li><strong>file:</strong> gallery/stat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="templategallery">templateGallery</h1>
+<p>Treat the file as a single binary template.</p>
+<ul>
+<li><strong>file:</strong> gallery/template.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="turkgallery">turkGallery</h1>
+<p>For Amazon Mechanical Turk datasets</p>
+<ul>
+<li><strong>file:</strong> gallery/turk.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#gallery">Gallery</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="txtgallery">txtGallery</h1>
+<p>Treats each line as a file.</p>
+<ul>
+<li><strong>file:</strong> gallery/txt.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#filegallery">FileGallery</a></li>
+<li><strong>see:</strong> <a href="../csvGallery">csvGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="xmlgallery">xmlGallery</h1>
+<p>A</p>
+<ul>
+<li><strong>file:</strong> gallery/xml.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/#filegallery">FileGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr /></div>
+        </div>
+
+        <!-- Search modal.  Not yet supported. -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="searchModalLabel">Documentation search</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <script src="../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../js/highlight.pack.js"></script>
+        <script src="../../../js/base.js"></script>
+    </body>
+</html>
