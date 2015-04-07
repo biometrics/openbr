@@ -46,14 +46,8 @@ class LikelyTransform : public Transform
         QtUtils::readFile(sourceFile, sourceCode);
 
         // Pick settings to minimize code size
-        likely_settings settings;
-        settings.opt_level = 2;
-        settings.size_level = 2;
-        settings.multicore = false;
-        settings.heterogeneous = false;
-        settings.unroll_loops = false;
-        settings.vectorize_loops = false;
-        settings.verbose = false;
+        likely_settings settings = likely_default_settings(likely_file_bitcode, false);
+        settings.runtime_only = true;
 
         likely_mat output;
         const likely_const_env parent = likely_standard(settings, &output, likely_file_bitcode);
