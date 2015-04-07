@@ -14,12 +14,12 @@ namespace br
  * www.liblikely.org
  * \author Josh Klontz \cite jklontz
  */
-class lmatGallery : public Gallery
+class lmGallery : public Gallery
 {
     Q_OBJECT
     QList<cv::Mat> mats;
 
-    ~lmatGallery()
+    ~lmGallery()
     {
         const likely_const_mat m = likelyFromOpenCVMat(OpenCVUtils::toMatByRow(mats));
         likely_write(m, qPrintable(file.name));
@@ -38,8 +38,8 @@ class lmatGallery : public Gallery
     }
 };
 
-BR_REGISTER(Gallery, lmatGallery)
+BR_REGISTER(Gallery, lmGallery)
 
 } // namespace br
 
-#include "gallery/lmat.moc"
+#include "gallery/lm.moc"
