@@ -49,7 +49,7 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  *
- * \property float keep Default is 0.95. If (keep <  0) then all eigenvalues are retained. If (keep =  0) then no PCA is performed and the eigenvectors form an identity matrix. If (0 < keep <  1) then keep is the fraction of the variance to retain. If (keep >= 1) then keep is the number of leading eigenvectors to retain.
+ * \property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
  * \property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
  * \property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
  */

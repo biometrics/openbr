@@ -75,7 +75,7 @@ Likely matrix format
 Reads a NIST BEE mask matrix.
 
 * **file:** format/mtx.cpp
-* **inherits:** [mtxFormat](../cpp_api.md#mtxformat)
+* **inherits:** [mtxFormat](#mtxformat)
 * **author:** Josh Klontz
 * **properties:** None
 

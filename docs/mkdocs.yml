@@ -3,7 +3,7 @@ repo_url: https://github.com/biometrics/openbr
 site_favicon: docs/img/openbr.ico
 copyright: 2012 The MITRE Corporation
 
-theme: readly
+theme: spacelab
 theme_dir: themes/spacelab/
 
 pages:

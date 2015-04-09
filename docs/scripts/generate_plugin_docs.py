@@ -35,8 +35,26 @@ def parse(group):
             attributes[key] = [value]
 
     attributes['Name'] = clss[5:clss.find(':')].strip()
-    attributes['Parent'] = clss[clss.find('public')+6:].strip()
+    attributes['Parent'] = clss[clss.find('public')+6:].strip().strip(',') # Handles the edge case of multiple inheritence
     return attributes
+
+def parseInheritance(inheritance):
+    abstractions = ['Transform', 'UntrainableTransform',
+                    'MetaTransform', 'UntrainableMetaTransform',
+                    'MetadataTransform', 'UntrainableMetadataTransform',
+                    'TimeVaryingTransform',
+                    'Distance', 'UntrainableDistance',
+                    'Output', 'MatrixOutput',
+                    'Format',
+                    'Gallery', 'FileGallery',
+                    'Representation',
+                    'Classifier'
+                   ]
+
+    if inheritance in abstractions:
+        return '../cpp_api.md#' + inheritance.lower()
+    else: # Not an abstraction must inherit in the local file!
+        return '#' + inheritance.lower()
 
 def parseSees(sees):
     if not sees:
@@ -49,7 +67,10 @@ def parseSees(sees):
             output += "\t* [" + see + "](" + see + ")\n"
         output += "\n"
     else:
-        output += " [" + sees[0] + "](" + sees[0] + ")\n"
+        link = sees[0]
+        if not 'http' in link:
+            link = '#' + link.lower()
+        output += " [" + sees[0] + "](" + link + ")\n"
 
     return output
 
@@ -70,13 +91,29 @@ def parseProperties(properties):
         return "* **properties:** None\n\n"
 
     output = "* **properties:**\n\n"
-    output += "Name | Type | Description\n"
+    output += "Property | Type | Description\n"
     output += "--- | --- | ---\n"
     for prop in properties:
         split = prop.split(' ')
         ty = split[0]
         name = split[1]
         desc = ' '.join(split[2:])
+
+        table_regex = re.compile('\[(.*?)\]')
+        table_match = table_regex.search(desc)
+        while table_match:
+            before = desc[:table_match.start()]
+            after = desc[table_match.end():]
+
+            table_content = desc[table_match.start()+1:table_match.end()-1].split(',')
+
+            table = "<ul>"
+            for field in table_content:
+                table += "<li>" + field.strip() + "</li>"
+            table += "</ul>"
+
+            desc = before.strip() + table + after.strip()
+            table_match = table_regex.search(desc)
 
         output += name + " | " + ty + " | " + desc + "\n"
 
@@ -109,7 +146,7 @@ def main():
                 plugin_string = "# " + attributes["Name"] + "\n\n"
                 plugin_string += ' '.join([brief for brief in attributes["brief"]]) + "\n\n"
                 plugin_string += "* **file:** " + os.path.join(module, plugin) + "\n"
-                plugin_string += "* **inherits:** [" + attributes["Parent"] + "](../cpp_api.md#" + attributes["Parent"].lower() + ")\n"
+                plugin_string += "* **inherits:** [" + attributes["Parent"] + "](" + parseInheritance(attributes["Parent"]) + ")\n"
 
                 plugin_string += parseSees(attributes.get("see", None))
                 plugin_string += parseAuthors(attributes.get("author", None))

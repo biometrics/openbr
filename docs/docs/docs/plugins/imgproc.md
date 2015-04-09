@@ -579,7 +579,7 @@ Sliding window feature extraction from a multi-channel integral image.
 Overloads SlidingWindowTransform for integral images that should be
 
 * **file:** imgproc/slidingwindow.cpp
-* **inherits:** [SlidingWindowTransform](../cpp_api.md#slidingwindowtransform)
+* **inherits:** [SlidingWindowTransform](#slidingwindowtransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -775,7 +775,7 @@ Normalize matrix to unit length
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 NormType | enum | Values are NORM_INF, NORM_L1, NORM_L2, NORM_MINMAX
 ByRow | bool | If true normalize each row independently otherwise normalize the entire matrix.

@@ -1,6 +1,6 @@
 # OpenBR ![Overview](img/openbr_48x48.png)
 
-Open source, industry quality biometrics.
+<p id=tagline>Open source, industry quality biometrics.</p>
 
 ---
 
@@ -35,7 +35,7 @@ OpenBR is supported on multiple operating systems. Please select yours from the 
 We have created a few tutorials to help teach you the basic principles of the OpenBR system. If this is your first time using OpenBR you should look at these before moving on to the more technical descriptions below.
 
 * [Quick Start](tutorials.md#quick-start)
-* [Training in OpenBR](tutorials.md#training-in-openbr)
+* [Training in OpenBR](tutorials.md#training-algorithms)
 * [Face Recognition](tutorials.md#face-recognition)
 * [Age Estimation](tutorials.md#age-estimation)
 * [Gender Estimation](tutorials.md#gender-estimation)

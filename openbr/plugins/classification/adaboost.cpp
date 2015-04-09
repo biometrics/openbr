@@ -27,8 +27,8 @@ namespace br
  * \brief Wraps OpenCV's Ada Boost framework
  * \author Scott Klum \cite sklum
  * \see http://docs.opencv.org/modules/ml/doc/boosting.html
- * \property enum type Type of Adaboost to perform. Options are Discrete, Real, Logit, and Gentle. Default is Real.
- * \property enum splitCriteria Splitting criteria used to choose optimal splits during a weak tree construction. Options are Default, Gini, Misclass, Sqerr. Default is Default.
+ * \property enum type Type of Adaboost to perform. Options are: [Discrete, Real, Logit, Gentle] Default is Real.
+ * \property enum splitCriteria Splitting criteria used to choose optimal splits during a weak tree construction. Options are: [Default, Gini, Misclass, Sqerr] Default is Default.
  * \property int weakCount Maximum number of weak classifiers per stage. Default is 100.
  * \property float trimRate A threshold between 0 and 1 used to save computational time. Samples with summary weight \leq 1 - weight\_trim\_rate do not participate in the next iteration of training. Set this parameter to 0 to turn off this functionality. Default is 0.95.
  * \property int folds OpenCV parameter variable. Default value is 0.

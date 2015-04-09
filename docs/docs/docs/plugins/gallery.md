@@ -1,3 +1,15 @@
+# BinaryGallery
+
+An abstract gallery for handling binary data
+
+* **file:** gallery/binary.cpp
+* **inherits:** [Gallery](../cpp_api.md#gallery)
+* **author:** Unknown
+* **properties:** None
+
+
+---
+
 # DefaultGallery
 
 Treats the gallery as a br::Format.
@@ -64,7 +76,7 @@ Treats each line as a file.
 
 * **file:** gallery/csv.cpp
 * **inherits:** [FileGallery](../cpp_api.md#filegallery)
-* **see:** [txtGallery](txtGallery)
+* **see:** [txtGallery](#txtgallery)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -100,7 +112,7 @@ Treats each line as a call to File::flat()
 A binary gallery.
 
 * **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **inherits:** [BinaryGallery](#binarygallery)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -124,7 +136,7 @@ Input from a google image search.
 Newline-separated JSON objects.
 
 * **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **inherits:** [BinaryGallery](#binarygallery)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -196,7 +208,7 @@ A gallery held in memory.
 Read key frames of a .mp4 video file with LibAV
 
 * **file:** gallery/keyframes.cpp
-* **inherits:** [keyframesGallery](../cpp_api.md#keyframesgallery)
+* **inherits:** [keyframesGallery](#keyframesgallery)
 * **author:** Ben Klein
 * **properties:** None
 
@@ -257,7 +269,7 @@ Treats each line as a file.
 
 * **file:** gallery/txt.cpp
 * **inherits:** [FileGallery](../cpp_api.md#filegallery)
-* **see:** [csvGallery](csvGallery)
+* **see:** [csvGallery](#csvgallery)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -269,7 +281,7 @@ Treats each line as a file.
 Newline-separated URLs.
 
 * **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **inherits:** [BinaryGallery](#binarygallery)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -281,7 +293,7 @@ Newline-separated URLs.
 A contiguous array of br_universal_template.
 
 * **file:** gallery/binary.cpp
-* **inherits:** [BinaryGallery](../cpp_api.md#binarygallery)
+* **inherits:** [BinaryGallery](#binarygallery)
 * **author:** Josh Klontz
 * **properties:** None
 

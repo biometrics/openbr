@@ -99,7 +99,7 @@ Renders metadata onto the image.
 Elicits metadata for templates in a pretty GUI
 
 * **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **inherits:** [ShowTransform](#showtransform)
 * **author:** Scott Klum
 * **properties:** None
 
@@ -135,7 +135,7 @@ Limits the frequency of projects going through this transform to the input targe
 Manual select rectangular regions on an image.
 
 * **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **inherits:** [ShowTransform](#showtransform)
 * **author:** Charles Otto
 * **properties:** None
 
@@ -147,7 +147,7 @@ Manual select rectangular regions on an image.
 Manual selection of landmark locations
 
 * **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **inherits:** [ShowTransform](#showtransform)
 * **author:** Scott Klum
 * **properties:** None
 
@@ -183,7 +183,7 @@ Displays templates in a GUI pop-up window using QT.
 Display an image, and asks a yes/no question about it
 
 * **file:** gui/show.cpp
-* **inherits:** [ShowTransform](../cpp_api.md#showtransform)
+* **inherits:** [ShowTransform](#showtransform)
 * **author:** Charles Otto
 * **properties:** None
 

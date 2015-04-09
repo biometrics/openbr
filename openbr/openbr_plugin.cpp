@@ -1040,11 +1040,6 @@ void Object::init(const File &file_)
 }
 
 /* Context - public methods */
-int br::Context::blocks(int size) const
-{
-    return std::ceil(1.f*size/blockSize);
-}
-
 bool br::Context::contains(const QString &name)
 {
     return property(qPrintable(name)).isValid();

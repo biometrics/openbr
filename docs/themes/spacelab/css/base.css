@@ -3,6 +3,21 @@ body {
     padding-top: 5%;
 }
 
+/* Center the header and tagline */
+#openbr, #tagline {
+    text-align: center;
+}
+
+/* The anchor tags in the tables
+ * are blocked by the navbar when
+ * they are used. This fixes that */
+a.table-anchor {
+    display: block;
+    position: relative;
+    top: -70px;
+    visibility: hidden;
+}
+
 h1[id]:before, h2[id]:before {
     content: "";
     display: block;
@@ -10,8 +25,19 @@ h1[id]:before, h2[id]:before {
     height: 75px;
 }
 
+h3 {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 120%;
+    background-color: #e7e7e7;/* text-color => #3399f3;*/
+    display: block;
+}
+
 ul.nav li.main {
     font-weight: bold;
+    font-size: 90%;
 }
 
 div.col-md-3 {

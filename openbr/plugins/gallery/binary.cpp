@@ -29,6 +29,11 @@
 namespace br
 {
 
+/*!
+ * \ingroup galleries
+ * \brief An abstract gallery for handling binary data
+ * \author Unknown
+ */
 class BinaryGallery : public Gallery
 {
     Q_OBJECT

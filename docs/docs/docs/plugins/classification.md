@@ -8,10 +8,10 @@ Wraps OpenCV's Ada Boost framework
 * **author:** Scott Klum
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
-type | enum | Type of Adaboost to perform. Options are Discrete, Real, Logit, and Gentle. Default is Real.
-splitCriteria | enum | Splitting criteria used to choose optimal splits during a weak tree construction. Options are Default, Gini, Misclass, Sqerr. Default is Default.
+type | enum | Type of Adaboost to perform. Options are:<ul><li>Discrete</li><li>Real</li><li>Logit</li><li>Gentle</li></ul>Default is Real.
+splitCriteria | enum | Splitting criteria used to choose optimal splits during a weak tree construction. Options are:<ul><li>Default</li><li>Gini</li><li>Misclass</li><li>Sqerr</li></ul>Default is Default.
 weakCount | int | Maximum number of weak classifiers per stage. Default is 100.
 trimRate | float | A threshold between 0 and 1 used to save computational time. Samples with summary weight
 folds | int | OpenCV parameter variable. Default value is 0.
@@ -32,7 +32,7 @@ Computes Distance From Feature Space (DFFS)
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 keep | float | Sets PCA keep property. Default is 0.95.
 
@@ -44,11 +44,11 @@ Face Recognition Using Early Biologically Inspired Features
 
 * **file:** classification/ebif.cpp
 * **inherits:** [UntrainableTransform](../cpp_api.md#untrainabletransform)
-* **see:** [Min Li (IBM China Research Lab, China), Nalini Ratha (IBM Watson Research Center, USA), Weihong Qian (IBM China Research Lab, China), Shenghua Bao (IBM China Research Lab, China), Zhong Su (IBM China Research Lab, China)](Min Li (IBM China Research Lab, China), Nalini Ratha (IBM Watson Research Center, USA), Weihong Qian (IBM China Research Lab, China), Shenghua Bao (IBM China Research Lab, China), Zhong Su (IBM China Research Lab, China))
+* **see:** [Min Li (IBM China Research Lab, China), Nalini Ratha (IBM Watson Research Center, USA), Weihong Qian (IBM China Research Lab, China), Shenghua Bao (IBM China Research Lab, China), Zhong Su (IBM China Research Lab, China)](#min li (ibm china research lab, china), nalini ratha (ibm watson research center, usa), weihong qian (ibm china research lab, china), shenghua bao (ibm china research lab, china), zhong su (ibm china research lab, china))
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 N | int | The number of scales. Default is 6.
 M | int | The number of orientations between 0 and pi. Default is 9.
@@ -60,12 +60,12 @@ M | int | The number of orientations between 0 and pi. Default is 9.
 Wraps OpenCV's random trees framework to induce features
 
 * **file:** classification/forest.cpp
-* **inherits:** [ForestTransform](../cpp_api.md#foresttransform)
+* **inherits:** [ForestTransform](#foresttransform)
 * **see:** [https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf](https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf)
 * **author:** Scott Klum
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 useRegressionValue | bool | SCOTT FILL ME IN.
 
@@ -81,7 +81,7 @@ Wraps OpenCV's random trees framework
 * **author:** Scott Klum
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 classification | bool | If true the labels are expected to be categorical. Otherwise they are expected to be numerical. Default is true.
 splitPercentage | float | Used to calculate the minimum number of samples per split in a random tree. The minimum number of samples is calculated as the number of samples x splitPercentage. Default is 0.01.
@@ -118,7 +118,7 @@ Projects input into learned Linear Discriminant Analysis subspace.
 * **authors:** Brendan Klare, Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 pcaKeep | float | BRENDAN OR JOSH FILL ME IN. Default is 0.98.
 pcaWhiten | bool | BRENDAN OR JOSH FILL ME IN. Default is false.
@@ -140,7 +140,7 @@ Wraps OpenCV's multi-layer perceptron framework
 * **author:** Scott Klum
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 kernel | enum | Type of MLP kernel to use. Options are Identity, Sigmoid, Gaussian. Default is Sigmoid.
 alpha | float | Determines activation function for neural network. See OpenCV documentation for more details. Default is 1.
@@ -208,9 +208,9 @@ Projects input into learned Principal Component Analysis subspace.
 * **authors:** Brendan Klare, Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
-keep | float | Default is 0.95. If (keep <  0) then all eigenvalues are retained. If (keep =  0) then no PCA is performed and the eigenvectors form an identity matrix. If (0 < keep <  1) then keep is the fraction of the variance to retain. If (keep >= 1) then keep is the number of leading eigenvectors to retain.
+keep | float | Options are:<ul><li>keep < 0 - All eigenvalues are retained</li><li>keep == 0 - No PCA is performed and the eigenvectors form an identity matrix</li><li>0 < keep < 1 - Keep is the fraction of the variance to retain</li><li>keep >= 1 - keep is the number of leading eigenvectors to retain</li></ul>Default is 0.95.
 drop | int | BRENDAN OR JOSH FILL ME IN. Default is 0.
 whiten | bool | BRENDAN OR JOSH FILL ME IN. Default is false.
 
@@ -221,7 +221,7 @@ whiten | bool | BRENDAN OR JOSH FILL ME IN. Default is false.
 Compare faces using PittPatt 4.
 
 * **file:** classification/pp4.cpp
-* **inherits:** [Distance,](../cpp_api.md#distance,)
+* **inherits:** [Distance](../cpp_api.md#distance)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -237,7 +237,7 @@ Enroll faces in PittPatt 4
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 detectOnly | bool | If true, return all detected faces. Otherwise, return only faces that are suitable for recognition. Default is false.
 
@@ -264,7 +264,7 @@ Enroll faces in PP5
 * **authors:** Josh Klontz, E. Taborsky
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 detectOnly | bool | If true, enroll all detected faces. Otherwise, only enroll faces suitable for recognition. Default is false.
 requireLandmarks | bool | If true, require the right eye, left eye, and nose base to be detectable by PP5. If this does not happen FTE is set to true for that template. Default is false.
@@ -280,7 +280,7 @@ searchPruningAggressiveness | int | The amount of aggressiveness involved in sea
 PCA on each row.
 
 * **file:** classification/lda.cpp
-* **inherits:** [PCATransform](../cpp_api.md#pcatransform)
+* **inherits:** [PCATransform](#pcatransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -301,7 +301,7 @@ Wraps OpenCV's SVM framework.
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 Kernel | enum | The type of SVM kernel to use. Options are Linear, Poly, RBF, Sigmoid. Default is Linear.
 Type | enum | The type of SVM to do. Options are C_SVC, NU_SVC, ONE_CLASS, EPS_SVR, NU_SVR. Default is C_SVC.
@@ -325,7 +325,7 @@ Projects input into learned Linear Discriminant Analysis subspace learned on a s
 * **author:** Brendan Klare
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 varThreshold | float | BRENDAN FILL ME IN. Default is 1.5.
 pcaKeep | float | BRENDAN FILL ME IN. Default is 0.98.
@@ -342,10 +342,10 @@ Convenience class for training turk attribute regressors
 * **author:** Josh Klontz
 * **properties:**
 
-Name | Type | Description
+Property | Type | Description
 --- | --- | ---
 key | QString | Metadata key to pass input values to SVM. Actual lookup key is "key_value" where value is each value in the parameter values. Default is "".
-values | QStringList | Metadata keys to pass input values to SVM. Actual lookup key is "key_value" where key is the parameter key and value is each value in this list. Each passed value trains a new SVM with the input values found in metadata["key_value"]. Default is "".
+values | QStringList | Metadata keys to pass input values to SVM. Actual lookup key is "key_value" where key is the parameter key and value is each value in this list. Each passed value trains a new SVM with the input values found in metadata<ul><li>"key_value"</li></ul>. Default is "".
 isMeta | bool | If true, "Average+SaveMat(predicted_key_value)" is appended to each classifier. If false, nothing is appended. Default is false.
 
 ---

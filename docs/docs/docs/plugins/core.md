@@ -40,7 +40,7 @@ Removes all template's matrices.
 
 * **file:** core/discard.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **see:** [IdentityTransform FirstTransform RestTransform RemoveTransform](IdentityTransform FirstTransform RestTransform RemoveTransform)
+* **see:** [IdentityTransform FirstTransform RestTransform RemoveTransform](#identitytransform firsttransform resttransform removetransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -53,7 +53,7 @@ Performs an expansion step on input templatelists
 
 * **file:** core/expand.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **see:** [PipeTransform](PipeTransform)
+* **see:** [PipeTransform](#pipetransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -78,7 +78,7 @@ Removes all but the first matrix from the template.
 
 * **file:** core/first.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **see:** [IdentityTransform DiscardTransform RestTransform RemoveTransform](IdentityTransform DiscardTransform RestTransform RemoveTransform)
+* **see:** [IdentityTransform DiscardTransform RestTransform RemoveTransform](#identitytransform discardtransform resttransform removetransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -90,8 +90,8 @@ Removes all but the first matrix from the template.
 Transforms in parallel.
 
 * **file:** core/fork.cpp
-* **inherits:** [CompositeTransform](../cpp_api.md#compositetransform)
-* **see:** [PipeTransform](PipeTransform)
+* **inherits:** [CompositeTransform](#compositetransform)
+* **see:** [PipeTransform](#pipetransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -116,7 +116,7 @@ A no-op transform.
 
 * **file:** core/identity.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **see:** [DiscardTransform FirstTransform RestTransform RemoveTransform](DiscardTransform FirstTransform RestTransform RemoveTransform)
+* **see:** [DiscardTransform FirstTransform RestTransform RemoveTransform](#discardtransform firsttransform resttransform removetransform)
 * **author:** Josh Klontz
 * **properties:** None
 
@@ -164,7 +164,7 @@ Caches transform training.
 Transforms in series.
 
 * **file:** core/pipe.cpp
-* **inherits:** [CompositeTransform](../cpp_api.md#compositetransform)
+* **inherits:** [CompositeTransform](#compositetransform)
 * **see:**
 
 	* [ExpandTransform](ExpandTransform)
@@ -181,7 +181,7 @@ Transforms in series.
 Interface to a separate process
 
 * **file:** core/processwrapper.cpp
-* **inherits:** [WrapperTransform](../cpp_api.md#wrappertransform)
+* **inherits:** [WrapperTransform](#wrappertransform)
 * **author:** Charles Otto
 * **properties:** None
 
@@ -206,7 +206,7 @@ Removes the first matrix from the template.
 
 * **file:** core/rest.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api.md#untrainablemetatransform)
-* **see:** [IdentityTransform DiscardTransform FirstTransform RemoveTransform](IdentityTransform DiscardTransform FirstTransform RemoveTransform)
+* **see:** [IdentityTransform DiscardTransform FirstTransform RemoveTransform](#identitytransform discardtransform firsttransform removetransform)
 * **author:** Josh Klontz
 * **properties:** None
 

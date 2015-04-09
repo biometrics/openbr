@@ -16,7 +16,7 @@ Ok, you probably knew all of this already, let's move on.
 The only way of creating an algorithm in OpenBR is from a text string that describes it.
 We call this string the *algorithm description*.
 The algorithm description is separated into two parts by a ':', with the left hand side indicating how to generate templates and the right hand side indicating how to compare them.
-Some algorithms, like [age_estimation](tutorials.md#age estimation) and [gender estimation](tutorials.md#gender estimation) are *classifiers* that don't create templates.
+Some algorithms, like [age_estimation](tutorials.md#age-estimation) and [gender estimation](tutorials.md#gender-estimation) are *classifiers* that don't create templates.
 In these cases, the colon and the template comparison technique can be omitted from the algorithm description.
 
 There are several motivations for mandating that algorithms are defined from these strings, here are the most important:
@@ -29,12 +29,12 @@ Let's look at some of the important parts of the code base that make this possib
 
 In `AlgorithmCore::init()` in `openbr/core/core.cpp` you can see the code for splitting the algorithm description at the colon.
 Shortly thereafter in this function we *make* the template generation and comparison methods.
-These make calls are defined in the public [C++ plugin API](#the c++ plugin api) and can also be called from end user code.
+These make calls are defined in the public [C++ plugin API](docs/cpp_api.md) and can also be called from end user code.
 
 Below we discuss some of the source code for `Transform::make` in `openbr/openbr_plugin.cpp`.
 Note, the make functions for other plugin types are similar in spirit and will not be covered.
 
-One of the first steps when converting the template enrollment description into a [Transform](docs/cpp_api.md#Transform) is to replace the operators, like '+', with their full form:
+One of the first steps when converting the template enrollment description into a [Transform](docs/cpp_api.md#transform) is to replace the operators, like '+', with their full form:
 
     { // Check for use of '+' as shorthand for Pipe(...)
          QStringList words = parse(str, '+');
@@ -83,10 +83,10 @@ The *Biometric Evaluation Environment* (BEE) is a [NIST](http://www.nist.gov/ind
 
 OpenBR implements the following portions of the BEE specification:
 
-* Signature Set- A signature set (or *sigset*) is a [Gallery](docs/cpp_api.md#gallery) compliant **XML** file-list specified on page 9 of [MBGC File Overview](MBGC_file_overview.pdf#page=9) and implemented in [xmlGallery](docs/plugins/gallery.md#xmlGallery). Sigsets are identified with a **.xml** extension.
+* Signature Set- A signature set (or *sigset*) is a [Gallery](docs/cpp_api.md#gallery) compliant **XML** file-list specified on page 9 of [MBGC File Overview](DOCUMENT ME) and implemented in [xmlGallery](docs/plugins/gallery.md#xmlgallery). Sigsets are identified with a **.xml** extension.
 
-* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](docs/cpp_api.md#output) compliant binary score matrix specified on page 12 of [MBGC File Overview](MBGC_file_overview.pdf#page=12) and implemented in [mtxOutput](docs/plugins/output.md#mtxOutput). Simmats are identified with a **.mtx** extension. See [br_eval](docs/c_api.md#br_eval) for more information.
+* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](docs/cpp_api.md#output) compliant binary score matrix specified on page 12 of [MBGC File Overview](DOCUMENT ME) and implemented in [mtxOutput](docs/plugins/output.md#mtxoutput). Simmats are identified with a **.mtx** extension. See [br_eval](docs/c_api.md#br_eval) for more information.
 
-* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](MBGC_file_overview.pdf#page=14) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](docs/c_api.md#br_make_mask) and [br_combine_masks](docs/c_api.md#br_combine_masks) for more information.
+* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](DOCUMENT ME) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](docs/c_api.md#br_make_mask) and [br_combine_masks](docs/c_api.md#br_combine_masks) for more information.
 
 ---
