@@ -40,23 +40,26 @@ class LikelyTransform : public Transform
             qFatal("Failed to compile: %s", qPrintable(sourceFile));
     }
 
-    void train(const TemplateList &)
+    void train(const TemplateList &trainingData)
     {
+        const likely_const_mat data = likelyFromOpenCVMats(trainingData.data().toVector().toStdVector());
+
         QByteArray sourceCode;
         QtUtils::readFile(sourceFile, sourceCode);
 
         // Pick settings to minimize code size
-        likely_settings settings;
-        settings.opt_level = 2;
-        settings.size_level = 2;
-        settings.multicore = false;
-        settings.heterogeneous = false;
-        settings.unroll_loops = false;
-        settings.vectorize_loops = false;
-        settings.verbose = false;
+        likely_settings settings = likely_default_settings(likely_file_bitcode, false);
+        settings.runtime_only = true;
 
         likely_mat output;
-        const likely_const_env parent = likely_standard(settings, &output, likely_file_bitcode);
+        likely_const_env parent = likely_standard(settings, &output, likely_file_bitcode);
+
+        { // Construct an environment where `data` is accessible
+            const likely_const_env env = likely_define("data", data, parent);
+            likely_release_env(parent);
+            parent = env;
+        }
+
         likely_release_env(likely_lex_parse_and_eval(sourceCode.data(), likely_guess_file_type(qPrintable(sourceFile)), parent));
         likely_release_env(parent);
 
@@ -64,6 +67,7 @@ class LikelyTransform : public Transform
         likely_release_mat(output);
 
         compile();
+        likely_release_mat(data);
     }
 
     void project(const Template &src, Template &dst) const

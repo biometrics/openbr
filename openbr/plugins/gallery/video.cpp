@@ -77,7 +77,7 @@ public:
         idx++;
 
         TemplateList rVal;
-        rVal.append(temp);
+        rVal.append(output);
         *done = false;
         return rVal;
     }

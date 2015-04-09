@@ -13,7 +13,7 @@ namespace br
  * www.liblikely.org
  * \author Josh Klontz \cite jklontz
  */
-class lmatFormat : public Format
+class lmFormat : public Format
 {
     Q_OBJECT
 
@@ -33,8 +33,8 @@ class lmatFormat : public Format
     }
 };
 
-BR_REGISTER(Format, lmatFormat)
+BR_REGISTER(Format, lmFormat)
 
 } // namespace br
 
-#include "format/lmat.moc"
+#include "format/lm.moc"
