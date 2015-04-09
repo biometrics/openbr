@@ -70,7 +70,9 @@ private:
 
     float compare(const Template &a, const Template &b) const
     {
-        if (a.size() != b.size()) qFatal("Comparison size mismatch");
+        if (a.size() != distances.size() ||
+            b.size() != distances.size())
+            return -std::numeric_limits<float>::max();
 
         QList<float> scores;
         for (int i=0; i<distances.size(); i++) {
