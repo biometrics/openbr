@@ -25,7 +25,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Fills contours with with white pixels.
+ * \brief Fills contours with white pixels.
  * \author Scott Klum \cite sklum
  */
 class FillContoursTransform : public UntrainableTransform
