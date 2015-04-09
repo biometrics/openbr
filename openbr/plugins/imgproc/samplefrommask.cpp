@@ -18,16 +18,22 @@ class SampleFromMaskTransform : public UntrainableTransform
     {
         Mat mask = src.file.get<Mat>("Mask");
         const int count = countNonZero(mask);
-        dst.m() = Mat(1,count,src.m().type());
 
-        Mat masked;
-        src.m().copyTo(masked, mask);
+        if (count > 0) {
+            dst.m() = Mat(1,count,src.m().type());
 
-        Mat indices;
-        findNonZero(masked,indices);
+            Mat masked;
+            src.m().copyTo(masked, mask);
 
-        for (size_t j=0; j<indices.total(); j++)
-            dst.m().at<uchar>(0,j) = masked.at<uchar>(indices.at<Point>(j).y,indices.at<Point>(j).x);
+            Mat indices;
+            findNonZero(masked,indices);
+
+            for (size_t j=0; j<indices.total(); j++)
+                dst.m().at<uchar>(0,j) = masked.at<uchar>(indices.at<Point>(j).y,indices.at<Point>(j).x);
+        } else {
+            dst.file.fte = true;
+            qWarning("No mask content for %s.",qPrintable(src.file.baseName()));
+        }
     }
 };
 
