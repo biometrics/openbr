@@ -55,17 +55,7 @@ class LikelyTransform : public Transform
         likely_const_env parent = likely_standard(settings, &output, likely_file_bitcode);
 
         { // Construct an environment where `data` is accessible
-            QString source;
-            QTextStream textStream(&source);
-            textStream << "(= data (";
-            {
-                const likely_const_mat dataType = likely_type_to_string(data->type);
-                textStream << dataType->data;
-                likely_release_mat(dataType);
-            }
-            textStream << " " << uintptr_t(data) << "))";
-
-            const likely_const_env env = likely_lex_parse_and_eval(qPrintable(source), likely_file_lisp, parent);
+            const likely_const_env env = likely_define("data", data, parent);
             likely_release_env(parent);
             parent = env;
         }
