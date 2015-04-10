@@ -64,6 +64,7 @@ private:
 
             dst.m() = Mat(src.m(), Rect(top, left, bottom - top + 1, right - left + 1));
         } else {
+            dst.file.remove("Mask");
             dst.file.fte = true;
         }
     }
