@@ -33,9 +33,9 @@ class FillContoursTransform : public UntrainableTransform
     Q_OBJECT
 
     Q_PROPERTY(float epsilon READ get_epsilon WRITE set_epsilon RESET reset_epsilon STORED false)
-    Q_PROPERTY(size_t minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+    Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     BR_PROPERTY(float, epsilon, 0)
-    BR_PROPERTY(size_t, minSize, 40)
+    BR_PROPERTY(int, minSize, 40)
 
     void project(const Template &src, Template &dst) const
     {
@@ -52,7 +52,7 @@ class FillContoursTransform : public UntrainableTransform
                 approxPolyDP(Mat(contours[i]), contours[i], epsilon, true);
 
         for(size_t i=0; i<contours.size(); i++)
-            if (contours[i].size() > minSize)
+            if (contours[i].size() > (size_t)minSize)
                 drawContours(dst, contours, i, Scalar(255,255,255), CV_FILLED);
     }
 };
