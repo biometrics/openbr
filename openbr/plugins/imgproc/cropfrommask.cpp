@@ -1,4 +1,5 @@
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/common.h>
 
 using namespace cv;
 
@@ -24,46 +25,45 @@ private:
 
         Mat mask = dst.file.get<Mat>("Mask");
 
-        const int count = countNonZero(mask);
+        Mat indices;
+        findNonZero(mask,indices);
 
-        if (count > 0) {
-            int w = mask.rows;
-            int h = mask.cols;
-            int left = w;
-            int right = 0;
-            int top = h;
-            int bottom = 0;
-            for (int i = 0 ; i < w; i++) {
-                for (int j = 0 ; j < h; j++) {
-                    if (mask.at<unsigned char>(i,j)) {
-                        if (i < left)
-                            left = i;
-                        if (i > right)
-                            right = i;
-                        if (j < top)
-                            top = j;
-                        if (j > bottom)
-                            bottom = j;
-                    }
-                }
+        if (indices.total() > 0) {
+            QList<int> x, y;
+            for (size_t i=0; i<indices.total(); i++) {
+                x.append(indices.at<Point>(i).x);
+                y.append(indices.at<Point>(i).y);
             }
+
+            int t, b, l, r;
+            Common::MinMax(x,&l,&r);
+            Common::MinMax(y,&t,&b);
 
             if (fixedAspectRatio) {
-                h = bottom - top + 1;
-                w = right - left + 1;
+                int h, w;
+
+                h = b - t + 1;
+                w = r - l + 1;
+
                 if (h > w) {
                     int h2 = (h - w) / 2;
-                    right += h2;
-                    left -= h2;
+                    r += h2;
+                    l -= h2;
                 } else {
                     int w2 = (w - h) / 2;
-                    bottom += w2;
-                    top -= w2;
+                    b += w2;
+                    t -= w2;
                 }
             }
 
-            dst.m() = Mat(src.m(), Rect(top, left, bottom - top + 1, right - left + 1));
+            t = max(t,0);
+            b = min(b, src.m().rows-1);
+            l = max(l,0);
+            r = min(r, src.m().cols-1);
+
+            dst.m() = Mat(src.m(), Rect(l, t, r - l + 1, b - t + 1));
         } else {
+            // Avoid serializing mask
             dst.file.remove("Mask");
             dst.file.fte = true;
         }
