@@ -25,12 +25,10 @@ private:
 
         Mat mask = dst.file.get<Mat>("Mask");
 
-        const int count = countNonZero(mask);
+        Mat indices;
+        findNonZero(mask,indices);
 
-        if (count > 0) {
-            Mat indices;
-            findNonZero(mask,indices);
-
+        if (indices.total() > 0) {
             QList<int> x, y;
             for (size_t i=0; i<indices.total(); i++) {
                 x.append(indices.at<Point>(i).x);
@@ -65,6 +63,7 @@ private:
 
             dst.m() = Mat(src.m(), Rect(l, t, r - l + 1, b - t + 1));
         } else {
+            // Avoid serializing mask
             dst.file.remove("Mask");
             dst.file.fte = true;
         }
