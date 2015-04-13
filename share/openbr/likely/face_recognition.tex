@@ -18,16 +18,17 @@ As Likely is a literate programming language, this document is both the source c
 
 \section{Quantization}
 \begin{likely}
+quantize-lo := data.min-element
+quantize-hi := data.max-element
+quantize-scale := (/ 255 (- quantize-hi quantize-lo))
+
 quantize :=
-  training-data :->
+  () :->
     src :->
     {
       dst := (imitate-size src (imitate-dimensions u8 src.type))
-      lo := training-data.min-element
-      hi := training-data.max-element
-      scale := (/ 255 (- hi lo))
-      (dst src lo scale) :=>
-        dst :<- src.(- lo).(* scale)
+      (dst src) :=>
+        dst :<- src.(- quantize-lo).(* quantize-scale)
     }
 \end{likely}
 
@@ -36,11 +37,11 @@ The top level definition of the face recognition algorithm.
 
 \begin{likely}
 face-recognition :=
+{
+  algorithm := (quantize)
   src :->
-  {
-    algorithm := (quantize data)
-    (algorithm src)
-  }
+    src.algorithm
+}
 \end{likely}
 
 \section{Entry Point}
