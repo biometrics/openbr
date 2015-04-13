@@ -37,10 +37,10 @@ class GridTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         QList<QPointF> landmarks;
-        const float row_step = (src.m().rows-src.m().rows*border*2) / rows;
-        const float column_step = (src.m().cols-src.m().cols*border*2) / columns;
-        for (float y=row_step/2+src.m().rows*border; y<src.m().rows-src.m().rows*border; y+=row_step)
-            for (float x=column_step/2+src.m().cols*border; x<src.m().cols-src.m().cols*border; x+=column_step)
+        const float row_step = (src.m().rows-(border < 1 ? src.m().rows*border*2 : border*2)) / rows;
+        const float column_step = (src.m().cols-(border < 1 ? src.m().cols*border*2 : border*2)) / columns;
+        for (float y=row_step/2+(border < 1 ? src.m().rows*border : border); y<src.m().rows-(border < 1 ? src.m().rows*border : border); y+=row_step)
+            for (float x=column_step/2+(border < 1 ? src.m().cols*border : border); x<src.m().cols-(border < 1 ? src.m().cols*border : border); x+=column_step)
                 landmarks.append(QPointF(x,y));
         dst = src;
         dst.file.setPoints(landmarks);
