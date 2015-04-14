@@ -36,6 +36,14 @@ class PipeDistance : public Distance
     Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
     BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
 
+    bool trainable()
+    {
+        for (int i=0; i<distances.size(); i++)
+            if (distances[i]->trainable())
+                return true;
+        return false;
+    }
+
     void train(const TemplateList &data)
     {
         QFutureSynchronizer<void> futures;
