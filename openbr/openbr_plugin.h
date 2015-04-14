@@ -946,7 +946,7 @@ struct Factory
     static QString parameters(const QString &name)
     {
         if (!registry) return QString();
-        T *object = make("." + name);
+        QScopedPointer<T> object(make("." + name));
         return object->parameters().join(", ");
     }
 
