@@ -5,7 +5,7 @@
 { \verbatim }
 { \endverbatim }
 
-\title{Likely Port: Face Recognition}
+\title{Face Recognition in Likely}
 \author{Joshua C. Klontz}
 \date{\today}
 \begin{document}
@@ -16,9 +16,37 @@ This document represents a long-term effort to port the OpenBR face recognition 
 As Likely is a literate programming language, this document is both the source code \emph{and} the documentation.
 \end{abstract}
 
-\section{Quantization}
+\section{Introduction}
+We start our journey constructing the face recognition algorithm with an identity function.
+
 \begin{likely}
-quantize :=
+face-recognition :=
+  src :->
+    src
+\end{likely}
+
+Throughout the remainder of this document we will append additional steps to the \texttt{face-recognition} function, building up the entire algorithm one transformation at a time.
+
+Note that the remainder of this document assumes that the global variable \texttt{data} is defined, and contains the appropriate training samples.
+
+\begin{likely}
+"Num Training Samples:"
+data.frames
+\end{likely}
+
+\section{...}
+This section serves as a placeholder for the unwritten sections.
+There are a lot of sections that haven't been written yet, including face detection, registration and representation.
+In fact, only the final section of the algorithm has been written.
+
+\section{Quantization}
+The goal of quantization is to re-scale and cast feature vector dimensions into 8-bit unsigned integers.
+The resulting feature vectors are smaller in size and faster to compare, with generally negligible loss in representation accuracy.
+
+The training data is used to determine the scaling parameters.
+
+\begin{likely}
+train-quantize :=
   () :->
   {
     lo := data.min-element
@@ -34,15 +62,14 @@ quantize :=
   }
 \end{likely}
 
-\section{Consolidated Algorithm}
-The top level definition of the face recognition algorithm.
+Now we can re-define \texttt{face-recognition} to include quantization.
 
 \begin{likely}
 face-recognition :=
 {
-  algorithm := (quantize)
+  quantize := (train-quantize)
   src :->
-    src.algorithm
+    src.face-recognition.quantize
 }
 \end{likely}
 
