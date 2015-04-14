@@ -152,6 +152,7 @@
 [QApplication]: http://doc.qt.io/qt-5/qapplication.html "QApplication"
 [QCoreApplication]: http://doc.qt.io/qt-5/qcoreapplication.html "QCoreApplication"
 [QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"
+[Qt Property System]: http://doc.qt.io/qt-5/properties.html "Qt Property System"
 
 [QString]: http://doc.qt.io/qt-5/QString.html "QString"
 [QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"
