@@ -19,18 +19,19 @@ As Likely is a literate programming language, this document is both the source c
 \section{Quantization}
 \begin{likely}
 quantize :=
-{
-  lo := data.min-element
-  hi := data.max-element
-  scale := (/ 255 (- hi lo))
-
-  src :->
+  () :->
   {
-    dst := (imitate-size src (imitate-dimensions u8 src.type))
-    (dst src) :=>
-      dst :<- src.(- lo).(* scale)
+    lo := data.min-element
+    hi := data.max-element
+    scale := (/ 255 (- hi lo))
+
+    src :->
+    {
+      dst := (imitate-size src (imitate-dimensions u8 src.type))
+      (dst src) :=>
+        dst :<- src.(- lo).(* scale)
+    }
   }
-}
 \end{likely}
 
 \section{Consolidated Algorithm}
@@ -38,18 +39,19 @@ The top level definition of the face recognition algorithm.
 
 \begin{likely}
 face-recognition :=
-{
-  algorithm := quantize
-  src :->
-    src.algorithm
-}
+  () :->
+  {
+    algorithm := (quantize)
+    src :->
+      src.algorithm
+  }
 \end{likely}
 
 \section{Entry Point}
 The entry point to the outside world is a single C function \texttt{face\_recognition} that takes as input a \texttt{likely\_mat} (the input image) and outputs a new \texttt{likely\_mat} (the feature vector).
 
 \begin{likely}
-(extern u8X "face_recognition" f32X face-recognition)
+(extern u8X "face_recognition" f32X (face-recognition))
 \end{likely}
 
 \end{document}
