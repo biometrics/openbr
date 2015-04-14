@@ -46,13 +46,13 @@ The resulting feature vectors are smaller in size and faster to compare, with ge
 The training data is used to determine the scaling parameters.
 
 \begin{likely}
+lo    := [ data.min-element  ]
+hi    := [ data.max-element  ]
+scale := [ (/ 255 (- hi lo)) ]
+
 train-quantize :=
   () :->
   {
-    lo := data.min-element
-    hi := data.max-element
-    scale := (/ 255 (- hi lo))
-
     src :->
     {
       dst := (imitate-size src (imitate-dimensions u8 src.type))
