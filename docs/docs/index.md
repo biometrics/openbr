@@ -13,9 +13,10 @@ Off-the-shelf algorithms are also available for specific modalities including [f
 OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
 The project was later published as open source software under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0.html) license and is *free for academic and commercial use*.
 
-![Overview](img/abstraction.svg)
-
-*The two principal software artifacts are the shared library 'openbr' and command line application 'br'.*
+<figure id="abstraction">
+  <img src="img/abstraction.svg">
+  <figcaption>The two principal software artifacts are the shared library 'openbr' and command line application 'br'.</figcaption>
+</figure>
 
 ---
 

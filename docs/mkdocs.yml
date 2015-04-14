@@ -28,3 +28,6 @@ pages:
 - [docs/plugins/metadata.md, Plugin Docs, Metadata]
 - [docs/plugins/output.md, Plugin Docs, Output]
 - [docs/plugins/video.md, Plugin Docs, Video]
+
+
+include_next_prev: False

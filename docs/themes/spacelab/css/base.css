@@ -3,8 +3,8 @@ body {
     padding-top: 5%;
 }
 
-/* Center the header and tagline */
-#openbr, #tagline {
+/* Center specific elements */
+#openbr, #tagline, #abstraction {
     text-align: center;
 }
 

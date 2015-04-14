@@ -101,7 +101,7 @@ def parse(content):
 def function_builder(name, function):
     markdown = ""
 
-    markdown += "### <h3 id=" + name.lower() + "-function-" + function['Name'].lower() + ">" + function['Full'] + "</h3>\n\n"
+    markdown += "### " + function["Full"] + " {: #" + name.lower() + "-function-" + function['Name'].lower() + "}\n\n"
     markdown += "DOCUMENT ME\n\n"
 
     markdown += "* **function definition:**\n\n"
@@ -128,7 +128,7 @@ def format_md(name, parent, properties, members, constructors, functions):
     markdown += "# " + name + "\n\n"
     markdown += "Inherits from [" + parent + "](#" + parent.lower() + ")\n\n"
 
-    markdown += "## <h2 id=" + name.lower() + "-properties>Properties</h2>\n\n"
+    markdown += "## Properties {: #" + name.lower() + "-properties }\n\n"
     if len(properties) == 0:
         markdown += "NONE\n\n"
     else:
@@ -139,7 +139,7 @@ def format_md(name, parent, properties, members, constructors, functions):
             markdown += prop[0] + " | " + prop[1] + " | DOCUMENT ME\n"
         markdown += "\n"
 
-    markdown += "## <h2 id=" + name.lower() + "-members>Members</h2>\n\n"
+    markdown += "## Members {: #" + name.lower() + "-members }\n\n"
     if len(members) == 0:
         markdown += "NONE\n\n"
     else:
@@ -150,7 +150,7 @@ def format_md(name, parent, properties, members, constructors, functions):
             markdown += member[0] + " | " + member[1] + " | DOCUMENT ME\n"
         markdown += "\n"
 
-    markdown += "## <h2 id=" + name.lower() + "-constructors>Constructors</h2>\n\n"
+    markdown += "## Constructors {: #" + name.lower() + "-constructors }\n\n"
     if len(constructors) == 0:
         markdown += "NONE\n\n"
     else:
@@ -160,12 +160,12 @@ def format_md(name, parent, properties, members, constructors, functions):
             markdown += constructor + " | DOCUMENT ME\n"
         markdown += "\n"
 
-    markdown += "## <h2 id=" + name.lower() + "-static-functions>Static Functions</h2>\n\n"
+    markdown += "## Static Functions {: #" + name.lower() + "-static-functions }\n\n"
     for function in functions:
         if function['Type'] == 'static':
             markdown += function_builder(name, function)
 
-    markdown += "## <h2 id=" + name.lower() + "-functions>Functions</h2>\n\n"
+    markdown += "## Functions {: #" + name.lower() + "-functions }\n\n"
     for function in functions:
         if not function['Type'] == 'static':
             markdown += function_builder(name, function)

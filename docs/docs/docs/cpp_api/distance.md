@@ -1,0 +1,3 @@
+<!-- DISTANCE -->
+
+Inherits [Object](#object)

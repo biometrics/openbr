@@ -1,0 +1,3 @@
+<!-- CLASSIFIER -->
+
+Inherits [Object](#object)

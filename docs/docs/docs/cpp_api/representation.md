@@ -1,0 +1,3 @@
+<!-- REPRESENTATION -->
+
+Inherits [Object](#object).
