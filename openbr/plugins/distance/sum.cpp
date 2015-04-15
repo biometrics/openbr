@@ -26,7 +26,7 @@ namespace br
  * \brief Sum match scores across multiple distances
  * \author Scott Klum \cite sklum
  */
-class SumDistance : public UntrainableDistance
+class SumDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
