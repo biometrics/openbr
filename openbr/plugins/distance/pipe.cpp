@@ -30,19 +30,9 @@ namespace br
  * If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
  * Otherwise the returned result is the value of comparing the templates using the last br::Distance.
  */
-class PipeDistance : public Distance
+class PipeDistance : public ListDistance
 {
     Q_OBJECT
-    Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
-    BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
-
-    bool trainable()
-    {
-        for (int i=0; i<distances.size(); i++)
-            if (distances[i]->trainable())
-                return true;
-        return false;
-    }
 
     void train(const TemplateList &data)
     {

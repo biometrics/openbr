@@ -29,11 +29,10 @@ namespace br
  * \author Scott Klum \cite sklum
  * \note Operation: Mean, sum, min, max are supported.
  */
-class FuseDistance : public Distance
+class FuseDistance : public ListDistance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
     Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
 
@@ -42,17 +41,8 @@ public:
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
-
-    bool trainable()
-    {
-        for (int i=0; i<distances.size(); i++)
-            if (distances[i]->trainable())
-                return true;
-        return false;
-    }
 
     void train(const TemplateList &src)
     {
