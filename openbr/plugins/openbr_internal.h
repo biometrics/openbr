@@ -486,7 +486,7 @@ private:
 };
 
 /*!
- * \brief A br::Distance that does not require training data.
+ * \brief A br::Distance that checks the elements of its list property to see if it needs to be trained.
  */
 class BR_EXPORT ListDistance : public Distance
 {
