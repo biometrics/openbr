@@ -18,6 +18,8 @@
 
 #include <openbr/plugins/openbr_internal.h>
 
+#include <QtConcurrent>
+
 namespace br
 {
 
@@ -27,31 +29,20 @@ namespace br
  * \author Scott Klum \cite sklum
  * \note Operation: Mean, sum, min, max are supported.
  */
-class FuseDistance : public Distance
+class FuseDistance : public ListDistance
 {
     Q_OBJECT
     Q_ENUMS(Operation)
-    Q_PROPERTY(QStringList descriptions READ get_descriptions WRITE set_descriptions RESET reset_descriptions STORED false)
     Q_PROPERTY(Operation operation READ get_operation WRITE set_operation RESET reset_operation STORED false)
     Q_PROPERTY(QList<float> weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
-
-    QList<br::Distance*> distances;
 
 public:
     /*!< */
     enum Operation {Mean, Sum, Max, Min};
 
 private:
-    BR_PROPERTY(QStringList, descriptions, QStringList() << "L2")
     BR_PROPERTY(Operation, operation, Mean)
     BR_PROPERTY(QList<float>, weights, QList<float>())
-
-    void init()
-    {
-        for (int i=0; i<descriptions.size(); i++) {
-            distances.append(make(descriptions[i]));
-        }
-    }
 
     void train(const TemplateList &src)
     {
@@ -62,10 +53,10 @@ private:
         QList<TemplateList> partitionedSrc = src.partition(split);
 
         // Train on each of the partitions
-        for (int i=0; i<descriptions.size(); i++) {
-            distances.append(make(descriptions[i]));
-            distances[i]->train(partitionedSrc[i]);
-        }
+        QFutureSynchronizer<void> futures;
+        for (int i=0; i<distances.size(); i++)
+            futures.addFuture(QtConcurrent::run(distances[i], &Distance::train, partitionedSrc[i]));
+        futures.waitForFinished();
     }
 
     float compare(const Template &a, const Template &b) const
@@ -98,24 +89,6 @@ private:
             qFatal("Invalid operation.");
         }
         return 0;
-    }
-
-    void store(QDataStream &stream) const
-    {
-        stream << distances.size();
-        foreach (Distance *distance, distances)
-            distance->store(stream);
-    }
-
-    void load(QDataStream &stream)
-    {
-        int numDistances;
-        stream >> numDistances;
-        for (int i=0; i<descriptions.size(); i++) {
-            distances.append(make(descriptions[i]));
-            distances[i]->load(stream);
-        }
-
     }
 };
 
