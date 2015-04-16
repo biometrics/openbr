@@ -459,7 +459,7 @@ struct TemplateList : public QList<Template>
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
     /*!< \brief Assign templates to folds partitions. */
-    BR_EXPORT TemplateList partition(int folds, const QString &inputVariable) const;
+    BR_EXPORT TemplateList partition(const QString &inputVariable) const;
 
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;

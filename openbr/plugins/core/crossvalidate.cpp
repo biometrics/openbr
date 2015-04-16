@@ -67,7 +67,7 @@ class CrossValidateTransform : public MetaTransform
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        QList<int> partitions = data.partition(Globals->crossValidate,inputVariable).files().crossValidationPartitions();
+        QList<int> partitions = data.partition(inputVariable).files().crossValidationPartitions();
         const int numPartitions = Common::Max(partitions)+1;
 
         while (transforms.size() < numPartitions)
@@ -101,7 +101,7 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        TemplateList partitioned = src.partition(Globals->crossValidate, inputVariable);
+        TemplateList partitioned = src.partition(inputVariable);
 
         for (int i=0; i<partitioned.size(); i++) {
             int partition = partitioned[i].file.get<int>("Partition", 0);

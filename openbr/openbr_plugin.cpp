@@ -433,7 +433,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
             newTemplates = newTemplates.reduced();
 
         if (Globals->crossValidate > 1)
-            newTemplates = newTemplates.partition(Globals->crossValidate, "Label");
+            newTemplates = newTemplates.partition("Label");
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
             if (newTemplates.size() != templates.size())
@@ -527,16 +527,17 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
     return result;
 }
 
-TemplateList TemplateList::partition(int folds, const QString &inputVariable) const
+TemplateList TemplateList::partition(const QString &inputVariable) const
 {
-    if (folds < 2)
+    const int crossValidate = Globals->crossValidate;
+    if (crossValidate < 2)
         return *this;
 
     TemplateList partitioned = *this;
     for (int i=partitioned.size()-1; i>=0; i--) {
         // See CrossValidateTransform for description of these variables
         if (partitioned[i].file.getBool("duplicatePartitions")) {
-            for (int j=folds-1; j>=0; j--) {
+            for (int j=crossValidate-1; j>=0; j--) {
                 Template duplicateTemplate = partitioned[i];
                 duplicateTemplate.file.set("Partition", j);
                 partitioned.insert(i+1, duplicateTemplate);
@@ -547,7 +548,7 @@ TemplateList TemplateList::partition(int folds, const QString &inputVariable) co
             if (!partitioned[i].file.contains(("Partition"))) {
                 const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
                 // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % folds);
+                partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
             }
         }
     }
