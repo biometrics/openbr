@@ -69,6 +69,11 @@ struct AlgorithmCore
         QScopedPointer<Transform> trainingWrapper(br::wrapTransform(transform.data(), "Stream(readMode=DistributeFrames)"));
         TemplateList data(TemplateList::fromGallery(input));
 
+        if (Globals->crossValidate > 1)
+            for (int i=data.size()-1; i>=0; i--)
+                if (data[i].file.get<bool>("allPartitions",false) || data[i].file.get<bool>("duplicatePartitions",false))
+                    data.removeAt(i);
+
         if (transform.isNull()) qFatal("Null transform.");
         qDebug("%d Training Files", data.size());
 
@@ -78,9 +83,6 @@ struct AlgorithmCore
         trainingWrapper->train(data);
 
         if (!distance.isNull() && distance->trainable()) {
-            if (Globals->crossValidate > 0)
-                for (int i=data.size()-1; i>=0; i--) if (data[i].file.get<bool>("allPartitions",false)) data.removeAt(i);
-
             qDebug("Projecting Enrollment");
             trainingWrapper->projectUpdate(data,data);
 
