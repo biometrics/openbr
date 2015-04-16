@@ -1,9 +1,12 @@
 \documentclass{article}
+\usepackage{listings}
 \usepackage{verbatim}
 
-\newenvironment{likely}
-{ \verbatim }
-{ \endverbatim }
+\lstnewenvironment{likely}{
+  \lstset{
+    basicstyle=\ttfamily,
+    showstringspaces=false
+  }}{}
 
 \title{Face Recognition in Likely}
 \author{Joshua C. Klontz}
@@ -12,9 +15,29 @@
 \maketitle
 
 \begin{abstract}
-This document represents a long-term effort to port the OpenBR face recognition algorithm to Likely\footnote{www.liblikely.org}.
+This document represents a long-term effort to port the OpenBR face recognition algorithm to \emph{Likely}\footnote{www.liblikely.org}.
 As Likely is a literate programming language, this document is both the source code \emph{and} the documentation.
 \end{abstract}
+
+\section{Compilation}
+This document is a valid \LaTeX\ file that can be rendered for reading by humans.
+
+\begin{verbatim}
+$ pdflatex face_recognition.tex
+\end{verbatim}
+
+It is also a valid Likely file that can be trained/compiled for reading by machines.
+
+\begin{verbatim}
+$ likely -p 'data := (read "path/to/training/data.lm" matrix \
+f32XT) ]' face_recognition.tex face_recognition.o
+\end{verbatim}
+
+Note that the \emph{face\_recognition.o} native object file output exposes its functionality through a C-compatible signature.
+
+\begin{verbatim}
+likely_mat face_recognition(likely_const_mat src);
+\end{verbatim}
 
 \section{Introduction}
 We start our journey constructing the face recognition algorithm with an identity function.
@@ -25,34 +48,33 @@ face-recognition :=
     src
 \end{likely}
 
-Throughout the remainder of this document we will append additional steps to the \texttt{face-recognition} function, building up the entire algorithm one transformation at a time.
+Throughout the remainder of this document we will append additional steps to this function, building up the entire algorithm one transformation at a time.
 
-Note that the remainder of this document assumes that the global variable \texttt{data} is defined, and contains the appropriate training samples.
+Note that the remainder of this document assumes that the global variable \emph{data} is defined, and contains the appropriate training samples.
 
 \begin{likely}
-"Num Training Samples:"
+"Number of training samples:"
 data.frames
 \end{likely}
 
 \section{...}
-This section serves as a placeholder for the unwritten sections.
-There are a lot of sections that haven't been written yet, including face detection, registration and representation.
+This section serves as a placeholder for the unwritten algorithm steps.
+There are a lot of sections that haven't been written yet, including face detection, registration and representation!
 In fact, only the final section of the algorithm has been written.
 
 \section{Quantization}
-The goal of quantization is to re-scale and cast feature vector dimensions into 8-bit unsigned integers.
+The goal of quantization is to rescale and cast feature vector dimensions into 8-bit unsigned integers.
 The resulting feature vectors are smaller in size and faster to compare, with generally negligible loss in representation accuracy.
-
-The training data is used to determine the scaling parameters.
+Training data is required to determine the scaling parameters.
 
 \begin{likely}
-lo    := [ data.min-element  ]
-hi    := [ data.max-element  ]
-scale := [ (/ 255 (- hi lo)) ]
-
 train-quantize :=
-  () :->
+  (training-samples) :->
   {
+    lo    := [ training-samples.min-element  ]
+    hi    := [ training-samples.max-element  ]
+    scale := [ (/ 255 (- hi lo)) ]
+
     src :->
     {
       dst := (imitate-size src (imitate-dimensions u8 src.type))
@@ -60,17 +82,29 @@ train-quantize :=
         dst :<- src.(- lo).(* scale)
     }
   }
+
+quantize := (train-quantize data)
 \end{likely}
 
-Now we can re-define \texttt{face-recognition} to include quantization.
+Now we can re-define \texttt{face-recognition} to append quantization.
 
 \begin{likely}
 face-recognition :=
-{
-  quantize := (train-quantize)
   src :->
     src.face-recognition.quantize
-}
+\end{likely}
+
+And project the training data.
+
+\begin{likely}
+data := data.quantize
+\end{likely}
+
+And report some statistics.
+
+\begin{likely}
+"Quantized feature vector dimensionality:"
+data.columns
 \end{likely}
 
 \section{Entry Point}
