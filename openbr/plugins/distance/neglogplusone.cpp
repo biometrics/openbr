@@ -24,11 +24,16 @@ namespace br
  * \brief Returns -log(distance(a,b)+1)
  * \author Josh Klontz \cite jklontz
  */
-class NegativeLogPlusOneDistance : public UntrainableDistance
+class NegativeLogPlusOneDistance : public Distance
 {
     Q_OBJECT
     Q_PROPERTY(br::Distance* distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     BR_PROPERTY(br::Distance*, distance, NULL)
+
+    bool trainable()
+    {
+        return distance->trainable();
+    }
 
     void train(const TemplateList &src)
     {

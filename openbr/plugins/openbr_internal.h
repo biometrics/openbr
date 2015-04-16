@@ -485,6 +485,26 @@ private:
     void train(const TemplateList &data) { (void) data; }
 };
 
+/*!
+ * \brief A br::Distance that checks the elements of its list property to see if it needs to be trained.
+ */
+class BR_EXPORT ListDistance : public Distance
+{
+    Q_OBJECT
+
+public:
+    Q_PROPERTY(QList<br::Distance*> distances READ get_distances WRITE set_distances RESET reset_distances)
+    BR_PROPERTY(QList<br::Distance*>, distances, QList<br::Distance*>())
+
+    bool trainable()
+    {
+        for (int i=0; i<distances.size(); i++)
+            if (distances[i]->trainable())
+                return true;
+        return false;
+    }
+};
+
 }
 
 #endif // OPENBR_INTERNAL_H
