@@ -55,7 +55,9 @@ class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(QString, description, "Identity")
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
@@ -65,7 +67,7 @@ class CrossValidateTransform : public MetaTransform
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        QList<int> partitions = data.files().crossValidationPartitions();
+        QList<int> partitions = data.partition(Globals->crossValidate,inputVariable).files().crossValidationPartitions();
         const int numPartitions = Common::Max(partitions)+1;
 
         while (transforms.size() < numPartitions)
@@ -80,10 +82,9 @@ class CrossValidateTransform : public MetaTransform
         for (int i=0; i<numPartitions; i++) {
             TemplateList partitionedData = data;
             for (int j=partitionedData.size()-1; j>=0; j--)
-                if (partitions[j] == i) {
+                if (partitions[j] == i)
                     // Remove data, it's designated for testing
                     partitionedData.removeAt(j);
-                }
             // Train on the remaining templates
             futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
         }
@@ -92,13 +93,20 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        // If we want to duplicate templates but use the same training data
-        // for all partitions (i.e. transforms.size() == 1), we need to
-        // restrict the partition
+        Q_UNUSED(src);
+        Q_UNUSED(dst);
 
-        int partition = src.file.get<int>("Partition", 0);
-        partition = (partition >= transforms.size()) ? 0 : partition;
-        transforms[partition]->project(src, dst);
+        qFatal("CrossValidateTransform::project(const Template &src, Template &dst) should not be called.");
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        TemplateList partitioned = src.partition(Globals->crossValidate, inputVariable);
+
+        for (int i=0; i<partitioned.size(); i++) {
+            int partition = partitioned[i].file.get<int>("Partition", 0);
+            transforms[partition]->project(partitioned, dst);
+        }
     }
 
     void store(QDataStream &stream) const
