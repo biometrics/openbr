@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{listings}
+\usepackage{upquote}
 \usepackage{verbatim}
 
 \lstnewenvironment{likely}{
@@ -29,11 +30,11 @@ $ pdflatex face_recognition.tex
 It is also a valid Likely file that can be trained/compiled for reading by machines.
 
 \begin{verbatim}
-$ likely -p 'data := (read "path/to/training/data.lm" matrix \
-f32XT) ]' face_recognition.tex face_recognition.o
+$ likely -p 'data := "path/to/training/data.lm".read-matrix' \
+face_recognition.tex face_recognition.o
 \end{verbatim}
 
-Note that the \emph{face\_recognition.o} native object file output exposes its functionality through a C-compatible signature.
+Note that the outputted \emph{face\_recognition.o} native object file exposes its functionality through a C-compatible signature.
 
 \begin{verbatim}
 likely_mat face_recognition(likely_const_mat src);
