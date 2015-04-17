@@ -73,16 +73,19 @@ Such a normalization has been observed to improve accuracy when comparing featur
 normalize-l2 :=
   src :->
   {
-    squared-sum := 0.f32.$
-    add-element :=
-      (mat t y x c) :->
-        squared-sum :<- (+ squared-sum (mat c x y t).(cast squared-sum).sq)
-    src:iter-elements add-element
-    alpha := (/ 1 (sqrt squared-sum))
+    norm := (new f32T src.channels 1 src.rows src.frames null)
+    (norm src) :=>
+    {
+      add-squared-element :=
+        x :->
+          norm :<- (+ norm src.(cast f32).sq)
+      (iter add-squared-element src.columns)
+      norm :<- (/ 1 (sqrt norm))
+    }
 
     dst := src.imitate
-    (dst src alpha) :=>
-      dst :<- src
+    (dst src norm) :=>
+      dst :<- (* src norm)
   }
 \end{likely}
 
