@@ -78,7 +78,7 @@ normalize-l2 :=
     {
       add-squared-element :=
         x :->
-          norm :<- (+ norm src.(cast f32).sq)
+          norm :<- (+ norm src.f32.sq)
       (iter add-squared-element src.columns)
       norm :<- (/ 1 (sqrt norm))
     }
