@@ -50,6 +50,8 @@ face-recognition :=
 \end{likely}
 
 Throughout the remainder of this document we will append additional steps to this function, building up the entire algorithm one transformation at a time.
+It is the responsibility of each section in this document to update the \emph{face-recognition} function and the training data.
+In this way the sections maintain independence, and the algorithm can be changed by inserting, removing, or editing sections of this document.
 
 Note that the remainder of this document assumes that the global variable \emph{data} is defined, and contains the appropriate training samples.
 
@@ -60,8 +62,43 @@ data.frames
 
 \section{...}
 This section serves as a placeholder for the unwritten algorithm steps.
-There are a lot of sections that haven't been written yet, including face detection, registration and representation!
-In fact, only the final section of the algorithm has been written.
+There are a lot of steps that haven't been written yet, including face detection, registration and representation!
+In fact, only the final few sections of the algorithm have been written.
+
+\section{L2 Normalization}
+We wish to normalize every feature vector to a unit L2 norm, ensuring that they live on a high-dimensional unit sphere.
+Such a normalization has been observed to improve accuracy when comparing feature vectors using a Euclidean distance.
+
+\begin{likely}
+normalize-l2 :=
+  src :->
+  {
+    squared-sum := 0.f32.$
+    add-element :=
+      (mat t y x c) :->
+        squared-sum :<- (+ squared-sum (mat c x y t).(cast squared-sum).sq)
+    src:iter-elements add-element
+    alpha := (/ 1 (sqrt squared-sum))
+
+    dst := src.imitate
+    (dst src alpha) :=>
+      dst :<- src
+  }
+\end{likely}
+
+Now we can re-define \texttt{face-recognition} to append L2 normalization.
+
+\begin{likely}
+face-recognition :=
+  src :->
+    src.face-recognition.normalize-l2
+\end{likely}
+
+And project the training data.
+
+\begin{likely}
+data := [ data.normalize-l2 ]
+\end{likely}
 
 \section{Quantization}
 The goal of quantization is to rescale and cast feature vector dimensions into 8-bit unsigned integers.
@@ -98,7 +135,7 @@ face-recognition :=
 And project the training data.
 
 \begin{likely}
-data := data.quantize
+data := [ data.quantize ]
 \end{likely}
 
 And report some statistics.
