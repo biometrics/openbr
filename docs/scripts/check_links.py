@@ -16,42 +16,42 @@ def walk(path, ext):
     files.extend(subfiles(path, ext))
     return files
 
-def basename_no_ext(name):
-    basename = os.path.basename(name)
-    return basename.split('.')[0]
-
 class Link():
-    def __init__(self, raw_link):
+    def __init__(self, path, raw_link):
         if 'http' in raw_link:
             self.http = raw_link
             self.file = None
             self.anchor = None
+
         elif raw_link[0] == '#':
             self.http = None
             self.file = None
             self.anchor = raw_link[1:]
+
         elif '#' in raw_link:
             self.http = None
 
             split_link = raw_link.split('#')
-            self.file = basename_no_ext(split_link[0])
+            self.file = os.path.normpath(os.path.join(path, split_link[0]))
             self.anchor = split_link[1]
+
         else:
             self.http = None
-            self.file = basename_no_ext(raw_link)
+            self.file = os.path.normpath(os.path.join(path, raw_link))
             self.anchor = None
 
 class LinkParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, path):
         HTMLParser.__init__(self)
 
+        self.path = path
         self.headers = []
         self.links = []
 
     def handle_starttag(self, tag, attrs):
         for attr in attrs:
             if u'href' == attr[0]:
-                self.links.append(Link(attr[1].encode('ascii', 'ignore')))
+                self.links.append(Link(self.path, attr[1].encode('ascii', 'ignore')))
 
             elif u'class' == attr[0]:
                 self.headers.append(attr[1].encode('ascii', 'ignore'))
@@ -63,8 +63,8 @@ class LinkParser(HTMLParser):
                 self.headers.append(attr[1].encode('ascii', 'ignore'))
 
 
-def parse(html):
-    parser = LinkParser()
+def parse(path, html):
+    parser = LinkParser(path)
     parser.feed(html)
 
     return parser.headers, parser.links
@@ -80,29 +80,32 @@ def check(headers, links):
                 link_file = link.file
 
             if link_file not in headers:
-                print 'BAD FILE IN ' + f + '.md:', link_file
+                print 'BAD FILE IN ' + f + ':', link_file
+                print
                 continue
 
             if link.anchor and link.anchor not in headers[link_file]:
-                print 'BAD LINK IN ' + f + '.md:', link_file + ', ' + link.anchor
-
+                print 'BAD ANCHOR IN ' + f + ':', link_file + '#' + link.anchor
+                print
+                continue
 
 def main():
     docs_dir = '../docs/'
     ext = 'md'
 
+    links = open('../docs/links.md', 'r').read()
     md_files = walk(docs_dir, ext)
-    md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code'] )
+    md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code', 'attr_list'] )
 
-    html_files = [md.convert(open(f, 'r').read()) for f in md_files]
+    html_files = [md.convert(open(f, 'r').read() + "\n\n" + links) for f in md_files]
 
     headers = {}
     links = {}
     for i in range(len(md_files)):
-        local_headers, local_links = parse(html_files[i])
+        local_headers, local_links = parse(os.path.dirname(md_files[i]), html_files[i])
 
-        headers[basename_no_ext(md_files[i])] = local_headers
-        links[basename_no_ext(md_files[i])] = local_links
+        headers[md_files[i]] = local_headers
+        links[md_files[i]] = local_links
 
     check(headers, links)
 

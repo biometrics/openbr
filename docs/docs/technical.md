@@ -29,12 +29,12 @@ Let's look at some of the important parts of the code base that make this possib
 
 In `AlgorithmCore::init()` in `openbr/core/core.cpp` you can see the code for splitting the algorithm description at the colon.
 Shortly thereafter in this function we *make* the template generation and comparison methods.
-These make calls are defined in the public [C++ plugin API](docs/cpp_api.md) and can also be called from end user code.
+These make calls are defined in the public [C++ plugin API](api_docs/cpp_api.md) and can also be called from end user code.
 
 Below we discuss some of the source code for `Transform::make` in `openbr/openbr_plugin.cpp`.
 Note, the make functions for other plugin types are similar in spirit and will not be covered.
 
-One of the first steps when converting the template enrollment description into a [Transform](docs/cpp_api.md#transform) is to replace the operators, like '+', with their full form:
+One of the first steps when converting the template enrollment description into a [Transform](api_docs/cpp_api/transform/transform.md) is to replace the operators, like '+', with their full form:
 
     { // Check for use of '+' as shorthand for Pipe(...)
          QStringList words = parse(str, '+');
@@ -42,7 +42,7 @@ One of the first steps when converting the template enrollment description into 
              return make("Pipe([" + words.join(",") + "])", parent);
     }
 
-A pipe (see [PipeTransform](docs/plugins/core.md#pipetransform)) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
+A pipe (see [PipeTransform](api_docs/plugins/core.md#pipetransform)) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
 PipeTransform takes a list of transforms, and *projects* templates through each transform in order.
 
 After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recursively starting at the root of the tree:
@@ -50,7 +50,7 @@ After operator expansion, the template enrollment description forms a tree, and 
     Transform *transform = Factory<Transform>::make("." + str);
 
 At this point we reach arguably the most important code in the entire framework, the *object factory* in `openbr/openbr_plugin.h`.
-The [Factory](docs/cpp_api.md#factory) class is responsible for constructing an object from a string:
+The [Factory](api_docs/cpp_api/factory/factory.md) class is responsible for constructing an object from a string:
 
     static T *make(const File &file)
     {
@@ -66,14 +66,14 @@ The [Factory](docs/cpp_api.md#factory) class is responsible for constructing an 
         return object;
     }
 
-Going back to our original example, a [PipeTransform](docs/plugins/core.md#pipetransform) will be created with [OpenTransform](docs/plugins/io.md#opentransform), [CvtTransform](docs/plugins/imgproc.md#cvttransform), [CascadeTransform](docs/plugins/metadata.md#cascadetransform), [ASEFEyesTransform](docs/plugins/metadata.md#asefeyestransform), [AffineTransform](docs/plugins/imgproc.md#affinetransform), [CvtFloatTransform](docs/plugins/imgproc.md#cvtfloattransform), and [PCATransform](docs/plugins/classification.md#pcatransform) as its children.
+Going back to our original example, a [PipeTransform](api_docs/plugins/core.md#pipetransform) will be created with [OpenTransform](api_docs/plugins/io.md#opentransform), [CvtTransform](api_docs/plugins/imgproc.md#cvttransform), [CascadeTransform](api_docs/plugins/metadata.md#cascadetransform), [ASEFEyesTransform](api_docs/plugins/metadata.md#asefeyestransform), [AffineTransform](api_docs/plugins/imgproc.md#affinetransform), [CvtFloatTransform](api_docs/plugins/imgproc.md#cvtfloattransform), and [PCATransform](api_docs/plugins/classification.md#pcatransform) as its children.
 
-If you want all the tedious details about what exactly this algoritm does, then you should read the [project](docs/cpp_api.md#project) function implemented by each of these plugins.
+If you want all the tedious details about what exactly this algoritm does, then you should read the [project](api_docs/cpp_api/transform/functions.md#project-1) function implemented by each of these plugins.
 The brief explanation is that it *reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images*.
 If you are familiar with face recognition, you will likely recognize this as the Eigenfaces \cite turk1991eigenfaces algorithm.
 
 As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
-Since OpenBR expects *similarity* values when comparing templates, and not *distances*, the [DistDistance](docs/plugins/distance.md#distdistance) will return *-log(distance+1)* so that larger values indicate more similarity.
+Since OpenBR expects *similarity* values when comparing templates, and not *distances*, the [DistDistance](api_docs/plugins/distance.md#distdistance) will return *-log(distance+1)* so that larger values indicate more similarity.
 
 ---
 
@@ -83,10 +83,10 @@ The *Biometric Evaluation Environment* (BEE) is a [NIST](http://www.nist.gov/ind
 
 OpenBR implements the following portions of the BEE specification:
 
-* Signature Set- A signature set (or *sigset*) is a [Gallery](docs/cpp_api.md#gallery) compliant **XML** file-list specified on page 9 of [MBGC File Overview](DOCUMENT ME) and implemented in [xmlGallery](docs/plugins/gallery.md#xmlgallery). Sigsets are identified with a **.xml** extension.
+* Signature Set- A signature set (or *sigset*) is a [Gallery](api_docs/cpp_api/gallery/gallery.md) compliant **XML** file-list specified on page 9 of [MBGC File Overview](DOCUMENT ME) and implemented in [xmlGallery](api_docs/plugins/gallery.md#xmlgallery). Sigsets are identified with a **.xml** extension.
 
-* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](docs/cpp_api.md#output) compliant binary score matrix specified on page 12 of [MBGC File Overview](DOCUMENT ME) and implemented in [mtxOutput](docs/plugins/output.md#mtxoutput). Simmats are identified with a **.mtx** extension. See [br_eval](docs/c_api.md#br_eval) for more information.
+* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](api_docs/cpp_api/output/output.md) compliant binary score matrix specified on page 12 of [MBGC File Overview](DOCUMENT ME) and implemented in [mtxOutput](api_docs/plugins/output.md#mtxoutput). Simmats are identified with a **.mtx** extension. See [br_eval](api_docs/c_api/functions.md#br_eval) for more information.
 
-* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](DOCUMENT ME) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](docs/c_api.md#br_make_mask) and [br_combine_masks](docs/c_api.md#br_combine_masks) for more information.
+* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](DOCUMENT ME) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](api_docs/c_api/functions.md#br_make_mask) and [br_combine_masks](api_docs/c_api/functions.md#br_combine_masks) for more information.
 
 ---

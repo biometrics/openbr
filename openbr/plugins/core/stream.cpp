@@ -760,6 +760,11 @@ public:
 
 };
 
+/*!
+ * \ingroup transforms
+ * \brief DOCUMENT ME CHARLES
+ * \author Charles Otto \cite caotto
+ */
 class CollectOutputTransform : public TimeVaryingTransform
 {
     Q_OBJECT
@@ -901,6 +906,11 @@ void BasicLoop::run()
 
 }
 
+/*!
+ * \ingroup transforms
+ * \brief DOCUMENT ME CHARLES
+ * \author Charles Otto \cite caotto
+ */
 class DirectStreamTransform : public CompositeTransform
 {
     Q_OBJECT
@@ -1212,6 +1222,11 @@ QMutex DirectStreamTransform::poolsAccess;
 
 BR_REGISTER(Transform, DirectStreamTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief DOCUMENT ME CHARLES
+ * \author Charles Otto \cite caotto
+ */
 class StreamTransform : public WrapperTransform
 {
     Q_OBJECT

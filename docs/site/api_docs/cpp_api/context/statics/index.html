@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Static Functions - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/highlight.css">
+
+  <script src="../../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../../js/highlight.pack.js"></script>
+  <script src="../../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="../../">C++ Plugin API</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../apifunctions/">API Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../file/file/">File</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filelist/filelist/">FileList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../template/template/">Template</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../templatelist/templatelist/">TemplateList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../factory/factory/">Factory</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../object/object/">Object</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 current">
+            <a class="current" href="../context/">Context</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../members/">Members</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../constructors/">Constructors</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 current">
+            <a class="current" href="./">Static Functions</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l4"><a href="#initialize">void initialize(int &amp;argc, char *argv[], QString sdkPath = "", bool useGui = true)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#finalize">void finalize()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#checksdkpath">bool checkSDKPath(const QString &amp;sdkPath)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#about">QString about()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#version">QString version()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#scratchpath">QString scratchPath()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#objects">QStringList objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true)</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../functions/">Functions</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../initializer/initializer/">Initializer</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../transform/transform/">Transform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabletransform/untrainabletransform/">UntrainableTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metatransform/metatransform/">MetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metadatatransform/metadatatransform/">MetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../distance/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabledistance/untrainabledistance/">UntrainableDistance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../output/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../matrixoutput/matrixoutput/">MatrixOutput</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../format/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../gallery/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filegallery/filegallery/">FileGallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../representation/representation/">Representation</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../classifier/classifier/">Classifier</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>Context &raquo;</li>
+      
+    
+    <li>Static Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h2 id="initialize">void initialize(int &amp;argc, char *argv[], <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> sdkPath = "", bool useGui = true)</h2>
+<p>Call <em>once</em> at the start of the application to allocate global variables. If the project is a <a href="http://qt-project.org/" title="Qt">Qt</a> project this call should occur after initializing <tt>QApplication</tt>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static void initialize(int &amp;argc, char *argv[], QString sdkPath = "", bool useGui = true);
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>argc</td>
+<td>int &amp;</td>
+<td>Number of command line arguments as provided by <tt>main()</tt></td>
+</tr>
+<tr>
+<td>argv</td>
+<td>char * []</td>
+<td>Command line arguments as provided by <tt>main()</tt></td>
+</tr>
+<tr>
+<td>sdkPath</td>
+<td><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a></td>
+<td>(Optional) The path to the folder containing <strong>share/openbr/openbr.bib</strong>. If no path is provided (default) OpenBR automatically searches: <ul> <li>The working directory</li> <li>The executable's location</li> </ul></td>
+</tr>
+<tr>
+<td>useGui</td>
+<td>bool</td>
+<td>(Optional) Make OpenBR as a <a href="http://doc.qt.io/qt-5/qapplication.html" title="QApplication">QApplication</a> instead of a <a href="http://doc.qt.io/qt-5/qcoreapplication.html" title="QCoreApplication">QCoreApplication</a>. Default is true.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="#finalize">finalize</a></li>
+<li><strong>example:</strong><pre><code>int main(int argc, char \*argv[])
+{
+    QApplication(argc, argv); // ONLY FOR QT PROJECTS
+    br::Context::initialize(argc, argv);
+
+    // ...
+
+    br::Context::finalize();
+    return 0;
+}
+</code></pre>
+</li>
+</ul>
+<h2 id="finalize">void finalize()</h2>
+<p>Call <em>once</em> at the end of the application to deallocate global variables.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static void finalize();
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (void)</li>
+<li><strong>see:</strong> <a href="#initialize">initialize</a></li>
+</ul>
+<h2 id="checksdkpath">bool checkSDKPath(const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;sdkPath)</h2>
+<p>Check if a given SDK path is valid. A valid SDK satisfies</p>
+<pre><code>exists(sdkPath + "share/openbr/openbr.bib")
+</code></pre>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static bool checkSDKPath(const QString &amp;sdkPath);
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sdkPath</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>Possible sdk path to examine</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (bool) Returns true if the sdkPath + "share/openbr/openbr.bib" exists, otherwise returns false.</p>
+</li>
+<li><strong>example:</strong><pre><code>// OpenBR is at /libs/openbr
+
+checkSDKPath("/libs/openbr/"); // returns true
+checkSDKPath("/libs/"); // returns false
+</code></pre>
+</li>
+</ul>
+<h2 id="about"><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> about()</h2>
+<p>Get a string with the name, version, and copyright of the project. This string is suitable for printing or terminal.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static QString about();
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a>) Returns a string containing the name, version and copyright of the project</li>
+<li><strong>example:</strong><pre><code>// Using OpenBR version 0.6.0
+Context::about(); // returns "OpenBR 0.6.0 Copyright (c) 2013 OpenBiometrics. All rights reserved."
+</code></pre>
+</li>
+</ul>
+<h2 id="version"><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> version()</h2>
+<p>Get the version of the SDK.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static QString version();
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a>) Returns a string containing the version of the OpenBR SDK. The string has the format <em>&lt;MajorVersion></em>.<em>&lt;MinorVersion></em>.<em>&lt;PatchVersion></em></li>
+<li><strong>example:</strong><pre><code>// Using OpenBR version 0.6.0
+Context::version(); // returns "0.6.0"
+</code></pre>
+</li>
+</ul>
+<h2 id="scratchpath"><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> scratchPath()</h2>
+<p>Get the scratch directory used by OpenBR. This directory should be used as the root directory for managing temporary files and providing process persistence.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static QString scratchPath();
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a>) Returns a string pointing to the OpenBR scratch directory. The string has the format <em>&lt;path/to/user/home>&lt;OpenBR->&lt;MajorVersion></em>.<em>&lt;MinorVersion></em>.</li>
+<li><strong>see:</strong> <a href="#version">version</a></li>
+<li><strong>example:</strong><pre><code>// Using OpenBR version 0.6.0
+Context::scratchPath(); // returns "/path/to/user/home/OpenBR-0.6"
+</code></pre>
+</li>
+</ul>
+<h2 id="objects"><a href="http://doc.qt.io/qt-5/qstringlist.html" title="QStringList">QStringList</a> objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true)</h2>
+<p>Get a collection of objects in OpenBR that match provided regular expressions. This function uses <a href="http://doc.qt.io/qt-5/QRegExp.html" title="QRegExp">QRegExp</a> syntax.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static QStringList objects(const char *abstractions = ".*", const char *implementations = ".*", bool parameters = true)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<pre><code>Parameter | Type | Description
+--- | --- | ---
+abstractions | const char \* | (Optional) Regular expression of the abstractions to search. Default is ".\*"
+implementations | const char \* | (Optional) Regular expression of the implementations to search. Default is ".\*".
+parameters | bool | (Optional) If true include parameters after object name. Default is true.
+</code></pre>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/qstringlist.html" title="QStringList">QStringList</a>) Return names and parameters for the requested objects. Each object is newline separated. Arguments are separated from the object name with tabs.</p>
+</li>
+<li><strong>example:</strong><pre><code>// Find all 'Rnd' Transforms
+Context::objects("Transform", "Rnd.*", false); // returns ["RndPoint", "RndRegion", "RndRotate", "RndSample", "RndSubspace"]
+</code></pre>
+</li>
+</ul>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../functions/" class="btn btn-neutral float-right" title="Functions"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../constructors/" class="btn btn-neutral" title="Constructors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../constructors/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../functions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:25.506344
+-->
+</body>
+</html>

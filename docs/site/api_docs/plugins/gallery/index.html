@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Gallery - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/highlight.css">
+
+  <script src="../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+  <script src="../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../cpp_api/">C++ Plugin API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="./">Gallery</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l2"><a href="#binarygallery">BinaryGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#defaultgallery">DefaultGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#emptygallery">EmptyGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#fddbgallery">FDDBGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#arffgallery">arffGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#crawlgallery">crawlGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#csvgallery">csvGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#dbgallery">dbGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#flatgallery">flatGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#galgallery">galGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#googlegallery">googleGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#jsongallery">jsonGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#keyframesgallery">keyframesGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#landmarksgallery">landmarksGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#lmatgallery">lmatGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#matrixgallery">matrixGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#memgallery">memGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#mp4gallery">mp4Gallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#postgallery">postGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#statgallery">statGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#templategallery">templateGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#turkgallery">turkGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#txtgallery">txtGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#urlgallery">urlGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#utgallery">utGallery</a></li>
+                        
+                            <li class="toctree-l2"><a href="#xmlgallery">xmlGallery</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>Plugin Docs &raquo;</li>
+      
+    
+    <li>Gallery</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h1 id="binarygallery">BinaryGallery</h1>
+<p>An abstract gallery for handling binary data</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Unknown</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="defaultgallery">DefaultGallery</h1>
+<p>Treats the gallery as a br::Format.</p>
+<ul>
+<li><strong>file:</strong> gallery/default.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="emptygallery">EmptyGallery</h1>
+<p>Reads/writes templates to/from folders.</p>
+<ul>
+<li><strong>file:</strong> gallery/empty.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="fddbgallery">FDDBGallery</h1>
+<p>Implements the FDDB detection format.</p>
+<ul>
+<li><strong>file:</strong> gallery/fddb.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="arffgallery">arffGallery</h1>
+<p>Weka ARFF file format.</p>
+<ul>
+<li><strong>file:</strong> gallery/arff.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="crawlgallery">crawlGallery</h1>
+<p>Crawl a root location for image files.</p>
+<ul>
+<li><strong>file:</strong> gallery/crawl.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="csvgallery">csvGallery</h1>
+<p>Treats each line as a file.</p>
+<ul>
+<li><strong>file:</strong> gallery/csv.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/filegallery/filegallery/">FileGallery</a></li>
+<li><strong>see:</strong> <a href="#txtgallery">txtGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="dbgallery">dbGallery</h1>
+<p>Database input.</p>
+<ul>
+<li><strong>file:</strong> gallery/db.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="flatgallery">flatGallery</h1>
+<p>Treats each line as a call to File::flat()</p>
+<ul>
+<li><strong>file:</strong> gallery/flat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/filegallery/filegallery/">FileGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="galgallery">galGallery</h1>
+<p>A binary gallery.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="googlegallery">googleGallery</h1>
+<p>Input from a google image search.</p>
+<ul>
+<li><strong>file:</strong> gallery/google.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="jsongallery">jsonGallery</h1>
+<p>Newline-separated JSON objects.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="keyframesgallery">keyframesGallery</h1>
+<p>Read key frames of a video with LibAV</p>
+<ul>
+<li><strong>file:</strong> gallery/keyframes.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Ben Klein</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="landmarksgallery">landmarksGallery</h1>
+<p>Text format for associating anonymous landmarks with images.</p>
+<ul>
+<li><strong>file:</strong> gallery/landmarks.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="lmatgallery">lmatGallery</h1>
+<p>Likely matrix format</p>
+<ul>
+<li><strong>file:</strong> gallery/lmat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="matrixgallery">matrixGallery</h1>
+<p>Combine all templates into one large matrix and process it as a br::Format</p>
+<ul>
+<li><strong>file:</strong> gallery/matrix.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="memgallery">memGallery</h1>
+<p>A gallery held in memory.</p>
+<ul>
+<li><strong>file:</strong> gallery/mem.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="mp4gallery">mp4Gallery</h1>
+<p>Read key frames of a .mp4 video file with LibAV</p>
+<ul>
+<li><strong>file:</strong> gallery/keyframes.cpp</li>
+<li><strong>inherits:</strong> <a href="#keyframesgallery">keyframesGallery</a></li>
+<li><strong>author:</strong> Ben Klein</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="postgallery">postGallery</h1>
+<p>Handle POST requests</p>
+<ul>
+<li><strong>file:</strong> gallery/post.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="statgallery">statGallery</h1>
+<p>Print template statistics.</p>
+<ul>
+<li><strong>file:</strong> gallery/stat.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="templategallery">templateGallery</h1>
+<p>Treat the file as a single binary template.</p>
+<ul>
+<li><strong>file:</strong> gallery/template.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="turkgallery">turkGallery</h1>
+<p>For Amazon Mechanical Turk datasets</p>
+<ul>
+<li><strong>file:</strong> gallery/turk.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/gallery/gallery/">Gallery</a></li>
+<li><strong>author:</strong> Scott Klum</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="txtgallery">txtGallery</h1>
+<p>Treats each line as a file.</p>
+<ul>
+<li><strong>file:</strong> gallery/txt.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/filegallery/filegallery/">FileGallery</a></li>
+<li><strong>see:</strong> <a href="#csvgallery">csvGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="urlgallery">urlGallery</h1>
+<p>Newline-separated URLs.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="utgallery">utGallery</h1>
+<p>A contiguous array of br_universal_template.</p>
+<ul>
+<li><strong>file:</strong> gallery/binary.cpp</li>
+<li><strong>inherits:</strong> <a href="#binarygallery">BinaryGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="xmlgallery">xmlGallery</h1>
+<p>A</p>
+<ul>
+<li><strong>file:</strong> gallery/xml.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/filegallery/filegallery/">FileGallery</a></li>
+<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../gui/" class="btn btn-neutral float-right" title="GUI"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../format/" class="btn btn-neutral" title="Format"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../format/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../gui/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:26.167378
+-->
+</body>
+</html>

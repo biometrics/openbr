@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Functions - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/highlight.css">
+
+  <script src="../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+  <script src="../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="../">C++ Plugin API</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l2 current">
+            <a class="current" href="./">API Functions</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l3"><a href="#isclassifier">IsClassifier</a></li>
+                        
+                            <li class="toctree-l3"><a href="#train">Train</a></li>
+                        
+                            <li class="toctree-l3"><a href="#enroll-1">Enroll</a></li>
+                        
+                            <li class="toctree-l3"><a href="#enroll-2">Enroll</a></li>
+                        
+                            <li class="toctree-l3"><a href="#project">Project</a></li>
+                        
+                            <li class="toctree-l3"><a href="#compare">Compare</a></li>
+                        
+                            <li class="toctree-l3"><a href="#comparetemplatelists">CompareTemplateList</a></li>
+                        
+                            <li class="toctree-l3"><a href="#pairwisecompare">PairwiseCompare</a></li>
+                        
+                            <li class="toctree-l3"><a href="#convert">Convert</a></li>
+                        
+                            <li class="toctree-l3"><a href="#cat">Cat</a></li>
+                        
+                            <li class="toctree-l3"><a href="#deduplicate">Deduplicate</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../file/file/">File</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../filelist/filelist/">FileList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../template/template/">Template</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../templatelist/templatelist/">TemplateList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../factory/factory/">Factory</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../object/object/">Object</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../context/context/">Context</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../initializer/initializer/">Initializer</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../transform/transform/">Transform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../untrainabletransform/untrainabletransform/">UntrainableTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../metatransform/metatransform/">MetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../metadatatransform/metadatatransform/">MetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../distance/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../untrainabledistance/untrainabledistance/">UntrainableDistance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../output/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../matrixoutput/matrixoutput/">MatrixOutput</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../format/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../gallery/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../filegallery/filegallery/">FileGallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../representation/representation/">Representation</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../classifier/classifier/">Classifier</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>C++ Plugin API &raquo;</li>
+      
+    
+    <li>API Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <!-- API FUNCTIONS -->
+
+<h2 id="isclassifier">IsClassifier</h2>
+<p>Determines if the given algorithm is a classifier. A classifier is defined as a <a href="../transform/transform/">Transform</a> with no associated <a href="../distance/distance/">Distance</a>. Instead metadata fields with the predicted output classes are populated in <a href="../template/template/">Template</a> <a href="../template/members/#file">files</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>bool IsClassifier(const QString &amp;algorithm)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>algorithm</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>Algorithm to evaluate</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (bool) True if the algorithm is a classifier and false otherwise</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_is_classifier">br_is_classifier</a></li>
+<li><strong>example:</strong><pre><code>IsClassifier("Identity"); // returns true
+IsClassifier("Identity:Dist"); // returns false
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="train">Train</h2>
+<p>High level function for creating models.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Train(const File &amp;input, const File &amp;model)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>input</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Training data</td>
+</tr>
+<tr>
+<td>model</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Model file</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> The <a href="../../../tutorials/#training-algorithms">training tutorial</a> for an example of training.</li>
+<li><strong>example:</strong><pre><code>File file("/path/to/images/or/gallery.gal");
+File model("/path/to/model/file");
+Train(file, model);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="enroll-1">Enroll</h2>
+<p>High level function for creating <a href="../gallery/gallery/">galleries</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Enroll(const File &amp;input, const File &amp;gallery = File())
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>input</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Path to enrollment file</td>
+</tr>
+<tr>
+<td>gallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>(Optional) Path to gallery file.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_enroll">br_enroll</a></li>
+<li><strong>example:</strong><pre><code>File file("/path/to/images/or/gallery.gal");
+Enroll(file); // Don't need to specify a gallery file
+File gallery("/path/to/gallery/file");
+Enroll(file, gallery); // Will write to the specified gallery file
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="enroll-2">Enroll</h2>
+<p>High level function for enrolling templates. Templates are modified in place as they are projected through the algorithm.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Enroll(TemplateList &amp;tmpl)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tmpl</td>
+<td><a href="../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Data to enroll</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>TemplateList tList = TemplateList() &lt;&lt; Template("picture1.jpg")
+                                    &lt;&lt; Template("picture2.jpg")
+                                    &lt;&lt; Template("picture3.jpg");
+Enroll(tList);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="project">Project</h2>
+<p>A naive alternative to <a href="#enroll-1">Enroll</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Project(const File &amp;input, const File &amp;output)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>input</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Path to enrollment file</td>
+</tr>
+<tr>
+<td>gallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Path to gallery file.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="#enroll-1">Enroll</a></li>
+<li><strong>example:</strong><pre><code>File file("/path/to/images/or/gallery.gal");
+File output("/path/to/gallery/file");
+Project(file, gallery); // Will write to the specified gallery file
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="compare">Compare</h2>
+<p>High level function for comparing galleries. Each template in the <strong>queryGallery</strong> is compared against every template in the <strong>targetGallery</strong>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Compare(const File &amp;targetGallery, const File &amp;queryGallery, const File &amp;output)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>targetGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery of target templates</td>
+</tr>
+<tr>
+<td>queryGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery of query templates</td>
+</tr>
+<tr>
+<td>output</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Output file for results</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>returns:</strong> (output)</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_compare">br_compare</a></li>
+<li><strong>example:</strong><pre><code>File target("/path/to/target/images/");
+File query("/path/to/query/images/");
+File output("/path/to/output/file");
+Compare(target, query, output);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="comparetemplatelists">CompareTemplateList</h2>
+<p>High level function for comparing templates.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void CompareTemplateLists(const TemplateList &amp;target, const TemplateList &amp;query, Output *output);
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>target</td>
+<td>const <a href="../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Target templates</td>
+</tr>
+<tr>
+<td>query</td>
+<td>const <a href="../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Query templates</td>
+</tr>
+<tr>
+<td>output</td>
+<td><a href="../output/output/">Output</a> *</td>
+<td>Output file for results</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>TemplateList targets = TemplateList() &lt;&lt; Template("target_img1.jpg")
+                                      &lt;&lt; Template("target_img2.jpg")
+                                      &lt;&lt; Template("target_img3.jpg");
+
+TemplateList query = TemplateList() &lt;&lt; Template("query_img.jpg");
+Output *output = Factory::make&lt;Output&gt;("/path/to/output/file");
+
+CompareTemplateLists(targets, query, output);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="pairwisecompare">PairwiseCompare</h2>
+<p>High level function for doing a series of pairwise comparisons.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void PairwiseCompare(const File &amp;targetGallery, const File &amp;queryGallery, const File &amp;output)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>targetGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery of target templates</td>
+</tr>
+<tr>
+<td>queryGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery of query templates</td>
+</tr>
+<tr>
+<td>output</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Output file for results</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_pairwise_compare">br_pairwise_comparison</a></li>
+<li><strong>example:</strong><pre><code>File target("/path/to/target/images/");
+File query("/path/to/query/images/");
+File output("/path/to/output/file");
+PairwiseCompare(target, query, output);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="convert">Convert</h2>
+<p>Change the format of the <strong>inputFile</strong> to the format of the <strong>outputFile</strong>. Both the <strong>inputFile</strong> format and the <strong>outputFile</strong> format must be of the same format group, which is specified by the <strong>fileType</strong>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Convert(const File &amp;fileType, const File &amp;inputFile, const File &amp;outputFile)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileType</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Can be either: <ul> <li><a href="../format/format/">Format</a></li> <li><a href="../gallery/gallery/">Gallery</a></li> <li><a href="../output/output/">Output</a></li> </ul></td>
+</tr>
+<tr>
+<td>inputFile</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>File to be converted. Format is inferred from the extension.</td>
+</tr>
+<tr>
+<td>outputFile</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>File to store converted input. Format is inferred from the extension.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>File input("input.csv");
+File output("output.xml");
+Convert("Format", input, output);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="cat">Cat</h2>
+<p>Concatenate several galleries into one.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Cat(const QStringList &amp;inputGalleries, const QString &amp;outputGallery)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inputGalleries</td>
+<td>const <a href="http://doc.qt.io/qt-5/qstringlist.html" title="QStringList">QStringList</a> &amp;</td>
+<td>List of galleries to concatenate</td>
+</tr>
+<tr>
+<td>outputGallery</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>Gallery to store the concatenated result. This gallery cannot be in the inputGalleries</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_cat">br_cat</a></li>
+<li><strong>example:</strong><pre><code>QStringList inputGalleries = QStringList() &lt;&lt; "/path/to/gallery1"
+                                           &lt;&lt; "/path/to/gallery2"
+                                           &lt;&lt; "/path/to/gallery3";
+
+QString outputGallery = "/path/to/outputGallery";
+Cat(inputGalleries, outputGallery);
+</code></pre>
+</li>
+</ul>
+<hr />
+<h2 id="deduplicate">Deduplicate</h2>
+<p>Deduplicate a gallery. A duplicate is defined as an image with a match score above a given threshold to another image in the gallery.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void Deduplicate(const File &amp;inputGallery, const File &amp;outputGallery, const QString &amp;threshold)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inputGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery to deduplicate</td>
+</tr>
+<tr>
+<td>outputGallery</td>
+<td>const <a href="../file/file/">File</a> &amp;</td>
+<td>Gallery to store the deduplicated result</td>
+</tr>
+<tr>
+<td>threshold</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>Match score threshold to determine duplicates</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>see:</strong> <a href="../../c_api/functions/#br_deduplicate">br_deduplicate</a></li>
+<li><strong>example:</strong><pre><code>File input("/path/to/input/galley/with/dups");
+File output("/path/to/output/gallery");
+Deduplicate(input, output, "0.7"); // Remove duplicates with match scores above 0.7
+</code></pre>
+</li>
+</ul>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../file/file/" class="btn btn-neutral float-right" title="File"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../" class="btn btn-neutral" title="C++ Plugin API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../file/file/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:25.036908
+-->
+</body>
+</html>

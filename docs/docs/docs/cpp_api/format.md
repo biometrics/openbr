@@ -1,3 +1,0 @@
-<!-- FORMAT -->
-
-Inherits [Object](#object)

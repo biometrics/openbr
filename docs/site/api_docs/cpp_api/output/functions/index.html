@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Functions - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/highlight.css">
+
+  <script src="../../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../../js/highlight.pack.js"></script>
+  <script src="../../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="../../">C++ Plugin API</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../apifunctions/">API Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../file/file/">File</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filelist/filelist/">FileList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../template/template/">Template</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../templatelist/templatelist/">TemplateList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../factory/factory/">Factory</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../object/object/">Object</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../context/context/">Context</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../initializer/initializer/">Initializer</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../transform/transform/">Transform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabletransform/untrainabletransform/">UntrainableTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metatransform/metatransform/">MetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metadatatransform/metadatatransform/">MetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../distance/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabledistance/untrainabledistance/">UntrainableDistance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 current">
+            <a class="current" href="../output/">Output</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../properties/">Properties</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../members/">Members</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../constructors/">Constructors</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../statics/">Static Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 current">
+            <a class="current" href="./">Functions</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l4"><a href="#initialize">void initialize(const FileList &amp;targetFiles, const FileList &amp;queryFiles)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#setblock">void setBlock(int rowBlock, int columnBlock)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#setrelative">void setRelative(float value, int i, int j)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#set">void set(float value, int i, int j)</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../matrixoutput/matrixoutput/">MatrixOutput</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../format/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../gallery/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filegallery/filegallery/">FileGallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../representation/representation/">Representation</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../classifier/classifier/">Classifier</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>Output &raquo;</li>
+      
+    
+    <li>Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h2 id="initialize">void initialize(const <a href="../../filelist/filelist/">FileList</a> &amp;targetFiles, const <a href="../../filelist/filelist/">FileList</a> &amp;queryFiles)</h2>
+<p>This is a virtual function. Initialize the output with provided target and query files.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void initialize(const [FileList](../filelist/filelist.md) &amp;targetFiles, const [FileList](../filelist/filelist.md) &amp;queryFiles)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>targetFiles</td>
+<td>const <a href="../../filelist/filelist/">FileList</a> &amp;</td>
+<td>Target files to initialize the Output with</td>
+</tr>
+<tr>
+<td>queryFiles</td>
+<td>const <a href="../../filelist/filelist/">FileList</a> &amp;</td>
+<td>Query files to initialize the Output with</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>TemplateList targets = TemplateList() &lt;&lt; Template("target1.jpg") &lt;&lt; Template("target2.jpg") &lt;&lt; Template("target3.jpg");
+TemplateList queries = TemplateList() &lt;&lt; Template("query1.jpg") &lt;&lt; Template("query2.jpg");
+
+Output *output = Factory::make&lt;Output&gt;("output.mtx");
+output-&gt;initialize(targets, queries); // This is the same as calling Output::make("output.mtx", targets, queries)
+</code></pre>
+</li>
+</ul>
+<h2 id="setblock">void setBlock(int rowBlock, int columnBlock)</h2>
+<p>This is a virtual function. Set the read offset of the Output.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void setBlock(int rowBlock, int columnBlock)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rowBlock</td>
+<td>int</td>
+<td>Row position of the offset</td>
+</tr>
+<tr>
+<td>columnBlock</td>
+<td>int</td>
+<td>Column position of the offset</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+</ul>
+<h2 id="setrelative">void setRelative(float value, int i, int j)</h2>
+<p>This is a virtual function. Set a value in the Output. <strong>i</strong> and <strong>j</strong> are <em>relative</em> to the current block.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void setRelative(float value, int i, int j)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>float</td>
+<td>Value to set in the output</td>
+</tr>
+<tr>
+<td>i</td>
+<td>int</td>
+<td>Row value relative to the current block</td>
+</tr>
+<tr>
+<td>j</td>
+<td>int</td>
+<td>Column value relative to the current block</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+</ul>
+<h2 id="set">void set(float value, int i, int j)</h2>
+<p>This is a pure virtual function. Set a value in the output.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void set(float value, int i, int j) = 0
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>float</td>
+<td>Value to be inserted into the output</td>
+</tr>
+<tr>
+<td>i</td>
+<td>int</td>
+<td>Row index to insert at</td>
+</tr>
+<tr>
+<td>j</td>
+<td>int</td>
+<td>Column index to insert at</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+</ul>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../matrixoutput/matrixoutput/" class="btn btn-neutral float-right" title="MatrixOutput"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../statics/" class="btn btn-neutral" title="Static Functions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../statics/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../../matrixoutput/matrixoutput/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:25.846120
+-->
+</body>
+</html>

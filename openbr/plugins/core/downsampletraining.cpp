@@ -86,6 +86,11 @@ static TemplateList Downsample(const TemplateList &templates, int classes, int i
     return downsample;
 }
 
+/*!
+ * \ingroup transforms
+ * \brief DOCUMENT ME JOSH
+ * \author Josh Klontz \cite jklontz
+ */
 class DownsampleTrainingTransform : public Transform
 {
     Q_OBJECT

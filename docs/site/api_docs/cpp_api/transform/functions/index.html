@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Functions - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/highlight.css">
+
+  <script src="../../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../../js/highlight.pack.js"></script>
+  <script src="../../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="../../">C++ Plugin API</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../apifunctions/">API Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../file/file/">File</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filelist/filelist/">FileList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../template/template/">Template</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../templatelist/templatelist/">TemplateList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../factory/factory/">Factory</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../object/object/">Object</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../context/context/">Context</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../initializer/initializer/">Initializer</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 current">
+            <a class="current" href="../transform/">Transform</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../members/">Members</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../constructors/">Constructors</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../statics/">Static Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 current">
+            <a class="current" href="./">Functions</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l4"><a href="#clone">Transform *clone()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#train-1">void train(const TemplateList &amp;data)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#train-2">void train(const QList&lt;TemplateList&gt; &amp;data)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#project-1">void project(const Template &amp;src, Template &amp;dst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#project-2">void project(const TemplateList &amp;src, TemplateList &amp;dst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#projectupdate-1">void projectUpdate(const Template &amp;src, Template &amp;dst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#projectupdate-2">void projectUpdate(const TemplateList &amp;src, TemplateList &amp;dst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#projectupdate-3">void projectUpdate(Template &amp;srcdst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#projectupdate-4">void projectUpdate(TemplateList &amp;srcdst)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#timevarying">bool timeVarying()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#operator-pp-1">Template operator()(const Template &amp;src)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#operator-pp-2">TemplateList operator()(const TemplateList &amp;src)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#smartcopy-1">Transform *smartCopy(bool &amp;newTransform)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#smartcopy-2">Transform *smartCopy()</a></li>
+                        
+                            <li class="toctree-l4"><a href="#simplify">Transform *simplify(bool &amp;newTransform)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#make">Transform *make(const QString &amp;description)</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabletransform/untrainabletransform/">UntrainableTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metatransform/metatransform/">MetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metadatatransform/metadatatransform/">MetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../distance/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabledistance/untrainabledistance/">UntrainableDistance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../output/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../matrixoutput/matrixoutput/">MatrixOutput</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../format/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../gallery/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filegallery/filegallery/">FileGallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../representation/representation/">Representation</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../classifier/classifier/">Classifier</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>Transform &raquo;</li>
+      
+    
+    <li>Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h2 id="clone"><a href="../transform/">Transform</a> *clone()</h2>
+<p>This is a virtual function. Make a deep copy of the transform.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual Transform *clone() const
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (<a href="../transform/">Transform</a>)</li>
+<li><strong>example:</strong><pre><code>class ExampleTransform : public Transform
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int property READ get_property WRITE set_property RESET reset_property STORED false)
+    BR_PROPERTY(int, property, 1)
+
+    ...
+};
+
+Transform *transform = Transform::make("Example", NULL);
+transform-&gt;parameters(); // returns ["property = 1"]
+
+Transform *clone = transform-&gt;clone();
+clone-&gt;parameters(); // returns ["property = 1"]
+
+transform-&gt;setProperty("property", 10);
+transform-&gt;parameters(); // returns ["property = 10"]
+clone-&gt;parameters(); // returns ["property = 1"]
+</code></pre>
+</li>
+</ul>
+<h2 id="train-1">void train(const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;data)</h2>
+<p>This is a virtual function. Train the transform on provided training data. This function should be overloaded for any transform that needs to be trained. <a href="../members/#trainable">Trainable</a> must be set to true for this function to be called. If <a href="../members/#independent">independent</a> is true a new instance of the transform will be trained for each <a href="http://docs.opencv.org/modules/core/doc/basic_structures.html#mat" title="Mat">Mat</a> stored in a <a href="../../template/template/">Template</a> in the provided training data. Each <a href="../../template/template/">Template</a> should have the same number of <a href="http://docs.opencv.org/modules/core/doc/basic_structures.html#mat" title="Mat">Mats</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void train(const TemplateList &amp;data)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td>const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Training data. The format of the data depends on the transform to be trained. In some cases the transform requires a "Label" field in each <a href="../../template/template/">Template</a> <a href="../../template/members/#file">file's</a> <a href="../../file/members/#m_metadata">metadata</a> (normally these are classifiers like <a href="../../../plugins/classification/#svmtransform">SVM</a>). In other cases no metadata is required and training occurs on the raw image data only.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>// Create data for a 2-class classification problem
+Template t1("training_pic1.jpg");
+t1.file.set("Label", 0);
+Template t2("training_pic2.jpg");
+t2.file.set("Label", 0);
+Template t3("training_pic3.jpg");
+t3.file.set("Label", 1);
+Template t4("training_pic4.jpg");
+t4.file.set("Label", 1);
+
+TemplateList training_data(QList&lt;Template&gt;() &lt;&lt; t1 &lt;&lt; t2 &lt;&lt; t3 &lt;&lt; t4);
+
+Transform *classifier = Transform::make("DataPrep+Classifier");
+classifier-&gt;train(training_data); // The data is projected through DataPrep, assuming it is untrainable, and then passed to the train method of Classifier
+</code></pre>
+</li>
+</ul>
+<h2 id="train-2">void train(const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;<a href="../../templatelist/templatelist/">TemplateList</a>&gt; &amp;data)</h2>
+<p>This is a virtual function. This version of train is meant for special-case, internal, transforms and for tranforms that require a specific number of templates at project time. If a transform requires a specific number of templates at project time it should be trained in batches that have the same number of templates. For example, if a transform requires exactly 5 templates when projecting it should get a list of <a href="../../templatelist/templatelist/">TemplateLists</a>, each with exactly 5 templates, at train time. Each <a href="../../templatelist/templatelist/">TemplateList</a> can then be treated as an individual input to the training function.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<p>virtual void train(const QList<TemplateList> &amp;data)</p>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td>const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;<a href="../../templatelist/templatelist/">TemplateList</a>&gt; &amp;</td>
+<td>Specially formatted list of training input. Format should match what is passed to <a href="#project-2">project</a>.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+</ul>
+<h2 id="project-1">void project(const <a href="../../template/template/">Template</a> &amp;src, <a href="../../template/template/">Template</a> &amp;dst)</h2>
+<p>This is a pure virtual function. It must be overloaded by all derived classes. Project a template through the transform, modifying its contents in some way and storing the modified data in <strong>dst</strong>. This function has a strict <a href="../../template/template/">Template</a> in, <a href="../../template/template/">Template</a> out model. For a multiple <a href="../../template/template/">Template</a> in, multiple <a href="../../template/template/">Template</a> out model see [project]{: #project-2 }.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void project(const Template &amp;src, Template &amp;dst) const = 0
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>src</td>
+<td>const <a href="../../template/template/">Template</a> &amp;</td>
+<td>Input template. It is immutable</td>
+</tr>
+<tr>
+<td>dst</td>
+<td><a href="../../template/template/">Template</a> &amp;</td>
+<td>Output template. Should contain the modified data from the input template.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>Template src("color_picture.jpg"), dst;
+
+Transform *color_converter = Transfrom::make("Read+Cvt(Gray)");
+color_converter-&gt;project(src, dst); // returns a grayscale image stored in dst
+</code></pre>
+</li>
+</ul>
+<h2 id="project-2">void project(const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;src, <a href="../../templatelist/templatelist/">TemplateList</a> &amp;dst)</h2>
+<p>This is a virtual function. Project multiple <a href="../../template/template/">Templates</a> in and get multiple, modified, <a href="../../template/template/">Templates</a> out. Especially useful in cases like detection where the requirement is image in, multiple objects out. The default implementation calls <a href="#project-1">project</a> on each <a href="../../template/template/">Template</a> in <strong>src</strong> and appends the results to <strong>dst</strong>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void project(const TemplateList &amp;src, TemplateList &amp;dst) const
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>src</td>
+<td>const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Input templates. It is immutable</td>
+</tr>
+<tr>
+<td>dst</td>
+<td><a href="../../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Output templates. Should contain the modified data from the input templates</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>TemplateList src(QList&lt;Template&gt;() &lt;&lt; Template("image_with_faces.jpg")), dst;
+
+Transform *face_detector = Transform::make("FaceDetector");
+face_detector-&gt;project(src, dst); // dst will have one template for every face detected in src
+</code></pre>
+</li>
+</ul>
+<h2 id="projectupdate-1">void projectUpdate(const <a href="../../template/template/">Template</a> &amp;src, <a href="../../template/template/">Template</a> &amp;dst)</h2>
+<p>This is a virtual function. Very similar to <a href="#project-1">project</a> except this version is not <strong>const</strong> and can modify the internal state of the transform.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void projectUpdate(const Template &amp;src, Template &amp;dst)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>src</td>
+<td>const <a href="../../template/template/">Template</a> &amp;</td>
+<td>Input template. It is immutable</td>
+</tr>
+<tr>
+<td>dst</td>
+<td><a href="../../template/template/">Template</a> &amp;</td>
+<td>Output template. Should contain the modified data from the input template.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>class ExampleTransform : public Transform
+{
+    Q_OBJECT
+
+    int internalState;
+
+    void projectUpdate(const Template &amp;src, Template &amp;dst)
+    {
+        dst = src;
+        internalState++;
+    }
+
+    ...
+};
+
+BR_REGISTER(Transform, ExampleTransform)
+
+Template src("picture.jpg"), dst;
+
+Transform *example = Transform::make("Example");
+example-&gt;projectUpdate(src, dst); // dst is unchanged but Example's internalState has been incremented.
+</code></pre>
+</li>
+</ul>
+<h2 id="projectupdate-2">void projectUpdate(const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;src, <a href="../../templatelist/templatelist/">TemplateList</a> &amp;dst)</h2>
+<p>This is a virtual function. Very similar to <a href="#project-2">project</a> except this version is not <strong>const</strong> and can modify the internal state of the transform.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual void projectUpdate(const TemplateList &amp;src, TemplateList &amp;dst)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<pre><code>Parameter | Type | Description
+--- | --- | ---
+src | const [TemplateList](../templatelist/templatelist.md) &amp; | Input templates. It is immutable
+dst | [TemplateList](../templatelist/templatelist.md) &amp; | Output templates. Should contain the modified data from the input templates
+</code></pre>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>class ExampleTransform : public Transform
+{
+    Q_OBJECT
+
+    int internalState;
+
+    void projectUpdate(const TemplateList &amp;src, TemplateList &amp;dst)
+    {
+        dst = src;
+        internalState++;
+    }
+
+    ...
+};
+
+BR_REGISTER(Transform, ExampleTransform)
+
+TemplateList src(QList&lt;Template&gt;() &lt;&lt; Template("picture.jpg")), dst;
+
+Transform *example = Transform::make("Example");
+example-&gt;projectUpdate(src, dst); // dst is unchanged but Example's internalState has been incremented.
+</code></pre>
+</li>
+</ul>
+<h2 id="projectupdate-3">void projectUpdate(<a href="../../template/template/">Template</a> &amp;srcdst)</h2>
+<p>In-place version of <a href="#projectupdate-1">projectUpdate</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void projectUpdate(Template &amp;srcdst)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>srcdst</td>
+<td><a href="../../template/template/">Template</a> &amp;</td>
+<td>Input and output template. It is overwritten with the output value after projecting</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>class ExampleTransform : public Transform
+{
+    Q_OBJECT
+
+    int internalState;
+
+    void projectUpdate(const Template &amp;src, Template &amp;dst)
+    {
+        dst = src;
+        internalState++;
+    }
+
+    ...
+};
+
+BR_REGISTER(Transform, ExampleTransform)
+
+Template src("picture.jpg");
+
+Transform *example = Transform::make("Example");
+example-&gt;projectUpdate(src); // src is modified in-place and Example's internalState has been incremented.
+</code></pre>
+</li>
+</ul>
+<h2 id="projectupdate-4">void projectUpdate(<a href="../../templatelist/templatelist/">TemplateList</a> &amp;srcdst)</h2>
+<p>In-place version of <a href="#projectupdate-2">projectUpdate</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>void projectUpdate(TemplateList &amp;srcdst)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>srcdst</td>
+<td><a href="../../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Input and output templates. It is overwritten with the output value after projecting</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (void)</p>
+</li>
+<li><strong>example:</strong><pre><code>class ExampleTransform : public Transform
+{
+    Q_OBJECT
+
+    int internalState;
+
+    void projectUpdate(const TemplateList &amp;src, TemplateList &amp;dst)
+    {
+        dst = src;
+        internalState++;
+    }
+
+    ...
+};
+
+BR_REGISTER(Transform, ExampleTransform)
+
+TemplateList src(QList&lt;Template&gt;() &lt;&lt; Template("picture.jpg"));
+
+Transform *example = Transform::make("Example");
+example-&gt;projectUpdate(src); // src is modified in-place and Example's internalState has been incremented.
+</code></pre>
+</li>
+</ul>
+<h2 id="timevarying">bool timeVarying()</h2>
+<p>This is a virtual function. Check if the transform is time varying. Time varying means the internal state of the transform needs to be updated during projection. Time varying transforms should overload this function to return true and implement <a href="#projectupdate-1">projectUpdate</a> instead of <a href="#project-1">project</a>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual bool timeVarying() const
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (bool) Returns true if the transform is time varying and false otherwise</li>
+</ul>
+<h2 id="operator-pp-1"><a href="../../template/template/">Template</a> operator()(const <a href="../../template/template/">Template</a> &amp;src)</h2>
+<p>A convenience function to call <a href="#project-1">project</a></p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>inline Template operator()(const Template &amp;src) const
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>src</td>
+<td>const <a href="../../template/template/">Template</a> &amp;</td>
+<td>Input template. It is immutable.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output</strong>: (<a href="../../template/template/">Template</a>) Returns the result of calling <a href="#project-1">project</a></p>
+</li>
+<li><strong>example:</strong><pre><code>Template src("color_picture.jpg");
+
+Transform *color_converter = Transfrom::make("Read+Cvt(Gray)");
+Template dst = color_converter(src); // returns a grayscale image
+</code></pre>
+</li>
+</ul>
+<h2 id="operator-pp-2"><a href="../../templatelist/templatelist/">TemplateList</a> operator()(const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;src)</h2>
+<p>A convenience function to call <a href="#project-2">project</a></p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>inline TemplateList operator()(const TemplateList &amp;src) const
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>src</td>
+<td>const <a href="../../templatelist/templatelist/">TemplateList</a> &amp;</td>
+<td>Input templates. It is immutable.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output</strong>: (<a href="../../templatelist/templatelist/">TemplateList</a>) Returns the result of calling <a href="#project-2">project</a></p>
+</li>
+<li><strong>example:</strong><pre><code>TemplateList src(QList&lt;Template&gt;() &lt;&lt; Template("color_picture.jpg"));
+
+Transform *color_converter = Transfrom::make("Read+Cvt(Gray)");
+TemplateList dst = color_converter(src); // returns a list of grayscale images
+</code></pre>
+</li>
+</ul>
+<h2 id="smartcopy-1"><a href="../transform/">Transform</a> *smartCopy(bool &amp;newTransform)</h2>
+<p>This is a virtual function. Only <a href="../../timevaryingtransform/timevaryingtransform/">TimeVaryingTransforms</a> need to overload this method. Similar to <a href="#clone">clone</a>, this function returns a deep copy of the transform. Unlike <a href="#clone">clone</a>, which copies everything, this function should copy the minimum amount required so that <a href="#projectupdate-1">projectUpdate</a> can be called safely on the original instance and the copy returned by this function concurrently.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual Transform *smartCopy(bool &amp;newTransform)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>newTransform</td>
+<td>bool &amp;</td>
+<td>True if the returned transform is newly allocated, false otherwise. This is used to handle deallocation. If newTransform is true, the caller of this function is responsible for deallocating it. If not, a <a href="http://doc.qt.io/qt-5/qsharedpointer.html" title="QSharedPointer">QSharedPointer</a> can wrap the output, and it will be deallocated elsewhere.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="../transform/">Transform</a> *) Returns a pointer to a deep, smart, copy of the transform</p>
+</li>
+</ul>
+<h2 id="smartcopy-2"><a href="../transform/">Transform</a> *smartCopy()</h2>
+<p>Convenience function to call <a href="#smartcopy-1">smartCopy</a> without arguments</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual Transform *smartCopy()
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong> NONE</p>
+</li>
+<li><strong>output:</strong> (<a href="../transform/">Transform</a> *) Returns a pointer, to a deep, smart, copy of the transform</li>
+</ul>
+<h2 id="simplify"><a href="../transform/">Transform</a> *simplify(bool &amp;newTransform)</h2>
+<p>This is a virtual function. Get a simplified version of the transform for use at project time. The simplified version of the <a href="../transform/">Transform</a> does not include any <a href="../transform/">Transforms</a> that are only active at train time. It also removes any <a href="../../../plugins/core/#loadstoretransform">LoadStore</a> transforms and keeps only their children. Transforms that only are active at train time (see <a href="../../../plugins/core/#downsampletransform">DownsampleTransform</a> as an example) should overload this function and return their children if they have any or NULL if they do not.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>virtual Transform * simplify(bool &amp;newTransform)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>newTransform</td>
+<td>bool &amp;</td>
+<td>True if the simplified transform is newly allocated, false otherwise. If true, the caller of this function is responsible for deallocating the transform.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="../transform/">Transform</a> *) Returns a pointer to the simplified version of the transform</p>
+</li>
+<li><strong>example:</strong><pre><code>Transform *transform = Transform::make("DataProcessing+DownsampleTraining(Example)+&lt;ModelFile&gt;");
+transfrom-&gt;description(); // returns "DataProcessing+DownsampleTraining(Example)+LoadStore(transformString=TransformFromModelFile)"
+
+bool newTransform;
+transform-&gt;simplify(newTransform)-&gt;description(); // returns "DataProcessing+Example+TransformFromModelFile"
+</code></pre>
+</li>
+</ul>
+<h2 id="make"><a href="../transform/">Transform</a> *make(const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;description)</h2>
+<p>This is a protected function. Makes a child transform from a provided description by calling <a href="../statics/#make">make</a> with parent = <tt>this</tt>.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>inline Transform *make(const QString &amp;description)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>Description of the child transform</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="../transform/">Transform</a> *) Returns a pointer to the created child transform</p>
+</li>
+</ul>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../untrainabletransform/untrainabletransform/" class="btn btn-neutral float-right" title="UntrainableTransform"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../statics/" class="btn btn-neutral" title="Static Functions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../statics/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../../untrainabletransform/untrainabletransform/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:25.639454
+-->
+</body>
+</html>

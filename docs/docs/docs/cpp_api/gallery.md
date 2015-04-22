@@ -1,3 +1,0 @@
-<!-- GALLERY -->
-
-Inherits [Object](#object)

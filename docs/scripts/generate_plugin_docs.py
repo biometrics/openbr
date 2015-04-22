@@ -52,7 +52,7 @@ def parseInheritance(inheritance):
                    ]
 
     if inheritance in abstractions:
-        return '../cpp_api.md#' + inheritance.lower()
+        return '../cpp_api/' + inheritance.lower() + '/' + inheritance.lower() + '.md'
     else: # Not an abstraction must inherit in the local file!
         return '#' + inheritance.lower()
 

@@ -1,3 +1,0 @@
-<!-- TRANSFORM -->
-
-Inherits [Object](#object)

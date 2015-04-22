@@ -48,9 +48,9 @@ We have created a few tutorials to help teach you the basic principles of the Op
 OpenBR has several parts. Below are several more technical descriptions of important parts of the system. Enjoy!
 
 * [Algorithms in OpenBR](technical.md#algorithms-in-openbr)
-* [The C API](docs/c_api.md)
-* [The Command Line Interface](docs/cl_api.md)
-* [The C++ Plugin API](docs/cpp_api.md)
+* [The C API](api_docs/c_api.md)
+* [The Command Line Interface](api_docs/cl_api.md)
+* [The C++ Plugin API](api_docs/cpp_api.md)
 * [The Evaluation Harness](technical.md#the-evaluation-harness)
 
 ---

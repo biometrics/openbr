@@ -1,3 +1,0 @@
-<!-- TIMEVARYINGTRANSFORM -->
-
-Inherits [Object](#object)
