@@ -1,0 +1,131 @@
+body {
+    position: relative;
+    padding-top: 5%;
+}
+
+/* Center specific elements */
+#openbr, #tagline, #abstraction {
+    text-align: center;
+}
+
+/* The anchor tags in the tables
+ * are blocked by the navbar when
+ * they are used. This fixes that */
+a.table-anchor {
+    display: block;
+    position: relative;
+    top: -70px;
+    visibility: hidden;
+}
+
+h1[id]:before, h2[id]:before {
+    content: "";
+    display: block;
+    margin-top: -75px;
+    height: 75px;
+}
+
+h3 {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 120%;
+    background-color: #e7e7e7;/* text-color => #3399f3;*/
+    display: block;
+}
+
+ul.nav li.main {
+    font-weight: bold;
+    font-size: 90%;
+}
+
+div.col-md-3 {
+    padding-left: 0;
+}
+
+div.col-md-9 {
+    padding-bottom: 100px;
+}
+
+div.source-links {
+    float: right;
+}
+
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+
+.bs-sidebar {
+    z-index: 1000;
+    position: fixed;
+    height: 90%;
+    overflow-y: auto;
+    left: 5%;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.bs-sidebar.affix-bottom {
+    position: absolute; /* Undo the static from mobile first approach */
+}
+
+/* First level of nav */
+.bs-sidenav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* All levels of nav */
+.bs-sidebar .nav > li > a {
+    display: block;
+    padding: 5px 20px;
+}
+
+.bs-sidebar .nav > li > a:hover,
+.bs-sidebar .nav > li > a:focus {
+    text-decoration: none;
+    border-right: 2px solid;
+}
+
+.bs-sidebar .nav > .active > a,
+.bs-sidebar .nav > .active:hover > a,
+.bs-sidebar .nav > .active:focus > a {
+    font-weight: bold;
+    background-color: transparent;
+    border-right: 2px solid;
+}
+
+/* Nav: second level (shown on .active) */
+.bs-sidebar .nav .nav > li > a {
+    padding-left: 30px;
+    font-size: 90%;
+}
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+    .bs-sidebar .nav > .active > ul {
+        display: block;
+    }
+    /* Widen the fixed sidebar */
+    .bs-sidebar.affix,
+    .bs-sidebar.affix-bottom {
+        width: 213px;
+    }
+}
+@media (min-width: 1200px) {
+    /* Widen the fixed sidebar again */
+    .bs-sidebar.affix-bottom,
+    .bs-sidebar.affix {
+        width: 263px;
+    }
+}

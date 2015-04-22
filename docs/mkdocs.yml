@@ -1,0 +1,213 @@
+site_name: OpenBR
+repo_url: https://github.com/biometrics/openbr
+site_favicon: docs/img/openbr.ico
+copyright: 2012 The MITRE Corporation
+
+theme: readthedocs
+theme_dir: themes/readthedocs/
+links_file: docs/links.md
+
+include_search: True
+include_next_prev: False
+
+markdown_extensions:
+- attr_list
+
+pages:
+- [index.md, Home]
+- [install.md, Install]
+- [tutorials.md, Tutorials]
+- [technical.md, Technical Overviews]
+- [contribute.md, Contribute]
+- [papers.md, Publications]
+
+# C API
+- [api_docs/c_api.md, API Docs, C API]
+- [api_docs/c_api/typedefs.md, C API, Typedefs]
+- [api_docs/c_api/functions.md, C API, Functions]
+
+- [api_docs/cpp_api.md, API Docs, C++ Plugin API]
+
+# API Functions
+- [api_docs/cpp_api/apifunctions.md, C++ Plugin API, API Functions]
+
+# File
+- [api_docs/cpp_api/file/file.md, C++ Plugin API, File]
+- [api_docs/cpp_api/file/members.md, File, Members]
+- [api_docs/cpp_api/file/constructors.md, File, Constructors]
+- [api_docs/cpp_api/file/statics.md, File, Static Functions]
+- [api_docs/cpp_api/file/functions.md, File, Functions]
+
+# FileList
+- [api_docs/cpp_api/filelist/filelist.md, C++ Plugin API, FileList]
+- [api_docs/cpp_api/filelist/members.md, FileList, Members]
+- [api_docs/cpp_api/filelist/constructors.md, FileList, Constructors]
+- [api_docs/cpp_api/filelist/statics.md, FileList, Static Functions]
+- [api_docs/cpp_api/filelist/functions.md, FileList, Functions]
+
+# Template
+- [api_docs/cpp_api/template/template.md, C++ Plugin API, Template]
+- [api_docs/cpp_api/template/members.md, Template, Members]
+- [api_docs/cpp_api/template/constructors.md, Template, Constructors]
+- [api_docs/cpp_api/template/statics.md, Template, Static Functions]
+- [api_docs/cpp_api/template/functions.md, Template, Functions]
+
+# TemplateList
+- [api_docs/cpp_api/templatelist/templatelist.md, C++ Plugin API, TemplateList]
+- [api_docs/cpp_api/templatelist/members.md, TemplateList, Members]
+- [api_docs/cpp_api/templatelist/constructors.md, TemplateList, Constructors]
+- [api_docs/cpp_api/templatelist/statics.md, TemplateList, Static Functions]
+- [api_docs/cpp_api/templatelist/functions.md, TemplateList, Functions]
+
+# Factory
+- [api_docs/cpp_api/factory/factory.md, C++ Plugin API, Factory]
+- [api_docs/cpp_api/factory/members.md, Factory, Members]
+- [api_docs/cpp_api/factory/constructors.md, Factory, Constructors]
+- [api_docs/cpp_api/factory/macros.md, Factory, Macros]
+- [api_docs/cpp_api/factory/statics.md, Factory, Static Functions]
+- [api_docs/cpp_api/factory/functions.md, Factory, Functions]
+
+# Object
+- [api_docs/cpp_api/object/object.md, C++ Plugin API, Object]
+- [api_docs/cpp_api/object/members.md, Object, Members]
+- [api_docs/cpp_api/object/constructors.md, Object, Constructors]
+- [api_docs/cpp_api/object/macros.md, Object, Macros]
+- [api_docs/cpp_api/object/statics.md, Object, Static Functions]
+- [api_docs/cpp_api/object/functions.md, Object, Functions]
+
+# Context
+- [api_docs/cpp_api/context/context.md, C++ Plugin API, Context]
+- [api_docs/cpp_api/context/members.md, Context, Members]
+- [api_docs/cpp_api/context/constructors.md, Context, Constructors]
+- [api_docs/cpp_api/context/statics.md, Context, Static Functions]
+- [api_docs/cpp_api/context/functions.md, Context, Functions]
+
+# Initializer
+- [api_docs/cpp_api/initializer/initializer.md, C++ Plugin API, Initializer]
+- [api_docs/cpp_api/initializer/members.md, Initializer, Members]
+- [api_docs/cpp_api/initializer/constructors.md, Initializer, Constructors]
+- [api_docs/cpp_api/initializer/statics.md, Initializer, Static Functions]
+- [api_docs/cpp_api/initializer/functions.md, Initializer, Functions]
+
+
+# Transform
+- [api_docs/cpp_api/transform/transform.md, C++ Plugin API, Transform]
+- [api_docs/cpp_api/transform/members.md, Transform, Members]
+- [api_docs/cpp_api/transform/constructors.md, Transform, Constructors]
+- [api_docs/cpp_api/transform/statics.md, Transform, Static Functions]
+- [api_docs/cpp_api/transform/functions.md, Transform, Functions]
+
+# UntrainableTransform
+- [api_docs/cpp_api/untrainabletransform/untrainabletransform.md, C++ Plugin API, UntrainableTransform]
+- [api_docs/cpp_api/untrainabletransform/members.md, UntrainableTransform, Members]
+- [api_docs/cpp_api/untrainabletransform/constructors.md, UntrainableTransform, Constructors]
+- [api_docs/cpp_api/untrainabletransform/statics.md, UntrainableTransform, Static Functions]
+- [api_docs/cpp_api/untrainabletransform/functions.md, UntrainableTransform, Functions]
+
+# MetaTransform
+- [api_docs/cpp_api/metatransform/metatransform.md, C++ Plugin API, MetaTransform]
+- [api_docs/cpp_api/metatransform/members.md, MetaTransform, Members]
+- [api_docs/cpp_api/metatransform/constructors.md, MetaTransform, Constructors]
+- [api_docs/cpp_api/metatransform/statics.md, MetaTransform, Static Functions]
+- [api_docs/cpp_api/metatransform/functions.md, MetaTransform, Functions]
+
+# UntrainableMetaTransform
+- [api_docs/cpp_api/untrainablemetatransform/untrainablemetatransform.md, C++ Plugin API, UntrainableMetaTransform]
+- [api_docs/cpp_api/untrainablemetatransform/members.md, UntrainableMetaTransform, Members]
+- [api_docs/cpp_api/untrainablemetatransform/constructors.md, UntrainableMetaTransform, Constructors]
+- [api_docs/cpp_api/untrainablemetatransform/statics.md, UntrainableMetaTransform, Static Functions]
+- [api_docs/cpp_api/untrainablemetatransform/functions.md, UntrainableMetaTransform, Functions]
+
+# MetadataTransform
+- [api_docs/cpp_api/metadatatransform/metadatatransform.md, C++ Plugin API, MetadataTransform]
+- [api_docs/cpp_api/metadatatransform/members.md, MetadataTransform, Members]
+- [api_docs/cpp_api/metadatatransform/constructors.md, MetadataTransform, Constructors]
+- [api_docs/cpp_api/metadatatransform/statics.md, MetadataTransform, Static Functions]
+- [api_docs/cpp_api/metadatatransform/functions.md, MetadataTransform, Functions]
+
+# UntrainableMetadataTransform
+- [api_docs/cpp_api/untrainablemetadatatransform/untrainablemetadatatransform.md, C++ Plugin API, UntrainableMetadataTransform]
+- [api_docs/cpp_api/untrainablemetadatatransform/members.md, UntrainableMetadataTransform, Members]
+- [api_docs/cpp_api/untrainablemetadatatransform/constructors.md, UntrainableMetadataTransform, Constructors]
+- [api_docs/cpp_api/untrainablemetadatatransform/statics.md, UntrainableMetadataTransform, Static Functions]
+- [api_docs/cpp_api/untrainablemetadatatransform/functions.md, UntrainableMetadataTransform, Functions]
+
+# TimeVaryingTransform
+- [api_docs/cpp_api/timevaryingtransform/timevaryingtransform.md, C++ Plugin API, TimeVaryingTransform]
+
+# Distance
+- [api_docs/cpp_api/distance/distance.md, C++ Plugin API, Distance]
+- [api_docs/cpp_api/distance/members.md, Distance, Members]
+- [api_docs/cpp_api/distance/constructors.md, Distance, Constructors]
+- [api_docs/cpp_api/distance/statics.md, Distance, Static Functions]
+- [api_docs/cpp_api/distance/functions.md, Distance, Functions]
+
+# UntrainableDistance
+- [api_docs/cpp_api/untrainabledistance/untrainabledistance.md, C++ Plugin API, UntrainableDistance]
+- [api_docs/cpp_api/untrainabledistance/members.md, UntrainableDistance, Members]
+- [api_docs/cpp_api/untrainabledistance/constructors.md, UntrainableDistance, Constructors]
+- [api_docs/cpp_api/untrainabledistance/statics.md, UntrainableDistance, Static Functions]
+- [api_docs/cpp_api/untrainabledistance/functions.md, UntrainableDistance, Functions]
+
+# Output
+- [api_docs/cpp_api/output/output.md, C++ Plugin API, Output]
+- [api_docs/cpp_api/output/properties.md, Output, Properties]
+- [api_docs/cpp_api/output/members.md, Output, Members]
+- [api_docs/cpp_api/output/constructors.md, Output, Constructors]
+- [api_docs/cpp_api/output/statics.md, Output, Static Functions]
+- [api_docs/cpp_api/output/functions.md, Output, Functions]
+
+# MatrixOutput
+- [api_docs/cpp_api/matrixoutput/matrixoutput.md, C++ Plugin API, MatrixOutput]
+- [api_docs/cpp_api/matrixoutput/members.md, MatrixOutput, Members]
+- [api_docs/cpp_api/matrixoutput/constructors.md, MatrixOutput, Constructors]
+- [api_docs/cpp_api/matrixoutput/statics.md, MatrixOutput, Static Functions]
+- [api_docs/cpp_api/matrixoutput/functions.md, MatrixOutput, Functions]
+
+# Format
+- [api_docs/cpp_api/format/format.md, C++ Plugin API, Format]
+- [api_docs/cpp_api/format/members.md, Format, Members]
+- [api_docs/cpp_api/format/constructors.md, Format, Constructors]
+- [api_docs/cpp_api/format/statics.md, Format, Static Functions]
+- [api_docs/cpp_api/format/functions.md, Format, Functions]
+
+# Gallery
+- [api_docs/cpp_api/gallery/gallery.md, C++ Plugin API, Gallery]
+- [api_docs/cpp_api/gallery/properties.md, Gallery, Properties]
+- [api_docs/cpp_api/gallery/members.md, Gallery, Members]
+- [api_docs/cpp_api/gallery/constructors.md, Gallery, Constructors]
+- [api_docs/cpp_api/gallery/statics.md, Gallery, Static Functions]
+- [api_docs/cpp_api/gallery/functions.md, Gallery, Functions]
+
+# FileGallery
+- [api_docs/cpp_api/filegallery/filegallery.md, C++ Plugin API, FileGallery]
+
+# Representation
+- [api_docs/cpp_api/representation/representation.md, C++ Plugin API, Representation]
+- [api_docs/cpp_api/representation/members.md, Representation, Members]
+- [api_docs/cpp_api/representation/constructors.md, Representation, Constructors]
+- [api_docs/cpp_api/representation/statics.md, Representation, Static Functions]
+- [api_docs/cpp_api/representation/functions.md, Representation, Functions]
+
+# Classifier
+- [api_docs/cpp_api/classifier/classifier.md, C++ Plugin API, Classifier]
+- [api_docs/cpp_api/classifier/members.md, Classifier, Members]
+- [api_docs/cpp_api/classifier/constructors.md, Classifier, Constructors]
+- [api_docs/cpp_api/classifier/statics.md, Classifier, Static Functions]
+- [api_docs/cpp_api/classifier/functions.md, Classifier, Functions]
+
+- [api_docs/cl_api.md, API Docs, Command Line API]
+
+# Plugins
+- [api_docs/plugins/classification.md, Plugin Docs, Classification]
+- [api_docs/plugins/cluster.md, Plugin Docs, Cluster]
+- [api_docs/plugins/core.md, Plugin Docs, Core]
+- [api_docs/plugins/distance.md, Plugin Docs, Distance]
+- [api_docs/plugins/format.md, Plugin Docs, Format]
+- [api_docs/plugins/gallery.md, Plugin Docs, Gallery]
+- [api_docs/plugins/gui.md, Plugin Docs, GUI]
+- [api_docs/plugins/imgproc.md, Plugin Docs, Image Processing]
+- [api_docs/plugins/io.md, Plugin Docs, I/O]
+- [api_docs/plugins/metadata.md, Plugin Docs, Metadata]
+- [api_docs/plugins/output.md, Plugin Docs, Output]
+- [api_docs/plugins/video.md, Plugin Docs, Video]

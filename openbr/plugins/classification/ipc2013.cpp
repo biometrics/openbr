@@ -31,7 +31,7 @@ BR_REGISTER(Initializer, IPC2013Initializer)
  * \brief Intel Perceptual Computing SDK 2013 Face Recognition
  * \author Josh Klontz \cite jklontz
  */
-class IPC2013FaceRecognitionTransfrom : public UntrainableTransform
+class IPC2013FaceRecognitionTransform : public UntrainableTransform
 {
     Q_OBJECT
 	

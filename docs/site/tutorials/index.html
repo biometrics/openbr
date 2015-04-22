@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorials - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 current">
+            <a class="current" href="./">Tutorials</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l1"><a href="#quick-start">Quick Start</a></li>
+                        
+                            <li class="toctree-l1"><a href="#algorithms-in-openbr">Algorithms in OpenBR</a></li>
+                        
+                            <li class="toctree-l1"><a href="#training-algorithms">Training Algorithms</a></li>
+                        
+                            <li class="toctree-l1"><a href="#face-recognition">Face Recognition</a></li>
+                        
+                            <li class="toctree-l1"><a href="#age-estimation">Age Estimation</a></li>
+                        
+                            <li class="toctree-l1"><a href="#gender-estimation">Gender Estimation</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/cpp_api/">C++ Plugin API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+    <li>Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <p>Welcome to OpenBR! Here we have a series of tutorials designed to get you up to speed on what OpenBR is, how it works, its command line interface, and the C API. These tutorials aren't meant to be completed in a specific order so feel free to hop around. If you need help, feel free to <a href="..#help">contact us</a>.</p>
+<hr />
+<h1 id="quick-start">Quick Start</h1>
+<p>This tutorial is meant to familiarize you with the ideas, objects and motivations behind OpenBR using some fun examples. <strong>Note:</strong> parts of this tutorial require a webcam.</p>
+<p>OpenBR is a C++ library built on top of QT and OpenCV. It can either be used from the command line using the <strong>br</strong> application, or from interfacing with the <a href="../api_docs/c_api/">C API</a>. The command line is the easiest and fastest way to get started and this tutorial will use it for all of the examples.</p>
+<p>First, make sure that OpenBR has been installed on your system using the steps described in the <a href="../install/">installation section</a>. Then open up your terminal or command prompt and enter:</p>
+<pre><code>$ br -gui -algorithm "Show(false)" -enroll 0.webcam
+</code></pre>
+<p>If everything goes well your webcam should have opened up and is streaming. Look you are using OpenBR! Let's talk about what's happening in this command. OpenBR expects flags to be prepended by a <em>-</em> and arguments to follow the flags and be separated by spaces. Flags normally require a specific number of flags. All of the possible flags and their values are <a href="../api_docs/cl_api/">documented here</a>. Let's step through the individual arguments and values. <strong>-gui</strong> is the flag that tells OpenBR to open up a GUI window. Take a look at the <a href="../api_docs/plugins/gui/">GUI plugins</a> for other plugins that require the <strong>-gui</strong> flag. <strong>-algorithm</strong> is one of the most important flags in OpenBR. It expects one argument called the <em>algorithm string</em>. This string determines the pipeline that images and metadata propagate through. Finally, <strong>-enroll</strong> reads files from disk and <em>enrolls</em> them into the image pipeline. It takes one input argument (0.webcam in our example) and an optional output argument. OpenBR has a range of formats that can be enrolled into algorithms, some examples include .jpg, .png, .csv, and .xml. .webcam tells OpenBR to enroll frames from the computers webcam.</p>
+<p>Let's try a slightly more complicated example, after all OpenBR can do way more then just open webcams! Fire up the terminal again and enter:</p>
+<pre><code>$ br -gui -algorithm "Cvt(Gray)+Show(false)" -enroll 0.webcam
+</code></pre>
+<p>Hey what happened? We took our normal BGR (OpenCV's alternative to RGB) image and converted it to a grayscale image. How did we do that? Simple, by adding "Cvt(Gray)" to the algorithm string. <a href="../api_docs/plugins/imgproc/#cvttransform">Cvt</a>, short for convert, is an example of an OpenBR <em>plugin</em>. <a href="../api_docs/plugins/gui/#showtransform">Show</a> is a plugin as well. Every algorithm string in OpenBR is just a series of plugins joined together into a pipeline. In fact the <strong>+</strong> symbol is shorthand for a <a href="../api_docs/plugins/core/#pipetransform">Pipe</a>, another kind of OpenBR plugin. We specify <strong>Gray</strong> to <a href="../api_docs/plugins/imgproc/#cvttransform">Cvt</a> as a runtime parameter to tell the plugin which color space to convert the image to. We also could have written <strong>Cvt(HSV)</strong> if we wanted to convert to the HSV color space or <strong>Cvt(Luv)</strong> if we wanted to convert to Luv. The arguments inside of the plugins are runtime parameters that can adjust the functionality. They can be provided as key-value pairs, <strong>Cvt(Gray)</strong> is equivalent to <strong>Cvt(ColorSpace=Gray)</strong>, or as keyless values. Make sure you are supplying parameters in the proper order if you are not using keys! Try and run the code with <strong>Show(true)</strong> and see how changing the parameters effect the output of the command (<strong>Hint:</strong> hit a key to cycle through the images).</p>
+<p>Let's make this example a little bit more exciting and relevant to OpenBR's biometric roots. Face detection is normally the first step in a <a href="#face-recognition">face recognition</a> algorithm. Let's do face detection in OpenBR. Back in the terminal enter:</p>
+<pre><code>$ br -gui -algorithm "Cvt(Gray)+Cascade(FrontalFace)+Draw(lineThickness=3)+Show(false)" -enroll 0.webcam
+</code></pre>
+<p>You're webcam should be open again but this time a box should have appeared around your face! We added two new plugins to our string, <a href="../api_docs/plugins/metadata/#cascadetransform">Cascade</a> and <a href="../api_docs/plugins/gui/#drawtransform">Draw</a>. Let's walk through this plugin by plugin and see how it works:</p>
+<ol>
+<li><a href="../api_docs/plugins/imgproc/#cvttransform">Cvt(Gray)</a>: Convert the image from BGR to grayscale. Grayscale is required for <a href="../api_docs/plugins/metadata/#cascadetransform">Cascade</a> to work properly.</li>
+<li><a href="../api_docs/plugins/metadata/#cascadetransform">Cascade(FrontalFace)</a>: This is a wrapper on the OpenCV <a href="http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html">Cascade Classification</a> framework. It detects frontal faces using the <strong>FrontalFace</strong> model.</li>
+<li><a href="../api_docs/plugins/gui/#drawtransform">Draw(lineThickness=3)</a>: Take the rects detected by <a href="../api_docs/plugins/metadata/#cascadetransform">Cascade</a> and draw them onto the frame from the webcam. <strong>lineThickness</strong> determines the thickness of the drawn rect.</li>
+<li><a href="../api_docs/plugins/gui/#showtransform">Show(false)</a>: Show the image in a GUI window. <strong>false</strong> indicates the images should be shown in succession without waiting for a key press.</li>
+</ol>
+<p>Pretty straightforward right? Each plugin completes one task and the passes the output on to the next plugin. You can pipe together as many plugins as you like as long as the output data from one can be the input data to the next. But wait! Output data? Input data? we haven't talked about data at all yet! How does OpenBR handle data? There are two objects that handle data is OpenBR; <a href="../api_docs/cpp_api/file/file/">Files</a>, which handle metadata, and <a href="../api_docs/cpp_api/template/template/">Templates</a> which are containers for images and <a href="../api_docs/cpp_api/file/file/">Files</a>. Let's talk about <a href="../api_docs/cpp_api/file/file/">Files</a> first. A file consists of file name, which is a path to a file on disk, and metadata which is a map of key-value pairs. The metadata can contain any textual information about the file. In the example above we use it to store the rectangles detected by <a href="../api_docs/plugins/metadata/#cascadetransform">Cascade</a> and pass them along to <a href="../api_docs/plugins/gui/#drawtransform">Draw</a> for drawing. <a href="../api_docs/cpp_api/template/template/">Templates</a> are containers for images, given as OpenCV <a href="http://docs.opencv.org/modules/core/doc/basic_structures.html#mat" title="Mat">Mats</a> and <a href="../api_docs/cpp_api/file/file/">Files</a>. They can contain one image or a list of images. Plugins are either <a href="../api_docs/cpp_api/template/template/">Template</a> in, <a href="../api_docs/cpp_api/template/template/">Template</a> out or <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateList</a> in, <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateList</a> out. <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateLists</a> are, of course, just a list of <a href="../api_docs/cpp_api/template/template/">Templates</a> which a few functions added for your convenience.</p>
+<p>And there you go! You have gotten your quick start in OpenBR. We covered the <a href="../api_docs/cl_api/">command line</a>, <a href="../api_docs/cpp_api/">plugins, and the key data structures</a> in OpenBR. If you want to learn more the next few tutorials will cover these fields with more depth. For even more information check out the <a href="../technical/">technical overviews</a> and class documentation!</p>
+<hr />
+<h1 id="algorithms-in-openbr">Algorithms in OpenBR</h1>
+<hr />
+<h1 id="training-algorithms">Training Algorithms</h1>
+<hr />
+<h1 id="face-recognition">Face Recognition</h1>
+<hr />
+<h1 id="age-estimation">Age Estimation</h1>
+<hr />
+<h1 id="gender-estimation">Gender Estimation</h1>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../technical/" class="btn btn-neutral float-right" title="Technical Overviews"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../install/" class="btn btn-neutral" title="Install"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../install/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../technical/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:24.802646
+-->
+</body>
+</html>

@@ -764,12 +764,6 @@ public:
     QTime startTime; /*!< \brief Used to estimate timeRemaining(). */
 
     /*!
-     * \brief Returns the suggested number of partitions \em size should be divided into for processing.
-     * \param size The length of the list to be partitioned.
-     */
-    int blocks(int size) const;
-
-    /*!
      * \brief Returns true if \em name is queryable using <a href="http://doc.qt.digia.com/qt/qobject.html#property">QObject::property</a>
      * \param name The property key to check for existance.
      * \return \c true if \em name is a property, \c false otherwise.

@@ -50,6 +50,10 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \brief Projects input into learned Principal Component Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
+ *
+ * \property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
+ * \property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
  */
 class PCATransform : public Transform
 {
@@ -62,12 +66,6 @@ protected:
     Q_PROPERTY(int drop READ get_drop WRITE set_drop RESET reset_drop STORED false)
     Q_PROPERTY(bool whiten READ get_whiten WRITE set_whiten RESET reset_whiten STORED false)
 
-    /*!
-     *     keep <  0: All eigenvalues are retained.
-     *     keep =  0: No PCA performed, eigenvectors form an identity matrix.
-     * 0 < keep <  1: Fraction of the variance to retain.
-     *     keep >= 1: Number of leading eigenvectors to retain.
-     */
     BR_PROPERTY(float, keep, 0.95)
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
@@ -272,6 +270,7 @@ BR_REGISTER(Transform, RowWisePCATransform)
  * \ingroup transforms
  * \brief Computes Distance From Feature Space (DFFS) \cite moghaddam97.
  * \author Josh Klontz \cite jklontz
+ * \property float keep Sets PCA keep property. Default is 0.95.
  */
 class DFFSTransform : public Transform
 {
@@ -317,6 +316,13 @@ BR_REGISTER(Transform, DFFSTransform)
  * \brief Projects input into learned Linear Discriminant Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
+ * \property float pcaKeep BRENDAN OR JOSH FILL ME IN. Default is 0.98.
+ * \property bool pcaWhiten BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \property int directLDA BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \property float directDrop BRENDAN OR JOSH FILL ME IN. Default is 0.1.
+ * \property QString inputVariable BRENDAN OR JOSH FILL ME IN. Default is "Label".
+ * \property bool isBinary BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \property bool normalize BRENDAN OR JOSH FILL ME IN. Default is true.
  */
 class LDATransform : public Transform
 {
@@ -558,10 +564,11 @@ BR_REGISTER(Transform, LDATransform)
 
 /*!
  * \ingroup transforms
- * \brief Projects input into learned Linear Discriminant Analysis subspace
- *          learned on a sparse subset of features with the highest weight
- *          in the original LDA algorithm.
+ * \brief Projects input into learned Linear Discriminant Analysis subspace learned on a sparse subset of features with the highest weight in the original LDA algorithm.
  * \author Brendan Klare \cite bklare
+ * \property float varThreshold BRENDAN FILL ME IN. Default is 1.5.
+ * \property float pcaKeep BRENDAN FILL ME IN. Default is 0.98.
+ * \property bool normalize BRENDAN FILL ME IN. Default is true.
  */
 class SparseLDATransform : public Transform
 {

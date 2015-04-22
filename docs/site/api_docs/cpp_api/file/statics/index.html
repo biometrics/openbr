@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Static Functions - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../../../../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../css/highlight.css">
+
+  <script src="../../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../../js/highlight.pack.js"></script>
+  <script src="../../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../../.." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../technical/">Technical Overviews</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../../../../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 current">
+            <a class="current" href="../../">C++ Plugin API</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../apifunctions/">API Functions</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 current">
+            <a class="current" href="../file/">File</a>
+            
+                <ul>
+                    
+                        
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../members/">Members</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../constructors/">Constructors</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 current">
+            <a class="current" href="./">Static Functions</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l4"><a href="#parse">QVariant parse(const QString &amp;value)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#values">QList&lt;QVariant&gt; values(const QList&lt;U&gt; &amp;fileList, const QString &amp;key)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#get-1">QList&lt;T&gt; get(const QList&lt;U&gt; &amp;fileList, const QString &amp;key)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#get-2">QList&lt;T&gt; get(const QList&lt;U&gt; &amp;fileList, const QString &amp;key, const T &amp;defaultValue)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#dbg-operator-ltlt">QDebug operator &lt;&lt;(QDebug dbg, const File &amp;file)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#stream-operator-ltlt">QDataStream &amp;operator &lt;&lt;(QDataStream &amp;stream, const File &amp;file)</a></li>
+                        
+                            <li class="toctree-l4"><a href="#stream-operator-gtgt">QDataStream &amp;operator &gt;&gt;(QDataStream &amp;stream, const File &amp;file)</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l3 ">
+            <a class="" href="../functions/">Functions</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filelist/filelist/">FileList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../template/template/">Template</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../templatelist/templatelist/">TemplateList</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../factory/factory/">Factory</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../object/object/">Object</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../context/context/">Context</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../initializer/initializer/">Initializer</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../transform/transform/">Transform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabletransform/untrainabletransform/">UntrainableTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metatransform/metatransform/">MetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../metadatatransform/metadatatransform/">MetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../distance/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../untrainabledistance/untrainabledistance/">UntrainableDistance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../output/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../matrixoutput/matrixoutput/">MatrixOutput</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../format/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../gallery/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../filegallery/filegallery/">FileGallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../representation/representation/">Representation</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l2 ">
+            <a class="" href="../../classifier/classifier/">Classifier</a>
+            
+            </li>
+        
+    
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../../../plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../..">Docs</a> &raquo;</li>
+    
+      
+        <li>File &raquo;</li>
+      
+    
+    <li>Static Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h2 id="parse"><a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a> parse(const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;value)</h2>
+<p>Try to convert a given value to a <a href="http://doc.qt.io/qt-5/qpointf.html" title="QPointF">QPointF</a>, <a href="http://doc.qt.io/qt-5/qrectf.html" title="QRectF">QRectF</a>, int or float.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>static QVariant parse(const QString &amp;value);
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>String value to be converted.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a>) The converted file if a conversion was possible. Otherwise the unconverted string is returned.</p>
+</li>
+<li><strong>example:</strong><pre><code>QString point = "(1, 1)";
+QString rect = "(1, 1, 5, 5)";
+QString integer = "1";
+QString fp = "1.0";
+QString string = "Hello World";
+
+File::parse(point);   // returns QVariant(QPointF, QPointF(1, 1))
+File::parse(rect);    // returns QVariant(QRectF, QRectF(1, 1, 5x5))
+File::parse(integer); // returns QVariant(int, 1)
+File::parse(fp);      // returns QVariant(float, 1.0f)
+File::parse(string);  // returns QVariant(QString, "Hello World")
+</code></pre>
+</li>
+</ul>
+<h2 id="values"><a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;<a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a>&gt; values(const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;fileList, const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;key)</h2>
+<p>Gather a list of <a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a> values associated with a metadata key from a provided list of files.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>template&lt;class U&gt; static [QList&lt;QVariant&gt; values(const QList&lt;U&gt; &amp;fileList, const QString &amp;key)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileList</td>
+<td>const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;</td>
+<td>A list of files to parse for values. A type is required for <tt>U</tt>. Valid options are: <ul> <li><a href="../file/">File</a></li> <li><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a></li> </ul></td>
+</tr>
+<tr>
+<td>key</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>A metadata key used to lookup the values.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;<a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a>&gt;) A list of <a href="http://doc.qt.io/qt-5/qvariant.html" title="QVariant">QVariant</a> values associated with the given key in each of the provided files.</p>
+</li>
+<li><strong>example:</strong><pre><code>File f1, f2;
+f1.set("Key1", QVariant::fromValue&lt;float&gt;(1));
+f1.set("Key2", QVariant::fromValue&lt;float&gt;(2));
+f2.set("Key1", QVariant::fromValue&lt;float&gt;(3));
+
+File::values&lt;File&gt;(QList&lt;File&gt;() &lt;&lt; f1 &lt;&lt; f2, "Key1"); // returns [QVariant(float, 1),
+                                                       //          QVariant(float, 3)]
+</code></pre>
+</li>
+</ul>
+<h2 id="get-1"><a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;T&gt; get(const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;fileList, const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;key)</h2>
+<p>Gather a list of <tt>T</tt> values associated with a metadata key from a provided list of files. <tt>T</tt> is a user provided type. If the key does not exist in the metadata of <em>any</em> file an error is thrown.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>template&lt;class T, class U&gt; static QList&lt;T&gt; get(const QList&lt;U&gt; &amp;fileList, const QString &amp;key)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileList</td>
+<td>const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;</td>
+<td>A list of files to parse for values. A type is required for U. Valid options are: <ul> <li><a href="../file/">File</a></li> <li><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a></li> </ul></td>
+</tr>
+<tr>
+<td>key</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>A metadata key used to lookup the values.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;T&gt;) A list of the values of type <tt>T</tt> associated with the given key. A type is required for <tt>T</tt>.</p>
+</li>
+<li><strong>example:</strong><pre><code>File f1, f2;
+f1.set("Key1", QVariant::fromValue&lt;float&gt;(1));
+f1.set("Key2", QVariant::fromValue&lt;float&gt;(2));
+f2.set("Key1", QVariant::fromValue&lt;float&gt;(3));
+
+File::get&lt;float, File&gt;(QList&lt;File&gt;() &lt;&lt; f1 &lt;&lt; f2, "Key1");  // returns [1., 3.]
+File::get&lt;float, File&gt;(QList&lt;File&gt;() &lt;&lt; f1 &lt;&lt; f2, "Key2");  // Error: Key doesn't exist in f2
+File::get&lt;QRectF, File&gt;(QList&lt;File&gt;() &lt;&lt; f1 &lt;&lt; f2, "Key1"); // Error: float is not convertable to QRectF
+</code></pre>
+</li>
+</ul>
+<h2 id="get-2"><a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;T&gt; get(const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;fileList, const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;key, const T &amp;defaultValue)</h2>
+<p>Gather a list of <tt>T</tt> values associated with a metadata key from a provided list of files. <tt>T</tt> is a user provided type. If the key does not exist in the metadata of <em>any</em> file the provided <strong>defaultValue</strong> is used.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>template&lt;class T, class U&gt; static QList&lt;T&gt; get(const QList&lt;U&gt; &amp;fileList, const QString &amp;key, const T &amp;defaultValue)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileList</td>
+<td>const <a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;U&gt; &amp;</td>
+<td>A list of files to parse for values. A type is required for U. Valid options are: <ul> <li><a href="../file/">File</a></li> <li><a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a></li> </ul></td>
+</tr>
+<tr>
+<td>key</td>
+<td>const <a href="http://doc.qt.io/qt-5/QString.html" title="QString">QString</a> &amp;</td>
+<td>A metadata key used to lookup the values.</td>
+</tr>
+<tr>
+<td>defaultValue</td>
+<td>const T &amp;</td>
+<td>The default value if the key is not in a file's metadata. A type is required for T. All types are valid.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/QList.html" title="QList">QList</a>&lt;T&gt;) A list of the values of type <tt>T</tt> associated with the given key. A type is required for <tt>T</tt>.</p>
+</li>
+<li>
+<p><strong>example:</strong></p>
+<p>File f1, f2;
+f1.set("Key1", QVariant::fromValue<float>(1));
+f1.set("Key2", QVariant::fromValue<float>(2));
+f2.set("Key1", QVariant::fromValue<float>(3));</p>
+<p>File::get<float, File>(QList<File>() &lt;&lt; f1 &lt;&lt; f2, "Key1");                       // returns [1., 3.]
+File::get<float, File>(QList<File>() &lt;&lt; f1 &lt;&lt; f2, "Key2", QList<float>() &lt;&lt; 1);  // returns [1.]
+File::get<QRectF, File>(QList<File>() &lt;&lt; f1 &lt;&lt; f2, "Key1, QList<QRectF>()");     // returns []</p>
+</li>
+</ul>
+<h2 id="dbg-operator-ltlt"><a href="http://doc.qt.io/qt-5/qdebug.html" title="QDebug">QDebug</a> operator &lt;&lt;(<a href="http://doc.qt.io/qt-5/qdebug.html" title="QDebug">QDebug</a> dbg, const <a href="../file/">File</a> &amp;file)</h2>
+<p>Calls <a href="../functions/#flat">flat</a> on the given file and then streams that file to stderr.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>QDebug operator &lt;&lt;(QDebug dbg, const File &amp;file)
+</code></pre>
+</li>
+<li>
+<p><strong>parameter:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dbg</td>
+<td><a href="http://doc.qt.io/qt-5/qdebug.html" title="QDebug">QDebug</a></td>
+<td>The debug stream</td>
+</tr>
+<tr>
+<td>file</td>
+<td>const <a href="../file/">File</a> &amp;</td>
+<td>File to stream</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/qdebug.html" title="QDebug">QDebug</a> &amp;) returns a reference to the updated debug stream</p>
+</li>
+<li><strong>example:</strong><pre><code>File file("../path/to/pictures/picture.jpg");
+file.set("Key", QString("Value"));
+
+qDebug() &lt;&lt; file; // "../path/to/pictures/picture.jpg[Key=Value]" streams to stderr
+</code></pre>
+</li>
+</ul>
+<h2 id="stream-operator-ltlt"><a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;operator &lt;&lt;(<a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;stream, const <a href="../file/">File</a> &amp;file)</h2>
+<p>Serialize a file to a data stream.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>QDataStream &amp;operator &lt;&lt;(QDataStream &amp;stream, const File &amp;file)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stream</td>
+<td><a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a></td>
+<td>The data stream</td>
+</tr>
+<tr>
+<td>file</td>
+<td>const <a href="../file/">File</a> &amp;</td>
+<td>File to stream</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;) returns a reference to the updated data stream</p>
+</li>
+<li><strong>example:</strong><pre><code>void store(QDataStream &amp;stream)
+{
+    File file("../path/to/pictures/picture.jpg");
+    file.set("Key", QString("Value"));
+
+    stream &lt;&lt; file; // "../path/to/pictures/picture.jpg[Key=Value]" serialized to the stream
+}
+</code></pre>
+</li>
+</ul>
+<h2 id="stream-operator-gtgt"><a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;operator &gt;&gt;(<a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;stream, const <a href="../file/">File</a> &amp;file)</h2>
+<p>Deserialize a file from a data stream.</p>
+<ul>
+<li>
+<p><strong>function definition:</strong></p>
+<pre><code>QDataStream &amp;operator &gt;&gt;(QDataStream &amp;stream, const File &amp;file)
+</code></pre>
+</li>
+<li>
+<p><strong>parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stream</td>
+<td><a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a></td>
+<td>The data stream</td>
+</tr>
+<tr>
+<td>file</td>
+<td>const <a href="../file/">File</a> &amp;</td>
+<td>File to stream</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>output:</strong> (<a href="http://doc.qt.io/qt-5/qdatastream.html" title="QDataStream">QDataStream</a> &amp;) returns a reference to the updated data stream</p>
+</li>
+<li><strong>example:</strong><pre><code>void load(QDataStream &amp;stream)
+{
+    File in("../path/to/pictures/picture.jpg");
+    in.set("Key", QString("Value"));
+
+    stream &lt;&lt; in; // "../path/to/pictures/picture.jpg[Key=Value]" serialized to the stream
+
+    File out;
+    stream &gt;&gt; out;
+
+    out.name; // returns "../path/to/pictures/picture.jpg"
+    out.flat(); // returns "../path/to/pictures/picture.jpg[Key=Value]"
+}
+</code></pre>
+</li>
+</ul>
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../functions/" class="btn btn-neutral float-right" title="Functions"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../constructors/" class="btn btn-neutral" title="Constructors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../constructors/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../functions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:25.087825
+-->
+</body>
+</html>

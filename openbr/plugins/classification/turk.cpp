@@ -23,6 +23,9 @@ namespace br
  * \ingroup transforms
  * \brief Convenience class for training turk attribute regressors
  * \author Josh Klontz \cite jklontz
+ * \property QString key Metadata key to pass input values to SVM. Actual lookup key is "key_value" where value is each value in the parameter values. Default is "".
+ * \property QStringList values Metadata keys to pass input values to SVM. Actual lookup key is "key_value" where key is the parameter key and value is each value in this list. Each passed value trains a new SVM with the input values found in metadata["key_value"]. Default is "".
+ * \property bool isMeta If true, "Average+SaveMat(predicted_key_value)" is appended to each classifier. If false, nothing is appended. Default is false.
  */
 class TurkClassifierTransform : public Transform
 {

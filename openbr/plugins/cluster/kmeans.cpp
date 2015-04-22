@@ -28,6 +28,9 @@ namespace br
  * \ingroup transforms
  * \brief Wraps OpenCV kmeans and flann.
  * \author Josh Klontz \cite jklontz
+ * \property int kTrain The number of random centroids to make at train time. Default is 256.
+ * \property int kSearch The number of nearest neighbors to search for at runtime. Default is 1.
+ * \see http://docs.opencv.org/modules/flann/doc/flann_fast_approximate_nearest_neighbor_search.html
  */
 class KMeansTransform : public Transform
 {

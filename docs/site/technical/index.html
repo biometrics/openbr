@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Technical Overviews - OpenBR</title>
+  
+
+  <link rel="shortcut icon" href="../docs/img/openbr.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> OpenBR</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="..">Home</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../install/">Install</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../tutorials/">Tutorials</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 current">
+            <a class="current" href="./">Technical Overviews</a>
+            
+                <ul>
+                    
+                        
+                            <li class="toctree-l1"><a href="#algorithms-in-openbr">Algorithms in OpenBR</a></li>
+                        
+                            <li class="toctree-l1"><a href="#the-evaluation-harness">The Evaluation Harness</a></li>
+                        
+                    
+                </ul>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../contribute/">Contribute</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l0 ">
+            <a class="" href="../papers/">Publications</a>
+            
+            </li>
+        
+    
+        
+            <span>API Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/c_api/">C API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/cpp_api/">C++ Plugin API</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/cl_api/">Command Line API</a>
+            
+            </li>
+        
+    
+        
+    
+        
+            <span>Plugin Docs</span>
+            
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/classification/">Classification</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/cluster/">Cluster</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/core/">Core</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/distance/">Distance</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/format/">Format</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/gallery/">Gallery</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/gui/">GUI</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/imgproc/">Image Processing</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/io/">I/O</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/metadata/">Metadata</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/output/">Output</a>
+            
+            </li>
+        
+    
+        
+            <li class="toctree-l1 ">
+            <a class="" href="../api_docs/plugins/video/">Video</a>
+            
+            </li>
+        
+    
+        
+    
+</ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">OpenBR</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+    <li>Technical Overviews</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <h1 id="algorithms-in-openbr">Algorithms in OpenBR</h1>
+<p><strong>So you've run <code>scripts/helloWorld.sh</code> and it generally makes sense, except you have no idea what    <code>'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)'</code> means or how it is executed.</strong></p>
+<p>Well if this is the case, you've found the right documentation.
+Let's get started!</p>
+<p>In OpenBR an <em>algorithm</em> is a technique for enrolling templates associated with a technique for comparing them.
+Recall that our ultimate goal is to be able to say how similar two face images are (or two fingerprints, irises, etc.).
+Instead of storing the entire raw image for comparison, it is common practice to store an optimized representation, or <em>template</em>, of the image for the task at hand.
+The process of generating this optimized representation is called <em>template enrollment</em> or <em>template generation</em>.
+Given two templates, <em>template comparison</em> computes the similarity between them, where the higher values indicate more probable matches and the threshold for determining what constitutes an adequate match is determined operationally.
+The goal of template generation is to design templates that are small, accurate, and fast to compare.
+Ok, you probably knew all of this already, let's move on.</p>
+<p>The only way of creating an algorithm in OpenBR is from a text string that describes it.
+We call this string the <em>algorithm description</em>.
+The algorithm description is separated into two parts by a ':', with the left hand side indicating how to generate templates and the right hand side indicating how to compare them.
+Some algorithms, like <a href="../tutorials/#age-estimation">age_estimation</a> and <a href="../tutorials/#gender-estimation">gender estimation</a> are <em>classifiers</em> that don't create templates.
+In these cases, the colon and the template comparison technique can be omitted from the algorithm description.</p>
+<p>There are several motivations for mandating that algorithms are defined from these strings, here are the most important:
+    1. It ensures good software development practices by forcibly decoupling the development of each step in an algorithm, facilitating the modification of algorithms and the re-use of individual steps.
+    2. It spares the creation and maintenance of a lot of very similar header files that would otherwise be needed for each step in an algorithm, observe the absence of headers in <code>openbr/plugins</code>.
+    3. It allows for algorithm parameter tuning without recompiling.
+    4. It is completely unambiguous, both the OpenBR interpreter and anyone familiar with the project can understand exactly what your algorithm does just from this description.</p>
+<p>Let's look at some of the important parts of the code base that make this possible!</p>
+<p>In <code>AlgorithmCore::init()</code> in <code>openbr/core/core.cpp</code> you can see the code for splitting the algorithm description at the colon.
+Shortly thereafter in this function we <em>make</em> the template generation and comparison methods.
+These make calls are defined in the public <a href="../api_docs/cpp_api/">C++ plugin API</a> and can also be called from end user code.</p>
+<p>Below we discuss some of the source code for <code>Transform::make</code> in <code>openbr/openbr_plugin.cpp</code>.
+Note, the make functions for other plugin types are similar in spirit and will not be covered.</p>
+<p>One of the first steps when converting the template enrollment description into a <a href="../api_docs/cpp_api/transform/transform/">Transform</a> is to replace the operators, like '+', with their full form:</p>
+<pre><code>{ // Check for use of '+' as shorthand for Pipe(...)
+     QStringList words = parse(str, '+');
+     if (words.size() &gt; 1)
+         return make("Pipe([" + words.join(",") + "])", parent);
+}
+</code></pre>
+<p>A pipe (see <a href="../api_docs/plugins/core/#pipetransform">PipeTransform</a>) is the standard way of chaining together multiple steps in series to form more sophisticated algorithms.
+PipeTransform takes a list of transforms, and <em>projects</em> templates through each transform in order.</p>
+<p>After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recursively starting at the root of the tree:</p>
+<pre><code>Transform *transform = Factory&lt;Transform&gt;::make("." + str);
+</code></pre>
+<p>At this point we reach arguably the most important code in the entire framework, the <em>object factory</em> in <code>openbr/openbr_plugin.h</code>.
+The <a href="../api_docs/cpp_api/factory/factory/">Factory</a> class is responsible for constructing an object from a string:</p>
+<pre><code>static T *make(const File &amp;file)
+{
+    QString name = file.get&lt;QString&gt;("plugin", "");
+    if (name.isEmpty()) name = file.suffix();
+    if (!names().contains(name)) {
+        if      (names().contains("Empty") &amp;&amp; name.isEmpty()) name = "Empty";
+        else if (names().contains("Default"))                 name = "Default";
+        else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
+    }
+    T *object = registry-&gt;value(name)-&gt;_make();
+    static_cast&lt;Object*&gt;(object)-&gt;init(file);
+    return object;
+}
+</code></pre>
+<p>Going back to our original example, a <a href="../api_docs/plugins/core/#pipetransform">PipeTransform</a> will be created with <a href="../api_docs/plugins/io/#opentransform">OpenTransform</a>, <a href="../api_docs/plugins/imgproc/#cvttransform">CvtTransform</a>, <a href="../api_docs/plugins/metadata/#cascadetransform">CascadeTransform</a>, <a href="../api_docs/plugins/metadata/#asefeyestransform">ASEFEyesTransform</a>, <a href="../api_docs/plugins/imgproc/#affinetransform">AffineTransform</a>, <a href="../api_docs/plugins/imgproc/#cvtfloattransform">CvtFloatTransform</a>, and <a href="../api_docs/plugins/classification/#pcatransform">PCATransform</a> as its children.</p>
+<p>If you want all the tedious details about what exactly this algoritm does, then you should read the <a href="../api_docs/cpp_api/transform/functions/#project-1">project</a> function implemented by each of these plugins.
+The brief explanation is that it <em>reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images</em>.
+If you are familiar with face recognition, you will likely recognize this as the Eigenfaces \cite turk1991eigenfaces algorithm.</p>
+<p>As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
+Since OpenBR expects <em>similarity</em> values when comparing templates, and not <em>distances</em>, the <a href="../api_docs/plugins/distance/#distdistance">DistDistance</a> will return <em>-log(distance+1)</em> so that larger values indicate more similarity.</p>
+<hr />
+<h1 id="the-evaluation-harness">The Evaluation Harness</h1>
+<p>The <em>Biometric Evaluation Environment</em> (BEE) is a <a href="http://www.nist.gov/index.html">NIST</a> standard for evaluating biometric algorithms.</p>
+<p>OpenBR implements the following portions of the BEE specification:</p>
+<ul>
+<li>
+<p>Signature Set- A signature set (or <em>sigset</em>) is a <a href="../api_docs/cpp_api/gallery/gallery/">Gallery</a> compliant <strong>XML</strong> file-list specified on page 9 of <a href="../DOCUMENT ME">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/gallery/#xmlgallery">xmlGallery</a>. Sigsets are identified with a <strong>.xml</strong> extension.</p>
+</li>
+<li>
+<p>Similarity Matrix- A similarity matrix (or <em>simmat</em>) is an <a href="../api_docs/cpp_api/output/output/">Output</a> compliant binary score matrix specified on page 12 of <a href="../DOCUMENT ME">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/output/#mtxoutput">mtxOutput</a>. Simmats are identified with a <strong>.mtx</strong> extension. See <a href="../api_docs/c_api/functions/#br_eval">br_eval</a> for more information.</p>
+</li>
+<li>
+<p>Mask Matrix- A mask matrix (or <em>mask</em>) is a binary matrix specified on page 14 of <a href="../DOCUMENT ME">MBGC File Overview</a> identifying the ground truth genuines and impostors of a corresponding <em>simmat</em>. Masks are identified with a <strong>.mask</strong> extension. See <a href="../api_docs/c_api/functions/#br_make_mask">br_make_mask</a> and <a href="../api_docs/c_api/functions/#br_combine_masks">br_combine_masks</a> for more information.</p>
+</li>
+</ul>
+<hr />
+<!-- Links -->
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../contribute/" class="btn btn-neutral float-right" title="Contribute"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../tutorials/" class="btn btn-neutral" title="Tutorials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+        
+      <span><a href="../tutorials/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../contribute/" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+
+<!--
+MkDocs version  : 0.12.1
+Docs Build Date : 2015-04-22 01:05:24.817040
+-->
+</body>
+</html>

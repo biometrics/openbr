@@ -23,41 +23,6 @@
 extern "C" {
 #endif
 
- /*!
- * \defgroup c_sdk C SDK
- * \brief High-level API for running algorithms and evaluating results.
- *
- * In order to provide a high-level interface that is usable from the command line and callable from other programming languages,
- * the API is designed to operate at the "file system" level.
- * In other words, arguments to many functions are file paths that specify either a source of input or a desired output.
- * File extensions are relied upon to determine \em how files should be interpreted in the context of the function being called.
- * The \ref cpp_plugin_sdk should be used if more fine-grained control is required.
- *
- * \code
- * #include <openbr/openbr.h>
- * \endcode
- * <a href="http://www.cmake.org/">CMake</a> developers may wish to use <tt>share/openbr/cmake/OpenBRConfig.cmake</tt>.
- *
- * \section managed_return_value Managed Return Value
- * Memory for <tt>const char*</tt> return values is managed internally and guaranteed until the next call to the function.
- *
- * \section input_string_buffer Input String Buffer
- * Users should input a char * buffer and the size of that buffer. String data will be copied into the buffer, if the buffer is too
- * small, only part of the string will be copied. Returns the buffer size required to contain the complete string.
- *
- * \section examples Examples
- * - \ref c_face_recognition_evaluation
- *
- * \subsection c_face_recognition_evaluation Face Recognition Evaluation
- * \ref cli_face_recognition_evaluation "Command Line Interface Equivalent"
- * \snippet app/examples/face_recognition_evaluation.cpp face_recognition_evaluation
- */
-
-/*!
- * \addtogroup c_sdk
- *  @{
- */
-
 /*!
  * \brief Wraps br::Context::about()
  * \see br_version
@@ -77,7 +42,6 @@ BR_EXPORT void br_cat(int num_input_galleries, const char *input_galleries[], co
  * \note If a gallery contains n duplicates, the first n-1 duplicates in the gallery will be removed and the nth will be kept.
  * \note Users are encouraged to use binary gallery formats as the entire gallery is read into memory in one call to Gallery::read.
  */
-
 BR_EXPORT void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold);
 
 /*!
@@ -122,6 +86,9 @@ BR_EXPORT void br_compare(const char *target_gallery, const char *query_gallery,
  */
 BR_EXPORT void br_compare_n(int num_targets, const char *target_galleries[], const char *query_gallery, const char *output);
 
+/*!
+ * \brief DOCUMENT ME!
+ */
 BR_EXPORT void br_pairwise_compare(const char *target_gallery, const char *query_gallery, const char *output = "");
 
 /*!

@@ -26,7 +26,18 @@ namespace br
  * \ingroup transforms
  * \brief Wraps OpenCV's random trees framework
  * \author Scott Klum \cite sklum
- * \brief http://docs.opencv.org/modules/ml/doc/random_trees.html
+ * \see http://docs.opencv.org/modules/ml/doc/random_trees.html
+ * \property bool classification If true the labels are expected to be categorical. Otherwise they are expected to be numerical. Default is true.
+ * \property float splitPercentage Used to calculate the minimum number of samples per split in a random tree. The minimum number of samples is calculated as the number of samples x splitPercentage. Default is 0.01.
+ * \property int maxDepth The maximum depth of each decision tree. Default is std::numeric_limits<int>::max() and typically should be set by the user.
+ * \property int maxTrees The maximum number of trees in the forest. Default is 10.
+ * \property float forestAccuracy A sufficient accuracy for the forest for training to terminate. Used if termCrit is EPS or Both. Default is 0.1.
+ * \property bool returnConfidence If both classification and returnConfidence are use a fuzzy class label as the output of the forest. Default is true.
+ * \property bool overwriteMat If true set dst to be a 1x1 Mat with the forest response as its value. Otherwise append the forest response to metadata using outputVariable as a key. Default is true.
+ * \property QString inputVariable The metadata key for each templates label. Default is "Label".
+ * \property QString outputVariable The metadata key for the forest response if overwriteMat is false. Default is "".
+ * \property bool weight If true and classification is true the random forest will use prior accuracies. Default is false.
+ * \property enum termCrit Termination criteria for training the random forest. Options are Iter, EPS and Both. Iter terminates when the maximum number of trees is reached. EPS terminates when forestAccuracy is met. Both terminates when either is true. Default is Iter.
  */
 class ForestTransform : public Transform
 {
@@ -176,7 +187,8 @@ BR_REGISTER(Transform, ForestTransform)
  * \ingroup transforms
  * \brief Wraps OpenCV's random trees framework to induce features
  * \author Scott Klum \cite sklum
- * \brief https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf
+ * \see https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf
+ * \property bool useRegressionValue SCOTT FILL ME IN.
  */
 class ForestInductionTransform : public ForestTransform
 {
