@@ -11,7 +11,8 @@ namespace br
  * \ingroup transforms
  * \brief Generic interface to Likely JIT compiler
  *
- * www.liblikely.org
+ * - [Homepage](www.liblikely.org)
+ * - [API Documentation](https://s3.amazonaws.com/liblikely/doxygen/index.html)
  * \author Josh Klontz \cite jklontz
  */
 class LikelyTransform : public Transform
