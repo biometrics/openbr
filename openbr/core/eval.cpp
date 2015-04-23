@@ -196,7 +196,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
 
     // Flags rows as being mated or non-mated searches
+    // Positive value: mated search, negative value: non-mated search
+    // Value of 0: ignored search
     QVector<int> genuineSearches(simmat.rows, 0);
+
     int totalGenuineSearches = 0, totalImpostorSearches = 0;
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
     for (int i=0; i<simmat.rows; i++) {
