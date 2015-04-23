@@ -20,7 +20,7 @@ class CannyTransform : public UntrainableTransform
     Q_PROPERTY(bool L2Gradient READ get_L2Gradient WRITE set_L2Gradient RESET reset_L2Gradient STORED false)
     BR_PROPERTY(double, threshold, 5)
     BR_PROPERTY(double, aperatureSize, 3)
-    BR_PROPERTY(bool, L2Gradient, false)
+    BR_PROPERTY(bool, L2Gradient, true)
 
     void project(const Template &src, Template &dst) const
     {
