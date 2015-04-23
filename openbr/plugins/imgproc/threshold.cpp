@@ -9,7 +9,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Wraps OpenCV's adaptive thresholding.
+ * \brief Wraps OpenCV's thresholding.
  * \author Scott Klum \cite sklum
  */
 class ThresholdTransform : public UntrainableTransform
