@@ -20,12 +20,8 @@ class ShapeAxisRatioTransform : public UntrainableTransform
     {
         dst = src;
 
-        Mat mask = src.file.get<Mat>("Mask");
-        Mat masked;
-        src.m().copyTo(masked, mask);
-
         Mat indices;
-        findNonZero(masked,indices);
+        findNonZero(src,indices);
 
         dst.m() = Mat(1,1,CV_32FC1);
 
