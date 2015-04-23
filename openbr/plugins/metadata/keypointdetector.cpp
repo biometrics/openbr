@@ -27,6 +27,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Key Point Detector
+ * \br_link http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html
  * \author Josh Klontz \cite jklontz
  */
 class KeyPointDetectorTransform : public UntrainableTransform

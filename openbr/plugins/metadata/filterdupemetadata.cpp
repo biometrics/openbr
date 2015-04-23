@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Removes duplicate templates based on a unique metadata key
+ * \brief Removes duplicate Templates based on a unique metadata key
  * \author Austin Blanton \cite imaus10
  */
 class FilterDupeMetadataTransform : public TimeVaryingTransform

@@ -29,11 +29,13 @@ static void _train(Transform *transform, TemplateList data) // think data has to
 
 /*!
  * \ingroup transforms
- * \brief Cross validate a trainable transform.
+ * \brief Cross validate a trainable Transform.
+ *
+ * To use an extended Gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
+ * against for all testing partitions.
+ *
  * \author Josh Klontz \cite jklontz
  * \author Scott Klum \cite sklum
- * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
- *       against for all testing partitions.
  */
 class CrossValidateTransform : public MetaTransform
 {

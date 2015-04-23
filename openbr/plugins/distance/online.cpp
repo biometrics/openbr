@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Online distance metric to attenuate match scores across multiple frames
+ * \brief Online Distance metric to attenuate match scores across multiple frames
  * \author Brendan klare \cite bklare
  */
 class OnlineDistance : public UntrainableDistance

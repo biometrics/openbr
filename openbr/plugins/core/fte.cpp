@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Flags images that failed to enroll based on the specified transform.
+ * \brief Flags images that failed to enroll based on the specified Transform.
  * \author Josh Klontz \cite jklontz
  */
 class FTETransform : public Transform

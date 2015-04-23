@@ -32,7 +32,7 @@ namespace br
 /*!
  * \ingroup galleries
  * \brief An abstract gallery for handling binary data
- * \author Unknown
+ * \author Josh Klontz \cite jklontz
  */
 class BinaryGallery : public Gallery
 {

@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Caches br::Transform::project() results.
+ * \brief Caches Transform::project() results.
  * \author Josh Klontz \cite jklontz
  */
 class CacheTransform : public MetaTransform

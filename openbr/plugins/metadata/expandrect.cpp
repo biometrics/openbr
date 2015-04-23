@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Expand the width and height of a template's rects by input width and height factors.
+ * \brief Expand the width and height of a Template's rects by input width and height factors.
  * \author Charles Otto \cite caotto
  */
 class ExpandRectTransform : public UntrainableTransform

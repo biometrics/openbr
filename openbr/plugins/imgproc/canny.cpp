@@ -9,7 +9,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Warpper to OpenCV Canny edge detector
+ * \brief Wrapper to OpenCV Canny edge detector
+ * \br_link http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/canny_detector/canny_detector.html
  * \author Scott Klum \cite sklum
  */
 class CannyTransform : public UntrainableTransform

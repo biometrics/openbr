@@ -24,7 +24,7 @@ namespace br
  * \ingroup galleries
  * \brief Weka ARFF file format.
  * \author Josh Klontz \cite jklontz
- * http://weka.wikispaces.com/ARFF+%28stable+version%29
+ * \br_link http://weka.wikispaces.com/ARFF+%28stable+version%29
  */
 class arffGallery : public Gallery
 {

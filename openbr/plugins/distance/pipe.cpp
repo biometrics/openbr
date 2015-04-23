@@ -24,11 +24,13 @@ namespace br
 /*!
  * \ingroup distances
  * \brief Distances in series.
+ *
+ * The Templates are compared using each Distance in order.
+ * If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
+ * Otherwise the returned result is the value of comparing the Templates using the last Distance.
+ *
  * \author Josh Klontz \cite jklontz
  *
- * The templates are compared using each br::Distance in order.
- * If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
- * Otherwise the returned result is the value of comparing the templates using the last br::Distance.
  */
 class PipeDistance : public Distance
 {

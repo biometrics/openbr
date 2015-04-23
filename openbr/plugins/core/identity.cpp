@@ -21,8 +21,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief A no-op transform.
- * \see DiscardTransform FirstTransform RestTransform RemoveTransform
+ * \brief A no-op Transform.
+ * \br_related_plugin DiscardTransform FirstTransform RestTransform RemoveTransform
  * \author Josh Klontz \cite jklontz
  */
 class IdentityTransform : public UntrainableMetaTransform

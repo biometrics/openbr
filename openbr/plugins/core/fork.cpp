@@ -29,11 +29,11 @@ static void _train(Transform *transform, const QList<TemplateList> *data)
 /*!
  * \ingroup transforms
  * \brief Transforms in parallel.
+ *
+ * The source Template is seperately given to each transform and the results are appended together.
+ *
  * \author Josh Klontz \cite jklontz
- *
- * The source br::Template is seperately given to each transform and the results are appended together.
- *
- * \see PipeTransform
+ * \br_related_plugin PipeTransform
  */
 class ForkTransform : public CompositeTransform
 {

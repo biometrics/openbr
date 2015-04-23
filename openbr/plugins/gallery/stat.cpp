@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup galleries
- * \brief Print template statistics.
+ * \brief Print Template statistics.
  * \author Josh Klontz \cite jklontz
  */
 class statGallery : public Gallery

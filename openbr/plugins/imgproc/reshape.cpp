@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Reshape the each matrix to the specified number of rows.
+ * \brief Reshape each matrix to the specified number of rows.
  * \author Josh Klontz \cite jklontz
  */
 class ReshapeTransform : public UntrainableTransform

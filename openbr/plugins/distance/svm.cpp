@@ -11,8 +11,8 @@ namespace br
 
 /*!
  * \ingroup Distances
- * \brief SVM Regression on template absolute differences.
- * \author Josh Klontz
+ * \brief SVM Regression on Template absolute differences.
+ * \author Josh Klontz \cite jklontz
  */
 class SVMDistance : public Distance
 {

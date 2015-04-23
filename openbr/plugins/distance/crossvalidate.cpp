@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Cross validate a distance metric.
+ * \brief Cross validate a Distance metric.
  * \author Josh Klontz \cite jklontz
  */
 class CrossValidateDistance : public UntrainableDistance

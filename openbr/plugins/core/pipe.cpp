@@ -24,12 +24,11 @@ namespace br
 /*!
  * \ingroup Transforms
  * \brief Transforms in series.
+ *
+ * The source Template is given to the first transform and the resulting Template is passed to the next transform, etc.
+ *
  * \author Josh Klontz \cite jklontz
- *
- * The source br::Template is given to the first transform and the resulting br::Template is passed to the next transform, etc.
- *
- * \see ExpandTransform
- * \see ForkTransform
+ * \br_related_plugin ExpandTransform ForkTransform
  */
 class PipeTransform : public CompositeTransform
 {

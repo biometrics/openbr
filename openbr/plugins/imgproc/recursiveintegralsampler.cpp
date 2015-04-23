@@ -25,7 +25,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Construct template in a recursive decent manner.
+ * \brief Construct Template in a recursive decent manner.
  * \author Josh Klontz \cite jklontz
  */
 class RecursiveIntegralSamplerTransform : public Transform

@@ -8,9 +8,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Xiaoyang Tan; Triggs, B.;
- * "Enhanced Local Texture Feature Sets for Face Recognition Under Difficult Lighting Conditions,"
- * Image Processing, IEEE Transactions on , vol.19, no.6, pp.1635-1650, June 2010
+ * \brief Perform contrast equalization
+ * \br_paper Xiaoyang Tan; Triggs, B.;
+ *           "Enhanced Local Texture Feature Sets for Face Recognition Under Difficult Lighting Conditions,"
+ *           Image Processing, IEEE Transactions on , vol.19, no.6, pp.1635-1650, June 2010
  * \author Josh Klontz \cite jklontz
  */
 class ContrastEqTransform : public UntrainableTransform

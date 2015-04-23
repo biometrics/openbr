@@ -29,7 +29,7 @@ namespace br
  * \ingroup formats
  * \brief Reads FBI EBTS transactions.
  * \author Scott Klum \cite sklum
- * https://www.fbibiospecs.org/ebts.html
+ * \br_link https://www.fbibiospecs.org/ebts.html
  */
 class ebtsFormat : public Format
 {

@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Clear templates without the required metadata.
+ * \brief Clear Templates without the required metadata.
  * \author Josh Klontz \cite jklontz
  */
 class IfMetadataTransform : public UntrainableMetadataTransform

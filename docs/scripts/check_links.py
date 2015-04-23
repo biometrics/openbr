@@ -72,12 +72,18 @@ def parse(path, html):
 def check(headers, links):
     for f, file_links in links.items():
         for link in file_links:
-            if link.http:
+            if link.http: # Can't check links to other websites
                 continue
 
             link_file = f
             if link.file:
                 link_file = link.file
+
+            if link_file.endswith('.pdf'):
+                if not os.path.exists(link_file):
+                    print 'BAD PDF: ' + link_file + ' DOES NOT EXIST'
+                    print
+                continue
 
             if link_file not in headers:
                 print 'BAD FILE IN ' + f + ':', link_file

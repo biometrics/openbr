@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup galleries
- * \brief Treat the file as a single binary template.
+ * \brief Treat the file as a single binary Template.
  * \author Josh Klontz \cite jklontz
  */
 class templateGallery : public Gallery

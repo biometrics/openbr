@@ -24,6 +24,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV merge
+ * \br_link http://docs.opencv.org/modules/core/doc/operations_on_arrays.html#merge
  * \author Josh Klontz \cite jklontz
  */
 class MergeTransform : public UntrainableMetaTransform

@@ -48,12 +48,9 @@ static TemplateList Expanded(const TemplateList &templates)
 
 /*!
  * \ingroup transforms
- * \brief Performs an expansion step on input templatelists
+ * \brief Performs an expansion step on an input TemplateList. Each matrix in each input Template is expanded into its own Template.
  * \author Josh Klontz \cite jklontz
- *
- * Each matrix in an input Template is expanded into its own template.
- *
- * \see PipeTransform
+ * \br_related_plugin PipeTransform
  */
 class ExpandTransform : public UntrainableMetaTransform
 {

@@ -19,6 +19,10 @@
 namespace br
 {
 
+/*!
+ * \brief Get the transpose of the Template matrix
+ * \author Unknown \cite unknown
+ */
 class TransposeTransform : public UntrainableTransform
 {
     Q_OBJECT

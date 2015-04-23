@@ -1,10 +1,11 @@
 # CacheTransform
 
-Caches br::Transform::project() results.
+Caches [Transform](../cpp_api/transform/transform.md)::project() results.
+ 
 
 * **file:** core/cache.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -13,10 +14,11 @@ Caches br::Transform::project() results.
 # CollectOutputTransform
 
 DOCUMENT ME CHARLES
+ 
 
 * **file:** core/stream.cpp
 * **inherits:** [TimeVaryingTransform](../cpp_api/timevaryingtransform/timevaryingtransform.md)
-* **author:** Charles Otto
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -26,9 +28,12 @@ DOCUMENT ME CHARLES
 
 It's like the opposite of ExpandTransform, but not really
 
+Given a [TemplateList](../cpp_api/templatelist/templatelist.md) as input, concatenate them into a single [Template](../cpp_api/template/template.md)
+ 
+
 * **file:** core/contract.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **author:** Charles Otto
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -36,11 +41,15 @@ It's like the opposite of ExpandTransform, but not really
 
 # CrossValidateTransform
 
-Cross validate a trainable transform.
+Cross validate a trainable [Transform](../cpp_api/transform/transform.md).
+
+To use an extended [Gallery](../cpp_api/gallery/gallery.md), add an allPartitions="true" flag to the gallery sigset for those images that should be compared
+against for all testing partitions.
+ 
 
 * **file:** core/crossvalidate.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **authors:** Josh Klontz, Scott Klum
+* **author(s):** [Josh Klontz][jklontz], [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -49,10 +58,24 @@ Cross validate a trainable transform.
 # DirectStreamTransform
 
 DOCUMENT ME CHARLES
+ 
 
 * **file:** core/stream.cpp
-* **inherits:** [CompositeTransform](#compositetransform)
-* **author:** Charles Otto
+* **inherits:** [CompositeTransform](../cpp_api/compositetransform/compositetransform.md)
+* **author(s):** [Charles Otto][caotto]
+* **properties:** None
+
+
+---
+
+# DiscardTemplatesTransform
+
+DOCUMENT ME
+ 
+
+* **file:** core/discardtemplates.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
+* **author(s):** [Unknown][unknown]
 * **properties:** None
 
 
@@ -60,12 +83,25 @@ DOCUMENT ME CHARLES
 
 # DiscardTransform
 
-Removes all template's matrices.
+Removes all matrices from a [Template](../cpp_api/template/template.md).
+ 
 
 * **file:** core/discard.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **see:** [IdentityTransform FirstTransform RestTransform RemoveTransform](#identitytransform firsttransform resttransform removetransform)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **properties:** None
+
+
+---
+
+# DistributeTemplateTransform
+
+DOCUMENT ME
+ 
+
+* **file:** core/distributetemplate.cpp
+* **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
+* **author(s):** [Unknown][unknown]
 * **properties:** None
 
 
@@ -74,10 +110,24 @@ Removes all template's matrices.
 # DownsampleTrainingTransform
 
 DOCUMENT ME JOSH
+ 
 
 * **file:** core/downsampletraining.cpp
 * **inherits:** [Transform](../cpp_api/transform/transform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **properties:** None
+
+
+---
+
+# EventTransform
+
+DOCUMENT ME
+ 
+
+* **file:** core/event.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
+* **author(s):** [Unknown][unknown]
 * **properties:** None
 
 
@@ -85,12 +135,12 @@ DOCUMENT ME JOSH
 
 # ExpandTransform
 
-Performs an expansion step on input templatelists
+Performs an expansion step on an input [TemplateList](../cpp_api/templatelist/templatelist.md). Each matrix in each input [Template](../cpp_api/template/template.md) is expanded into its own [Template](../cpp_api/template/template.md).
+ 
 
 * **file:** core/expand.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **see:** [PipeTransform](#pipetransform)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -98,11 +148,12 @@ Performs an expansion step on input templatelists
 
 # FTETransform
 
-Flags images that failed to enroll based on the specified transform.
+Flags images that failed to enroll based on the specified [Transform](../cpp_api/transform/transform.md).
+ 
 
 * **file:** core/fte.cpp
 * **inherits:** [Transform](../cpp_api/transform/transform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -110,12 +161,12 @@ Flags images that failed to enroll based on the specified transform.
 
 # FirstTransform
 
-Removes all but the first matrix from the template.
+Removes all but the first matrix from the [Template](../cpp_api/template/template.md).
+ 
 
 * **file:** core/first.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **see:** [IdentityTransform DiscardTransform RestTransform RemoveTransform](#identitytransform discardtransform resttransform removetransform)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -125,10 +176,12 @@ Removes all but the first matrix from the template.
 
 Transforms in parallel.
 
+The source [Template](../cpp_api/template/template.md) is seperately given to each transform and the results are appended together.
+ 
+
 * **file:** core/fork.cpp
-* **inherits:** [CompositeTransform](#compositetransform)
-* **see:** [PipeTransform](#pipetransform)
-* **author:** Josh Klontz
+* **inherits:** [CompositeTransform](../cpp_api/compositetransform/compositetransform.md)
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -136,11 +189,13 @@ Transforms in parallel.
 
 # GalleryCompareTransform
 
-Compare each template to a fixed gallery (with name = galleryName), using the specified distance.
+Compare each [Template](../cpp_api/template/template.md) to a fixed [Gallery](../cpp_api/gallery/gallery.md) (with name = galleryName), using the specified distance.
+dst will contain a 1 by n vector of scores.
+ 
 
 * **file:** core/gallerycompare.cpp
 * **inherits:** [Transform](../cpp_api/transform/transform.md)
-* **author:** Charles Otto
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -148,12 +203,12 @@ Compare each template to a fixed gallery (with name = galleryName), using the sp
 
 # IdentityTransform
 
-A no-op transform.
+A no-op [Transform](../cpp_api/transform/transform.md).
+ 
 
 * **file:** core/identity.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **see:** [DiscardTransform FirstTransform RestTransform RemoveTransform](#discardtransform firsttransform resttransform removetransform)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -161,11 +216,27 @@ A no-op transform.
 
 # IndependentTransform
 
-Clones the transform so that it can be applied independently.
+Clones the [Transform](../cpp_api/transform/transform.md) so that it can be applied independently.
+
+Independent [Transform](../cpp_api/transform/transform.md)s expect single-matrix [Template](../cpp_api/template/template.md).
+ 
 
 * **file:** core/independent.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **properties:** None
+
+
+---
+
+# JNITransform
+
+Execute Java code from OpenBR using the JNI
+ 
+
+* **file:** core/jni.cpp
+* **inherits:** [UntrainableTransform](../cpp_api/untrainabletransform/untrainabletransform.md)
+* **author(s):** [Jordan Cheney][jcheney]
 * **properties:** None
 
 
@@ -174,10 +245,12 @@ Clones the transform so that it can be applied independently.
 # LikelyTransform
 
 Generic interface to Likely JIT compiler
+ 
 
 * **file:** core/likely.cpp
 * **inherits:** [UntrainableTransform](../cpp_api/untrainabletransform/untrainabletransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **see:** [www.liblikely.org](www.liblikely.org)
 * **properties:** None
 
 
@@ -185,11 +258,12 @@ Generic interface to Likely JIT compiler
 
 # LoadStoreTransform
 
-Caches transform training.
+Caches [Transform](../cpp_api/transform/transform.md) training.
+ 
 
 * **file:** core/loadstore.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -199,14 +273,12 @@ Caches transform training.
 
 Transforms in series.
 
+The source [Template](../cpp_api/template/template.md) is given to the first transform and the resulting [Template](../cpp_api/template/template.md) is passed to the next transform, etc.
+ 
+
 * **file:** core/pipe.cpp
-* **inherits:** [CompositeTransform](#compositetransform)
-* **see:**
-
-	* [ExpandTransform](ExpandTransform)
-	* [ForkTransform](ForkTransform)
-
-* **author:** Josh Klontz
+* **inherits:** [CompositeTransform](../cpp_api/compositetransform/compositetransform.md)
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -215,10 +287,11 @@ Transforms in series.
 # ProcessWrapperTransform
 
 Interface to a separate process
+ 
 
 * **file:** core/processwrapper.cpp
-* **inherits:** [WrapperTransform](#wrappertransform)
-* **author:** Charles Otto
+* **inherits:** [WrapperTransform](../cpp_api/wrappertransform/wrappertransform.md)
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -227,10 +300,43 @@ Interface to a separate process
 # ProcrustesAlignTransform
 
 Improved procrustes alignment of points, to include a post processing scaling of points
+to faciliate subsequent texture mapping.
+ 
 
 * **file:** core/align.cpp
 * **inherits:** [Transform](../cpp_api/transform/transform.md)
-* **author:** Brendan Klare
+* **author(s):** [Brendan Klare][bklare]
+* **properties:**
+
+	Property | Type | Description
+	--- | --- | ---
+	width | float | Width of output coordinate space (before padding)
+	padding | float | Amount of padding around the coordinate space
+	useFirst | bool | Whether or not to use the first instance as the reference object
+
+---
+
+# ProgressCounterTransform
+
+DOCUMENT ME
+ 
+
+* **file:** core/progresscounter.cpp
+* **inherits:** [TimeVaryingTransform](../cpp_api/timevaryingtransform/timevaryingtransform.md)
+* **author(s):** [Unknown][unknown]
+* **properties:** None
+
+
+---
+
+# RemoveTransform
+
+Removes the matrix from the [Template](../cpp_api/template/template.md) at the specified index.
+ 
+
+* **file:** core/remove.cpp
+* **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -238,12 +344,12 @@ Improved procrustes alignment of points, to include a post processing scaling of
 
 # RestTransform
 
-Removes the first matrix from the template.
+Removes the first matrix from the [Template](../cpp_api/template/template.md).
+ 
 
 * **file:** core/rest.cpp
 * **inherits:** [UntrainableMetaTransform](../cpp_api/untrainablemetatransform/untrainablemetatransform.md)
-* **see:** [IdentityTransform DiscardTransform FirstTransform RemoveTransform](#identitytransform discardtransform firsttransform removetransform)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -251,11 +357,13 @@ Removes the first matrix from the template.
 
 # SchrodingerTransform
 
-Generates two templates, one of which is passed through a transform and the other
+Generates two [Template](../cpp_api/template/template.md), one of which is passed through a [Transform](../cpp_api/transform/transform.md) and the other
+is not. No cats were harmed in the making of this [Transform](../cpp_api/transform/transform.md).
+ 
 
 * **file:** core/schrodinger.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -263,11 +371,12 @@ Generates two templates, one of which is passed through a transform and the othe
 
 # SingletonTransform
 
-A globally shared transform.
+A globally shared [Transform](../cpp_api/transform/transform.md).
+ 
 
 * **file:** core/singleton.cpp
 * **inherits:** [MetaTransform](../cpp_api/metatransform/metatransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -276,10 +385,11 @@ A globally shared transform.
 # StreamTransform
 
 DOCUMENT ME CHARLES
+ 
 
 * **file:** core/stream.cpp
-* **inherits:** [WrapperTransform](#wrappertransform)
-* **author:** Charles Otto
+* **inherits:** [WrapperTransform](../cpp_api/wrappertransform/wrappertransform.md)
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -288,10 +398,11 @@ DOCUMENT ME CHARLES
 # SynthesizePointsTransform
 
 Synthesize additional points via triangulation.
+ 
 
 * **file:** core/align.cpp
 * **inherits:** [MetadataTransform](../cpp_api/metadatatransform/metadatatransform.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -300,10 +411,11 @@ Synthesize additional points via triangulation.
 # TextureMapTransform
 
 Maps texture from one set of points to another. Assumes that points are rigidly transformed
+ 
 
 * **file:** core/align.cpp
 * **inherits:** [UntrainableTransform](../cpp_api/untrainabletransform/untrainabletransform.md)
-* **authors:** Brendan Klare, Scott Klum
+* **author(s):** [Brendan Klare][bklare], [Scott Klum][sklum]
 * **properties:** None
 
 

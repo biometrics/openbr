@@ -28,12 +28,10 @@ namespace br
  * \ingroup formats
  * \brief Reads in scores or ground truth from a text table.
  * \author Josh Klontz \cite jklontz
+ * \br_format Example of the format:
  *
- * Example of the format:
- * \code
  * 2.2531514    FALSE   99990377    99990164
  * 2.2549822    TRUE    99990101    99990101
- * \endcode
  */
 class scoresFormat : public Format
 {

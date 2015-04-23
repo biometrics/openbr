@@ -380,7 +380,7 @@ Convenience function to call [smartCopy](#smartcopy-1) without arguments
 
 ## [Transform](transform.md) \*simplify(bool &newTransform) {: #simplify }
 
-This is a virtual function. Get a simplified version of the transform for use at project time. The simplified version of the [Transform](transform.md) does not include any [Transforms](transform.md) that are only active at train time. It also removes any [LoadStore](../../plugins/core.md#loadstoretransform) transforms and keeps only their children. Transforms that only are active at train time (see [DownsampleTransform](../../plugins/core.md#downsampletransform) as an example) should overload this function and return their children if they have any or NULL if they do not.
+This is a virtual function. Get a simplified version of the transform for use at project time. The simplified version of the [Transform](transform.md) does not include any [Transforms](transform.md) that are only active at train time. It also removes any [LoadStore](../../plugins/core.md#loadstoretransform) transforms and keeps only their children. Transforms that only are active at train time (see [DownsampleTrainingTransform](../../plugins/core.md#downsampletrainingtransform) as an example) should overload this function and return their children if they have any or NULL if they do not.
 
 * **function definition:**
 

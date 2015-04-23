@@ -28,10 +28,12 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Face Recognition Using Early Biologically Inspired Features
- * \see Min Li (IBM China Research Lab, China), Nalini Ratha (IBM Watson Research Center, USA), Weihong Qian (IBM China Research Lab, China), Shenghua Bao (IBM China Research Lab, China), Zhong Su (IBM China Research Lab, China)
+ * \br_paper Li, Min, et al.
+ *           "Face recognition using early biologically inspired features."
+ *           Biometrics: Theory, Applications and Systems (BTAS), 2013 IEEE Sixth International Conference on. IEEE, 2013.
  * \author Josh Klontz \cite jklontz
- * \property int N The number of scales. Default is 6.
- * \property int M The number of orientations between 0 and pi. Default is 9.
+ * \br_property int N The number of scales. Default is 6.
+ * \br_property int M The number of orientations between 0 and pi. Default is 9.
  */
 class EBIFTransform : public UntrainableTransform
 {

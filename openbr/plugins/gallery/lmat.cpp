@@ -8,7 +8,7 @@ namespace br
  * \ingroup formats
  * \brief Likely matrix format
  *
- * www.liblikely.org
+ * \br_link www.liblikely.org
  * \author Josh Klontz \cite jklontz
  */
 class lmatGallery : public Gallery

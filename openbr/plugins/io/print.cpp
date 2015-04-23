@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Prints the template's file to stdout or stderr.
+ * \brief Prints the file of the input Template to stdout or stderr.
  * \author Josh Klontz \cite jklontz
  */
 class PrintTransform : public UntrainableMetaTransform

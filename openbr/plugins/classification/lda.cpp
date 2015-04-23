@@ -28,7 +28,7 @@ namespace br
 /*!
  * \ingroup initializers
  * \brief Initialize Eigen
- * http://eigen.tuxfamily.org/dox/TopicMultiThreading.html
+ * \br_link http://eigen.tuxfamily.org/dox/TopicMultiThreading.html
  * \author Scott Klum \cite sklum
  */
 class EigenInitializer : public Initializer
@@ -49,9 +49,9 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  *
- * \property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
- * \property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
- * \property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
+ * \br_property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \br_property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
  */
 class PCATransform : public Transform
 {
@@ -266,9 +266,12 @@ BR_REGISTER(Transform, RowWisePCATransform)
 
 /*!
  * \ingroup transforms
- * \brief Computes Distance From Feature Space (DFFS) \cite moghaddam97.
+ * \brief Computes Distance From Feature Space (DFFS)
+ * \br_paper Moghaddam, Baback, and Alex Pentland.
+ *           "Probabilistic visual learning for object representation."
+ *           Pattern Analysis and Machine Intelligence, IEEE Transactions on 19.7 (1997): 696-710.
  * \author Josh Klontz \cite jklontz
- * \property float keep Sets PCA keep property. Default is 0.95.
+ * \br_property float keep Sets PCA keep property. Default is 0.95.
  */
 class DFFSTransform : public Transform
 {
@@ -314,13 +317,13 @@ BR_REGISTER(Transform, DFFSTransform)
  * \brief Projects input into learned Linear Discriminant Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
- * \property float pcaKeep BRENDAN OR JOSH FILL ME IN. Default is 0.98.
- * \property bool pcaWhiten BRENDAN OR JOSH FILL ME IN. Default is false.
- * \property int directLDA BRENDAN OR JOSH FILL ME IN. Default is 0.
- * \property float directDrop BRENDAN OR JOSH FILL ME IN. Default is 0.1.
- * \property QString inputVariable BRENDAN OR JOSH FILL ME IN. Default is "Label".
- * \property bool isBinary BRENDAN OR JOSH FILL ME IN. Default is false.
- * \property bool normalize BRENDAN OR JOSH FILL ME IN. Default is true.
+ * \br_property float pcaKeep BRENDAN OR JOSH FILL ME IN. Default is 0.98.
+ * \br_property bool pcaWhiten BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property int directLDA BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \br_property float directDrop BRENDAN OR JOSH FILL ME IN. Default is 0.1.
+ * \br_property QString inputVariable BRENDAN OR JOSH FILL ME IN. Default is "Label".
+ * \br_property bool isBinary BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property bool normalize BRENDAN OR JOSH FILL ME IN. Default is true.
  */
 class LDATransform : public Transform
 {
@@ -564,9 +567,9 @@ BR_REGISTER(Transform, LDATransform)
  * \ingroup transforms
  * \brief Projects input into learned Linear Discriminant Analysis subspace learned on a sparse subset of features with the highest weight in the original LDA algorithm.
  * \author Brendan Klare \cite bklare
- * \property float varThreshold BRENDAN FILL ME IN. Default is 1.5.
- * \property float pcaKeep BRENDAN FILL ME IN. Default is 0.98.
- * \property bool normalize BRENDAN FILL ME IN. Default is true.
+ * \br_property float varThreshold BRENDAN FILL ME IN. Default is 1.5.
+ * \br_property float pcaKeep BRENDAN FILL ME IN. Default is 0.98.
+ * \br_property bool normalize BRENDAN FILL ME IN. Default is true.
  */
 class SparseLDATransform : public Transform
 {

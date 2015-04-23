@@ -1,10 +1,11 @@
 # AttributeDistance
 
 Attenuation function based distance from attributes
+ 
 
 * **file:** distance/attribute.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -12,11 +13,12 @@ Attenuation function based distance from attributes
 
 # BayesianQuantizationDistance
 
-Bayesian quantization distance
+Bayesian quantization [Distance](../cpp_api/distance/distance.md)
+ 
 
 * **file:** distance/bayesianquantization.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -25,10 +27,11 @@ Bayesian quantization distance
 # ByteL1Distance
 
 Fast 8-bit L1 distance
+ 
 
 * **file:** distance/byteL1.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -36,11 +39,12 @@ Fast 8-bit L1 distance
 
 # CrossValidateDistance
 
-Cross validate a distance metric.
+Cross validate a [Distance](../cpp_api/distance/distance.md) metric.
+ 
 
 * **file:** distance/crossvalidate.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -49,10 +53,11 @@ Cross validate a distance metric.
 # DefaultDistance
 
 DistDistance wrapper.
+ 
 
 * **file:** distance/default.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -60,11 +65,12 @@ DistDistance wrapper.
 
 # DistDistance
 
-Standard distance metrics
+Standard [Distance](../cpp_api/distance/distance.md) metrics
+ 
 
 * **file:** distance/dist.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -73,10 +79,11 @@ Standard distance metrics
 # FilterDistance
 
 Checks target metadata against filters.
+ 
 
 * **file:** distance/filter.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -84,23 +91,28 @@ Checks target metadata against filters.
 
 # FuseDistance
 
-Fuses similarity scores across multiple matrices of compared templates
+Fuses similarity scores across multiple matrices of compared [Template](../cpp_api/template/template.md)
+ 
 
 * **file:** distance/fuse.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Scott Klum
-* **properties:** None
+* **author(s):** [Scott Klum][sklum]
+* **properties:**
 
+	Property | Type | Description
+	--- | --- | ---
+	Operation | enum | Possible values are:<ul><li>Mean</li><li>sum</li><li>min</li><li>max</li></ul>.
 
 ---
 
 # HalfByteL1Distance
 
 Fast 4-bit L1 distance
+ 
 
 * **file:** distance/halfbyteL1.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -109,10 +121,11 @@ Fast 4-bit L1 distance
 # HeatMapDistance
 
 1v1 heat map comparison
+ 
 
 * **file:** distance/heatmap.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -120,11 +133,12 @@ Fast 4-bit L1 distance
 
 # IdenticalDistance
 
-Returns
+Returns true if the [Template](../cpp_api/template/template.md) are identical, false otherwise.
+ 
 
 * **file:** distance/identical.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -133,10 +147,12 @@ Returns
 # KeyPointMatcherDistance
 
 Wraps OpenCV Key Point Matcher
+ 
 
 * **file:** distance/keypointmatcher.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **see:** [http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html](http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html)
 * **properties:** None
 
 
@@ -145,10 +161,11 @@ Wraps OpenCV Key Point Matcher
 # L1Distance
 
 L1 distance computed using eigen.
+ 
 
 * **file:** distance/L1.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -157,10 +174,11 @@ L1 distance computed using eigen.
 # L2Distance
 
 L2 distance computed using eigen.
+ 
 
 * **file:** distance/L2.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -169,10 +187,11 @@ L2 distance computed using eigen.
 # MatchProbabilityDistance
 
 Match Probability
+ 
 
 * **file:** distance/matchprobability.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -181,10 +200,11 @@ Match Probability
 # MetadataDistance
 
 Checks target metadata against query metadata.
+ 
 
 * **file:** distance/metadata.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -193,10 +213,11 @@ Checks target metadata against query metadata.
 # NegativeLogPlusOneDistance
 
 Returns -log(distance(a,b)+1)
+ 
 
 * **file:** distance/neglogplusone.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -204,11 +225,12 @@ Returns -log(distance(a,b)+1)
 
 # OnlineDistance
 
-Online distance metric to attenuate match scores across multiple frames
+Online [Distance](../cpp_api/distance/distance.md) metric to attenuate match scores across multiple frames
+ 
 
 * **file:** distance/online.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Brendan klare
+* **author(s):** [Brendan klare][bklare]
 * **properties:** None
 
 
@@ -218,9 +240,14 @@ Online distance metric to attenuate match scores across multiple frames
 
 Distances in series.
 
+The [Template](../cpp_api/template/template.md) are compared using each [Distance](../cpp_api/distance/distance.md) in order.
+If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
+Otherwise the returned result is the value of comparing the [Template](../cpp_api/template/template.md) using the last [Distance](../cpp_api/distance/distance.md).
+ 
+
 * **file:** distance/pipe.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -228,11 +255,12 @@ Distances in series.
 
 # RejectDistance
 
-Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
+Sets [Distance](../cpp_api/distance/distance.md) to -FLOAT_MAX if a target [Template](../cpp_api/template/template.md) has/doesn't have a key.
+ 
 
 * **file:** distance/reject.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -240,11 +268,12 @@ Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
 
 # SVMDistance
 
-SVM Regression on template absolute differences.
+SVM Regression on [Template](../cpp_api/template/template.md) absolute differences.
+ 
 
 * **file:** distance/svm.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -252,11 +281,12 @@ SVM Regression on template absolute differences.
 
 # SumDistance
 
-Sum match scores across multiple distances
+Sum match scores across multiple [Distance](../cpp_api/distance/distance.md)
+ 
 
 * **file:** distance/sum.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -265,10 +295,11 @@ Sum match scores across multiple distances
 # TurkDistance
 
 Unmaps Turk HITs to be compared against query mats
+ 
 
 * **file:** distance/turk.cpp
 * **inherits:** [UntrainableDistance](../cpp_api/untrainabledistance/untrainabledistance.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -276,11 +307,25 @@ Unmaps Turk HITs to be compared against query mats
 
 # UnitDistance
 
-Linear normalizes of a distance so the mean impostor score is 0 and the mean genuine score is 1.
+Linear normalizes of a [Distance](../cpp_api/distance/distance.md) so the mean impostor score is 0 and the mean genuine score is 1.
+ 
 
 * **file:** distance/unit.cpp
 * **inherits:** [Distance](../cpp_api/distance/distance.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
+* **properties:** None
+
+
+---
+
+# ZScoreDistance
+
+DOCUMENT ME
+ 
+
+* **file:** distance/zscore.cpp
+* **inherits:** [Distance](../cpp_api/distance/distance.md)
+* **author(s):** [Unknown][unknown]
 * **properties:** None
 
 

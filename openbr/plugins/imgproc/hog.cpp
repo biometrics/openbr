@@ -26,6 +26,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief OpenCV HOGDescriptor wrapper
+ * \br_link http://docs.opencv.org/modules/gpu/doc/object_detection.html
  * \author Austin Blanton \cite imaus10
  */
 class HoGDescriptorTransform : public UntrainableTransform

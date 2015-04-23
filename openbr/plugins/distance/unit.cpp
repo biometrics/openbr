@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Linear normalizes of a distance so the mean impostor score is 0 and the mean genuine score is 1.
+ * \brief Linear normalizes of a Distance so the mean impostor score is 0 and the mean genuine score is 1.
  * \author Josh Klontz \cite jklontz
  */
 class UnitDistance : public Distance

@@ -20,6 +20,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class ZScoreDistance : public Distance
 {
     Q_OBJECT

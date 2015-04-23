@@ -19,6 +19,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite Unknown
+ */
 class OutputTransform : public TimeVaryingTransform
 {
     Q_OBJECT

@@ -19,6 +19,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite Unknown
+ */
 class FileExclusionTransform : public UntrainableMetaTransform
 {
     Q_OBJECT

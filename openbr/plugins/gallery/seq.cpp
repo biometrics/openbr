@@ -24,6 +24,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class seqGallery : public Gallery
 {
 public:

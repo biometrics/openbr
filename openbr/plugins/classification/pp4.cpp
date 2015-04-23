@@ -200,7 +200,7 @@ struct PP4Context
  * \brief Enroll faces in PittPatt 4
  * \author Josh Klontz \cite jklontz
  * \warning Needs a maintainer.
- * \property bool detectOnly If true, return all detected faces. Otherwise, return only faces that are suitable for recognition. Default is false.
+ * \br_property bool detectOnly If true, return all detected faces. Otherwise, return only faces that are suitable for recognition. Default is false.
  */
 class PP4EnrollTransform : public UntrainableMetaTransform
 {

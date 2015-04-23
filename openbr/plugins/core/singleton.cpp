@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief A globally shared transform.
+ * \brief A globally shared Transform.
  * \author Josh Klontz \cite jklontz
  */
 class SingletonTransform : public MetaTransform

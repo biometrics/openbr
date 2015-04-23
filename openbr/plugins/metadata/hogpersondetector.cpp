@@ -26,6 +26,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Detects objects with OpenCV's built-in HOG detection.
+ * \br_link http://docs.opencv.org/modules/gpu/doc/object_detection.html
  * \author Austin Blanton \cite imaus10
  */
 class HOGPersonDetectorTransform : public UntrainableTransform

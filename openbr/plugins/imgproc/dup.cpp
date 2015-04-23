@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Duplicates the template data.
+ * \brief Duplicates the Template data.
  * \author Josh Klontz \cite jklontz
  */
 class DupTransform : public UntrainableMetaTransform

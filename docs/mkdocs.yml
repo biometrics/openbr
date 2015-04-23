@@ -6,6 +6,7 @@ copyright: 2012 The MITRE Corporation
 theme: readthedocs
 theme_dir: themes/readthedocs/
 links_file: docs/links.md
+contributors_file: docs/contributors.md
 
 include_search: True
 include_next_prev: False
@@ -89,7 +90,6 @@ pages:
 - [api_docs/cpp_api/initializer/statics.md, Initializer, Static Functions]
 - [api_docs/cpp_api/initializer/functions.md, Initializer, Functions]
 
-
 # Transform
 - [api_docs/cpp_api/transform/transform.md, C++ Plugin API, Transform]
 - [api_docs/cpp_api/transform/members.md, Transform, Members]
@@ -134,6 +134,12 @@ pages:
 
 # TimeVaryingTransform
 - [api_docs/cpp_api/timevaryingtransform/timevaryingtransform.md, C++ Plugin API, TimeVaryingTransform]
+
+# CompositeTransform
+- [api_docs/cpp_api/compositetransform/compositetransform.md, C++ Plugin API, CompositeTransform]
+
+# WrapperTransform
+- [api_docs/cpp_api/wrappertransform/wrappertransform.md, C++ Plugin API, WrapperTransform]
 
 # Distance
 - [api_docs/cpp_api/distance/distance.md, C++ Plugin API, Distance]
@@ -181,6 +187,10 @@ pages:
 
 # FileGallery
 - [api_docs/cpp_api/filegallery/filegallery.md, C++ Plugin API, FileGallery]
+- [api_docs/cpp_api/filegallery/members.md, FileGallery, Members]
+- [api_docs/cpp_api/filegallery/constructors.md, FileGallery, Constructors]
+- [api_docs/cpp_api/filegallery/statics.md, FileGallery, Static Functions]
+- [api_docs/cpp_api/filegallery/functions.md, FileGallery, Functions]
 
 # Representation
 - [api_docs/cpp_api/representation/representation.md, C++ Plugin API, Representation]

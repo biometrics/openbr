@@ -8,6 +8,10 @@ using namespace cv;
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class HeatmapTransform : public UntrainableTransform
 {
     Q_OBJECT

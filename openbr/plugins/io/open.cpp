@@ -25,7 +25,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Applies br::Format to br::Template::file::name and appends results.
+ * \brief Applies Format to Template filename and appends results.
  * \author Josh Klontz \cite jklontz
  */
 class OpenTransform : public UntrainableMetaTransform

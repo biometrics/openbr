@@ -6,6 +6,7 @@ Plugin base class for storing a list of enrolled templates.
 
 See:
 
+* [Properties](properties.md)
 * [Members](members.md)
 * [Constructors](constructors.md)
 * [Static Functions](statics.md)

@@ -29,19 +29,22 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV's SVM framework.
- * \see http://docs.opencv.org/modules/ml/doc/support_vector_machines.html
- * \see C. Burges. "A tutorial on support vector machines for pattern recognition", Knowledge Discovery and Data Mining 2(2), 1998.
+ * \br_link http://docs.opencv.org/modules/ml/doc/support_vector_machines.html
+ * \br_paper C. Burges.
+ *           "A tutorial on support vector machines for pattern recognition"
+ *           Knowledge Discovery and Data Mining 2(2), 1998.
  * \author Josh Klontz \cite jklontz
- * \property enum Kernel The type of SVM kernel to use. Options are Linear, Poly, RBF, Sigmoid. Default is Linear.
- * \property enum Type The type of SVM to do. Options are C_SVC, NU_SVC, ONE_CLASS, EPS_SVR, NU_SVR. Default is C_SVC.
- * \property float C Parameter C of an SVM optimization problem. Needed when Type is C_SVC, EPS_SVR or NU_SVR. Default is -1.
- * \property float gamma Parameter gamma of a kernel function. Needed when Kernel is Poly, RBF, or Sigmoid. Default is -1.
- * \property QString inputVariable Metadata variable storing the label for each template. Default is "Label".
- * \property QString outputVariable Metadata variable to store the prediction value of the trained SVM. If type is EPS_SVR or NU_SVR the stored value is the output of the SVM. Otherwise the value is the output of the SVM mapped through the reverse lookup table. Default is "".
- * \property bool returnDFVal If true, dst is set to a 1x1 Mat with value equal to the predicted output of the SVM. Default is false.
- * \property int termCriteria The maximum number of training iterations. Default is 1000.
- * \property int folds Cross validation parameter used for autoselecting other parameters. Default is 5.
- * \property bool balanceFolds If true and the problem is 2-class classification then more balanced cross validation subsets are created. Default is false.
+ *
+ * \br_property enum Kernel The type of SVM kernel to use. Options are Linear, Poly, RBF, Sigmoid. Default is Linear.
+ * \br_property enum Type The type of SVM to do. Options are C_SVC, NU_SVC, ONE_CLASS, EPS_SVR, NU_SVR. Default is C_SVC.
+ * \br_property float C Parameter C of an SVM optimization problem. Needed when Type is C_SVC, EPS_SVR or NU_SVR. Default is -1.
+ * \br_property float gamma Parameter gamma of a kernel function. Needed when Kernel is Poly, RBF, or Sigmoid. Default is -1.
+ * \br_property QString inputVariable Metadata variable storing the label for each template. Default is "Label".
+ * \br_property QString outputVariable Metadata variable to store the prediction value of the trained SVM. If type is EPS_SVR or NU_SVR the stored value is the output of the SVM. Otherwise the value is the output of the SVM mapped through the reverse lookup table. Default is "".
+ * \br_property bool returnDFVal If true, dst is set to a 1x1 Mat with value equal to the predicted output of the SVM. Default is false.
+ * \br_property int termCriteria The maximum number of training iterations. Default is 1000.
+ * \br_property int folds Cross validation parameter used for autoselecting other parameters. Default is 5.
+ * \br_property bool balanceFolds If true and the problem is 2-class classification then more balanced cross validation subsets are created. Default is false.
  */
 class SVMTransform : public Transform
 {

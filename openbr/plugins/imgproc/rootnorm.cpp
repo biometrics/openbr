@@ -23,7 +23,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief dst=sqrt(norm_L1(src)) proposed as RootSIFT in \cite Arandjelovic12
+ * \brief dst=sqrt(norm_L1(src)) proposed as RootSIFT (see paper)
+ * \br_paper Arandjelovic, Relja, and Andrew Zisserman.
+ *           "Three things everyone should know to improve object retrieval."
+ *           Computer Vision and Pattern Recognition (CVPR), 2012 IEEE Conference on. IEEE, 2012.
  * \author Josh Klontz \cite jklontz
  */
 class RootNormTransform : public UntrainableTransform

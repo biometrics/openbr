@@ -26,7 +26,7 @@ namespace br
  * \ingroup formats
  * \brief RAW format
  *
- * http://www.nist.gov/srd/nistsd27.cfm
+ * \br_link http://www.nist.gov/srd/nistsd27.cfm
  * \author Josh Klontz \cite jklontz
  */
 class rawFormat : public Format

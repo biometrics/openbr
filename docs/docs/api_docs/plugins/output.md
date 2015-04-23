@@ -1,10 +1,11 @@
 # DefaultOutput
 
-Adaptor class -- write a matrix output using Format classes.
+Adaptor class -- write a matrix output using [Format](../cpp_api/format/format.md) classes.
+ 
 
 * **file:** output/default.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Charles Otto
+* **author(s):** [Charles Otto][caotto]
 * **properties:** None
 
 
@@ -13,10 +14,11 @@ Adaptor class -- write a matrix output using Format classes.
 # EmptyOutput
 
 Output to the terminal.
+ 
 
 * **file:** output/empty.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -25,10 +27,11 @@ Output to the terminal.
 # bestOutput
 
 The highest scoring matches.
+ 
 
 * **file:** output/best.cpp
 * **inherits:** [Output](../cpp_api/output/output.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -37,10 +40,11 @@ The highest scoring matches.
 # csvOutput
 
 Comma separated values output.
+ 
 
 * **file:** output/csv.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -49,10 +53,11 @@ Comma separated values output.
 # evalOutput
 
 Evaluate the output matrix.
+ 
 
 * **file:** output/eval.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -61,10 +66,11 @@ Evaluate the output matrix.
 # heatOutput
 
 Matrix-like output for heat maps.
+ 
 
 * **file:** output/heat.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -73,10 +79,11 @@ Matrix-like output for heat maps.
 # histOutput
 
 Score histogram.
+ 
 
 * **file:** output/hist.cpp
 * **inherits:** [Output](../cpp_api/output/output.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -85,10 +92,11 @@ Score histogram.
 # meltOutput
 
 One score per row.
+ 
 
 * **file:** output/melt.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -96,11 +104,12 @@ One score per row.
 
 # mtxOutput
 
-
+simmat output.
+ 
 
 * **file:** output/mtx.cpp
 * **inherits:** [Output](../cpp_api/output/output.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -109,10 +118,11 @@ One score per row.
 # nullOutput
 
 Discards the scores.
+ 
 
 * **file:** output/null.cpp
 * **inherits:** [Output](../cpp_api/output/output.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -121,10 +131,11 @@ Discards the scores.
 # rankOutput
 
 Outputs highest ranked matches with scores.
+ 
 
 * **file:** output/rank.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Scott Klum
+* **author(s):** [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -133,10 +144,11 @@ Outputs highest ranked matches with scores.
 # rrOutput
 
 Rank retrieval output.
+ 
 
 * **file:** output/rr.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **authors:** Josh Klontz, Scott Klum
+* **author(s):** [Josh Klontz][jklontz], [Scott Klum][sklum]
 * **properties:** None
 
 
@@ -145,10 +157,11 @@ Rank retrieval output.
 # tailOutput
 
 The highest scoring matches.
+ 
 
 * **file:** output/tail.cpp
 * **inherits:** [Output](../cpp_api/output/output.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 
@@ -157,10 +170,11 @@ The highest scoring matches.
 # txtOutput
 
 Text file output.
+ 
 
 * **file:** output/txt.cpp
 * **inherits:** [MatrixOutput](../cpp_api/matrixoutput/matrixoutput.md)
-* **author:** Josh Klontz
+* **author(s):** [Josh Klontz][jklontz]
 * **properties:** None
 
 

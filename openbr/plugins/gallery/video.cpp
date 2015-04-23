@@ -22,7 +22,10 @@
 namespace br
 {
 
-// Read a video frame by frame using cv::VideoCapture
+/*!
+ * \brief Read a video frame by frame using cv::VideoCapture
+ * \author Unknown \cite unknown
+ */
 class videoGallery : public Gallery
 {
     Q_OBJECT
@@ -95,6 +98,10 @@ BR_REGISTER(Gallery,videoGallery)
 
 QMutex videoGallery::openLock;
 
+/*!
+ * \brief Read videos of format .avi
+ * \author Unknown \cite unknown
+ */
 class aviGallery : public videoGallery
 {
     Q_OBJECT
@@ -102,6 +109,10 @@ class aviGallery : public videoGallery
 
 BR_REGISTER(Gallery, aviGallery)
 
+/*!
+ * \brief Read videos of format .wmv
+ * \author Unknown \cite unknown
+ */
 class wmvGallery : public videoGallery
 {
     Q_OBJECT
@@ -109,8 +120,10 @@ class wmvGallery : public videoGallery
 
 BR_REGISTER(Gallery, wmvGallery)
 
-// Mostly the same as videoGallery, but we open the VideoCapture with an integer index
-// rather than file name/web address
+/*!
+ * \brief Read a video from the webcam
+ * \author Unknown \cite unknown
+ */
 class webcamGallery : public videoGallery
 {
 public:

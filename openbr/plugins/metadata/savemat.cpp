@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Store the last matrix of the input template as a metadata key with input property name.
+ * \brief Store the last matrix of the input Template as a metadata key with input property name.
  * \author Charles Otto \cite caotto
  */
 class SaveMatTransform : public UntrainableMetaTransform

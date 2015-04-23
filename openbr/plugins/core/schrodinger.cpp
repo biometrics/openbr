@@ -21,8 +21,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Generates two templates, one of which is passed through a transform and the other
- *        is not. No cats were harmed in the making of this transform.
+ * \brief Generates two Templates, one of which is passed through a Transform and the other
+ *        is not. No cats were harmed in the making of this Transform.
  * \author Scott Klum \cite sklum
  */
 class SchrodingerTransform : public MetaTransform

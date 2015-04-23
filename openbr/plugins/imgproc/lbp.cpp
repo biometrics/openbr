@@ -29,9 +29,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Ahonen, T.; Hadid, A.; Pietikainen, M.;
- * "Face Description with Local Binary Patterns: Application to Face Recognition"
- * Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
+ * \brief Convert the image into a feature vector using Local Binary Patterns
+ * \br_paper Ahonen, T.; Hadid, A.; Pietikainen, M.;
+ *           "Face Description with Local Binary Patterns: Application to Face Recognition"
+ *           Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
  * \author Josh Klontz \cite jklontz
  */
 class LBPTransform : public UntrainableTransform

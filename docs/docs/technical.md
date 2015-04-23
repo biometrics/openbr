@@ -83,10 +83,10 @@ The *Biometric Evaluation Environment* (BEE) is a [NIST](http://www.nist.gov/ind
 
 OpenBR implements the following portions of the BEE specification:
 
-* Signature Set- A signature set (or *sigset*) is a [Gallery](api_docs/cpp_api/gallery/gallery.md) compliant **XML** file-list specified on page 9 of [MBGC File Overview](DOCUMENT ME) and implemented in [xmlGallery](api_docs/plugins/gallery.md#xmlgallery). Sigsets are identified with a **.xml** extension.
+* Signature Set- A signature set (or *sigset*) is a [Gallery](api_docs/cpp_api/gallery/gallery.md) compliant **XML** file-list specified on page 9 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and implemented in [xmlGallery](api_docs/plugins/gallery.md#xmlgallery). Sigsets are identified with a **.xml** extension.
 
-* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](api_docs/cpp_api/output/output.md) compliant binary score matrix specified on page 12 of [MBGC File Overview](DOCUMENT ME) and implemented in [mtxOutput](api_docs/plugins/output.md#mtxoutput). Simmats are identified with a **.mtx** extension. See [br_eval](api_docs/c_api/functions.md#br_eval) for more information.
+* Similarity Matrix- A similarity matrix (or *simmat*) is an [Output](api_docs/cpp_api/output/output.md) compliant binary score matrix specified on page 12 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and implemented in [mtxOutput](api_docs/plugins/output.md#mtxoutput). Simmats are identified with a **.mtx** extension. See [br_eval](api_docs/c_api/functions.md#br_eval) for more information.
 
-* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of [MBGC File Overview](DOCUMENT ME) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](api_docs/c_api/functions.md#br_make_mask) and [br_combine_masks](api_docs/c_api/functions.md#br_combine_masks) for more information.
+* Mask Matrix- A mask matrix (or *mask*) is a binary matrix specified on page 14 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) identifying the ground truth genuines and impostors of a corresponding *simmat*. Masks are identified with a **.mask** extension. See [br_make_mask](api_docs/c_api/functions.md#br_make_mask) and [br_combine_masks](api_docs/c_api/functions.md#br_combine_masks) for more information.
 
 ---

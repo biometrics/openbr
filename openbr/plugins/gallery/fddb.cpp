@@ -25,7 +25,7 @@ namespace br
  * \brief Implements the FDDB detection format.
  * \author Josh Klontz \cite jklontz
  *
- * http://vis-www.cs.umass.edu/fddb/README.txt
+ * \br_link http://vis-www.cs.umass.edu/fddb/README.txt
  */
 class FDDBGallery : public Gallery
 {

@@ -24,7 +24,7 @@ namespace br
 
 /*!
  * \ingroup galleries
- * \brief A \ref sigset input.
+ * \brief A sigset input.
  * \author Josh Klontz \cite jklontz
  */
 class xmlGallery : public FileGallery

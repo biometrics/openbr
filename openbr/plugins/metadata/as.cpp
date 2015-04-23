@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Change the br::Template::file extension
+ * \brief Change the Template's file extension
  * \author Josh Klontz \cite jklontz
  */
 class AsTransform : public UntrainableMetadataTransform

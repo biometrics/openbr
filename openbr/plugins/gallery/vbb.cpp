@@ -23,6 +23,10 @@ namespace br
 
 using namespace cv;
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class vbbGallery : public Gallery
 {
     Q_OBJECT

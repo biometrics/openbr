@@ -75,9 +75,9 @@ BR_REGISTER(Initializer, NT4Initializer)
  */
 struct NT4Context
 {
-    HNLExtractor extractor; /*!< Face extractor. */
-    HNEExtractor irisExtractor; /*!< Iris extractor. */
-    HNMatcher matcher; /*!< Template matcher. */
+    HNLExtractor extractor; // Face extractor.
+    HNEExtractor irisExtractor; // Iris extractor.
+    HNMatcher matcher; // Template matcher.
 
     NT4Context()
     {
@@ -148,9 +148,7 @@ struct NT4Context
         NObjectFree(matcher);
     }
 
-    /*!
-     * \brief to NT image
-     */
+    // to NT image
     static void toImage(const Mat &src, HNGrayscaleImage *grayscaleImage)
     {
         Mat gray;
@@ -167,9 +165,7 @@ struct NT4Context
         NObjectFree(image);
     }
 
-    /*!
-     * \brief to OpenCV matrix
-     */
+    // to OpenCV matrix
     static Mat toMat(const HNLTemplate &templ)
     {
         NSizeType bufferSize;
@@ -181,9 +177,7 @@ struct NT4Context
         return buffer;
     }
 
-    /*!
-     * \brief extract metadata
-     */
+    // extract metadata
     static File toMetadata(const NleDetectionDetails &detectionDetails)
     {
         File metadata;
@@ -221,9 +215,7 @@ struct NT4Context
         return metadata;
     }
 
-    /*!
-     * \brief Initialize from metadata
-     */
+    // Initialize from metadata
     static NleDetectionDetails fromMetadata(const File &metadata)
     {
         NleDetectionDetails detectionDetails;

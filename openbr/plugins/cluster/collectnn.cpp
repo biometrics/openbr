@@ -23,7 +23,7 @@ namespace br
  * \ingroup transforms
  * \brief Collect nearest neighbors and append them to metadata.
  * \author Charles Otto \cite caotto
- * \property int keep The maximum number of nearest neighbors to keep. Default is 20.
+ * \br_property int keep The maximum number of nearest neighbors to keep. Default is 20.
  */
 class CollectNNTransform : public UntrainableMetaTransform
 {

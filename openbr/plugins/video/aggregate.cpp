@@ -21,10 +21,11 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Passes along n sequential frames to the next transform.
- * \author Josh Klontz \cite jklontz
+ * \brief Passes along n sequential frames to the next Transform.
  *
- * For a video with m frames, AggregateFrames would create a total of m-n+1 sequences ([0,n] ... [m-n+1, m]).
+ * For a video with m frames, AggregateFrames would create a total of m-n+1 sequences ([0,n] ... [m-n+1, m])
+ *
+ * \author Josh Klontz \cite jklontz
  */
 class AggregateFrames : public TimeVaryingTransform
 {

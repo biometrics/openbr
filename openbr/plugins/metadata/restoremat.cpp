@@ -21,9 +21,9 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Set the last matrix of the input template to a matrix stored as metadata with input propName.
+ * \brief Set the last matrix of the input Template to a matrix stored as metadata with input propName.
  *
- * Also removes the property from the templates metadata after restoring it.
+ * Also removes the property from the Templates metadata after restoring it.
  *
  * \author Charles Otto \cite caotto
  */

@@ -19,6 +19,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class DiscardTemplatesTransform : public UntrainableMetaTransform
 {
     Q_OBJECT

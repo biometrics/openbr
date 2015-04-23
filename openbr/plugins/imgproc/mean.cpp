@@ -24,7 +24,9 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Computes the mean of a set of templates.
- * \note Suitable for visualization only as it sets every projected template to the mean template.
+ *
+ * Suitable for visualization only as it sets every projected template to the mean template.
+ *
  * \author Scott Klum \cite sklum
  */
 class MeanTransform : public Transform

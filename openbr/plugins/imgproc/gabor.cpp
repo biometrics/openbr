@@ -25,7 +25,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief http://en.wikipedia.org/wiki/Gabor_filter
+ * \brief Implements a Gabor Filter
+ * \br_link http://en.wikipedia.org/wiki/Gabor_filter
  * \author Josh Klontz \cite jklontz
  */
 class GaborTransform : public UntrainableTransform

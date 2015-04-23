@@ -29,9 +29,9 @@ namespace br
  * \ingroup transforms
  * \brief Chooses k random points to be centroids.
  * \author Austin Blanton \cite imaus10
- * \property int kTrain The number of random centroids to make at train time. Default is 256.
- * \property int kSearch The number of nearest neighbors to search for at runtime. Default is 1.
- * \see http://docs.opencv.org/modules/flann/doc/flann_fast_approximate_nearest_neighbor_search.html
+ * \br_property int kTrain The number of random centroids to make at train time. Default is 256.
+ * \br_property int kSearch The number of nearest neighbors to search for at runtime. Default is 1.
+ * \br_link http://docs.opencv.org/modules/flann/doc/flann_fast_approximate_nearest_neighbor_search.html
  */
 class RandomCentroidsTransform : public Transform
 {

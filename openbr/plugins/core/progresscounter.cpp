@@ -22,6 +22,11 @@
 namespace br
 {
 
+/*!
+ * \ingroup transforms
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class ProgressCounterTransform : public TimeVaryingTransform
 {
     Q_OBJECT

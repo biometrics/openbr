@@ -11,4 +11,4 @@ See:
 * [Static Functions](statics.md)
 * [Functions](functions.md)
 
-[UntrainableMetadataTransforms](untrainablemetadatatransform.md) are [Transforms](../transform/transform.md) that operate soley on textual [metadata](../transform/members.md#file). They are *not* [independent](../transform/members.md#independent), because [Templates](../template/template.md) can only every have one collection of [metadata](../template/members.md#file), and they are *not* [trainable](../transform/members.md#trainable).
+[UntrainableMetadataTransforms](untrainablemetadatatransform.md) are [Transforms](../transform/transform.md) that operate soley on textual [metadata](../template/members.md#file). They are *not* [independent](../transform/members.md#independent), because [Templates](../template/template.md) can only every have one collection of [metadata](../template/members.md#file), and they are *not* [trainable](../transform/members.md#trainable).

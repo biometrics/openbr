@@ -263,7 +263,7 @@ Creates a **.csv** file containing performance metrics from evaluating the simil
 
 ## br_assert_eval
 
-Evaluates the similarity matrix using the mask matrix.  Function aborts ff TAR @ FAR = 0.001 does not meet an expected performance value.
+Evaluates the similarity matrix using the mask matrix.  Function aborts if TAR @ FAR = 0.001 does not meet an expected performance value.
 
 * **function definition:**
 
@@ -794,7 +794,7 @@ Returns the full path to the root of the SDK.
 
 ## br_get_header
 
-Retrieve the target and query inputs in the [BEE matrix](../../technical.md#the-evaluation-harness) header. See the bullets at the top of this page on managed return values.
+Retrieve the target and query inputs in the [BEE matrix](../../technical.md#the-evaluation-harness) header. For information on managed return values see [here](../c_api.md#memory).
 
 * **function definition:**
 
@@ -900,8 +900,8 @@ Convenience function for training on multiple inputs
 	Parameter | Type | Description
 	--- | --- | ---
 	num_inputs | int | Size of **inputs**
-	inputs[] | const char * | An array of [galleries](../cpp_api.md#gallery) to train on.
-	modell | const char *model = | (Optional) String specifying the binary file to serialize training results to. The trained algorithm can be recovered by using this file as the algorithm. By default the trained algorithm will not be serialized to disk.
+	inputs[] | const char * | An array of [galleries](../cpp_api/gallery/gallery.md) to train on.
+	model | const char * | (Optional) String specifying the binary file to serialize training results to. The trained algorithm can be recovered by using this file as the algorithm. By default the trained algorithm will not be serialized to disk.
 
 * **output:** (void)
 * **see:** [br_train](#br_train)
@@ -919,6 +919,24 @@ Get the current OpenBR version.
 * **parameters:** None
 * **output:** (const char *) Returns the current OpenBR version
 * **see:** [br_about](#br_about), [br_scratch_path](#br_scratch_path)
+
+---
+
+## br_slave_process
+
+For internal use via [ProcessWrapperTransform](../plugins/core.md#processwrappertransform)
+
+* **function definition:**
+
+		void br_slave_process(const char * baseKey)
+
+* **parameters:**
+
+	Parameter | Type | Description
+	--- | --- | ---
+	baseKey | const char * | base key for the slave process
+
+* **output:** (void)
 
 ---
 
@@ -1179,7 +1197,7 @@ Enroll a [Template](../cpp_api/template/template.md) from the C API!
 
 	Parameter | Type | Description
 	--- | --- | ---
-	tmpl | br_template | Pointer to a [Template](../cpp_api.md#template).
+	tmpl | br_template | Pointer to a [Template](../cpp_api/template/template.md).
 
 * **output:** ([br_template_list](typedefs.md#br_template_list)) Returns a pointer to a [TemplateList](../cpp_api/templatelist/templatelist.md)
 

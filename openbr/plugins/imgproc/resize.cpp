@@ -27,9 +27,8 @@ namespace br
  * \ingroup transforms
  * \brief Resize the template
  * \author Josh Klontz \cite jklontz
- * \note Method: Area should be used for shrinking an image, Cubic for slow but accurate enlargment, Bilin for fast enlargement.
- * \param preserveAspect If true, the image will be sized per specification, but
- * 	a border will be applied to preserve aspect ratio.
+ * \br_property enum method Resize method. Good options are: [Area should be used for shrinking an image, Cubic for slow but accurate enlargment, Bilin for fast enlargement]
+ * \br_property bool preserveAspect If true, the image will be sized per specification, but a border will be applied to preserve aspect ratio.
  */
 class ResizeTransform : public UntrainableTransform
 {

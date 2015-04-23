@@ -107,7 +107,7 @@ static TemplateList cropTrainingSamples(const TemplateList &data, const float as
 
 /*!
  * \ingroup transforms
- * \brief Document me
+ * \brief DOCUMENT ME
  * \author Austin Blanton \cite imaus10
  */
 class BuildScalesTransform : public Transform

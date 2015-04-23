@@ -28,13 +28,13 @@ namespace br
  * \ingroup transforms
  * \brief Wraps OpenCV's multi-layer perceptron framework
  * \author Scott Klum \cite sklum
- * \see http://docs.opencv.org/modules/ml/doc/neural_networks.html
- * \property enum kernel Type of MLP kernel to use. Options are Identity, Sigmoid, Gaussian. Default is Sigmoid.
- * \property float alpha Determines activation function for neural network. See OpenCV documentation for more details. Default is 1.
- * \property float beta Determines activation function for neural network. See OpenCV documentation for more details. Default is 1.
- * \property QStringList inputVariables Metadata keys for the labels associated with each template. There should be the same number of keys in the list as there are neurons in the final layer. Default is QStringList().
- * \property QStringList outputVariables Metadata keys to store the output of the neural network. There should be the same number of keys in the list as there are neurons in the final layer. Default is QStringList().
- * \property QList<int> neuronsPerLayer The number of neurons in each layer of the net. Default is QList<int>() << 1 << 1.
+ * \br_link http://docs.opencv.org/modules/ml/doc/neural_networks.html
+ * \br_property enum kernel Type of MLP kernel to use. Options are Identity, Sigmoid, Gaussian. Default is Sigmoid.
+ * \br_property float alpha Determines activation function for neural network. See OpenCV documentation for more details. Default is 1.
+ * \br_property float beta Determines activation function for neural network. See OpenCV documentation for more details. Default is 1.
+ * \br_property QStringList inputVariables Metadata keys for the labels associated with each template. There should be the same number of keys in the list as there are neurons in the final layer. Default is QStringList().
+ * \br_property QStringList outputVariables Metadata keys to store the output of the neural network. There should be the same number of keys in the list as there are neurons in the final layer. Default is QStringList().
+ * \br_property QList<int> neuronsPerLayer The number of neurons in each layer of the net. Default is QList<int>() << 1 << 1.
  */
 class MLPTransform : public MetaTransform
 {

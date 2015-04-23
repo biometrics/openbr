@@ -36,9 +36,10 @@ namespace br
  * \brief Improved procrustes alignment of points, to include a post processing scaling of points
  * to faciliate subsequent texture mapping.
  * \author Brendan Klare \cite bklare
- * \param width Width of output coordinate space (before padding)
- * \param padding Amount of padding around the coordinate space
- * \param useFirst whether or not to use the first instance as the reference object
+ *
+ * \br_property float width Width of output coordinate space (before padding)
+ * \br_property float padding Amount of padding around the coordinate space
+ * \br_property bool useFirst Whether or not to use the first instance as the reference object
  */
 class ProcrustesAlignTransform : public Transform
 {

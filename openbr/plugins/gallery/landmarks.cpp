@@ -24,13 +24,12 @@ namespace br
  * \ingroup galleries
  * \brief Text format for associating anonymous landmarks with images.
  * \author Josh Klontz \cite jklontz
+ * \br_format The input should be formatted as follows:
  *
- * \code
  * file_name:x1,y1,x2,y2,...,xn,yn
  * file_name:x1,y1,x2,y2,...,xn,yn
  * ...
  * file_name:x1,y1,x2,y2,...,xn,yn
- * \endcode
  */
 class landmarksGallery : public Gallery
 {

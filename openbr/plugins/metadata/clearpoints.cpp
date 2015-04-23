@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Clears the points from a template
+ * \brief Clears the points from a Template
  * \author Brendan Klare \cite bklare
  */
 class ClearPointsTransform : public UntrainableMetadataTransform

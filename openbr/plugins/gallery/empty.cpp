@@ -26,7 +26,7 @@ namespace br
  * \ingroup galleries
  * \brief Reads/writes templates to/from folders.
  * \author Josh Klontz \cite jklontz
- * \param regexp An optional regular expression to match against the files extension.
+ * \br_property QString regexp An optional regular expression to match against the files extension.
  */
 class EmptyGallery : public Gallery
 {

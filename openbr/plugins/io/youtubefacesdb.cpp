@@ -24,7 +24,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Implements the YouTubesFaceDB \cite wolf11 experimental protocol.
+ * \brief Implements the YouTubesFaceDB
+ * \br_paper Wolf, Lior, Tal Hassner, and Itay Maoz.
+ *           "Face recognition in unconstrained videos with matched background similarity."
+ *           Computer Vision and Pattern Recognition (CVPR), 2011 IEEE Conference on. IEEE, 2011.
  * \author Josh Klontz \cite jklontz
  */
 class YouTubeFacesDBTransform : public UntrainableMetaTransform

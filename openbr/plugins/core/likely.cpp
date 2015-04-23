@@ -7,7 +7,7 @@ namespace br
  * \ingroup transforms
  * \brief Generic interface to Likely JIT compiler
  *
- * www.liblikely.org
+ * \br_link www.liblikely.org
  * \author Josh Klontz \cite jklontz
  */
 class LikelyTransform : public UntrainableTransform

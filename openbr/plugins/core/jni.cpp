@@ -56,7 +56,6 @@ BR_REGISTER(Initializer, JNIInitializer)
  * \brief Execute Java code from OpenBR using the JNI
  * \author Jordan Cheney \cite jcheney
  */
-
 class JNITransform : public UntrainableTransform
 {
     Q_OBJECT

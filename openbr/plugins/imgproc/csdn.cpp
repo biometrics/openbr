@@ -24,9 +24,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Meyers, E.; Wolf, L.
- * “Using biologically inspired features for face processing,”
- * Int. Journal of Computer Vision, vol. 76, no. 1, pp 93–104, 2008.
+ * \brief Use biologically inspired features for face processing (see paper).
+ * \br_paper Meyers, E.; Wolf, L.
+ *           “Using biologically inspired features for face processing,”
+ *           Int. Journal of Computer Vision, vol. 76, no. 1, pp 93–104, 2008.
  * \author Scott Klum \cite sklum
  */
 
