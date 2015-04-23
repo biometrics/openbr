@@ -157,11 +157,12 @@ struct RPlot
                        "IM <- data[grep(\"IM\",data$Plot),-c(1)]\n"
                        "GM <- data[grep(\"GM\",data$Plot),-c(1)]\n"
                        "DET <- data[grep(\"DET\",data$Plot),-c(1)]\n"
+                       "IET <- data[grep(\"IET\",data$Plot),-c(1)]\n"
                        "FAR <- data[grep(\"FAR\",data$Plot),-c(1)]\n"
                        "FRR <- data[grep(\"FRR\",data$Plot),-c(1)]\n"
                        "SD <- data[grep(\"SD\",data$Plot),-c(1)]\n"
+                       "TF <- data[grep(\"TF\",data$Plot),-c(1)]\n"
                        "FT <- data[grep(\"FT\",data$Plot),-c(1)]\n"
-                       "FatT <- data[grep(\"FatT\",data$Plot),-c(1)]\n"
                        "CT <- data[grep(\"CT\",data$Plot),-c(1)]\n"
                        "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
                        "TS <- data[grep(\"TS\",data$Plot),-c(1)]\n"
@@ -176,23 +177,26 @@ struct RPlot
                        "IM$Y <- as.character(IM$Y)\n"
                        "GM$Y <- as.character(GM$Y)\n"
                        "DET$Y <- as.numeric(as.character(DET$Y))\n"
+                       "IET$Y <- as.numeric(as.character(IET$Y))\n"
                        "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
                        "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
+                       "TF$Y <- as.numeric(as.character(TF$Y))\n"
                        "FT$Y <- as.numeric(as.character(FT$Y))\n"
-                       "FatT$Y <- as.numeric(as.character(FatT$Y))\n"
                        "CT$Y <- as.numeric(as.character(CT$Y))\n"
                        "BC$Y <- as.numeric(as.character(BC$Y))\n"
                        "TS$Y <- as.character(TS$Y)\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
-                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%5, .drop=TRUE) {\n\t\t"
+                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%6, .drop=TRUE) {\n\t\t"
                        "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
                        "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
                        "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
                        "\n\t\t\tmeasurevar\n\t\t)\n\n\t\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\t\tdatac$se <- datac$sd / sqrt(datac$N)"
                        "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\treturn(datac)\n\t}\n\t"
                        "DET <- summarySE(DET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
+                       "IET <- summarySE(IET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "ERR <- summarySE(ERR, measurevar=\"X\", groupvars=c(\"Error\", \"%2\", \"Y\"))\n\t"
+                       "TF <- summarySE(TF, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "FT <- summarySE(FT, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "CT <- summarySE(CT, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n}\n\n"
                        "# Code to format FAR values\n"
@@ -200,23 +204,23 @@ struct RPlot
                        "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n"
                        "\n"
                        "# Code to format TAR@FAR table\n"
-                       "algs <- unique(FT$%2)\n"
+                       "algs <- unique(TF$%2)\n"
                        "algs <- algs[!duplicated(algs)]\n"
                        "mat <- matrix(%3,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
                        "FTtable <- as.table(mat)\n"
                        "\n"
-                       "# Code to format TAR@FAR table\n"
+                       "# Code to format FAR@TAR table\n"
                        "algs <- unique(FT$%2)\n"
                        "algs <- algs[!duplicated(algs)]\n"
-                       "mat <- matrix(FatT$Y,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                       "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\"TAR = 0.95\", \"TAR = 0.85\", \"TAR = 0.75\", \"TAR = 0.65\", \"TAR = 0.50\", \"TAR = 0.40\")\n"
                        "F_at_Ttable <- as.table(mat)\n"
                        "\n"
                        "# Code to format CMC Table\n"
-                       "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                       "mat <- matrix(%5,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\" Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
                        "CMCtable <- as.table(mat)\n"
@@ -227,6 +231,7 @@ struct RPlot
                        "colnames(mat) <- algs\n\t"
                        "rownames(mat) <- c(\"Template Size (bytes):\")\n\t"
                        "TStable <- as.table(mat)\n}\n").arg(((major.smooth || minor.smooth) ? "TRUE" : "FALSE"), major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header),
+                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(TF$Y, 3)), round(TF$ci, 3), sep=\"\\u00b1\")" : "TF$Y",
                                                             (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
                                                             (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
                                                             QString::number(confidence))));
@@ -339,6 +344,17 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
                             QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", files.size()))));
+
+    p.file.write(qPrintable(QString("qplot(X, Y, data=IET, geom=\"line\"") +
+                            (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
+                            (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
+                            QString(", xlab=\"False Positive Identification Rate (FPIR)\", ylab=\"False Negative Identification Rate (FNIR)\") + theme_minimal()") +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=IET[seq(1, NROW(IET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
+                            (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
+                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
+                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
+                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()\n\n")));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score\", ylab=\"Frequency\"") +
