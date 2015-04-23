@@ -21,6 +21,7 @@ As Likely is a literate programming language, this document is both the source c
 \end{abstract}
 
 \section{Compilation}
+\label{sec:compilation}
 This document is a valid \LaTeX\ file that can be rendered for reading by humans.
 
 \begin{verbatim}
@@ -34,9 +35,10 @@ $ likely -p 'data := "path/to/training/data.lm".read-matrix' \
 face_recognition.tex face_recognition.o
 \end{verbatim}
 
-Note that the outputted \emph{face\_recognition.o} native object file exposes its functionality through a C-compatible signature.
+Note that the outputted \texttt{face\_recognition.o} native object file exposes its functionality through a C-compatible signature.
 
 \begin{verbatim}
+#include <likely.h>
 likely_mat face_recognition(likely_const_mat src);
 \end{verbatim}
 
@@ -50,10 +52,12 @@ face-recognition :=
 \end{likely}
 
 Throughout the remainder of this document we will append additional steps to this function, building up the entire algorithm one transformation at a time.
-It is the responsibility of each section in this document to update the \emph{face-recognition} function and the training data.
-In this way the sections maintain independence, and the algorithm can be changed by inserting, removing, or editing sections of this document.
+It is the responsibility of each section in this document to update the \texttt{face-recognition} function and the training \texttt{data}.
+It is in this way that the sections maintain independence, and the algorithm can be changed by inserting, removing, or editing sections of this document.
+Remember that the \emph{Likely Language Reference}\footnote{https://s3.amazonaws.com/liblikely/latex/standard.pdf} is a good resource to consult if you are uncertain about the meaning of some code.
 
-Note that the remainder of this document assumes that the global variable \emph{data} is defined, and contains the appropriate training samples.
+Note that the remainder of this document assumes that the global variable 
+\texttt{data} is defined, and contains the appropriate training samples.
 
 \begin{likely}
 "Number of training samples:"
@@ -73,19 +77,18 @@ Such a normalization has been observed to improve accuracy when comparing featur
 normalize-l2 :=
   src :->
   {
-    norm := (new f32T src.channels 1 src.rows src.frames null)
-    (norm src) :=>
-    {
-      add-squared-element :=
-        x :->
-          norm :<- (+ norm src.f32.sq)
-      (iter add-squared-element src.columns)
-      norm :<- (/ 1 (sqrt norm))
-    }
-
     dst := src.imitate
-    (dst src norm) :=>
-      dst :<- (* src norm)
+    len := src.columns
+    ((src.channels 1 src.rows src.frames)
+     dst src len) :=>
+    {
+      norm := 0.(cast src).$
+      (iter (-> x (<- norm (+ norm src.sq)))
+            len)
+      norm := (/ 1 (sqrt norm))        
+      (iter (-> x (<- dst (* src norm)))
+            len)
+    }
   }
 \end{likely}
 
@@ -149,7 +152,7 @@ data.columns
 \end{likely}
 
 \section{Entry Point}
-The entry point to the outside world is a single C function \texttt{face\_recognition} that takes as input a \texttt{likely\_mat} (the input image) and outputs a new \texttt{likely\_mat} (the feature vector).
+Recall from section \ref{sec:compilation} that the entry point to the outside world is a single C function \texttt{face\_recognition} that takes as input a \texttt{likely\_mat} (the input image) and outputs a new \texttt{likely\_mat} (the feature vector). Now that we have finished defining \texttt{face-recognition} we can finally export this symbol.
 
 \begin{likely}
 (extern u8X "face_recognition" f32X face-recognition)
