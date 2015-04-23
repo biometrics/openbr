@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Alpha-blend two matrices
+ * \brief Alpha-blend matrices
  * \author Josh Klontz \cite jklontz
  */
 class BlendTransform : public UntrainableMetaTransform
@@ -35,15 +35,16 @@ class BlendTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         dst.file = src.file;
+        dst.m() = Mat::zeros(src.m().rows, src.m().cols, src.m().type());
 
-        if (src.size() != 2) {
-            dst.m() = Mat::zeros(src.m().rows, src.m().cols, src.m().type());
-            for (int i=0; i<src.size(); i++) {
-                const float weight = (alpha.size() == src.size()) ? alpha[i] : 1./src.size();
-                dst.m() += src[i]*weight;
-            }
-        } else {
-            addWeighted(src[0], alpha[0], src[1], 1-alpha[0], 0, dst);
+        QList<float> a = alpha;
+
+        if (src.size() == 2 && a.size() == 1)
+            a << 1-a[0];
+
+        for (int i=0; i<src.size(); i++) {
+            const float weight = (a.size() == src.size()) ? a[i] : 1./src.size();
+            dst.m() += src[i]*weight;
         }
     }
 };
