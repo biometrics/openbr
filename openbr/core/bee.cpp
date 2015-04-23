@@ -298,14 +298,12 @@ Mat makeMask(const FileList &targets, const FileList &queries, int partition)
     const QStringList queryLabels = File::get<QString>(queries, "Label", "-1");
     const QList<int> targetPartitions = targets.crossValidationPartitions();
     const QList<int> queryPartitions = queries.crossValidationPartitions();
-    const QList<bool> targetsOnly = File::get<bool>(queries, "targetOnly", false);
 
     Mat mask(queries.size(), targets.size(), CV_8UC1);
     for (int i=0; i<queries.size(); i++) {
         const QString &fileA = queries[i];
         const QString labelA = queryLabels[i];
         const int partitionA = queryPartitions[i];
-        const bool targetOnly = targetsOnly[i];
 
         for (int j=0; j<targets.size(); j++) {
             const QString &fileB = targets[j];
@@ -314,7 +312,6 @@ Mat makeMask(const FileList &targets, const FileList &queries, int partition)
 
             MaskValue val;
             if      (fileA == fileB)           val = DontCare;
-            else if (targetOnly)               val = DontCare;
             else if (labelA == "-1")           val = DontCare;
             else if (labelB == "-1")           val = DontCare;
             else if (partitionA != partition)  val = DontCare;

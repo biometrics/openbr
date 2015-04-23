@@ -458,10 +458,12 @@ struct TemplateList : public QList<Template>
     /*!< \brief Ensure labels are in the range [0,numClasses-1]. */
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
+    /*!< \brief Assign templates to folds partitions. */
+    BR_EXPORT TemplateList partition(const QString &inputVariable) const;
+
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
     BR_EXPORT QList<int> applyIndex(const QString &propName, const QHash<QString, int> &valueMap) const;
-
     /*!
      * \brief Returns the total number of bytes in all the templates.
      */
@@ -486,7 +488,7 @@ struct TemplateList : public QList<Template>
     /*!
      * \brief Returns a list of #br::TemplateList with each #br::Template in a given #br::TemplateList containing the number of matrices specified by \em partitionSizes.
      */
-    QList<TemplateList> partition(const QList<int> &partitionSizes) const
+    QList<TemplateList> split(const QList<int> &partitionSizes) const
     {
         int sum = 0;
         QList<TemplateList> partitions; partitions.reserve(partitionSizes.size());

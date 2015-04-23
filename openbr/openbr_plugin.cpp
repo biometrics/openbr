@@ -432,77 +432,8 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         if (gallery.getBool("reduce"))
             newTemplates = newTemplates.reduced();
 
-        const int crossValidate = gallery.get<int>("crossValidate");
-
-        // The leaveOneImageOut flag is used when we want to train on n-1 of a subject's images
-        // Thus, we find all the images for a particular subject, and set their partitions based on
-        // the crossValidate parameter
-        // Note that when the number of images per subject varies from subject to subject
-        // the number of subjects will decrease as the partition increases
-        if (gallery.getBool("leaveOneImageOut") && crossValidate > 0) {
-            QStringList labels;
-            for (int i=newTemplates.size()-1; i>=0; i--) {
-                newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", file.name);
-
-                QString label = newTemplates.at(i).file.get<QString>("Label");
-                // Have we seen this subject before?
-                if (!labels.contains(label)) {
-                    labels.append(label);
-                    // Get indices belonging to this subject
-                    QList<int> labelIndices = newTemplates.find("Label",label);
-                    for (int j = 0; j < labelIndices.size(); j++) {
-                        // Set subject partitions
-                        newTemplates[labelIndices[j]].file.set("Partition",j%crossValidate);
-                    }
-                    // Extend the gallery for each partition
-                    for (int j=0; j<labelIndices.size(); j++) {
-                        for (int k=0; k<crossValidate; k++) {
-                            Template leaveOneImageOutTemplate = newTemplates[labelIndices[j]];
-                            if (k!=leaveOneImageOutTemplate.file.get<int>("Partition")) {
-                                leaveOneImageOutTemplate.file.set("Partition", k);
-                                leaveOneImageOutTemplate.file.set("targetOnly", true);
-                                newTemplates.insert(i+1,leaveOneImageOutTemplate);
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (int i=newTemplates.size()-1; i>=0; i--) {
-                newTemplates[i].file.set("Index", i+templates.size());
-                newTemplates[i].file.set("Gallery", file.name);
-
-                if (crossValidate > 0) {
-                    if (newTemplates[i].file.getBool("duplicatePartitions")) {
-                        // The duplicatePartitions flag is used to add target images
-                        // crossValidate times to the simmat/mask
-                        // when multiple training sets are being used
-
-                        // Set template to the first parition
-                        newTemplates[i].file.set("Partition", QVariant(0));
-
-                        // Insert templates for all the other partitions
-                        for (int j=crossValidate-1; j>0; j--) {
-                            Template duplicatePartitionsTemplate = newTemplates[i];
-                            duplicatePartitionsTemplate.file.set("Partition", j);
-                            newTemplates.insert(i+1, duplicatePartitionsTemplate);
-                        }
-                    } else if (newTemplates[i].file.getBool("allPartitions")) {
-                        // The allPartitions flag is used to add an extended set
-                        // of target images to every partition
-                        newTemplates[i].file.set("Partition", -1);
-                    } else {
-                        if (!newTemplates[i].file.contains(("Partition"))) {
-                            // Direct use of "Label" is not general -cao
-                            const QByteArray md5 = QCryptographicHash::hash(newTemplates[i].file.get<QString>("Label").toLatin1(), QCryptographicHash::Md5);
-                            // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                            newTemplates[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
-                        }
-                    }
-                }
-            }
-        }
+        if (Globals->crossValidate > 1)
+            newTemplates = newTemplates.partition("Label");
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
             if (newTemplates.size() != templates.size())
@@ -594,6 +525,35 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
     }
 
     return result;
+}
+
+TemplateList TemplateList::partition(const QString &inputVariable) const
+{
+    const int crossValidate = Globals->crossValidate;
+    if (crossValidate < 2)
+        return *this;
+
+    TemplateList partitioned = *this;
+    for (int i=partitioned.size()-1; i>=0; i--) {
+        // See CrossValidateTransform for description of these variables
+        if (partitioned[i].file.getBool("duplicatePartitions")) {
+            for (int j=crossValidate-1; j>=0; j--) {
+                Template duplicateTemplate = partitioned[i];
+                duplicateTemplate.file.set("Partition", j);
+                partitioned.insert(i+1, duplicateTemplate);
+            }
+        } else if (partitioned[i].file.getBool("allPartitions")) {
+            partitioned[i].file.set("Partition", -1);
+        } else {
+            if (!partitioned[i].file.contains(("Partition"))) {
+                const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
+                // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+            }
+        }
+    }
+
+    return partitioned;
 }
 
 /* Object - public methods */

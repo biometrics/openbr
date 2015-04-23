@@ -32,31 +32,43 @@ static void _train(Transform *transform, TemplateList data) // think data has to
  * \brief Cross validate a trainable transform.
  * \author Josh Klontz \cite jklontz
  * \author Scott Klum \cite sklum
- * \note To use an extended gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
- *       against for all testing partitions.
+ * \note  Two flags can be put in File metadata that are related to cross-validation and are used to
+ *        extend a testing gallery:
+ *        (i) allPartitions - This flag is intended to be used when comparing the
+ *                            performance of an untrainable algorithm (e.g. a COTS
+ *                            algorithm) against a trainable algorithm that was trained
+ *                            using cross-validation. All templates with the allPartitions
+ *                            flag will be compared against for every partition.  As
+ *                            untrainable algorithms will have no use for the
+ *                            CrossValidateTransform, this flag is only meaningful at comparison
+ *                            time (but care has been taken so that one can train and enroll
+ *                            without issue if these Files are present in the used Gallery).
+ *        (ii) duplicatePartitions - This flag is similar to allPartitions in that it causes
+ *                            the same template to be used during comparison for every partition.
+ *                            The difference is that duplicatePartitions will duplicate each
+ *                            marked template and project it into the model space constituded
+ *                            by the child transforms of CrossValidateTransform.  Again, care
+ *                            has been take such that one can train with these templates in the
+ *                            used Gallery successfully (they will simply be omitted).
  */
 class CrossValidateTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
-    Q_PROPERTY(bool leaveOneImageOut READ get_leaveOneImageOut WRITE set_leaveOneImageOut RESET reset_leaveOneImageOut STORED false)
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
     BR_PROPERTY(QString, description, "Identity")
-    BR_PROPERTY(bool, leaveOneImageOut, false)
+    BR_PROPERTY(QString, inputVariable, "Label")
 
     // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
 
-    // Treating this transform as a leaf (in terms of update training scheme), the child transform
+    // Treating this transform as a leaf (in terms of updated training scheme), the child transform
     // of this transform will lose any structure present in the training QList<TemplateList>, which
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        int numPartitions = 0;
-        QList<int> partitions; partitions.reserve(data.size());
-        foreach (const File &file, data.files()) {
-            partitions.append(file.get<int>("Partition", 0));
-            numPartitions = std::max(numPartitions, partitions.last()+1);
-        }
+        QList<int> partitions = data.partition(inputVariable).files().crossValidationPartitions();
+        const int numPartitions = Common::Max(partitions)+1;
 
         while (transforms.size() < numPartitions)
             transforms.append(make(description));
@@ -68,45 +80,11 @@ class CrossValidateTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
-            QList<int> partitionsBuffer = partitions;
             TemplateList partitionedData = data;
-            int j = partitionedData.size()-1;
-            while (j>=0) {
-                // Remove all templates belonging to partition i
-                // if leaveOneImageOut is true,
-                // and i is greater than the number of images for a particular subject
-                // even if the partitions are different
-                if (leaveOneImageOut) {
-                    const QString label = partitionedData.at(j).file.get<QString>("Label");
-                    QList<int> subjectIndices = partitionedData.find("Label",label);
-                    QList<int> removed;
-                    // Remove target only data
-                    for (int k=subjectIndices.size()-1; k>=0; k--)
-                        if (partitionedData[subjectIndices[k]].file.getBool("targetOnly")) {
-                            removed.append(subjectIndices[k]);
-                            subjectIndices.removeAt(k);
-                        }
-                    // Remove template that was repeated to make the testOnly template
-                    if (subjectIndices.size() > 1 && subjectIndices.size() <= i) {
-                        removed.append(subjectIndices[i%subjectIndices.size()]);
-                    } else if (partitionsBuffer[j] == i) {
-                        removed.append(j);
-                    }
-
-                    if (!removed.empty()) {
-                        typedef QPair<int,int> Pair;
-                        foreach (Pair pair, Common::Sort(removed,true)) {
-                            partitionedData.removeAt(pair.first); partitionsBuffer.removeAt(pair.first); j--;
-                        }
-                    } else {
-                        j--;
-                    }
-                } else if (partitions[j] == i) {
+            for (int j=partitionedData.size()-1; j>=0; j--)
+                if (partitions[j] == i)
                     // Remove data, it's designated for testing
                     partitionedData.removeAt(j);
-                    j--;
-                } else j--;
-            }
             // Train on the remaining templates
             futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
         }
@@ -115,18 +93,20 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const Template &src, Template &dst) const
     {
-        // Remember, the partition should never be -1
-        // since it is assumed that the allPartitions
-        // flag is only used during comparison
-        // (i.e. only used when making a mask)
+        Q_UNUSED(src);
+        Q_UNUSED(dst);
 
-        // If we want to duplicate templates but use the same training data
-        // for all partitions (i.e. transforms.size() == 1), we need to
-        // restrict the partition
+        qFatal("CrossValidateTransform::project(const Template &src, Template &dst) should not be called.");
+    }
 
-        int partition = src.file.get<int>("Partition", 0);
-        partition = (partition >= transforms.size()) ? 0 : partition;
-        transforms[partition]->project(src, dst);
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        TemplateList partitioned = src.partition(inputVariable);
+
+        for (int i=0; i<partitioned.size(); i++) {
+            int partition = partitioned[i].file.get<int>("Partition", 0);
+            transforms[partition]->project(partitioned, dst);
+        }
     }
 
     void store(QDataStream &stream) const

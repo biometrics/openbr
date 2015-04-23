@@ -47,10 +47,10 @@ private:
     void train(const TemplateList &src)
     {
         // Partition the templates by matrix
-        QList<int> split;
-        for (int i=0; i<src.at(0).size(); i++) split.append(1);
+        QList<int> splits;
+        for (int i=0; i<src.at(0).size(); i++) splits.append(1);
 
-        QList<TemplateList> partitionedSrc = src.partition(split);
+        QList<TemplateList> partitionedSrc = src.split(splits);
 
         // Train on each of the partitions
         QFutureSynchronizer<void> futures;
