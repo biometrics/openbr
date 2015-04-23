@@ -23,19 +23,29 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Alpha-blend two matrices
+ * \brief Alpha-blend matrices
  * \author Josh Klontz \cite jklontz
  */
 class BlendTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(float alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
-    BR_PROPERTY(float, alpha, 0.5)
+    Q_PROPERTY(QList<float> alpha READ get_alpha WRITE set_alpha RESET reset_alpha STORED false)
+    BR_PROPERTY(QList<float>, alpha, QList<float>() << 0.5)
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.size() != 2) qFatal("Expected two source matrices.");
-        addWeighted(src[0], alpha, src[1], 1-alpha, 0, dst);
+        dst.file = src.file;
+        dst.m() = Mat::zeros(src.m().rows, src.m().cols, src.m().type());
+
+        QList<float> a = alpha;
+
+        if (src.size() == 2 && a.size() == 1)
+            a << 1-a[0];
+
+        for (int i=0; i<src.size(); i++) {
+            const float weight = (a.size() == src.size()) ? a[i] : 1./src.size();
+            dst.m() += src[i]*weight;
+        }
     }
 };
 
