@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/highlight.css">
-
-  <script src="../../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
-  <script src="../../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -187,6 +179,8 @@
                         
                             <li class="toctree-l2"><a href="#unitdistance">UnitDistance</a></li>
                         
+                            <li class="toctree-l2"><a href="#zscoredistance">ZScoreDistance</a></li>
+                        
                     
                 </ul>
             
@@ -272,37 +266,40 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
-        <li>Plugin Docs &raquo;</li>
+        
+          <li>Plugin Docs &raquo;</li>
+        
       
     
     <li>Distance</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="attributedistance">AttributeDistance</h1>
+              
+                <h1 id="attributedistance">AttributeDistance</h1>
 <p>Attenuation function based distance from attributes</p>
 <ul>
 <li><strong>file:</strong> distance/attribute.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="bayesianquantizationdistance">BayesianQuantizationDistance</h1>
-<p>Bayesian quantization distance</p>
+<p>Bayesian quantization <a href="../../cpp_api/distance/distance/">Distance</a></p>
 <ul>
 <li><strong>file:</strong> distance/bayesianquantization.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -311,16 +308,16 @@
 <ul>
 <li><strong>file:</strong> distance/byteL1.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="crossvalidatedistance">CrossValidateDistance</h1>
-<p>Cross validate a distance metric.</p>
+<p>Cross validate a <a href="../../cpp_api/distance/distance/">Distance</a> metric.</p>
 <ul>
 <li><strong>file:</strong> distance/crossvalidate.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -329,16 +326,16 @@
 <ul>
 <li><strong>file:</strong> distance/default.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="distdistance">DistDistance</h1>
-<p>Standard distance metrics</p>
+<p>Standard <a href="../../cpp_api/distance/distance/">Distance</a> metrics</p>
 <ul>
 <li><strong>file:</strong> distance/dist.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -347,17 +344,35 @@
 <ul>
 <li><strong>file:</strong> distance/filter.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="fusedistance">FuseDistance</h1>
-<p>Fuses similarity scores across multiple matrices of compared templates</p>
+<p>Fuses similarity scores across multiple matrices of compared <a href="../../cpp_api/template/template/">Template</a></p>
 <ul>
 <li><strong>file:</strong> distance/fuse.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
+<li>
+<p><strong>properties:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>enum</td>
+<td>Possible values are:<ul><li>Mean</li><li>sum</li><li>min</li><li>max</li></ul>.</td>
+</tr>
+</tbody>
+</table>
+</li>
 </ul>
 <hr />
 <h1 id="halfbytel1distance">HalfByteL1Distance</h1>
@@ -365,7 +380,7 @@
 <ul>
 <li><strong>file:</strong> distance/halfbyteL1.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -374,16 +389,16 @@
 <ul>
 <li><strong>file:</strong> distance/heatmap.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="identicaldistance">IdenticalDistance</h1>
-<p>Returns</p>
+<p>Returns true if the <a href="../../cpp_api/template/template/">Template</a> are identical, false otherwise.</p>
 <ul>
 <li><strong>file:</strong> distance/identical.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -392,7 +407,8 @@
 <ul>
 <li><strong>file:</strong> distance/keypointmatcher.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html">http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -401,7 +417,7 @@
 <ul>
 <li><strong>file:</strong> distance/L1.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -410,7 +426,7 @@
 <ul>
 <li><strong>file:</strong> distance/L2.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -419,7 +435,7 @@
 <ul>
 <li><strong>file:</strong> distance/matchprobability.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -428,7 +444,7 @@
 <ul>
 <li><strong>file:</strong> distance/metadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -437,52 +453,55 @@
 <ul>
 <li><strong>file:</strong> distance/neglogplusone.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="onlinedistance">OnlineDistance</h1>
-<p>Online distance metric to attenuate match scores across multiple frames</p>
+<p>Online <a href="../../cpp_api/distance/distance/">Distance</a> metric to attenuate match scores across multiple frames</p>
 <ul>
 <li><strong>file:</strong> distance/online.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Brendan klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="pipedistance">PipeDistance</h1>
 <p>Distances in series.</p>
+<p>The <a href="../../cpp_api/template/template/">Template</a> are compared using each <a href="../../cpp_api/distance/distance/">Distance</a> in order.
+If the result of the comparison with any given distance is -FLOAT_MAX then this result is returned early.
+Otherwise the returned result is the value of comparing the <a href="../../cpp_api/template/template/">Template</a> using the last <a href="../../cpp_api/distance/distance/">Distance</a>.</p>
 <ul>
 <li><strong>file:</strong> distance/pipe.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="rejectdistance">RejectDistance</h1>
-<p>Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.</p>
+<p>Sets <a href="../../cpp_api/distance/distance/">Distance</a> to -FLOAT_MAX if a target <a href="../../cpp_api/template/template/">Template</a> has/doesn't have a key.</p>
 <ul>
 <li><strong>file:</strong> distance/reject.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="svmdistance">SVMDistance</h1>
-<p>SVM Regression on template absolute differences.</p>
+<p>SVM Regression on <a href="../../cpp_api/template/template/">Template</a> absolute differences.</p>
 <ul>
 <li><strong>file:</strong> distance/svm.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="sumdistance">SumDistance</h1>
-<p>Sum match scores across multiple distances</p>
+<p>Sum match scores across multiple <a href="../../cpp_api/distance/distance/">Distance</a></p>
 <ul>
 <li><strong>file:</strong> distance/sum.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -491,20 +510,32 @@
 <ul>
 <li><strong>file:</strong> distance/turk.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="unitdistance">UnitDistance</h1>
-<p>Linear normalizes of a distance so the mean impostor score is 0 and the mean genuine score is 1.</p>
+<p>Linear normalizes of a <a href="../../cpp_api/distance/distance/">Distance</a> so the mean impostor score is 0 and the mean genuine score is 1.</p>
 <ul>
 <li><strong>file:</strong> distance/unit.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="zscoredistance">ZScoreDistance</h1>
+<p>DOCUMENT ME</p>
+<ul>
+<li><strong>file:</strong> distance/zscore.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/distance/distance/">Distance</a></li>
+<li><strong>author(s):</strong> [Unknown][unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -539,17 +570,33 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../core/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../format/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../core/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../format/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/highlight.css">
+
+<script src="../../../js/jquery-2.1.1.min.js"></script>
+<script src="../../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+<script src="../../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.121250
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:29.708974
 -->
 </body>
 </html>

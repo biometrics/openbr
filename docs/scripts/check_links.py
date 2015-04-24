@@ -18,7 +18,7 @@ def walk(path, ext):
 
 class Link():
     def __init__(self, path, raw_link):
-        if 'http' in raw_link:
+        if 'http' in raw_link or 'www' in raw_link:
             self.http = raw_link
             self.file = None
             self.anchor = None
@@ -101,7 +101,7 @@ def main():
 
     links = open('../docs/links.md', 'r').read()
     md_files = walk(docs_dir, ext)
-    md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code', 'attr_list'] )
+    md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code', 'attr_list', 'footnotes'] )
 
     html_files = [md.convert(open(f, 'r').read() + "\n\n" + links) for f in md_files]
 

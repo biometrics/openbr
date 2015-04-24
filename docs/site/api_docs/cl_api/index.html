@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/highlight.css">
-
-  <script src="../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
-  <script src="../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -105,6 +97,14 @@
             
                 <ul>
                     
+                        
+                            <li class="toctree-l2"><a href="#algorithms">Algorithms</a></li>
+                        
+                            <li class="toctree-l2"><a href="#core-commands">Core Commands</a></li>
+                        
+                            <li class="toctree-l2"><a href="#other-commands">Other Commands</a></li>
+                        
+                            <li class="toctree-l2"><a href="#miscellaneous">Miscellaneous</a></li>
                         
                     
                 </ul>
@@ -224,23 +224,485 @@
     <li><a href="../..">Docs</a> &raquo;</li>
     
       
-        <li>API Docs &raquo;</li>
+        
+          <li>API Docs &raquo;</li>
+        
       
     
     <li>Command Line API</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <!-- Links -->
+              
+                <p>The command line API is a tool to run OpenBR from the command line. The command line is the easiest and fastest way to run OpenBR!</p>
+<p>The following is a detailed description of the command line API. The command line API is really just a set of wrappers to call the <a href="../c_api/">C API</a>. All of the flags in this API have a corresponding C API call. To help display the examples the following shorthand definitions will be used:</p>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;arg&gt;</td>
+<td>&lt;&gt; Represent an input argument</td>
+</tr>
+<tr>
+<td>{arg}</td>
+<td>{} Represent an output argument</td>
+</tr>
+<tr>
+<td>[arg]</td>
+<td>[] Represent an optional argument</td>
+</tr>
+<tr>
+<td>(arg0 &#124; ... &#124; argN)</td>
+<td>(... &#124; ...) Represent a choice.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="algorithms">Algorithms</h2>
+<p>Almost every command line process needs to specify an algorithm to work properly. Algorithms in OpenBR are described in detail <a href="../../tutorials/#algorithms-in-openbr">here</a>. To specify algorithms to the command line use the <tt>-algorithm</tt> flag like so:</p>
+<pre><code>    -algorithm "AlgorithmString"
+</code></pre>
+<p>Make sure you use the quotes if your algorithm is longer than one plugin because special characters in OpenBR are also special characters (with very different meanings!) in Bash.</p>
+<h2 id="core-commands">Core Commands</h2>
+<h3 id="train">-train</h3>
+<p>Train a model</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-train &lt;gallery&gt; ... &lt;gallery&gt; [{model}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_train_n">br_train_n</a></p>
+</li>
+</ul>
+<h3 id="enroll">-enroll</h3>
+<p>Enroll a <a href="../cpp_api/gallery/gallery/">Gallery</a> through an algorithm</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-enroll &lt;input_gallery&gt; ... &lt;input_gallery&gt; {output_gallery}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_enroll">br_enroll</a> or <a href="../c_api/functions/#br_enroll_n">br_enroll_n</a> depending on the input size</p>
+</li>
+</ul>
+<h3 id="compare">-compare</h3>
+<p>Compare query <a href="../cpp_api/template/template/">Templates</a> against a target <a href="../cpp_api/gallery/gallery/">Gallery</a></p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-compare &lt;target_gallery&gt; &lt;query_gallery&gt; [{output}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_compare">br_compare</a></p>
+</li>
+</ul>
+<h3 id="pairwisecompare">-pairwiseCompare</h3>
+<p>DOCUMENT ME</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-pairwiseCompare &lt;target_gallery&gt; &lt;query_gallery&gt; [{output}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_pairwise_compare">br_pairwise_compare</a></p>
+</li>
+</ul>
+<h3 id="eval">-eval</h3>
+<p>Evaluate a similarity matrix</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-eval &lt;simmat&gt; [&lt;mask&gt;] [{csv}] [{matches}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval">br_eval</a></p>
+</li>
+</ul>
+<h3 id="inplaceeval">-inplaceEval</h3>
+<p>DOCUMENT ME</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-inplaceEval &lt;simmat&gt; &lt;target&gt; &lt;query&gt; [{output}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_inplace_eval">br_inplace_eval</a></p>
+</li>
+</ul>
+<h3 id="inplaceeval">-plot</h3>
+<p>Plot the results of an evaluation</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>       -plot &lt;file&gt; ... &lt;file&gt; {destination}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_plot">br_plot</a></p>
+</li>
+</ul>
+<h2 id="other-commands">Other Commands</h2>
+<h3 id="fuse">-fuse</h3>
+<p>Perform score level fusion on similarity matrices.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-fuse &lt;simmat&gt; ... &lt;simmat&gt; (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_fuse">br_fuse</a></p>
+</li>
+</ul>
+<h3 id="cluster">-cluster</h3>
+<p>Clusters one or more similarity matrices into a list of subjects</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-cluster &lt;simmat&gt; ... &lt;simmat&gt; &lt;aggressiveness&gt; {csv}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_cluster">br_cluster</a></p>
+</li>
+</ul>
+<h3 id="makemask">-makeMask</h3>
+<p>Constructs a mask from target and query inputs</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-makeMask &lt;target_gallery&gt; &lt;query_gallery&gt; {mask}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_make_mask">br_make_mask</a></p>
+</li>
+</ul>
+<h3 id="makepairwisemask">-makePairwiseMask</h3>
+<p>Constructs a mask from target and query inputs considering the target and input sets to be definite pairwise comparisons.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-makePairwiseMask &lt;target_gallery&gt; &lt;query_gallery&gt; {mask}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_make_pairwise_mask">br_make_pairwise_mask</a></p>
+</li>
+</ul>
+<h3 id="combinemask">-combineMasks</h3>
+<p>Combines several equal-sized mask matrices. A comparison may not be simultaneously indentified as both a genuine and an imposter by different input masks.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-combineMasks &lt;mask&gt; ... &lt;mask&gt; {mask} (And|Or)
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_combine_masks">br_combine_masks</a></p>
+</li>
+</ul>
+<h3 id="cat">-cat</h3>
+<p>Concatenates a list of galleries into 1 gallery</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-cat &lt;gallery&gt; ... &lt;gallery&gt; {gallery}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_cat">br_cat</a></p>
+</li>
+</ul>
+<h3 id="convert">-convert</h3>
+<p>Convert a file to a different type. Files can only be converted to types within the same group. For example formats can only be converted to other formats.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-convert (Format|Gallery|Output) &lt;input_file&gt; {output_file}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_convert">br_convert</a></p>
+</li>
+</ul>
+<h3 id="evalclassification">-evalClassification</h3>
+<p>Evaluates and prints classification accuracy to terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-evalClassification &lt;predicted_gallery&gt; &lt;truth_gallery&gt; &lt;predicted property name&gt; &lt;ground truth property name&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval_classification">br_eval_classification</a></p>
+</li>
+</ul>
+<h3 id="evalclustering">-evalClustering</h3>
+<p>Evaluates and prints clustering accuracy to the terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-evalClustering &lt;clusters&gt; &lt;gallery&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval_clustering">br_eval_clustering</a></p>
+</li>
+</ul>
+<h3 id="evaldetection">-evalDetection</h3>
+<p>Evaluates and prints detection accuracy to terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-evalDetection &lt;predicted_gallery&gt; &lt;truth_gallery&gt; [{csv}] [{normalize}] [{minSize}] [{maxSize}]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval_detection">br_eval_detection</a></p>
+</li>
+</ul>
+<h3 id="evallandmarking">-evalLandmarking</h3>
+<p>Evaluates and prints landmarking accuracy to terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-evalLandmarking &lt;predicted_gallery&gt; &lt;truth_gallery&gt; [{csv} [&lt;normalization_index_a&gt; &lt;normalization_index_b&gt;] [sample_index] [total_examples]]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval_landmarking">br_eval_landmarking</a></p>
+</li>
+</ul>
+<h3 id="evalregression">-evalRegression</h3>
+<p>Evaluates regression accuracy to disk</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-evalRegression &lt;predicted_gallery&gt; &lt;truth_gallery&gt; &lt;predicted property name&gt; &lt;ground truth property name&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_eval_regression">br_eval_regression</a></p>
+</li>
+</ul>
+<h3 id="asserteval">-assertEval</h3>
+<p>Evaluates the similarity matrix using the mask matrix.  Function aborts if TAR @ FAR = 0.001 does not meet an expected performance value.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-assertEval &lt;simmat&gt; &lt;mask&gt; &lt;accuracy&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_assert_eval">br_assert_eval</a></p>
+</li>
+</ul>
+<h3 id="plotdetection">-plotDetection</h3>
+<p>Renders detection performance figures for a set of .csv files created by <a href="#evaldetection">-evalDetection</a>.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-plotDetection &lt;file&gt; ... &lt;file&gt; {destination}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_plot_detection">br_plot_detection</a></p>
+</li>
+</ul>
+<h3 id="plotlandmarking">-plotLandmarking</h3>
+<p>Renders landmarking performance figures for a set of .csv files created by <a href="#evallandmarking">-evalLandmarking</a></p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-plotLandmarking &lt;file&gt; ... &lt;file&gt; {destination}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_plot_landmarking">br_plot_landmarking</a></p>
+</li>
+</ul>
+<h3 id="plotmetadata">-plotMetadata</h3>
+<p>Renders metadata figures for a set of .csv files with specified columns</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-plotMetadata &lt;file&gt; ... &lt;file&gt; &lt;columns&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_plot_metadata">br_plot_metadata</a></p>
+</li>
+</ul>
+<h3 id="project">-project</h3>
+<p>A naive alternative to <a href="#enroll">-enroll</a></p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-project &lt;input_gallery&gt; {output_gallery}
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_project">br_project</a></p>
+</li>
+</ul>
+<h3 id="getheader">-getHeader</h3>
+<p>Retrieve the target and query inputs in the <a href="../../technical/#the-evaluation-harness">BEE matrix</a> header</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-getHeader &lt;matrix&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_get_header">br_get_header</a></p>
+</li>
+</ul>
+<h3 id="setheader">-setHeader</h3>
+<p>Update the target and query inputs in the <a href="../../technical/#the-evaluation-harness">BEE matrix</a> header</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-setHeader {&lt;matrix&gt;} &lt;target_gallery&gt; &lt;query_gallery&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_set_header">br_set_header</a></p>
+</li>
+</ul>
+<h3 id="setproperty">-&lt;key&gt; &lt;value&gt;</h3>
+<p>Appends a provided value to the <a href="../cpp_api/context/context/">global metadata</a> using a provided key</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-&lt;key&gt; &lt;value&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_set_property">br_set_property</a></p>
+</li>
+</ul>
+<h2 id="miscellaneous">Miscellaneous</h2>
+<h3 id="help">-help</h3>
+<p>Print command line API documentation to the terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-help
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> N/A</p>
+</li>
+</ul>
+<h3 id="gui">-gui</h3>
+<p>If this flag is set OpenBR will enable GUI windows to be launched. It must be the first flag set.</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>br -gui
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> N/A</p>
+</li>
+</ul>
+<h3 id="objects">-objects</h3>
+<p>Returns names and parameters for the requested objects. Each object is newline separated. Arguments are separated from the object name with a tab. This function uses <a href="http://doc.qt.io/qt-5/QRegExp.html" title="QRegExp">QRegExp</a> syntax</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-objects [abstraction [implementation]]
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_objects">br_objects</a></p>
+</li>
+</ul>
+<h3 id="about">-about</h3>
+<p>Get a string with the name, version, and copyright of the project. This string is suitable for printing or terminal</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-about
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_about">br_about</a></p>
+</li>
+</ul>
+<h3 id="version">-version</h3>
+<p>Get the current OpenBR version</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-version
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_version">br_version</a></p>
+</li>
+</ul>
+<h3 id="slave">-slave</h3>
+<p>For internal use via <a href="../plugins/core/#processwrappertransform">ProcessWrapperTransform</a></p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-slave &lt;baseKey&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> <a href="../c_api/functions/#br_slave_process">br_slave_process</a></p>
+</li>
+</ul>
+<h3 id="daemon">-daemon</h3>
+<p>DOCUMENT ME</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-daemon &lt;daemon_pipe&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> N/A</p>
+</li>
+</ul>
+<h3 id="-exit">-exit</h3>
+<p>Exit the application</p>
+<ul>
+<li>
+<p><strong>arguments:</strong></p>
+<pre><code>-exit
+</code></pre>
+</li>
+<li>
+<p><strong>wraps:</strong> N/A</p>
+</li>
+</ul>
+<!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -275,17 +737,33 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../cpp_api/classifier/functions/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../plugins/classification/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../cpp_api/classifier/functions/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../plugins/classification/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../css/highlight.css">
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/highlight.pack.js"></script>
+<script src="../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.007731
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:29.466375
 -->
 </body>
 </html>

@@ -13,12 +13,12 @@ include_next_prev: False
 
 markdown_extensions:
 - attr_list
+- footnotes
 
 pages:
 - [index.md, Home]
 - [install.md, Install]
 - [tutorials.md, Tutorials]
-- [technical.md, Technical Overviews]
 - [contribute.md, Contribute]
 - [papers.md, Publications]
 
@@ -134,12 +134,26 @@ pages:
 
 # TimeVaryingTransform
 - [api_docs/cpp_api/timevaryingtransform/timevaryingtransform.md, C++ Plugin API, TimeVaryingTransform]
+- [api_docs/cpp_api/timevaryingtransform/members.md, TimeVaryingTransform, Members]
+- [api_docs/cpp_api/timevaryingtransform/constructors.md, TimeVaryingTransform, Constructors]
+- [api_docs/cpp_api/timevaryingtransform/statics.md, TimeVaryingTransform, Static Functions]
+- [api_docs/cpp_api/timevaryingtransform/functions.md, TimeVaryingTransform, Functions]
 
 # CompositeTransform
 - [api_docs/cpp_api/compositetransform/compositetransform.md, C++ Plugin API, CompositeTransform]
+- [api_docs/cpp_api/compositetransform/properties.md, CompositeTransform, Properties]
+- [api_docs/cpp_api/compositetransform/members.md, CompositeTransform, Members]
+- [api_docs/cpp_api/compositetransform/constructors.md, CompositeTransform, Constructors]
+- [api_docs/cpp_api/compositetransform/statics.md, CompositeTransform, Static Functions]
+- [api_docs/cpp_api/compositetransform/functions.md, CompositeTransform, Functions]
 
 # WrapperTransform
 - [api_docs/cpp_api/wrappertransform/wrappertransform.md, C++ Plugin API, WrapperTransform]
+- [api_docs/cpp_api/wrappertransform/properties.md, WrapperTransform, Properties]
+- [api_docs/cpp_api/wrappertransform/members.md, WrapperTransform, Members]
+- [api_docs/cpp_api/wrappertransform/constructors.md, WrapperTransform, Constructors]
+- [api_docs/cpp_api/wrappertransform/statics.md, WrapperTransform, Static Functions]
+- [api_docs/cpp_api/wrappertransform/functions.md, WrapperTransform, Functions]
 
 # Distance
 - [api_docs/cpp_api/distance/distance.md, C++ Plugin API, Distance]

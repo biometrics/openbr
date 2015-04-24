@@ -176,6 +176,11 @@ public:
         transform->project(src,dst);
     }
 
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        transform->project(src, dst);
+    }
+
     void projectUpdate(const Template &src, Template &dst)
     {
         transform->projectUpdate(src,dst);

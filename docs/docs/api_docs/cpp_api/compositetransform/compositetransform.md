@@ -12,4 +12,4 @@ See:
 * [Static Functions](statics.md)
 * [Functions](functions.md)
 
-A CompositeTransform is a wrapper around a list of child transforms. It is used internally for plugins like pipes and forks. It offers
+CompositeTransforms are the base class for [Transforms](../transform/transform.md) that have a list of child transforms. It is used internally for plugins like pipes and forks. It inherits from [TimeVaryingTransform](../timevaryingtransform/timevaryingtransform.md) so that it can properly handle having children (one or many) that are time varying. 

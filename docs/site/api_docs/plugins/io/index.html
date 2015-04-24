@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/highlight.css">
-
-  <script src="../../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
-  <script src="../../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -178,9 +170,13 @@
                         
                             <li class="toctree-l2"><a href="#downloadtransform">DownloadTransform</a></li>
                         
+                            <li class="toctree-l2"><a href="#galleryoutputtransform">GalleryOutputTransform</a></li>
+                        
                             <li class="toctree-l2"><a href="#incrementaloutputtransform">IncrementalOutputTransform</a></li>
                         
                             <li class="toctree-l2"><a href="#opentransform">OpenTransform</a></li>
+                        
+                            <li class="toctree-l2"><a href="#outputtransform">OutputTransform</a></li>
                         
                             <li class="toctree-l2"><a href="#printtransform">PrintTransform</a></li>
                         
@@ -242,28 +238,31 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
-        <li>Plugin Docs &raquo;</li>
+        
+          <li>Plugin Docs &raquo;</li>
+        
       
     
     <li>I/O</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="decodetransform">DecodeTransform</h1>
+              
+                <h1 id="decodetransform">DecodeTransform</h1>
 <p>Decodes images</p>
 <ul>
 <li><strong>file:</strong> io/decode.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -272,43 +271,69 @@
 <ul>
 <li><strong>file:</strong> io/download.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="galleryoutputtransform">GalleryOutputTransform</h1>
+<p>DOCUMENT ME</p>
+<ul>
+<li><strong>file:</strong> io/galleryoutput.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
+<li><strong>author(s):</strong> [Unknown][unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="incrementaloutputtransform">IncrementalOutputTransform</h1>
 <p>Incrementally output templates received to a gallery, based on the current filename</p>
+<p>When a template is received in projectUpdate for the first time since a finalize, open a new gallery based on the
+template's filename, and the galleryFormat property.</p>
+<p><a href="../../cpp_api/template/template/">Template</a> received in projectUpdate will be output to the gallery with a filename combining their original filename and
+their FrameNumber property, with the file extension specified by the fileFormat property.</p>
 <ul>
 <li><strong>file:</strong> io/incrementaloutput.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
-<li><strong>author:</strong> Charles Otto</li>
+<li><strong>author(s):</strong> <a href="https://github.com/caotto" title="Charles A. Otto ottochar@gmail.com">Charles Otto</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="opentransform">OpenTransform</h1>
-<p>Applies br::Format to br::Template::file::name and appends results.</p>
+<p>Applies <a href="../../cpp_api/format/format/">Format</a> to <a href="../../cpp_api/template/template/">Template</a> filename and appends results.</p>
 <ul>
 <li><strong>file:</strong> io/open.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="outputtransform">OutputTransform</h1>
+<p>DOCUMENT ME</p>
+<ul>
+<li><strong>file:</strong> io/out.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
+<li><strong>author(s):</strong> [Unknown][Unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="printtransform">PrintTransform</h1>
-<p>Prints the template's file to stdout or stderr.</p>
+<p>Prints the file of the input <a href="../../cpp_api/template/template/">Template</a> to stdout or stderr.</p>
 <ul>
 <li><strong>file:</strong> io/print.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="readlandmarkstransform">ReadLandmarksTransform</h1>
-<p>Read landmarks from a file and associate them with the correct templates.</p>
+<p>Read landmarks from a file and associate them with the correct <a href="../../cpp_api/template/template/">Template</a>.</p>
 <ul>
 <li><strong>file:</strong> io/readlandmarks.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
+<li><strong>format:</strong> Example of the format: <pre><code>image_001.jpg:146.000000,190.000000,227.000000,186.000000,202.000000,256.000000
+image_002.jpg:75.000000,235.000000,140.000000,225.000000,91.000000,300.000000
+image_003.jpg:158.000000,186.000000,246.000000,188.000000,208.000000,233.000000
+</code></pre></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -317,7 +342,7 @@
 <ul>
 <li><strong>file:</strong> io/read.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -326,7 +351,7 @@
 <ul>
 <li><strong>file:</strong> io/write.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -335,11 +360,24 @@
 <ul>
 <li><strong>file:</strong> io/youtubefacesdb.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Wolf, Lior, Tal Hassner, and Itay Maoz.</em>
+ <strong>"Face recognition in unconstrained videos with matched background similarity."</strong>
+ Computer Vision and Pattern Recognition (CVPR), 2011 IEEE Conference on. IEEE, 2011.</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -374,17 +412,33 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../imgproc/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../metadata/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../imgproc/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../metadata/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/highlight.css">
+
+<script src="../../../js/jquery-2.1.1.min.js"></script>
+<script src="../../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+<script src="../../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.300639
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:30.067435
 -->
 </body>
 </html>

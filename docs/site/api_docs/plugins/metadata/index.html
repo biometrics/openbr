@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/highlight.css">
-
-  <script src="../../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
-  <script src="../../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -205,6 +197,10 @@
                         
                             <li class="toctree-l2"><a href="#extractmetadatatransform">ExtractMetadataTransform</a></li>
                         
+                            <li class="toctree-l2"><a href="#facefromeyestransform">FaceFromEyesTransform</a></li>
+                        
+                            <li class="toctree-l2"><a href="#fileexclusiontransform">FileExclusionTransform</a></li>
+                        
                             <li class="toctree-l2"><a href="#filterdupemetadatatransform">FilterDupeMetadataTransform</a></li>
                         
                             <li class="toctree-l2"><a href="#gridtransform">GridTransform</a></li>
@@ -308,29 +304,42 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
-        <li>Plugin Docs &raquo;</li>
+        
+          <li>Plugin Docs &raquo;</li>
+        
       
     
     <li>Metadata</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="asefeyestransform">ASEFEyesTransform</h1>
-<p>Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;</p>
+              
+                <h1 id="asefeyestransform">ASEFEyesTransform</h1>
+<p>Find eye locations using an ASEF filter</p>
 <ul>
 <li><strong>file:</strong> metadata/eyes.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>authors:</strong> David Bolme, Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;</em>
+ <strong>"Average of Synthetic Exact Filters,"</strong>
+ Computer Vision and Pattern Recognition, 2009. CVPR 2009. IEEE Conference on , vol., no., pp.2105-2112, 20-25 June 2009</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="anonymizelandmarkstransform">AnonymizeLandmarksTransform</h1>
@@ -338,16 +347,16 @@
 <ul>
 <li><strong>file:</strong> metadata/anonymizelandmarks.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="astransform">AsTransform</h1>
-<p>Change the br::Template::file extension</p>
+<p>Change the <a href="../../cpp_api/template/template/">Template</a> file extension</p>
 <ul>
 <li><strong>file:</strong> metadata/as.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -356,7 +365,7 @@
 <ul>
 <li><strong>file:</strong> metadata/averagepoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -365,25 +374,26 @@
 <ul>
 <li><strong>file:</strong> metadata/cascade.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/metatransform/metatransform/">MetaTransform</a></li>
-<li><strong>authors:</strong> Josh Klontz, David Crouse</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a>, <a href="https://github.com/dgcrouse" title="David G. Crouse dgcrouse@gmail.com">David Crouse</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html">http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="checktransform">CheckTransform</h1>
-<p>Checks the template for NaN values.</p>
+<p>Checks the <a href="../../cpp_api/template/template/">Template</a> for NaN values.</p>
 <ul>
 <li><strong>file:</strong> metadata/check.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="clearpointstransform">ClearPointsTransform</h1>
-<p>Clears the points from a template</p>
+<p>Clears the points from a <a href="../../cpp_api/template/template/">Template</a></p>
 <ul>
 <li><strong>file:</strong> metadata/clearpoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -392,16 +402,16 @@
 <ul>
 <li><strong>file:</strong> metadata/consolidatedetections.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="croprecttransform">CropRectTransform</h1>
-<p>Crops the width and height of a template's rects by input width and height factors.</p>
+<p>Crops the width and height of a <a href="../../cpp_api/template/template/">Template</a> rects by input width and height factors.</p>
 <ul>
 <li><strong>file:</strong> metadata/croprect.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -410,16 +420,16 @@
 <ul>
 <li><strong>file:</strong> metadata/delaunay.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="expandrecttransform">ExpandRectTransform</h1>
-<p>Expand the width and height of a template's rects by input width and height factors.</p>
+<p>Expand the width and height of a <a href="../../cpp_api/template/template/">Template</a> rects by input width and height factors.</p>
 <ul>
 <li><strong>file:</strong> metadata/expandrect.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Charles Otto</li>
+<li><strong>author(s):</strong> <a href="https://github.com/caotto" title="Charles A. Otto ottochar@gmail.com">Charles Otto</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -428,34 +438,75 @@
 <ul>
 <li><strong>file:</strong> metadata/extractmetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="facefromeyestransform">FaceFromEyesTransform</h1>
+<p>Create face bounding box from two eye locations.</p>
+<ul>
+<li><strong>file:</strong> metadata/facefromeyes.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
+<li>
+<p><strong>properties:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>widthPadding</td>
+<td>double</td>
+<td>Specifies what percentage of the interpupliary distance (ipd) will be padded in both horizontal directions.</td>
+</tr>
+<tr>
+<td>verticalLocation</td>
+<td>double</td>
+<td>specifies where vertically the eyes are within the bounding box (0.5 would be the center).</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<hr />
+<h1 id="fileexclusiontransform">FileExclusionTransform</h1>
+<p>DOCUMENT ME</p>
+<ul>
+<li><strong>file:</strong> metadata/fileexclusion.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
+<li><strong>author(s):</strong> [Unknown][Unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="filterdupemetadatatransform">FilterDupeMetadataTransform</h1>
-<p>Removes duplicate templates based on a unique metadata key</p>
+<p>Removes duplicate <a href="../../cpp_api/template/template/">Template</a> based on a unique metadata key</p>
 <ul>
 <li><strong>file:</strong> metadata/filterdupemetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="gridtransform">GridTransform</h1>
-<p>Add landmarks to the template in a grid layout</p>
+<p>Add landmarks to the <a href="../../cpp_api/template/template/">Template</a> in a grid layout</p>
 <ul>
 <li><strong>file:</strong> metadata/grid.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="groundtruthtransform">GroundTruthTransform</h1>
-<p>Add any ground truth to the template using the file's base name.</p>
+<p>Add any ground truth to the <a href="../../cpp_api/template/template/">Template</a> using the file's base name.</p>
 <ul>
 <li><strong>file:</strong> metadata/groundtruth.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -464,16 +515,17 @@
 <ul>
 <li><strong>file:</strong> metadata/hogpersondetector.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/gpu/doc/object_detection.html">http://docs.opencv.org/modules/gpu/doc/object_detection.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="ifmetadatatransform">IfMetadataTransform</h1>
-<p>Clear templates without the required metadata.</p>
+<p>Clear <a href="../../cpp_api/template/template/">Template</a> without the required metadata.</p>
 <ul>
 <li><strong>file:</strong> metadata/ifmetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -482,7 +534,7 @@
 <ul>
 <li><strong>file:</strong> metadata/imposteruniquenessmeasure.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -491,7 +543,7 @@
 <ul>
 <li><strong>file:</strong> metadata/json.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -500,7 +552,7 @@
 <ul>
 <li><strong>file:</strong> metadata/keepmetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -509,7 +561,8 @@
 <ul>
 <li><strong>file:</strong> metadata/keypointdetector.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html">http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -518,7 +571,7 @@
 <ul>
 <li><strong>file:</strong> metadata/keytorect.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Jordan Cheney</li>
+<li><strong>author(s):</strong> [Jordan Cheney][JordanCheney]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -527,16 +580,16 @@
 <ul>
 <li><strong>file:</strong> metadata/namelandmarks.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="nametransform">NameTransform</h1>
-<p>Sets the template's matrix data to the br::File::name.</p>
+<p>Sets the <a href="../../cpp_api/template/template/">Template</a> matrix data to the br::File::name.</p>
 <ul>
 <li><strong>file:</strong> metadata/name.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -545,7 +598,7 @@
 <ul>
 <li><strong>file:</strong> metadata/normalizepoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -554,7 +607,7 @@
 <ul>
 <li><strong>file:</strong> metadata/pointdisplacement.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -563,7 +616,7 @@
 <ul>
 <li><strong>file:</strong> metadata/pointstomatrix.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -572,16 +625,16 @@
 <ul>
 <li><strong>file:</strong> metadata/procrustes.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/metadatatransform/metadatatransform/">MetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="rectstotemplatestransform">RectsToTemplatesTransform</h1>
-<p>For each rectangle bounding box in src, a new</p>
+<p>For each rectangle bounding box in src, a new <a href="../../cpp_api/template/template/">Template</a> is created.</p>
 <ul>
 <li><strong>file:</strong> metadata/rectstotemplates.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -590,25 +643,25 @@
 <ul>
 <li><strong>file:</strong> metadata/regexproperty.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Charles Otto</li>
+<li><strong>author(s):</strong> <a href="https://github.com/caotto" title="Charles A. Otto ottochar@gmail.com">Charles Otto</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="removemetadatatransform">RemoveMetadataTransform</h1>
-<p>Removes a metadata field from all templates</p>
+<p>Removes a metadata field from all <a href="../../cpp_api/template/template/">Template</a></p>
 <ul>
 <li><strong>file:</strong> metadata/removemetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="removetemplatestransform">RemoveTemplatesTransform</h1>
-<p>Remove templates with the specified file extension or metadata value.</p>
+<p>Remove <a href="../../cpp_api/template/template/">Template</a> with the specified file extension or metadata value.</p>
 <ul>
 <li><strong>file:</strong> metadata/removetemplates.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -617,7 +670,7 @@
 <ul>
 <li><strong>file:</strong> metadata/renamefirst.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -626,34 +679,36 @@
 <ul>
 <li><strong>file:</strong> metadata/rename.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="reorderpointstransform">ReorderPointsTransform</h1>
-<p>Reorder the points such that points[from[i]] becomes points[to[i]] and</p>
+<p>Reorder the points such that points[from[i]] becomes points[to[i]] and
+vice versa</p>
 <ul>
 <li><strong>file:</strong> metadata/reorderpoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="restoremattransform">RestoreMatTransform</h1>
-<p>Set the last matrix of the input template to a matrix stored as metadata with input propName.</p>
+<p>Set the last matrix of the input <a href="../../cpp_api/template/template/">Template</a> to a matrix stored as metadata with input propName.</p>
+<p>Also removes the property from the <a href="../../cpp_api/template/template/">Template</a>s metadata after restoring it.</p>
 <ul>
 <li><strong>file:</strong> metadata/restoremat.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Charles Otto</li>
+<li><strong>author(s):</strong> <a href="https://github.com/caotto" title="Charles A. Otto ottochar@gmail.com">Charles Otto</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="savemattransform">SaveMatTransform</h1>
-<p>Store the last matrix of the input template as a metadata key with input property name.</p>
+<p>Store the last matrix of the input <a href="../../cpp_api/template/template/">Template</a> as a metadata key with input property name.</p>
 <ul>
 <li><strong>file:</strong> metadata/savemat.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Charles Otto</li>
+<li><strong>author(s):</strong> <a href="https://github.com/caotto" title="Charles A. Otto ottochar@gmail.com">Charles Otto</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -662,7 +717,7 @@
 <ul>
 <li><strong>file:</strong> metadata/selectpoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -671,7 +726,7 @@
 <ul>
 <li><strong>file:</strong> metadata/setmetadata.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -680,7 +735,7 @@
 <ul>
 <li><strong>file:</strong> metadata/setpointsinrect.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetadatatransform/untrainablemetadatatransform/">UntrainableMetadataTransform</a></li>
-<li><strong>author:</strong> Jordan Cheney</li>
+<li><strong>author(s):</strong> [Jordan Cheney][JordanCheney]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -689,20 +744,23 @@
 <ul>
 <li><strong>file:</strong> metadata/stasm4.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="stopwatchtransform">StopWatchTransform</h1>
-<p>Gives time elapsed over a specified transform as a function of both images (or frames) and pixels.</p>
+<p>Gives time elapsed over a specified <a href="../../cpp_api/transform/transform/">Transform</a> as a function of both images (or frames) and pixels.</p>
 <ul>
 <li><strong>file:</strong> metadata/stopwatch.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/metatransform/metatransform/">MetaTransform</a></li>
-<li><strong>authors:</strong> Jordan Cheney, Josh Klontz</li>
+<li><strong>author(s):</strong> [Jordan Cheney][JordanCheney], <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -737,17 +795,33 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../io/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../output/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../io/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../output/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/highlight.css">
+
+<script src="../../../js/jquery-2.1.1.min.js"></script>
+<script src="../../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+<script src="../../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.345524
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:30.137659
 -->
 </body>
 </html>

@@ -1,13 +1,13 @@
-The command line API is a tool to run OpenBR from the command line. The command line is the easiest and fastest way to run OpenBR! 
+The command line API is a tool to run OpenBR from the command line. The command line is the easiest and fastest way to run OpenBR!
 
 The following is a detailed description of the command line API. The command line API is really just a set of wrappers to call the [C API](c_api.md). All of the flags in this API have a corresponding C API call. To help display the examples the following shorthand definitions will be used:
 
 Shortcut | Definition
 --- | ---
-<arg> | <> Represent an input argument
-{arg} | {} Represent an output argument
+&lt;arg&gt; | &lt;&gt; Represent an input argument
+\{arg\} | \{\} Represent an output argument
 [arg] | [] Represent an optional argument
-(arg0|...|argN) | (...|...) Represent a choice. 
+(arg0 &#124; ... &#124; argN) | (... &#124; ...) Represent a choice.
 
 ## Algorithms
 
@@ -17,7 +17,7 @@ Almost every command line process needs to specify an algorithm to work properly
 
 Make sure you use the quotes if your algorithm is longer than one plugin because special characters in OpenBR are also special characters (with very different meanings!) in Bash.
 
-## Core Commands 
+## Core Commands
 
 ### -train {: #train }
 
@@ -46,7 +46,7 @@ Compare query [Templates](cpp_api/template/template.md) against a target [Galler
 * **arguments:**
 
 		-compare <target_gallery> <query_gallery> [{output}]
-		
+
 * **wraps:** [br_compare](c_api/functions.md#br_compare)
 
 ### -pairwiseCompare {: #pairwisecompare }
@@ -99,7 +99,7 @@ Perform score level fusion on similarity matrices.
 * **arguments:**
 
 		-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}
-		
+
 * **wraps:** [br_fuse](c_api/functions.md#br_fuse)
 
 ### -cluster {: #cluster }
@@ -129,7 +129,7 @@ Constructs a mask from target and query inputs considering the target and input 
 * **arguments:**
 
 		-makePairwiseMask <target_gallery> <query_gallery> {mask}
-		
+
 * **wraps:** [br_make_pairwise_mask](c_api/functions.md#br_make_pairwise_mask)
 
 ### -combineMasks {: #combinemask }
@@ -139,7 +139,7 @@ Combines several equal-sized mask matrices. A comparison may not be simultaneous
 * **arguments:**
 
 		-combineMasks <mask> ... <mask> {mask} (And|Or)
- 
+
 * **wraps:** [br_combine_masks](c_api/functions.md#br_combine_masks)
 
 ### -cat {: #cat }
@@ -189,7 +189,7 @@ Evaluates and prints detection accuracy to terminal
 * **arguments:**
 
 		-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]
-		
+
 * **wraps:** [br_eval_detection](c_api/functions.md#br_eval_detection)
 
 ### -evalLandmarking {: #evallandmarking }
@@ -199,7 +199,7 @@ Evaluates and prints landmarking accuracy to terminal
 * **arguments:**
 
 		-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]
-		
+
 * **wraps:** [br_eval_landmarking](c_api/functions.md#br_eval_landmarking)
 
 
@@ -210,7 +210,7 @@ Evaluates regression accuracy to disk
 * **arguments:**
 
 		-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
-		
+
 * **wraps:** [br_eval_regression](c_api/functions.md#br_eval_regression)
 
 ### -assertEval {: #asserteval }
@@ -220,7 +220,7 @@ Evaluates the similarity matrix using the mask matrix.  Function aborts if TAR @
 * **arguments:**
 
 		-assertEval <simmat> <mask> <accuracy>
-		
+
 * **wraps:** [br_assert_eval](c_api/functions.md#br_assert_eval)
 
 ### -plotDetection {: #plotdetection }
@@ -230,7 +230,7 @@ Renders detection performance figures for a set of .csv files created by [-evalD
 * **arguments:**
 
 		-plotDetection <file> ... <file> {destination}
-		
+
 * **wraps:** [br_plot_detection](c_api/functions.md#br_plot_detection)
 
 ### -plotLandmarking {: #plotlandmarking }
@@ -265,7 +265,7 @@ A naive alternative to [-enroll](#enroll)
 
 ### -getHeader {: #getheader }
 
-Retrieve the target and query inputs in the [BEE matrix](../technical.md#the-evaluation-harness) header
+Retrieve the target and query inputs in the [BEE matrix](../tutorials.md#the-evaluation-harness) header
 
 * **arguments:**
 
@@ -275,12 +275,12 @@ Retrieve the target and query inputs in the [BEE matrix](../technical.md#the-eva
 
 ### -setHeader {: #setheader }
 
-Update the target and query inputs in the [BEE matrix](../technical.md#the-evaluation-harness) header
+Update the target and query inputs in the [BEE matrix](../tutorials.md#the-evaluation-harness) header
 
 * **arguments:**
 
 		-setHeader {<matrix>} <target_gallery> <query_gallery>
-		
+
 * **wraps:** [br_set_header](c_api/functions.md#br_set_header)
 
 ### -&lt;key&gt; &lt;value&gt; {: #setproperty }
@@ -290,7 +290,7 @@ Appends a provided value to the [global metadata](cpp_api/context/context.md) us
 * **arguments:**
 
 		-<key> <value>
-		
+
 * **wraps:** [br_set_property](c_api/functions.md#br_set_property)
 
 
@@ -303,7 +303,7 @@ Print command line API documentation to the terminal
 * **arguments:**
 
 		-help
-		
+
 * **wraps:** N/A
 
 ### -gui {: #gui }
@@ -313,17 +313,17 @@ If this flag is set OpenBR will enable GUI windows to be launched. It must be th
 * **arguments:**
 
 		br -gui
-		
+
 * **wraps:** N/A
 
 ### -objects {: #objects }
 
-Returns names and parameters for the requested objects. Each object is newline seperated. Arguments are seperated from the object name with a tab. This function uses [QRegExp][QRegExp] syntax
+Returns names and parameters for the requested objects. Each object is newline separated. Arguments are separated from the object name with a tab. This function uses [QRegExp][QRegExp] syntax
 
 * **arguments:**
 
 		-objects [abstraction [implementation]]
-		
+
 * **wraps:** [br_objects](c_api/functions.md#br_objects)
 
 ### -about {: #about }
@@ -333,7 +333,7 @@ Get a string with the name, version, and copyright of the project. This string i
 * **arguments:**
 
 		-about
-		
+
 * **wraps:** [br_about](c_api/functions.md#br_about)
 
 ### -version {: #version }
@@ -348,7 +348,7 @@ Get the current OpenBR version
 
 ### -slave {: #slave }
 
-For internal use via [ProcessWrapperTransform](../plugins/core.md#processwrappertransform)
+For internal use via [ProcessWrapperTransform](plugins/core.md#processwrappertransform)
 
 * **arguments:**
 

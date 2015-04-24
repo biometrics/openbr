@@ -55,7 +55,7 @@ Removes duplicate [templates](../cpp_api/template/template.md) in a [gallery](..
 
 ## br_cluster
 
-Clusters one or more similarity matrices into a list of subjects. A [similarity matrix](../../technical.md#the-evaluation-harness) is a type of [Output](../cpp_api/output/output.md). The current clustering algorithm is a simplified implementation of \cite zhu11.
+Clusters one or more similarity matrices into a list of subjects. A [similarity matrix](../../tutorials.md#the-evaluation-harness) is a type of [Output](../cpp_api/output/output.md). The current clustering algorithm is a simplified implementation of the algorithm proposed by Zhu et al[^1].
 
 * **function definition:**
 
@@ -66,7 +66,7 @@ Clusters one or more similarity matrices into a list of subjects. A [similarity 
 	Parameter | Type | Description
 	--- | --- | ---
 	num_simmats | int | Size of **simmats**
-	simmats[] | const char * | Array of [simmat](../../technical.md#the-evaluation-harness) composing one large self-similarity matrix arranged in row major order.
+	simmats[] | const char * | Array of [simmat](../../tutorials.md#the-evaluation-harness) composing one large self-similarity matrix arranged in row major order.
 	aggressiveness | float | The higher the aggressiveness the larger the clusters. Suggested range is [0,10]
 	csv | const char * | The cluster results file to generate. Results are stored one row per cluster and use gallery indices.
 
@@ -87,8 +87,8 @@ Combines several equal-sized mask matrices. A comparison may not be simultaneous
 	Parameter | Type | Description
 	--- | --- | ---
 	num_input_masks | int | Size of **input_masks**
-	input_masks[] | const char * | Array of [mask matrices](../../technical.md#the-evaluation-harness) to combine. All matrices must have the same dimensions.
-	output_mask | const char * | The file to contain the resulting [mask matrix](../../technical.md#the-evaluation-harness)
+	input_masks[] | const char * | Array of [mask matrices](../../tutorials.md#the-evaluation-harness) to combine. All matrices must have the same dimensions.
+	output_mask | const char * | The file to contain the resulting [mask matrix](../../tutorials.md#the-evaluation-harness)
 	method | const char * | Possible values are: <ul><li>And - Ignore comparison if *any* input masks ignore.</li> <li>Or - Ignore comparison if *all* input masks ignore.</li></ul>
 
 * **see:** [br_make_mask](#br_make_mask)
@@ -251,8 +251,8 @@ Creates a **.csv** file containing performance metrics from evaluating the simil
 
 	Parameter | Type | Description
 	--- | --- | ---
-	simmat | const char * | The [simmat](../../technical.md#the-evaluation-harness) to use
-	mask | const char * | The [mask](../../technical.md#the-evaluation-harness) to use.
+	simmat | const char * | The [simmat](../../tutorials.md#the-evaluation-harness) to use
+	mask | const char * | The [mask](../../tutorials.md#the-evaluation-harness) to use.
 	csv | const char * | (Optional) The **.csv** file to contain performance metrics.
 	matches | int | (Optional) An integer number of matches to output around the EER. Default is 0.
 
@@ -273,8 +273,8 @@ Evaluates the similarity matrix using the mask matrix.  Function aborts if TAR @
 
 	Parameter | Type | Description
 	--- | --- | ---
-	simmat | const char * | The [simmat](../../technical.md#the-evaluation-harness) to use
-	mask | const char * | The [mask](../../technical.md#the-evaluation-harness)
+	simmat | const char * | The [simmat](../../tutorials.md#the-evaluation-harness) to use
+	mask | const char * | The [mask](../../tutorials.md#the-evaluation-harness)
 	accuracy | const float | Desired true accept rate at false accept rate of one in one thousand.
 
 * **output:** (void)
@@ -293,7 +293,7 @@ Creates a **.csv** file containing performance metrics from evaluating the simil
 
 	Parameter | Type | Description
 	--- | --- | ---
-	simmat | const char * | The [simmat](../../technical.md#the-evaluation-harness)
+	simmat | const char * | The [simmat](../../tutorials.md#the-evaluation-harness)
 	target | const char * | The name of a gallery containing metadata for the target set.
 	query | const char * | The name of a gallery containing metadata for the query set.
 	csv | const char * | (Optional) The **.csv** file to contain performance metrics.
@@ -337,7 +337,7 @@ Evaluates and prints clustering accuracy to the terminal.
 Parameter | Type | Description
 --- | --- | ---
 csv | const char * | The cluster results file.
-gallery | const char * | The [Gallery](../cpp_api/gallery/gallery.md) used to generate the [simmat](../../technical.md#the-evaluation-harness) that was clustered.
+gallery | const char * | The [Gallery](../cpp_api/gallery/gallery.md) used to generate the [simmat](../../tutorials.md#the-evaluation-harness) that was clustered.
 truth_property | const char * | (Optional) which metadata key to use from **gallery**, defaults to Label
 
 * **output:** (void)
@@ -425,10 +425,10 @@ Perform score level fusion on similarity matrices.
 	Parameter | Type | Description
 	--- | --- | ---
 	num_input_simmats | int | Size of **input_simmats**.
-	input_simmats[] | const char * | Array of [simmats](../../technical.md#the-evaluation-harness). All simmats must have the same dimensions.
+	input_simmats[] | const char * | Array of [simmats](../../tutorials.md#the-evaluation-harness). All simmats must have the same dimensions.
 	normalization | const char * | Valid options are: <ul> <li>None - No score normalization.</li> <li>MinMax - Scores normalized to [0,1].</li> <li>ZScore - Scores normalized to a standard normal curve.</li> </ul>
 	fusion | const char * | Valid options are: <ul> <li>Min - Uses the minimum score.</li> <li>Max - Uses the maximum score.</li> <li>Sum - Sums the scores. Sums can also be weighted: <tt>SumW1:W2:...:Wn</tt>.</li> <li>Replace - Replaces scores in the first matrix with scores in the second matrix when the mask is set.</li> </ul>
-	output_simmat | const char * | [Simmat](../../technical.md#the-evaluation-harness) to contain the fused scores.
+	output_simmat | const char * | [Simmat](../../tutorials.md#the-evaluation-harness) to contain the fused scores.
 
 * **output:** (void)
 
@@ -505,7 +505,7 @@ Checks if the provided algorithm is a classifier. Wrapper of [IsClassifier](../c
 
 ## br_make_mask
 
-Constructs a [mask](../../technical.md#the-evaluation-harness) from target and query inputs.
+Constructs a [mask](../../tutorials.md#the-evaluation-harness) from target and query inputs.
 
 * **function definition:**
 
@@ -517,7 +517,7 @@ Constructs a [mask](../../technical.md#the-evaluation-harness) from target and q
 	--- | --- | ---
 	target_input | const char * | The target [Gallery](../cpp_api/gallery/gallery.md)
 	query_input | const char * | The query [Gallery](../cpp_api/gallery/gallery.md)
-	mask | const char * | The file to contain the resulting [mask](../../technical.md#the-evaluation-harness).
+	mask | const char * | The file to contain the resulting [mask](../../tutorials.md#the-evaluation-harness).
 
 * **output:** (void)
 * **see:** [br_combine_masks](#br_combine_masks)
@@ -526,7 +526,7 @@ Constructs a [mask](../../technical.md#the-evaluation-harness) from target and q
 
 ## br_make_pairwise_mask
 
-Constructs a [mask](../../technical.md#the-evaluation-harness) from target and query inputs considering the target and input sets to be definite pairwise comparisons.
+Constructs a [mask](../../tutorials.md#the-evaluation-harness) from target and query inputs considering the target and input sets to be definite pairwise comparisons.
 
 * **function definition:**
 
@@ -538,7 +538,7 @@ Parameter | Type | Description
 --- | --- | ---
 target_input | const char * | The target [Gallery](../cpp_api/gallery/gallery.md)
 query_input | const char * | The query [Gallery](../cpp_api/gallery/gallery.md)
-mask | const char * | The file to contain the resulting [mask](../../technical.md#the-evaluation-harness).
+mask | const char * | The file to contain the resulting [mask](../../tutorials.md#the-evaluation-harness).
 
 * **output:** (void)
 * **see:** [br_combine_masks](#br_combine_masks)
@@ -794,7 +794,7 @@ Returns the full path to the root of the SDK.
 
 ## br_get_header
 
-Retrieve the target and query inputs in the [BEE matrix](../../technical.md#the-evaluation-harness) header. For information on managed return values see [here](../c_api.md#memory).
+Retrieve the target and query inputs in the [BEE matrix](../../tutorials.md#the-evaluation-harness) header. For information on managed return values see [here](../c_api.md#memory).
 
 * **function definition:**
 
@@ -804,7 +804,7 @@ Retrieve the target and query inputs in the [BEE matrix](../../technical.md#the-
 
 	Parameter | Type | Description
 	--- | --- | ---
-	matrix | const char * | The [BEE matrix](../../technical.md#the-evaluation-harness) file to modify
+	matrix | const char * | The [BEE matrix](../../tutorials.md#the-evaluation-harness) file to modify
 	target_gallery | const char ** | The matrix target
 	query_gallery | const char ** | The matrix query
 
@@ -815,7 +815,7 @@ Retrieve the target and query inputs in the [BEE matrix](../../technical.md#the-
 
 ## br_set_header
 
-Update the target and query inputs in the [BEE matrix](../../technical.md#the-evaluation-harness) header.
+Update the target and query inputs in the [BEE matrix](../../tutorials.md#the-evaluation-harness) header.
 
 * **function definition:**
 
@@ -825,7 +825,7 @@ Update the target and query inputs in the [BEE matrix](../../technical.md#the-ev
 
 	Parameter | Type | Description
 	--- | --- | ---
-	matrix | const char * | The [BEE matrix](../../technical.md#the-evaluation-harness) file to modify
+	matrix | const char * | The [BEE matrix](../../tutorials.md#the-evaluation-harness) file to modify
 	target_gallery | const char ** | The matrix target
 	query_gallery | const char ** | The matrix query
 
@@ -1387,3 +1387,7 @@ Close a provided [Gallery](../cpp_api/gallery/gallery.md).
 	gallery | [br_gallery](typedefs.md#br_gallery) | Pointer to a [Gallery](../cpp_api/gallery/gallery.md)
 
 * **output:** (void)
+
+[^1]: *Zhu et al.*
+	**A Rank-Order Distance based Clustering Algorithm for Face Tagging**,
+	CVPR 2011

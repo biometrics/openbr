@@ -1,6 +1,6 @@
 ## void init() {: #init }
 
-Initialize the [FileGallery](filegallery.md). This sets [f](members.md#f) using the file name from [file](../object/members.md#file). It also calls [Gallery](../gallery/gallery.md)::[init](../gallery/functions.md#init).
+Initialize the [FileGallery](filegallery.md). This sets [f](members.md#f) using the file name from [file](../object/members.md#file). It also calls [Gallery](../gallery/gallery.md)::[init](../object/functions.md#init).
 
 * **function definition:**
 		

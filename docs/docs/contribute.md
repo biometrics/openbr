@@ -73,3 +73,56 @@ Finally, OpenBR supports automatic linking for abstractions found in comments. F
 ## Contributing to the API
 
 You should contribute to the API if you want to add a new abstraction or extend an existing abstraction with new functionality. Please note, this occurs *very* *very* rarely. Our goal is to leave the core API as stable and consistent as possible and change only the surrounding plugins. If you believe your idea offers exciting new functionality or greatly increases efficiency please [open an issue](https://github.com/biometrics/openbr/issues) so that it can be discussed as a community.
+
+---
+
+## Style Guide
+
+The most important rule is that **new code should be consistent with the existing code around it**. The rules below illustrate the preferred style when cleaning up existing inconsistently-styled code.
+
+These rules are a work in progress and are subject to additions. Changes to the style can be made with a pull request implementing the change across the entire repository.
+
+### Structs & Classes
+    struct FooBar
+    {
+
+    };
+
+### Functions
+    int *fooBar(const int &x, int *y, int z)
+    {
+        *y = x + z;
+        return y;
+    }
+
+### Variables
+    int x = 2;
+    int *y = &x;
+    int &z = x;
+
+### Loops and Conditionals
+#### Single-statement
+    for (int i=start; i<end; i++)
+        foo();
+
+#### Multiple-statement
+    for (int i=start; i<end; i++) {
+        foo();
+        bar();
+    }
+
+### Const
+Use `const` whenever possible.
+
+### Static
+Use `static` function declarations whenever possible but `static` variables sparingly.
+
+### Unused variables
+    int foo(int used, int)
+    {
+        // Unused variables are nameless in the function definition
+        return used;
+    }
+
+### Indentation
+4 spaces, no tabs.

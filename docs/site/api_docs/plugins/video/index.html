@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/highlight.css">
-
-  <script src="../../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
-  <script src="../../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -230,28 +222,32 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
-        <li>Plugin Docs &raquo;</li>
+        
+          <li>Plugin Docs &raquo;</li>
+        
       
     
     <li>Video</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="aggregateframes">AggregateFrames</h1>
-<p>Passes along n sequential frames to the next transform.</p>
+              
+                <h1 id="aggregateframes">AggregateFrames</h1>
+<p>Passes along n sequential frames to the next <a href="../../cpp_api/transform/transform/">Transform</a>.</p>
+<p>For a video with m frames, AggregateFrames would create a total of m-n+1 sequences ([0,n] ... [m-n+1, m])</p>
 <ul>
 <li><strong>file:</strong> video/aggregate.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/timevaryingtransform/timevaryingtransform/">TimeVaryingTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -260,20 +256,24 @@
 <ul>
 <li><strong>file:</strong> video/drop.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> [Austin Blanton][imaus10</li>
 </ul>
+<p>For a video with m frames, DropFrames will pass on m/n frames.]
+* <strong>properties:</strong> None</p>
 <hr />
 <h1 id="opticalflowtransform">OpticalFlowTransform</h1>
 <p>Gets a one-channel dense optical flow from two images</p>
 <ul>
 <li><strong>file:</strong> video/opticalflow.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -306,17 +306,31 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../output/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../output/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/highlight.css">
+
+<script src="../../../js/jquery-2.1.1.min.js"></script>
+<script src="../../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+<script src="../../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.367382
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:30.198278
 -->
 </body>
 </html>

@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
-
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script>
-  <script src="../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -227,20 +219,23 @@
   <ul class="wy-breadcrumbs">
     <li><a href="..">Docs</a> &raquo;</li>
     
+      
+    
     <li>Technical Overviews</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="algorithms-in-openbr">Algorithms in OpenBR</h1>
+              
+                <h1 id="algorithms-in-openbr">Algorithms in OpenBR</h1>
 <p><strong>So you've run <code>scripts/helloWorld.sh</code> and it generally makes sense, except you have no idea what    <code>'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)'</code> means or how it is executed.</strong></p>
 <p>Well if this is the case, you've found the right documentation.
 Let's get started!</p>
@@ -307,17 +302,20 @@ Since OpenBR expects <em>similarity</em> values when comparing templates, and no
 <p>OpenBR implements the following portions of the BEE specification:</p>
 <ul>
 <li>
-<p>Signature Set- A signature set (or <em>sigset</em>) is a <a href="../api_docs/cpp_api/gallery/gallery/">Gallery</a> compliant <strong>XML</strong> file-list specified on page 9 of <a href="../DOCUMENT ME">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/gallery/#xmlgallery">xmlGallery</a>. Sigsets are identified with a <strong>.xml</strong> extension.</p>
+<p>Signature Set- A signature set (or <em>sigset</em>) is a <a href="../api_docs/cpp_api/gallery/gallery/">Gallery</a> compliant <strong>XML</strong> file-list specified on page 9 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/gallery/#xmlgallery">xmlGallery</a>. Sigsets are identified with a <strong>.xml</strong> extension.</p>
 </li>
 <li>
-<p>Similarity Matrix- A similarity matrix (or <em>simmat</em>) is an <a href="../api_docs/cpp_api/output/output/">Output</a> compliant binary score matrix specified on page 12 of <a href="../DOCUMENT ME">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/output/#mtxoutput">mtxOutput</a>. Simmats are identified with a <strong>.mtx</strong> extension. See <a href="../api_docs/c_api/functions/#br_eval">br_eval</a> for more information.</p>
+<p>Similarity Matrix- A similarity matrix (or <em>simmat</em>) is an <a href="../api_docs/cpp_api/output/output/">Output</a> compliant binary score matrix specified on page 12 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/output/#mtxoutput">mtxOutput</a>. Simmats are identified with a <strong>.mtx</strong> extension. See <a href="../api_docs/c_api/functions/#br_eval">br_eval</a> for more information.</p>
 </li>
 <li>
-<p>Mask Matrix- A mask matrix (or <em>mask</em>) is a binary matrix specified on page 14 of <a href="../DOCUMENT ME">MBGC File Overview</a> identifying the ground truth genuines and impostors of a corresponding <em>simmat</em>. Masks are identified with a <strong>.mask</strong> extension. See <a href="../api_docs/c_api/functions/#br_make_mask">br_make_mask</a> and <a href="../api_docs/c_api/functions/#br_combine_masks">br_combine_masks</a> for more information.</p>
+<p>Mask Matrix- A mask matrix (or <em>mask</em>) is a binary matrix specified on page 14 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> identifying the ground truth genuines and impostors of a corresponding <em>simmat</em>. Masks are identified with a <strong>.mask</strong> extension. See <a href="../api_docs/c_api/functions/#br_make_mask">br_make_mask</a> and <a href="../api_docs/c_api/functions/#br_combine_masks">br_combine_masks</a> for more information.</p>
 </li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -352,17 +350,33 @@ Since OpenBR expects <em>similarity</em> values when comparing templates, and no
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../tutorials/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../contribute/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../tutorials/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../contribute/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../css/highlight.css">
+
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../js/highlight.pack.js"></script>
+<script src="../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:24.817040
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:27.412590
 -->
 </body>
 </html>

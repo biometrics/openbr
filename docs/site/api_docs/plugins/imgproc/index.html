@@ -9,19 +9,7 @@
   
 
   <link rel="shortcut icon" href="../../../docs/img/openbr.ico">
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../../css/highlight.css">
-
-  <script src="../../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../../js/highlight.pack.js"></script>
-  <script src="../../../js/theme.js"></script> 
+   
 
   
 </head>
@@ -34,7 +22,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> OpenBR</a>
-        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -249,6 +241,8 @@
                         
                             <li class="toctree-l2"><a href="#grouptransform">GroupTransform</a></li>
                         
+                            <li class="toctree-l2"><a href="#heatmaptransform">HeatmapTransform</a></li>
+                        
                             <li class="toctree-l2"><a href="#histbintransform">HistBinTransform</a></li>
                         
                             <li class="toctree-l2"><a href="#histeqquantizationtransform">HistEqQuantizationTransform</a></li>
@@ -359,6 +353,8 @@
                         
                             <li class="toctree-l2"><a href="#thresholdtransform">ThresholdTransform</a></li>
                         
+                            <li class="toctree-l2"><a href="#transposetransform">TransposeTransform</a></li>
+                        
                             <li class="toctree-l2"><a href="#watershedsegmentationtransform">WatershedSegmentationTransform</a></li>
                         
                     
@@ -418,28 +414,31 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
-        <li>Plugin Docs &raquo;</li>
+        
+          <li>Plugin Docs &raquo;</li>
+        
       
     
     <li>Image Processing</li>
-      <li class="wy-breadcrumbs-aside">
+    <li class="wy-breadcrumbs-aside">
+      
         
-          
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
-          
+          <a href="https://github.com/biometrics/openbr" class="icon icon-github"> Edit on GitHub</a>
         
-      </li>
+      
+    </li>
   </ul>
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="absdifftransform">AbsDiffTransform</h1>
+              
+                <h1 id="absdifftransform">AbsDiffTransform</h1>
 <p>Take the absolute difference of two matrices.</p>
 <ul>
 <li><strong>file:</strong> imgproc/absdiff.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -448,7 +447,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/abs.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -457,7 +456,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/adaptivethreshold.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html">http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -466,7 +466,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/affine.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -475,7 +475,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/and.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -484,7 +484,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/applymask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -493,7 +493,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/bayesianquantization.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -502,7 +502,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/binarize.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -511,7 +511,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/blend.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -520,16 +520,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/blur.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="buildscalestransform">BuildScalesTransform</h1>
-<p>Document me</p>
+<p>DOCUMENT ME</p>
 <ul>
 <li><strong>file:</strong> imgproc/multiscale.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -538,34 +538,37 @@
 <ul>
 <li><strong>file:</strong> imgproc/byrow.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="cannytransform">CannyTransform</h1>
-<p>Warpper to OpenCV Canny edge detector</p>
+<p>Wrapper to OpenCV Canny edge detector</p>
 <ul>
 <li><strong>file:</strong> imgproc/canny.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/canny_detector/canny_detector.html">http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/canny_detector/canny_detector.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="catcolstransform">CatColsTransform</h1>
-<p>Concatenates all input matrices by column into a single matrix.</p>
+<p>Concatenates all input matrices by column into a single matrix.
+Use after a fork to concatenate two feature matrices by column.</p>
 <ul>
 <li><strong>file:</strong> imgproc/catcols.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="catrowstransform">CatRowsTransform</h1>
-<p>Concatenates all input matrices by row into a single matrix.</p>
+<p>Concatenates all input matrices by row into a single matrix.
+All matricies must have the same column counts.</p>
 <ul>
 <li><strong>file:</strong> imgproc/catrows.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -574,7 +577,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cat.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -583,17 +586,27 @@
 <ul>
 <li><strong>file:</strong> imgproc/center.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="contrasteqtransform">ContrastEqTransform</h1>
-<p>Xiaoyang Tan; Triggs, B.;</p>
+<p>Perform contrast equalization</p>
 <ul>
 <li><strong>file:</strong> imgproc/contrasteq.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Xiaoyang Tan; Triggs, B.;</em>
+ <strong>"Enhanced Local Texture Feature Sets for Face Recognition Under Difficult Lighting Conditions,"</strong>
+ Image Processing, IEEE Transactions on , vol.19, no.6, pp.1635-1650, June 2010</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="cropblacktransform">CropBlackTransform</h1>
@@ -601,7 +614,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cropblack.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -610,7 +623,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cropfrommask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -619,7 +632,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cropsquare.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -628,7 +641,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/crop.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -637,7 +650,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/cryptographichash.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://doc.qt.io/qt-5/qcryptographichash.html">http://doc.qt.io/qt-5/qcryptographichash.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -646,7 +660,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cvtfloat.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -655,7 +669,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cvt.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -664,7 +678,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/cvtuchar.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -673,16 +687,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/discardalpha.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="divtransform">DivTransform</h1>
-<p>Enforce a multiple of</p>
+<p>Enforce a multiple of n columns.</p>
 <ul>
 <li><strong>file:</strong> imgproc/div.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -691,7 +705,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/dog.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -700,16 +714,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/downsample.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Lacey Best-Rowden</li>
+<li><strong>author(s):</strong> <a href="https://github.com/lbestrowden" title="Lacey S. Best-Rowden bestrow1@msu.edu">Lacey Best-Rowden</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="duptransform">DupTransform</h1>
-<p>Duplicates the template data.</p>
+<p>Duplicates the <a href="../../cpp_api/template/template/">Template</a> data.</p>
 <ul>
 <li><strong>file:</strong> imgproc/dup.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -718,7 +732,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/ensurechannels.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -727,7 +741,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/equalizehist.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -736,7 +750,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/flip.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -745,7 +759,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/flood.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -754,16 +768,17 @@
 <ul>
 <li><strong>file:</strong> imgproc/gabor.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="gabortransform">GaborTransform</h1>
-<p>http://en.wikipedia.org/wiki/Gabor_filter</p>
+<p>Implements a Gabor Filter</p>
 <ul>
 <li><strong>file:</strong> imgproc/gabor.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://en.wikipedia.org/wiki/Gabor_filter">http://en.wikipedia.org/wiki/Gabor_filter</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -772,7 +787,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/gamma.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -781,7 +796,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/gradientmask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -790,16 +805,26 @@
 <ul>
 <li><strong>file:</strong> imgproc/gradient.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="grouptransform">GroupTransform</h1>
 <p>Group all input matrices into a single matrix.</p>
+<p>Similar to CatTransfrom but groups every <em>size</em> adjacent matricies.</p>
 <ul>
 <li><strong>file:</strong> imgproc/group.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="heatmaptransform">HeatmapTransform</h1>
+<p>DOCUMENT ME</p>
+<ul>
+<li><strong>file:</strong> imgproc/heatmap.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
+<li><strong>author(s):</strong> [Unknown][unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -808,7 +833,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/histbin.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -817,7 +842,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/histeqquantization.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -826,7 +851,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/hist.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -835,7 +860,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/hog.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/gpu/doc/object_detection.html">http://docs.opencv.org/modules/gpu/doc/object_detection.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -844,7 +870,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/inpaint.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/photo/doc/inpainting.html">http://docs.opencv.org/modules/photo/doc/inpainting.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -853,7 +880,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/integralhist.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -862,16 +889,17 @@
 <ul>
 <li><strong>file:</strong> imgproc/integralsampler.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="integralslidingwindowtransform">IntegralSlidingWindowTransform</h1>
-<p>Overloads SlidingWindowTransform for integral images that should be</p>
+<p>Overloads SlidingWindowTransform for integral images that should be
+sampled at multiple scales.</p>
 <ul>
 <li><strong>file:</strong> imgproc/slidingwindow.cpp</li>
 <li><strong>inherits:</strong> <a href="#slidingwindowtransform">SlidingWindowTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -880,7 +908,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/integral.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -889,7 +917,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/kernelhash.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -898,26 +926,47 @@
 <ul>
 <li><strong>file:</strong> imgproc/keypointdescriptor.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html">http://docs.opencv.org/modules/features2d/doc/common_interfaces_of_feature_detectors.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="lbptransform">LBPTransform</h1>
-<p>Ahonen, T.; Hadid, A.; Pietikainen, M.;</p>
+<p>Convert the image into a feature vector using Local Binary Patterns</p>
 <ul>
 <li><strong>file:</strong> imgproc/lbp.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Ahonen, T.; Hadid, A.; Pietikainen, M.;</em>
+ <strong>"Face Description with Local Binary Patterns: Application to Face Recognition"</strong>
+ Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="ltptransform">LTPTransform</h1>
-<p>Tan, Xiaoyang, and Bill Triggs. "Enhanced local texture feature sets for face recognition under difficult lighting conditions." Analysis and Modeling of Faces and Gestures. Springer Berlin Heidelberg, 2007. 168-182.</p>
+<p>DOCUMENT ME</p>
 <ul>
 <li><strong>file:</strong> imgproc/ltp.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>authors:</strong> Brendan Klare, Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a>, <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Tan, Xiaoyang, and Bill Triggs.</em>
+ <strong>"Enhanced local texture feature sets for face recognition under difficult lighting conditions."</strong>
+ Analysis and Modeling of Faces and Gestures. Springer Berlin Heidelberg, 2007. 168-182.</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="largestconvexareatransform">LargestConvexAreaTransform</h1>
@@ -925,7 +974,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/largestconvexarea.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -934,16 +983,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/limitsize.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="maddtransform">MAddTransform</h1>
-<p>dst = a*src+b</p>
+<p>dst = a src+b</p>
 <ul>
 <li><strong>file:</strong> imgproc/madd.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -952,7 +1001,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/mask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -961,7 +1010,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/matstats.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -970,16 +1019,17 @@
 <ul>
 <li><strong>file:</strong> imgproc/meanfill.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="meantransform">MeanTransform</h1>
 <p>Computes the mean of a set of templates.</p>
+<p>Suitable for visualization only as it sets every projected template to the mean template.</p>
 <ul>
 <li><strong>file:</strong> imgproc/mean.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -988,7 +1038,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/merge.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/core/doc/operations_on_arrays.html#merge">http://docs.opencv.org/modules/core/doc/operations_on_arrays.html#merge</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -997,7 +1048,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/morph.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1006,7 +1057,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/denoising.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/photo/doc/denoising.html">http://docs.opencv.org/modules/photo/doc/denoising.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1015,9 +1067,9 @@
 <ul>
 <li><strong>file:</strong> imgproc/normalize.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong></li>
-</ul>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>properties:</strong></p>
 <table>
 <thead>
 <tr>
@@ -1030,7 +1082,7 @@
 <tr>
 <td>NormType</td>
 <td>enum</td>
-<td>Values are NORM_INF, NORM_L1, NORM_L2, NORM_MINMAX</td>
+<td>Values are:<ul><li>NORM_INF</li><li>NORM_L1</li><li>NORM_L2</li><li>NORM_MINMAX</li></ul></td>
 </tr>
 <tr>
 <td>ByRow</td>
@@ -1054,13 +1106,15 @@
 </tr>
 </tbody>
 </table>
+</li>
+</ul>
 <hr />
 <h1 id="origlinearregressiontransform">OrigLinearRegressionTransform</h1>
 <p>Prediction with magic numbers from jmp; must get input as blue;green;red</p>
 <ul>
 <li><strong>file:</strong> imgproc/origlinearregression.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> E. Taborsky</li>
+<li><strong>author(s):</strong> <a href="https://github.com/mmtaborsky" title="M. M. Taborsky mmtaborsky@gmail.com">E. Taborsky</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1069,7 +1123,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/pack.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1078,7 +1132,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/pow.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1087,8 +1141,18 @@
 <ul>
 <li><strong>file:</strong> imgproc/productquantization.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabledistance/untrainabledistance/">UntrainableDistance</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Jegou, Herve, Matthijs Douze, and Cordelia Schmid.</em>
+ <strong>"Product quantization for nearest neighbor search."</strong>
+ Pattern Analysis and Machine Intelligence, IEEE Transactions on 33.1 (2011): 117-128</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="productquantizationtransform">ProductQuantizationTransform</h1>
@@ -1096,8 +1160,18 @@
 <ul>
 <li><strong>file:</strong> imgproc/productquantization.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Jegou, Herve, Matthijs Douze, and Cordelia Schmid.</em>
+ <strong>"Product quantization for nearest neighbor search."</strong>
+ Pattern Analysis and Machine Intelligence, IEEE Transactions on 33.1 (2011): 117-128</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="quantizetransform">QuantizeTransform</h1>
@@ -1105,7 +1179,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/quantize.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1114,7 +1188,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rg.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1123,7 +1197,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/roifrompoints.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1132,7 +1206,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/roi.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1141,7 +1215,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rank.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1150,16 +1224,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/rectregions.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="recursiveintegralsamplertransform">RecursiveIntegralSamplerTransform</h1>
-<p>Construct template in a recursive decent manner.</p>
+<p>Construct <a href="../../cpp_api/template/template/">Template</a> in a recursive decent manner.</p>
 <ul>
 <li><strong>file:</strong> imgproc/recursiveintegralsampler.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1168,16 +1242,16 @@
 <ul>
 <li><strong>file:</strong> imgproc/redlinearregression.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> E. Taborsky</li>
+<li><strong>author(s):</strong> <a href="https://github.com/mmtaborsky" title="M. M. Taborsky mmtaborsky@gmail.com">E. Taborsky</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="reshapetransform">ReshapeTransform</h1>
-<p>Reshape the each matrix to the specified number of rows.</p>
+<p>Reshape each matrix to the specified number of rows.</p>
 <ul>
 <li><strong>file:</strong> imgproc/reshape.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1186,16 +1260,42 @@
 <ul>
 <li><strong>file:</strong> imgproc/resize.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>properties:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>method</td>
+<td>enum</td>
+<td>Resize method. Good options are:<ul><li>Area should be used for shrinking an image</li><li>Cubic for slow but accurate enlargment</li><li>Bilin for fast enlargement</li></ul></td>
+</tr>
+<tr>
+<td>preserveAspect</td>
+<td>bool</td>
+<td>If true, the image will be sized per specification, but a border will be applied to preserve aspect ratio.</td>
+</tr>
+</tbody>
+</table>
+</li>
 </ul>
 <hr />
 <h1 id="revertaffinetransform">RevertAffineTransform</h1>
-<p>Designed for use after eye detection + Stasm, this will</p>
+<p>Designed for use after eye detection + Stasm, this will
+revert the detected landmarks to the original coordinate space
+before affine alignment to the stasm mean shape. The storeAffine
+parameter must be set to true when calling AffineTransform before this.</p>
 <ul>
 <li><strong>file:</strong> imgproc/revertaffine.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Brendan Klare</li>
+<li><strong>author(s):</strong> <a href="https://github.com/bklare" title="Dr. Brendan F. Klare brendan.klare@ieee.org">Brendan Klare</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1204,7 +1304,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rndpoint.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1213,7 +1313,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rndregion.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1222,7 +1322,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rndrotate.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1231,17 +1331,27 @@
 <ul>
 <li><strong>file:</strong> imgproc/rndsubspace.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="rootnormtransform">RootNormTransform</h1>
-<p>dst=sqrt(norm_L1(src)) proposed as RootSIFT in</p>
+<p>dst=sqrt(norm_L1(src)) proposed as RootSIFT (see paper)</p>
 <ul>
 <li><strong>file:</strong> imgproc/rootnorm.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
-<li><strong>properties:</strong> None</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li>
+<p><strong>read:</strong></p>
+<ol>
+<li><em>Arandjelovic, Relja, and Andrew Zisserman.</em>
+ <strong>"Three things everyone should know to improve object retrieval."</strong>
+ Computer Vision and Pattern Recognition (CVPR), 2012 IEEE Conference on. IEEE, 2012.</li>
+</ol>
+</li>
+<li>
+<p><strong>properties:</strong> None</p>
+</li>
 </ul>
 <hr />
 <h1 id="rowwisemeancentertransform">RowWiseMeanCenterTransform</h1>
@@ -1249,7 +1359,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/rowwisemeancenter.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1258,7 +1368,8 @@
 <ul>
 <li><strong>file:</strong> imgproc/sift.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/nonfree/doc/feature_detection.html">http://docs.opencv.org/modules/nonfree/doc/feature_detection.html</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1267,7 +1378,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/samplefrommask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1276,25 +1387,27 @@
 <ul>
 <li><strong>file:</strong> imgproc/scale.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="skinmasktransform">SkinMaskTransform</h1>
-<p>http://worldofcameras.wordpress.com/tag/skin-detection-opencv/</p>
+<p>Make a mask over skin in an image</p>
 <ul>
 <li><strong>file:</strong> imgproc/skinmask.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
+<li><strong>see:</strong> <a href="http://worldofcameras.wordpress.com/tag/skin-detection-opencv/">http://worldofcameras.wordpress.com/tag/skin-detection-opencv/</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <h1 id="slidingwindowtransform">SlidingWindowTransform</h1>
-<p>Applies a transform to a sliding window.</p>
+<p>Applies a transform to a sliding window.
+Discards negative detections.</p>
 <ul>
 <li><strong>file:</strong> imgproc/slidingwindow.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/transform/transform/">Transform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1303,7 +1416,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/splitchannels.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1312,7 +1425,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/subdivide.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1321,7 +1434,7 @@
 <ul>
 <li><strong>file:</strong> imgproc/subtract.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainablemetatransform/untrainablemetatransform/">UntrainableMetaTransform</a></li>
-<li><strong>author:</strong> Josh Klontz</li>
+<li><strong>author(s):</strong> <a href="https://github.com/jklontz" title="Joshua C. Klontz, jklontz@ieee.org">Josh Klontz</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1330,7 +1443,17 @@
 <ul>
 <li><strong>file:</strong> imgproc/threshold.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Scott Klum</li>
+<li><strong>author(s):</strong> <a href="https://github.com/sklum" title="Scott J. Klum scott.klum@gmail.com">Scott Klum</a></li>
+<li><strong>see:</strong> <a href="http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html">http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html</a></li>
+<li><strong>properties:</strong> None</li>
+</ul>
+<hr />
+<h1 id="transposetransform">TransposeTransform</h1>
+<p>Get the transpose of the <a href="../../cpp_api/template/template/">Template</a> matrix</p>
+<ul>
+<li><strong>file:</strong> imgproc/transpose.cpp</li>
+<li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
+<li><strong>author(s):</strong> [Unknown][unknown]</li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
@@ -1339,11 +1462,14 @@
 <ul>
 <li><strong>file:</strong> imgproc/watershedsegmentation.cpp</li>
 <li><strong>inherits:</strong> <a href="../../cpp_api/untrainabletransform/untrainabletransform/">UntrainableTransform</a></li>
-<li><strong>author:</strong> Austin Blanton</li>
+<li><strong>author(s):</strong> <a href="https://github.com/imaus10" title="Austin Van Blanton imaus10@gmail.com">Austin Blanton</a></li>
 <li><strong>properties:</strong> None</li>
 </ul>
 <hr />
 <!-- Links -->
+
+<!-- Contributors -->
+              
             </div>
           </div>
           <footer>
@@ -1378,17 +1504,33 @@
 
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
-        
-            <a href="https://github.com/biometrics/openbr" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
-        
-      <span><a href="../gui/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../io/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../gui/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../io/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
 
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/highlight.css">
+
+<script src="../../../js/jquery-2.1.1.min.js"></script>
+<script src="../../../js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="../../../js/highlight.pack.js"></script>
+<script src="../../../js/theme.js"></script>
+
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-22 01:05:26.288376
+MkDocs version      : 0.12.1
+Docs Build Date UTC : 2015-04-24 17:55:29.994020
 -->
 </body>
 </html>
