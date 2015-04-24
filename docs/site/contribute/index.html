@@ -54,13 +54,6 @@
         
     
         
-            <li class="toctree-l0 ">
-            <a class="" href="../technical/">Technical Overviews</a>
-            
-            </li>
-        
-    
-        
             <li class="toctree-l0 current">
             <a class="current" href="./">Contribute</a>
             
@@ -70,6 +63,8 @@
                             <li class="toctree-l1"><a href="#contributing-a-plugin">Contributing a Plugin</a></li>
                         
                             <li class="toctree-l1"><a href="#contributing-to-the-api">Contributing to the API</a></li>
+                        
+                            <li class="toctree-l1"><a href="#style-guide">Style Guide</a></li>
                         
                     
                 </ul>
@@ -338,6 +333,52 @@
 <hr />
 <h2 id="contributing-to-the-api">Contributing to the API</h2>
 <p>You should contribute to the API if you want to add a new abstraction or extend an existing abstraction with new functionality. Please note, this occurs <em>very</em> <em>very</em> rarely. Our goal is to leave the core API as stable and consistent as possible and change only the surrounding plugins. If you believe your idea offers exciting new functionality or greatly increases efficiency please <a href="https://github.com/biometrics/openbr/issues">open an issue</a> so that it can be discussed as a community.</p>
+<hr />
+<h2 id="style-guide">Style Guide</h2>
+<p>The most important rule is that <strong>new code should be consistent with the existing code around it</strong>. The rules below illustrate the preferred style when cleaning up existing inconsistently-styled code.</p>
+<p>These rules are a work in progress and are subject to additions. Changes to the style can be made with a pull request implementing the change across the entire repository.</p>
+<h3 id="structs-classes">Structs &amp; Classes</h3>
+<pre><code>struct FooBar
+{
+
+};
+</code></pre>
+<h3 id="functions">Functions</h3>
+<pre><code>int *fooBar(const int &amp;x, int *y, int z)
+{
+    *y = x + z;
+    return y;
+}
+</code></pre>
+<h3 id="variables">Variables</h3>
+<pre><code>int x = 2;
+int *y = &amp;x;
+int &amp;z = x;
+</code></pre>
+<h3 id="loops-and-conditionals">Loops and Conditionals</h3>
+<h4 id="single-statement">Single-statement</h4>
+<pre><code>for (int i=start; i&lt;end; i++)
+    foo();
+</code></pre>
+<h4 id="multiple-statement">Multiple-statement</h4>
+<pre><code>for (int i=start; i&lt;end; i++) {
+    foo();
+    bar();
+}
+</code></pre>
+<h3 id="const">Const</h3>
+<p>Use <code>const</code> whenever possible.</p>
+<h3 id="static">Static</h3>
+<p>Use <code>static</code> function declarations whenever possible but <code>static</code> variables sparingly.</p>
+<h3 id="unused-variables">Unused variables</h3>
+<pre><code>int foo(int used, int)
+{
+    // Unused variables are nameless in the function definition
+    return used;
+}
+</code></pre>
+<h3 id="indentation">Indentation</h3>
+<p>4 spaces, no tabs.</p>
 <!-- Links -->
 
 <!-- Contributors -->
@@ -351,7 +392,7 @@
         <a href="../papers/" class="btn btn-neutral float-right" title="Publications"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../technical/" class="btn btn-neutral" title="Technical Overviews"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorials/" class="btn btn-neutral" title="Tutorials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -380,7 +421,7 @@
           <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../technical/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../tutorials/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../papers/" style="color: #fcfcfc">Next &raquo;</a></span>
@@ -402,7 +443,7 @@
 
 <!--
 MkDocs version      : 0.12.1
-Docs Build Date UTC : 2015-04-24 17:55:27.427140
+Docs Build Date UTC : 2015-04-24 19:47:59.943501
 -->
 </body>
 </html>

@@ -55,13 +55,6 @@
     
         
             <li class="toctree-l0 ">
-            <a class="" href="../../../technical/">Technical Overviews</a>
-            
-            </li>
-        
-    
-        
-            <li class="toctree-l0 ">
             <a class="" href="../../../contribute/">Contribute</a>
             
             </li>
@@ -494,7 +487,7 @@
 </ul>
 <hr />
 <h2 id="br_cluster">br_cluster</h2>
-<p>Clusters one or more similarity matrices into a list of subjects. A <a href="../../../technical/#the-evaluation-harness">similarity matrix</a> is a type of <a href="../../cpp_api/output/output/">Output</a>. The current clustering algorithm is a simplified implementation of \cite zhu11.</p>
+<p>Clusters one or more similarity matrices into a list of subjects. A <a href="../../../tutorials/#the-evaluation-harness">similarity matrix</a> is a type of <a href="../../cpp_api/output/output/">Output</a>. The current clustering algorithm is a simplified implementation of the algorithm proposed by Zhu et al<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>.</p>
 <ul>
 <li>
 <p><strong>function definition:</strong></p>
@@ -520,7 +513,7 @@
 <tr>
 <td>simmats[]</td>
 <td>const char *</td>
-<td>Array of <a href="../../../technical/#the-evaluation-harness">simmat</a> composing one large self-similarity matrix arranged in row major order.</td>
+<td>Array of <a href="../../../tutorials/#the-evaluation-harness">simmat</a> composing one large self-similarity matrix arranged in row major order.</td>
 </tr>
 <tr>
 <td>aggressiveness</td>
@@ -566,12 +559,12 @@
 <tr>
 <td>input_masks[]</td>
 <td>const char *</td>
-<td>Array of <a href="../../../technical/#the-evaluation-harness">mask matrices</a> to combine. All matrices must have the same dimensions.</td>
+<td>Array of <a href="../../../tutorials/#the-evaluation-harness">mask matrices</a> to combine. All matrices must have the same dimensions.</td>
 </tr>
 <tr>
 <td>output_mask</td>
 <td>const char *</td>
-<td>The file to contain the resulting <a href="../../../technical/#the-evaluation-harness">mask matrix</a></td>
+<td>The file to contain the resulting <a href="../../../tutorials/#the-evaluation-harness">mask matrix</a></td>
 </tr>
 <tr>
 <td>method</td>
@@ -902,12 +895,12 @@
 <tr>
 <td>simmat</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">simmat</a> to use</td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">simmat</a> to use</td>
 </tr>
 <tr>
 <td>mask</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">mask</a> to use.</td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">mask</a> to use.</td>
 </tr>
 <tr>
 <td>csv</td>
@@ -950,12 +943,12 @@
 <tr>
 <td>simmat</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">simmat</a> to use</td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">simmat</a> to use</td>
 </tr>
 <tr>
 <td>mask</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">mask</a></td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">mask</a></td>
 </tr>
 <tr>
 <td>accuracy</td>
@@ -992,7 +985,7 @@
 <tr>
 <td>simmat</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">simmat</a></td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">simmat</a></td>
 </tr>
 <tr>
 <td>target</td>
@@ -1094,7 +1087,7 @@
 <tr>
 <td>gallery</td>
 <td>const char *</td>
-<td>The <a href="../../cpp_api/gallery/gallery/">Gallery</a> used to generate the <a href="../../../technical/#the-evaluation-harness">simmat</a> that was clustered.</td>
+<td>The <a href="../../cpp_api/gallery/gallery/">Gallery</a> used to generate the <a href="../../../tutorials/#the-evaluation-harness">simmat</a> that was clustered.</td>
 </tr>
 <tr>
 <td>truth_property</td>
@@ -1300,7 +1293,7 @@
 <tr>
 <td>input_simmats[]</td>
 <td>const char *</td>
-<td>Array of <a href="../../../technical/#the-evaluation-harness">simmats</a>. All simmats must have the same dimensions.</td>
+<td>Array of <a href="../../../tutorials/#the-evaluation-harness">simmats</a>. All simmats must have the same dimensions.</td>
 </tr>
 <tr>
 <td>normalization</td>
@@ -1315,7 +1308,7 @@
 <tr>
 <td>output_simmat</td>
 <td>const char *</td>
-<td><a href="../../../technical/#the-evaluation-harness">Simmat</a> to contain the fused scores.</td>
+<td><a href="../../../tutorials/#the-evaluation-harness">Simmat</a> to contain the fused scores.</td>
 </tr>
 </tbody>
 </table>
@@ -1437,7 +1430,7 @@
 </ul>
 <hr />
 <h2 id="br_make_mask">br_make_mask</h2>
-<p>Constructs a <a href="../../../technical/#the-evaluation-harness">mask</a> from target and query inputs.</p>
+<p>Constructs a <a href="../../../tutorials/#the-evaluation-harness">mask</a> from target and query inputs.</p>
 <ul>
 <li>
 <p><strong>function definition:</strong></p>
@@ -1468,7 +1461,7 @@
 <tr>
 <td>mask</td>
 <td>const char *</td>
-<td>The file to contain the resulting <a href="../../../technical/#the-evaluation-harness">mask</a>.</td>
+<td>The file to contain the resulting <a href="../../../tutorials/#the-evaluation-harness">mask</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -1480,7 +1473,7 @@
 </ul>
 <hr />
 <h2 id="br_make_pairwise_mask">br_make_pairwise_mask</h2>
-<p>Constructs a <a href="../../../technical/#the-evaluation-harness">mask</a> from target and query inputs considering the target and input sets to be definite pairwise comparisons.</p>
+<p>Constructs a <a href="../../../tutorials/#the-evaluation-harness">mask</a> from target and query inputs considering the target and input sets to be definite pairwise comparisons.</p>
 <ul>
 <li>
 <p><strong>function definition:</strong></p>
@@ -1513,7 +1506,7 @@
 <tr>
 <td>mask</td>
 <td>const char *</td>
-<td>The file to contain the resulting <a href="../../../technical/#the-evaluation-harness">mask</a>.</td>
+<td>The file to contain the resulting <a href="../../../tutorials/#the-evaluation-harness">mask</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -1956,7 +1949,7 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 </ul>
 <hr />
 <h2 id="br_get_header">br_get_header</h2>
-<p>Retrieve the target and query inputs in the <a href="../../../technical/#the-evaluation-harness">BEE matrix</a> header. For information on managed return values see <a href="../#memory">here</a>.</p>
+<p>Retrieve the target and query inputs in the <a href="../../../tutorials/#the-evaluation-harness">BEE matrix</a> header. For information on managed return values see <a href="../#memory">here</a>.</p>
 <ul>
 <li>
 <p><strong>function definition:</strong></p>
@@ -1977,7 +1970,7 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 <tr>
 <td>matrix</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">BEE matrix</a> file to modify</td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">BEE matrix</a> file to modify</td>
 </tr>
 <tr>
 <td>target_gallery</td>
@@ -1999,7 +1992,7 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 </ul>
 <hr />
 <h2 id="br_set_header">br_set_header</h2>
-<p>Update the target and query inputs in the <a href="../../../technical/#the-evaluation-harness">BEE matrix</a> header.</p>
+<p>Update the target and query inputs in the <a href="../../../tutorials/#the-evaluation-harness">BEE matrix</a> header.</p>
 <ul>
 <li>
 <p><strong>function definition:</strong></p>
@@ -2020,7 +2013,7 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 <tr>
 <td>matrix</td>
 <td>const char *</td>
-<td>The <a href="../../../technical/#the-evaluation-harness">BEE matrix</a> file to modify</td>
+<td>The <a href="../../../tutorials/#the-evaluation-harness">BEE matrix</a> file to modify</td>
 </tr>
 <tr>
 <td>target_gallery</td>
@@ -3064,6 +3057,17 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 <!-- Links -->
 
 <!-- Contributors -->
+
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><em>Zhu et al.</em>
+<strong>A Rank-Order Distance based Clustering Algorithm for Face Tagging</strong>,
+CVPR 2011&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div>
@@ -3125,7 +3129,7 @@ When computing <em>continuous</em> curves, true positives and false negatives ar
 
 <!--
 MkDocs version      : 0.12.1
-Docs Build Date UTC : 2015-04-24 17:55:27.632674
+Docs Build Date UTC : 2015-04-24 19:48:00.412358
 -->
 </body>
 </html>

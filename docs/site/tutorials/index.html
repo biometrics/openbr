@@ -59,6 +59,8 @@
                         
                             <li class="toctree-l1"><a href="#training-algorithms">Training Algorithms</a></li>
                         
+                            <li class="toctree-l1"><a href="#the-evaluation-harness">The Evaluation Harness</a></li>
+                        
                             <li class="toctree-l1"><a href="#face-recognition">Face Recognition</a></li>
                         
                             <li class="toctree-l1"><a href="#age-estimation">Age Estimation</a></li>
@@ -67,13 +69,6 @@
                         
                     
                 </ul>
-            
-            </li>
-        
-    
-        
-            <li class="toctree-l0 ">
-            <a class="" href="../technical/">Technical Overviews</a>
             
             </li>
         
@@ -267,7 +262,7 @@
 <li><a href="../api_docs/plugins/gui/#showtransform">Show(false)</a>: Show the image in a GUI window. <strong>false</strong> indicates the images should be shown in succession without waiting for a key press.</li>
 </ol>
 <p>Pretty straightforward right? Each plugin completes one task and the passes the output on to the next plugin. You can pipe together as many plugins as you like as long as the output data from one can be the input data to the next. But wait! Output data? Input data? we haven't talked about data at all yet! How does OpenBR handle data? There are two objects that handle data is OpenBR; <a href="../api_docs/cpp_api/file/file/">Files</a>, which handle metadata, and <a href="../api_docs/cpp_api/template/template/">Templates</a> which are containers for images and <a href="../api_docs/cpp_api/file/file/">Files</a>. Let's talk about <a href="../api_docs/cpp_api/file/file/">Files</a> first. A file consists of file name, which is a path to a file on disk, and metadata which is a map of key-value pairs. The metadata can contain any textual information about the file. In the example above we use it to store the rectangles detected by <a href="../api_docs/plugins/metadata/#cascadetransform">Cascade</a> and pass them along to <a href="../api_docs/plugins/gui/#drawtransform">Draw</a> for drawing. <a href="../api_docs/cpp_api/template/template/">Templates</a> are containers for images, given as OpenCV <a href="http://docs.opencv.org/modules/core/doc/basic_structures.html#mat" title="Mat">Mats</a> and <a href="../api_docs/cpp_api/file/file/">Files</a>. They can contain one image or a list of images. Plugins are either <a href="../api_docs/cpp_api/template/template/">Template</a> in, <a href="../api_docs/cpp_api/template/template/">Template</a> out or <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateList</a> in, <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateList</a> out. <a href="../api_docs/cpp_api/templatelist/templatelist/">TemplateLists</a> are, of course, just a list of <a href="../api_docs/cpp_api/template/template/">Templates</a> which a few functions added for your convenience.</p>
-<p>And there you go! You have gotten your quick start in OpenBR. We covered the <a href="../api_docs/cl_api/">command line</a>, <a href="../api_docs/cpp_api/">plugins, and the key data structures</a> in OpenBR. If you want to learn more the next few tutorials will cover these fields with more depth. For even more information check out the <a href="../technical/">technical overviews</a> and class documentation!</p>
+<p>And there you go! You have gotten your quick start in OpenBR. We covered the <a href="../api_docs/cl_api/">command line</a>, <a href="../api_docs/cpp_api/">plugins, and the key data structures</a> in OpenBR. If you want to learn more the next few tutorials will cover these fields with more depth.</p>
 <hr />
 <h1 id="algorithms-in-openbr">Algorithms in OpenBR</h1>
 <p>The purpose of OpenBR is to express biometrics algorithms in a consistent and simple way. But what exactly does <em>algorithm</em> mean? In OpenBR an <em>algorithm</em> is a technique for enrolling templates associated with a technique for comparing them. Recall that our ultimate goal is to be able to say how similar two face images are (or two fingerprints, irises, etc.).</p>
@@ -354,6 +349,21 @@ Since OpenBR expects <em>similarity</em> values when comparing templates, and no
 <hr />
 <h1 id="training-algorithms">Training Algorithms</h1>
 <hr />
+<h1 id="the-evaluation-harness">The Evaluation Harness</h1>
+<p>OpenBR implements a complete, <a href="http://www.nist.gov/index.html">NIST</a> compliant, evaluation harness for evaluating face recognition, face detection, and facial landmarking. The goal is to provide a consistent environment for the repeatable evaluation of algorithms to the academic and open source communities. To accompish this OpenBR defines the following portions of the biometrics evaluation evironment (BEE) standard-</p>
+<ul>
+<li>
+<p>Signature Set- A signature set (or <em>sigset</em>) is a <a href="../api_docs/cpp_api/gallery/gallery/">Gallery</a> compliant <strong>XML</strong> file-list specified on page 9 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/gallery/#xmlgallery">xmlGallery</a>. Sigsets are identified with a <strong>.xml</strong> extension.</p>
+</li>
+<li>
+<p>Similarity Matrix- A similarity matrix (or <em>simmat</em>) is an <a href="../api_docs/cpp_api/output/output/">Output</a> compliant binary score matrix specified on page 12 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> and implemented in <a href="../api_docs/plugins/output/#mtxoutput">mtxOutput</a>. Simmats are identified with a <strong>.mtx</strong> extension. See <a href="../api_docs/c_api/functions/#br_eval">br_eval</a> for more information.</p>
+</li>
+<li>
+<p>Mask Matrix- A mask matrix (or <em>mask</em>) is a binary matrix specified on page 14 of the <a href="../misc/MBGC_file_overview.pdf">MBGC File Overview</a> identifying the ground truth genuines and impostors of a corresponding <em>simmat</em>. Masks are identified with a <strong>.mask</strong> extension. See <a href="../api_docs/c_api/functions/#br_make_mask">br_make_mask</a> and <a href="../api_docs/c_api/functions/#br_combine_masks">br_combine_masks</a> for more information.</p>
+</li>
+</ul>
+<p>The evaluation harness is also accessible from the command line! Please see <a href="../api_docs/cl_api/#eval">-eval</a>, <a href="../api_docs/cl_api/#evaldetection">-evalDetection</a>, <a href="../api_docs/cl_api/#evallandmarking">-evalLandmarking</a>, <a href="../api_docs/cl_api/#evalclassification">-evalClassification</a>, <a href="../api_docs/cl_api/#evalclustering">-evalClustering</a>, or <a href="../api_docs/cl_api/#evalregression">-evalRegression</a> for relevant information.</p>
+<hr />
 <h1 id="face-recognition">Face Recognition</h1>
 <p>This tutorial gives an example on how to perform face recognition in OpenBR. OpenBR implements the 4SF<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup> algorithm to perform face recognition. Please read the the paper for more specific implementation details.</p>
 <p>To start, lets run face recognition from the command line. Open the terminal and enter</p>
@@ -362,6 +372,22 @@ Since OpenBR expects <em>similarity</em> values when comparing templates, and no
     -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S386-04-t10_01.jpg
 </code></pre>
 <p>Easy enough? You should see results printed to terminal that look like</p>
+<pre><code>$ Set algorithm to FaceRecognition
+$ Loading /usr/local/share/openbr/models/algorithms/FaceRecognition
+$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionExtraction
+$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionEmbedding
+$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionQuantization
+$Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S354-02-t10_01.jpg
+$ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
+$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+$ 1.8812
+$ Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S386-04-t10_01.jpg
+$ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
+$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+$ 0.571219
+</code></pre>
 <p>So what is 'FaceRecognition'? It's an abbrieviation to make running the algorithm easier. All of the algorithm abbreviations are located in <code>openbr/plugins/core/algorithms.cpp</code>, please see the previous tutorial for an introduction to OpenBR's algorithm grammar.</p>
 <p>It also possible to perform face recognition evaluation (<strong>note:</strong> this requires <a href="http://www.r-project.org/" title="R">R</a> to be installed)-</p>
 <pre><code>$ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
@@ -379,7 +405,7 @@ $ br -algorithm FaceRecognition -compare meds.gal ../data/MEDS/img/S001-01-t10_0
 <p>and face recognition training-</p>
 <pre><code>$ br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ../data/ATT/img FaceRecognitionATT
 </code></pre>
-<p>all right from the command line! The entire command line API is documented <a href="../api_docs/cl_api/">here</a>. It is a powerful tool for creating and testing new algorithms. </p>
+<p>all right from the command line! The entire command line API is documented <a href="../api_docs/cl_api/">here</a>. It is a powerful tool for creating and testing new algorithms.</p>
 <p>The command line isn't perfect for all situations however. So OpenBR exposes a <a href="../api_docs/cpp_api/">C++ API</a> that can be embedded pretty much everywhere. Let's step through the example code at <code>app/example/face_recognition.cpp</code> and learn about using OpenBR as a library.</p>
 <p>Our main function starts with-</p>
 <pre><code>    br::Context::initialize(argc, argv)
@@ -388,7 +414,7 @@ $ br -algorithm FaceRecognition -compare meds.gal ../data/MEDS/img/S001-01-t10_0
 <pre><code>QSharedPointer&lt;br::Transform&gt; transform = br::Transform::fromAlgorithm("FaceRecognition");
 QSharedPointer&lt;br::Distance&gt; distance = br::Distance::fromAlgorithm("FaceRecognition");
 </code></pre>
-<p>Here, we split our algorithm into <em>enrollment</em> (<a href="../api_docs/cpp_api/transform/transform/">Transform</a>::<a href="../api_docs/cpp_api/transform/statics/#fromalgorithm">fromAlgorithm</a>) and <em>comparison</em> (<a href="../api_docs/cpp_api/distance/distance/">Distance</a>::<a href="../api_docs/cpp_api/distance/statics/#fromalgorithm">fromAlgorithm</a>) </p>
+<p>Here, we split our algorithm into <em>enrollment</em> (<a href="../api_docs/cpp_api/transform/transform/">Transform</a>::<a href="../api_docs/cpp_api/transform/statics/#fromalgorithm">fromAlgorithm</a>) and <em>comparison</em> (<a href="../api_docs/cpp_api/distance/distance/">Distance</a>::<a href="../api_docs/cpp_api/distance/statics/#fromalgorithm">fromAlgorithm</a>)</p>
 <pre><code>br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
 br::Template queryB("../data/MEDS/img/S382-08-t10_01.jpg");
 br::Template target("../data/MEDS/img/S354-02-t10_01.jpg");
@@ -413,8 +439,22 @@ printf("Impostor match score: %.3f\n", comparisonB);
 <p>And that's it! Now you can embed face recognition into all of your applications.</p>
 <hr />
 <h1 id="age-estimation">Age Estimation</h1>
+<p>Age Estimation is very similar in spirit to <a href="#face-recognition">Face Recognition</a> and will be covered in far less detail.</p>
+<p>To implement Age Estimation from the command line you can run</p>
+<pre><code>$ br -algorithm AgeEstimation \
+    -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
+</code></pre>
+<p>The results will be stored in metadata.csv under the key 'Age'. Remember from the <a href="#face-recognition">Face Recognition</a> 'AgeEstimation' is just an abbreviation for the full algorithm description. The expanded version is stored in <code>openbr/plugins/core/algorithms.cpp</code>.</p>
+<p>The source code to run age estimation as an application is in <code>app/examples/age_estimation.cpp</code></p>
 <hr />
 <h1 id="gender-estimation">Gender Estimation</h1>
+<p>Gender Estimation is very similar in spirit to <a href="#face-recognition">Face Recognition</a> and will be covered in far less detail.</p>
+<p>To implement Gender Estimation from the command line you can run</p>
+<pre><code>$ br -algorithm GenderEstimation \
+    -enroll ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S001-01-t10_01.jpg metadata.csv
+</code></pre>
+<p>The results will be stored in metadata.csv under the key 'Gender'. Remember from the <a href="#face-recognition">Face Recognition</a> 'GenderEstimation' is just an abbreviation for the full algorithm description. The expanded version is stored in <code>openbr/plugins/core/algorithms.cpp</code>.</p>
+<p>The source code to run gender estimation as an application is in <code>app/examples/gender_estimation.cpp</code></p>
 <!-- Links -->
 
 <!-- Contributors -->
@@ -424,12 +464,12 @@ printf("Impostor match score: %.3f\n", comparisonB);
 <ol>
 <li id="fn:1">
 <p><em>Matthew Turk and Alex Pentland.</em>
-<strong>Eigenfaces for recognition.</strong> 
-Journal of Cognitive Neuroscience, 3(1):71–86, 1991&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<strong>Eigenfaces for recognition.</strong>
+Journal of Cognitive Neuroscience, 71&#45;86, 1991 <!-- Don't know why I have to use the &#45; code instead of '-' -->&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p><em>B. Klare.</em> 
-<strong>Spectrally sampled structural subspace features (4SF).</strong> 
+<p><em>B. Klare.</em>
+<strong>Spectrally sampled structural subspace features (4SF).</strong>
 In Michigan State University Technical Report, MSUCSE-11-16, 2011&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
@@ -441,7 +481,7 @@ In Michigan State University Technical Report, MSUCSE-11-16, 2011&#160;<a class=
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../technical/" class="btn btn-neutral float-right" title="Technical Overviews"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../contribute/" class="btn btn-neutral float-right" title="Contribute"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../install/" class="btn btn-neutral" title="Install"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -476,7 +516,7 @@ In Michigan State University Technical Report, MSUCSE-11-16, 2011&#160;<a class=
         <span><a href="../install/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../technical/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../contribute/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
@@ -495,7 +535,7 @@ In Michigan State University Technical Report, MSUCSE-11-16, 2011&#160;<a class=
 
 <!--
 MkDocs version      : 0.12.1
-Docs Build Date UTC : 2015-04-24 17:55:27.388636
+Docs Build Date UTC : 2015-04-24 19:47:59.885024
 -->
 </body>
 </html>
