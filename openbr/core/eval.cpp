@@ -86,7 +86,6 @@ static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &ope
             return OperatingPoint(operatingPoints.last().score, operatingPoints.last().FAR, TAR);
     }
 
-
     const float FAR1 = (index == 0 ? 0 : operatingPoints[index-1].FAR);
     const float TAR1 = (index == 0 ? 0 : operatingPoints[index-1].TAR);
     const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index-1].score);
@@ -99,7 +98,7 @@ static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &ope
     const float bScore = score1 - mScore*FAR1;
 
     const float FAR = (TAR - bTAR) / mTAR;
-    return OperatingPoint(mScore * FAR + bScore,FAR, TAR);
+    return OperatingPoint(mScore * FAR + bScore, FAR, TAR);
 }
 
 

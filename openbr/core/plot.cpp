@@ -216,7 +216,7 @@ struct RPlot
                        "algs <- algs[!duplicated(algs)]\n"
                        "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
-                       "rownames(mat) <- c(\"TAR = 0.95\", \"TAR = 0.85\", \"TAR = 0.75\", \"TAR = 0.65\", \"TAR = 0.50\", \"TAR = 0.40\")\n"
+                       "rownames(mat) <- c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")\n"
                        "F_at_Ttable <- as.table(mat)\n"
                        "\n"
                        "# Code to format CMC Table\n"
@@ -331,7 +331,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + annotation_logticks(sides=\"b\")") +
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", files.size()))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
@@ -343,7 +343,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", files.size()))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=IET, geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
@@ -354,7 +354,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()\n\n")));
+                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score\", ylab=\"Frequency\"") +
@@ -371,7 +372,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (cmcOpts.contains("yLimits") ? QString(" + scale_y_continuous(labels=percent) + coord_cartesian(ylim=%1)").arg("c"+QtUtils::toString(cmcOpts.get<QPointF>("yLimits",QPointF()))) : QString(" + scale_y_continuous(labels=percent)")) +
                             QString(" + theme_minimal() + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(cmcOpts.get<float>("textSize",12)), cmcOpts.contains("legendPosition") ? "c"+QtUtils::toString(cmcOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", files.size()))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
 
     p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
