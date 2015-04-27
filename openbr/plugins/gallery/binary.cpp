@@ -175,8 +175,18 @@ class galGallery : public BinaryGallery
     {
         if (t.isEmpty() && t.file.isNull())
             return;
-        else if (t.file.fte)
-            stream << Template(t.file); // only write metadata for failure to enroll
+        else if (t.file.fte) {
+             // Only write metadata for failure to enroll, but remove any stored QVariants of type cv::Mat
+            File f = t.file;
+            QVariantMap metadata = f.localMetadata();
+            QMapIterator<QString, QVariant> i(metadata);
+            while (i.hasNext()) {
+                i.next();
+                if (strcmp(i.value().typeName(),"cv::Mat") == 0)
+                    f.remove(i.key());
+            }
+            stream << Template(f);
+        }
         else
             stream << t;
     }
