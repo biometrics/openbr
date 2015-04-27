@@ -86,6 +86,10 @@ struct AlgorithmCore
             qDebug("Projecting Enrollment");
             trainingWrapper->projectUpdate(data,data);
 
+            for (int i=data.size()-1; i>=0; i--)
+                if (data[i].file.fte || data[i].file.getBool("FTE"))
+                    data.removeAt(i);
+
             qDebug("Training Comparison");
             distance->train(data);
         }
