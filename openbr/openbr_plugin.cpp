@@ -97,6 +97,7 @@ void File::append(const File &other)
         }
     }
     append(other.m_metadata);
+    fte = fte | other.fte;
 }
 
 QList<File> File::split() const
