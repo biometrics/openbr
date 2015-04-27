@@ -111,7 +111,7 @@ class CascadeTransform : public MetaTransform
         QString cascadeDir = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
         classifier.train(cascadeDir.toStdString(),
                          vecFile.toStdString(), negFile.toStdString(),
-                         numPos, numNeg, 1024, 1024, 20,
+                         numPos, numNeg, 1024, 1024, 17,
                          cascadeParams, featureParams, stageParams);
     }
 

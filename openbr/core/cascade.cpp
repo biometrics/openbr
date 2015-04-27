@@ -209,7 +209,7 @@ void CascadeParams::write( FileStorage &fs ) const
     string stageTypeStr = stageType == BOOST ? CC_BOOST : string();
     CV_Assert( !stageTypeStr.empty() );
     fs << CC_STAGE_TYPE << stageTypeStr;
-    string featureTypeStr = featureType == FeatureParams::LBP ? CC_HAAR :
+    string featureTypeStr = featureType == FeatureParams::LBP ? CC_LBP :
                             0;
     CV_Assert( !stageTypeStr.empty() );
     fs << CC_FEATURE_TYPE << featureTypeStr;
@@ -544,7 +544,6 @@ bool BrCascadeClassifier::readParams( const FileNode &node )
     FileNode rnode = node[CC_STAGE_PARAMS];
     if ( !stageParams->read( rnode ) )
         return false;
-
     featureParams = FeatureParams::create(cascadeParams.featureType);
     rnode = node[CC_FEATURE_PARAMS];
     if ( !featureParams->read( rnode ) )
@@ -599,12 +598,16 @@ void BrCascadeClassifier::save( const string filename, bool baseFormat )
 bool BrCascadeClassifier::load( const string cascadeDirName )
 {
     FileStorage fs( cascadeDirName + CC_PARAMS_FILENAME, FileStorage::READ );
-    if ( !fs.isOpened() )
+    qDebug() << "1";
+    if ( !fs.isOpened() ) {
+        qDebug() << "2";
         return false;
+    }
     FileNode node = fs.getFirstTopLevelNode();
-    if ( !readParams( node ) )
+    if ( !readParams( node ) ) {
+        qDebug() << "3";
         return false;
-
+    }
     featureEvaluator = FeatureEvaluator::create(cascadeParams.featureType);
     featureEvaluator->init( ((FeatureParams*)featureParams), numPos + numNeg, cascadeParams.winSize );
     fs.release();
