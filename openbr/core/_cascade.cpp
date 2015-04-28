@@ -1,4 +1,4 @@
-#include "cascade.h"
+#include "_cascade.h"
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -6,10 +6,13 @@
 using namespace std;
 using namespace br;
 using namespace cv;
-/*
-bool CascadeImageReader::create( const string _posFilename, const string _negFilename, Size _winSize )
+
+bool CascadeImageReader::create( const vector<Mat> &_posImages, const vector<Mat> &_negImages, Size _winSize )
 {
-    return posReader.create(_posFilename) && negReader.create(_negFilename, _winSize);
+    posImages = _posImages;
+    negImages = _negImages;
+    winSize = _winSize;
+    return posReader.create(_posImages) && negReader.create(_negImages, _winSize);
 }
 
 CascadeImageReader::NegReader::NegReader()
@@ -22,30 +25,9 @@ CascadeImageReader::NegReader::NegReader()
     stepFactor  = 0.5F;
 }
 
-bool CascadeImageReader::NegReader::create( const string _filename, Size _winSize )
+bool CascadeImageReader::NegReader::create( const vector<Mat> &_negImages, Size _winSize )
 {
-    string dirname, str;
-    std::ifstream file(_filename.c_str());
-    if ( !file.is_open() )
-        return false;
-
-    size_t pos = _filename.rfind('\\');
-    char dlmrt = '\\';
-    if (pos == string::npos)
-    {
-        pos = _filename.rfind('/');
-        dlmrt = '/';
-    }
-    dirname = pos == string::npos ? "" : _filename.substr(0, pos) + dlmrt;
-    while( !file.eof() )
-    {
-        std::getline(file, str);
-        if (str.empty()) break;
-        if (str.at(0) == '#' ) continue;
-        imgFilenames.push_back(dirname + str);
-    }
-    file.close();
-
+    negImages = _negImages;
     winSize = _winSize;
     last = round = 0;
     return true;
@@ -54,10 +36,10 @@ bool CascadeImageReader::NegReader::create( const string _filename, Size _winSiz
 bool CascadeImageReader::NegReader::nextImg()
 {
     Point _offset = Point(0,0);
-    size_t count = imgFilenames.size();
+    size_t count = negImages.size();
     for( size_t i = 0; i < count; i++ )
     {
-        src = imread( imgFilenames[last++], 0 );
+        src = negImages[last++];
         if( src.empty() )
             continue;
         round += last / count;
@@ -124,66 +106,21 @@ CascadeImageReader::PosReader::PosReader()
 {
     file = 0;
     vec = 0;
+    last = 0;
 }
 
-bool CascadeImageReader::PosReader::create( const string _filename )
+bool CascadeImageReader::PosReader::create( const vector<Mat> &_posImages )
 {
-    if ( file )
-        fclose( file );
-    file = fopen( _filename.c_str(), "rb" );
-
-    if( !file )
-        return false;
-    short tmp = 0;
-    if( fread( &count, sizeof( count ), 1, file ) != 1 ||
-        fread( &vecSize, sizeof( vecSize ), 1, file ) != 1 ||
-        fread( &tmp, sizeof( tmp ), 1, file ) != 1 ||
-        fread( &tmp, sizeof( tmp ), 1, file ) != 1 )
-        CV_Error_( CV_StsParseError, ("wrong file format for %s\n", _filename.c_str()) );
-    base = sizeof( count ) + sizeof( vecSize ) + 2*sizeof( tmp );
-    if( feof( file ) )
-        return false;
-    last = 0;
-    vec = (short*) cvAlloc( sizeof( *vec ) * vecSize );
-    CV_Assert( vec );
+    posImages = _posImages;
     return true;
 }
 
-bool CascadeImageReader::PosReader::get( Mat &_img )
+bool CascadeImageReader::getPos(Mat &_img)
 {
-    CV_Assert( _img.rows * _img.cols == vecSize );
-    uchar tmp = 0;
-    size_t elements_read = fread( &tmp, sizeof( tmp ), 1, file );
-    if( elements_read != 1 )
-        CV_Error( CV_StsBadArg, "Can not get new positive sample. The most possible reason is "
-                                "insufficient count of samples in given vec-file.\n");
-    elements_read = fread( vec, sizeof( vec[0] ), vecSize, file );
-    if( elements_read != (size_t)(vecSize) )
-        CV_Error( CV_StsBadArg, "Can not get new positive sample. Seems that vec-file has incorrect structure.\n");
-
-    if( feof( file ) || last++ >= count )
+    if (last > (int)posImages.size())
         CV_Error( CV_StsBadArg, "Can not get new positive sample. vec-file is over.\n");
-
-    for( int r = 0; r < _img.rows; r++ )
-    {
-        for( int c = 0; c < _img.cols; c++ )
-            _img.ptr(r)[c] = (uchar)vec[r * _img.cols + c];
-    }
+    _img = posImages[posIdx++];
     return true;
-}
-
-void CascadeImageReader::PosReader::restart()
-{
-    CV_Assert( file );
-    last = 0;
-    fseek( file, base, SEEK_SET );
-}
-
-CascadeImageReader::PosReader::~PosReader()
-{
-    if (file)
-        fclose( file );
-    cvFree( &vec );
 }
 
 //---------------------------- CascadeParams --------------------------------------
@@ -303,8 +240,8 @@ bool CascadeParams::scanAttr( const string prmName, const string val )
 //---------------------------- CascadeClassifier --------------------------------------
 
 bool BrCascadeClassifier::train(const string _cascadeDirName,
-                                const string _posFilename,
-                                const string _negFilename,
+                                const vector<Mat> &_posImages,
+                                const vector<Mat> &_negImages,
                                 int _numPos, int _numNeg,
                                 int _precalcValBufSize, int _precalcIdxBufSize,
                                 int _numStages,
@@ -316,8 +253,8 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     // Start recording clock ticks for training time output
     const clock_t begin_time = clock();
 
-    if( _cascadeDirName.empty() || _posFilename.empty() || _negFilename.empty() )
-        CV_Error( CV_StsBadArg, "_cascadeDirName or _bgfileName or _vecFileName is NULL" );
+    if( _cascadeDirName.empty() )
+        CV_Error( CV_StsBadArg, "_cascadeDirName is NULL" );
 
     string dirName;
     if (_cascadeDirName.find_last_of("/\\") == (_cascadeDirName.length() - 1) )
@@ -328,12 +265,8 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     numPos = _numPos;
     numNeg = _numNeg;
     numStages = _numStages;
-    if ( !imgReader.create( _posFilename, _negFilename, _cascadeParams.winSize ) )
-    {
-        cout << "Image reader can not be created from -vec " << _posFilename
-                << " and -bg " << _negFilename << "." << endl;
-        return false;
-    }
+    imgReader.create( _posImages, _negImages, _cascadeParams.winSize );
+
     if ( !load( dirName ) )
     {
         cascadeParams = _cascadeParams;
@@ -347,8 +280,6 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     }
     cout << "PARAMETERS:" << endl;
     cout << "cascadeDirName: " << _cascadeDirName << endl;
-    cout << "vecFileName: " << _posFilename << endl;
-    cout << "bgFileName: " << _negFilename << endl;
     cout << "numPos: " << _numPos << endl;
     cout << "numNeg: " << _numNeg << endl;
     cout << "numStages: " << numStages << endl;
@@ -488,7 +419,7 @@ int BrCascadeClassifier::fillPassedSamples( int first, int count, bool isPositiv
         for( ; ; )
         {
             bool isGetImg = isPositive ? imgReader.getPos( img ) :
-                                           imgReader.getNeg( img );
+                                         imgReader.getNeg( img );
             if( !isGetImg )
                 return getcount;
             consumed++;
@@ -641,5 +572,6 @@ void BrCascadeClassifier::getUsedFeaturesIdxMap( Mat& featureMap )
     for( int fi = 0, idx = 0; fi < varCount; fi++ )
         if ( featureMap.at<int>(0, fi) >= 0 )
             featureMap.ptr<int>(0)[fi] = idx++;
-}*/
+}
+
 

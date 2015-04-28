@@ -1,5 +1,5 @@
-#ifndef CASCADE_H
-#define CASCADE_H
+#ifndef _CASCADE_H
+#define _CASCADE_H
 
 #include <openbr/openbr_plugin.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -8,50 +8,27 @@
 
 namespace br
 {
-/*
+
 class CascadeImageReader
 {
 public:
-    bool create( const std::string _posFilename, const std::string _negFilename, cv::Size _winSize );
-    void restart() { posReader.restart(); }
-    bool getNeg(cv::Mat &_img) { return negReader.get( _img ); }
-    bool getPos(cv::Mat &_img) { return posReader.get( _img ); }
+    bool create( const std::vector<cv::Mat> &_posImages, const std::vector<cv::Mat> &_negImages, cv::Size _winSize );
+    void restart() { posIdx = 0; }
+    bool getNeg(cv::Mat &_img);
+    bool getPos(cv::Mat &_img);
 
 private:
-    class PosReader
-    {
-    public:
-        PosReader();
-        virtual ~PosReader();
-        bool create( const std::string _filename );
-        bool get( cv::Mat &_img );
-        void restart();
+    std::vector<cv::Mat> posImages, negImages;
 
-        short* vec;
-        FILE*  file;
-        int    count;
-        int    vecSize;
-        int    last;
-        int    base;
-    } posReader;
+    int posIdx, negIdx;
 
-    class NegReader
-    {
-    public:
-        NegReader();
-        bool create( const std::string _filename, cv::Size _winSize );
-        bool get( cv::Mat& _img );
-        bool nextImg();
-
-        cv::Mat     src, img;
-        std::vector<std::string> imgFilenames;
-        cv::Point   offset, point;
-        float   scale;
-        float   scaleFactor;
-        float   stepFactor;
-        size_t  last, round;
-        cv::Size    winSize;
-    } negReader;
+    cv::Mat     src, img;
+    cv::Point   offset, point;
+    float   scale;
+    float   scaleFactor;
+    float   stepFactor;
+    size_t  round;
+    cv::Size    winSize;
 };
 
 class CascadeParams : public Params
@@ -79,8 +56,8 @@ class BrCascadeClassifier
 {
 public:
     bool train( const std::string _cascadeDirName,
-                const std::string _posFilename,
-                const std::string _negFilename,
+                const std::vector<cv::Mat> &_posImages,
+                const std::vector<cv::Mat> &_negImages,
                 int _numPos, int _numNeg,
                 int _precalcValBufSize, int _precalcIdxBufSize,
                 int _numStages,
@@ -113,7 +90,8 @@ private:
     int numStages, curNumSamples;
     int numPos, numNeg;
 };
-*/
+
 } // namespace br
 
-#endif // CASCADE_H
+#endif // _CASCADE_H
+

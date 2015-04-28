@@ -1415,6 +1415,9 @@ public:
     virtual ~Classifier() {}
 
     static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
+
+    virtual Classifier *clone() const { return Factory<Classifier>::make("." + description(false)); }
+
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
     // By convention, classify should return a value normalized such that the threshold is 0. Negative values
     // can be interpreted as a negative classification and positive values as a positive classification.

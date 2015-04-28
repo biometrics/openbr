@@ -1505,7 +1505,7 @@ Transform *Transform::make(QString str, QObject *parent)
 Transform *Transform::clone() const
 {
    Transform *clone = Factory<Transform>::make("."+description(false));
-    return clone;
+   return clone;
 }
 
 static void _project(const Transform *transform, const Template *src, Template *dst)
