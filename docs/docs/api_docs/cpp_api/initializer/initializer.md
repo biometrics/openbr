@@ -4,9 +4,7 @@ Inherits [Object](../object/object.md)
 
 See:
 
-* [Members](members.md)
 * [Constructors](constructors.md)
-* [Static Functions](statics.md)
 * [Functions](functions.md)
 
 Plugin base class for initializing resources. On startup (the call to [Context](../context/context.md)::[initialize](../context/statics.md#initialize)), OpenBR will call [initialize](functions.md#initialize) on every Initializer that has been registered with the [Factory](../factory/factory.md). On shutdown (the call to [Context](../context/context.md)::[finalize](../context/statics.md#finalize), OpenBR will call [finalize](functions.md#finalize) on every registered initializer.

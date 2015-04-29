@@ -6,7 +6,6 @@ Plugin base class for comparing two [Templates](../template/template.md)
 
 See:
 
-* [Members](members.md)
 * [Constructors](constructors.md)
 * [Static Functions](statics.md)
 * [Functions](functions.md)

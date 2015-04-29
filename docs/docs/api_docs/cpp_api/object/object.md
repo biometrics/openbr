@@ -5,7 +5,6 @@ Inherits from [QObject][QObject]
 See:
 
 * [Members](members.md)
-* [Constructors](constructors.md)
 * [Macros](macros.md)
 * [Static Functions](statics.md)
 * [Functions](functions.md)

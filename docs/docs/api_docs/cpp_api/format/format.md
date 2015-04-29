@@ -6,7 +6,6 @@ Plugin base class for reading a template from disk.
 
 See:
 
-* [Members](members.md)
 * [Constructors](constructors.md)
 * [Static Functions](statics.md)
 * [Functions](functions.md)

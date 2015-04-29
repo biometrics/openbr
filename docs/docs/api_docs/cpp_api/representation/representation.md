@@ -6,7 +6,6 @@ Plugin base class for converting images into feature vectors
 
 See:
 
-* [Members](members.md)
 * [Constructors](constructors.md)
 * [Static Functions](statics.md)
 * [Functions](functions.md)

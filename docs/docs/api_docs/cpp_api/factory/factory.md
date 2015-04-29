@@ -8,7 +8,6 @@ See:
 * [Constructors](constructors.md)
 * [Macros](macros.md)
 * [Static Functions](statics.md)
-* [Functions](functions.md)
 
 Uses the Industrial Strength Pluggable Factory model described [here](http://adtmag.com/articles/2000/09/25/industrial-strength-pluggable-factories.aspx).
 

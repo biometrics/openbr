@@ -1,11 +1,10 @@
 <!-- CONTEXT -->
 
-The singleton class of global settings. 
+The singleton class of global settings.
 
 See:
 
 * [Members](members.md)
-* [Constructors](constructors.md)
 * [Static Functions](statics.md)
 * [Functions](functions.md)
 

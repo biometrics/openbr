@@ -8,7 +8,6 @@ See:
 
 * [Members](members.md)
 * [Constructors](constructors.md)
-* [Static Functions](statics.md)
 * [Functions](functions.md)
 
 [FileGalleries](filegallery.md) are the base abstraction for all [Galleries](../gallery/gallery.md) that handle I/O with the hard drive. They automatically track the size and current position of a file and also provide convienience opererators for opening them for reading and writing.
