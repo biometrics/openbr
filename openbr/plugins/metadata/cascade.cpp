@@ -22,7 +22,7 @@
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/resource.h>
 #include <openbr/core/qtutils.h>
-#include <openbr/core/_cascade.h>
+#include <openbr/core/cascade.h>
 
 using namespace cv;
 
@@ -187,18 +187,15 @@ class CascadeTransform : public MetaTransform
 
         BrCascadeClassifier classifier;
 
-        CascadeParams cascadeParams(CascadeParams::BOOST, FeatureParams::LBP);
-        cascadeParams.winSize = Size(winWidth, winHeight);
-
         CascadeBoostParams stageParams(CvBoost::GENTLE, 0.999, 0.5, 0.95, 1, 200);
-        LBPFeatureParams featureParams;
+
+        Representation *representation = Representation::make("MBLBP(24,24)", NULL);
 
         QString cascadeDir = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
         classifier.train(cascadeDir.toStdString(),
-                         posImages.toVector().toStdVector(),
-                         negImages.toVector().toStdVector(),
-                         numPos, numNeg, 1024, 1024, numStages,
-                         cascadeParams, featureParams, stageParams);
+                         posImages, negImages,
+                         1024, 1024, numPos, numNeg, numStages,
+                         representation, stageParams);
     }
 
     void project(const Template &src, Template &dst) const

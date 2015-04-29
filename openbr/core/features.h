@@ -84,10 +84,34 @@
     (p3) = (rect).x + (rect).width - (rect).height                        \
            + (step) * ((rect).y + (rect).width + (rect).height);
 
+#define CV_SUM_PTRS( p0, p1, p2, p3, sum, rect, step )                    \
+    /* (x, y) */                                                          \
+    (p0) = sum + (rect).x + (step) * (rect).y,                            \
+    /* (x + w, y) */                                                      \
+    (p1) = sum + (rect).x + (rect).width + (step) * (rect).y,             \
+    /* (x, y + h) */                                                      \
+    (p2) = sum + (rect).x + (step) * ((rect).y + (rect).height),          \
+    /* (x + w, y + h) */                                                  \
+    (p3) = sum + (rect).x + (rect).width + (step) * ((rect).y + (rect).height)
+
+#define CV_TILTED_PTRS( p0, p1, p2, p3, tilted, rect, step )                        \
+    /* (x, y) */                                                                    \
+    (p0) = tilted + (rect).x + (step) * (rect).y,                                   \
+    /* (x - h, y + h) */                                                            \
+    (p1) = tilted + (rect).x - (rect).height + (step) * ((rect).y + (rect).height), \
+    /* (x + w, y + w) */                                                            \
+    (p2) = tilted + (rect).x + (rect).width + (step) * ((rect).y + (rect).width),   \
+    /* (x + w - h, y + w + h) */                                                    \
+    (p3) = tilted + (rect).x + (rect).width - (rect).height                         \
+           + (step) * ((rect).y + (rect).width + (rect).height)
+
+#define CALC_SUM_(p0, p1, p2, p3, offset) \
+    ((p0)[offset] - (p1)[offset] - (p2)[offset] + (p3)[offset])
+
+#define CALC_SUM(rect,offset) CALC_SUM_((rect)[0], (rect)[1], (rect)[2], (rect)[3], offset)
+
 namespace br
 {
-
-float calcNormFactor( const cv::Mat& sum, const cv::Mat& sqSum );
 
 template<class Feature>
 void _writeFeatures( const std::vector<Feature> features, cv::FileStorage &fs, const cv::Mat& featureMap )
@@ -104,81 +128,23 @@ void _writeFeatures( const std::vector<Feature> features, cv::FileStorage &fs, c
     fs << "]";
 }
 
-class Params
-{
-public:
-    Params();
-    virtual ~Params() {}
-    // from|to file
-    virtual void write( cv::FileStorage &fs ) const = 0;
-    virtual bool read( const cv::FileNode &node ) = 0;
-    // from|to screen
-    virtual void printDefaults() const;
-    virtual void printAttrs() const;
-    virtual bool scanAttr( const std::string prmName, const std::string val );
-    std::string name;
-};
-
-class FeatureParams : public Params
-{
-public:
-    enum { LBP = 0 };
-    FeatureParams();
-    virtual void init( const FeatureParams& fp );
-    virtual void write( cv::FileStorage &fs ) const;
-    virtual bool read( const cv::FileNode &node );
-    static cv::Ptr<FeatureParams> create( int featureType );
-    int maxCatCount; // 0 in case of numerical features
-    int featSize; // 1 in case of simple features (HAAR, LBP) and N_BINS(9)*N_CELLS(4) in case of Dalal's HOG features
-};
-
-class FeatureEvaluator
-{
-public:
-    virtual ~FeatureEvaluator() {}
-    virtual void init(const FeatureParams *_featureParams,
-                      int _maxSampleCount, cv::Size _winSize );
-    virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const = 0;
-    virtual float operator()(int featureIdx, int sampleIdx) const = 0;
-    static cv::Ptr<FeatureEvaluator> create(int type);
-
-    int getNumFeatures() const { return numFeatures; }
-    int getMaxCatCount() const { return featureParams->maxCatCount; }
-    int getFeatureSize() const { return featureParams->featSize; }
-    const cv::Mat& getCls() const { return cls; }
-    float getCls(int si) const { return cls.at<float>(si, 0); }
-protected:
-    virtual void generateFeatures() = 0;
-
-    int npos, nneg;
-    int numFeatures;
-    cv::Size winSize;
-    FeatureParams *featureParams;
-    cv::Mat cls;
-};
-
-
 //------------------------- LBP Feature ---------------------------------
 
-#define LBPF_NAME "lbpFeatureParams"
-
-struct LBPFeatureParams : FeatureParams
-{
-    LBPFeatureParams();
-
-};
-
-class LBPEvaluator : public FeatureEvaluator
+class LBPTrainingEvaluator
 {
 public:
-    virtual ~LBPEvaluator() {}
-    virtual void init(const FeatureParams *_featureParams,
-        int _maxSampleCount, cv::Size _winSize );
+    virtual ~LBPTrainingEvaluator() {}
+    virtual void init(int _maxSampleCount, cv::Size _winSize );
     virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    virtual float operator()(int featureIdx, int sampleIdx) const
-    { return (float)features[featureIdx].calc( sum, sampleIdx); }
+    virtual float operator()(int featureIdx, int sampleIdx) const { return (float)features[featureIdx].calc( sum, sampleIdx); }
     virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
+
+    int getNumFeatures() const { return numFeatures; }
+    int getMaxCatCount() const { return maxCatCount; }
+    int getFeatureSize() const { return 1; }
+    const cv::Mat& getCls() const { return cls; }
+    float getCls(int si) const { return cls.at<float>(si, 0); }
+
 protected:
     virtual void generateFeatures();
 
@@ -195,10 +161,14 @@ protected:
     };
     std::vector<Feature> features;
 
-    cv::Mat sum;
+    int npos, nneg;
+    int maxCatCount;
+    int numFeatures;
+    cv::Size winSize;
+    cv::Mat cls, sum;
 };
 
-inline uchar LBPEvaluator::Feature::calc(const cv::Mat &_sum, size_t y) const
+inline uchar LBPTrainingEvaluator::Feature::calc(const cv::Mat &_sum, size_t y) const
 {
     const int* psum = _sum.ptr<int>((int)y);
     int cval = psum[p[5]] - psum[p[6]] - psum[p[9]] + psum[p[10]];

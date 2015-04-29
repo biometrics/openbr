@@ -1404,7 +1404,12 @@ public:
     // By convention, an empty indices list will result in all feature responses being calculated
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
+
     virtual int numFeatures() const = 0;
+    virtual cv::Size windowSize() const = 0;
+
+    // Temporary for OpenCV compatibility
+    virtual void write( cv::FileStorage &fs, const cv::Mat &featureMap ) { (void)fs; (void)featureMap; }
 };
 
 class BR_EXPORT Classifier : public Object

@@ -17,20 +17,31 @@ struct CascadeBoostParams : CvBoostParams
                           double _weightTrimRate, int _maxDepth, int _maxWeakCount );
     virtual ~CascadeBoostParams() {}
     void write( cv::FileStorage &fs ) const;
-    bool read( const cv::FileNode &node );
-    virtual void printDefaults() const;
-    virtual void printAttrs() const;
-    virtual bool scanAttr( const std::string prmName, const std::string val);
+};
+
+struct BoostBRCompatibility
+{
+    BoostBRCompatibility(Representation *_representation, int _numSamples);
+    void setImage(const cv::Mat &img, uchar clsLabel, int idx);
+    float operator()(int featureIdx, int sampleIdx) const;
+    const cv::Mat &getCls() const { return cls; }
+    float getCls(int idx) const { return cls.at<float>(idx, 0); }
+
+    int numFeatures() const { return representation->numFeatures(); }
+    int maxCatCount() const { return 256; }
+
+    Representation *representation;
+    cv::Mat data, cls;
 };
 
 struct CascadeBoostTrainData : CvDTreeTrainData
 {
-    CascadeBoostTrainData( const FeatureEvaluator* _featureEvaluator,
+    CascadeBoostTrainData( const BoostBRCompatibility* _compat,
                              const CvDTreeParams& _params );
-    CascadeBoostTrainData( const FeatureEvaluator* _featureEvaluator,
+    CascadeBoostTrainData( const BoostBRCompatibility* _compat,
                              int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                              const CvDTreeParams& _params = CvDTreeParams() );
-    virtual void setData( const FeatureEvaluator* _featureEvaluator,
+    virtual void setData( const BoostBRCompatibility* _compat,
                           int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                           const CvDTreeParams& _params=CvDTreeParams() );
     void precalculate();
@@ -47,7 +58,7 @@ struct CascadeBoostTrainData : CvDTreeTrainData
     virtual float getVarValue( int vi, int si );
     virtual void free_train_data();
 
-    const FeatureEvaluator* featureEvaluator;
+    const BoostBRCompatibility* compat;
     cv::Mat valCache; // precalculated feature values (CV_32FC1)
     CvMat _resp; // for casting
     int numPrecalcVal, numPrecalcIdx;
@@ -58,7 +69,6 @@ class CascadeBoostTree : public CvBoostTree
 public:
     virtual CvDTreeNode* predict( int sampleIdx ) const;
     void write( cv::FileStorage &fs, const cv::Mat& featureMap );
-    void read( const cv::FileNode &node, CvBoost* _ensemble, CvDTreeTrainData* _data );
     void markFeaturesInMap( cv::Mat& featureMap );
 protected:
     virtual void split_node_data( CvDTreeNode* n );
@@ -67,15 +77,13 @@ protected:
 class CascadeBoost : public CvBoost
 {
 public:
-    virtual bool train( const FeatureEvaluator* _featureEvaluator,
+    virtual bool train( const BoostBRCompatibility* _compat,
                         int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                         const CascadeBoostParams& _params=CascadeBoostParams() );
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
     void write( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
-    bool read( const cv::FileNode &node, const FeatureEvaluator* _featureEvaluator,
-               const CascadeBoostParams& _params );
     void markUsedFeaturesInMap( cv::Mat& featureMap );
 protected:
     virtual bool set_params( const CvBoostParams& _params );

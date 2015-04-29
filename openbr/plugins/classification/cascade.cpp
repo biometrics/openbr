@@ -6,7 +6,7 @@ using namespace cv;
 namespace br
 {
 
-class CascadeClassifier : public Classifier
+class _CascadeClassifier : public Classifier
 {
     Q_OBJECT
 
@@ -151,7 +151,7 @@ private:
     };
 };
 
-BR_REGISTER(Classifier, CascadeClassifier)
+BR_REGISTER(Classifier, _CascadeClassifier)
 
 } // namespace br
 

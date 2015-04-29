@@ -7,7 +7,7 @@ using namespace cv;
 namespace br
 {
 
-class BoostClassifier : public Classifier
+class BoostedForestClassifier : public Classifier
 {
     Q_OBJECT
 
@@ -27,17 +27,7 @@ class BoostClassifier : public Classifier
 
     void train(const QList<Mat> &images, const QList<float> &labels)
     {
-        FeatureEvaluator *featureEvaluator = FeatureEvaluator::create(0);
-        featureEvaluator->init(new FeatureParams, images.size(), Size(24, 24));
-        for (int i = 0; i < images.size(); i++)
-            featureEvaluator->setImage(images[i], (uchar)labels[i], i);
-
-        CascadeBoostParams stageParams(CvBoost::GENTLE, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
-
-        if (boost) delete boost;
-
-        boost = new CascadeBoost;
-        boost->train(featureEvaluator, images.size(), 1024, 1024, stageParams);
+        (void)images; (void)labels;
     }
 
     float classify(const Mat &image) const
@@ -47,8 +37,8 @@ class BoostClassifier : public Classifier
     }
 };
 
-BR_REGISTER(Classifier, BoostClassifier)
+BR_REGISTER(Classifier, BoostedForestClassifier)
 
 } // namespace br
 
-#include "classification/boost.moc"
+#include "classification/boostedforest.moc"
