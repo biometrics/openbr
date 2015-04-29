@@ -232,7 +232,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     if (numNaNs > 0) qWarning("Encountered %d NaN scores!", numNaNs);
     if (genuineCount == 0) qFatal("No genuine scores!");
     if (impostorCount == 0) qFatal("No impostor scores!");
-    if (totalImpostorSearches == 0) totalImpostorSearches = 10;
 
     // Sort comparisons by simmat_val (score)
     std::stable_sort(comparisons.begin(), comparisons.end());
@@ -347,9 +346,9 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write Detection Error Tradeoff (DET), PRE, REC, Identification Error Tradeoff (IET)
-    float expFAR = csv.get<float>("FAR", ceil(log10(impostorCount)));
-    float expFRR = csv.get<float>("FRR", ceil(log10(genuineCount)));
-    float expFPIR = csv.get<float>("FPIR", ceil(log10(totalImpostorSearches)));
+    float expFAR = csv.get<float>("FAR", std::max(ceil(log10(impostorCount)), 1.0));
+    float expFRR = csv.get<float>("FRR", std::max(ceil(log10(genuineCount)), 1.0));
+    float expFPIR = csv.get<float>("FPIR", std::max(ceil(log10(totalImpostorSearches)), 1.0));
 
     float FARstep = expFAR / (float)(Max_Points - 1);
     float FRRstep = expFRR / (float)(Max_Points - 1);
