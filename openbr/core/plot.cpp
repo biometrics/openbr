@@ -187,7 +187,7 @@ struct RPlot
                        "TS$Y <- as.character(TS$Y)\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
-                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%6, .drop=TRUE) {\n\t\t"
+                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%7, .drop=TRUE) {\n\t\t"
                        "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
                        "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
                        "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
@@ -204,7 +204,7 @@ struct RPlot
                        "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n"
                        "\n"
                        "# Code to format TAR@FAR table\n"
-                       "algs <- unique(TF$%2)\n"
+                       "algs <- unique(%6)\n"
                        "algs <- algs[!duplicated(algs)]\n"
                        "mat <- matrix(%3,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
@@ -212,8 +212,6 @@ struct RPlot
                        "FTtable <- as.table(mat)\n"
                        "\n"
                        "# Code to format FAR@TAR table\n"
-                       "algs <- unique(FT$%2)\n"
-                       "algs <- algs[!duplicated(algs)]\n"
                        "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
                        "colnames(mat) <- algs \n"
                        "rownames(mat) <- c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")\n"
@@ -234,8 +232,9 @@ struct RPlot
                                                             (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(TF$Y, 3)), round(TF$ci, 3), sep=\"\\u00b1\")" : "TF$Y",
                                                             (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
                                                             (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
+                                                            (major.size > 1 && minor.size > 1) && !(major.smooth || minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(major.header, minor.header) : QString("TF$%1").arg(major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header)),
                                                             QString::number(confidence))));
-                       
+
         // Open output device
         file.write(qPrintable(QString("\n"
                                       "# Open output device\n"
@@ -331,7 +330,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + annotation_logticks(sides=\"b\")") +
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
@@ -343,7 +342,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
 
     p.file.write(qPrintable(QString("qplot(X, Y, data=IET, geom=\"line\"") +
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
@@ -355,7 +354,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score\", ylab=\"Frequency\"") +
@@ -372,7 +371,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (cmcOpts.contains("yLimits") ? QString(" + scale_y_continuous(labels=percent) + coord_cartesian(ylim=%1)").arg("c"+QtUtils::toString(cmcOpts.get<QPointF>("yLimits",QPointF()))) : QString(" + scale_y_continuous(labels=percent)")) +
                             QString(" + theme_minimal() + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
                             " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(cmcOpts.get<float>("textSize",12)), cmcOpts.contains("legendPosition") ? "c"+QtUtils::toString(cmcOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<QString>("ncol", QString("length(algs)")))));
+                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
 
     p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
