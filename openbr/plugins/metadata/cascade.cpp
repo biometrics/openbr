@@ -80,20 +80,18 @@ class CascadeTransform : public MetaTransform
     Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
     Q_PROPERTY(int numPos READ get_numPos WRITE set_numPos RESET reset_numPos STORED false)
     Q_PROPERTY(int numNeg READ get_numNeg WRITE set_numNeg RESET reset_numNeg STORED false)
-    Q_PROPERTY(int numStages READ get_numStages WRITE set_numStages RESET reset_numStages STORED false)
 
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
     BR_PROPERTY(int, minNeighbors, 5)
     BR_PROPERTY(bool, ROCMode, false)                 
 
-    BR_PROPERTY(QString, vecFile, "vec.vec")
+    BR_PROPERTY(QString, vecFile, "data.vec")
     BR_PROPERTY(QString, negFile, "neg.txt")
     BR_PROPERTY(int, winWidth, 24)
     BR_PROPERTY(int, winHeight, 24)
     BR_PROPERTY(int, numPos, 1000)
     BR_PROPERTY(int, numNeg, 1000)
-    BR_PROPERTY(int, numStages, 20)
 
     Resource<CascadeClassifier> cascadeResource;
 
@@ -180,22 +178,21 @@ class CascadeTransform : public MetaTransform
     // Train transform
     void train(const TemplateList& data)
     {
-        (void) data;
+        (void)data;
+
+        BrCascadeClassifier classifier;
 
         QList<Mat> posImages = getPos();
         QList<Mat> negImages = getNeg();
 
-        BrCascadeClassifier classifier;
-
         CascadeBoostParams stageParams(CvBoost::GENTLE, 0.999, 0.5, 0.95, 1, 200);
-
-        Representation *representation = Representation::make("MBLBP(24,24)", NULL);
 
         QString cascadeDir = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
         classifier.train(cascadeDir.toStdString(),
                          posImages, negImages,
-                         1024, 1024, numPos, numNeg, numStages,
-                         representation, stageParams);
+                         numPos, numNeg, 1024, 1024, 12,
+                         Size(winWidth, winHeight),
+                         stageParams);
     }
 
     void project(const Template &src, Template &dst) const

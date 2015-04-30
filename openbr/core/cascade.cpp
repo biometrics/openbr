@@ -3,17 +3,17 @@
 #include <iostream>
 #include <fstream>
 
+using namespace std;
 using namespace br;
 using namespace cv;
 
-bool CascadeImageReader::create( const QList<Mat> &_posImages, const QList<Mat> &_negImages, Size _winSize )
+bool CascadeImageReader::create(const QList<Mat> &_posImages, const QList<Mat> &_negImages, Size _winSize)
 {
     posImages = _posImages;
     negImages = _negImages;
     winSize = _winSize;
 
-    posIdx = 0; negIdx = 0;
-    round = 0;
+    posIdx = negIdx = 0;
 
     src.create( 0, 0 , CV_8UC1 );
     img.create( 0, 0, CV_8UC1 );
@@ -21,22 +21,32 @@ bool CascadeImageReader::create( const QList<Mat> &_posImages, const QList<Mat> 
     scale       = 1.0F;
     scaleFactor = 1.4142135623730950488016887242097F;
     stepFactor  = 0.5F;
+    round = 0;
 
     return true;
 }
 
 bool CascadeImageReader::nextNeg()
 {
-    src = negImages[negIdx++];
+    Point _offset = Point(0,0);
+    size_t count = negImages.size();
+    for (size_t i = 0; i < count; i++) {
+        src = negImages[negIdx++];
+        if( src.empty() )
+            continue;
+        round += negIdx / count;
+        round = round % (winSize.width * winSize.height);
+        negIdx %= count;
 
-    round += negIdx / negImages.size();
-    round = round % (winSize.width * winSize.height);
-    negIdx %= negImages.size();
+        _offset.x = std::min( (int)round % winSize.width, src.cols - winSize.width );
+        _offset.y = std::min( (int)round / winSize.width, src.rows - winSize.height );
+        if( !src.empty() && src.type() == CV_8UC1 && _offset.x >= 0 && _offset.y >= 0 )
+            break;
+    }
 
-    offset.x = std::min( (int)round % winSize.width, src.cols - winSize.width );
-    offset.y = std::min( (int)round / winSize.width, src.rows - winSize.height );
-
-    point = offset;
+    if( src.empty() )
+        return false; // no appropriate image
+    point = offset = _offset;
     scale = max( ((float)winSize.width + point.x) / ((float)src.cols),
                  ((float)winSize.height + point.y) / ((float)src.rows) );
 
@@ -56,7 +66,8 @@ bool CascadeImageReader::getNeg( Mat& _img )
         if ( !nextNeg() )
             return false;
 
-    Mat mat( winSize.height, winSize.width, CV_8UC1, (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step );
+    Mat mat( winSize.height, winSize.width, CV_8UC1,
+        (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step );
     mat.copyTo(_img);
 
     if( (int)( point.x + (1.0F + stepFactor ) * winSize.width ) < img.cols )
@@ -82,11 +93,10 @@ bool CascadeImageReader::getNeg( Mat& _img )
     return true;
 }
 
+
 bool CascadeImageReader::getPos(Mat &_img)
 {
-    if (posIdx > (int)posImages.size())
-        CV_Error( CV_StsBadArg, "Can not get new positive sample. Not enough positive samples.\n");
-    _img = posImages[posIdx++];
+    posImages[posIdx++].copyTo(_img);
     return true;
 }
 
@@ -95,15 +105,16 @@ bool CascadeImageReader::getPos(Mat &_img)
 bool BrCascadeClassifier::train(const string _cascadeDirName,
                                 const QList<Mat> &_posImages,
                                 const QList<Mat> &_negImages,
+                                int _numPos, int _numNeg,
                                 int _precalcValBufSize, int _precalcIdxBufSize,
-                                int _numPos, int _numNeg, int _numStages,
-                                Representation *_representation,
+                                int _numStages,
+                                Size _winSize,
                                 const CascadeBoostParams& _stageParams)
 {
     // Start recording clock ticks for training time output
     const clock_t begin_time = clock();
 
-    if( _cascadeDirName.empty() )
+    if (_cascadeDirName.empty())
         CV_Error( CV_StsBadArg, "_cascadeDirName is NULL" );
 
     string dirName;
@@ -112,14 +123,17 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     else
         dirName = _cascadeDirName + '/';
 
-    compat = new BoostBRCompatibility(_representation, _numPos + _numNeg);
+    winSize = _winSize;
+
     numPos = _numPos;
     numNeg = _numNeg;
     numStages = _numStages;
-    imgReader.create(_posImages, _negImages, _representation->windowSize());
+    imgReader.create(_posImages, _negImages, winSize);
 
     stageParams = new CascadeBoostParams;
     *stageParams = _stageParams;
+    featureEvaluator = new FeatureEvaluator;
+    featureEvaluator->init(numPos + numNeg, winSize);
     stageClassifiers.reserve( numStages );
 
     double requiredLeafFARate = pow( (double) stageParams->maxFalseAlarm, (double) numStages ) /
@@ -127,31 +141,29 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     double tempLeafFARate;
 
     for (int i = 0; i < numStages; i++) {
-        qDebug() << endl << "===== TRAINING " << i << "-stage =====";
-        qDebug() << "<BEGIN";
-        if ( !updateTrainingSet( tempLeafFARate ) )
-        {
-            qDebug() << "Train dataset for temp stage can not be filled. "
-                "Branch training terminated.";
+        cout << endl << "===== TRAINING " << i << "-stage =====" << endl;
+        cout << "<BEGIN" << endl;
+        if (!updateTrainingSet(tempLeafFARate)) {
+            cout << "Train dataset for temp stage can not be filled. "
+                "Branch training terminated." << endl;
             break;
         }
-        if( tempLeafFARate <= requiredLeafFARate )
-        {
-            qDebug() << "Required leaf false alarm rate achieved. "
-                 "Branch training terminated.";
+        if (tempLeafFARate <= requiredLeafFARate) {
+            cout << "Required leaf false alarm rate achieved. "
+                 "Branch training terminated." << endl;
             break;
         }
 
         CascadeBoost* tempStage = new CascadeBoost;
-        bool isStageTrained = tempStage->train( (BoostBRCompatibility*)compat,
+        bool isStageTrained = tempStage->train( (FeatureEvaluator*)featureEvaluator,
                                                 curNumSamples, _precalcValBufSize, _precalcIdxBufSize,
                                                 *((CascadeBoostParams*)stageParams) );
-        qDebug() << "END>";
+        cout << "END>" << endl;
 
-        if(!isStageTrained)
+        if (!isStageTrained)
             break;
 
-        stageClassifiers.push_back( tempStage );
+        stageClassifiers.push_back(tempStage);
 
         // Output training time up till now
         float seconds = float( clock () - begin_time ) / CLOCKS_PER_SEC;
@@ -159,12 +171,11 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
         int hours = (int(seconds) / 60 / 60) % 24;
         int minutes = (int(seconds) / 60) % 60;
         int seconds_left = int(seconds) % 60;
-        qDebug() << "Training until now has taken " << days << " days " << hours << " hours " << minutes << " minutes " << seconds_left <<" seconds.";
+        cout << "Training until now has taken " << days << " days " << hours << " hours " << minutes << " minutes " << seconds_left <<" seconds." << endl;
     }
 
-    if(stageClassifiers.size() == 0)
-    {
-        qDebug() << "Cascade classifier can't be trained. Check the used training parameters.";
+    if (stageClassifiers.size() == 0) {
+        cout << "Cascade classifier can't be trained. Check the used training parameters." << endl;
         return false;
     }
 
@@ -193,7 +204,7 @@ bool BrCascadeClassifier::updateTrainingSet( double& acceptanceRatio)
     int posCount = fillPassedSamples( 0, numPos, true, posConsumed );
     if( !posCount )
         return false;
-    qDebug() << "POS count : consumed   " << posCount << " : " << (int)posConsumed;
+    cout << "POS count : consumed   " << posCount << " : " << (int)posConsumed << endl;
 
     int proNumNeg = cvRound( ( ((double)numNeg) * ((double)posCount) ) / numPos ); // apply only a fraction of negative samples. double is required since overflow is possible
     int negCount = fillPassedSamples( posCount, proNumNeg, false, negConsumed );
@@ -202,14 +213,14 @@ bool BrCascadeClassifier::updateTrainingSet( double& acceptanceRatio)
 
     curNumSamples = posCount + negCount;
     acceptanceRatio = negConsumed == 0 ? 0 : ( (double)negCount/(double)(int64)negConsumed );
-    qDebug() << "NEG count : acceptanceRatio    " << negCount << " : " << acceptanceRatio;
+    cout << "NEG count : acceptanceRatio    " << negCount << " : " << acceptanceRatio << endl;
     return true;
 }
 
 int BrCascadeClassifier::fillPassedSamples( int first, int count, bool isPositive, int64& consumed )
 {
     int getcount = 0;
-    Mat img(compat->representation->windowSize(), CV_8UC1);
+    Mat img(winSize, CV_8UC1);
     for( int i = first; i < first + count; i++ )
     {
         for( ; ; )
@@ -220,7 +231,7 @@ int BrCascadeClassifier::fillPassedSamples( int first, int count, bool isPositiv
                 return getcount;
             consumed++;
 
-            compat->setImage( img, isPositive ? 1 : 0, i );
+            featureEvaluator->setImage( img, isPositive ? 1 : 0, i );
             if( predict( i ) == 1.0F )
             {
                 getcount++;
@@ -238,13 +249,18 @@ void BrCascadeClassifier::writeParams( FileStorage &fs ) const
     fs << CC_FEATURE_TYPE << CC_LBP;
     fs << CC_HEIGHT << winSize.height;
     fs << CC_WIDTH << winSize.width;
+
     fs << CC_STAGE_PARAMS << "{"; stageParams->write( fs ); fs << "}";
-    fs << CC_FEATURE_PARAMS << "{"; fs << CC_MAX_CAT_COUNT << 256; fs << CC_FEATURE_SIZE << 1; fs << "}";
+
+    fs << CC_FEATURE_PARAMS << "{";
+    fs << CC_MAX_CAT_COUNT << featureEvaluator->getMaxCatCount();
+    fs << CC_FEATURE_SIZE << featureEvaluator->getFeatureSize();
+    fs << "}";
 }
 
 void BrCascadeClassifier::writeFeatures( FileStorage &fs, const Mat& featureMap ) const
 {
-    compat->representation->write(fs, featureMap);
+    ((FeatureEvaluator*)((Ptr<FeatureEvaluator>)featureEvaluator))->writeFeatures( fs, featureMap );
 }
 
 void BrCascadeClassifier::writeStages( FileStorage &fs, const Mat& featureMap ) const
@@ -285,7 +301,7 @@ void BrCascadeClassifier::save(const string filename)
 
 void BrCascadeClassifier::getUsedFeaturesIdxMap( Mat& featureMap )
 {
-    int varCount = compat->numFeatures();
+    int varCount = featureEvaluator->getNumFeatures() * featureEvaluator->getFeatureSize();
     featureMap.create( 1, varCount, CV_32SC1 );
     featureMap.setTo(Scalar(-1));
 
@@ -297,5 +313,4 @@ void BrCascadeClassifier::getUsedFeaturesIdxMap( Mat& featureMap )
         if ( featureMap.at<int>(0, fi) >= 0 )
             featureMap.ptr<int>(0)[fi] = idx++;
 }
-
 
