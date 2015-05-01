@@ -1158,6 +1158,7 @@ float CascadeBoost::predict( int sampleIdx, bool returnSum ) const
 {
     CV_Assert( weak );
     double sum = 0;
+
     CvSeqReader reader;
     cvStartReadSeq( weak, &reader );
     cvSetSeqReaderPos( &reader, 0 );
@@ -1167,6 +1168,7 @@ float CascadeBoost::predict( int sampleIdx, bool returnSum ) const
         CV_READ_SEQ_ELEM( wtree, reader );
         sum += ((CascadeBoostTree*)wtree)->predict(sampleIdx)->value;
     }
+
     if( !returnSum )
         sum = sum < threshold - CV_THRESHOLD_EPS ? 0.0 : 1.0;
     return (float)sum;

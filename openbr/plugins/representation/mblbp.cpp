@@ -22,11 +22,6 @@ class MBLBPRepresentation : public Representation
 {
     Q_OBJECT
 
-    Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
-    Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
-    BR_PROPERTY(int, winWidth, 24)
-    BR_PROPERTY(int, winHeight, 24)
-
     void init()
     {
         int offset = winWidth + 1;
@@ -38,11 +33,14 @@ class MBLBPRepresentation : public Representation
                             features.append(Feature(offset, x, y, w, h ) );
     }
 
-    Mat preprocess(const Mat &image) const
+    void preprocess(const Mat &src, Mat &dst) const
     {
-        Mat integralImage;
-        integral(image, integralImage);
-        return integralImage;
+        integral(src, dst);
+    }
+
+    float evaluate(const Mat &image, int idx) const
+    {
+        return (float)features[idx].calc(image);
     }
 
     Mat evaluate(const Mat &image, const QList<int> &indices) const
@@ -55,7 +53,9 @@ class MBLBPRepresentation : public Representation
 
     void write(FileStorage &fs, const Mat &featureMap);
     int numFeatures() const { return features.size(); }
-    Size windowSize() const { return Size(winWidth + 1, winHeight + 1); }
+    Size preWindowSize() const { return Size(winWidth, winHeight); }
+    Size postWindowSize() const { return Size(winWidth + 1, winHeight + 1); }
+    int maxCatCount() const { return 256; }
 
     struct Feature
     {
@@ -100,17 +100,17 @@ MBLBPRepresentation::Feature::Feature( int offset, int x, int y, int _blockWidth
 
 inline uchar MBLBPRepresentation::Feature::calc(const Mat &img) const
 {
-    const int* psum = img.ptr<int>();
-    int cval = psum[p[5]] - psum[p[6]] - psum[p[9]] + psum[p[10]];
+    const int* ptr = img.ptr<int>();
+    int cval = ptr[p[5]] - ptr[p[6]] - ptr[p[9]] + ptr[p[10]];
 
-    return (uchar)((psum[p[0]] - psum[p[1]] - psum[p[4]] + psum[p[5]] >= cval ? 128 : 0) |   // 0
-        (psum[p[1]] - psum[p[2]] - psum[p[5]] + psum[p[6]] >= cval ? 64 : 0) |    // 1
-        (psum[p[2]] - psum[p[3]] - psum[p[6]] + psum[p[7]] >= cval ? 32 : 0) |    // 2
-        (psum[p[6]] - psum[p[7]] - psum[p[10]] + psum[p[11]] >= cval ? 16 : 0) |  // 5
-        (psum[p[10]] - psum[p[11]] - psum[p[14]] + psum[p[15]] >= cval ? 8 : 0) | // 8
-        (psum[p[9]] - psum[p[10]] - psum[p[13]] + psum[p[14]] >= cval ? 4 : 0) |  // 7
-        (psum[p[8]] - psum[p[9]] - psum[p[12]] + psum[p[13]] >= cval ? 2 : 0) |   // 6
-        (psum[p[4]] - psum[p[5]] - psum[p[8]] + psum[p[9]] >= cval ? 1 : 0));     // 3
+    return (uchar)((ptr[p[0]] - ptr[p[1]] - ptr[p[4]] + ptr[p[5]] >= cval ? 128 : 0) |   // 0
+                   (ptr[p[1]] - ptr[p[2]] - ptr[p[5]] + ptr[p[6]] >= cval ? 64 : 0) |    // 1
+                   (ptr[p[2]] - ptr[p[3]] - ptr[p[6]] + ptr[p[7]] >= cval ? 32 : 0) |    // 2
+                   (ptr[p[6]] - ptr[p[7]] - ptr[p[10]] + ptr[p[11]] >= cval ? 16 : 0) |  // 5
+                   (ptr[p[10]] - ptr[p[11]] - ptr[p[14]] + ptr[p[15]] >= cval ? 8 : 0) | // 8
+                   (ptr[p[9]] - ptr[p[10]] - ptr[p[13]] + ptr[p[14]] >= cval ? 4 : 0) |  // 7
+                   (ptr[p[8]] - ptr[p[9]] - ptr[p[12]] + ptr[p[13]] >= cval ? 2 : 0) |   // 6
+                   (ptr[p[4]] - ptr[p[5]] - ptr[p[8]] + ptr[p[9]] >= cval ? 1 : 0));     // 3
 }
 
 } // namespace br

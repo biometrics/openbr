@@ -130,10 +130,12 @@ bool BrCascadeClassifier::train(const string _cascadeDirName,
     numStages = _numStages;
     imgReader.create(_posImages, _negImages, winSize);
 
+    Representation *representation = Representation::make("MBLBP(24,24)", NULL);
+
     stageParams = new CascadeBoostParams;
     *stageParams = _stageParams;
     featureEvaluator = new FeatureEvaluator;
-    featureEvaluator->init(numPos + numNeg, winSize);
+    featureEvaluator->init(representation, numPos + numNeg);
     stageClassifiers.reserve( numStages );
 
     double requiredLeafFARate = pow( (double) stageParams->maxFalseAlarm, (double) numStages ) /

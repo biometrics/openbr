@@ -26,63 +26,27 @@ using namespace cv;
 
 namespace br
 {
-/*
-class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
-{
-    QString file;
 
-public:
-    CascadeResourceMaker(const QString &model)
-    {
-        file = Globals->sdkPath + "/share/openbr/models/";
-        if      (model == "Ear")         file += "haarcascades/haarcascade_ear.xml";
-        else if (model == "Eye")         file += "haarcascades/haarcascade_eye_tree_eyeglasses.xml";
-        else if (model == "FrontalFace") file += "haarcascades/haarcascade_frontalface_alt2.xml";
-        else if (model == "ProfileFace") file += "haarcascades/haarcascade_profileface.xml";
-        else {
-            // Create a directory for trainable cascades
-            file += "openbrcascades/"+model+"/cascade.xml";
-            QFile touchFile(file);
-            QtUtils::touchDir(touchFile);
-        }
-    }
-
-private:
-    CascadeClassifier *make() const
-    {
-        CascadeClassifier *cascade = new CascadeClassifier();
-        if (!cascade->load(file.toStdString()))
-            qFatal("Failed to load: %s", qPrintable(file));
-        return cascade;
-    }
-};
-*/
 /*!
  * \ingroup transforms
  * \brief Applies a classifier to a sliding window.
  *        Discards negative detections.
  * \author Jordan Cheney \cite JordanCheney
  */
- /*
+
 class SlidingWindowTransform : public Transform
 {
     Q_OBJECT
 
     Q_PROPERTY(br::Classifier *classifier READ get_classifier WRITE set_classifier RESET reset_classifier STORED false)
+    Q_PROPERTY(QString cascadeDir READ get_cascadeDir WRITE set_cascadeDir RESET reset_cascadeDir STORED false)
     Q_PROPERTY(QString vecFile READ get_vecFile WRITE set_vecFile RESET reset_vecFile STORED false)
     Q_PROPERTY(QString negFile READ get_negFile WRITE set_negFile RESET reset_negFile STORED false)
-    Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
-    Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
-    Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
 
     BR_PROPERTY(br::Classifier *, classifier, NULL)
+    BR_PROPERTY(QString, cascadeDir, "")
     BR_PROPERTY(QString, vecFile, "vec.vec")
     BR_PROPERTY(QString, negFile, "neg.txt")
-    BR_PROPERTY(int, minSize, 20)
-    BR_PROPERTY(int, maxSize, -1)
-    BR_PROPERTY(float, scaleFactor, 1.2)
-
-    Resource<CascadeClassifier> cascadeResource;
 
     QList<Mat> getPos()
     {
@@ -159,9 +123,7 @@ class SlidingWindowTransform : public Transform
 
     void init()
     {
-        cascadeResource.setResourceMaker(new CascadeResourceMaker(model));
-        if (model == "Ear" || model == "Eye" || model == "FrontalFace" || model == "ProfileFace")
-            this->trainable = false;
+        cascadeDir = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir;
     }
 
     void train(const TemplateList &_data)
@@ -183,118 +145,38 @@ class SlidingWindowTransform : public Transform
         }
 
         classifier->train(images, labels);
+
+        // save the cascade
+        std::string filename = cascadeDir.toStdString() + "/cascade.xml";
+        FileStorage fs(filename, FileStorage::WRITE );
+
+        if ( !fs.isOpened() )
+            return;
+
+        fs << FileStorage::getDefaultObjectName(filename) << "{";
+
+        Mat featureMap(1, classifier->numFeatures(), CV_32SC1);
+        featureMap.setTo(Scalar(-1));
+
+        classifier->getUsedFeatures(featureMap);
+
+        for (int fi = 0, idx = 0; fi < classifier->numFeatures(); fi++)
+            if (featureMap.at<int>(0, fi) >= 0)
+                featureMap.ptr<int>(0)[fi] = idx++;
+
+        classifier->write(fs, featureMap);
+        classifier->writeFeatures(fs, featureMap);
+
+        fs << "}";
     }
 
-        void project(const Template &src, Template &dst) const
+    void project(const Template &src, Template &dst) const
     {
-        TemplateList temp;
-        project(TemplateList() << src, temp);
-        if (!temp.isEmpty()) dst = temp.first();
-    }
-
-    void project(const TemplateList &src, TemplateList &dst) const
-    {
-        CascadeClassifier *cascade = cascadeResource.acquire();
-        foreach (const Template &t, src) {
-            const bool enrollAll = t.file.getBool("enrollAll");
-
-            // Mirror the behavior of ExpandTransform in the special case
-            // of an empty template.
-            if (t.empty() && !enrollAll) {
-                dst.append(t);
-                continue;
-            }
-
-            for (int i=0; i<t.size(); i++) {
-                Mat m;
-                OpenCVUtils::cvtUChar(t[i], m);
-
-                Size maxSize(m.cols, m.rows);
-
-                Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
-
-                QList<Rect> rects;
-                QList<int> levels;
-                QList<double> weights;
-
-                for (double factor = 1; ; factor *= 1.2) {
-                    Size originalWindowSize = Size(winWidth, winHeight);
-
-                    Size windowSize( cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
-                    Size scaledImageSize( cvRound( m.cols/factor ), cvRound( m.rows/factor ) );
-                    Size processingRectSize( scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height );
-
-                    if( processingRectSize.width <= 0 || processingRectSize.height <= 0 )
-                        break;
-                    if( windowSize.width > maxSize.width || windowSize.height > maxSize.height )
-                        break;
-                    if( windowSize.width < minSize || windowSize.height < minSize )
-                        continue;
-
-                    Mat scaledImage( scaledImageSize, CV_8U, imageBuffer.data );
-                    resize( m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR );
-
-                    int yStep = factor > 2. ? 1 : 2;
-                    int stripCount, stripSize;
-
-                    const int PTS_PER_THREAD = 1000;
-                    stripCount = ((processingRectSize.width/yStep)*(processingRectSize.height + yStep-1)/yStep + PTS_PER_THREAD/2)/PTS_PER_THREAD;
-                    stripCount = std::min(std::max(stripCount, 1), 100);
-                    stripSize = (((processingRectSize.height + stripCount - 1)/stripCount + yStep-1)/yStep)*yStep;
-
-                    if( !cascade->setImage( scaledImage ) )
-                        qFatal("Can't set an image. Don't know why");
-
-                    for( int y = 0; y < min(stripCount * stripSize, processingRectSize.height); y += yStep ) {
-                        for( int x = 0; x < processingRectSize.width; x += yStep ) {
-                            double gypWeight;
-                            int result = cascade->runAt(cascade->featureEvaluator, Point(x, y), gypWeight);
-
-                            if (ROCMode) {
-                                if (result == 1)
-                                    result =  -(int)cascade->data.stages.size();
-                                if (cascade->data.stages.size() + result < 4 ) {
-                                    rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                    levels.append(-result);
-                                    weights.append(gypWeight);
-                                }
-                            }
-                            else if( result > 0 ) {
-                                rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                            }
-                            if( result == 0 )
-                                x += yStep;
-                        }
-                    }
-                }
-
-                if (ROCMode)
-                    groupRectangles(rects, levels, weights, minNeighbors, 0.2);
-                else
-                    groupRectangles(rects, minNeighbors, 0.2);
-
-                if (!enrollAll && rects.empty())
-                    rects.append(Rect(0, 0, m.cols, m.rows));
-
-                for (int j = 0; j < rects.size(); j++) {
-                    Template u(t.file, m);
-                    if (levels.size() > j)
-                        u.file.set("Confidence", levels[j]*weights[j]);
-                    else
-                        u.file.set("Confidence", 1);
-                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
-                    u.file.appendRect(rect);
-                    u.file.set(model, rect);
-                    dst.append(u);
-                }
-            }
-        }
-        cascadeResource.release(cascade);
+        (void)src; (void)dst;
     }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
-*/
 
 } // namespace br
 

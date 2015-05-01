@@ -1395,18 +1395,27 @@ class BR_EXPORT Representation : public Object
 {
     Q_OBJECT
 
+    Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
+    Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
+    BR_PROPERTY(int, winWidth, 24)
+    BR_PROPERTY(int, winHeight, 24)
+
 public:
     virtual ~Representation() {}
 
     static Representation *make(QString str, QObject *parent); /*!< \brief Make a representation from a string. */
-    virtual cv::Mat preprocess(const cv::Mat &image) const { return image; }
+    virtual void preprocess(const cv::Mat &src, cv::Mat &dst) const { dst = src; }
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) { (void) images; (void)labels; }
+
+    virtual float evaluate(const cv::Mat &image, int idx) const = 0;
     // By convention, an empty indices list will result in all feature responses being calculated
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
 
+    virtual cv::Size preWindowSize() const = 0; // window size before preprocessing
+    virtual cv::Size postWindowSize() const = 0; // window size after preprocessing
     virtual int numFeatures() const = 0;
-    virtual cv::Size windowSize() const = 0;
+    virtual int maxCatCount() const = 0;
 
     // Temporary for OpenCV compatibility
     virtual void write( cv::FileStorage &fs, const cv::Mat &featureMap ) { (void)fs; (void)featureMap; }
@@ -1421,12 +1430,20 @@ public:
 
     static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
 
-    virtual Classifier *clone() const { return Factory<Classifier>::make("." + description(false)); }
-
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
     // By convention, classify should return a value normalized such that the threshold is 0. Negative values
     // can be interpreted as a negative classification and positive values as a positive classification.
     virtual float classify(const cv::Mat &image) const = 0;
+
+    // Slots for representation
+    virtual cv::Size windowSize() const = 0;
+
+    // OpenCV compatibility
+    virtual int numFeatures() const = 0;
+    virtual int maxCatCount() const = 0;
+    virtual void getUsedFeatures(cv::Mat &featureMap) const { (void)featureMap; return; }
+    virtual void write(cv::FileStorage &fs, const cv::Mat &featureMap) const { (void)fs; (void)featureMap; }
+    virtual void writeFeatures(cv::FileStorage &fs, const cv::Mat &featureMap) const { (void)fs; (void)featureMap; }
 };
 
 /*!
