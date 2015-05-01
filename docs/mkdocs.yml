@@ -20,7 +20,6 @@ pages:
 - [install.md, Install]
 - [tutorials.md, Tutorials]
 - [contribute.md, Contribute]
-- [papers.md, Publications]
 
 # C API
 - [api_docs/c_api.md, API Docs, C API]
@@ -41,7 +40,6 @@ pages:
 
 # FileList
 - [api_docs/cpp_api/filelist/filelist.md, C++ Plugin API, FileList]
-- [api_docs/cpp_api/filelist/members.md, FileList, Members]
 - [api_docs/cpp_api/filelist/constructors.md, FileList, Constructors]
 - [api_docs/cpp_api/filelist/statics.md, FileList, Static Functions]
 - [api_docs/cpp_api/filelist/functions.md, FileList, Functions]
@@ -55,7 +53,6 @@ pages:
 
 # TemplateList
 - [api_docs/cpp_api/templatelist/templatelist.md, C++ Plugin API, TemplateList]
-- [api_docs/cpp_api/templatelist/members.md, TemplateList, Members]
 - [api_docs/cpp_api/templatelist/constructors.md, TemplateList, Constructors]
 - [api_docs/cpp_api/templatelist/statics.md, TemplateList, Static Functions]
 - [api_docs/cpp_api/templatelist/functions.md, TemplateList, Functions]
@@ -66,12 +63,10 @@ pages:
 - [api_docs/cpp_api/factory/constructors.md, Factory, Constructors]
 - [api_docs/cpp_api/factory/macros.md, Factory, Macros]
 - [api_docs/cpp_api/factory/statics.md, Factory, Static Functions]
-- [api_docs/cpp_api/factory/functions.md, Factory, Functions]
 
 # Object
 - [api_docs/cpp_api/object/object.md, C++ Plugin API, Object]
 - [api_docs/cpp_api/object/members.md, Object, Members]
-- [api_docs/cpp_api/object/constructors.md, Object, Constructors]
 - [api_docs/cpp_api/object/macros.md, Object, Macros]
 - [api_docs/cpp_api/object/statics.md, Object, Static Functions]
 - [api_docs/cpp_api/object/functions.md, Object, Functions]
@@ -79,15 +74,12 @@ pages:
 # Context
 - [api_docs/cpp_api/context/context.md, C++ Plugin API, Context]
 - [api_docs/cpp_api/context/members.md, Context, Members]
-- [api_docs/cpp_api/context/constructors.md, Context, Constructors]
 - [api_docs/cpp_api/context/statics.md, Context, Static Functions]
 - [api_docs/cpp_api/context/functions.md, Context, Functions]
 
 # Initializer
 - [api_docs/cpp_api/initializer/initializer.md, C++ Plugin API, Initializer]
-- [api_docs/cpp_api/initializer/members.md, Initializer, Members]
 - [api_docs/cpp_api/initializer/constructors.md, Initializer, Constructors]
-- [api_docs/cpp_api/initializer/statics.md, Initializer, Static Functions]
 - [api_docs/cpp_api/initializer/functions.md, Initializer, Functions]
 
 # Transform
@@ -99,44 +91,29 @@ pages:
 
 # UntrainableTransform
 - [api_docs/cpp_api/untrainabletransform/untrainabletransform.md, C++ Plugin API, UntrainableTransform]
-- [api_docs/cpp_api/untrainabletransform/members.md, UntrainableTransform, Members]
 - [api_docs/cpp_api/untrainabletransform/constructors.md, UntrainableTransform, Constructors]
-- [api_docs/cpp_api/untrainabletransform/statics.md, UntrainableTransform, Static Functions]
-- [api_docs/cpp_api/untrainabletransform/functions.md, UntrainableTransform, Functions]
 
 # MetaTransform
 - [api_docs/cpp_api/metatransform/metatransform.md, C++ Plugin API, MetaTransform]
-- [api_docs/cpp_api/metatransform/members.md, MetaTransform, Members]
 - [api_docs/cpp_api/metatransform/constructors.md, MetaTransform, Constructors]
-- [api_docs/cpp_api/metatransform/statics.md, MetaTransform, Static Functions]
-- [api_docs/cpp_api/metatransform/functions.md, MetaTransform, Functions]
 
 # UntrainableMetaTransform
 - [api_docs/cpp_api/untrainablemetatransform/untrainablemetatransform.md, C++ Plugin API, UntrainableMetaTransform]
-- [api_docs/cpp_api/untrainablemetatransform/members.md, UntrainableMetaTransform, Members]
 - [api_docs/cpp_api/untrainablemetatransform/constructors.md, UntrainableMetaTransform, Constructors]
-- [api_docs/cpp_api/untrainablemetatransform/statics.md, UntrainableMetaTransform, Static Functions]
-- [api_docs/cpp_api/untrainablemetatransform/functions.md, UntrainableMetaTransform, Functions]
 
 # MetadataTransform
 - [api_docs/cpp_api/metadatatransform/metadatatransform.md, C++ Plugin API, MetadataTransform]
-- [api_docs/cpp_api/metadatatransform/members.md, MetadataTransform, Members]
 - [api_docs/cpp_api/metadatatransform/constructors.md, MetadataTransform, Constructors]
-- [api_docs/cpp_api/metadatatransform/statics.md, MetadataTransform, Static Functions]
 - [api_docs/cpp_api/metadatatransform/functions.md, MetadataTransform, Functions]
 
 # UntrainableMetadataTransform
 - [api_docs/cpp_api/untrainablemetadatatransform/untrainablemetadatatransform.md, C++ Plugin API, UntrainableMetadataTransform]
-- [api_docs/cpp_api/untrainablemetadatatransform/members.md, UntrainableMetadataTransform, Members]
 - [api_docs/cpp_api/untrainablemetadatatransform/constructors.md, UntrainableMetadataTransform, Constructors]
-- [api_docs/cpp_api/untrainablemetadatatransform/statics.md, UntrainableMetadataTransform, Static Functions]
-- [api_docs/cpp_api/untrainablemetadatatransform/functions.md, UntrainableMetadataTransform, Functions]
 
 # TimeVaryingTransform
 - [api_docs/cpp_api/timevaryingtransform/timevaryingtransform.md, C++ Plugin API, TimeVaryingTransform]
 - [api_docs/cpp_api/timevaryingtransform/members.md, TimeVaryingTransform, Members]
 - [api_docs/cpp_api/timevaryingtransform/constructors.md, TimeVaryingTransform, Constructors]
-- [api_docs/cpp_api/timevaryingtransform/statics.md, TimeVaryingTransform, Static Functions]
 - [api_docs/cpp_api/timevaryingtransform/functions.md, TimeVaryingTransform, Functions]
 
 # CompositeTransform
@@ -144,30 +121,22 @@ pages:
 - [api_docs/cpp_api/compositetransform/properties.md, CompositeTransform, Properties]
 - [api_docs/cpp_api/compositetransform/members.md, CompositeTransform, Members]
 - [api_docs/cpp_api/compositetransform/constructors.md, CompositeTransform, Constructors]
-- [api_docs/cpp_api/compositetransform/statics.md, CompositeTransform, Static Functions]
 - [api_docs/cpp_api/compositetransform/functions.md, CompositeTransform, Functions]
 
 # WrapperTransform
 - [api_docs/cpp_api/wrappertransform/wrappertransform.md, C++ Plugin API, WrapperTransform]
 - [api_docs/cpp_api/wrappertransform/properties.md, WrapperTransform, Properties]
-- [api_docs/cpp_api/wrappertransform/members.md, WrapperTransform, Members]
 - [api_docs/cpp_api/wrappertransform/constructors.md, WrapperTransform, Constructors]
-- [api_docs/cpp_api/wrappertransform/statics.md, WrapperTransform, Static Functions]
 - [api_docs/cpp_api/wrappertransform/functions.md, WrapperTransform, Functions]
 
 # Distance
 - [api_docs/cpp_api/distance/distance.md, C++ Plugin API, Distance]
-- [api_docs/cpp_api/distance/members.md, Distance, Members]
 - [api_docs/cpp_api/distance/constructors.md, Distance, Constructors]
 - [api_docs/cpp_api/distance/statics.md, Distance, Static Functions]
 - [api_docs/cpp_api/distance/functions.md, Distance, Functions]
 
 # UntrainableDistance
 - [api_docs/cpp_api/untrainabledistance/untrainabledistance.md, C++ Plugin API, UntrainableDistance]
-- [api_docs/cpp_api/untrainabledistance/members.md, UntrainableDistance, Members]
-- [api_docs/cpp_api/untrainabledistance/constructors.md, UntrainableDistance, Constructors]
-- [api_docs/cpp_api/untrainabledistance/statics.md, UntrainableDistance, Static Functions]
-- [api_docs/cpp_api/untrainabledistance/functions.md, UntrainableDistance, Functions]
 
 # Output
 - [api_docs/cpp_api/output/output.md, C++ Plugin API, Output]
@@ -180,13 +149,11 @@ pages:
 # MatrixOutput
 - [api_docs/cpp_api/matrixoutput/matrixoutput.md, C++ Plugin API, MatrixOutput]
 - [api_docs/cpp_api/matrixoutput/members.md, MatrixOutput, Members]
-- [api_docs/cpp_api/matrixoutput/constructors.md, MatrixOutput, Constructors]
 - [api_docs/cpp_api/matrixoutput/statics.md, MatrixOutput, Static Functions]
 - [api_docs/cpp_api/matrixoutput/functions.md, MatrixOutput, Functions]
 
 # Format
 - [api_docs/cpp_api/format/format.md, C++ Plugin API, Format]
-- [api_docs/cpp_api/format/members.md, Format, Members]
 - [api_docs/cpp_api/format/constructors.md, Format, Constructors]
 - [api_docs/cpp_api/format/statics.md, Format, Static Functions]
 - [api_docs/cpp_api/format/functions.md, Format, Functions]
@@ -194,7 +161,6 @@ pages:
 # Gallery
 - [api_docs/cpp_api/gallery/gallery.md, C++ Plugin API, Gallery]
 - [api_docs/cpp_api/gallery/properties.md, Gallery, Properties]
-- [api_docs/cpp_api/gallery/members.md, Gallery, Members]
 - [api_docs/cpp_api/gallery/constructors.md, Gallery, Constructors]
 - [api_docs/cpp_api/gallery/statics.md, Gallery, Static Functions]
 - [api_docs/cpp_api/gallery/functions.md, Gallery, Functions]
@@ -203,19 +169,16 @@ pages:
 - [api_docs/cpp_api/filegallery/filegallery.md, C++ Plugin API, FileGallery]
 - [api_docs/cpp_api/filegallery/members.md, FileGallery, Members]
 - [api_docs/cpp_api/filegallery/constructors.md, FileGallery, Constructors]
-- [api_docs/cpp_api/filegallery/statics.md, FileGallery, Static Functions]
 - [api_docs/cpp_api/filegallery/functions.md, FileGallery, Functions]
 
 # Representation
 - [api_docs/cpp_api/representation/representation.md, C++ Plugin API, Representation]
-- [api_docs/cpp_api/representation/members.md, Representation, Members]
 - [api_docs/cpp_api/representation/constructors.md, Representation, Constructors]
 - [api_docs/cpp_api/representation/statics.md, Representation, Static Functions]
 - [api_docs/cpp_api/representation/functions.md, Representation, Functions]
 
 # Classifier
 - [api_docs/cpp_api/classifier/classifier.md, C++ Plugin API, Classifier]
-- [api_docs/cpp_api/classifier/members.md, Classifier, Members]
 - [api_docs/cpp_api/classifier/constructors.md, Classifier, Constructors]
 - [api_docs/cpp_api/classifier/statics.md, Classifier, Static Functions]
 - [api_docs/cpp_api/classifier/functions.md, Classifier, Functions]
