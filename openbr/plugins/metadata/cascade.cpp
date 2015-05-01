@@ -22,7 +22,6 @@
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/resource.h>
 #include <openbr/core/qtutils.h>
-#include <openbr/core/cascade.h>
 
 using namespace cv;
 
@@ -65,33 +64,18 @@ private:
  * \author Josh Klontz \cite jklontz
  * \author David Crouse \cite dgcrouse
  */
-class CascadeTransform : public MetaTransform
+class CascadeTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(int minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(bool ROCMode READ get_ROCMode WRITE set_ROCMode RESET reset_ROCMode STORED false)
-    
-    // Training parameters
-    Q_PROPERTY(QString vecFile READ get_vecFile WRITE set_vecFile RESET reset_vecFile STORED false)
-    Q_PROPERTY(QString negFile READ get_negFile WRITE set_negFile RESET reset_negFile STORED false)
-    Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
-    Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
-    Q_PROPERTY(int numPos READ get_numPos WRITE set_numPos RESET reset_numPos STORED false)
-    Q_PROPERTY(int numNeg READ get_numNeg WRITE set_numNeg RESET reset_numNeg STORED false)
 
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
     BR_PROPERTY(int, minNeighbors, 5)
     BR_PROPERTY(bool, ROCMode, false)                 
-
-    BR_PROPERTY(QString, vecFile, "data.vec")
-    BR_PROPERTY(QString, negFile, "neg.txt")
-    BR_PROPERTY(int, winWidth, 24)
-    BR_PROPERTY(int, winHeight, 24)
-    BR_PROPERTY(int, numPos, 1000)
-    BR_PROPERTY(int, numNeg, 1000)
 
     Resource<CascadeClassifier> cascadeResource;
 
@@ -100,99 +84,6 @@ class CascadeTransform : public MetaTransform
         cascadeResource.setResourceMaker(new CascadeResourceMaker(model));
         if (model == "Ear" || model == "Eye" || model == "FrontalFace" || model == "ProfileFace")
             this->trainable = false;
-    }
-    
-    QList<Mat> getPos()
-    {
-        FILE *file = fopen(vecFile.toStdString().c_str(), "rb");
-        if ( !file )
-            qFatal("Couldn't open the file");
-
-        short* vec = 0;
-        int count, vecSize, last, base;
-
-        short tmp = 0;
-        if( fread( &count, sizeof( count ), 1, file ) != 1 ||
-            fread( &vecSize, sizeof( vecSize ), 1, file ) != 1 ||
-            fread( &tmp, sizeof( tmp ), 1, file ) != 1 ||
-            fread( &tmp, sizeof( tmp ), 1, file ) != 1 )
-            CV_Error_( CV_StsParseError, ("wrong file format for %s\n", qPrintable(vecFile)) );
-        base = sizeof( count ) + sizeof( vecSize ) + 2*sizeof( tmp );
-
-        last = 0;
-        vec = (short*) cvAlloc( sizeof( *vec ) * vecSize );
-        CV_Assert( vec );
-
-        QList<Mat> posImages;
-        for (int i = 0; i < 35770; i++) {
-            Mat pos(winHeight, winWidth, CV_8UC1);
-
-            CV_Assert( pos.rows * pos.cols == vecSize );
-            uchar tmp = 0;
-            size_t elements_read = fread( &tmp, sizeof( tmp ), 1, file );
-            if( elements_read != 1 )
-                CV_Error( CV_StsBadArg, "Can not get new positive sample. The most possible reason is "
-                                        "insufficient count of samples in given vec-file.\n");
-            elements_read = fread( vec, sizeof( vec[0] ), vecSize, file );
-            if( elements_read != (size_t)(vecSize) )
-                CV_Error( CV_StsBadArg, "Can not get new positive sample. Seems that vec-file has incorrect structure.\n");
-
-            if( feof( file ) || last++ >= count )
-                CV_Error( CV_StsBadArg, "Can not get new positive sample. vec-file is over.\n");
-
-            for( int r = 0; r < pos.rows; r++ )
-                for( int c = 0; c < pos.cols; c++ )
-                    pos.ptr(r)[c] = (uchar)vec[r * pos.cols + c];
-            posImages.append(pos);
-        }
-        return posImages;
-    }
-
-    QList<Mat> getNeg()
-    {
-        QList<Mat> negs;
-
-        std::string dirname, str;
-        std::ifstream file(negFile.toStdString().c_str());
-
-        size_t pos = negFile.toStdString().rfind('\\');
-        char dlmrt = '\\';
-        if (pos == string::npos)
-        {
-            pos = negFile.toStdString().rfind('/');
-            dlmrt = '/';
-        }
-        dirname = pos == string::npos ? "" : negFile.toStdString().substr(0, pos) + dlmrt;
-        while( !file.eof() )
-        {
-            std::getline(file, str);
-            if (str.empty()) break;
-            if (str.at(0) == '#' ) continue;
-            negs.append(imread(dirname + str, CV_LOAD_IMAGE_GRAYSCALE));
-        }
-        file.close();
-
-        return negs;
-    }
-
-    // Train transform
-    void train(const TemplateList& data)
-    {
-        (void)data;
-
-        BrCascadeClassifier classifier;
-
-        QList<Mat> posImages = getPos();
-        QList<Mat> negImages = getNeg();
-
-        CascadeBoostParams stageParams(CvBoost::GENTLE, 0.999, 0.5, 0.95, 1, 200);
-
-        QString cascadeDir = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
-        classifier.train(cascadeDir.toStdString(),
-                         posImages, negImages,
-                         numPos, numNeg, 1024, 1024, 12,
-                         Size(winWidth, winHeight),
-                         stageParams);
     }
 
     void project(const Template &src, Template &dst) const

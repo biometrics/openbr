@@ -22,6 +22,11 @@ class MBLBPRepresentation : public Representation
 {
     Q_OBJECT
 
+    Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
+    Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
+    BR_PROPERTY(int, winWidth, 24)
+    BR_PROPERTY(int, winHeight, 24)
+
     void init()
     {
         int offset = winWidth + 1;
@@ -45,9 +50,11 @@ class MBLBPRepresentation : public Representation
 
     Mat evaluate(const Mat &image, const QList<int> &indices) const
     {
-        Mat result(1, indices.size(), CV_32FC1);
-        for (int i = 0; i < indices.size(); i++)
-            result.at<float>(i) = (float)features[indices[i]].calc(image);
+        int size = indices.empty() ? numFeatures() : indices.size();
+
+        Mat result(1, size, CV_32FC1);
+        for (int i = 0; i < size; i++)
+            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
         return result;
     }
 

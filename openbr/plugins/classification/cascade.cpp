@@ -1,5 +1,6 @@
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include <openbr/plugins/openbr_internal.h>
-#include <openbr/core/features.h>
 #include <openbr/core/boost.h>
 
 using namespace cv;
@@ -9,7 +10,7 @@ namespace br
 
 struct ImageHandler
 {
-    bool create( const QList<cv::Mat> &_posImages, const QList<cv::Mat> &_negImages, cv::Size _winSize )
+    bool create(const QList<Mat> &_posImages, const QList<Mat> &_negImages, Size _winSize)
     {
         posImages = _posImages;
         negImages = _negImages;
@@ -30,72 +31,57 @@ struct ImageHandler
 
     void restart() { posIdx = 0; }
 
-    int numPos() const { return posImages.size(); }
-    int numNeg() const { return negImages.size(); }
-
-    bool nextNeg()
+    void nextNeg()
     {
-        Point _offset = Point(0,0);
-        size_t count = negImages.size();
-        for (size_t i = 0; i < count; i++) {
+        int count = negImages.size();
+        for (int i = 0; i < count; i++) {
             src = negImages[negIdx++];
-            if( src.empty() )
-                continue;
+
             round += negIdx / count;
             round = round % (winSize.width * winSize.height);
             negIdx %= count;
 
-            _offset.x = std::min( (int)round % winSize.width, src.cols - winSize.width );
-            _offset.y = std::min( (int)round / winSize.width, src.rows - winSize.height );
-            if( !src.empty() && src.type() == CV_8UC1 && _offset.x >= 0 && _offset.y >= 0 )
+            offset.x = qMin( (int)round % winSize.width, src.cols - winSize.width );
+            offset.y = qMin( (int)round / winSize.width, src.rows - winSize.height );
+            if (!src.empty() && src.type() == CV_8UC1 && offset.x >= 0 && offset.y >= 0)
                 break;
         }
 
-        if( src.empty() )
-            return false; // no appropriate image
-        point = offset = _offset;
-        scale = max( ((float)winSize.width + point.x) / ((float)src.cols),
-                     ((float)winSize.height + point.y) / ((float)src.rows) );
+        point = offset;
+        scale = max(((float)winSize.width + point.x) / ((float)src.cols),
+                    ((float)winSize.height + point.y) / ((float)src.rows));
 
-        Size sz( (int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F) );
-        resize( src, img, sz );
-        return true;
+        Size sz((int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F));
+        resize(src, img, sz);
     }
 
-    bool getNeg(cv::Mat &_img)
+    bool getNeg(Mat &_img)
     {
-        if( img.empty() )
-            if ( !nextNeg() )
-                return false;
+        if (img.empty())
+            nextNeg();
 
-        Mat mat( winSize.height, winSize.width, CV_8UC1,
-            (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step );
-        mat.copyTo(_img);
+        Mat m(winSize.height, winSize.width, CV_8UC1, (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step);
+        m.copyTo(_img);
 
-        if( (int)( point.x + (1.0F + stepFactor ) * winSize.width ) < img.cols )
+        if ((int)(point.x + (1.0F + stepFactor) * winSize.width) < img.cols)
             point.x += (int)(stepFactor * winSize.width);
-        else
-        {
+        else {
             point.x = offset.x;
-            if( (int)( point.y + (1.0F + stepFactor ) * winSize.height ) < img.rows )
+            if ((int)( point.y + (1.0F + stepFactor ) * winSize.height ) < img.rows)
                 point.y += (int)(stepFactor * winSize.height);
-            else
-            {
+            else {
                 point.y = offset.y;
                 scale *= scaleFactor;
-                if( scale <= 1.0F )
-                    resize( src, img, Size( (int)(scale*src.cols), (int)(scale*src.rows) ) );
+                if (scale <= 1.0F)
+                    resize(src, img, Size((int)(scale*src.cols), (int)(scale*src.rows)));
                 else
-                {
-                    if ( !nextNeg() )
-                        return false;
-                }
+                    nextNeg();
             }
         }
         return true;
     }
 
-    bool getPos(cv::Mat &_img)
+    bool getPos(Mat &_img)
     {
         if (posIdx >= posImages.size())
             return false;
@@ -104,20 +90,20 @@ struct ImageHandler
         return true;
     }
 
-    QList<cv::Mat> posImages, negImages;
+    QList<Mat> posImages, negImages;
 
     int posIdx, negIdx;
 
-    cv::Mat     src, img;
-    cv::Point   offset, point;
+    Mat     src, img;
+    Point   offset, point;
     float   scale;
     float   scaleFactor;
     float   stepFactor;
     size_t  round;
-    cv::Size    winSize;
+    Size    winSize;
 };
 
-class _CascadeClassifier : public Classifier
+class CascadeClassifier : public Classifier
 {
     Q_OBJECT
 
@@ -242,6 +228,7 @@ private:
                 qFatal("Cannot get another positive sample!");
 
             if (classify(pos) == 1.0f) {
+                printf("POS current samples: %d\r", images.size());
                 images.append(pos);
                 labels.append(1.0f);
             }
@@ -257,6 +244,7 @@ private:
                 qFatal("Cannot get another negative sample!");
 
             if (classify(neg) == 1.0f) {
+                printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
                 labels.append(0.0f);
             }
@@ -269,7 +257,7 @@ private:
     }
 };
 
-BR_REGISTER(Classifier, _CascadeClassifier)
+BR_REGISTER(Classifier, CascadeClassifier)
 
 } // namespace br
 

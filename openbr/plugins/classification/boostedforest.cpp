@@ -1,6 +1,5 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/boost.h>
-#include <openbr/core/features.h>
 
 using namespace cv;
 

@@ -137,6 +137,28 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
     return idx;
 }
 
+//------------------------------------- FeatureEvaluator ---------------------------------------
+
+void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount)
+{
+    representation = _representation;
+    data.create((int)_maxSampleCount, representation->postWindowSize().area(), CV_32SC1);
+    cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
+}
+
+void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
+{
+    cls.ptr<float>(idx)[0] = clsLabel;
+
+    Mat integralImg(representation->postWindowSize(), data.type(), data.ptr<int>(idx));
+    representation->preprocess(img, integralImg);
+}
+
+void FeatureEvaluator::writeFeatures(FileStorage &fs, const Mat &featureMap) const
+{
+    representation->write(fs, featureMap);
+}
+
 //----------------------------- CascadeBoostParams -------------------------------------------------
 
 CascadeBoostParams::CascadeBoostParams() : minHitRate( 0.995F), maxFalseAlarm( 0.5F )
