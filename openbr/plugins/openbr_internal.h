@@ -21,7 +21,6 @@ private:
     void load(QDataStream &stream) { (void) stream; }
 };
 
-
 class BR_EXPORT MetaTransform : public Transform
 {
     Q_OBJECT
