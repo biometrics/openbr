@@ -3,8 +3,8 @@
 Initialize the [FileGallery](filegallery.md). This sets [f](members.md#f) using the file name from [file](../object/members.md#file). It also calls [Gallery](../gallery/gallery.md)::[init](../object/functions.md#init).
 
 * **function definition:**
-		
-		void init()
+
+        void init()
 
 * **parameters:** NONE
 * **output:** (void)
@@ -14,8 +14,8 @@ Initialize the [FileGallery](filegallery.md). This sets [f](members.md#f) using 
 Get the total size of the file. This is useful for estimating progress.
 
 * **function definition:**
-		
-		qint64 totalSize()
+
+        qint64 totalSize()
 
 * **parameters:** NONE
 * **output:** (qint64) Returns the total size of the file in bytes
@@ -26,7 +26,7 @@ Get the current index in the file. This is useful for reading and writing blocks
 
 * **function definition:**
 
-		qint64 position()
+        qint64 position()
 
 * **parameters:** NONE
 * **output:** (qint64) Returns the current position in the file
@@ -37,8 +37,8 @@ Open [f](members.md#f) in read-only mode
 
 * **function definition:**
 
-		bool readOpen()
-		
+        bool readOpen()
+
 * **parameters:** NONE
 * **output:** (bool) Returns true if the file was opened successfully, false otherwise
 
@@ -48,7 +48,7 @@ Open [f](members.md#f) in write-only mode
 
 * **function definition:**
 
-		void writeOpen()
+        void writeOpen()
 
 * **parameters:** NONE
 * **output:** (void)

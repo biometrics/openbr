@@ -23,5 +23,3 @@ A special macro to register plugins in the [Factory](factory.md)::[registry](mem
         };
 
         BR_REGISTER(Abstraction, Implementation)
-
-

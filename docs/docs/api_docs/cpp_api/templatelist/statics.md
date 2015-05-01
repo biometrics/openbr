@@ -63,4 +63,3 @@ Relabel the values associated with a given key in the [metadata](../file/members
 
         relabeled = TemplateList::relabel(tList, "Class", false);
         relabeled.files(); // returns [[Class=1, Label=0], [Class=10, Label=1], [Class=100, Label=2]]
-

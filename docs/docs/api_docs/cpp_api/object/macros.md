@@ -29,4 +29,3 @@ This macro provides an extension to the [Qt Property System][Qt Property System]
 
             ...
         };
-

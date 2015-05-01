@@ -27,7 +27,7 @@ If the transform is time varying call [timeInvariantAlias](../timevaryingtransfo
 * **function definition:**
 
 		virtual void project(const Template &src, Template &dst) const
-		
+
 * **parameters:**
 
 	Parameter | Type | Description
@@ -44,7 +44,7 @@ If the transform is time varying call [timeInvariantAlias](../timevaryingtransfo
 * **function definition:**
 
 		virtual void project(const TemplateList &src, TemplateList &dst) const
-		
+
 * **parameters:**
 
 	Parameter | Type | Description

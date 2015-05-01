@@ -95,7 +95,7 @@ def parseLinks(links):
     if len(links) > 1:
         output += "\n\n"
         for link in links:
-            output += "\t* [" + link + "](" + link + ")\n"
+            output += "    * [" + link + "](" + link + ")\n"
         output += "\n"
     else:
         output += " [" + links[0] + "](" + links[0] + ")\n"
@@ -117,11 +117,11 @@ def parsePapers(papers):
         if len(info) >= 3:
             other = info[2].strip()
 
-        output += "\t" + str(i+1) + ". *" + authors + "*\n"
+        output += "    " + str(i+1) + ". *" + authors + "*\n"
         if title:
-            output += "\t **" + title + "**\n"
+            output += "     **" + title + "**\n"
         if other:
-            output += "\t " + other + "\n"
+            output += "     " + other + "\n"
         output += "\n"
 
     return output
@@ -148,8 +148,8 @@ def parseProperties(properties):
         return "* **properties:** None\n\n"
 
     output = "* **properties:**\n\n"
-    output += "\tProperty | Type | Description\n"
-    output += "\t--- | --- | ---\n"
+    output += "    Property | Type | Description\n"
+    output += "    --- | --- | ---\n"
     for prop in properties:
         split = prop.split(' ')
         ty = split[0]
@@ -172,7 +172,7 @@ def parseProperties(properties):
             desc = before.strip() + table + after.strip()
             table_match = table_regex.search(desc)
 
-        output += "\t" + name + " | " + ty + " | " + desc + "\n"
+        output += "    " + name + " | " + ty + " | " + desc + "\n"
 
     return output
 

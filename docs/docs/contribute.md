@@ -21,11 +21,11 @@ Some common mistakes that will stop your plugin from working!
 
 ### Documenting
 
-Documenting your plugin is very important. OpenBR supports custom, doxygen-style, in-code comments to make documentation simple, clear, and easy. Comments should appear like 
+Documenting your plugin is very important. OpenBR supports custom, doxygen-style, in-code comments to make documentation simple, clear, and easy. Comments should appear like
 
-		/*!
-		 * ...
-		 */
+        /*!
+         * ...
+         */
 
 Comments are organized using tags, which are of the form <tt>\tag</tt>. There are a few **required** tags that all OpenBR transforms must have.
 
@@ -39,14 +39,14 @@ Tag | Description
 
 The mimimum comment would look like this
 
-		/*!
-		 * \ingroup abstraction group
-		 * \brief A description of the plugin
-		 * \author Your Name \cite Your Citation
-		 * \br_property percentage float The percentage of something
-		 * \br_property enum choice A choice with possible values: [choice1, choice2, choice3]
-		 */
-		 
+        /*!
+         * \ingroup abstraction group
+         * \brief A description of the plugin
+         * \author Your Name \cite Your Citation
+         * \br_property percentage float The percentage of something
+         * \br_property enum choice A choice with possible values: [choice1, choice2, choice3]
+         */
+
 There are also a few **optional** tags to provide more information.
 
 Tag | Description
@@ -58,18 +58,18 @@ Tag | Description
 
 Optional tags could look like this
 
-		/*!
-		 * \br_link http://openbiometrics.org
-		 * \br_paper Author1, Author2, Author3
-		 *           Paper Title
-		 *           Conference. Year
-		 * \br_related_plugin ExampleTransform ExampleDistance ExampleGallery
-		 */
+        /*!
+         * \br_link http://openbiometrics.org
+         * \br_paper Author1, Author2, Author3
+         *           Paper Title
+         *           Conference. Year
+         * \br_related_plugin ExampleTransform ExampleDistance ExampleGallery
+         */
 
-Finally, OpenBR supports automatic linking for abstractions found in comments. For example, Transform will automatically become [Transform](api_docs/cpp_api/transform/transform.md). Plural words like Transforms will also be linked but possesives like Tranform's will not. 
+Finally, OpenBR supports automatic linking for abstractions found in comments. For example, Transform will automatically become [Transform](api_docs/cpp_api/transform/transform.md). Plural words like Transforms will also be linked but possesives like Tranform's will not.
 
 ---
-	 
+
 ## Contributing to the API
 
 You should contribute to the API if you want to add a new abstraction or extend an existing abstraction with new functionality. Please note, this occurs *very* *very* rarely. Our goal is to leave the core API as stable and consistent as possible and change only the surrounding plugins. If you believe your idea offers exciting new functionality or greatly increases efficiency please [open an issue](https://github.com/biometrics/openbr/issues) so that it can be discussed as a community.

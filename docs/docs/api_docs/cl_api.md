@@ -13,7 +13,7 @@ Shortcut | Definition
 
 Almost every command line process needs to specify an algorithm to work properly. Algorithms in OpenBR are described in detail [here](../tutorials.md#algorithms-in-openbr). To specify algorithms to the command line use the <tt>-algorithm</tt> flag like so:
 
-		-algorithm "AlgorithmString"
+        -algorithm "AlgorithmString"
 
 Make sure you use the quotes if your algorithm is longer than one plugin because special characters in OpenBR are also special characters (with very different meanings!) in Bash.
 
@@ -25,7 +25,7 @@ Train a model
 
 * **arguments:**
 
-		-train <gallery> ... <gallery> [{model}]
+        -train <gallery> ... <gallery> [{model}]
 
 * **wraps:** [br_train_n](c_api/functions.md#br_train_n)
 
@@ -35,7 +35,7 @@ Enroll a [Gallery](cpp_api/gallery/gallery.md) through an algorithm
 
 * **arguments:**
 
-		-enroll <input_gallery> ... <input_gallery> {output_gallery}
+        -enroll <input_gallery> ... <input_gallery> {output_gallery}
 
 * **wraps:** [br_enroll](c_api/functions.md#br_enroll) or [br_enroll_n](c_api/functions.md#br_enroll_n) depending on the input size
 
@@ -45,7 +45,7 @@ Compare query [Templates](cpp_api/template/template.md) against a target [Galler
 
 * **arguments:**
 
-		-compare <target_gallery> <query_gallery> [{output}]
+        -compare <target_gallery> <query_gallery> [{output}]
 
 * **wraps:** [br_compare](c_api/functions.md#br_compare)
 
@@ -55,7 +55,7 @@ DOCUMENT ME
 
 * **arguments:**
 
-		-pairwiseCompare <target_gallery> <query_gallery> [{output}]
+        -pairwiseCompare <target_gallery> <query_gallery> [{output}]
 
 * **wraps:** [br_pairwise_compare](c_api/functions.md#br_pairwise_compare)
 
@@ -65,7 +65,7 @@ Evaluate a similarity matrix
 
 * **arguments:**
 
-		-eval <simmat> [<mask>] [{csv}] [{matches}]
+        -eval <simmat> [<mask>] [{csv}] [{matches}]
 
 * **wraps:** [br_eval](c_api/functions.md#br_eval)
 
@@ -75,7 +75,7 @@ DOCUMENT ME
 
 * **arguments:**
 
-		-inplaceEval <simmat> <target> <query> [{output}]
+        -inplaceEval <simmat> <target> <query> [{output}]
 
 * **wraps:** [br_inplace_eval](c_api/functions.md#br_inplace_eval)
 
@@ -98,7 +98,7 @@ Perform score level fusion on similarity matrices.
 
 * **arguments:**
 
-		-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}
+        -fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}
 
 * **wraps:** [br_fuse](c_api/functions.md#br_fuse)
 
@@ -108,7 +108,7 @@ Clusters one or more similarity matrices into a list of subjects
 
 * **arguments:**
 
-		-cluster <simmat> ... <simmat> <aggressiveness> {csv}
+        -cluster <simmat> ... <simmat> <aggressiveness> {csv}
 
 * **wraps:** [br_cluster](c_api/functions.md#br_cluster)
 
@@ -118,7 +118,7 @@ Constructs a mask from target and query inputs
 
 * **arguments:**
 
-		-makeMask <target_gallery> <query_gallery> {mask}
+        -makeMask <target_gallery> <query_gallery> {mask}
 
 * **wraps:** [br_make_mask](c_api/functions.md#br_make_mask)
 
@@ -128,7 +128,7 @@ Constructs a mask from target and query inputs considering the target and input 
 
 * **arguments:**
 
-		-makePairwiseMask <target_gallery> <query_gallery> {mask}
+        -makePairwiseMask <target_gallery> <query_gallery> {mask}
 
 * **wraps:** [br_make_pairwise_mask](c_api/functions.md#br_make_pairwise_mask)
 
@@ -138,7 +138,7 @@ Combines several equal-sized mask matrices. A comparison may not be simultaneous
 
 * **arguments:**
 
-		-combineMasks <mask> ... <mask> {mask} (And|Or)
+        -combineMasks <mask> ... <mask> {mask} (And|Or)
 
 * **wraps:** [br_combine_masks](c_api/functions.md#br_combine_masks)
 
@@ -148,7 +148,7 @@ Concatenates a list of galleries into 1 gallery
 
 * **arguments:**
 
-		-cat <gallery> ... <gallery> {gallery}
+        -cat <gallery> ... <gallery> {gallery}
 
 * **wraps:** [br_cat](c_api/functions.md#br_cat)
 
@@ -158,7 +158,7 @@ Convert a file to a different type. Files can only be converted to types within 
 
 * **arguments:**
 
-		-convert (Format|Gallery|Output) <input_file> {output_file}
+        -convert (Format|Gallery|Output) <input_file> {output_file}
 
 * **wraps:** [br_convert](c_api/functions.md#br_convert)
 
@@ -168,7 +168,7 @@ Evaluates and prints classification accuracy to terminal
 
 * **arguments:**
 
-		-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
+        -evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
 
 * **wraps:** [br_eval_classification](c_api/functions.md#br_eval_classification)
 
@@ -178,7 +178,7 @@ Evaluates and prints clustering accuracy to the terminal
 
 * **arguments:**
 
-		-evalClustering <clusters> <gallery>
+        -evalClustering <clusters> <gallery>
 
 * **wraps:** [br_eval_clustering](c_api/functions.md#br_eval_clustering)
 
@@ -188,7 +188,7 @@ Evaluates and prints detection accuracy to terminal
 
 * **arguments:**
 
-		-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]
+        -evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]
 
 * **wraps:** [br_eval_detection](c_api/functions.md#br_eval_detection)
 
@@ -198,7 +198,7 @@ Evaluates and prints landmarking accuracy to terminal
 
 * **arguments:**
 
-		-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]
+        -evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]
 
 * **wraps:** [br_eval_landmarking](c_api/functions.md#br_eval_landmarking)
 
@@ -209,7 +209,7 @@ Evaluates regression accuracy to disk
 
 * **arguments:**
 
-		-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
+        -evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
 
 * **wraps:** [br_eval_regression](c_api/functions.md#br_eval_regression)
 
@@ -219,7 +219,7 @@ Evaluates the similarity matrix using the mask matrix.  Function aborts if TAR @
 
 * **arguments:**
 
-		-assertEval <simmat> <mask> <accuracy>
+        -assertEval <simmat> <mask> <accuracy>
 
 * **wraps:** [br_assert_eval](c_api/functions.md#br_assert_eval)
 
@@ -229,7 +229,7 @@ Renders detection performance figures for a set of .csv files created by [-evalD
 
 * **arguments:**
 
-		-plotDetection <file> ... <file> {destination}
+        -plotDetection <file> ... <file> {destination}
 
 * **wraps:** [br_plot_detection](c_api/functions.md#br_plot_detection)
 
@@ -239,7 +239,7 @@ Renders landmarking performance figures for a set of .csv files created by [-eva
 
 * **arguments:**
 
-		-plotLandmarking <file> ... <file> {destination}
+        -plotLandmarking <file> ... <file> {destination}
 
 * **wraps:** [br_plot_landmarking](c_api/functions.md#br_plot_landmarking)
 
@@ -249,7 +249,7 @@ Renders metadata figures for a set of .csv files with specified columns
 
 * **arguments:**
 
-		-plotMetadata <file> ... <file> <columns>
+        -plotMetadata <file> ... <file> <columns>
 
 * **wraps:** [br_plot_metadata](c_api/functions.md#br_plot_metadata)
 
@@ -259,7 +259,7 @@ A naive alternative to [-enroll](#enroll)
 
 * **arguments:**
 
-		-project <input_gallery> {output_gallery}
+        -project <input_gallery> {output_gallery}
 
 * **wraps:** [br_project](c_api/functions.md#br_project)
 
@@ -269,7 +269,7 @@ Retrieve the target and query inputs in the [BEE matrix](../tutorials.md#the-eva
 
 * **arguments:**
 
-		-getHeader <matrix>
+        -getHeader <matrix>
 
 * **wraps:** [br_get_header](c_api/functions.md#br_get_header)
 
@@ -279,7 +279,7 @@ Update the target and query inputs in the [BEE matrix](../tutorials.md#the-evalu
 
 * **arguments:**
 
-		-setHeader {<matrix>} <target_gallery> <query_gallery>
+        -setHeader {<matrix>} <target_gallery> <query_gallery>
 
 * **wraps:** [br_set_header](c_api/functions.md#br_set_header)
 
@@ -289,7 +289,7 @@ Appends a provided value to the [global metadata](cpp_api/context/context.md) us
 
 * **arguments:**
 
-		-<key> <value>
+        -<key> <value>
 
 * **wraps:** [br_set_property](c_api/functions.md#br_set_property)
 
@@ -302,7 +302,7 @@ Print command line API documentation to the terminal
 
 * **arguments:**
 
-		-help
+        -help
 
 * **wraps:** N/A
 
@@ -312,7 +312,7 @@ If this flag is set OpenBR will enable GUI windows to be launched. It must be th
 
 * **arguments:**
 
-		br -gui
+        br -gui
 
 * **wraps:** N/A
 
@@ -322,7 +322,7 @@ Returns names and parameters for the requested objects. Each object is newline s
 
 * **arguments:**
 
-		-objects [abstraction [implementation]]
+        -objects [abstraction [implementation]]
 
 * **wraps:** [br_objects](c_api/functions.md#br_objects)
 
@@ -332,7 +332,7 @@ Get a string with the name, version, and copyright of the project. This string i
 
 * **arguments:**
 
-		-about
+        -about
 
 * **wraps:** [br_about](c_api/functions.md#br_about)
 
@@ -342,7 +342,7 @@ Get the current OpenBR version
 
 * **arguments:**
 
-		-version
+        -version
 
 * **wraps:** [br_version](c_api/functions.md#br_version)
 
@@ -352,7 +352,7 @@ For internal use via [ProcessWrapperTransform](plugins/core.md#processwrappertra
 
 * **arguments:**
 
-		-slave <baseKey>
+        -slave <baseKey>
 
 * **wraps:** [br_slave_process](c_api/functions.md#br_slave_process)
 
@@ -362,7 +362,7 @@ DOCUMENT ME
 
 * **arguments:**
 
-		-daemon <daemon_pipe>
+        -daemon <daemon_pipe>
 
 * **wraps:** N/A
 
@@ -372,6 +372,6 @@ Exit the application
 
 * **arguments:**
 
-		-exit
+        -exit
 
 * **wraps:** N/A

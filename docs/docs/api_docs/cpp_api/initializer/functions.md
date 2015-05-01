@@ -15,7 +15,7 @@ This is a virtual function. It is called once at the beginning of [finalize](../
 
 * **function definition**:
 
-		virtual void finalize() const	
+        virtual void finalize() const
 
 * **parameters:** NONE
 * **output:** (void)

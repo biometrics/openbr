@@ -82,23 +82,23 @@ One of the first steps when converting the template enrollment description into 
 
 After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recursively starting at the root of the tree:
 
-	Transform *transform = Factory<Transform>::make("." + str);
+    Transform *transform = Factory<Transform>::make("." + str);
 
 Let's use the algorithm in ```scripts/helloWorld.sh``` as an example. The algorithm is:
 
-	Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)
+    Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)
 
 So what is happening here? Let's expand this using our new knowledge of OpenBR's algorithm syntax. First, the algorithm will be split into enrollment and comparison portions at the **:**. So enrollment becomes-
 
-	Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)
+    Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)
 
 and comparison is-
 
-	Dist(L2)
+    Dist(L2)
 
 On the enrollment side the **+'s** are converted into a [PipeTransform](api_docs/plugins/core.md#pipetransform) with the other plugins as children. Enrollment is transformed to
 
-	Pipe(transforms=[Open,Cvt(Gray),Cascade(FrontalFace),ASEFEyes,Affine(128,128,0.33,0.45,CvtFloat,PCA(0.95)])
+    Pipe(transforms=[Open,Cvt(Gray),Cascade(FrontalFace),ASEFEyes,Affine(128,128,0.33,0.45,CvtFloat,PCA(0.95)])
 
 If you want all the tedious details about what exactly this algoritm does, then you should read the [project](api_docs/cpp_api/transform/functions.md#project-1) function implemented by each of these plugins.
 The brief explanation is that it *reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images*.
@@ -133,48 +133,48 @@ This tutorial gives an example on how to perform face recognition in OpenBR. Ope
 
 To start, lets run face recognition from the command line. Open the terminal and enter
 
-	$ br -algorithm FaceRecognition \
-    	-compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S354-02-t10_01.jpg \
-     	-compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S386-04-t10_01.jpg
+    $ br -algorithm FaceRecognition \
+        -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S354-02-t10_01.jpg \
+         -compare ../data/MEDS/img/S354-01-t10_01.jpg ../data/MEDS/img/S386-04-t10_01.jpg
 
 Easy enough? You should see results printed to terminal that look like
 
-	$ Set algorithm to FaceRecognition
-	$ Loading /usr/local/share/openbr/models/algorithms/FaceRecognition
-	$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionExtraction
-	$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionEmbedding
-	$ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionQuantization
-	$Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S354-02-t10_01.jpg
-	$ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
-	$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
-	$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
-	$ 1.8812
-	$ Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S386-04-t10_01.jpg
-	$ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
-	$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
-	$ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
-	$ 0.571219
+    $ Set algorithm to FaceRecognition
+    $ Loading /usr/local/share/openbr/models/algorithms/FaceRecognition
+    $ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionExtraction
+    $ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionEmbedding
+    $ Loading /usr/local/share/openbr/models/transforms//FaceRecognitionQuantization
+    $Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S354-02-t10_01.jpg
+    $ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
+    $ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+    $ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+    $ 1.8812
+    $ Comparing ../data/MEDS/img/S354-01-t10_01.jpg and ../data/MEDS/img/S386-04-t10_01.jpg
+    $ Enrolling ../data/MEDS/img/S354-01-t10_01.jpg to S354-01-t10_01r7Rv4W.mem
+    $ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+    $ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
+    $ 0.571219
 
 So what is 'FaceRecognition'? It's an abbrieviation to make running the algorithm easier. All of the algorithm abbreviations are located in ```openbr/plugins/core/algorithms.cpp```, please see the previous tutorial for an introduction to OpenBR's algorithm grammar.
 
 It also possible to perform face recognition evaluation (**note:** this requires [R][R] to be installed)-
 
-	$ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
-     	-enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
-     	-enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
-     	-compare target.gal query.gal scores.mtx \
-     	-makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
-     	-eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
-     	-plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
+    $ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
+         -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
+         -enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
+         -compare target.gal query.gal scores.mtx \
+         -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
+         -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
+         -plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
 
 face recognition search-
 
-	$ br -algorithm FaceRecognition -enrollAll -enroll ../data/MEDS/img 'meds.gal;meds.csv[separator=;]'
-	$ br -algorithm FaceRecognition -compare meds.gal ../data/MEDS/img/S001-01-t10_01.jpg match_scores.csv
+    $ br -algorithm FaceRecognition -enrollAll -enroll ../data/MEDS/img 'meds.gal;meds.csv[separator=;]'
+    $ br -algorithm FaceRecognition -compare meds.gal ../data/MEDS/img/S001-01-t10_01.jpg match_scores.csv
 
 and face recognition training-
 
-	$ br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ../data/ATT/img FaceRecognitionATT
+    $ br -algorithm 'Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)' -train ../data/ATT/img FaceRecognitionATT
 
 all right from the command line! The entire command line API is documented [here](api_docs/cl_api.md). It is a powerful tool for creating and testing new algorithms.
 
@@ -182,38 +182,38 @@ The command line isn't perfect for all situations however. So OpenBR exposes a [
 
 Our main function starts with-
 
-		br::Context::initialize(argc, argv)
+        br::Context::initialize(argc, argv)
 
 This is the first step in any OpenBR application, it initializes the global context.
 
-	QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("FaceRecognition");
+    QSharedPointer<br::Transform> transform = br::Transform::fromAlgorithm("FaceRecognition");
     QSharedPointer<br::Distance> distance = br::Distance::fromAlgorithm("FaceRecognition");
 
 Here, we split our algorithm into *enrollment* ([Transform](api_docs/cpp_api/transform/transform.md)::[fromAlgorithm](api_docs/cpp_api/transform/statics.md#fromalgorithm)) and *comparison* ([Distance](api_docs/cpp_api/distance/distance.md)::[fromAlgorithm](api_docs/cpp_api/distance/statics.md#fromalgorithm))
 
-	br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
+    br::Template queryA("../data/MEDS/img/S354-01-t10_01.jpg");
     br::Template queryB("../data/MEDS/img/S382-08-t10_01.jpg");
     br::Template target("../data/MEDS/img/S354-02-t10_01.jpg");
 
 These lines create our [Templates](api_docs/cpp_api/template/template.md) for enrollment. They are just images loaded from disk. For this example queryA is the same person (different picture) as target and queryB is a different person.
 
-	queryA >> *transform;
+    queryA >> *transform;
     queryB >> *transform;
     target >> *transform;
 
 And now we enroll them! **>>** is a convienience operator for enrolling [Templates](api_docs/cpp_api/template/template.md) in [Transforms](api_docs/cpp_api/transform/transform.md). The enrollment is done in-place, which means the output overwrites the input. Our [Templates](api_docs/cpp_api/template/template.md) now store the results of enrollment.
 
-	float comparisonA = distance->compare(target, queryA);
+    float comparisonA = distance->compare(target, queryA);
     float comparisonB = distance->compare(target, queryB);
 
 Compare our query [Templates](api_docs/cpp_api/template/template.md) against the target [Template](api_docs/cpp_api/template/template.md). The result is a float.
 
-	printf("Genuine match score: %.3f\n", comparisonA);
+    printf("Genuine match score: %.3f\n", comparisonA);
     printf("Impostor match score: %.3f\n", comparisonB);
 
 Print out our results. You can see that comparisonA (between queryA and target) has a higher score then comparisonB, which is exactly what we expect!
 
-	br::Context::finalize();
+    br::Context::finalize();
 
 The last line in any OpenBR application has to be call to finalize. This shuts down OpenBR.
 
@@ -251,8 +251,8 @@ The source code to run gender estimation as an application is in ```app/examples
 
 
 [^1]: *Matthew Turk and Alex Pentland.*
-	**Eigenfaces for recognition.**
-	Journal of Cognitive Neuroscience, 71&#45;86, 1991 <!-- Don't know why I have to use the &#45; code instead of '-' -->
+    **Eigenfaces for recognition.**
+    Journal of Cognitive Neuroscience, 71&#45;86, 1991 <!-- Don't know why I have to use the &#45; code instead of '-' -->
 [^2]: *B. Klare.*
-	**Spectrally sampled structural subspace features (4SF).**
-	In Michigan State University Technical Report, MSUCSE-11-16, 2011
+    **Spectrally sampled structural subspace features (4SF).**
+    In Michigan State University Technical Report, MSUCSE-11-16, 2011

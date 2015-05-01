@@ -16,37 +16,37 @@ This is a pure virtual function. It must be overloaded by all derived classes. P
 * **output:** (void)
 * **example:**
 
-		class IncrementPropertyTransform : public MetadataTransform
-		{
-    		Q_OBJECT
-    		Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
-    		BR_PROPERTY(QString, key, "")
+        class IncrementPropertyTransform : public MetadataTransform
+        {
+            Q_OBJECT
+            Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+            BR_PROPERTY(QString, key, "")
 
-			void projectMetadata(const File &src, File &dst) const
-    		{
-        		dst = src;
-        		dst.set(key, src.get<int>(key, 0) + 1);
-    		}
-		};
-		
-		BR_REGISTER(Transform, IncrementPropertyTransform)
+            void projectMetadata(const File &src, File &dst) const
+            {
+                dst = src;
+                dst.set(key, src.get<int>(key, 0) + 1);
+            }
+        };
 
-		MetadataTransform *m_transform = (MetadataTransform *)Transform::make("IncrementProperty(property1)", NULL);
+        BR_REGISTER(Transform, IncrementPropertyTransform)
 
-		File in("picture.jpg"), out;
-		in.set("property1", 10);
+        MetadataTransform *m_transform = (MetadataTransform *)Transform::make("IncrementProperty(property1)", NULL);
 
-		m_transform->projectMetadata(in, out);
-		out.flat(); // Returns "picture.jpg[property1=11]"
+        File in("picture.jpg"), out;
+        in.set("property1", 10);
+
+        m_transform->projectMetadata(in, out);
+        out.flat(); // Returns "picture.jpg[property1=11]"
 
 
 ## void project(const [Template](../template/template.md) &src, [Template](../template/template.md) &dst) {: #project }
 
-Project a [Template](../template/template.md) through the transform by passing its [metadata](../template/members.md#file) through [projectMetadata](#projectmetadata) and storing the result in dst. All matrices in src are passed unchanged to dst. 
+Project a [Template](../template/template.md) through the transform by passing its [metadata](../template/members.md#file) through [projectMetadata](#projectmetadata) and storing the result in dst. All matrices in src are passed unchanged to dst.
 
 * **function definition:**
 
-		void project(const Template &src, Template &dst) const
+        void project(const Template &src, Template &dst) const
 
 * **parameters:**
 
