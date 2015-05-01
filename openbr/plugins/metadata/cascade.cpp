@@ -15,10 +15,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #include <QProcess>
 #include <QTemporaryFile>
-#include <opencv2/objdetect/objdetect.hpp>
 #include <fstream>
 
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/cascade.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/resource.h>
 #include <openbr/core/qtutils.h>
@@ -28,7 +28,7 @@ using namespace cv;
 namespace br
 {
         
-class CascadeResourceMaker : public ResourceMaker<CascadeClassifier>
+class CascadeResourceMaker : public ResourceMaker<_CascadeClassifier>
 {
     QString file;
 
@@ -49,9 +49,9 @@ public:
     }
 
 private:
-    CascadeClassifier *make() const
+    _CascadeClassifier *make() const
     {
-        CascadeClassifier *cascade = new CascadeClassifier();
+        _CascadeClassifier *cascade = new _CascadeClassifier();
         if (!cascade->load(file.toStdString()))
             qFatal("Failed to load: %s", qPrintable(file));
         return cascade;
@@ -77,7 +77,7 @@ class CascadeTransform : public UntrainableMetaTransform
     BR_PROPERTY(int, minNeighbors, 5)
     BR_PROPERTY(bool, ROCMode, false)                 
 
-    Resource<CascadeClassifier> cascadeResource;
+    Resource<_CascadeClassifier> cascadeResource;
 
     void init()
     {
@@ -95,7 +95,7 @@ class CascadeTransform : public UntrainableMetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        CascadeClassifier *cascade = cascadeResource.acquire();
+        _CascadeClassifier *cascade = cascadeResource.acquire();
         foreach (const Template &t, src) {
             const bool enrollAll = t.file.getBool("enrollAll");
 
