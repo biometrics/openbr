@@ -192,7 +192,9 @@ struct RPlot
                        "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
                        "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
                        "\n\t\t\tmeasurevar\n\t\t)\n\n\t\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\t\tdatac$se <- datac$sd / sqrt(datac$N)"
-                       "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\treturn(datac)\n\t}\n\t"
+                       "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\t"
+                       "datac$upper <- if(datac[, measurevar] + datac$ci < 1) (datac[, measurevar] + datac$ci) else 1\n\t\t"
+                       "datac$lower <- if(datac[, measurevar] - datac$ci > 0) (datac[, measurevar] - datac$ci) else 0\n\n\t\treturn(datac)\n\t}\n\t"
                        "DET <- summarySE(DET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "IET <- summarySE(IET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "ERR <- summarySE(ERR, measurevar=\"X\", groupvars=c(\"Error\", \"%2\", \"Y\"))\n\t"
@@ -322,7 +324,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=(1-Y)-ci, ymax=(1-Y)+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=(1-lower), ymax=(1-upper)), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format()))") +
@@ -336,7 +338,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=lower, ymax=upper), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
@@ -348,7 +350,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
                             (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
                             QString(", xlab=\"False Positive Identification Rate (FPIR)\", ylab=\"False Negative Identification Rate (FNIR)\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=IET[seq(1, NROW(IET), by = 29),], aes(x=X, ymin=Y-ci, ymax=Y+ci), width=0.1, alpha=I(1/2))" : QString()) +
+                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=IET[seq(1, NROW(IET), by = 29),], aes(x=X, ymin=lower, ymax=upper), width=0.1, alpha=I(1/2))" : QString()) +
                             (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
                             (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
                             QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
