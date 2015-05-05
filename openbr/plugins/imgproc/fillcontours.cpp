@@ -32,8 +32,19 @@ class FillContoursTransform : public UntrainableTransform
 {
     Q_OBJECT
 
+    Q_ENUMS(Approximation)
+    Q_PROPERTY(Approximation approximation READ get_approximation WRITE set_approximation RESET reset_approximation STORED false)
     Q_PROPERTY(float epsilon READ get_epsilon WRITE set_epsilon RESET reset_epsilon STORED false)
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+
+public:
+    enum Approximation { None = CV_CHAIN_APPROX_NONE,
+                  Simple = CV_CHAIN_APPROX_SIMPLE,
+                  L1 = CV_CHAIN_APPROX_TC89_L1,
+                  KCOS = CV_CHAIN_APPROX_TC89_KCOS };
+
+private:
+    BR_PROPERTY(Approximation, approximation, None)
     BR_PROPERTY(float, epsilon, 0)
     BR_PROPERTY(int, minSize, 40)
 
@@ -45,7 +56,7 @@ class FillContoursTransform : public UntrainableTransform
         vector<Vec4i> hierarchy;
 
         /// Find contours
-        findContours(src.m(), contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+        findContours(src.m(), contours, hierarchy, CV_RETR_TREE, approximation);
 
         if (epsilon > 0)
             for(size_t i=0; i<contours.size(); i++)
