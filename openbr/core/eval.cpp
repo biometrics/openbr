@@ -134,17 +134,17 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
     return cv::Mat();
 }
 
-float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &csv, int partition)
+float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv, int partition)
 {
     return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QString(), QString(), 0);
 }
 
-float Evaluate(const QString &simmat, const QString &mask, const QString &csv, unsigned int matches)
+float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsigned int matches)
 {
     qDebug("Evaluating %s%s%s",
            qPrintable(simmat),
            mask.isEmpty() ? "" : qPrintable(" with " + mask),
-           csv.isEmpty() ? "" : qPrintable(" to " + csv));
+           csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
 
     // Read similarity matrix
     QString target, query;
@@ -176,7 +176,7 @@ float Evaluate(const QString &simmat, const QString &mask, const QString &csv, u
     return Evaluate(scores, truth, csv, target, query, matches);
 }
 
-float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QString &target, const QString &query, unsigned int matches)
+float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QString &target, const QString &query, unsigned int matches)
 {
     if (target.isEmpty() || query.isEmpty()) matches = 0;
     if (simmat.size() != mask.size())
@@ -232,7 +232,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
     if (numNaNs > 0) qWarning("Encountered %d NaN scores!", numNaNs);
     if (genuineCount == 0) qFatal("No genuine scores!");
     if (impostorCount == 0) qFatal("No impostor scores!");
-    if (totalImpostorSearches == 0) totalImpostorSearches = 1;
 
     // Sort comparisons by simmat_val (score)
     std::stable_sort(comparisons.begin(), comparisons.end());
@@ -346,33 +345,31 @@ float Evaluate(const Mat &simmat, const Mat &mask, const QString &csv, const QSt
         }
     }
 
-    // Write Detection Error Tradeoff (DET), PRE, REC
-    float expFAR = ceil(log10(impostorCount));
-    float FARstep = expFAR / (float)(Max_Points - 1);
-    for (float i = -expFAR; i <= 0; i += FARstep) {
-        float FAR = pow(10, i);
-        OperatingPoint operatingPoint = getOperatingPointGivenFAR(operatingPoints, FAR);
-        lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
-                                              QString::number(1-operatingPoint.TAR)));
-        lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPoint.score),
-                                              QString::number(FAR)));
-        lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPoint.score),
-                                              QString::number(1-operatingPoint.TAR)));
-    }
+    // Write Detection Error Tradeoff (DET), PRE, REC, Identification Error Tradeoff (IET)
+    float expFAR = csv.get<float>("FAR", std::max(ceil(log10(impostorCount)), 1.0));
+    float expFRR = csv.get<float>("FRR", std::max(ceil(log10(genuineCount)), 1.0));
+    float expFPIR = csv.get<float>("FPIR", std::max(ceil(log10(totalImpostorSearches)), 1.0));
 
-    // Write Identification Error Tradeoff (IET)
-    float expFPIR = ceil(log10(totalImpostorSearches));
-    if (expFPIR > 1) {
-        float FPIRstep = expFPIR / (float)(Max_Points - 1);
-        for (float i = -expFPIR; i <= 0; i += FPIRstep) {
-            float FPIR = pow(10, i);
-            OperatingPoint searchOperatingPoint = getOperatingPointGivenFAR(searchOperatingPoints, FPIR);
-            lines.append(QString("IET,%1,%2").arg(QString::number(searchOperatingPoint.FAR),
+    float FARstep = expFAR / (float)(Max_Points - 1);
+    float FRRstep = expFRR / (float)(Max_Points - 1);
+    float FPIRstep = expFPIR / (float)(Max_Points - 1);
+
+    for (int i=0; i<Max_Points; i++) {
+        float FAR = pow(10, -expFAR + i*FARstep);
+        float FRR = pow(10, -expFRR + i*FRRstep);
+        float FPIR = pow(10, -expFPIR + i*FPIRstep);
+
+        OperatingPoint operatingPointFAR = getOperatingPointGivenFAR(operatingPoints, FAR);
+        OperatingPoint operatingPointTAR = getOperatingPointGivenTAR(operatingPoints, 1-FRR);
+        OperatingPoint searchOperatingPoint = getOperatingPointGivenFAR(searchOperatingPoints, FPIR);
+        lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
+                                              QString::number(1-operatingPointFAR.TAR)));
+        lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
+                                              QString::number(FAR)));
+        lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
+                                              QString::number(FRR)));
+        lines.append(QString("IET,%1,%2").arg(QString::number(searchOperatingPoint.FAR),
                                               QString::number(1-searchOperatingPoint.TAR)));
-        }
-    } else {
-        lines.append(QString("IET,%1,%2").arg(QString::number(1), QString::number(1)));
-        lines.append(QString("IET,%1,%2").arg(QString::number(0), QString::number(0)));
     }
 
     // Write TAR@FAR Table (TF)
