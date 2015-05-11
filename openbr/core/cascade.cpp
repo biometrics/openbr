@@ -113,61 +113,10 @@ void br::groupRectangles(vector<Rect>& rectList, vector<int>& weights, int group
 {
     groupRectangles(rectList, groupThreshold, eps, &weights, 0);
 }
-//used for cascade detection algorithm for ROC-curve calculating
+
 void br::groupRectangles(vector<Rect>& rectList, vector<int>& rejectLevels, vector<double>& levelWeights, int groupThreshold, double eps)
 {
     groupRectangles(rectList, groupThreshold, eps, &rejectLevels, &levelWeights);
-}
-
-bool _FeatureEvaluator::Feature::read(const FileNode& node )
-{
-    FileNode rnode = node[CC_RECT];
-    FileNodeIterator it = rnode.begin();
-    it >> rect.x >> rect.y >> rect.width >> rect.height;
-    return true;
-}
-
-bool _FeatureEvaluator::read( const FileNode& node )
-{
-    features->resize(node.size());
-    featuresPtr = &(*features)[0];
-    FileNodeIterator it = node.begin(), it_end = node.end();
-    for(int i = 0; it != it_end; ++it, i++)
-    {
-        if(!featuresPtr[i].read(*it))
-            return false;
-    }
-    return true;
-}
-
-bool _FeatureEvaluator::setImage( const Mat& image, Size _origWinSize )
-{
-    int rn = image.rows+1, cn = image.cols+1;
-    origWinSize = _origWinSize;
-
-    if( image.cols < origWinSize.width || image.rows < origWinSize.height )
-        return false;
-
-    if( sum0.rows < rn || sum0.cols < cn )
-        sum0.create(rn, cn, CV_32S);
-    sum = Mat(rn, cn, CV_32S, sum0.data);
-    integral(image, sum);
-
-    size_t fi, nfeatures = features->size();
-
-    for( fi = 0; fi < nfeatures; fi++ )
-        featuresPtr[fi].updatePtrs( sum );
-    return true;
-}
-
-bool _FeatureEvaluator::setWindow( Point pt )
-{
-    if( pt.x < 0 || pt.y < 0 ||
-        pt.x + origWinSize.width >= sum.cols ||
-        pt.y + origWinSize.height >= sum.rows )
-        return false;
-    offset = pt.y * ((int)sum.step/sizeof(int)) + pt.x;
-    return true;
 }
 
 // --------------------------------- Cascade Classifier ----------------------------------
@@ -175,47 +124,62 @@ bool _FeatureEvaluator::setWindow( Point pt )
 bool _CascadeClassifier::load(const string& filename)
 {
     data = Data();
-    featureEvaluator.release();
 
     FileStorage fs(filename, FileStorage::READ);
-    if( !fs.isOpened() )
+    if (!fs.isOpened())
         return false;
 
-    if( read(fs.getFirstTopLevelNode()) )
-        return true;
-
-    return false;
+    return data.read(fs.getFirstTopLevelNode());
 }
 
-bool _CascadeClassifier::read(const FileNode& root)
+int _CascadeClassifier::predict(const Mat &image, double &sum) const
 {
-    if( !data.read(root) )
-        return false;
+    int nstages = (int)data.stages.size();
+    int nodeOfs = 0, leafOfs = 0;
 
-    // load features
-    featureEvaluator = Ptr<_FeatureEvaluator>(new _FeatureEvaluator());
-    FileNode fn = root[CC_FEATURES];
-    if( fn.empty() )
-        return false;
+    size_t subsetSize = (data.ncategories + 31)/32;
+    const int *cascadeSubsets = &data.subsets[0];
 
-    return featureEvaluator->read(fn);
-}
+    const float *cascadeLeaves = &data.leaves[0];
+    const Data::DTreeNode *cascadeNodes = &data.nodes[0];
+    const Data::DTree *cascadeWeaks = &data.classifiers[0];
+    const Data::Stage *cascadeStages = &data.stages[0];
 
-int _CascadeClassifier::runAt(Point pt, double& weight)
-{
-    if( !featureEvaluator->setWindow(pt) )
-        return -1;
+    for (int stageIdx = 0; stageIdx < nstages; stageIdx++) {
+        const Data::Stage &stage = cascadeStages[stageIdx];
+        sum = 0;
 
-    if( data.isStumpBased )
-        return predictCategoricalStump<_FeatureEvaluator>( *this, featureEvaluator, weight );
-    return predictCategorical<_FeatureEvaluator>( *this, featureEvaluator, weight );
+        for (int wi = 0; wi < stage.ntrees; wi++) {
+            const Data::DTree &weak = cascadeWeaks[stage.first + wi];
+            int idx = 0, root = nodeOfs;
+
+            do {
+                const Data::DTreeNode &node = cascadeNodes[root + idx];
+                if (data.ncategories > 0) {
+                    int c = (int)representation->evaluate(image, node.featureIdx);
+                    const int* subset = &cascadeSubsets[(root + idx)*subsetSize];
+                    idx = (subset[c>>5] & (1 << (c & 31))) ? node.left : node.right;
+                } else {
+                    double val = representation->evaluate(image, node.featureIdx);
+                    idx = val < node.threshold ? node.left : node.right;
+                }
+            } while( idx > 0 );
+
+            sum += cascadeLeaves[leafOfs - idx];
+            nodeOfs += weak.nodeCount;
+            leafOfs += weak.nodeCount + 1;
+        }
+        if( sum < stage.threshold )
+            return -stageIdx;
+    }
+    return 1;
 }
 
 void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objects,
                                           vector<int>& rejectLevels,
                                           vector<double>& levelWeights,
                                           double scaleFactor, int minNeighbors,
-                                          int flags, Size minObjectSize, Size maxObjectSize,
+                                          Size minObjectSize, Size maxObjectSize,
                                           bool outputRejectLevels )
 {
     const double GROUP_EPS = 0.2;
@@ -246,14 +210,17 @@ void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objec
 
         Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
         resize(image, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
-        if (!featureEvaluator->setImage(scaledImage, originalWindowSize))
-            qFatal("Couldn't set the image");
+
+        Mat repImage;
+        representation->preprocess(scaledImage, repImage);
 
         int yStep = factor > 2. ? 1 : 2;
         for (int y = 0; y < processingRectSize.height; y += yStep) {
             for (int x = 0; x < processingRectSize.width; x += yStep) {
+                Mat window = repImage(Rect(Point(x, y), representation->postWindowSize())).clone();
+
                 double gypWeight;
-                int result = runAt(Point(x, y), gypWeight);
+                int result = predict(window, gypWeight);
 
                 if (outputRejectLevels) {
                     if (result == 1)
@@ -279,28 +246,18 @@ void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objec
         groupRectangles(objects, minNeighbors, GROUP_EPS);
 }
 
-void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objects,
-                                          double scaleFactor, int minNeighbors,
-                                          int flags, Size minObjectSize, Size maxObjectSize)
+void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& objects,
+                                          double scaleFactor, int minNeighbors, Size minObjectSize, Size maxObjectSize)
 {
     vector<int> fakeLevels;
     vector<double> fakeWeights;
     detectMultiScale( image, objects, fakeLevels, fakeWeights, scaleFactor,
-        minNeighbors, flags, minObjectSize, maxObjectSize, false );
+        minNeighbors, minObjectSize, maxObjectSize, false );
 }
 
 bool _CascadeClassifier::Data::read(const FileNode &root)
 {
     static const float THRESHOLD_EPS = 1e-5f;
-
-    // load stage params
-    string stageTypeStr = (string)root[CC_STAGE_TYPE];
-    if( stageTypeStr == CC_BOOST )
-        stageType = BOOST;
-    else
-        return false;
-
-    featureType = _FeatureEvaluator::LBP;
 
     origWinSize.width = (int)root[CC_WIDTH];
     origWinSize.height = (int)root[CC_HEIGHT];

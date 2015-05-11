@@ -62,19 +62,9 @@ class BoostedForestClassifier : public Classifier
         return representation->preWindowSize();
     }
 
-    void getUsedFeatures(Mat &featureMap) const
+    void write(FileStorage &fs) const
     {
-        boost->markUsedFeaturesInMap(featureMap);
-    }
-
-    void write(FileStorage &fs, const Mat &featureMap) const
-    {
-        boost->write(fs, featureMap);
-    }
-
-    void writeFeatures(FileStorage &fs, const Mat &featureMap) const
-    {
-        featureEvaluator->writeFeatures(fs, featureMap);
+        boost->write(fs);
     }
 };
 

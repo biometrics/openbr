@@ -1436,9 +1436,8 @@ public:
     // OpenCV compatibility
     virtual int numFeatures() const = 0;
     virtual int maxCatCount() const = 0;
-    virtual void getUsedFeatures(cv::Mat &featureMap) const { (void)featureMap; return; }
-    virtual void write(cv::FileStorage &fs, const cv::Mat &featureMap) const { (void)fs; (void)featureMap; }
-    virtual void writeFeatures(cv::FileStorage &fs, const cv::Mat &featureMap) const { (void)fs; (void)featureMap; }
+    virtual void write(cv::FileStorage &fs) const { (void)fs; }
+    virtual void read(const cv::FileNode &node) { (void)node; }
 };
 
 /*!

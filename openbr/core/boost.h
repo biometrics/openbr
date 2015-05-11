@@ -113,8 +113,7 @@ class CascadeBoostTree : public CvBoostTree
 {
 public:
     virtual CvDTreeNode* predict(int sampleIdx) const;
-    void write(cv::FileStorage &fs, const cv::Mat& featureMap);
-    void markFeaturesInMap(cv::Mat& featureMap);
+    void write(cv::FileStorage &fs);
 
 protected:
     virtual void split_node_data(CvDTreeNode* n);
@@ -129,8 +128,7 @@ public:
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
-    void write(cv::FileStorage &fs, const cv::Mat& featureMap) const;
-    void markUsedFeaturesInMap(cv::Mat& featureMap);
+    void write(cv::FileStorage &fs) const;
 
 protected:
     virtual bool set_params(const CvBoostParams& _params);

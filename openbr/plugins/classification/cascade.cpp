@@ -176,13 +176,7 @@ class CascadeClassifier : public Classifier
         return stages.first()->windowSize();
     }
 
-    void getUsedFeatures(Mat &featureMap) const
-    {
-        foreach (const Classifier *stage, stages)
-            stage->getUsedFeatures(featureMap);
-    }
-
-    void write(FileStorage &fs, const Mat &featureMap) const
+    void write(FileStorage &fs) const
     {
         fs << CC_STAGE_TYPE << CC_BOOST;
         fs << CC_FEATURE_TYPE << CC_LBP;
@@ -199,22 +193,13 @@ class CascadeClassifier : public Classifier
 
         fs << CC_STAGE_NUM << stages.size();
 
-        char cmnt[30];
-        int i = 0;
         fs << CC_STAGES << "[";
         foreach (const Classifier *stage, stages) {
-            sprintf( cmnt, "stage %d", i );
-            cvWriteComment( fs.fs, cmnt, 0 );
             fs << "{";
-            stage->write(fs, featureMap);
+            stage->write(fs);
             fs << "}";
         }
         fs << "]";
-    }
-
-    void writeFeatures(FileStorage &fs, const Mat& featureMap) const
-    {
-        stages.first()->writeFeatures(fs, featureMap);
     }
 
 private:

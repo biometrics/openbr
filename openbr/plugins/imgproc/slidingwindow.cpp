@@ -155,17 +155,7 @@ class SlidingWindowTransform : public Transform
 
         fs << FileStorage::getDefaultObjectName(filename) << "{";
 
-        Mat featureMap(1, classifier->numFeatures(), CV_32SC1);
-        featureMap.setTo(Scalar(-1));
-
-        classifier->getUsedFeatures(featureMap);
-
-        for (int fi = 0, idx = 0; fi < classifier->numFeatures(); fi++)
-            if (featureMap.at<int>(0, fi) >= 0)
-                featureMap.ptr<int>(0)[fi] = idx++;
-
-        classifier->write(fs, featureMap);
-        classifier->writeFeatures(fs, featureMap);
+        classifier->write(fs);
 
         fs << "}";
     }
