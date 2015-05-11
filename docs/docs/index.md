@@ -13,11 +13,11 @@ Off-the-shelf algorithms are also available for specific modalities including [f
 OpenBR originated within The MITRE Corporation from a need to streamline the process of prototyping new algorithms.
 The project was later published as open source software under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0.html) license and is *free for academic and commercial use*.
 
-Please read [our paper](http://openbiometrics.org/publications/klontz2013open.pdf) for more information about OpenBR and kindly cite
+Please read [our paper](http://openbiometrics.org/publications/klontz2013open.pdf) for more information about OpenBR and kindly cite in your own work:
 
-    JOSH PLEASE ADD LATEX CITATION
+> J. Klontz, B. Klare, S. Klum, E. Taborsky, M. Burge, A. Jain, “Open Source Biometric Recognition”, Biometrics: Theory, Applications and Systems, 2013.
 
-in your own works.
+---
 
 <figure id="abstraction">
   <img src="img/abstraction.svg">
@@ -26,9 +26,9 @@ in your own works.
 
 ---
 
-## Getting Started
+## Install
 
-OpenBR is supported on multiple operating systems. Please select yours from the list below for installation instructions. Happy Hacking!
+OpenBR is supported on multiple operating systems. Please select yours from the list below for installation instructions.
 
 * [Linux](install.md#linux)
 * [Mac OSX](install.md#osx)
@@ -37,9 +37,9 @@ OpenBR is supported on multiple operating systems. Please select yours from the 
 
 ---
 
-## The Basics
+## Tutorials
 
-We have created a few tutorials to help teach you the basic principles of the OpenBR system. If this is your first time using OpenBR you should look at these before moving on to the more in-depth documentation below.
+We recommend that first-time users of the OpenBR framework look at the following tutorials before moving on to the more in-depth documentation below.
 
 * [Quick Start](tutorials.md#quick-start)
 * [Algorithms in OpenBR](tutorials.md#algorithms-in-openbr)
@@ -51,7 +51,7 @@ We have created a few tutorials to help teach you the basic principles of the Op
 
 ---
 
-## The Documentation
+## Documentation
 
 Here is the complete documentation for OpenBR. Enjoy!
 
@@ -63,4 +63,4 @@ Here is the complete documentation for OpenBR. Enjoy!
 
 ## Help
 
-Still have questions? Please reach out to us on our [developer mailing list](https://groups.google.com/forum/?fromgroups#!forum/openbr-dev) or our [IRC channel](http://webchat.freenode.net/?channels=openbr).
+Still have questions? Please reach out to us on our [developer mailing list](https://groups.google.com/forum/?fromgroups#!forum/openbr-dev).
