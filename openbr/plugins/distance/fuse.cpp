@@ -69,7 +69,8 @@ private:
         for (int i=0; i<distances.size(); i++) {
             float weight;
             weights.isEmpty() ? weight = 1. : weight = weights[i];
-            scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
+            if (weight != 0)
+                scores.append(weight*distances[i]->compare(Template(a.file, a[i]),Template(b.file, b[i])));
         }
 
         switch (operation) {
