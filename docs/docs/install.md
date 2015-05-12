@@ -4,30 +4,30 @@ A hacker's guide to building, editing, and running OpenBR.
 
 # Linux
 
-1. Install GCC 4.7.3
+1. Install GCC 4.9.2
 
         $ sudo apt-get update
         $ sudo apt-get install build-essential
 
-2. Install CMake 2.8.10.1
+2. Install CMake 3.0.2
 
         $ sudo apt-get install cmake cmake-curses-gui
 
-3. [Download OpenCV 2.4.5](http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.5/opencv-2.4.5.tar.gz), **note** [Build OpenCV with video support](https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu)
+3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download), **note** [Build OpenCV with video support](https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu)
 
         $ cd ~/Downloads
-        $ tar -xf opencv-2.4.5.tar.gz
-        $ cd opencv-2.4.5
+        $ unzip opencv-2.4.11.zip
+        $ cd opencv-2.4.11
         $ mkdir build
         $ cd build
         $ cmake -DCMAKE_BUILD_TYPE=Release ..
         $ make -j4
         $ sudo make install
         $ cd ../..
-        $ rm -rf opencv-2.4.5*
+        $ rm -rf opencv-2.4.11*
 
 
-4. Install Qt 5.0.1
+4. Install Qt 5.4.1
 
         $ sudo apt-get install qt5-default libqt5svg5-dev qtcreator
 
@@ -78,9 +78,9 @@ Need to rewrite this step for the new docs!
 
 # OSX
 
-1. Download and install the latest "Xcode" and "Command Line Tools" from the [Apple Developer Downloads](https://developer.apple.com/downloads/index.action#) page.
+1. Download and install the latest "XCode" and "Command Line Tools" from the [Apple Developer Downloads](https://developer.apple.com/downloads/index.action#) page.
 
-2. [Download CMake 2.8.11.2](http://www.cmake.org/files/v2.8/cmake-2.8.11.2.tar.gz)
+2. [Download CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz)
 
             $ cd ~/Downloads
             $ tar -xf cmake-2.8.11.2.tar.gz
@@ -91,20 +91,20 @@ Need to rewrite this step for the new docs!
             $ cd ..
             $ rm -rf cmake-2.8.11.2*
 
-3. [Download OpenCV 2.4.6.1](http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.6.1/opencv-2.4.6.1.tar.gz)
+3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download)
 
         $ cd ~/Downloads
-        $ tar -xf opencv-2.4.6.1.tar.gz
-        $ cd opencv-2.4.6.1
+        $ unzip opencv-2.4.11.zip
+        $ cd opencv-2.4.11
         $ mkdir build
         $ cd build
         $ cmake -DCMAKE_BUILD_TYPE=Release ..
         $ make -j4
         $ sudo make install
         $ cd ../..
-        $ rm -rf opencv-2.4.6.1*
+        $ rm -rf opencv-2.4.11*
 
-4. [Download and install Qt 5.1.1](http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-mac-opensource-5.1.1-clang-offline.dmg)
+4. [Download and install Qt 5.4.1](http://download.qt.io/official_releases/qt/5.4/5.4.1/qt-opensource-mac-x64-clang-5.4.1.dmg)
 
 5. Create a [GitHub](https://github.com/) account, follow their instructions for [setting up Git](https://help.github.com/articles/set-up-git).
 
@@ -118,14 +118,14 @@ Need to rewrite this step for the new docs!
 
         $ mkdir build # from the OpenBR root directory
         $ cd build
-        $ cmake -DCMAKE_PREFIX_PATH=~/Qt5.1.1/5.1.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
+        $ cmake -DCMAKE_PREFIX_PATH=~/Qt/5.4.1/clang_64 -DCMAKE_BUILD_TYPE=Release ..
         $ make -j4
         $ sudo make install
 
 7. Hack OpenBR!
     1. Open Qt Creator IDE
 
-            $ open ~/Qt5.1.1/Qt\ Creator.app
+            $ open ~/Qt/Qt\ Creator.app
 
     2. From the Qt Creator "File" menu select "Open File or Project...".
     3. Select "openbr/CMakeLists.txt" then "Open".
@@ -155,7 +155,7 @@ Need to remake this step with the new docs!
 
 # Windows
 
-1. [Download Visual Studio 2012 Express Edition for Windows Desktop](http://www.microsoft.com/en-us/download/details.aspx?id=34673) and install.
+1. [Download Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) and install.
     1. Consider the free open source program [WinCDEmu](http://wincdemu.sysprogs.org) if you need a program to mount ISO images.
     2. You will have to register with Microsoft after installation, but it's free.
     3. Grab any available [Visual Studio Updates](http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update).
