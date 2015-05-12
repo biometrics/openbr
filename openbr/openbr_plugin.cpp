@@ -529,7 +529,7 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
     return result;
 }
 
-TemplateList TemplateList::partition(const QString &inputVariable, int bootStrap) const
+TemplateList TemplateList::partition(const QString &inputVariable, unsigned int bootStrap) const
 {
     TemplateList partitioned = *this;
     if (bootStrap > 0) {

@@ -56,10 +56,10 @@ class CrossValidateTransform : public MetaTransform
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
-    Q_PROPERTY(int bootStrap READ get_bootStrap WRITE set_bootStrap RESET reset_bootStrap STORED false)
+    Q_PROPERTY(unsigned int bootStrap READ get_bootStrap WRITE set_bootStrap RESET reset_bootStrap STORED false)
     BR_PROPERTY(QString, description, "Identity")
     BR_PROPERTY(QString, inputVariable, "Label")
-    BR_PROPERTY(int, bootStrap, 0)
+    BR_PROPERTY(unsigned int, bootStrap, 0)
 
     // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
@@ -74,7 +74,7 @@ class CrossValidateTransform : public MetaTransform
         while (transforms.size() < numPartitions)
             transforms.append(make(description));
 
-        if (numPartitions < 2 && !(bootStrap > 0)) {
+        if (numPartitions < 2 && !bootStrap) {
             transforms.first()->train(data);
             return;
         }
