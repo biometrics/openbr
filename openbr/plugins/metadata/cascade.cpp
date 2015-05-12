@@ -75,7 +75,7 @@ class CascadeTransform : public UntrainableMetaTransform
     BR_PROPERTY(QString, model, "FrontalFace")
     BR_PROPERTY(int, minSize, 64)
     BR_PROPERTY(int, minNeighbors, 5)
-    BR_PROPERTY(bool, ROCMode, false)                 
+    BR_PROPERTY(bool, ROCMode, false)
 
     Resource<_CascadeClassifier> cascadeResource;
 
@@ -112,8 +112,7 @@ class CascadeTransform : public UntrainableMetaTransform
                 std::vector<Rect> rects;
                 std::vector<int> rejectLevels;
                 std::vector<double> levelWeights;
-                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, Size(minSize, minSize), Size(), true);
-                else         cascade->detectMultiScale(m, rects, 1.2, minNeighbors, Size(minSize, minSize));
+                cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, Size(minSize, minSize), Size());
 
                 if (!enrollAll && rects.empty())
                     rects.push_back(Rect(0, 0, m.cols, m.rows));

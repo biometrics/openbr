@@ -121,81 +121,118 @@ void br::groupRectangles(vector<Rect>& rectList, vector<int>& rejectLevels, vect
 
 // --------------------------------- Cascade Classifier ----------------------------------
 
+static void loadRecursive(const FileNode &fn, _CascadeClassifier::Node *node, int maxCatCount)
+{
+    bool hasChildren = (int)fn["hasChildren"];
+    if (hasChildren) {
+        if (maxCatCount > 1) {
+            FileNode subset_fn = fn["subset"];
+            for (FileNodeIterator subset_it = subset_fn.begin(); subset_it != subset_fn.end(); ++subset_it)
+                node->subset.append((int)*subset_it);
+        } else {
+            node->threshold = (float)fn["threshold"];
+        }
+
+        node->featureIdx = (int)fn["feature_idx"];
+
+        node->left = new _CascadeClassifier::Node;
+        loadRecursive(fn["left"], node->left, maxCatCount);
+        node->right = new _CascadeClassifier::Node;
+        loadRecursive(fn["right"], node->right, maxCatCount);
+    } else {
+        node->value = (float)fn["value"];
+    }
+}
+
 bool _CascadeClassifier::load(const string& filename)
 {
-    data = Data();
-
     FileStorage fs(filename, FileStorage::READ);
     if (!fs.isOpened())
         return false;
 
-    return data.read(fs.getFirstTopLevelNode());
+    FileNode root = fs.getFirstTopLevelNode();
+
+    const float THRESHOLD_EPS = 1e-5;
+
+    int maxCatCount = representation->maxCatCount();
+
+    // load stages
+    FileNode stages_fn = root["stages"];
+    if( stages_fn.empty() )
+        return false;
+
+    for (FileNodeIterator stage_it = stages_fn.begin(); stage_it != stages_fn.end(); ++stage_it) {
+        FileNode stage_fn = *stage_it;
+
+        Stage stage;
+        stage.threshold = (float)stage_fn["stageThreshold"] - THRESHOLD_EPS;
+
+        FileNode nodes_fn = stage_fn["weakClassifiers"];
+        if(nodes_fn.empty())
+            return false;
+
+        for (FileNodeIterator node_it = nodes_fn.begin(); node_it != nodes_fn.end(); ++node_it) {
+            FileNode node_fn = *node_it;
+
+            Node *root = new Node;
+            loadRecursive(node_fn, root, maxCatCount);
+
+            stage.trees.append(root);
+        }
+
+        stages.append(stage);
+    }
+
+    return true;
 }
 
 int _CascadeClassifier::predict(const Mat &image, double &sum) const
 {
-    int nstages = (int)data.stages.size();
-    int nodeOfs = 0, leafOfs = 0;
-
-    size_t subsetSize = (data.ncategories + 31)/32;
-    const int *cascadeSubsets = &data.subsets[0];
-
-    const float *cascadeLeaves = &data.leaves[0];
-    const Data::DTreeNode *cascadeNodes = &data.nodes[0];
-    const Data::DTree *cascadeWeaks = &data.classifiers[0];
-    const Data::Stage *cascadeStages = &data.stages[0];
-
-    for (int stageIdx = 0; stageIdx < nstages; stageIdx++) {
-        const Data::Stage &stage = cascadeStages[stageIdx];
+    for (int stageIdx = 0; stageIdx < stages.size(); stageIdx++) {
+        Stage stage = stages[stageIdx];
         sum = 0;
 
-        for (int wi = 0; wi < stage.ntrees; wi++) {
-            const Data::DTree &weak = cascadeWeaks[stage.first + wi];
-            int idx = 0, root = nodeOfs;
+        for (int treeIdx = 0; treeIdx < stage.trees.size(); treeIdx++) {
+            Node *node = stage.trees[treeIdx];
 
-            do {
-                const Data::DTreeNode &node = cascadeNodes[root + idx];
-                if (data.ncategories > 0) {
-                    int c = (int)representation->evaluate(image, node.featureIdx);
-                    const int* subset = &cascadeSubsets[(root + idx)*subsetSize];
-                    idx = (subset[c>>5] & (1 << (c & 31))) ? node.left : node.right;
+            while (node->left) {
+                if (representation->maxCatCount() > 1) {
+                    int c = (int)representation->evaluate(image, node->featureIdx);
+                    node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
-                    double val = representation->evaluate(image, node.featureIdx);
-                    idx = val < node.threshold ? node.left : node.right;
+                    double val = representation->evaluate(image, node->featureIdx);
+                    node = val < node->threshold ? node->left : node->right;
                 }
-            } while( idx > 0 );
-
-            sum += cascadeLeaves[leafOfs - idx];
-            nodeOfs += weak.nodeCount;
-            leafOfs += weak.nodeCount + 1;
+            }
+            sum += node->value;
         }
-        if( sum < stage.threshold )
-            return -stageIdx;
+
+        if (sum < stage.threshold)
+            return stageIdx;
     }
-    return 1;
+
+    return stages.size();
 }
 
-void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objects,
-                                          vector<int>& rejectLevels,
-                                          vector<double>& levelWeights,
-                                          double scaleFactor, int minNeighbors,
-                                          Size minObjectSize, Size maxObjectSize,
-                                          bool outputRejectLevels )
+void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& objects, vector<int>& rejectLevels,
+                                                            vector<double>& levelWeights,
+                                                            double scaleFactor, int minNeighbors,
+                                                            Size minSize, Size maxSize) const
 {
     const double GROUP_EPS = 0.2;
 
     CV_Assert( scaleFactor > 1 && image.depth() == CV_8U );
 
-    if (data.stages.empty())
+    if (stages.empty())
         return;
 
-    if( maxObjectSize.height == 0 || maxObjectSize.width == 0 )
-        maxObjectSize = image.size();
+    if( maxSize.height == 0 || maxSize.width == 0 )
+        maxSize = image.size();
 
     Mat imageBuffer(image.rows + 1, image.cols + 1, CV_8U);
 
     for (double factor = 1; ; factor *= scaleFactor) {
-        Size originalWindowSize = data.origWinSize;
+        Size originalWindowSize = representation->preWindowSize();
 
         Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
         Size scaledImageSize(cvRound(image.cols/factor ), cvRound(image.rows/factor));
@@ -203,9 +240,9 @@ void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objec
 
         if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
             break;
-        if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
+        if (windowSize.width > maxSize.width || windowSize.height > maxSize.height)
             break;
-        if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
+        if (windowSize.width < minSize.width || windowSize.height < minSize.height)
             continue;
 
         Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
@@ -222,126 +259,17 @@ void _CascadeClassifier::detectMultiScale( const Mat& image, vector<Rect>& objec
                 double gypWeight;
                 int result = predict(window, gypWeight);
 
-                if (outputRejectLevels) {
-                    if (result == 1)
-                        result = -(int)data.stages.size();
-                    if (data.stages.size() + result < 4) {
-                        objects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                        rejectLevels.push_back(-result);
-                        levelWeights.push_back(gypWeight);
-                    }
-                }
-                else if (result > 0) {
+                if (stages.size() - result < 4) {
                     objects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
+                    rejectLevels.push_back(result);
+                    levelWeights.push_back(gypWeight);
                 }
+
                 if (result == 0)
                     x += yStep;
             }
         }
     }
 
-    if (outputRejectLevels)
-        groupRectangles(objects, rejectLevels, levelWeights, minNeighbors, GROUP_EPS);
-    else
-        groupRectangles(objects, minNeighbors, GROUP_EPS);
-}
-
-void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& objects,
-                                          double scaleFactor, int minNeighbors, Size minObjectSize, Size maxObjectSize)
-{
-    vector<int> fakeLevels;
-    vector<double> fakeWeights;
-    detectMultiScale( image, objects, fakeLevels, fakeWeights, scaleFactor,
-        minNeighbors, minObjectSize, maxObjectSize, false );
-}
-
-bool _CascadeClassifier::Data::read(const FileNode &root)
-{
-    static const float THRESHOLD_EPS = 1e-5f;
-
-    origWinSize.width = (int)root[CC_WIDTH];
-    origWinSize.height = (int)root[CC_HEIGHT];
-    CV_Assert( origWinSize.height > 0 && origWinSize.width > 0 );
-
-    isStumpBased = (int)(root[CC_STAGE_PARAMS][CC_MAX_DEPTH]) == 1 ? true : false;
-
-    // load feature params
-    FileNode fn = root[CC_FEATURE_PARAMS];
-    if( fn.empty() )
-        return false;
-
-    ncategories = fn[CC_MAX_CAT_COUNT];
-    int subsetSize = (ncategories + 31)/32,
-        nodeStep = 3 + ( ncategories>0 ? subsetSize : 1 );
-
-    // load stages
-    fn = root[CC_STAGES];
-    if( fn.empty() )
-        return false;
-
-    stages.reserve(fn.size());
-    classifiers.clear();
-    nodes.clear();
-
-    FileNodeIterator it = fn.begin(), it_end = fn.end();
-
-    for( int si = 0; it != it_end; si++, ++it )
-    {
-        FileNode fns = *it;
-        Stage stage;
-        stage.threshold = (float)fns[CC_STAGE_THRESHOLD] - THRESHOLD_EPS;
-        fns = fns[CC_WEAK_CLASSIFIERS];
-        if(fns.empty())
-            return false;
-        stage.ntrees = (int)fns.size();
-        stage.first = (int)classifiers.size();
-        stages.push_back(stage);
-        classifiers.reserve(stages[si].first + stages[si].ntrees);
-
-        FileNodeIterator it1 = fns.begin(), it1_end = fns.end();
-        for( ; it1 != it1_end; ++it1 ) // weak trees
-        {
-            FileNode fnw = *it1;
-            FileNode internalNodes = fnw[CC_INTERNAL_NODES];
-            FileNode leafValues = fnw[CC_LEAF_VALUES];
-            if( internalNodes.empty() || leafValues.empty() )
-                return false;
-
-            DTree tree;
-            tree.nodeCount = (int)internalNodes.size()/nodeStep;
-            classifiers.push_back(tree);
-
-            nodes.reserve(nodes.size() + tree.nodeCount);
-            leaves.reserve(leaves.size() + leafValues.size());
-            if( subsetSize > 0 )
-                subsets.reserve(subsets.size() + tree.nodeCount*subsetSize);
-
-            FileNodeIterator internalNodesIter = internalNodes.begin(), internalNodesEnd = internalNodes.end();
-
-            for( ; internalNodesIter != internalNodesEnd; ) // nodes
-            {
-                DTreeNode node;
-                node.left = (int)*internalNodesIter; ++internalNodesIter;
-                node.right = (int)*internalNodesIter; ++internalNodesIter;
-                node.featureIdx = (int)*internalNodesIter; ++internalNodesIter;
-                if( subsetSize > 0 )
-                {
-                    for( int j = 0; j < subsetSize; j++, ++internalNodesIter )
-                        subsets.push_back((int)*internalNodesIter);
-                    node.threshold = 0.f;
-                }
-                else
-                {
-                    node.threshold = (float)*internalNodesIter; ++internalNodesIter;
-                }
-                nodes.push_back(node);
-            }
-
-            internalNodesIter = leafValues.begin(), internalNodesEnd = leafValues.end();
-
-            for( ; internalNodesIter != internalNodesEnd; ++internalNodesIter ) // leaves
-                leaves.push_back((float)*internalNodesIter);
-        }
-    }
-    return true;
+    groupRectangles(objects, rejectLevels, levelWeights, minNeighbors, GROUP_EPS);
 }

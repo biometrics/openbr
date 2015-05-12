@@ -4,31 +4,6 @@
 #include <openbr/openbr_plugin.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#define CC_CASCADE_PARAMS "cascadeParams"
-#define CC_STAGE_TYPE     "stageType"
-#define CC_FEATURE_TYPE   "featureType"
-#define CC_HEIGHT         "height"
-#define CC_WIDTH          "width"
-
-#define CC_STAGE_NUM    "stageNum"
-#define CC_STAGES       "stages"
-#define CC_STAGE_PARAMS "stageParams"
-
-#define CC_BOOST            "BOOST"
-#define CC_MAX_DEPTH        "maxDepth"
-#define CC_WEAK_COUNT       "maxWeakCount"
-#define CC_STAGE_THRESHOLD  "stageThreshold"
-#define CC_WEAK_CLASSIFIERS "weakClassifiers"
-#define CC_INTERNAL_NODES   "internalNodes"
-#define CC_LEAF_VALUES      "leafValues"
-
-#define CC_FEATURES       "features"
-#define CC_FEATURE_PARAMS "featureParams"
-#define CC_MAX_CAT_COUNT  "maxCatCount"
-
-#define CC_LBP  "LBP"
-
-
 using namespace std;
 using namespace cv;
 
@@ -65,65 +40,37 @@ public:
     ~_CascadeClassifier() {}
 
     bool load(const string& filename);
-    void detectMultiScale(const Mat& image,
-                                   vector<Rect>& objects,
-                                   double scaleFactor=1.1,
-                                   int minNeighbors=3,
-                                   Size minSize=Size(),
-                                   Size maxSize=Size());
 
-    void detectMultiScale( const Mat& image,
+    void detectMultiScale(const Mat& image,
                                    vector<Rect>& objects,
                                    vector<int>& rejectLevels,
                                    vector<double>& levelWeights,
                                    double scaleFactor=1.1,
                                    int minNeighbors=3,
                                    Size minSize=Size(),
-                                   Size maxSize=Size(),
-                                   bool outputRejectLevels=false );
+                                   Size maxSize=Size()) const;
 
     int predict(const Mat &image, double &weight) const;
 
-    class Data
+    struct Node
     {
-    public:
-        struct DTreeNode
-        {
-            int featureIdx;
-            float threshold; // for ordered features only
-            int left;
-            int right;
-        };
+        Node() : left(NULL), right(NULL) {}
 
-        struct DTree
-        {
-            int nodeCount;
-        };
-
-        struct Stage
-        {
-            int first;
-            int ntrees;
-            float threshold;
-        };
-
-        bool read(const FileNode &node);
-
-        bool isStumpBased;
-
-        int stageType;
-        int featureType;
-        int ncategories;
-        Size origWinSize;
-
-        vector<Stage> stages;
-        vector<DTree> classifiers;
-        vector<DTreeNode> nodes;
-        vector<float> leaves;
-        vector<int> subsets;
+        int featureIdx;
+        float threshold; // for ordered features only
+        QList<int> subset; // for categorical features only
+        float value; // for leaf nodes only
+        Node *left;
+        Node *right;
     };
 
-    Data data;
+    struct Stage
+    {
+        QList<Node*> trees;
+        float threshold;
+    };
+
+    QList<Stage> stages;
     Representation *representation;
 };
 
