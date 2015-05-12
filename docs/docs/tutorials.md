@@ -66,28 +66,28 @@ As previously noted, an algorithm is defined in OpenBR through an algorithm stri
 3. It allows for algorithm parameter tuning without recompiling.
 4. It is completely unambiguous, both the OpenBR interpreter and anyone familiar with the project can understand exactly what your algorithm does just from this description.
 
-OpenBR provides a syntax for creating concise algorithm strings. The relevant symbols are:
+OpenBR provides a syntax for setting plugin property values and creating concise algorithm strings. The relevant symbols are:
 
 Symbol | Meaning
 --- | ---
 PluginName(property1=value1,...propertyN=valueN) | A plugin is described by its name (without the abstraction) and a list of properties and values. Properties of a plugin that are not specified are set to their default values.
-: | Seperates *templatelate enrollment* from *template comparison*. Enrollment is on the left and comparison is on the right. Defining an algorithm with a template comparison step is optional.
-\+ | Abbreviation for a Pipe. Joins Transforms together and projects input through them in series. The output of a Transform to the left of \+ become the input of the Transform to the right.
- / | Abbreviation for a Fork. Joins Transforms together and projects input through them in parallel. All Transforms receive the same input, the output of which is concatenated together.
- \{\} | Abbreviation for Cache. Cache the output of a plugin in memory for quick lookups later on.
- <\> | Abbreviation for LoadStore. Parameters for Transforms inside the brackets are stored on disk after training and loaded from disk before projection.
+: | Seperates *template enrollment* from *template comparison*. Enrollment is on the left of the colon in the algorithm string, while comparison is on the right. Defining an algorithm with a template comparison step is optional.
+\+ | Abbreviation for a [Pipe](api_docs/plugins/core.md#pipetransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in series. The output of a [Transform](api_docs/cpp_api/transform/transform.md) to the left of \+ become the input of the Transform to the right.
+ / | Abbreviation for a [Fork](api_docs/plugins/core.md#forktransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in parallel. All [Transform](api_docs/cpp_api/transform/transform.md)s receive the same input, the output of which is concatenated together.
+ \{\} | Abbreviation for [Cache](api_docs/plugins/core.md#cachetransform). Cache the output of a plugin in memory for quick lookups later on.
+ <\> | Abbreviation for [LoadStore](api_docs/plugins/core.md#loadstoretransform). Parameters for [Transform](api_docs/cpp_api/transform/transform.md)s inside the brackets are stored on disk after training and loaded from disk before projection.
  () | Order of operations. Change the order of operations using parantheses.
 
-Let's look at some of the important parts of the code base that make this possible:
+Let's look at some of the important parts of the codebase that make this possible:
 
 In ```AlgorithmCore::init()``` in ```openbr/core/core.cpp``` you can see the code for splitting the algorithm description at the colon.
-Shortly thereafter in this function we *make* the template generation and comparison objects.
-These make calls are defined in the public [C++ plugin API](api_docs/cpp_api.md) and can also be called from end user code.
+Shortly thereafter in this function we `make` the template generation and comparison objects.
+These `make` calls are defined in the public [C++ plugin API](api_docs/cpp_api.md) and can also be called from end user code.
 
 Below we discuss some of the source code for `Transform::make` in `openbr/openbr_plugin.cpp`.
-Note, the make functions for other plugin types are similar in spirit and will not be covered.
+Note, the `make` functions for other plugin types are similar in spirit and will not be covered.
 
-One of the first steps when converting the template enrollment description into a [Transform](api_docs/cpp_api/transform/transform.md) is to replace the operators, like '\+', with their full form:
+One of the first steps when converting the template generation description into [Transform](api_docs/cpp_api/transform/transform.md)s is to replace the operators, like '\+', with their full form:
 
     { // Check for use of '+' as shorthand for Pipe(...)
          QStringList words = parse(str, '+');
@@ -95,7 +95,7 @@ One of the first steps when converting the template enrollment description into 
              return make("Pipe([" + words.join(",") + "])", parent);
     }
 
-After operator expansion, the template enrollment description forms a tree, and the transform is constructed from this description starting recursively starting at the root of the tree:
+After operator expansion, the template enrollment description forms a tree, and the [Transform](api_docs/cpp_api/transform/transform.md) is constructed from this description recursively, starting at the root of the tree:
 
     Transform *transform = Factory<Transform>::make("." + str);
 
@@ -103,24 +103,33 @@ Let's use the algorithm in ```scripts/helloWorld.sh``` as an example. The algori
 
     Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95):Dist(L2)
 
-So what is happening here? Let's expand this using our new knowledge of OpenBR's algorithm syntax. First, the algorithm will be split into enrollment and comparison portions at the **:**. So enrollment becomes-
+Let's expand this using our new knowledge of OpenBR's algorithm syntax. First, the algorithm will be split into enrollment and comparison portions at the `:`. So enrollment becomes:
 
     Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)
 
-and comparison is-
+and comparison is:
 
     Dist(L2)
 
-On the enrollment side the **+'s** are converted into a [PipeTransform](api_docs/plugins/core.md#pipetransform) with the other plugins as children. Enrollment is transformed to
+On the enrollment side, [Transform](api_docs/cpp_api/transform/transform.md)s joined by the `+` operators are converted into children of a [Pipe](api_docs/plugins/core.md#pipetransform). Thus, the enrollment algorithm is constructed as:
 
     Pipe(transforms=[Open,Cvt(Gray),Cascade(FrontalFace),ASEFEyes,Affine(128,128,0.33,0.45,CvtFloat,PCA(0.95)])
 
-If you want all the details about what exactly this algorithm does, then you should read the [project](api_docs/cpp_api/transform/functions.md#project-1) function implemented by each of these plugins.
-The brief explanation is that it *reads the image from disk, converts it to grayscale, runs the face detector, runs the eye detector on any detected faces, uses the eye locations to normalize the face for rotation and scale, converts to floating point format, and then embeds it in a PCA subspaced trained on face images*.
+Low-level detail of the operations involved in this algorithm can be found in the [project](api_docs/cpp_api/transform/functions.md#project-1) function implemented by each of these [Transform](api_docs/cpp_api/transform/transform.md)s.
+To briefly summarize:
+
+	1. Reads the image from disk
+	2. Converts the image to grayscale
+	3. Detects faces
+	4. Detects eyes in detected faces
+	5. Normalize the face with respect to rotation and scale using the eye locations
+	6. Converts the image to floating point format
+	7. Embeds the image in a PCA subspace trained on face images
+	
 If you are familiar with face recognition, you will likely recognize this as the Eigenfaces[^1] algorithm.
 
 As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
-Since OpenBR expects similarity values when comparing templates and not dissimilarity values, the [DistDistance](api_docs/plugins/distance.md#distdistance) will return *-log(distance+1)* by default so that larger values indicate more similarity.
+Since OpenBR expects similarity values when comparing templates and not dissimilarity values, the [DistDistance](api_docs/plugins/distance.md#distdistance) will return *-log(distance+1)* by default so that smaller distances (in the Euclidean sense) indicate higher similarity.
 Note that [NegativeLogPlusOne](api_docs/plugins/distance.md#negativelogplusone) distance also exists such that you can convert the output of any distance using the above function.
 
 ---
@@ -153,7 +162,7 @@ Easy enough? You should see results printed to terminal that look like
     $ 100.00%  ELAPSED=00:00:00  REMAINING=00:00:00  COUNT=1
     $ 0.571219
 
-So what is 'FaceRecognition'? It's an abbrieviation to make running the algorithm easier. All of the algorithm abbreviations are located in ```openbr/plugins/core/algorithms.cpp```.
+So, what is `FaceRecognition`? It's an abbrieviation to simplify execution of the algorithm. All of the algorithm abbreviations are located in ```openbr/plugins/core/algorithms.cpp```.
 
 It is also possible to:
 
