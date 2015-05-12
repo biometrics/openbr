@@ -161,17 +161,17 @@ Need to remake this step with the new docs!
     3. Grab any available [Visual Studio Updates](http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update).
     4. Download and install [Windows 8 SDK](http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx).
 
-2. [Download and Install CMake 2.8.11.2](http://www.cmake.org/files/v2.8/cmake-2.8.11.2-win32-x86.exe)
+2. [Download and Install CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2-win32-x86.exe)
     1. During installation setup select "add CMake to PATH".
 
-3. [Download OpenCV 2.4.6.1](http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.6.1/opencv-2.4.6.1.tar.gz)
+3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download)
     1. Consider the free open source program [7-Zip](http://www.7-zip.org/) if you need a program to unarchive tarballs.
-    2. Move the "opencv-2.4.6.1" folder to "C:\".
-    3. Open "VS2012 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2012" -> "Visual Studio Tools" -> "VS2012 x64 Cross Tools Command Prompt") and enter:
+    2. Move the "opencv-2.4.11" folder to "C:\".
+    3. Open "VS2013 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2013" -> "Visual Studio Tools" -> "VS2013 x64 Cross Tools Command Prompt") and enter:
 
-            $ cd C:\opencv-2.4.6.1
-            $ mkdir build-msvc2012
-            $ cd build-msvc2012
+            $ cd C:\opencv-2.4.11
+            $ mkdir build-msvc2013
+            $ cd build-msvc2013
             $ cmake -G "NMake Makefiles" -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
             $ nmake
             $ nmake install
@@ -180,7 +180,7 @@ Need to remake this step with the new docs!
             $ nmake install
             $ nmake clean
 
-4. [Download and Install Qt 5.1.1](http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-msvc2012-x86_64-offline.exe)
+4. [Download and Install Qt 5.4.1](http://download.qt.io/official_releases/qt/5.4/5.4.1/qt-opensource-windows-x86-msvc2013_64-5.4.1.exe)
 
 5. Create a [GitHub](https://github.com/) account and follow their instructions for [setting up Git](https://help.github.com/articles/set-up-git).
     1. Launch "Git Bash" from the Desktop and clone OpenBR:
@@ -193,33 +193,33 @@ Need to remake this step with the new docs!
             $ git submodule update
 
 6. Build OpenBR!
-    1. From the VS2012 x64 Cross Tools Command Prompt:
+    1. From the VS2013 x64 Cross Tools Command Prompt:
 
             $ cd C:\openbr
-            $ mkdir build-msvc2012
-            $ cd build-msvc2012
-            $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv-2.4.6.1/build-msvc2012/install;C:/Qt/Qt5.1.1/5.1.1/msvc2012_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+            $ mkdir build-msvc2013
+            $ cd build-msvc2013
+            $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv-2.4.11/build-msvc2013/install;C:/Qt/5.4.1/msvc2013_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
             $ nmake
             $ nmake install
 
     2. Check out the "install" folder.
 
 7. Hack OpenBR!
-    1. From the VS2012 x64 Cross Tools Command Prompt:
-        $ C:\Qt\Qt5.1.1\Tools\QtCreator\bin\qtcreator.exe
+    1. From the VS2013 x64 Cross Tools Command Prompt:
+        $ C:\Qt\5.4.1\Tools\QtCreator\bin\qtcreator.exe
     2. From the Qt Creator "Tools" menu select "Options..."
     3. Under "Kits" select "Desktop (default)"
     4. For "Compiler:" select "Microsoft Visual C++ Compiler 11.0 (x86_amd64)" and click "OK"
     5. From the Qt Creator "File" menu select "Open File or Project...".
     6. Select "C:\openbr\CMakeLists.txt" then "Open".
-    7. If prompted for the location of CMake, enter "C:\Program Files (x86)\CMake 2.8\bin\cmake.exe".
-    8. Browse to your pre-existing build directory "C:\openbr\build-msvc2012" then select "Next".
+    7. If prompted for the location of CMake, enter "C:\Program Files (x86)\CMake 3.0.2\bin\cmake.exe".
+    8. Browse to your pre-existing build directory "C:\openbr\build-msvc2013" then select "Next".
     9. Select "Run CMake" then "Finish".
     10. You're all set! You can find more information on Qt Creator <a href="http://qt-project.org/doc/qtcreator">here</a> if you need.
 
 8. (Optional) Package OpenBR!
-    1. From the VS2012 x64 Cross Tools Command Prompt:
-        $ cd C:\openbr\build-msvc2012
+    1. From the VS2013 x64 Cross Tools Command Prompt:
+        $ cd C:\openbr\build-msvc2013
         $ cpack -G ZIP
 
 ---
