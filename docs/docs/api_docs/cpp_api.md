@@ -22,7 +22,7 @@ Plugin | Function
 [Gallery](cpp_api/gallery/gallery.md) | Used for I/O. Galleries handle file types that correspond to many objects (e.g. .csv., .xml, etc.).
 [Output](cpp_api/output/output.md) | Used for I/O. Outputs handle the results of [Distance](cpp_api/distance/distance.md) comparisons.
 [Representation](cpp_api/representation/representation.md) | Converts images into feature vectors. Slightly different then [Transform](cpp_api/transform/transform.md)s in implementation and available API calls.
-[Classifier](cpp_api/classifier/classifier.md) | Classifies feature vectors as members of specific classes.
+[Classifier](cpp_api/classifier/classifier.md) | Classifies feature vectors as members of specific classes or performs regression on them.
 
  Additionally, there are several child-abstractions for specific use cases. A few examples are:
 
