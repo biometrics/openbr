@@ -55,7 +55,6 @@ struct FeatureEvaluator
     ~FeatureEvaluator() {}
     void init(Representation *_representation, int _maxSampleCount);
     void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    void writeFeatures(cv::FileStorage &fs, const cv::Mat& featureMap) const;
     float operator()(int featureIdx, int sampleIdx) const { return representation->evaluate(data.row(sampleIdx), featureIdx); }
 
     int getNumFeatures() const { return representation->numFeatures(); }
@@ -77,7 +76,6 @@ struct CascadeBoostParams : CvBoostParams
     CascadeBoostParams(int _boostType, float _minHitRate, float _maxFalseAlarm,
                        double _weightTrimRate, int _maxDepth, int _maxWeakCount);
     virtual ~CascadeBoostParams() {}
-    void write( cv::FileStorage &fs ) const;
 };
 
 struct CascadeBoostTrainData : CvDTreeTrainData
@@ -128,12 +126,14 @@ public:
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
-    void write(cv::FileStorage &fs) const;
+    QList<CvBoostTree*> getClassifiers() const { return classifiers; }
 
 protected:
     virtual bool set_params(const CvBoostParams& _params);
     virtual void update_weights(CvBoostTree* tree);
     virtual bool isErrDesired();
+
+    QList<CvBoostTree*> classifiers;
 
     float threshold;
     float minHitRate, maxFalseAlarm;

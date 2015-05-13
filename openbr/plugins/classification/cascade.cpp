@@ -178,22 +178,9 @@ class CascadeClassifier : public Classifier
 
     void write(FileStorage &fs) const
     {
-        fs << CC_STAGE_TYPE << CC_BOOST;
-        fs << CC_FEATURE_TYPE << CC_LBP;
-        fs << CC_HEIGHT << 24;
-        fs << CC_WIDTH << 24;
+        fs << "stageCount" << stages.size();
 
-        CascadeBoostParams stageParams(CvBoost::GINI, 0.999, 0.5, 0.95, 1, 200);
-        fs << CC_STAGE_PARAMS << "{"; stageParams.write( fs ); fs << "}";
-
-        fs << CC_FEATURE_PARAMS << "{";
-        fs << CC_MAX_CAT_COUNT << stages.first()->maxCatCount();
-        fs << CC_FEATURE_SIZE << 1;
-        fs << "}";
-
-        fs << CC_STAGE_NUM << stages.size();
-
-        fs << CC_STAGES << "[";
+        fs << "stages" << "[";
         foreach (const Classifier *stage, stages) {
             fs << "{";
             stage->write(fs);

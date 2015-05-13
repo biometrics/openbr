@@ -154,11 +154,6 @@ void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
     representation->preprocess(img, integralImg);
 }
 
-void FeatureEvaluator::writeFeatures(FileStorage &fs, const Mat &featureMap) const
-{
-    representation->write(fs, featureMap);
-}
-
 //----------------------------- CascadeBoostParams -------------------------------------------------
 
 CascadeBoostParams::CascadeBoostParams() : minHitRate( 0.995F), maxFalseAlarm( 0.5F )
@@ -176,21 +171,6 @@ CascadeBoostParams::CascadeBoostParams( int _boostType,
     minHitRate = _minHitRate;
     maxFalseAlarm = _maxFalseAlarm;
     use_surrogates = use_1se_rule = truncate_pruned_tree = false;
-}
-
-void CascadeBoostParams::write( FileStorage &fs ) const
-{
-    string boostTypeStr = boost_type == CvBoost::DISCRETE ? CC_DISCRETE_BOOST :
-                          boost_type == CvBoost::REAL ? CC_REAL_BOOST :
-                          boost_type == CvBoost::LOGIT ? CC_LOGIT_BOOST :
-                          boost_type == CvBoost::GENTLE ? CC_GENTLE_BOOST : string();
-    CV_Assert( !boostTypeStr.empty() );
-    fs << CC_BOOST_TYPE << boostTypeStr;
-    fs << CC_MINHITRATE << minHitRate;
-    fs << CC_MAXFALSEALARM << maxFalseAlarm;
-    fs << CC_TRIM_RATE << weight_trim_rate;
-    fs << CC_MAX_DEPTH << max_depth;
-    fs << CC_WEAK_COUNT << weak_count;
 }
 
 //---------------------------- CascadeBoostTrainData -----------------------------
@@ -826,7 +806,7 @@ CvDTreeNode* CascadeBoostTree::predict( int sampleIdx ) const
     return node;
 }
 
-/*
+
 static void writeRecursive(FileStorage &fs, CvDTreeNode *node, int maxCatCount)
 {
     bool hasChildren = node->left ? true : false;
@@ -835,7 +815,7 @@ static void writeRecursive(FileStorage &fs, CvDTreeNode *node, int maxCatCount)
     if (!hasChildren) // Write the leaf value
         fs << "value" << node->value; // value of the node. Only relevant for leaf nodes
     else { // Write the splitting information and then the children
-        if (maxCatCount > 0) {
+        if (maxCatCount > 1) {
             fs << "subset" << "[:";
             for (int i = 0; i < ((maxCatCount + 31) / 32); i++)
                 fs << node->split->subset[i]; // subset to split on (categorical features)
@@ -857,7 +837,7 @@ void CascadeBoostTree::write(FileStorage &fs)
     writeRecursive(fs, root, ((CascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount());
     fs << "}";
 }
-
+/*
 static void readRecursive(const FileNode &fn, CvDTreeNode *node, CvDTreeTrainData *data)
 {
     bool hasChildren = (int)fn["hasChildren"];
@@ -897,67 +877,8 @@ void CascadeBoostTree::read(const FileNode &fn, CvBoost* _ensemble, CvDTreeTrain
 
     root = data->new_node(0, 0, 0, 0);
     readRecursive(fn, root, data);
-}*/
-
-void CascadeBoostTree::write(FileStorage &fs)
-{
-    int maxCatCount = ((CascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount();
-    int subsetN = (maxCatCount + 31)/32;
-    queue<CvDTreeNode*> internalNodesQueue;
-    int size = (int)pow( 2.f, (float)ensemble->get_params().max_depth);
-    Ptr<float> leafVals = new float[size];
-    int leafValIdx = 0;
-    int internalNodeIdx = 1;
-    CvDTreeNode* tempNode;
-
-    CV_DbgAssert( root );
-    internalNodesQueue.push( root );
-
-    fs << "{";
-    fs << CC_INTERNAL_NODES << "[:";
-    while (!internalNodesQueue.empty())
-    {
-        tempNode = internalNodesQueue.front();
-        CV_Assert( tempNode->left );
-        if ( !tempNode->left->left && !tempNode->left->right) // left node is leaf
-        {
-            leafVals[-leafValIdx] = (float)tempNode->left->value;
-            fs << leafValIdx-- ;
-        }
-        else
-        {
-            internalNodesQueue.push( tempNode->left );
-            fs << internalNodeIdx++;
-        }
-        CV_Assert( tempNode->right );
-        if ( !tempNode->right->left && !tempNode->right->right) // right node is leaf
-        {
-            leafVals[-leafValIdx] = (float)tempNode->right->value;
-            fs << leafValIdx--;
-        }
-        else
-        {
-            internalNodesQueue.push( tempNode->right );
-            fs << internalNodeIdx++;
-        }
-        int fidx = tempNode->split->var_idx;
-
-        fs << fidx;
-        if ( !maxCatCount )
-            fs << tempNode->split->ord.c;
-        else
-            for( int i = 0; i < subsetN; i++ )
-                fs << tempNode->split->subset[i];
-        internalNodesQueue.pop();
-    }
-    fs << "]"; // CC_INTERNAL_NODES
-
-    fs << CC_LEAF_VALUES << "[:";
-    for (int ni = 0; ni < -leafValIdx; ni++)
-        fs << leafVals[ni];
-    fs << "]"; // CC_LEAF_VALUES
-    fs << "}";
 }
+*/
 
 void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 {
@@ -1214,6 +1135,7 @@ bool CascadeBoost::train( const FeatureEvaluator* _featureEvaluator,
             break;
         }
 
+        classifiers.append(tree);
         cvSeqPush( weak, &tree );
         update_weights( tree );
         trim_weights();
@@ -1540,22 +1462,5 @@ bool CascadeBoost::isErrDesired()
     cout << "+----+---------+---------+" << endl;
 
     return falseAlarm <= maxFalseAlarm;
-}
-
-void CascadeBoost::write(FileStorage &fs) const
-{
-//    char cmnt[30];
-    CascadeBoostTree* weakTree;
-    fs << CC_WEAK_COUNT << weak->total;
-    fs << CC_STAGE_THRESHOLD << threshold;
-    fs << CC_WEAK_CLASSIFIERS << "[";
-    for( int wi = 0; wi < weak->total; wi++)
-    {
-        /*sprintf( cmnt, "tree %i", wi );
-        cvWriteComment( fs, cmnt, 0 );*/
-        weakTree = *((CascadeBoostTree**) cvGetSeqElem( weak, wi ));
-        weakTree->write(fs);
-    }
-    fs << "]";
 }
 
