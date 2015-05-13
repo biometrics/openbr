@@ -118,7 +118,7 @@ class BoostedForestClassifier : public Classifier
             featureEvaluator.setImage(images[i], labels[i], i);
 
         CascadeBoost boost;
-        boost.train(&featureEvaluator, images.size(), 1024, 1024, params);
+        boost.train(&featureEvaluator, images.size(), 2048, 2048, params);
 
         // Convert into simpler, cleaner cascade after training
         threshold = boost.getThreshold();
@@ -151,8 +151,8 @@ class BoostedForestClassifier : public Classifier
         }
 
         if (sum < threshold)
-            return -std::abs(sum);
-        return std::abs(sum);
+            return 0.0f; //-std::abs(sum);
+        return 1.0f; //std::abs(sum);
     }
 
     int numFeatures() const

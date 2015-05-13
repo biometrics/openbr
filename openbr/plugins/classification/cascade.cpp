@@ -157,7 +157,12 @@ class CascadeClassifier : public Classifier
 
     float classify(const Mat &image) const
     {
-        if (stages.size() == 0) // special case for empty cascade
+        foreach (const Classifier *stage, stages)
+            if (stage->classify(image) == 0)
+                return 0.0f;
+        return 1.0f;
+
+        /*if (stages.size() == 0) // special case for empty cascade
             return 1.0f;
 
         float result = 0.0f;
@@ -167,7 +172,7 @@ class CascadeClassifier : public Classifier
             if (result < 0)
                 return stageIdx > (stages.size() - 4) ? stageIdx * result : 0.0f;
         }
-        return std::abs(stages.size() * result);
+        return std::abs(stages.size() * result);*/
     }
 
     int numFeatures() const
