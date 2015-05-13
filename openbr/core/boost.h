@@ -77,7 +77,6 @@ struct CascadeBoostParams : CvBoostParams
     CascadeBoostParams(int _boostType, float _minHitRate, float _maxFalseAlarm,
                        double _weightTrimRate, int _maxDepth, int _maxWeakCount);
     virtual ~CascadeBoostParams() {}
-    void write( cv::FileStorage &fs ) const;
 };
 
 struct CascadeBoostTrainData : CvDTreeTrainData
@@ -113,7 +112,6 @@ class CascadeBoostTree : public CvBoostTree
 {
 public:
     virtual CvDTreeNode* predict(int sampleIdx) const;
-    void write(cv::FileStorage &fs);
 
 protected:
     virtual void split_node_data(CvDTreeNode* n);
@@ -128,12 +126,14 @@ public:
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
-    void write(cv::FileStorage &fs) const;
+    const QList<CvBoostTree*> getTrees() const { return trees; }
 
 protected:
     virtual bool set_params(const CvBoostParams& _params);
     virtual void update_weights(CvBoostTree* tree);
     virtual bool isErrDesired();
+
+    QList<CvBoostTree*> trees;
 
     float threshold;
     float minHitRate, maxFalseAlarm;
