@@ -46,7 +46,7 @@ static void loadModel(model &m, QDataStream &stream)
 }
 
 /*!
- * \brief DOCUMENT ME SCOTT
+ * \brief Wraps LibLinear's Linear SVM framework.
  * \author Scott Klum \cite sklum
  */
 class Linear : public Transform
