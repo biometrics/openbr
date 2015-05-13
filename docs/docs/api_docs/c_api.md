@@ -7,7 +7,7 @@ In other words, arguments to many functions are file paths that specify either a
 File extensions are relied upon to determine *how* files should be interpreted in the context of the function being called.
 The [C++ Plugin API](cpp_api.md) should be used if more fine-grained control is required.
 
-## Import API considerations
+## Important API Considerations
 
 Name | Consideration
 --- | ---
@@ -17,11 +17,11 @@ Name | Consideration
 
 ## Using the API
 
-To use the API in your project use-
+To use the API in your project include the following file:
 
     #include <openbr/openbr.h>
 
-[CMake](http://www.cmake.org/) developers may wish to the cmake configuration file found at
+[CMake](http://www.cmake.org/) developers may wish to the cmake configuration file found at:
 
     share/openbr/cmake/OpenBRConfig.cmake
 
