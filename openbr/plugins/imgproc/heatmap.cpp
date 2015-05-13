@@ -9,8 +9,8 @@ namespace br
 {
 
 /*!
- * \brief DOCUMENT ME
- * \author Unknown \cite unknown
+ * \brief Applies a colormap to src.
+ * \author Scott Klum \cite sklum
  */
 class HeatmapTransform : public UntrainableTransform
 {
