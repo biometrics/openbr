@@ -155,14 +155,13 @@ Need to remake this step with the new docs!
 
 # Windows
 
-1. [Download Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) and install.
+1. [Download Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) and install. You will have to register with Microsoft, but it's free.
     1. Consider the free open source program [WinCDEmu](http://wincdemu.sysprogs.org) if you need a program to mount ISO images.
-    2. You will have to register with Microsoft after installation, but it's free.
-    3. Grab any available [Visual Studio Updates](http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update).
-    4. Download and install [Windows 8 SDK](http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx).
+    2. Grab any available [Visual Studio Updates](http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update).
+    3. Download and install [Windows 8 SDK](http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx).
 
 2. [Download and Install CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2-win32-x86.exe)
-    1. During installation setup select "add CMake to PATH".
+    1. During installation setup select "Add CMake to PATH".
 
 3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download)
     1. Consider the free open source program [7-Zip](http://www.7-zip.org/) if you need a program to unarchive tarballs.
@@ -198,7 +197,7 @@ Need to remake this step with the new docs!
             $ cd C:\openbr
             $ mkdir build-msvc2013
             $ cd build-msvc2013
-            $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv-2.4.11/build-msvc2013/install;C:/Qt/5.4.1/msvc2013_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+            $ cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv-2.4.11/build/install;C:/Qt/Qt5.4.1/5.4/msvc2013_64" -DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
             $ nmake
             $ nmake install
 
@@ -206,7 +205,7 @@ Need to remake this step with the new docs!
 
 7. Hack OpenBR!
     1. From the VS2013 x64 Cross Tools Command Prompt:
-        $ C:\Qt\5.4.1\Tools\QtCreator\bin\qtcreator.exe
+        $ C:\Qt\Qt5.4.1\Tools\QtCreator\bin\qtcreator.exe
     2. From the Qt Creator "Tools" menu select "Options..."
     3. Under "Kits" select "Desktop (default)"
     4. For "Compiler:" select "Microsoft Visual C++ Compiler 11.0 (x86_amd64)" and click "OK"
