@@ -124,6 +124,7 @@ void br::groupRectangles(vector<Rect>& rectList, vector<int>& rejectLevels, vect
 static void loadRecursive(const FileNode &fn, _CascadeClassifier::Node *node, int maxCatCount)
 {
     bool hasChildren = (int)fn["hasChildren"];
+
     if (hasChildren) {
         if (maxCatCount > 1) {
             FileNode subset_fn = fn["subset"];
@@ -158,6 +159,7 @@ bool _CascadeClassifier::load(const string& filename)
 
     // load stages
     FileNode stages_fn = root["stages"];
+
     if( stages_fn.empty() )
         return false;
 
@@ -168,6 +170,7 @@ bool _CascadeClassifier::load(const string& filename)
         stage.threshold = (float)stage_fn["stageThreshold"] - THRESHOLD_EPS;
 
         FileNode nodes_fn = stage_fn["weakClassifiers"];
+
         if(nodes_fn.empty())
             return false;
 

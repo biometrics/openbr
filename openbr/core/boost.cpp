@@ -806,6 +806,7 @@ CvDTreeNode* CascadeBoostTree::predict( int sampleIdx ) const
     return node;
 }
 
+<<<<<<< HEAD
 
 static void writeRecursive(FileStorage &fs, CvDTreeNode *node, int maxCatCount)
 {
@@ -880,6 +881,8 @@ void CascadeBoostTree::read(const FileNode &fn, CvBoost* _ensemble, CvDTreeTrain
 }
 */
 
+=======
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
 void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 {
     int n = node->sample_count, nl, nr, scount = data->sample_count;
@@ -1135,7 +1138,11 @@ bool CascadeBoost::train( const FeatureEvaluator* _featureEvaluator,
             break;
         }
 
+<<<<<<< HEAD
         classifiers.append(tree);
+=======
+        trees.append(tree);
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
         cvSeqPush( weak, &tree );
         update_weights( tree );
         trim_weights();
@@ -1463,4 +1470,7 @@ bool CascadeBoost::isErrDesired()
 
     return falseAlarm <= maxFalseAlarm;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e

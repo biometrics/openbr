@@ -111,7 +111,6 @@ class CascadeBoostTree : public CvBoostTree
 {
 public:
     virtual CvDTreeNode* predict(int sampleIdx) const;
-    void write(cv::FileStorage &fs);
 
 protected:
     virtual void split_node_data(CvDTreeNode* n);
@@ -126,14 +125,22 @@ public:
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
+<<<<<<< HEAD
     QList<CvBoostTree*> getClassifiers() const { return classifiers; }
+=======
+    const QList<CvBoostTree*> getTrees() const { return trees; }
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
 
 protected:
     virtual bool set_params(const CvBoostParams& _params);
     virtual void update_weights(CvBoostTree* tree);
     virtual bool isErrDesired();
 
+<<<<<<< HEAD
     QList<CvBoostTree*> classifiers;
+=======
+    QList<CvBoostTree*> trees;
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
 
     float threshold;
     float minHitRate, maxFalseAlarm;

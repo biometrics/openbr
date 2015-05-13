@@ -10,16 +10,24 @@ struct Node
 {
     Node() : left(NULL), right(NULL) {}
 
+<<<<<<< HEAD
     float value;
 
     float threshold; // For ordered features
     QList<int> subset; // For categorical features
     int featureIdx;
 
+=======
+    int featureIdx;
+    float threshold; // for ordered features only
+    QList<int> subset; // for categorical features only
+    float value; // for leaf nodes only
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
     Node *left;
     Node *right;
 };
 
+<<<<<<< HEAD
 static void buildTreeRecursive(Node *node, const CvDTreeNode *cv_node, int maxCatCount)
 {
     if (!cv_node->left) // Write the leaf value
@@ -37,6 +45,26 @@ static void buildTreeRecursive(Node *node, const CvDTreeNode *cv_node, int maxCa
         buildTreeRecursive(node->left, cv_node->left, maxCatCount);
         node->right = new Node;
         buildTreeRecursive(node->right, cv_node->right, maxCatCount);
+=======
+static void buildTreeRecursive(Node *node, const CvDTreeNode *tree_node, int maxCatCount)
+{
+    if (tree_node->left) {
+        if (maxCatCount > 1) {
+            for (int i = 0; i < (maxCatCount + 31)/32; i++)
+                node->subset.append(tree_node->split->subset[i]);
+        } else {
+            node->threshold = tree_node->split->ord.c;
+        }
+
+        node->featureIdx = tree_node->split->var_idx;
+
+        node->left = new Node;
+        buildTreeRecursive(node->left, tree_node->left, maxCatCount);
+        node->right = new Node;
+        buildTreeRecursive(node->right, tree_node->right, maxCatCount);
+    } else {
+        node->value = tree_node->value;
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
     }
 }
 
@@ -46,10 +74,17 @@ static void writeRecursive(FileStorage &fs, const Node *node, int maxCatCount)
     fs << "hasChildren" << hasChildren;
 
     if (!hasChildren) // Write the leaf value
+<<<<<<< HEAD
         fs << "value" << node->value; // value of the node. Only relevant for leaf nodes
     else { // Write the splitting information and then the children
         if (maxCatCount > 1) {
             fs << "subset" << "[:";
+=======
+        fs << "value" << node->value; // value of the node.
+    else { // Write the splitting information and then the children
+        if (maxCatCount > 1) {
+            fs << "subset" << "[";
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
             for (int i = 0; i < ((maxCatCount + 31) / 32); i++)
                 fs << node->subset[i]; // subset to split on (categorical features)
             fs << "]";
@@ -64,6 +99,32 @@ static void writeRecursive(FileStorage &fs, const Node *node, int maxCatCount)
     }
 }
 
+<<<<<<< HEAD
+=======
+static void readRecursive(const FileNode &fn, Node *node, int maxCatCount)
+{
+    bool hasChildren = (int)fn["hasChildren"];
+    if (!hasChildren) {
+        node->value = (float)fn["value"];
+    } else {
+        if (maxCatCount > 1) {
+            FileNode subset_fn = fn["subset"];
+            for (FileNodeIterator subset_it = subset_fn.begin(); subset_it != subset_fn.end(); ++subset_it)
+                node->subset.append((int)*subset_it);
+        } else {
+            node->threshold = (float)fn["threshold"];
+        }
+
+        node->featureIdx = (int)fn["feature_idx"];
+
+        node->left = new Node;
+        readRecursive(fn["left"], node->left, maxCatCount);
+        node->right = new Node;
+        readRecursive(fn["right"], node->right, maxCatCount);
+    }
+}
+
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
 class BoostedForestClassifier : public Classifier
 {
     Q_OBJECT
@@ -97,10 +158,18 @@ class BoostedForestClassifier : public Classifier
 
         CascadeBoost boost;
         boost.train(&featureEvaluator, images.size(), 2048, 2048, params);
+<<<<<<< HEAD
 
         threshold = boost.getThreshold();
 
         foreach (const CvBoostTree *tree, boost.getClassifiers()) {
+=======
+
+        // Convert into simpler, cleaner cascade after training
+        threshold = boost.getThreshold();
+
+        foreach (const CvBoostTree *tree, boost.getTrees()) {
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
             Node *root = new Node;
             buildTreeRecursive(root, tree->get_root(), representation->maxCatCount());
             weakClassifiers.append(root);
@@ -109,6 +178,7 @@ class BoostedForestClassifier : public Classifier
 
     float classify(const Mat &image) const
     {
+<<<<<<< HEAD
         float sum = 0;
         foreach (const Node *root, weakClassifiers) {
             const Node *node = root;
@@ -119,12 +189,33 @@ class BoostedForestClassifier : public Classifier
                     node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
                     float val = representation->evaluate(image, node->featureIdx);
+=======
+        Mat pp;
+        representation->preprocess(image, pp);
+
+        float sum = 0;
+
+        foreach (const Node *node, weakClassifiers) {
+            while (node->left) {
+                if (representation->maxCatCount() > 1) {
+                    int c = (int)representation->evaluate(pp, node->featureIdx);
+                    node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
+                } else {
+                    double val = representation->evaluate(pp, node->featureIdx);
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
                     node = val < node->threshold ? node->left : node->right;
                 }
             }
             sum += node->value;
         }
+<<<<<<< HEAD
         return sum < threshold - FLT_EPSILON ? 0.0 : 1.0;
+=======
+
+        if (sum < threshold)
+            return 0.0f; //-std::abs(sum);
+        return 1.0f; //std::abs(sum);
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
     }
 
     int numFeatures() const
@@ -144,7 +235,11 @@ class BoostedForestClassifier : public Classifier
 
     void write(FileStorage &fs) const
     {
+<<<<<<< HEAD
         fs << "weakCount" << weakClassifiers.size();
+=======
+        fs << "numWeak" << weakClassifiers.size();
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
         fs << "stageThreshold" << threshold;
         fs << "weakClassifiers" << "[";
         foreach (const Node *root, weakClassifiers) {
@@ -153,6 +248,25 @@ class BoostedForestClassifier : public Classifier
             fs << "}";
         }
         fs << "]";
+<<<<<<< HEAD
+=======
+    }
+
+    void read(const FileNode &node)
+    {
+        weakClassifiers.reserve((int)node["numWeak"]);
+        threshold = (float)node["stageThreshold"];
+
+        FileNode weaks_fn = node["weakClassifiers"];
+        for (FileNodeIterator weaks_it = weaks_fn.begin(); weaks_it != weaks_fn.end(); ++weaks_it) {
+            FileNode weak_fn = *weaks_it;
+
+            Node *root = new Node;
+            readRecursive(weak_fn, root, representation->maxCatCount());
+
+            weakClassifiers.append(root);
+        }
+>>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
     }
 };
 
