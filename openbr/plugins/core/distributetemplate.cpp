@@ -27,7 +27,7 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
 }
 
 /*!
- * \brief DOCUMENT ME
+ * \brief DOCUMENT ME CHARLES
  * \author Unknown \cite unknown
  */
 class DistributeTemplateTransform : public MetaTransform

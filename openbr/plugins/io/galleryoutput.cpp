@@ -20,7 +20,7 @@ namespace br
 {
 
 /*!
- * \brief DOCUMENT ME
+ * \brief DOCUMENT ME CHARLES
  * \author Unknown \cite unknown
  */
 class GalleryOutputTransform : public TimeVaryingTransform
