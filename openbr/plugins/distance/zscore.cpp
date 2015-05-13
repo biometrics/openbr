@@ -21,8 +21,9 @@ namespace br
 {
 
 /*!
- * \brief DOCUMENT ME
- * \author Unknown \cite unknown
+ * \brief Performs zscore normalization on distances at test time by learning mean
+ *        and standard deviation parameters during training.
+ * \author Scott Klum \cite sklum
  */
 class ZScoreDistance : public Distance
 {
