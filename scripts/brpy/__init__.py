@@ -1,18 +1,47 @@
 from ctypes import *
 import os
 
+# some notes on ctypes:
+# first, you have to make an object that talks directly to the compiled C object
+# then, for each function in the C API, the user must define the input/return types
+# not setting the argtypes means no args, not setting restypes is void
+# there are the normal types, like c_int, c_bool, c_float, c_int_p (char*)
+# for char** and *char[], we use POINTER(c_char_p)
+# and c_void_p for void*
+
+# these helper functions are just for code reuse -
+# they generate common arguments for the  C API functions
+
 def _string_args(n):
-	s  = []
-	for i in range(n):
-		s.append(c_char_p)
-	return s
+    '''
+    Returns n char*
+    '''
+    s  = []
+    for i in range(n):
+        s.append(c_char_p)
+    return s
 
 def _var_string_args(n):
-	s = [c_int, POINTER(c_char_p)]
-	s.extend(_string_args(n))
-	return s
+    '''
+    Returns one int and one char** followed by n char*
+    '''
+    s = [c_int, POINTER(c_char_p)]
+    s.extend(_string_args(n))
+    return s
 
 def _handle_string_func(func):
+    '''
+    A helper function to make the C functions 
+    that populate string buffers more pythonic.
+    The functions in the C API return an int 
+    (the length of the returned string buffer) 
+    and put the return value in a string buffer.
+    This function replaces the call to the C obj with two calls - 
+        a) one with empty string to get length
+        b) one with a string of that length to get the actual value
+    Then it returns the string itself. This way, the user of brpy 
+    doesn't need to do this stupid magic for themselves. Hooray!
+    '''
     def call_func(*args):
         howlong = func('', 0, *args)
         msg = 'x'*(howlong-1)
