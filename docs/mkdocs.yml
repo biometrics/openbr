@@ -25,7 +25,7 @@ pages:
 - [api_docs/c_api.md, API Docs, C API]
 - [api_docs/c_api/typedefs.md, C API, Typedefs]
 - [api_docs/c_api/functions.md, C API, Functions]
-
+- [api_docs/python_api.md, API Docs, Python wrapper API]
 - [api_docs/cpp_api.md, API Docs, C++ Plugin API]
 
 # API Functions
