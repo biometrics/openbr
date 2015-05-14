@@ -156,9 +156,6 @@ Need to remake this step with the new docs!
 # Windows
 
 1. [Download Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) and install. You will have to register with Microsoft, but it's free.
-    1. Consider the free open source program [WinCDEmu](http://wincdemu.sysprogs.org) if you need a program to mount ISO images.
-    2. Grab any available [Visual Studio Updates](http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update).
-    3. Download and install [Windows 8 SDK](http://msdn.microsoft.com/en-us/windows/hardware/hh852363.aspx).
 
 2. [Download and Install CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2-win32-x86.exe)
     1. During installation setup select "Add CMake to PATH".
