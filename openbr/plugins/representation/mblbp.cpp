@@ -58,6 +58,7 @@ class MBLBPRepresentation : public Representation
         return result;
     }
 
+    void write(FileStorage &fs, const Mat &featureMap);
     int numFeatures() const { return features.size(); }
     Size preWindowSize() const { return Size(winWidth, winHeight); }
     Size postWindowSize() const { return Size(winWidth + 1, winHeight + 1); }
@@ -77,6 +78,20 @@ class MBLBPRepresentation : public Representation
 };
 
 BR_REGISTER(Representation, MBLBPRepresentation)
+
+void MBLBPRepresentation::write(FileStorage &fs, const Mat &featureMap)
+{
+    fs << "features" << "[";
+    const Mat_<int>& featureMap_ = (const Mat_<int>&)featureMap;
+    for ( int fi = 0; fi < featureMap.cols; fi++ )
+        if ( featureMap_(0, fi) >= 0 )
+        {
+            fs << "{";
+            features[fi].write( fs );
+            fs << "}";
+        }
+    fs << "]";
+}
 
 MBLBPRepresentation::Feature::Feature( int offset, int x, int y, int _blockWidth, int _blockHeight )
 {

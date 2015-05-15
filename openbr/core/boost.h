@@ -4,43 +4,6 @@
 #include "ml.h"
 #include <openbr/openbr_plugin.h>
 
-#define CC_CASCADE_FILENAME "cascade.xml"
-#define CC_PARAMS_FILENAME "params.xml"
-
-#define CC_CASCADE_PARAMS "cascadeParams"
-#define CC_STAGE_TYPE "stageType"
-#define CC_FEATURE_TYPE "featureType"
-#define CC_HEIGHT "height"
-#define CC_WIDTH  "width"
-
-#define CC_STAGE_NUM    "stageNum"
-#define CC_STAGES       "stages"
-#define CC_STAGE_PARAMS "stageParams"
-
-#define CC_BOOST            "BOOST"
-#define CC_BOOST_TYPE       "boostType"
-#define CC_DISCRETE_BOOST   "DAB"
-#define CC_REAL_BOOST       "RAB"
-#define CC_LOGIT_BOOST      "LB"
-#define CC_GENTLE_BOOST     "GAB"
-#define CC_MINHITRATE       "minHitRate"
-#define CC_MAXFALSEALARM    "maxFalseAlarm"
-#define CC_TRIM_RATE        "weightTrimRate"
-#define CC_MAX_DEPTH        "maxDeptrh"
-#define CC_WEAK_COUNT       "maxWeakCount"
-#define CC_STAGE_THRESHOLD  "stageThreshold"
-#define CC_WEAK_CLASSIFIERS "weakClassifiers"
-#define CC_INTERNAL_NODES   "internalNodes"
-#define CC_LEAF_VALUES      "leafValues"
-
-#define CC_FEATURES       "features"
-#define CC_FEATURE_PARAMS "featureParams"
-#define CC_MAX_CAT_COUNT  "maxCatCount"
-#define CC_FEATURE_SIZE   "featSize"
-
-#define CC_LBP  "LBP"
-#define CC_RECT "rect"
-
 #ifdef _WIN32
 #define TIME( arg ) (((double) clock()) / CLOCKS_PER_SEC)
 #else
@@ -125,22 +88,14 @@ public:
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
-<<<<<<< HEAD
-    QList<CvBoostTree*> getClassifiers() const { return classifiers; }
-=======
-    const QList<CvBoostTree*> getTrees() const { return trees; }
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
+    QList<CvBoostTree *> getClassifers() const { return classifiers; }
 
 protected:
     virtual bool set_params(const CvBoostParams& _params);
     virtual void update_weights(CvBoostTree* tree);
     virtual bool isErrDesired();
 
-<<<<<<< HEAD
-    QList<CvBoostTree*> classifiers;
-=======
-    QList<CvBoostTree*> trees;
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
+    QList<CvBoostTree *> classifiers;
 
     float threshold;
     float minHitRate, maxFalseAlarm;

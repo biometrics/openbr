@@ -124,9 +124,10 @@ void br::groupRectangles(vector<Rect>& rectList, vector<int>& rejectLevels, vect
 static void loadRecursive(const FileNode &fn, _CascadeClassifier::Node *node, int maxCatCount)
 {
     bool hasChildren = (int)fn["hasChildren"];
-
-    if (hasChildren) {
-        if (maxCatCount > 1) {
+    if (!hasChildren)
+        node->value = (float)fn["value"];
+    else {
+        if (maxCatCount > 0) {
             FileNode subset_fn = fn["subset"];
             for (FileNodeIterator subset_it = subset_fn.begin(); subset_it != subset_fn.end(); ++subset_it)
                 node->subset.append((int)*subset_it);
@@ -134,14 +135,11 @@ static void loadRecursive(const FileNode &fn, _CascadeClassifier::Node *node, in
             node->threshold = (float)fn["threshold"];
         }
 
-        node->featureIdx = (int)fn["feature_idx"];
+        node->featureIdx = (int)fn["featureIdx"];
 
-        node->left = new _CascadeClassifier::Node;
+        node->left = new _CascadeClassifier::Node; node->right = new _CascadeClassifier::Node;
         loadRecursive(fn["left"], node->left, maxCatCount);
-        node->right = new _CascadeClassifier::Node;
         loadRecursive(fn["right"], node->right, maxCatCount);
-    } else {
-        node->value = (float)fn["value"];
     }
 }
 
@@ -159,7 +157,6 @@ bool _CascadeClassifier::load(const string& filename)
 
     // load stages
     FileNode stages_fn = root["stages"];
-
     if( stages_fn.empty() )
         return false;
 
@@ -170,7 +167,6 @@ bool _CascadeClassifier::load(const string& filename)
         stage.threshold = (float)stage_fn["stageThreshold"] - THRESHOLD_EPS;
 
         FileNode nodes_fn = stage_fn["weakClassifiers"];
-
         if(nodes_fn.empty())
             return false;
 

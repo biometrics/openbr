@@ -806,38 +806,6 @@ CvDTreeNode* CascadeBoostTree::predict( int sampleIdx ) const
     return node;
 }
 
-<<<<<<< HEAD
-
-static void writeRecursive(FileStorage &fs, CvDTreeNode *node, int maxCatCount)
-{
-    bool hasChildren = node->left ? true : false;
-    fs << "hasChildren" << hasChildren;
-
-    if (!hasChildren) // Write the leaf value
-        fs << "value" << node->value; // value of the node. Only relevant for leaf nodes
-    else { // Write the splitting information and then the children
-        if (maxCatCount > 1) {
-            fs << "subset" << "[:";
-            for (int i = 0; i < ((maxCatCount + 31) / 32); i++)
-                fs << node->split->subset[i]; // subset to split on (categorical features)
-            fs << "]";
-        } else {
-            fs << "threshold" << node->split->ord.c; // threshold to split on (ordered features)
-        }
-
-        fs << "feature_idx" << node->split->var_idx; // feature idx of node
-
-        fs << "left" << "{"; writeRecursive(fs, node->left, maxCatCount); fs << "}"; // write left child
-        fs << "right" << "{"; writeRecursive(fs, node->right, maxCatCount); fs << "}"; // write right child
-    }
-}
-
-void CascadeBoostTree::write(FileStorage &fs)
-{
-    fs << "{";
-    writeRecursive(fs, root, ((CascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount());
-    fs << "}";
-}
 /*
 static void readRecursive(const FileNode &fn, CvDTreeNode *node, CvDTreeTrainData *data)
 {
@@ -881,8 +849,6 @@ void CascadeBoostTree::read(const FileNode &fn, CvBoost* _ensemble, CvDTreeTrain
 }
 */
 
-=======
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
 void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 {
     int n = node->sample_count, nl, nr, scount = data->sample_count;
@@ -1138,11 +1104,7 @@ bool CascadeBoost::train( const FeatureEvaluator* _featureEvaluator,
             break;
         }
 
-<<<<<<< HEAD
         classifiers.append(tree);
-=======
-        trees.append(tree);
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
         cvSeqPush( weak, &tree );
         update_weights( tree );
         trim_weights();
@@ -1470,7 +1432,3 @@ bool CascadeBoost::isErrDesired()
 
     return falseAlarm <= maxFalseAlarm;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e

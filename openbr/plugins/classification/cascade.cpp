@@ -1,7 +1,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
-#include <openbr/core/boost.h>
 
 using namespace cv;
 
@@ -112,14 +111,12 @@ class CascadeClassifier : public Classifier
     Q_PROPERTY(int numPos READ get_numPos WRITE set_numPos RESET reset_numPos STORED false)
     Q_PROPERTY(int numNegs READ get_numNegs WRITE set_numNegs RESET reset_numNegs STORED false)
     Q_PROPERTY(float maxFAR READ get_maxFAR WRITE set_maxFAR RESET reset_maxFAR STORED false)
-    Q_PROPERTY(bool ROCMode READ get_ROCMode WRITE set_ROCMode RESET reset_ROCMode STORED false)
 
     BR_PROPERTY(QString, stageDescription, "")
     BR_PROPERTY(int, numStages, 20)
     BR_PROPERTY(int, numPos, 1000)
     BR_PROPERTY(int, numNegs, 1000)
     BR_PROPERTY(float, maxFAR, pow(0.5, numStages))
-    BR_PROPERTY(bool, ROCMode, false)
 
     QList<Classifier *> stages;
 
@@ -158,21 +155,9 @@ class CascadeClassifier : public Classifier
     float classify(const Mat &image) const
     {
         foreach (const Classifier *stage, stages)
-            if (stage->classify(image) == 0)
+            if (stage->classify(image) == 0.0f)
                 return 0.0f;
         return 1.0f;
-
-        /*if (stages.size() == 0) // special case for empty cascade
-            return 1.0f;
-
-        float result = 0.0f;
-        for (int stageIdx = 0; stageIdx < stages.size(); stageIdx++) {
-            result = stages[stageIdx]->classify(image);
-
-            if (result < 0)
-                return stageIdx > (stages.size() - 4) ? stageIdx * result : 0.0f;
-        }
-        return std::abs(stages.size() * result);*/
     }
 
     int numFeatures() const
@@ -192,13 +177,7 @@ class CascadeClassifier : public Classifier
 
     void write(FileStorage &fs) const
     {
-<<<<<<< HEAD
-        fs << "stageCount" << stages.size();
-
         fs << "stages" << "[";
-=======
-        fs << CC_STAGES << "[";
->>>>>>> 4fab7f69ddc82d6ba40a73fc6233e3cc9871473e
         foreach (const Classifier *stage, stages) {
             fs << "{";
             stage->write(fs);
@@ -217,7 +196,7 @@ private:
             if (!imgHandler.getPos(pos))
                 qFatal("Cannot get another positive sample!");
 
-            if (classify(pos) > 0.0f) {
+            if (classify(pos) == 1.0f) {
                 printf("POS current samples: %d\r", images.size());
                 images.append(pos);
                 labels.append(1.0f);
@@ -233,7 +212,7 @@ private:
             if (!imgHandler.getNeg(neg))
                 qFatal("Cannot get another negative sample!");
 
-            if (classify(neg) > 0.0f) {
+            if (classify(neg) == 1.0f) {
                 printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
                 labels.append(0.0f);
