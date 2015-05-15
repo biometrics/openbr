@@ -56,10 +56,10 @@ class CrossValidateTransform : public MetaTransform
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
-    Q_PROPERTY(unsigned int bootStrap READ get_bootStrap WRITE set_bootStrap RESET reset_bootStrap STORED false)
+    Q_PROPERTY(unsigned int randomSeed READ get_randomSeed WRITE set_randomSeed RESET reset_randomSeed STORED false)
     BR_PROPERTY(QString, description, "Identity")
     BR_PROPERTY(QString, inputVariable, "Label")
-    BR_PROPERTY(unsigned int, bootStrap, 0)
+    BR_PROPERTY(unsigned int, randomSeed, 0)
 
     // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
@@ -69,15 +69,11 @@ class CrossValidateTransform : public MetaTransform
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        QList<int> partitions = data.partition(inputVariable, bootStrap).files().crossValidationPartitions();
-        const int numPartitions = (bootStrap > 0) ? 1 : Common::Max(partitions)+1;
+        QList<int> partitions = data.partition(inputVariable, randomSeed).files().crossValidationPartitions();
+        const int crossValidate = Globals->crossValidate;
+        const int numPartitions = (crossValidate == 1) ? 1 : Common::Max(partitions)+1;
         while (transforms.size() < numPartitions)
             transforms.append(make(description));
-
-        if (numPartitions < 2 && !bootStrap) {
-            transforms.first()->train(data);
-            return;
-        }
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
@@ -102,9 +98,10 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        TemplateList partitioned = src.partition(inputVariable, bootStrap);
+        TemplateList partitioned = src.partition(inputVariable, randomSeed);
+        const int crossValidate = Globals->crossValidate;
 
-        if (bootStrap > 0) {
+        if (crossValidate == 1) {
             transforms[0]->project(partitioned, dst);
             return;
         }
