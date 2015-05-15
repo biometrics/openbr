@@ -157,11 +157,17 @@ class SlidingWindowTransform : public Transform
     {
         (void) stream;
 
-        QString filename = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
-        if ( !fs.isOpened() )
-            return;
+	QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir;
+	QtUtils::touchDir(QDir(path));
 
+	QString filename = path + "/cascade.xml";
+        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
+
+        if (!fs.isOpened()) {
+	    qWarning("Unable to open file: %s", qPrintable(filename));
+            return;
+	}
+	
         fs << FileStorage::getDefaultObjectName(filename.toStdString()) << "{";
 
         classifier->write(fs);
