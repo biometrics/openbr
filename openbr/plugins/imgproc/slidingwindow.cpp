@@ -98,26 +98,13 @@ class SlidingWindowTransform : public Transform
     {
         QList<Mat> negs;
 
-        std::string dirname, str;
-        std::ifstream file(negFile.toStdString().c_str());
+	QStringList lines;
+	QtUtils::readFile(negFile,lines);
 
-        size_t pos = negFile.toStdString().rfind('\\');
-        char dlmrt = '\\';
-        if (pos == string::npos)
-        {
-            pos = negFile.toStdString().rfind('/');
-            dlmrt = '/';
-        }
-        dirname = pos == string::npos ? "" : negFile.toStdString().substr(0, pos) + dlmrt;
-        while( !file.eof() )
-        {
-            std::getline(file, str);
-            if (str.empty()) break;
-            if (str.at(0) == '#' ) continue;
-            negs.append(imread(dirname + str, CV_LOAD_IMAGE_GRAYSCALE));
-        }
-        file.close();
-
+	foreach(const QString &line, lines) {
+	    if (line[0] == QChar('#')) continue;
+	    else negs.append(imread(qPrintable(line), CV_LOAD_IMAGE_GRAYSCALE));
+	}
         return negs;
     }
 
