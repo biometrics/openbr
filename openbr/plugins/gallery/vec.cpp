@@ -7,7 +7,6 @@ class vecGallery : public Gallery
 {
     Q_OBJECT
 
-    // Property for image width/height
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
     Q_PROPERTY(int height READ get_height WRITE set_height RESET reset_height STORED false)
     BR_PROPERTY(int, width, 24)
