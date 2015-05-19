@@ -6,8 +6,8 @@ The C++ Plugin API is a pluggable API designed to allow the succinct expression 
 
 The API defines two data structures:
 
-* [File](api_docs/cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](api_docs/plugins/metadata.md#cascadetransform) as metadata which are then used by [Draw](api_docs/plugins/gui.md#drawtransform) for visualization.
-* [Template](api_docs/cpp_api/template/template.md)s are containers for images and [File](api_docs/cpp_api/file/file.md)s. Images in OpenBR are OpenCV Mats and are member variables of Templates. Templates can contain one or more images.
+* [File](cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](plugins/metadata.md#cascadetransform) as metadata which are then used by [Draw](plugins/gui.md#drawtransform) for visualization.
+* [Template](cpp_api/template/template.md)s are containers for images and [File](cpp_api/file/file.md)s. Images in OpenBR are OpenCV Mats and are member variables of Templates. Templates can contain one or more images.
 
 ## Plugin Abstractions
 
@@ -17,7 +17,7 @@ Plugin | Function
 --- | ---
 [Initializer](cpp_api/initializer/initializer.md) | Initializes shared contexts and variables at the launch of OpenBR. Typically used with third-party plugins.
 [Transform](cpp_api/transform/transform.md) | The most common plugin type in OpenBR. Provides the basis for algorithms by transforming images or metadata.
-[Distance](cpp_api/distance/distance.md) | Used to compute a distance metric between [Template](api_docs/cpp_api/template/template.md)s.
+[Distance](cpp_api/distance/distance.md) | Used to compute a distance metric between [Template](cpp_api/template/template.md)s.
 [Format](cpp_api/format/format.md) | Used for I/O. Formats handle file types that correspond to single objects (e.g. .jpg, .png, etc.).
 [Gallery](cpp_api/gallery/gallery.md) | Used for I/O. Galleries handle file types that correspond to many objects (e.g. .csv., .xml, etc.).
 [Output](cpp_api/output/output.md) | Used for I/O. Outputs handle the results of [Distance](cpp_api/distance/distance.md) comparisons.

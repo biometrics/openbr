@@ -212,7 +212,9 @@ def parseFormats(formats):
 def main():
     plugins_dir = '../../openbr/plugins/'
     output_dir = '../docs/api_docs/plugins/'
-
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    
     for module in subdirs(plugins_dir):
         if module == "cmake":
             continue
