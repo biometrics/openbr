@@ -15,7 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/highgui/highgui.hpp>
-
+#include <openbr/core/opencvutils.h>
 #include <openbr/plugins/openbr_internal.h>
 
 using namespace cv;
@@ -59,9 +59,13 @@ private:
             else          dst.file.fte = true;
         } else {
             foreach (const Mat &m, src) {
-                const Mat img = imdecode(m, mode);
-                if (img.data) dst.append(img);
-                else          dst.file.fte = true;
+		if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1))
+                    dst += m;
+		else {
+                    const Mat img = imdecode(m, mode);
+                    if (img.data) dst.append(img);
+                    else          dst.file.fte = true;
+		}
             }
         }
         if (dst.file.fte)

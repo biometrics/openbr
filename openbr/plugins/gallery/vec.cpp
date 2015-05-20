@@ -3,6 +3,12 @@
 namespace br
 {
 
+/*!
+ * \ingroup galleries
+ * \brief Reads/writes OpenCV's .vec format.
+ * \author Scott Klum \cite sklum
+ */
+
 class vecGallery : public Gallery
 {
     Q_OBJECT
@@ -56,7 +62,9 @@ class vecGallery : public Gallery
             for (int r = 0; r < height; r++)
                 for (int c = 0; c < width; c++)
                     m.ptr(r)[c] = (uchar)vec[r*width+c];
-            templates.append(Template(m));
+	    Template t(m);
+	    t.file.set("Label",1);
+            templates.append(t);
         }
 
         return templates;
