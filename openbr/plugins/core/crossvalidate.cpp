@@ -71,9 +71,15 @@ class CrossValidateTransform : public MetaTransform
     {
         QList<int> partitions = data.partition(inputVariable, randomSeed).files().crossValidationPartitions();
         const int crossValidate = Globals->crossValidate;
-        const int numPartitions = (crossValidate == 1) ? 1 : Common::Max(partitions)+1;
+        // Only train once based on the 0th partition if crossValidate is negative.
+        const int numPartitions = (crossValidate < 0) ? 1 : Common::Max(partitions)+1;
         while (transforms.size() < numPartitions)
             transforms.append(make(description));
+
+        if (std::abs(crossValidate) < 2) {
+            transforms.first()->train(data);
+            return;
+        }
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
@@ -101,7 +107,7 @@ class CrossValidateTransform : public MetaTransform
         TemplateList partitioned = src.partition(inputVariable, randomSeed);
         const int crossValidate = Globals->crossValidate;
 
-        if (crossValidate == 1) {
+        if (crossValidate < 0) {
             transforms[0]->project(partitioned, dst);
             return;
         }

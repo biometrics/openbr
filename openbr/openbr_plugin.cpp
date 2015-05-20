@@ -531,47 +531,34 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
 
 TemplateList TemplateList::partition(const QString &inputVariable, unsigned int randomSeed) const
 {
-    TemplateList partitioned = *this;
-    const int crossValidate = Globals->crossValidate;
+    const int crossValidate = std::abs(Globals->crossValidate);
+    if (crossValidate < 2)
+        return *this;
 
     // Use separate RNG from Common::randN() to avoid re-seeding the global RNG.
     // rng is seeded with the inputVariable hash in order to maintain partition across br runs, given the same randomSeed seed.
     RandomLib::Random rng;
-    if (crossValidate == 1) {
-        for (int i=0; i < partitioned.size(); i++) {
-            const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
-            quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
-            rng.Reseed(labelSeed);
 
-            // Roughly 2/3rd to training, 1/3rd to testing for the special single split case
-            float result = rng.FloatN();
-            if (result <= (2.0/3.0))
-                // Training
-                partitioned[i].file.set("Partition", QString::number(1));
-            else
-                partitioned[i].file.set("Partition", QString::number(0));
-        }
-    } else {
-        for (int i=partitioned.size()-1; i>=0; i--) {
-            // See CrossValidateTransform for description of these variables
-            if (partitioned[i].file.getBool("duplicatePartitions")) {
-                for (int j=crossValidate-1; j>=0; j--) {
-                    Template duplicateTemplate = partitioned[i];
-                    duplicateTemplate.file.set("Partition", j);
-                    partitioned.insert(i+1, duplicateTemplate);
-                }
-            } else if (partitioned[i].file.getBool("allPartitions")) {
-                partitioned[i].file.set("Partition", -1);
-            } else {
-                const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
-                if (randomSeed) {
-                    quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
-                    rng.Reseed(labelSeed);
-                    partitioned[i].file.set("Partition", rng.Integer() % crossValidate);
-                } else if (!partitioned[i].file.contains(("Partition"))) {
-                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                    partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
-                }
+    TemplateList partitioned = *this;
+    for (int i=partitioned.size()-1; i>=0; i--) {
+        // See CrossValidateTransform for description of these variables
+        if (partitioned[i].file.getBool("duplicatePartitions")) {
+            for (int j=crossValidate-1; j>=0; j--) {
+                Template duplicateTemplate = partitioned[i];
+                duplicateTemplate.file.set("Partition", j);
+                partitioned.insert(i+1, duplicateTemplate);
+            }
+        } else if (partitioned[i].file.getBool("allPartitions")) {
+            partitioned[i].file.set("Partition", -1);
+        } else {
+            const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
+            if (randomSeed) {
+                quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
+                rng.Reseed(labelSeed);
+                partitioned[i].file.set("Partition", rng.Integer() % crossValidate);
+            } else if (!partitioned[i].file.contains(("Partition"))) {
+                // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
             }
         }
     }
