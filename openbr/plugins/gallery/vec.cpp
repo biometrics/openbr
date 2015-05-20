@@ -56,7 +56,7 @@ class vecGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
-	readOpen();
+        readOpen();
 
         *done = true;
 
