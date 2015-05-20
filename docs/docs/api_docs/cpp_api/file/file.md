@@ -1,5 +1,3 @@
-# File
-
 A file path with associated metadata.
 
 See:
@@ -63,3 +61,9 @@ Age             | float          | Age used for demographic filtering
 Gender          | QString        | Subject gender
 Train           | bool           | The data is for training, as opposed to enrollment
 _\*              | \*              | Reserved for internal use
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QVariantList]: http://doc.qt.io/qt-5/qvariant.html#QVariantList-typedef "QVariantList"
+[QRectF]: http://doc.qt.io/qt-5/qrectf.html "QRectF"
+[QPointF]: http://doc.qt.io/qt-5/qpointf.html "QPointF"

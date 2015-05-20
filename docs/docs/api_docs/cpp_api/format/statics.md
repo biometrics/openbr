@@ -39,3 +39,6 @@ Write a template to disk at the provided file location.
         Template t("picture.jpg");
 
         Format::write("new_pic_location.jpg", t); // Write t to "new_pic_location.jpg"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"

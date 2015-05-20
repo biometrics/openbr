@@ -283,3 +283,7 @@ Deduplicate a gallery. A duplicate is defined as an image with a match score abo
         File input("/path/to/input/galley/with/dups");
         File output("/path/to/output/gallery");
         Deduplicate(input, output, "0.7"); // Remove duplicates with match scores above 0.7
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"

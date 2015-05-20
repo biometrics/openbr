@@ -101,11 +101,10 @@ def main():
     docs_dir = '../docs/'
     ext = 'md'
 
-    links = open('../docs/links.md', 'r').read()
     md_files = walk(docs_dir, ext)
     md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code', 'attr_list', 'footnotes'] )
 
-    html_files = [md.convert(open(f, 'r', encoding='utf-8').read() + "\n\n" + links) for f in md_files]
+    html_files = [md.convert(open(f, 'r', encoding='utf-8').read()) for f in md_files]
 
     headers = {}
     links = {}

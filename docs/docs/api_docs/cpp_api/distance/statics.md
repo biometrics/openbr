@@ -44,3 +44,8 @@ Create a [Distance](distance.md) from an OpenBR algorithm string. The [Distance]
 
     Distance::fromAlgorithm("EnrollmentTransform:Distance")->decription(); // returns "Distance"
     Distance::fromAlgorithm("EnrollmentTransform!Distance1+Distance2")->decription(); // returns "Pipe(distances=[Distance1,Distance2])
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"
+[QSharedPointer]: http://doc.qt.io/qt-5/qsharedpointer.html "QSharedPointer"

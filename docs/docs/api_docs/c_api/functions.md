@@ -1391,3 +1391,7 @@ Close a provided [Gallery](../cpp_api/gallery/gallery.md).
 [^1]: *Zhu et al.*
     **A Rank-Order Distance based Clustering Algorithm for Face Tagging**,
     CVPR 2011
+
+<!-- Links -->
+[R]: http://www.r-project.org/ "R"
+[QRegExp]: http://doc.qt.io/qt-5/QRegExp.html "QRegExp"

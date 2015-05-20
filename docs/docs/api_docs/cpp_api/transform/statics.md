@@ -191,3 +191,9 @@ Convenience function for [load](../object/functions.md#load)
         Transform out;
         stream >> out;
         out->description(); // returns "Example(property1=value1,property2=value2)"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"
+[QSharedPointer]: http://doc.qt.io/qt-5/qsharedpointer.html "QSharedPointer"
+[QDataStream]: http://doc.qt.io/qt-5/qdatastream.html "QDataStream"

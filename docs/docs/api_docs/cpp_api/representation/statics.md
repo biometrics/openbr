@@ -19,3 +19,7 @@ Make a [Representation](representation.md) from a string. The string is passed t
 
         Representation *rep = Representation::make("Representation(property1=value1)");
         rep->description(); // Returns "Representation(property1=value1)"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"

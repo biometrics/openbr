@@ -134,3 +134,13 @@ Get a collection of objects in OpenBR that match provided regular expressions. T
 
         // Find all 'Rnd' Transforms
         Context::objects("Transform", "Rnd.*", false); // returns ["RndPoint", "RndRegion", "RndRotate", "RndSample", "RndSubspace"]
+
+<!-- Links -->
+[Qt]: http://qt-project.org/ "Qt"
+[QApplication]: http://doc.qt.io/qt-5/qapplication.html "QApplication"
+[QCoreApplication]: http://doc.qt.io/qt-5/qcoreapplication.html "QCoreApplication"
+
+[QRegExp]: http://doc.qt.io/qt-5/QRegExp.html "QRegExp"
+
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"

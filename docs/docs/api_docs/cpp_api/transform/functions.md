@@ -417,3 +417,9 @@ This is a protected function. Makes a child transform from a provided descriptio
     description | const [QString][QString] & | Description of the child transform
 
 * **output:** ([Transform](transform.md) \*) Returns a pointer to the created child transform
+
+<!-- Links -->
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QSharedPointer]: http://doc.qt.io/qt-5/qsharedpointer.html "QSharedPointer"

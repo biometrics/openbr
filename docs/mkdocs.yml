@@ -5,8 +5,6 @@ copyright: 2012 The MITRE Corporation
 
 theme: readthedocs
 theme_dir: themes/readthedocs/
-links_file: docs/links.md
-contributors_file: docs/contributors.md
 
 include_next_prev: False
 

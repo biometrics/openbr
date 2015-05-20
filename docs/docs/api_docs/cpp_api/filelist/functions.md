@@ -104,3 +104,8 @@ Get the number of [Files](../file/file.md) in the list that have [failed to enro
 
         FileList fList(QList<File>() << f1 << f2 << f3);
         fList.failures(); // returns 2
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"

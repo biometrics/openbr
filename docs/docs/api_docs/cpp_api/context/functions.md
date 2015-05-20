@@ -81,3 +81,7 @@ Get the completion percentage of a call to [Train](../apifunctions.md#train), [E
 
 * **parameters:** NONE
 * **output:** (float) Returns the fraction of the currently running job that has been completed.
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QObject::property]: http://doc.qt.io/qt-5/qobject.html#property "QObject::property"

@@ -375,3 +375,6 @@ Exit the application
         -exit
 
 * **wraps:** N/A
+
+<!-- Link -->
+[QRegExp]: http://doc.qt.io/qt-5/QRegExp.html "QRegExp"

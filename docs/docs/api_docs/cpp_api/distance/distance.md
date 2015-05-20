@@ -1,5 +1,3 @@
-<!-- DISTANCE -->
-
 Inherits [Object](../object/object.md)
 
 Plugin base class for comparing two [Templates](../template/template.md)

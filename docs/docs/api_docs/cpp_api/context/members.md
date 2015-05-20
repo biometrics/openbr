@@ -21,3 +21,13 @@ Member | Type | Description
 <a class="table-anchor" id=abbreviations></a>abbreviations | [QHash][QHash]&lt;[QString][QString], [QString][QString]&gt; | Used by [Transform](../transform/transform.md)::[make](../transform/statics.md#make) to expand abbreviated algorithms into their complete definitions.
 <a class="table-anchor" id=starttime></a>startTime | [QTime][QTime] | Used to estimate [timeRemaining](functions.md#timeremaining).
 <a class="table-anchor" id=logfile></a>logFile | [QFile][QFile] | Log file to write to.
+
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[QHash]: http://doc.qt.io/qt-5/qhash.html "QHash"
+[QThread]: http://doc.qt.io/qt-5/qthread.html "QThread"
+[QByteArray]: http://doc.qt.io/qt-5/qbytearray.html "QByteArray"
+[QTime]: http://doc.qt.io/qt-5/QTime.html "QTime"
+[QFile]: http://doc.qt.io/qt-5/qfile.html "QFile"

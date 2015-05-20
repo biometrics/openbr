@@ -1,5 +1,3 @@
-<!-- TIMEVARYINGTRANSFORM -->
-
 Inherits [Transform](../transform/transform.md)
 
 A [Transform](../transform/transform.md) that can change state at project time.

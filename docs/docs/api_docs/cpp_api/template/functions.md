@@ -162,7 +162,7 @@ Append the contents of another template. The [files](members.md#file) are append
 
     Parameter | Type | Description
     --- | --- | ---
-    other | const [Template][template.md] & | Template to be merged
+    other | const [Template](template.md) & | Template to be merged
 
 * **output:** (void)
 * **example:**
@@ -221,3 +221,8 @@ Clone the template
 
         t2.file; // returns "picture.jpg"
         t2; // returns ["1"]
+
+<!-- Links -->
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"
+[InputArray]: http://docs.opencv.org/modules/core/doc/basic_structures.html#inputarray "InputArray"
+[OutputArray]: http://docs.opencv.org/modules/core/doc/basic_structures.html#outputarray "OutputArray"

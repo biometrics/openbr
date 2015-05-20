@@ -17,3 +17,7 @@ Split the provided string using the provided split character. Lexical scoping of
 * **example:**
 
         Object::parse("Transform1(p1=v1,p2=v2),Transform2(p1=v3,p2=v4)"); // returns ["Transform1(p1=v1,p2=v2)", "Transform2(p1=v3,p2=v4)"]
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"

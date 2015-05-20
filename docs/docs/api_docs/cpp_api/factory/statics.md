@@ -88,3 +88,9 @@ Get the parameters for the plugin defined by the provided name.
 
         Factory<Transform>::parameters("Example"); // returns "int property1 = 1, float property2 = 2.5, QString property3 = Value"
         Factory<Transform>::parameters("Example(property3=NewValue)"); // returns "int property1 = 1, float property2 = 2.5, QString property3 = NewValue"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[QSharedPointer]: http://doc.qt.io/qt-5/qsharedpointer.html "QSharedPointer"

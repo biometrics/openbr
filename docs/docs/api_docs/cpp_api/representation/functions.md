@@ -89,3 +89,7 @@ This is a pure virtual function. Get the size of the feature space.
 
         rep1->numFeatures(); // returns 1000
         rep2->numFeatures(); // returns 25643
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"

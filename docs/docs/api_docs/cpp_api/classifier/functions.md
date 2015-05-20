@@ -50,3 +50,7 @@ This is a pure virtual function. Classify a provided input image.
 
         classifier->classify(p1); // returns confidence > 0
         classifier->classify(n1); // returns confidence < 0
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"

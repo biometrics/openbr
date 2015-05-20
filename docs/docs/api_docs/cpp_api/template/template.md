@@ -20,3 +20,7 @@ In the cases where exactly one image is expected, the template provides the func
 Casting operators are also provided to pass the template into image processing functions expecting matrices.
 
 Metadata related to the template that is computed during enrollment (ex. bounding boxes, eye locations, quality metrics, ...) should be assigned to the template's [File](members.md#file) member.
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"

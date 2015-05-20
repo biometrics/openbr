@@ -29,7 +29,7 @@ Create a template from a memory buffer of individual templates. This is compatib
     --- | --- | ---
     buffer | const [QByteArray][QByteArray] & | Raw data buffer to be enrolled
 
-* **output:** ([TemplateList][TemplateList]) Returns a [TemplateList](templatelist.md) created by enrolling the buffer
+* **output:** ([TemplateList](templatelist.md)) Returns a [TemplateList](templatelist.md) created by enrolling the buffer
 
 
 ## [TemplateList](templatelist.md) relabel(const [TemplateList](templatelist.md) &tl, const [QString][QString] &propName, bool preserveIntegers) {: #relabel }
@@ -63,3 +63,7 @@ Relabel the values associated with a given key in the [metadata](../file/members
 
         relabeled = TemplateList::relabel(tList, "Class", false);
         relabeled.files(); // returns [[Class=1, Label=0], [Class=10, Label=1], [Class=100, Label=2]]
+
+<!-- Links -->
+[QByteArray]: http://doc.qt.io/qt-5/qbytearray.html "QByteArray"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"

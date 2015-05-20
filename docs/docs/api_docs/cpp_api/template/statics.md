@@ -55,3 +55,6 @@ Deserialize a template
             out.file; // returns "picture.jpg"
             out; // returns ["1"]
         }
+
+<!-- Links -->
+[QDataStream]: http://doc.qt.io/qt-5/qdatastream.html "QDataStream"

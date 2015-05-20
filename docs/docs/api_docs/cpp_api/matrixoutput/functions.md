@@ -70,3 +70,6 @@ Set a value in [data](members.md#data) at the provided row and column indices.
 
         output->set(10.0, 1, 2);
         output->toString(1, 2); // Returns "10.0"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"

@@ -304,3 +304,11 @@ Get the indices of every [Template](../template/template.md) that has a provided
 
         TemplateList tList(QList<Template>() << t1 << t2 << t3);
         tList.find<QString>("Key", "Value2"); // returns [1, 2]
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[QHash]: http://doc.qt.io/qt-5/qhash.html "QHash"
+[QMap]: http://doc.qt.io/qt-5/qmap.html "QMap"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QVariant]: http://doc.qt.io/qt-5/qvariant.html "QVariant"
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"

@@ -151,3 +151,6 @@ Get a smart copy, meaning a copy only if one is required, of this transform
     newTransform | bool & | True if a new, simplified, transform was allocated inside this call, false otherwise
 
 * **output:** ([Transform](../transform/transform.md) \*) Returns itself if the child transform is not time varying (no copy needed). newTransform is set to false in this case. If the child is time varying make a copy by calling [smartCopy](../timevaryingtransform/functions.md#smartcopy) on the child. newTransform is set to true in this case.
+
+<!-- Links -->
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"

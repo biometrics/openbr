@@ -62,7 +62,7 @@ This is a virtual function. Compare two [TemplateLists](../templatelist/template
 * **output:** (void)
 
 
-## [QList][QList]&lt;float&gt; compare(const [TemplateList][TemplateList] &target, const [Template](../template/template.md) &query) {: #compare-2 }
+## [QList][QList]&lt;float&gt; compare(const [TemplateList](../templatelist/templatelist.md) &target, const [Template](../template/template.md) &query) {: #compare-2 }
 
 This is a virtual function. Compare a query against a list of targets. Each comparison results in a floating point response which is the distance between the query and a specific target.
 
@@ -211,3 +211,8 @@ This is a protected function. Makes a child distance from a provided description
     description | const [QString][QString] & | Description of the child distance
 
 * **output:** ([Distance](distance.md) \*) Returns a pointer to the created child distance
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"
+[Mat]: http://docs.opencv.org/modules/core/doc/basic_structures.html#mat "Mat"

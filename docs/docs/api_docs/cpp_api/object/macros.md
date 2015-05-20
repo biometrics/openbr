@@ -29,3 +29,6 @@ This macro provides an extension to the [Qt Property System][Qt Property System]
 
             ...
         };
+
+<!-- Links -->
+[Qt Property System]: http://doc.qt.io/qt-5/properties.html "Qt Property System"

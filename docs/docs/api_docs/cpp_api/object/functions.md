@@ -453,3 +453,11 @@ Provides a wrapper on [getChildren](#getchildren-1) as a convenience to allow th
         QScopedPointer<Transform> transform(Factory<Transform>::make(".Parent"));
         transform->getChildren<Transform>(); // returns [br::ChildTransform(0x7fc10bf01050, name = "Child")]
         transform->getChildren<Transform>().first()->parameters(); // returns ["int property1 = 2", "float property2 = 2"]
+
+<!-- Links -->
+[QDataStream]: http://doc.qt.io/qt-5/qdatastream.html "QDataStream"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/qstringlist.html "QStringList"
+[QVariant]: http://doc.qt.io/qt-5/qvariant.html "QVariant"
+[QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"
+[QList]: http://doc.qt.io/qt-5/QList.html "QList"

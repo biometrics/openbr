@@ -19,3 +19,7 @@ Make a [Classifier](classifier.md) from a string. The string is passed to [Facto
 
         Classifier *classifier = Classifier::make("Classifier(representation=Representation(property1=value1)");
         classifier->description(); // Returns "Classifier(representation=Representation(property1=value1))"
+
+<!-- Links -->
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QObject]: http://doc.qt.io/qt-5/QObject.html "QObject"

@@ -28,3 +28,6 @@ A *format* is a [File](../file/file.md) representing a [Template](../template/te
 * binary
 
 Many of these extensions are unique to OpenBR. Please look at the relevant [Format plugin](../../../plugin_docs/format.md) for information on formatting and other concerns.
+
+<!-- Links -->
+[OpenCV Image Formats]: http://docs.opencv.org/modules/highgui/doc/reading_and_writing_images_and_video.html?highlight=imread#imread "OpenCV Image Formats"
