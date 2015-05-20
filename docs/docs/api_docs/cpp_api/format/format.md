@@ -27,4 +27,4 @@ A *format* is a [File](../file/file.md) representing a [Template](../template/te
 * csv
 * binary
 
-Many of these extensions are unique to OpenBR. Please look at the relevant [Format plugin](../../plugins/format.md) for information on formatting and other concerns.
+Many of these extensions are unique to OpenBR. Please look at the relevant [Format plugin](../../../plugin_docs/format.md) for information on formatting and other concerns.

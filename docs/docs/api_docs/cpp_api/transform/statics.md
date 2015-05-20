@@ -4,10 +4,10 @@ Make a transform from a string. This function converts the abbreviation characte
 
 Abbreviation | Translation
 --- | ---
-\+ | [PipeTransform](../../plugins/core.md#pipetransform). Each [Transform](transform.md) linked by a **+** is turned into a child of a single [PipeTransform](../../plugins/core.md#pipetransform). "Example1+Example2" becomes "Pipe([Example1,Example2])". [Templates](../template/template.md) are projected through the children of a pipe in series, the output of one become the input of the next.
-/ | [ForkTransform](../../plugins/core.md#forktransform). Each [Transform](transform.md) linked by a **/** is turned into a child of a single [ForkTransform](../../plugins/core.md#forktransform). "Example1/Example2" becomes "Fork([Example1,Example2])". [Templates](../template/template.md) are projected the children of a fork in parallel, each receives the same input and the outputs are merged together.
-\{\} | [CacheTransform](../../plugins/core.md#cachetransform). Can only surround a single [Transform](transform.md). "{Example}" becomes "Cache(Example)". The results of a cached [Transform](transform.md) are stored in a global cache using the [file](../object/members.md#file) name as a key.
-<> | [LoadStoreTransform](../../plugins/core.md#loadstoretransform). Can only surround a single [Transform](transform.md). "<Example>" becomes "LoadStore(Example)". Serialize and store a [Transform](transform.md) after training or deserialize and load a [Transform](transform.md) before projecting.
+\+ | [PipeTransform](../../../plugin_docs/core.md#pipetransform). Each [Transform](transform.md) linked by a **+** is turned into a child of a single [PipeTransform](../../../plugin_docs/core.md#pipetransform). "Example1+Example2" becomes "Pipe([Example1,Example2])". [Templates](../template/template.md) are projected through the children of a pipe in series, the output of one become the input of the next.
+/ | [ForkTransform](../../../plugin_docs/core.md#forktransform). Each [Transform](transform.md) linked by a **/** is turned into a child of a single [ForkTransform](../../../plugin_docs/core.md#forktransform). "Example1/Example2" becomes "Fork([Example1,Example2])". [Templates](../template/template.md) are projected the children of a fork in parallel, each receives the same input and the outputs are merged together.
+\{\} | [CacheTransform](../../../plugin_docs/core.md#cachetransform). Can only surround a single [Transform](transform.md). "{Example}" becomes "Cache(Example)". The results of a cached [Transform](transform.md) are stored in a global cache using the [file](../object/members.md#file) name as a key.
+<> | [LoadStoreTransform](../../../plugin_docs/core.md#loadstoretransform). Can only surround a single [Transform](transform.md). "<Example>" becomes "LoadStore(Example)". Serialize and store a [Transform](transform.md) after training or deserialize and load a [Transform](transform.md) before projecting.
 () | Order of operations. Change the order of operations using parantheses.
 
 The parsed string is then passed to [Factory](../factory/factory.md)::[make](../factory/statics.md#make) to be turned into a transform.
@@ -43,7 +43,7 @@ Create a [Transform](transform.md) from an OpenBR algorithm string. The [Transfo
     Parameter | Type | Description
     --- | --- | ---
     algorithm | const [QString][QString] & | Algorithm string to construct the [Transform](transform.md) from
-    preprocess | bool | (Optional) If true add a [StreamTransform](../../plugins/core.md#streamtransform) as the parent of the constructed [Transform](transform.md). Default is false.
+    preprocess | bool | (Optional) If true add a [StreamTransform](../../../plugin_docs/core.md#streamtransform) as the parent of the constructed [Transform](transform.md). Default is false.
 
 * **output:** ([QSharedPointer][QSharedPointer]&lt;[Transform](transform.md)&gt;) Returns a pointer to the [Transform](transform.md) described by the algorithm.
 * **example:**
@@ -54,7 +54,7 @@ Create a [Transform](transform.md) from an OpenBR algorithm string. The [Transfo
 
 ## [QSharedPointer][QSharedPointer]<[Transform](transform.md)> fromComparison(const [QString][QString] &algorithm) {: #fromcomparison }
 
-Create a[Transform](transform.md) from an OpenBR algorithm string. The [Transform](transform.md) is created using everything to the right of a **:** or a **!** in the string. If the separating symbol is a **:** the string to the right describes a distance. It is converted to a [GalleryCompareTransform](../../plugins/core.md#gallerycomparetransform) with the distance stored as a property. If the separating symbol is a **!** the string already describes a transform and is unchanged.
+Create a[Transform](transform.md) from an OpenBR algorithm string. The [Transform](transform.md) is created using everything to the right of a **:** or a **!** in the string. If the separating symbol is a **:** the string to the right describes a distance. It is converted to a [GalleryCompareTransform](../../../plugin_docs/core.md#gallerycomparetransform) with the distance stored as a property. If the separating symbol is a **!** the string already describes a transform and is unchanged.
 
 * **function definition:**
 

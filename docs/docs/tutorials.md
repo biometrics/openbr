@@ -15,38 +15,38 @@ Open up your terminal or command prompt and enter:
 
     $ br -gui -algorithm "Show(false)" -enroll 0.webcam
 
-If everything has gone according to plan, your webcam should be on and capturing video. Congratulations, you are using OpenBR! 
+If everything has gone according to plan, your webcam should be on and capturing video. Congratulations, you are using OpenBR!
 
 Let's talk about what's happening in the above command. `-gui`, `-algorithm`, and `-enroll` are examples of OpenBR's flags and are used to specify instructions to `br`. OpenBR expects flags to be prepended by a `-` and arguments that follow the flags to be separated by spaces. Flags normally require a specific number of arguments. All of the possible flags and their values are [documented here](api_docs/cl_api.md). Let's step through the individual arguments and values:
 
-* `-gui` is the flag that tells OpenBR to open up a GUI window. Note that when `-gui` is used, it must be the first flag passed to `br`. 
-* `-algorithm` is one of the most important flags in OpenBR. It expects one argument, referred to as the *algorithm string*. This string determines the pipeline through which images and metadata propagate. It is composed of [Transform](api_docs/cpp_api/transform/transform.md)s, which are described in detail later in this tutorial. 
+* `-gui` is the flag that tells OpenBR to open up a GUI window. Note that when `-gui` is used, it must be the first flag passed to `br`.
+* `-algorithm` is one of the most important flags in OpenBR. It expects one argument, referred to as the *algorithm string*. This string determines the pipeline through which images and metadata propagate. It is composed of [Transforms](api_docs/cpp_api/transform/transform.md), which are described in detail later in this tutorial.
 * `-enroll` reads files from a [Gallery](api_docs/cpp_api/gallery/gallery.md) or a [Format](api_docs/cpp_api/format/format.md) and *enrolls* them through the algorithm pipeline and serializes them to another [Gallery](api_docs/cpp_api/gallery/gallery.md) or [Format](api_docs/cpp_api/format/format.md). `-enroll` takes one input argument (`0.webcam` in this example) and an optional output argument. OpenBR supports multiple formats including `.jpg`, `.png`, `.csv`, and `.xml`. The `.webcam` [Format](api_docs/cpp_api/format/format.md) tells OpenBR to enroll frames from the computer's webcam.
 
 Let's try a slightly more complicated example. After all, OpenBR can do way more then just open webcams! Fire up the terminal again and enter:
 
     $ br -gui -algorithm "Cvt(Gray)+Show(false)" -enroll 0.webcam
 
-Here, we took our normal BGR (OpenCV's alternative to RGB) image and converted it to a grayscale image simply by adding `Cvt(Gray)` to the algorithm string. [Cvt](api_docs/plugins/imgproc.md#cvttransform), short for convert, is an example of an OpenBR *[Transform](api_docs/cpp_api/transform/transform.md)*. [Show](api_docs/plugins/gui.md#showtransform) is a [Transform](api_docs/cpp_api/transform/transform.md) as well. In fact, every algorithm string in OpenBR is just a series of [Transform](api_docs/cpp_api/transform/transform.md)s joined to form a pipeline; even the `+` symbol is shorthand for a [Pipe](api_docs/plugins/core.md#pipetransform), another kind of OpenBR [Transform](api_docs/cpp_api/transform/transform.md). 
+Here, we took our normal BGR (OpenCV's alternative to RGB) image and converted it to a grayscale image simply by adding `Cvt(Gray)` to the algorithm string. [Cvt](plugin_docs/imgproc.md#cvttransform), short for convert, is an example of an OpenBR *[Transform](api_docs/cpp_api/transform/transform.md)*. [Show](plugin_docs/gui.md#showtransform) is a [Transform](api_docs/cpp_api/transform/transform.md) as well. In fact, every algorithm string in OpenBR is just a series of [Transform](api_docs/cpp_api/transform/transform.md)s joined to form a pipeline; even the `+` symbol is shorthand for a [Pipe](plugin_docs/core.md#pipetransform), another kind of OpenBR [Transform](api_docs/cpp_api/transform/transform.md).
 
-Typically, [Transform](api_docs/cpp_api/transform/transform.md)s accept parameters.  We specify `Gray` to [Cvt](api_docs/plugins/imgproc.md#cvttransform) as a runtime parameter to tell the [Transform](api_docs/cpp_api/transform/transform.md) which color space to convert the image to. We also could have written `Cvt(HSV)` if we wanted to convert to the HSV color space or `Cvt(Luv)` if we wanted to convert to LUV. Parameters can be provided as key-value pairs or as keyless values (`Cvt(Gray)` is equivalent to `Cvt(colorSpace=Gray)`) . Note that if you are supplying values only, the parameters are expected to be supplied in the order they are defined. Try changing the algorithm string above to include `Show(true)` to see how modifying the parameters affects the output of the command (Hint: hit a key to cycle through the images).
+Typically, [Transform](api_docs/cpp_api/transform/transform.md)s accept parameters.  We specify `Gray` to [Cvt](plugin_docs/imgproc.md#cvttransform) as a runtime parameter to tell the [Transform](api_docs/cpp_api/transform/transform.md) which color space to convert the image to. We also could have written `Cvt(HSV)` if we wanted to convert to the HSV color space or `Cvt(Luv)` if we wanted to convert to LUV. Parameters can be provided as key-value pairs or as keyless values (`Cvt(Gray)` is equivalent to `Cvt(colorSpace=Gray)`) . Note that if you are supplying values only, the parameters are expected to be supplied in the order they are defined. Try changing the algorithm string above to include `Show(true)` to see how modifying the parameters affects the output of the command (Hint: hit a key to cycle through the images).
 
 Let's make this example a little bit more exciting and relevant to OpenBR's biometric roots. Face detection is normally the first step in a [face recognition](#face-recognition) algorithm. Let's perform face detection in OpenBR. Back in the terminal enter:
 
     $ br -gui -algorithm "Cvt(Gray)+Cascade(FrontalFace)+Draw(lineThickness=3)+Show(false)" -enroll 0.webcam
 
-You're webcam should be open again but this time a bounding-box should have appeared around your face! We added two new [Transform](api_docs/cpp_api/transform/transform.md)s to our string: [Cascade](api_docs/plugins/metadata.md#cascadetransform) and [Draw](api_docs/plugins/gui.md#drawtransform). Let's walk through this [Transform](api_docs/cpp_api/transform/transform.md) by [Transform](api_docs/cpp_api/transform/transform.md) and see how it works:
+You're webcam should be open again but this time a bounding-box should have appeared around your face! We added two new [Transform](api_docs/cpp_api/transform/transform.md)s to our string: [Cascade](plugin_docs/metadata.md#cascadetransform) and [Draw](plugin_docs/gui.md#drawtransform). Let's walk through this [Transform](api_docs/cpp_api/transform/transform.md) by [Transform](api_docs/cpp_api/transform/transform.md) and see how it works:
 
-1. [Cvt(Gray)](api_docs/plugins/imgproc.md#cvttransform): Convert the image from BGR to grayscale. Grayscale is required for [Cascade](api_docs/plugins/metadata.md#cascadetransform) to work properly.
-2. [Cascade(FrontalFace)](api_docs/plugins/metadata.md#cascadetransform): This is a wrapper on the OpenCV [Cascade Classification](http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html) framework. It detects frontal faces using the `FrontalFace` model.
-3. [Draw(lineThickness=3)](api_docs/plugins/gui.md#drawtransform): Take the rectangles detected by [Cascade](api_docs/plugins/metadata.md#cascadetransform) and draw them onto the frame from the webcam. `lineThickness` determines the thickness of the drawn rectangle.
-4. [Show(false)](api_docs/plugins/gui.md#showtransform): Show the image in a GUI window. `false` indicates the images should be shown in succession without waiting for a key press.
+1. [Cvt(Gray)](plugin_docs/imgproc.md#cvttransform): Convert the image from BGR to grayscale. Grayscale is required for [Cascade](plugin_docs/metadata.md#cascadetransform) to work properly.
+2. [Cascade(FrontalFace)](plugin_docs/metadata.md#cascadetransform): This is a wrapper on the OpenCV [Cascade Classification](http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html) framework. It detects frontal faces using the `FrontalFace` model.
+3. [Draw(lineThickness=3)](plugin_docs/gui.md#drawtransform): Take the rectangles detected by [Cascade](plugin_docs/metadata.md#cascadetransform) and draw them onto the frame from the webcam. `lineThickness` determines the thickness of the drawn rectangle.
+4. [Show(false)](plugin_docs/gui.md#showtransform): Show the image in a GUI window. `false` indicates the images should be shown in succession without waiting for a key press.
 
-Each [Transform](api_docs/cpp_api/transform/transform.md) completes one task and the passes the output on to the next [Transform](api_docs/cpp_api/transform/transform.md). You can pipe together as many [Transform](api_docs/cpp_api/transform/transform.md)s as you like, but note that certain [Transform](api_docs/cpp_api/transform/transform.md)s have specific expectations for their input. 
+Each [Transform](api_docs/cpp_api/transform/transform.md) completes one task and the passes the output on to the next [Transform](api_docs/cpp_api/transform/transform.md). You can pipe together as many [Transform](api_docs/cpp_api/transform/transform.md)s as you like, but note that certain [Transform](api_docs/cpp_api/transform/transform.md)s have specific expectations for their input.
 
 You may be wondering what objects are actually being propagated through the algorithm pipeline. There are two objects that handle data in OpenBR:
 
-* [File](api_docs/cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](api_docs/plugins/metadata.md#cascadetransform) as metadata which are then used by [Draw](api_docs/plugins/gui.md#drawtransform) for visualization.
+* [File](api_docs/cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](plugin_docs/metadata.md#cascadetransform) as metadata which are then used by [Draw](plugin_docs/gui.md#drawtransform) for visualization.
 * [Template](api_docs/cpp_api/template/template.md)s are containers for images and [File](api_docs/cpp_api/file/file.md)s. Images in OpenBR are OpenCV Mats and are member variables of Templates. Templates can contain one or more images.
 
 If you want to learn more about the [command line](api_docs/cl_api.md) or [all of the plugins and the key data structures](api_docs/cpp_api.md), please refer to the linked documentation.  The next few tutorials will explore algorithms and their use in more depth.
@@ -72,10 +72,10 @@ Symbol | Meaning
 --- | ---
 PluginName(property1=value1,...propertyN=valueN) | A plugin is described by its name (without the abstraction) and a list of properties and values. Properties of a plugin that are not specified are set to their default values.
 : | Seperates *template enrollment* from *template comparison*. Enrollment is on the left of the colon in the algorithm string, while comparison is on the right. Defining an algorithm with a template comparison step is optional.
-\+ | Abbreviation for a [Pipe](api_docs/plugins/core.md#pipetransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in series. The output of a [Transform](api_docs/cpp_api/transform/transform.md) to the left of \+ become the input of the Transform to the right.
- / | Abbreviation for a [Fork](api_docs/plugins/core.md#forktransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in parallel. All [Transform](api_docs/cpp_api/transform/transform.md)s receive the same input, the output of which is concatenated together.
- \{\} | Abbreviation for [Cache](api_docs/plugins/core.md#cachetransform). Cache the output of a plugin in memory for quick lookups later on.
- <\> | Abbreviation for [LoadStore](api_docs/plugins/core.md#loadstoretransform). Parameters for [Transform](api_docs/cpp_api/transform/transform.md)s inside the brackets are stored on disk after training and loaded from disk before projection.
+\+ | Abbreviation for a [Pipe](plugin_docs/core.md#pipetransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in series. The output of a [Transform](api_docs/cpp_api/transform/transform.md) to the left of \+ become the input of the Transform to the right.
+ / | Abbreviation for a [Fork](plugin_docs/core.md#forktransform). Joins [Transform](api_docs/cpp_api/transform/transform.md)s together and projects input through them in parallel. All [Transform](api_docs/cpp_api/transform/transform.md)s receive the same input, the output of which is concatenated together.
+ \{\} | Abbreviation for [Cache](plugin_docs/core.md#cachetransform). Cache the output of a plugin in memory for quick lookups later on.
+ <\> | Abbreviation for [LoadStore](plugin_docs/core.md#loadstoretransform). Parameters for [Transform](api_docs/cpp_api/transform/transform.md)s inside the brackets are stored on disk after training and loaded from disk before projection.
  () | Order of operations. Change the order of operations using parantheses.
 
 Let's look at some of the important parts of the codebase that make this possible:
@@ -111,7 +111,7 @@ and comparison is:
 
     Dist(L2)
 
-On the enrollment side, [Transform](api_docs/cpp_api/transform/transform.md)s joined by the `+` operators are converted into children of a [Pipe](api_docs/plugins/core.md#pipetransform). Thus, the enrollment algorithm is constructed as:
+On the enrollment side, [Transform](api_docs/cpp_api/transform/transform.md)s joined by the `+` operators are converted into children of a [Pipe](plugin_docs/core.md#pipetransform). Thus, the enrollment algorithm is constructed as:
 
     Pipe(transforms=[Open,Cvt(Gray),Cascade(FrontalFace),ASEFEyes,Affine(128,128,0.33,0.45,CvtFloat,PCA(0.95)])
 
@@ -125,12 +125,54 @@ To briefly summarize:
 	5. Normalize the face with respect to rotation and scale using the eye locations
 	6. Converts the image to floating point format
 	7. Embeds the image in a PCA subspace trained on face images
-	
+
 If you are familiar with face recognition, you will likely recognize this as the Eigenfaces[^1] algorithm.
 
 As a final note, the Eigenfaces algorithms uses the Euclidean distance (or L2-norm) to compare templates.
-Since OpenBR expects similarity values when comparing templates and not dissimilarity values, the [DistDistance](api_docs/plugins/distance.md#distdistance) will return *-log(distance+1)* by default so that smaller distances (in the Euclidean sense) indicate higher similarity.
-Note that [NegativeLogPlusOne](api_docs/plugins/distance.md#negativelogplusone) distance also exists such that you can convert the output of any distance using the above function.
+Since OpenBR expects similarity values when comparing templates and not dissimilarity values, the [DistDistance](plugin_docs/distance.md#distdistance) will return *-log(distance+1)* by default so that smaller distances (in the Euclidean sense) indicate higher similarity.
+Note that [NegativeLogPlusOne](plugin_docs/distance.md#negativelogplusonedistance) distance also exists such that you can convert the output of any distance using the above function.
+
+---
+
+# Training Algorithms
+
+OpenBR makes it easy to create and train your own algorithms on custom datasets. Let's start with the algorithm string for the Eigenfaces[^1] algorithm described in the [Algorithms](#algorithms-in-openbr) tutorial. Recall the algorithm is
+
+    $ Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)
+
+Now lets say we want to train this algorithm on some data we gathered. How would we do this? First, lets examine some of the underlying principles of training in OpenBR. Recall that this algorithm if composed of [Transforms](api_docs/cpp_api/transform/transform.md). Each [Transform](api_docs/cpp_api/transform/transform.md) is completely independent of its neighbors. Additionally, not all [Transforms](api_docs/cpp_api/transform/transform.md) can be or need to be trained. In our example, ```Cvt(Gray)```, which converts the image to grayscale, does not need to be trained at all, neither does ```Open```, ```ASEFEyes```, ```Affine(128,128,0.33,0.45)``` or ```CvtFloat```. These are [UntrainableTransforms](api_docs/cpp_api/untrainabletransform/untrainabletransform.md), a special child abstraction of [Transform](api_docs/cpp_api/transform/transform.md). ```Cascade(FrontalFace)``` is a special case, it is a [Transform](api_docs/cpp_api/transform/transform.md) and therefore can be trained, however we have passed it a pre-trained model file (FrontalFace) and are treating it as an [UntrainableTransform](api_docs/cpp_api/untrainabletransform/untrainabletransform.md) in this example. Thus, ```PCA(0.95)``` is the only trainable [Transform](api_docs/cpp_api/transform/transform.md) in our algorithm string.
+
+Now we need to supply data to train our algorithm. To understand how to supply data to an OpenBR algorithm for training lets step back and start with the full command line training command. The command to train this algorithm would be
+
+    $ br -algorithm "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)" -train data.csv model
+
+Notice the ```-train``` flag used in the algorithm. [-train](api_docs/cl_api.md#train) requires one argument, the training gallery, and has an optional second argument, a name for a trained model. The training gallery can be any of the formats specified in the documentation for [Gallery](api_docs/cpp_api/gallery/gallery.md), it contains all of the labelled training data for the algorithm. The optional model file is a serialized and compressed binary file that stores the outcome of training. Serialization will be discussed later in this tutorial.
+
+Now that we have both an algorithm to train and training data, lets talk about the actual process of training. As we briefly touched on above, each [Transform](api_docs/cpp_api/transform/transform.md) in our algorithm is independent of its neighbors and is either [trainable](api_docs/cpp_api/transform/members.md#trainable) or not (in our case only ```PCA(0.95)``` is trainable). At train time, the training data is projected through each [UntrainableTransforms](api_docs/cpp_api/untrainabletransform/untrainabletransform.md) in series, just as it would be at test time. When it reaches a trainable transform [train](api_docs/cpp_api/transform/functions.md#train-1) is called with the projected training data as its input. After training, project is called on the newly trained transform and the data continues to propagate through the algorithm.
+
+After training is complete the algorithm is serialized to a model file. The algorithm string is serialized first, then, the data from each transform is serialized using the [store](api_docs/cpp_api/object/functions.md#store) function. Note that only trainable [Transforms](api_docs/cpp_api/transform/transform.md) need to implement [store](api_docs/cpp_api/object/functions.md#store) because [UntrainableTransforms](api_docs/cpp_api/untrainabletransform/untrainabletransform.md) can be recreated from just their algorithm string definitions.
+
+Serializing the entire algorithm string makes using a trained algorithm incredibly easy. Lets say we trained our Eigenfaces algorithm with the following command:
+
+    $ br -algorithm "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+CvtFloat+PCA(0.95)" -train training_data.csv EigenFaces
+
+It can then be run using only the model file as input:
+
+    $ br -algorithm EigenFaces -enroll enroll_data.csv
+
+The model ```EigenFaces``` contains the serialized algorithm string, and that string is automatically deserialized and constructed at test time.
+
+What if the train time and test time algorithm strings are different however? In that case, an explicit [LoadStoreTransform](plugin_docs/core.md#loadstoretransform) can be used to only serialize specific parts of the algorithm string. Reusing our EigenFaces example, we could specify that only ```CvtFloat``` and ```PCA(0.95)``` should be serialized to the model, allowing the other steps to be specified at test time. The command to do so looks like:
+
+    $ br -algorithm "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+<CvtFloat+PCA(0.95),EigenFaces>" -train training_data.csv
+
+Recall from the [Algorithms](#algorithms-in-openbr) tutorial that ```<>``` is shorthand for a [LoadStoreTransform](plugin_docs/core.md#loadstoretransform). Also note that the [LoadStoreTransform](plugin_docs/core.md#loadstoretransform) takes two arguments, the algorithm string and an optional model name. If a name is not provided, a random name is created. Using this model would like this:
+
+    $ br -algorithm "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.2,0.55)+<EigenFaces>"
+
+Notice that the parameters of ```Affine``` can now be changed at test time! Although, in this contrived example, changing those parameters would probably have a strong negative impact on performance. As a final note, in the second case when we explicitly use the [LoadStoreTransform](plugin_docs/core.md#loadstoretransform), OpenBR will not overwrite a model file that already exists, instead it will try and load the old model file, declare it untrainable (since loaded models should never be trained), and throw and error when you try and train it. To avoid headaches and debugging issues for yourself please delete your old models before you try and train new ones!
+
+And that's it! We covered training new algorithms using your custom data and how those algorithms are stored and loaded from disk. The next tutorials will cover popular OpenBR algorithms including [FaceRecognition](#face-recognition), [Age Estimation](#age-estimation), and [Gender Estimation](#gender-estimation), please keep reading for more information.
 
 ---
 
@@ -175,7 +217,7 @@ It is also possible to:
             -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
             -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
             -plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
-         
+
 
 * Perform a 1:N face recognition search:
 
@@ -269,9 +311,9 @@ That's it! You can now embed face recognition into all of your applications.
 
 OpenBR implements a complete, [NIST](http://www.nist.gov/index.html) compliant, evaluation harness for evaluating face recognition, face detection, and facial landmarking. The goal is to provide a consistent environment for the repeatable evaluation of algorithms to the academic and open source communities. To accompish this OpenBR defines the following portions of the biometrics evaluation environment (BEE) standard-
 
-* Signature set - A signature set (or *sigset*) is an XML file-list specified on page 9 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and is implemented in [xmlGallery](api_docs/plugins/gallery.md#xmlgallery). Sigsets are identified with an `.xml` extension.
+* Signature set - A signature set (or *sigset*) is an XML file-list specified on page 9 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and is implemented in [xmlGallery](plugin_docs/gallery.md#xmlgallery). Sigsets are identified with an `.xml` extension.
 
-* Similarity matrix - A similarity matrix (or *simmat*) is a binary score matrix specified on page 12 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and is implemented in [mtxOutput](api_docs/plugins/output.md#mtxoutput). Simmats are identified with a `.mtx` extension. See [br_eval](api_docs/c_api/functions.md#br_eval) for more information.
+* Similarity matrix - A similarity matrix (or *simmat*) is a binary score matrix specified on page 12 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) and is implemented in [mtxOutput](plugin_docs/output.md#mtxoutput). Simmats are identified with a `.mtx` extension. See [br_eval](api_docs/c_api/functions.md#br_eval) for more information.
 
 * Mask matrix - A mask matrix (or *mask*) is a binary matrix specified on page 14 of the [MBGC File Overview](misc/MBGC_file_overview.pdf) identifying the genuine and impostor matches within a corresponding *simmat*. Masks are identified with a `.mask` extension. See [br_make_mask](api_docs/c_api/functions.md#br_make_mask) and [br_combine_masks](api_docs/c_api/functions.md#br_combine_masks) for more information.
 

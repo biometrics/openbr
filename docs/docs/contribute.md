@@ -18,7 +18,7 @@ Some common mistakes that will stop your plugin from working:
 * Remember to call [BR_REGISTER](api_docs/cpp_api/factory/macros.md#br_register) at the end of your plugin.
 * Remeber to add `#include "module/filename.moc"` at the very bottom of your file.
 
-When in doubt, check out existing [Transform](api_docs/cpp_api/transform/transform.md)s. [MAddTransform](api_docs/plugins/imgproc.md#maddtransform) is a simple and clear example of how a [Transform](api_docs/cpp_api/transform/transform.md) should look.
+When in doubt, check out existing [Transform](api_docs/cpp_api/transform/transform.md)s. [MAddTransform](plugin_docs/imgproc.md#maddtransform) is a simple and clear example of how a [Transform](api_docs/cpp_api/transform/transform.md) should look.
 
 ### Documenting
 

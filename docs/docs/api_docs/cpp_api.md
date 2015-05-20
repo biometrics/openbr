@@ -6,7 +6,7 @@ The C++ Plugin API is a pluggable API designed to allow the succinct expression 
 
 The API defines two data structures:
 
-* [File](cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](plugins/metadata.md#cascadetransform) as metadata which are then used by [Draw](plugins/gui.md#drawtransform) for visualization.
+* [File](cpp_api/file/file.md)s are typically used to store the path to a file on disk with associated metadata (in the form of key-value pairs). In the example above, we store the rectangles detected by [Cascade](../plugin_docs/metadata.md#cascadetransform) as metadata which are then used by [Draw](../plugin_docs/gui.md#drawtransform) for visualization.
 * [Template](cpp_api/template/template.md)s are containers for images and [File](cpp_api/file/file.md)s. Images in OpenBR are OpenCV Mats and are member variables of Templates. Templates can contain one or more images.
 
 ## Plugin Abstractions

@@ -43,7 +43,7 @@ This is a virtual function. Train the transform on provided training data. This 
 
     Parameter | Type | Description
     --- | --- | ---
-    data | const [TemplateList](../templatelist/templatelist.md) & | Training data. The format of the data depends on the transform to be trained. In some cases the transform requires a "Label" field in each [Template](../template/template.md) [file's](../template/members.md#file) [metadata](../file/members.md#m_metadata) (normally these are classifiers like [SVM](../../plugins/classification.md#svmtransform)). In other cases no metadata is required and training occurs on the raw image data only.
+    data | const [TemplateList](../templatelist/templatelist.md) & | Training data. The format of the data depends on the transform to be trained. In some cases the transform requires a "Label" field in each [Template](../template/template.md) [file's](../template/members.md#file) [metadata](../file/members.md#m_metadata) (normally these are classifiers like [SVM](../../../plugin_docs/classification.md#svmtransform)). In other cases no metadata is required and training occurs on the raw image data only.
 
 * **output:** (void)
 * **example:**
@@ -380,7 +380,7 @@ Convenience function to call [smartCopy](#smartcopy-1) without arguments
 
 ## [Transform](transform.md) \*simplify(bool &newTransform) {: #simplify }
 
-This is a virtual function. Get a simplified version of the transform for use at project time. The simplified version of the [Transform](transform.md) does not include any [Transforms](transform.md) that are only active at train time. It also removes any [LoadStore](../../plugins/core.md#loadstoretransform) transforms and keeps only their children. Transforms that only are active at train time (see [DownsampleTrainingTransform](../../plugins/core.md#downsampletrainingtransform) as an example) should overload this function and return their children if they have any or NULL if they do not.
+This is a virtual function. Get a simplified version of the transform for use at project time. The simplified version of the [Transform](transform.md) does not include any [Transforms](transform.md) that are only active at train time. It also removes any [LoadStore](../../../plugin_docs/core.md#loadstoretransform) transforms and keeps only their children. Transforms that only are active at train time (see [DownsampleTrainingTransform](../../../plugin_docs/core.md#downsampletrainingtransform) as an example) should overload this function and return their children if they have any or NULL if they do not.
 
 * **function definition:**
 

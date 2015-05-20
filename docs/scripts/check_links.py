@@ -1,5 +1,7 @@
 import os
 import markdown
+from io import open
+
 from HTMLParser import HTMLParser
 
 def subfiles(path, ext):
@@ -90,7 +92,7 @@ def check(headers, links):
                 print
                 continue
 
-            if link.anchor and link.anchor not in headers[link_file]:
+            if link.anchor and link.anchor != "fnref:1" and link.anchor not in headers[link_file]:
                 print 'BAD ANCHOR IN ' + f + ':', link_file + '#' + link.anchor
                 print
                 continue
@@ -103,7 +105,7 @@ def main():
     md_files = walk(docs_dir, ext)
     md = markdown.Markdown( ['meta', 'toc', 'tables', 'fenced_code', 'attr_list', 'footnotes'] )
 
-    html_files = [md.convert(open(f, 'r').read() + "\n\n" + links) for f in md_files]
+    html_files = [md.convert(open(f, 'r', encoding='utf-8').read() + "\n\n" + links) for f in md_files]
 
     headers = {}
     links = {}

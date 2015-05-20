@@ -190,15 +190,15 @@ pages:
 
 - Plugin Documentation:
     - Description: plugin_docs.md
-    - Classification: api_docs/plugins/classification.md
-    - Cluster: api_docs/plugins/cluster.md
-    - Core: api_docs/plugins/core.md
-    - Distance: api_docs/plugins/distance.md
-    - Format: api_docs/plugins/format.md
-    - Gallery: api_docs/plugins/gallery.md
-    - GUI: api_docs/plugins/gui.md
-    - Image Processing: api_docs/plugins/imgproc.md
-    - I/O: api_docs/plugins/io.md
-    - Metadata: api_docs/plugins/metadata.md
-    - Output: api_docs/plugins/output.md
-    - Video: api_docs/plugins/video.md
+    - Classification: plugin_docs/classification.md
+    - Cluster: plugin_docs/cluster.md
+    - Core: plugin_docs/core.md
+    - Distance: plugin_docs/distance.md
+    - Format: plugin_docs/format.md
+    - Gallery: plugin_docs/gallery.md
+    - GUI: plugin_docs/gui.md
+    - Image Processing: plugin_docs/imgproc.md
+    - I/O: plugin_docs/io.md
+    - Metadata: plugin_docs/metadata.md
+    - Output: plugin_docs/output.md
+    - Video: plugin_docs/video.md

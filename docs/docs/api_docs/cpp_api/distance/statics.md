@@ -4,7 +4,7 @@ Make a [Distance](distance.md) from a string. This function converts the abbrevi
 
 Abbreviation | Translation
 --- | ---
-\+ | [PipeDistance](../../plugins/distance.md#pipedistance). Each [Distance](distance.md) linked by a **+** is turned into a child of a single [PipeDistance](../../plugins/distance.md#pipedistance). "Distance1+Distance2" becomes "Pipe([Distance1,Distance2])". [Templates](../template/template.md) are projected through the children of a pipe in series, the output of one become the input of the next.
+\+ | [PipeDistance](../../../plugin_docs/distance.md#pipedistance). Each [Distance](distance.md) linked by a **+** is turned into a child of a single [PipeDistance](../../../plugin_docs/distance.md#pipedistance). "Distance1+Distance2" becomes "Pipe([Distance1,Distance2])". [Templates](../template/template.md) are projected through the children of a pipe in series, the output of one become the input of the next.
 
 The expanded string is then passed to [Factory](../factory/factory.md)::[make](../factory/statics.md#make) to be turned into a distance.
 

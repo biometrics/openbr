@@ -40,4 +40,4 @@ A *gallery* is a file representing a [TemplateList](../templatelist/templatelist
 * json
 * arff
 
-Many of these extensions are unique to OpenBR. Please look at the relevant [Gallery plugin](../../plugins/gallery.md) for information on formatting and other concerns.
+Many of these extensions are unique to OpenBR. Please look at the relevant [Gallery plugin](../../../plugin_docs/gallery.md) for information on formatting and other concerns.

@@ -68,7 +68,7 @@ def parseBrief(briefs):
             matches = regex.finditer(brief)
             for match in matches:
                 name = ' [' + abstraction + ']'
-                link = '(../cpp_api/' + abstraction.lower() + '/' + abstraction.lower() + '.md)'
+                link = '(../api_docs/cpp_api/' + abstraction.lower() + '/' + abstraction.lower() + '.md)'
                 brief = brief.replace(match.group(), name + link).strip() # strip removes a possible leading whitespace
 
         for line in brief.split('\n'):
@@ -83,7 +83,7 @@ def parseBrief(briefs):
 
 def parseInheritance(inheritance):
     if inheritance in abstractions:
-        return '../cpp_api/' + inheritance.lower() + '/' + inheritance.lower() + '.md'
+        return '../api_docs/cpp_api/' + inheritance.lower() + '/' + inheritance.lower() + '.md'
     else: # Not an abstraction must inherit in the local file!
         return '#' + inheritance.lower()
 
@@ -211,10 +211,10 @@ def parseFormats(formats):
 
 def main():
     plugins_dir = '../../openbr/plugins/'
-    output_dir = '../docs/api_docs/plugins/'
+    output_dir = '../docs/plugin_docs/'
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    
+
     for module in subdirs(plugins_dir):
         if module == "cmake":
             continue

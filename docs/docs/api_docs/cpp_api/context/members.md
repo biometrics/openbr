@@ -13,7 +13,7 @@ Member | Type | Description
 <a class="table-anchor" id=currentstep></a>currentStep | double | Used internally to compute [progress](functions.md#progress) and [timeRemaining](functions.md#timeremaining).
 <a class="table-anchor" id=totalsteps></a>totalSteps | double | Used internally to compute [progress](functions.md#progress) and [timeRemaining](functions.md#timeremaining).
 <a class="table-anchor" id=enrollall></a>enrollAll | bool | If true, enroll 0 or more templates per image. Otherwise, enroll exactly one. The default is false.
-<a class="table-anchor" id=filters></a>filters | Filters | Filters is a ```typedef QHash<QString,QStringList> Filters```. Filters that automatically determine imposter matches based on target ([gallery](../gallery/gallery.md)) template metadata. See [FilterDistance](../../plugins/distance.md#filterdistance).
+<a class="table-anchor" id=filters></a>filters | Filters | Filters is a ```typedef QHash<QString,QStringList> Filters```. Filters that automatically determine imposter matches based on target ([gallery](../gallery/gallery.md)) template metadata. See [FilterDistance](../../../plugin_docs/distance.md#filterdistance).
 <a class="table-anchor" id=buffer></a>buffer | [QByteArray][QByteArray] | File output is redirected here if the file's basename is "buffer". This clears previous contents.
 <a class="table-anchor" id=scorenormalization></a>scoreNormalization | bool | If true, enable score normalization. Otherwise disable it. The default is true.
 <a class="table-anchor" id=crossvalidate></a>crossValidate | int | Perform k-fold cross validation where k is the value of **crossValidate**. The default value is 0.

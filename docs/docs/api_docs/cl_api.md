@@ -348,7 +348,7 @@ Get the current OpenBR version
 
 ### -slave {: #slave }
 
-For internal use via [ProcessWrapperTransform](plugins/core.md#processwrappertransform)
+For internal use via [ProcessWrapperTransform](../plugin_docs/core.md#processwrappertransform)
 
 * **arguments:**
 

@@ -26,4 +26,4 @@ An *Output* is a [File](../file/file.md) representing the result comparing templ
 * csv
 * best
 
-Many of these extensions are unique to OpenBR. Please look at the relevant [Output plugin](../../plugins/output.md) for information on formatting and other concerns.
+Many of these extensions are unique to OpenBR. Please look at the relevant [Output plugin](../../../plugin_docs/output.md) for information on formatting and other concerns.
