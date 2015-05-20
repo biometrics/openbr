@@ -9,7 +9,7 @@ namespace br
  * \author Scott Klum \cite sklum
  */
 
-class vecGallery : public Gallery
+class vecGallery : public FileGallery
 {
     Q_OBJECT
 
@@ -18,27 +18,56 @@ class vecGallery : public Gallery
     BR_PROPERTY(int, width, 24)
     BR_PROPERTY(int, height, 24)
 
+    QList<cv::Mat> mats;
+
+    ~vecGallery()
+    {
+	if (mats.isEmpty())
+	    return;
+
+	writeOpen();
+
+	// Write header
+	int count = mats.size();
+	int size = width*height;
+	short temp = 0;
+
+        const size_t write1 = f.write((char*)&count,sizeof(count));
+        const size_t write2 = f.write((char*)&size,sizeof(size));
+        const size_t write3 = f.write((char*)&temp,sizeof(temp));
+        const size_t write4 = f.write((char*)&temp,sizeof(temp));
+
+        if (write1 != sizeof(count) || write2 != sizeof(size) || write3 != sizeof(temp) || write4 != sizeof(temp))
+            qFatal("Failed to write header.");
+
+        for (int i=0; i<count; i++) {
+            uchar tmp = 0;
+	    const size_t write5 = f.write((char*)&tmp,sizeof(tmp));
+
+            for (int r = 0; r < height; r++)
+                for (int c = 0; c < width; c++) {
+	            short buffer = mats[i].ptr(r)[c];
+		    f.write((char*)&buffer, sizeof(buffer));
+		}
+        }
+
+	f.close();
+    }
+
     TemplateList readBlock(bool *done)
     {
+	readOpen();
+
         *done = true;
-
-        QFile gallery;
-        gallery.setFileName(file);
-        if (!gallery.exists())
-            qFatal("File %s does not exist", qPrintable(gallery.fileName()));
-
-        QFile::OpenMode mode = QFile::ReadOnly;
-        if (!gallery.open(mode))
-            qFatal("Can't open gallery: %s for reading", qPrintable(gallery.fileName()));
 
         // Read header
         int count, size;
         short temp;
 
-        const size_t read1 = gallery.read((char*)&count,sizeof(count));
-        const size_t read2 = gallery.read((char*)&size,sizeof(size));
-        const size_t read3 = gallery.read((char*)&temp,sizeof(temp));
-        const size_t read4 = gallery.read((char*)&temp,sizeof(temp));
+        const size_t read1 = f.read((char*)&count,sizeof(count));
+        const size_t read2 = f.read((char*)&size,sizeof(size));
+        const size_t read3 = f.read((char*)&temp,sizeof(temp));
+        const size_t read4 = f.read((char*)&temp,sizeof(temp));
 
         if (read1 != sizeof(count) || read2 != sizeof(size) || read3 != sizeof(temp) || read4 != sizeof(temp))
             qFatal("Failed to read header.");
@@ -52,8 +81,8 @@ class vecGallery : public Gallery
         TemplateList templates;
         for (int i=0; i<count; i++) {
             uchar tmp = 0;
-            const size_t read5 = gallery.read((char*)&tmp,sizeof(tmp));
-            const size_t read6 = gallery.read((char*)vec,size*sizeof(short));
+            const size_t read5 = f.read((char*)&tmp,sizeof(tmp));
+            const size_t read6 = f.read((char*)vec,size*sizeof(short));
 
             if (read5 != sizeof(tmp) || read6 != size*sizeof(short))
                 qFatal("Unable to read vector.");
@@ -72,7 +101,10 @@ class vecGallery : public Gallery
 
     void write(const Template &t)
     {
-	Q_UNUSED(t);
+	if (t.m().rows == height && t.m().cols == width)
+	    mats.append(t);
+	else
+	    qFatal("Matrix has incorrect width/height.");
     }
 };
 
