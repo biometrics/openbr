@@ -35,7 +35,7 @@ namespace br
  * \author Jordan Cheney \cite JordanCheney
  */
 
-class SlidingWindowTransform : public Transform
+class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
 
@@ -118,14 +118,13 @@ class SlidingWindowTransform : public Transform
                             Mat window = scaledImage(Rect(Point(x, y), classifier->windowSize())).clone();
 
                             float result = classifier->classify(window);
-                            qDebug("result: %f", result);
                             if (result > 0) {
                                 rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
                                 rejectLevels.push_back(1);
                                 levelWeights.push_back(result);
                             }
                             if (result == 0)
-                                x = yStep;
+                                x += yStep;
                         }
                     }
                 }

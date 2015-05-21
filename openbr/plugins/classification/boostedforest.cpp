@@ -147,7 +147,6 @@ class BoostedForestClassifier : public Classifier
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
-            qDebug("value: %f", node->value);
             sum += node->value;
         }
 
