@@ -29,7 +29,8 @@ namespace br
  * \brief Sliding Window Framework
  * \author Jordan Cheney
  */
-class SlidingWindowTransform : public UntrainableMetaTransform
+
+class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
 
