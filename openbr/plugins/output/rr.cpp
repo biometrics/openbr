@@ -48,6 +48,7 @@ class rrOutput : public MatrixOutput
 
             typedef QPair<float,int> Pair;
             foreach (const Pair &pair, Common::Sort(OpenCVUtils::matrixToVector<float>(data.row(i)), true, limit)) {
+                // Check if target files are marked as allParitions, and make sure target and query files are in the same partition
                 if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == -1 || targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
                     if (pair.first < threshold) break;
                     File target = targetFiles[pair.second];
