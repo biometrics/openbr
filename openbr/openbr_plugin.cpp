@@ -434,7 +434,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         if (gallery.getBool("reduce"))
             newTemplates = newTemplates.reduced();
 
-        if (Globals->crossValidate > 1)
+        if (abs(Globals->crossValidate) > 1)
             newTemplates = newTemplates.partition("Label");
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {

@@ -69,7 +69,7 @@ struct AlgorithmCore
         QScopedPointer<Transform> trainingWrapper(br::wrapTransform(transform.data(), "Stream(readMode=DistributeFrames)"));
         TemplateList data(TemplateList::fromGallery(input));
 
-        if (Globals->crossValidate > 1)
+        if (abs(Globals->crossValidate) > 1)
             for (int i=data.size()-1; i>=0; i--)
                 if (data[i].file.get<bool>("allPartitions",false) || data[i].file.get<bool>("duplicatePartitions",false))
                     data.removeAt(i);
