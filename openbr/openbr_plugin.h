@@ -1411,9 +1411,6 @@ public:
     virtual cv::Size postWindowSize() const = 0; // window size after preprocessing
     virtual int numFeatures() const = 0;
     virtual int maxCatCount() const = 0;
-
-    // Temporary for OpenCV compatibility
-    virtual void write( cv::FileStorage &fs, const cv::Mat &featureMap ) { (void)fs; (void)featureMap; }
 };
 
 class BR_EXPORT Classifier : public Object

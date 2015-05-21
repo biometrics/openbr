@@ -23,7 +23,6 @@ static void buildTreeRecursive(Node *node, const CvDTreeNode *cv_node, int maxCa
 {
     if (!cv_node->left) {
         node->value = cv_node->value;
-
         node->left = node->right = NULL;
     } else {
         if (maxCatCount > 0)
@@ -37,6 +36,29 @@ static void buildTreeRecursive(Node *node, const CvDTreeNode *cv_node, int maxCa
         node->left = new Node; node->right = new Node;
         buildTreeRecursive(node->left, cv_node->left, maxCatCount);
         buildTreeRecursive(node->right, cv_node->right, maxCatCount);
+    }
+}
+
+static void readRecursive(const FileNode &fn, Node *node, int maxCatCount)
+{
+    bool hasChildren = (int)fn["hasChildren"];
+    if (!hasChildren) {
+        node->value = (float)fn["value"];
+        node->left = node->right = NULL;
+    } else {
+        if (maxCatCount > 0) {
+            FileNode subset_fn = fn["subset"];
+            for (FileNodeIterator subset_it = subset_fn.begin(); subset_it != subset_fn.end(); ++subset_it)
+                node->subset.append((int)*subset_it);
+        } else {
+            node->threshold = (float)fn["threshold"];
+        }
+
+        node->featureIdx = (int)fn["featureIdx"];
+
+        node->left = new Node; node->right = new Node;
+        readRecursive(fn["left"], node->left, maxCatCount);
+        readRecursive(fn["right"], node->right, maxCatCount);
     }
 }
 
@@ -119,16 +141,17 @@ class BoostedForestClassifier : public Classifier
             while (node->left) {
                 if (representation->maxCatCount() > 1) {
                     int c = (int)representation->evaluate(image, node->featureIdx);
-                    node = (2*((node->subset[c >> 5] & (1 << (c & 31))) == 0) - 1) < 0 ? node->left : node->right;
+                    node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
                     double val = representation->evaluate(image, node->featureIdx);
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
+            qDebug("value: %f", node->value);
             sum += node->value;
         }
 
-        return sum < threshold - THRESHOLD_EPS ? 0.0f : 1.0f;
+        return sum < threshold - THRESHOLD_EPS ? -std::abs(sum) : std::abs(sum);
     }
 
     int numFeatures() const
@@ -144,6 +167,17 @@ class BoostedForestClassifier : public Classifier
     Size windowSize() const
     {
         return representation->preWindowSize();
+    }
+
+    void read(const FileNode &node)
+    {
+        threshold = (float)node["stageThreshold"];
+        FileNode weaks_fn = node["weakClassifiers"];
+        for (FileNodeIterator weaks_it = weaks_fn.begin(); weaks_it != weaks_fn.end(); ++weaks_it) {
+            Node *root = new Node;
+            readRecursive(*weaks_it, root, representation->maxCatCount());
+            classifiers.append(root);
+        }
     }
 
     void write(FileStorage &fs) const

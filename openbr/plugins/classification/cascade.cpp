@@ -154,10 +154,16 @@ class CascadeClassifier : public Classifier
 
     float classify(const Mat &image) const
     {
-        foreach (const Classifier *stage, stages)
-            if (stage->classify(image) == 0.0f)
-                return 0.0f;
-        return 1.0f;
+        if (stages.empty())
+             return 1.0f;
+
+        float val = 0.0f;
+        for (int i = 0; i < stages.size(); i++) {
+            val = stages[i]->classify(image);
+            if (val < 0.0f)
+                return stages.size() - i < 4 ? i * val : 0.0f;
+        }
+        return stages.size() * val;
     }
 
     int numFeatures() const
@@ -173,6 +179,16 @@ class CascadeClassifier : public Classifier
     cv::Size windowSize() const
     {
         return stages.first()->windowSize();
+    }
+
+    void read(const FileNode &node)
+    {
+        FileNode stages_fn = node["stages"];
+        for (FileNodeIterator stages_it = stages_fn.begin(); stages_it != stages_fn.end(); ++stages_it) {
+            Classifier *nextStage = Classifier::make(stageDescription, NULL);
+            nextStage->read(*stages_it);
+            stages.append(nextStage);
+        }
     }
 
     void write(FileStorage &fs) const
@@ -196,7 +212,7 @@ private:
             if (!imgHandler.getPos(pos))
                 qFatal("Cannot get another positive sample!");
 
-            if (classify(pos) == 1.0f) {
+            if (classify(pos) > 0.0f) {
                 printf("POS current samples: %d\r", images.size());
                 images.append(pos);
                 labels.append(1.0f);
@@ -212,7 +228,7 @@ private:
             if (!imgHandler.getNeg(neg))
                 qFatal("Cannot get another negative sample!");
 
-            if (classify(neg) == 1.0f) {
+            if (classify(neg) > 0.0f) {
                 printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
                 labels.append(0.0f);
