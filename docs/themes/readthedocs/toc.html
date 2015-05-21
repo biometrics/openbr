@@ -12,7 +12,7 @@
     <li class="toctree-l1 {% if nav_item.active%}current{%endif%}">
     <a class="{% if nav_item.active%}current{%endif%}" href="{{ nav_item.url }}">{{ nav_item.title }}</a>
         {% if nav_item == current_page %}
-            <ul>
+            <ul class="subnav">
             {% for toc_item in toc %}
                 <li class="toctree-l3"><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
             {% endfor %}

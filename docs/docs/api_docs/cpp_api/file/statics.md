@@ -199,6 +199,7 @@ Deserialize a file from a data stream.
 [QList]: http://doc.qt.io/qt-5/QList.html "QList"
 [QVariant]: http://doc.qt.io/qt-5/qvariant.html "QVariant"
 [QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QDebug]: http://doc.qt.io/qt-5/qdebug.html "QDebug"
 [QDataStream]: http://doc.qt.io/qt-5/qdatastream.html "QDataStream"
 [QRectF]: http://doc.qt.io/qt-5/qrectf.html "QRectF"
 [QPointF]: http://doc.qt.io/qt-5/qpointf.html "QPointF"
