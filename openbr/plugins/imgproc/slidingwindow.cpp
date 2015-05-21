@@ -14,15 +14,10 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <fstream>
-
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/cascade.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
-#include <openbr/core/cascade.h>
-
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 
@@ -31,22 +26,23 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Applies a classifier to a sliding window.
- * \author Jordan Cheney \cite JordanCheney
+ * \brief Sliding Window Framework
+ * \author Jordan Cheney
  */
-
-class SlidingWindowTransform : public Transform
+class SlidingWindowTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
     Q_PROPERTY(br::Classifier *classifier READ get_classifier WRITE set_classifier RESET reset_classifier STORED false)
+
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(int minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
 
-    Q_PROPERTY(QString cascadeDir READ get_cascadeDir WRITE set_cascadeDir RESET reset_cascadeDir STORED false)
+    Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
+
     BR_PROPERTY(br::Classifier *, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
@@ -54,7 +50,13 @@ class SlidingWindowTransform : public Transform
     BR_PROPERTY(int, minNeighbors, 5)
     BR_PROPERTY(float, eps, 0.2)
 
-    BR_PROPERTY(QString, cascadeDir, "")
+    BR_PROPERTY(QString, model, "")
+
+    void init()
+    {
+        QDataStream stream;
+        load(stream);
+    }
 
     void train(const TemplateList &data)
     {
@@ -70,6 +72,9 @@ class SlidingWindowTransform : public Transform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
+        Size minObjectSize(minSize, minSize);
+        Size maxObjectSize;
+
         foreach (const Template &t, src) {
             const bool enrollAll = t.file.getBool("enrollAll");
 
@@ -80,26 +85,23 @@ class SlidingWindowTransform : public Transform
                 continue;
             }
 
-            for (int i = 0; i < t.size(); i++) {
-                Mat image;
-                OpenCVUtils::cvtUChar(t[i], image);
-
+            for (int i=0; i<t.size(); i++) {
+                Mat m;
+                OpenCVUtils::cvtUChar(t[i], m);
                 std::vector<Rect> rects;
                 std::vector<int> rejectLevels;
                 std::vector<double> levelWeights;
 
-                Size minObjectSize(minSize, minSize);
-                Size maxObjectSize(maxSize, maxSize);
-                if (maxObjectSize.height <= 0 || maxObjectSize.width <= 0)
-                    maxObjectSize = image.size();
+                if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
+                    maxObjectSize = m.size();
 
-                Mat imageBuffer(image.rows + 1, image.cols + 1, CV_8U);
+                Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
 
                 for (double factor = 1; ; factor *= scaleFactor) {
-                    Size originalWindowSize = classifier->windowSize();
+                    Size originalWindowSize(24, 24);
 
                     Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
-                    Size scaledImageSize(cvRound(image.cols/factor ), cvRound(image.rows/factor));
+                    Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
                     Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
 
                     if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
@@ -110,22 +112,26 @@ class SlidingWindowTransform : public Transform
                         continue;
 
                     Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
-                    resize(image, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
 
-                    int yStep = factor > 2. ? 1 : 2;
-                    for (int y = 0; y < processingRectSize.height; y += yStep) {
-                        for (int x = 0; x < processingRectSize.width; x += yStep) {
-                            Mat window = scaledImage(Rect(Point(x, y), classifier->windowSize())).clone();
+                    Mat repImage = classifier->preprocess(scaledImage);
 
-                            float result = classifier->classify(window);
-                            qDebug("result: %f", result);
-                            if (result > 0) {
+                    int step = factor > 2. ? 1 : 2;
+                    for (int y = 0; y < processingRectSize.height; y += step) {
+                        for (int x = 0; x < processingRectSize.width; x += step) {
+                            Mat window = repImage(Rect(Point(x, y), Size(25,25))).clone();
+
+                            float gypWeight;
+                            int result = classifier->classify(window, gypWeight);
+
+                            if (12 - result < 4) {
                                 rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                rejectLevels.push_back(1);
-                                levelWeights.push_back(result);
+                                rejectLevels.push_back(result);
+                                levelWeights.push_back(gypWeight);
                             }
+
                             if (result == 0)
-                                x = yStep;
+                                x += step;
                         }
                     }
                 }
@@ -133,57 +139,33 @@ class SlidingWindowTransform : public Transform
                 groupRectangles(rects, rejectLevels, levelWeights, minNeighbors, eps);
 
                 if (!enrollAll && rects.empty())
-                    rects.push_back(Rect(0, 0, image.cols, image.rows));
+                    rects.push_back(Rect(0, 0, m.cols, m.rows));
 
-                for (size_t j = 0; j < rects.size(); j++) {
-                    Template u(t.file, image);
+                for (size_t j=0; j<rects.size(); j++) {
+                    Template u(t.file, m);
                     if (rejectLevels.size() > j)
                         u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
                     else
                         u.file.set("Confidence", 1);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
-                    u.file.set("Face", rect);
+                    u.file.set(model, rect);
                     dst.append(u);
                 }
             }
         }
-     }
+    }
 
     void load(QDataStream &stream)
     {
-        (void) stream;
+        (void)stream;
 
-        QString filename = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir + "/cascade.xml";
+        QString filename = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model + "/cascade.xml";
         FileStorage fs(filename.toStdString(), FileStorage::READ);
         if (!fs.isOpened())
             return;
 
         classifier->read(fs.getFirstTopLevelNode());
-
-        return;
-    }
-
-    void store(QDataStream &stream) const
-    {
-        (void) stream;
-
-        QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir;
-        QtUtils::touchDir(QDir(path));
-
-        QString filename = path + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
-
-        if (!fs.isOpened()) {
-            qWarning("Unable to open file: %s", qPrintable(filename));
-            return;
-        }
-
-        fs << FileStorage::getDefaultObjectName(filename.toStdString()) << "{";
-
-        classifier->write(fs);
-
-        fs << "}";
     }
 };
 
