@@ -26,12 +26,25 @@ class NPDRepresentation : public Representation
         return features[idx].calc(image);
     }
 
+    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    {
+        int size = indices.empty() ? numFeatures() : indices.size();
+
+        Mat result(1, size, CV_32FC1);
+        for (int i = 0; i < size; i++)
+            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+        return result;
+    }
+
     Size windowSize(int *dx, int *dy) const
     {
         if (dx && dy)
             *dx = *dy = 0;
         return Size(winWidth, winHeight);
     }
+
+    int numFeatures() const { return features.size(); }
+    int maxCatCount() const { return 0; }
 
     struct Feature
     {
@@ -45,6 +58,13 @@ class NPDRepresentation : public Representation
 };
 
 BR_REGISTER(Representation, NPDRepresentation)
+
+inline float NPDRepresentation::Feature::calc(const Mat &image) const
+{
+    const int *ptr = image.ptr<int>();
+    int v1 = ptr[p[0]], v2 = ptr[p[1]];
+    return v1 == 0 && v2 == 0 ? 0 : ((float)(v1 - v2)) / (v1 + v2);
+}
 
 } // namespace br
 
