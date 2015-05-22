@@ -168,6 +168,28 @@ class SlidingWindowTransform : public MetaTransform
 
         classifier->read(fs.getFirstTopLevelNode());
     }
+
+    void store(QDataStream &stream) const
+    {
+        (void) stream;
+
+        QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir;
+        QtUtils::touchDir(QDir(path));
+
+        QString filename = path + "/cascade.xml";
+        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
+
+        if (!fs.isOpened()) {
+            qWarning("Unable to open file: %s", qPrintable(filename));
+            return;
+        }
+
+        fs << FileStorage::getDefaultObjectName(filename.toStdString()) << "{";
+
+        classifier->write(fs);
+
+        fs << "}";
+    }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
