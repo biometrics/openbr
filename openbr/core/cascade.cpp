@@ -232,7 +232,7 @@ void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& object
 
     for (double factor = 1; ; factor *= scaleFactor) {
         int dx, dy;
-        Size originalWindowSize = representation->windowSize(dx, dy);
+        Size originalWindowSize = representation->windowSize(&dx, &dy);
 
         Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
         Size scaledImageSize(cvRound(image.cols/factor ), cvRound(image.rows/factor));

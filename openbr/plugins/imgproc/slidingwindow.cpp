@@ -100,7 +100,7 @@ class SlidingWindowTransform : public MetaTransform
 
                 for (double factor = 1; ; factor *= scaleFactor) {
                     int dx, dy;
-                    Size originalWindowSize = classifier->windowSize(dx, dy);
+                    Size originalWindowSize = classifier->windowSize(&dx, &dy);
 
                     Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
                     Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
@@ -124,7 +124,7 @@ class SlidingWindowTransform : public MetaTransform
                             Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
                             float gypWeight;
-                            int result = classifier->classify(window, gypWeight);
+                            int result = classifier->classify(window, &gypWeight);
 
                             if (12 - result < 4) {
                                 rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));

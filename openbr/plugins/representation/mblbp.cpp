@@ -58,7 +58,13 @@ class MBLBPRepresentation : public Representation
         return result;
     }
 
-    Size windowSize(int &dx, int &dy) const { dx = dy = 1; return Size(winWidth, winHeight); }
+    Size windowSize(int *dx, int *dy) const
+    {
+        if (dx && dy)
+            *dx = *dy = 1;
+        return Size(winWidth, winHeight);
+    }
+
     int numFeatures() const { return features.size(); }
     int maxCatCount() const { return 256; }
 

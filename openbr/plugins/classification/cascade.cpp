@@ -152,23 +152,18 @@ class CascadeClassifier : public Classifier
         }
     }
 
-    float classify(const Mat &image, float &confidence) const
+    float classify(const Mat &image, float *confidence) const
     {
-        if (stages.empty()) {
-            confidence = 0.0f;
-            return 1.0f;
-        }
-
-        for (int i = 0; i < stages.size(); i++) {
-            float result = stages[i]->classify(image, confidence);
+        float stageConf = 0.0f;
+        foreach (const Classifier *stage, stages) {
+            float result = stage->classify(image, &stageConf);
             if (result == 0.0f) {
-                //confidence *= i;
-                return i;
+                if (confidence)
+                    *confidence += stageConf;
+                return 0.0f;
             }
         }
-
-        //confidence *= stages.size();
-        return stages.size();
+        return 1.0f;
     }
 
     int numFeatures() const
@@ -186,7 +181,7 @@ class CascadeClassifier : public Classifier
         return stages.first()->preprocess(image);
     }
 
-    Size windowSize(int &dx, int &dy) const
+    Size windowSize(int *dx, int *dy) const
     {
         return stages.first()->windowSize(dx, dy);
     }
@@ -217,14 +212,14 @@ private:
     {
         imgHandler.restart();
 
-        float confidence = 0.0f; // not used;
+        float confidence = 0.0f;
 
         while (images.size() < numPos) {
             Mat pos(imgHandler.winSize, CV_8UC1);
             if (!imgHandler.getPos(pos))
                 qFatal("Cannot get another positive sample!");
 
-            if (classify(pos, confidence) > 0.0f) {
+            if (classify(pos, &confidence) > 0.0f) {
                 printf("POS current samples: %d\r", images.size());
                 images.append(pos);
                 labels.append(1.0f);
@@ -240,7 +235,7 @@ private:
             if (!imgHandler.getNeg(neg))
                 qFatal("Cannot get another negative sample!");
 
-            if (classify(neg, confidence) > 0.0f) {
+            if (classify(neg, &confidence) > 0.0f) {
                 printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
                 labels.append(0.0f);

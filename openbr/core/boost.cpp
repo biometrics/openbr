@@ -144,7 +144,7 @@ void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount
     representation = _representation;
 
     int dx, dy;
-    Size windowSize = representation->windowSize(dx, dy);
+    Size windowSize = representation->windowSize(&dx, &dy);
     data.create((int)_maxSampleCount, Size(windowSize.width + dx, windowSize.height + dy).area(), CV_32SC1);
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
 }
@@ -154,7 +154,7 @@ void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
     cls.ptr<float>(idx)[0] = clsLabel;
 
     int dx, dy;
-    Size windowSize = representation->windowSize(dx, dy);
+    Size windowSize = representation->windowSize(&dx, &dy);
     Mat integralImg(Size(windowSize.width + dx, windowSize.height + dy), data.type(), data.ptr<int>(idx));
     representation->preprocess(img, integralImg);
 }

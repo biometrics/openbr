@@ -129,9 +129,9 @@ class BoostedForestClassifier : public Classifier
         }
     }
 
-    float classify(const Mat &image, float &confidence) const
+    float classify(const Mat &image, float *confidence) const
     {
-        confidence = 0;
+        float sum = 0;
         for (int i = 0; i < classifiers.size(); i++) {
             Node *node = classifiers[i];
 
@@ -144,10 +144,12 @@ class BoostedForestClassifier : public Classifier
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
-            confidence += node->value;
+            sum += node->value;
         }
 
-        return confidence < threshold - THRESHOLD_EPS ? 0.0f : 1.0f;
+        if (confidence)
+            *confidence = sum;
+        return sum < threshold - THRESHOLD_EPS ? 0.0f : 1.0f;
     }
 
     int numFeatures() const
@@ -167,7 +169,7 @@ class BoostedForestClassifier : public Classifier
         return dst;
     }
 
-    Size windowSize(int &dx, int &dy) const
+    Size windowSize(int *dx, int *dy) const
     {
         return representation->windowSize(dx, dy);
     }

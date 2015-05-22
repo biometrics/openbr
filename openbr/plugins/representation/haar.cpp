@@ -89,7 +89,14 @@ class HaarRepresentation : public Representation
     }
 
     int numFeatures() const { return features.size(); }
-    Size windowSize(int &dx, int &dy) const { dx = dy = 1; return Size(winWidth, winHeight); }
+
+    Size windowSize(int *dx, int *dy) const
+    {
+        if (dx && dy)
+            *dx = *dy = 1;
+        return Size(winWidth, winHeight);
+    }
+
     int maxCatCount() const { return 0; }
 
     struct Feature
