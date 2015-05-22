@@ -99,7 +99,8 @@ class SlidingWindowTransform : public MetaTransform
                 Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
 
                 for (double factor = 1; ; factor *= scaleFactor) {
-                    Size originalWindowSize(24, 24);
+                    int dx, dy;
+                    Size originalWindowSize = classifier->windowSize(dx, dy);
 
                     Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
                     Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
@@ -120,7 +121,7 @@ class SlidingWindowTransform : public MetaTransform
                     int step = factor > 2. ? 1 : 2;
                     for (int y = 0; y < processingRectSize.height; y += step) {
                         for (int x = 0; x < processingRectSize.width; x += step) {
-                            Mat window = repImage(Rect(Point(x, y), Size(25,25))).clone();
+                            Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
                             float gypWeight;
                             int result = classifier->classify(window, gypWeight);
@@ -173,7 +174,7 @@ class SlidingWindowTransform : public MetaTransform
     {
         (void) stream;
 
-        QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + cascadeDir;
+        QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
         QtUtils::touchDir(QDir(path));
 
         QString filename = path + "/cascade.xml";

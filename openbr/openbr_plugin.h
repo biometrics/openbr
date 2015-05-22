@@ -1407,8 +1407,7 @@ public:
     // and returned.
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
 
-    virtual cv::Size preWindowSize() const = 0; // window size before preprocessing
-    virtual cv::Size postWindowSize() const = 0; // window size after preprocessing
+    virtual cv::Size windowSize(int &dx, int &dy) const = 0; // dx and dy should indicate the change to the original window size after preprocessing
     virtual int numFeatures() const = 0;
     virtual int maxCatCount() const = 0;
 };
@@ -1427,7 +1426,7 @@ public:
 
     // Slots for representation
     virtual cv::Mat preprocess(const cv::Mat &image) const = 0;
-    virtual cv::Size windowSize() const = 0;
+    virtual cv::Size windowSize(int &dx, int &dy) const = 0;
 
     // OpenCV compatibility
     virtual int numFeatures() const = 0;

@@ -167,9 +167,9 @@ class BoostedForestClassifier : public Classifier
         return dst;
     }
 
-    Size windowSize() const
+    Size windowSize(int &dx, int &dy) const
     {
-        return representation->preWindowSize();
+        return representation->windowSize(dx, dy);
     }
 
     void read(const FileNode &node)

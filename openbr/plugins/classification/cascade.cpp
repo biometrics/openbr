@@ -186,9 +186,9 @@ class CascadeClassifier : public Classifier
         return stages.first()->preprocess(image);
     }
 
-    Size windowSize() const
+    Size windowSize(int &dx, int &dy) const
     {
-        return stages.first()->windowSize();
+        return stages.first()->windowSize(dx, dy);
     }
 
     void read(const FileNode &node)

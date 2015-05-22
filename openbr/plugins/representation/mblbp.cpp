@@ -58,9 +58,8 @@ class MBLBPRepresentation : public Representation
         return result;
     }
 
+    Size windowSize(int &dx, int &dy) const { dx = dy = 1; return Size(winWidth, winHeight); }
     int numFeatures() const { return features.size(); }
-    Size preWindowSize() const { return Size(winWidth, winHeight); }
-    Size postWindowSize() const { return Size(winWidth + 1, winHeight + 1); }
     int maxCatCount() const { return 256; }
 
     struct Feature
@@ -77,16 +76,28 @@ class MBLBPRepresentation : public Representation
 
 BR_REGISTER(Representation, MBLBPRepresentation)
 
+static inline void calcOffset(int &p0, int &p1, int &p2, int &p3, Rect rect, int offset)
+{
+    /* (x, y) */
+    p0 = rect.x + offset * rect.y;
+    /* (x + w, y) */
+    p1 = rect.x + rect.width + offset * rect.y;
+    /* (x + w, y) */
+    p2 = rect.x + offset * (rect.y + rect.height);
+    /* (x + w, y + h) */
+    p3 = rect.x + rect.width + offset * (rect.y + rect.height);
+}
+
 MBLBPRepresentation::Feature::Feature( int offset, int x, int y, int _blockWidth, int _blockHeight )
 {
     Rect tr = rect = cvRect(x, y, _blockWidth, _blockHeight);
-    CV_SUM_OFFSETS( p[0], p[1], p[4], p[5], tr, offset )
+    calcOffset(p[0], p[1], p[4], p[5], tr, offset);
     tr.x += 2*rect.width;
-    CV_SUM_OFFSETS( p[2], p[3], p[6], p[7], tr, offset )
+    calcOffset(p[2], p[3], p[6], p[7], tr, offset);
     tr.y +=2*rect.height;
-    CV_SUM_OFFSETS( p[10], p[11], p[14], p[15], tr, offset )
+    calcOffset(p[10], p[11], p[14], p[15], tr, offset);
     tr.x -= 2*rect.width;
-    CV_SUM_OFFSETS( p[8], p[9], p[12], p[13], tr, offset )
+    calcOffset(p[8], p[9], p[12], p[13], tr, offset);
 }
 
 inline uchar MBLBPRepresentation::Feature::calc(const Mat &img) const

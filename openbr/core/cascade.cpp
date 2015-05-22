@@ -231,7 +231,8 @@ void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& object
     Mat imageBuffer(image.rows + 1, image.cols + 1, CV_8U);
 
     for (double factor = 1; ; factor *= scaleFactor) {
-        Size originalWindowSize = representation->preWindowSize();
+        int dx, dy;
+        Size originalWindowSize = representation->windowSize(dx, dy);
 
         Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
         Size scaledImageSize(cvRound(image.cols/factor ), cvRound(image.rows/factor));
@@ -253,7 +254,7 @@ void _CascadeClassifier::detectMultiScale(const Mat& image, vector<Rect>& object
         int yStep = factor > 2. ? 1 : 2;
         for (int y = 0; y < processingRectSize.height; y += yStep) {
             for (int x = 0; x < processingRectSize.width; x += yStep) {
-                Mat window = repImage(Rect(Point(x, y), representation->postWindowSize())).clone();
+                Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
                 double gypWeight;
                 int result = predict(window, gypWeight);
