@@ -99,7 +99,7 @@ namespace OpenCVUtils
     float overlap(const QRectF &rect1, const QRectF &rect2);
 
     // Misc
-    void group(std::vector<cv::Rect> &rects, std::vector<float> &confidences, float epsilon);
+    void group(std::vector<cv::Rect> &rects, std::vector<float> &confidences, float confidenceThreshold, float epsilon);
 
     int getFourcc();
 }

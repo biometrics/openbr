@@ -40,6 +40,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(int minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
+    Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
 
     Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
@@ -49,6 +50,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(int, maxSize, -1)
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(int, minNeighbors, 5)
+    BR_PROPERTY(float, confidenceThreshold, 2)
     BR_PROPERTY(float, eps, 0.2)
 
     BR_PROPERTY(QString, model, "")
@@ -132,7 +134,7 @@ class SlidingWindowTransform : public MetaTransform
                     }
                 }
 
-                OpenCVUtils::group(rects, confidences, eps);
+                OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
 
                 if (!enrollAll && rects.empty())
                     rects.push_back(Rect(0, 0, m.cols, m.rows));
