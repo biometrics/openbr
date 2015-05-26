@@ -155,8 +155,8 @@ void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
 
     int dx, dy;
     Size windowSize = representation->windowSize(&dx, &dy);
-    Mat integralImg(Size(windowSize.width + dx, windowSize.height + dy), data.type(), data.ptr<int>(idx));
-    representation->preprocess(img, integralImg);
+    Mat pp(Size(windowSize.width + dx, windowSize.height + dy), data.type(), data.ptr<int>(idx));
+    representation->preprocess(img, pp);
 }
 
 //----------------------------- CascadeBoostParams -------------------------------------------------
@@ -778,7 +778,7 @@ void CascadeBoostTrainData::precalculate()
     parallel_for_( Range(0, minNum),
                    FeatureValAndIdxPrecalc(featureEvaluator, buf, &valCache, sample_count, is_buf_16u!=0) );
     parallel_for_( Range(minNum, numPrecalcVal),
-                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );
+                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );        
     cout << "Precalculation time: " << (proctime + TIME( 0 )) << endl;
 }
 
@@ -810,49 +810,6 @@ CvDTreeNode* CascadeBoostTree::predict( int sampleIdx ) const
     }
     return node;
 }
-
-/*
-static void readRecursive(const FileNode &fn, CvDTreeNode *node, CvDTreeTrainData *data)
-{
-    bool hasChildren = (int)fn["hasChildren"];
-
-    if (!hasChildren)
-        node->value = (float)fn["value"];
-    else {
-        int maxCatCount = ((CascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount();
-        if (maxCatCount > 0) {
-            node->split = data->new_split_cat(0, 0);
-            FileNode subset_node = fn["subset"]; FileNodeIterator subset_it = subset_node.begin();
-            for (int i = 0; i < (maxCatCount + 31) / 32; i++, ++subset_it)
-                 node->split->subset[i] = (int)*subset_it;
-        } else {
-            float threshold = (float)fn["threshold"];
-            node->split = data->new_split_ord(0, threshold, 0, 0, 0);
-        }
-
-        node->split->var_idx = (int)fn["feature_idx"];
-
-        CvDTreeNode *leftChild = data->new_node(node, 0, 0, 0);
-        node->left = leftChild;
-        readRecursive(fn["left"], leftChild, data);
-
-        CvDTreeNode *rightChild = data->new_node(node, 0, 0, 0);
-        node->right = rightChild;
-        readRecursive(fn["right"], rightChild, data);
-    }
-}
-
-void CascadeBoostTree::read(const FileNode &fn, CvBoost* _ensemble, CvDTreeTrainData* _data)
-{
-    clear();
-    data = _data;
-    ensemble = _ensemble;
-    pruned_tree_idx = 0;
-
-    root = data->new_node(0, 0, 0, 0);
-    readRecursive(fn, root, data);
-}
-*/
 
 void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 {

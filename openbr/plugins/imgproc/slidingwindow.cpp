@@ -151,36 +151,12 @@ class SlidingWindowTransform : public MetaTransform
 
     void load(QDataStream &stream)
     {
-        (void)stream;
-
-        QString filename = model + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::READ);
-        if (!fs.isOpened())
-            return;
-
-        classifier->read(fs.getFirstTopLevelNode());
+        classifier->load(stream);
     }
 
     void store(QDataStream &stream) const
     {
-        (void) stream;
-
-        QString path = model;
-        QtUtils::touchDir(QDir(path));
-
-        QString filename = path + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
-
-        if (!fs.isOpened()) {
-            qWarning("Unable to open file: %s", qPrintable(filename));
-            return;
-        }
-
-        fs << FileStorage::getDefaultObjectName(filename.toStdString()) << "{";
-
-        classifier->write(fs);
-
-        fs << "}";
+        classifier->store(stream);
     }
 };
 

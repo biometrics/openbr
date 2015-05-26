@@ -39,50 +39,47 @@ static void buildTreeRecursive(Node *node, const CvDTreeNode *cv_node, int maxCa
     }
 }
 
-static void readRecursive(const FileNode &fn, Node *node, int maxCatCount)
+static void loadRecursive(QDataStream &stream, Node *node, int maxCatCount)
 {
-    bool hasChildren = (int)fn["hasChildren"];
+    bool hasChildren; stream >> hasChildren;
+
     if (!hasChildren) {
-        node->value = (float)fn["value"];
+        stream >> node->value;
         node->left = node->right = NULL;
     } else {
-        if (maxCatCount > 0) {
-            FileNode subset_fn = fn["subset"];
-            for (FileNodeIterator subset_it = subset_fn.begin(); subset_it != subset_fn.end(); ++subset_it)
-                node->subset.append((int)*subset_it);
-        } else {
-            node->threshold = (float)fn["threshold"];
-        }
+        if (maxCatCount > 0)
+            for (int i = 0; i < (maxCatCount + 31)/32; i++) {
+                int s; stream >> s; node->subset.append(s);
+            }
+        else
+            stream >> node->threshold;
 
-        node->featureIdx = (int)fn["featureIdx"];
+        stream >> node->featureIdx;
 
         node->left = new Node; node->right = new Node;
-        readRecursive(fn["left"], node->left, maxCatCount);
-        readRecursive(fn["right"], node->right, maxCatCount);
+        loadRecursive(stream, node->left, maxCatCount);
+        loadRecursive(stream, node->right, maxCatCount);
     }
 }
 
-static void writeRecursive(FileStorage &fs, const Node *node, int maxCatCount)
+static void storeRecursive(QDataStream &stream, const Node *node, int maxCatCount)
 {
     bool hasChildren = node->left ? true : false;
-    fs << "hasChildren" << hasChildren;
+    stream << hasChildren;
 
     if (!hasChildren)
-        fs << "value" << node->value;
+        stream << node->value;
     else {
-        if (maxCatCount > 0) {
-            fs << "subset" << "[";
+        if (maxCatCount > 0)
             for (int i = 0; i < (maxCatCount + 31)/32; i++)
-                fs << node->subset[i];
-            fs << "]";
-        } else {
-            fs << "threshold" << node->threshold;
-        }
+                stream << node->subset[i];
+        else
+            stream << node->threshold;
 
-        fs << "featureIdx" << node->featureIdx;
+        stream << node->featureIdx;
 
-        fs << "left" << "{"; writeRecursive(fs, node->left, maxCatCount); fs << "}";
-        fs << "right" << "{"; writeRecursive(fs, node->right, maxCatCount); fs << "}";
+        storeRecursive(stream, node->left, maxCatCount);
+        storeRecursive(stream, node->right, maxCatCount);
     }
 }
 
@@ -142,7 +139,7 @@ class BoostedForestClassifier : public Classifier
             Node *node = classifiers[i];
 
             while (node->left) {
-                if (representation->maxCatCount() > 1) {
+                if (representation->maxCatCount() > 0) {
                     int c = (int)representation->evaluate(m, node->featureIdx);
                     node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
@@ -150,6 +147,7 @@ class BoostedForestClassifier : public Classifier
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
+
             sum += node->value;
         }
 
@@ -180,28 +178,23 @@ class BoostedForestClassifier : public Classifier
         return representation->windowSize(dx, dy);
     }
 
-    void read(const FileNode &node)
+    void load(QDataStream &stream)
     {
-        threshold = (float)node["stageThreshold"];
-        FileNode weaks_fn = node["weakClassifiers"];
-        for (FileNodeIterator weaks_it = weaks_fn.begin(); weaks_it != weaks_fn.end(); ++weaks_it) {
-            Node *root = new Node;
-            readRecursive(*weaks_it, root, representation->maxCatCount());
-            classifiers.append(root);
+        stream >> threshold;
+        int numClassifiers; stream >> numClassifiers;
+        for (int i = 0; i < numClassifiers; i++) {
+            Node *classifier = new Node;
+            loadRecursive(stream, classifier, representation->maxCatCount());
+            classifiers.append(classifier);
         }
     }
 
-    void write(FileStorage &fs) const
+    void store(QDataStream &stream) const
     {
-        fs << "stageThreshold" << threshold;
-        fs << "weakSize" << classifiers.size();
-        fs << "weakClassifiers" << "[";
-        foreach (const Node *root, classifiers) {
-            fs << "{";
-            writeRecursive(fs, root, representation->maxCatCount());
-            fs << "}";
-        }
-        fs << "]";
+        stream << threshold;
+        stream << classifiers.size();
+        foreach (const Node *classifier, classifiers)
+            storeRecursive(stream, classifier, representation->maxCatCount());
     }
 };
 
