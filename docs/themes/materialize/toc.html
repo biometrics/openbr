@@ -1,0 +1,6 @@
+<ul>
+    <li><span>Table of Contents</span></li>
+    {% for toc_item in toc %}
+        <li><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
+    {% endfor %}
+</ul>

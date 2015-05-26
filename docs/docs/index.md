@@ -1,9 +1,3 @@
-# OpenBR ![Overview](img/openbr_48x48.png)
-
-<p id=tagline>Open source, industry quality biometrics.</p>
-
----
-
 ## Overview
 
 OpenBR is a framework for investigating new modalities, improving existing algorithms, interfacing with commercial systems, measuring recognition performance, and deploying automated biometric systems.

@@ -1,0 +1,20 @@
+{% if nav_item.children %}
+    <li class="parent no-padding {% if nav_item.active %}active{% endif %}">
+        <ul class="collapsible collapsible-accordion">
+            <li class="{% if nav_item.active %}active{% endif %}">
+                <a class="collapsible-header waves-effect waves-teal">{{ nav_item.title }}</a>
+                <div class="collapsible-body">
+                    <ul>
+                        {% for nav_item in nav_item.children %}
+                            {% include "nav.html" %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </li>
+{% else %}
+    <li class="{% if nav_item.active %}active{% endif %}">
+        <a href="{{ nav_item.url }}">{{ nav_item.title }}</a>
+    </li>
+{% endif %}
