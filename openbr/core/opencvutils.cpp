@@ -474,7 +474,7 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float e
         {
             double w2 = rejectWeights[j];
 
-            if (j == i) //|| n2 <= groupThreshold )
+            if (j == i)
                 continue;
 
             Rect r2 = rrects[j];
