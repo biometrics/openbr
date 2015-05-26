@@ -1,5 +1,6 @@
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "boost.h"
-#include <queue>
 #include "cxmisc.h"
 
 using namespace std;
@@ -15,9 +16,6 @@ logRatio( double val )
     val = min( val, 1. - eps );
     return log( val/(1. - val) );
 }
-
-#define CV_CMP_FLT(i,j) (i < j)
-static CV_IMPLEMENT_QSORT_EX( icvSortFlt, float, CV_CMP_FLT, const float* )
 
 #define CV_CMP_NUM_IDX(i,j) (aux[i] < aux[j])
 static CV_IMPLEMENT_QSORT_EX( icvSortIntAux, int, CV_CMP_NUM_IDX, const float* )
@@ -145,7 +143,7 @@ void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount
 
     int dx, dy;
     Size windowSize = representation->windowSize(&dx, &dy);
-    data.create((int)_maxSampleCount, Size(windowSize.width + dx, windowSize.height + dy).area(), CV_32SC1);
+    data.create((int)_maxSampleCount, (windowSize.width + dx) * (windowSize.height + dy), CV_32SC1);
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
 }
 
@@ -153,10 +151,9 @@ void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
 {
     cls.ptr<float>(idx)[0] = clsLabel;
 
-    int dx, dy;
-    Size windowSize = representation->windowSize(&dx, &dy);
-    Mat pp(Size(windowSize.width + dx, windowSize.height + dy), data.type(), data.ptr<int>(idx));
+    Mat pp;
     representation->preprocess(img, pp);
+    pp.reshape(0, 1).copyTo(data.row(idx));
 }
 
 //----------------------------- CascadeBoostParams -------------------------------------------------
@@ -1031,27 +1028,22 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 
 //----------------------------------- CascadeBoost --------------------------------------
 
-bool CascadeBoost::train( const FeatureEvaluator* _featureEvaluator,
-                           int _numSamples,
-                           int _precalcValBufSize, int _precalcIdxBufSize,
-                           const CascadeBoostParams& _params )
+void CascadeBoost::train(const FeatureEvaluator* _featureEvaluator,
+                         int _numSamples,
+                         int _precalcValBufSize, int _precalcIdxBufSize,
+                         const CascadeBoostParams& _params)
 {
-    bool isTrained = false;
-    CV_Assert( !data );
+    CV_Assert(!data);
     clear();
 
-    data = new CascadeBoostTrainData( _featureEvaluator, _numSamples,
-                                        _precalcValBufSize, _precalcIdxBufSize, _params );
+    data = new CascadeBoostTrainData(_featureEvaluator, _numSamples,
+                                        _precalcValBufSize, _precalcIdxBufSize, _params);
 
-    CvMemStorage *storage = cvCreateMemStorage();
-    weak = cvCreateSeq( 0, sizeof(CvSeq), sizeof(CvBoostTree*), storage );
-    storage = 0;
-
-    set_params( _params );
-    if ( (_params.boost_type == LOGIT) || (_params.boost_type == GENTLE) )
+    set_params(_params);
+    if ((_params.boost_type == LOGIT) || (_params.boost_type == GENTLE))
         data->do_responses_copy();
 
-    update_weights( 0 );
+    update_weights(0);
 
     cout << "+----+---------+---------+" << endl;
     cout << "|  N |    HR   |    FA   |" << endl;
@@ -1060,63 +1052,43 @@ bool CascadeBoost::train( const FeatureEvaluator* _featureEvaluator,
     do
     {
         CascadeBoostTree* tree = new CascadeBoostTree;
-        if( !tree->train( data, subsample_mask, this ) )
-        {
+        if (!tree->train( data, subsample_mask, this)) {
             delete tree;
-            break;
+            return;
         }
 
         classifiers.append(tree);
-        cvSeqPush( weak, &tree );
-        update_weights( tree );
+        update_weights(tree);
         trim_weights();
-        if( cvCountNonZero(subsample_mask) == 0 )
-            break;
+        if (cvCountNonZero(subsample_mask) == 0)
+            return;
     }
-    while( !isErrDesired() && (weak->total < params.weak_count) );
+    while (!isErrDesired() && (classifiers.size() < params.weak_count));
 
-    if(weak->total > 0)
-    {
-        data->is_classifier = true;
-        data->free_train_data();
-        isTrained = true;
-    }
-    else
-        clear();
-
-    return isTrained;
+    clear();
 }
 
-float CascadeBoost::predict( int sampleIdx, bool returnSum ) const
+float CascadeBoost::predict(int sampleIdx, bool returnSum) const
 {
-    CV_Assert( weak );
     double sum = 0;
+    foreach (const CvBoostTree *tree, classifiers)
+        sum += ((CascadeBoostTree*)tree)->predict(sampleIdx)->value;
 
-    CvSeqReader reader;
-    cvStartReadSeq( weak, &reader );
-    cvSetSeqReaderPos( &reader, 0 );
-    for( int i = 0; i < weak->total; i++ )
-    {
-        CvBoostTree* wtree;
-        CV_READ_SEQ_ELEM( wtree, reader );
-        sum += ((CascadeBoostTree*)wtree)->predict(sampleIdx)->value;
-    }
-
-    if( !returnSum )
+    if (!returnSum)
         sum = sum < threshold - CV_THRESHOLD_EPS ? 0.0 : 1.0;
     return (float)sum;
 }
 
-bool CascadeBoost::set_params( const CvBoostParams& _params )
+bool CascadeBoost::set_params(const CvBoostParams& _params)
 {
     minHitRate = ((CascadeBoostParams&)_params).minHitRate;
     maxFalseAlarm = ((CascadeBoostParams&)_params).maxFalseAlarm;
-    return ( ( minHitRate > 0 ) && ( minHitRate < 1) &&
-        ( maxFalseAlarm > 0 ) && ( maxFalseAlarm < 1) &&
-        CvBoost::set_params( _params ));
+    return (( minHitRate > 0 ) && ( minHitRate < 1) &&
+            (maxFalseAlarm > 0 ) && ( maxFalseAlarm < 1) &&
+            CvBoost::set_params(_params));
 }
 
-void CascadeBoost::update_weights( CvBoostTree* tree )
+void CascadeBoost::update_weights(CvBoostTree* tree)
 {
     int n = data->sample_count;
     double sumW = 0.;
@@ -1359,34 +1331,33 @@ void CascadeBoost::update_weights( CvBoostTree* tree )
 
 bool CascadeBoost::isErrDesired()
 {
-    int sCount = data->sample_count,
-        numPos = 0, numNeg = 0, numFalse = 0, numPosTrue = 0;
-    vector<float> eval(sCount);
+    QList<float> posVals;
+    for (int i = 0; i < data->sample_count; i++)
+        if (((CascadeBoostTrainData*)data)->featureEvaluator->getCls(i) == 1.0F)
+            posVals.append(predict(i, true));
 
-    for( int i = 0; i < sCount; i++ )
-        if( ((CascadeBoostTrainData*)data)->featureEvaluator->getCls( i ) == 1.0F )
-            eval[numPos++] = predict( i, true );
-    icvSortFlt( &eval[0], numPos, 0 );
-    int thresholdIdx = (int)((1.0F - minHitRate) * numPos);
-    threshold = eval[ thresholdIdx ];
-    numPosTrue = numPos - thresholdIdx;
-    for( int i = thresholdIdx - 1; i >= 0; i--)
-        if ( abs( eval[i] - threshold) < FLT_EPSILON )
+    std::sort(posVals.begin(), posVals.end());
+
+    int thresholdIdx = (int)((1.0F - minHitRate) * posVals.size());
+    threshold = posVals[thresholdIdx];
+
+    int numPosTrue = posVals.size() - thresholdIdx;
+    for (int i = thresholdIdx - 1; i >= 0; i--)
+        if (abs(posVals[i] - threshold) < FLT_EPSILON)
             numPosTrue++;
-    float hitRate = ((float) numPosTrue) / ((float) numPos);
+    float hitRate = ((float)numPosTrue) / ((float)posVals.size());
 
-    for( int i = 0; i < sCount; i++ )
-    {
-        if( ((CascadeBoostTrainData*)data)->featureEvaluator->getCls( i ) == 0.0F )
-        {
+    int numNeg = 0, numFalse = 0;
+    for (int i = 0; i < data->sample_count; i++) {
+        if (((CascadeBoostTrainData*)data)->featureEvaluator->getCls(i) == 0.0F) {
             numNeg++;
-            if( predict( i ) )
+            if (predict(i))
                 numFalse++;
         }
     }
-    float falseAlarm = ((float) numFalse) / ((float) numNeg);
+    float falseAlarm = ((float)numFalse) / ((float)numNeg);
 
-    cout << "|"; cout.width(4); cout << right << weak->total;
+    cout << "|"; cout.width(4); cout << right << classifiers.size();
     cout << "|"; cout.width(9); cout << right << hitRate;
     cout << "|"; cout.width(9); cout << right << falseAlarm;
     cout << "|" << endl;
