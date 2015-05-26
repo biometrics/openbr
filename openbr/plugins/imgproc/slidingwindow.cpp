@@ -116,7 +116,7 @@ class SlidingWindowTransform : public MetaTransform
                         for (int x = 0; x < processingRectSize.width; x += step) {
                             Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
-                            float confidence;
+                            float confidence = 0;
                             int result = classifier->classify(window, false, &confidence);
 
                             if (result == 1) {
@@ -124,7 +124,7 @@ class SlidingWindowTransform : public MetaTransform
                                 confidences.push_back(confidence);
                             }
 
-                            // Add ROC mode
+                            // TODO: Add ROC mode
 
                             if (result == 0)
                                 x += step;
@@ -132,18 +132,14 @@ class SlidingWindowTransform : public MetaTransform
                     }
                 }
 
-                // groupRectangles(rects, confidences, eps);
-                groupRectangles(rects, rejectLevels, levelWeights, minNeighbors, eps);
+                OpenCVUtils::group(rects, confidences, eps);
 
                 if (!enrollAll && rects.empty())
                     rects.push_back(Rect(0, 0, m.cols, m.rows));
 
                 for (size_t j=0; j<rects.size(); j++) {
                     Template u(t.file, m);
-                    if (rejectLevels.size() > j)
-                        u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
-                    else
-                        u.file.set("Confidence", 1);
+                    u.file.set("Confidence", confidences[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
                     u.file.set(model, rect);
@@ -157,7 +153,7 @@ class SlidingWindowTransform : public MetaTransform
     {
         (void)stream;
 
-        QString filename = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model + "/cascade.xml";
+        QString filename = model + "/cascade.xml";
         FileStorage fs(filename.toStdString(), FileStorage::READ);
         if (!fs.isOpened())
             return;
@@ -169,7 +165,7 @@ class SlidingWindowTransform : public MetaTransform
     {
         (void) stream;
 
-        QString path = Globals->sdkPath + "/share/openbr/models/openbrcascades/" + model;
+        QString path = model;
         QtUtils::touchDir(QDir(path));
 
         QString filename = path + "/cascade.xml";

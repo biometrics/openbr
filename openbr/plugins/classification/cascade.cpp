@@ -157,11 +157,10 @@ class CascadeClassifier : public Classifier
         float stageConf = 0.0f;
         foreach (const Classifier *stage, stages) {
             float result = stage->classify(image, process, &stageConf);
-            if (result == 0.0f) {
-                if (confidence)
-                    *confidence += stageConf;
+            if (confidence)
+                *confidence += stageConf;
+            if (result == 0.0f)
                 return 0.0f;
-            }
         }
         return 1.0f;
     }

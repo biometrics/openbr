@@ -382,6 +382,131 @@ bool OpenCVUtils::overlaps(const QList<Rect> &posRects, const Rect &negRect, dou
     return false;
 }
 
+// class for grouping object candidates, detected by Cascade Classifier, HOG etc.
+// instance of the class is to be passed to cv::partition (see cxoperations.hpp)
+class SimilarRects
+{
+public:
+    SimilarRects(double _eps) : eps(_eps) {}
+    inline bool operator()(const Rect& r1, const Rect& r2) const
+    {
+        double delta = eps*(std::min(r1.width, r2.width) + std::min(r1.height, r2.height))*0.5;
+        return std::abs(r1.x - r2.x) <= delta &&
+            std::abs(r1.y - r2.y) <= delta &&
+            std::abs(r1.x + r1.width - r2.x - r2.width) <= delta &&
+            std::abs(r1.y + r1.height - r2.y - r2.height) <= delta;
+    }
+    double eps;
+};
+
+// TODO: Make sure case where no confidences are inputted works.
+void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float epsilon)
+{
+    if (rects.empty())
+        return;
+
+    const bool useConfidences = !confidences.empty();
+
+    vector<int> labels;
+    int nClasses = cv::partition(rects, labels, SimilarRects(epsilon));
+
+    // Rect for each class (class meaning identity assigned by partition)
+    vector<Rect> rrects(nClasses);
+
+    // Total number of rects in each class
+    vector<int> rweights(nClasses, 0);
+    vector<double> rejectWeights(nClasses, -std::numeric_limits<double>::max());
+
+    for (int i = 0; i < labels.size(); i++)
+    {
+        int cls = labels[i];
+        rrects[cls].x += rects[i].x;
+        rrects[cls].y += rects[i].y;
+        rrects[cls].width += rects[i].width;
+        rrects[cls].height += rects[i].height;
+        rweights[cls]++;
+    }
+
+    if (useConfidences)
+    {
+        // For each class, find maximum confidence
+        for (int i = 0; i < labels.size(); i++)
+        {
+            int cls = labels[i];
+            if (confidences[i] > rejectWeights[cls])
+                rejectWeights[cls] = confidences[i];
+        }
+    }
+
+    // Find average rectangle for all classes
+    for (int i = 0; i < nClasses; i++)
+    {
+        Rect r = rrects[i];
+        float s = 1.f/rweights[i];
+        rrects[i] = Rect(saturate_cast<int>(r.x*s),
+             saturate_cast<int>(r.y*s),
+             saturate_cast<int>(r.width*s),
+             saturate_cast<int>(r.height*s));
+    }
+
+    rects.clear();
+    confidences.clear();
+
+    const double threshold = 2;
+
+    // Aggregate by comparing average rectangles against other average rectangels
+    for (int i = 0; i < nClasses; i++)
+    {
+        // Average rectangle
+        Rect r1 = rrects[i];
+
+        // Used to eliminate rectangles with few neighbors in the case of no weights
+        // int n1 = levelWeights ? rejectLevels[i] : rweights[i];
+        double w1 = rejectWeights[i];
+
+        // Eliminate rectangle if it doesn't meet confidence criteria
+        if (w1 <= threshold)
+            continue;
+
+        // filter out small face rectangles inside large rectangles
+        int j;
+        for (j = 0; j < nClasses; j++)
+        {
+            double w2 = rejectWeights[j];
+
+            if (j == i) //|| n2 <= groupThreshold )
+                continue;
+
+            Rect r2 = rrects[j];
+
+            int dx = saturate_cast<int>(r2.width * epsilon);
+            int dy = saturate_cast<int>(r2.height * epsilon);
+
+            // If, r1 is within the r2 AND
+            // the second rectangle reaches a later stage than the first
+            // where both the first and the second must have a stage greater than three OR
+            // the first doens't reach the third stage.
+            // Changeto: second rectangle has a higher confidence than the first OR
+            // the first has a low confidence.
+            // Then, eliminate the first rectangle.
+            if(r1.x >= r2.x - dx &&
+               r1.y >= r2.y - dy &&
+               r1.x + r1.width <= r2.x + r2.width + dx &&
+               r1.y + r1.height <= r2.y + r2.height + dy &&
+               (w2 > std::max(threshold, w1)))
+               break;
+        }
+
+        // Need to return rects and confidences
+        if( j == nClasses )
+        {
+            rects.push_back(r1);
+            if (useConfidences)
+                confidences.push_back(w1);
+        }
+    }
+}
+
 QDataStream &operator<<(QDataStream &stream, const Mat &m)
 {
     // Write header
