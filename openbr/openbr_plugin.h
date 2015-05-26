@@ -1422,7 +1422,7 @@ public:
     static Classifier *make(QString str, QObject *parent); /*!< \brief Make a classifier from a string. */
 
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
-    virtual float classify(const cv::Mat &image, float *confidence = NULL) const = 0;
+    virtual float classify(const cv::Mat &image, bool process = true, float *confidence = NULL) const = 0;
 
     // Slots for representation
     virtual cv::Mat preprocess(const cv::Mat &image) const = 0;

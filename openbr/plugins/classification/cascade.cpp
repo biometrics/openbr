@@ -152,11 +152,11 @@ class CascadeClassifier : public Classifier
         }
     }
 
-    float classify(const Mat &image, float *confidence) const
+    float classify(const Mat &image, bool process, float *confidence) const
     {
         float stageConf = 0.0f;
         foreach (const Classifier *stage, stages) {
-            float result = stage->classify(image, &stageConf);
+            float result = stage->classify(image, process, &stageConf);
             if (result == 0.0f) {
                 if (confidence)
                     *confidence += stageConf;
@@ -219,7 +219,7 @@ private:
             if (!imgHandler.getPos(pos))
                 qFatal("Cannot get another positive sample!");
 
-            if (classify(pos, &confidence) > 0.0f) {
+            if (classify(pos, true, &confidence) > 0.0f) {
                 printf("POS current samples: %d\r", images.size());
                 images.append(pos);
                 labels.append(1.0f);
@@ -235,7 +235,7 @@ private:
             if (!imgHandler.getNeg(neg))
                 qFatal("Cannot get another negative sample!");
 
-            if (classify(neg, &confidence) > 0.0f) {
+            if (classify(neg, true, &confidence) > 0.0f) {
                 printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
                 labels.append(0.0f);

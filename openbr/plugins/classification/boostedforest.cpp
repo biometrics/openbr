@@ -129,18 +129,24 @@ class BoostedForestClassifier : public Classifier
         }
     }
 
-    float classify(const Mat &image, float *confidence) const
+    float classify(const Mat &image, bool process, float *confidence) const
     {
+        Mat m;
+        if (process)
+            m = preprocess(image);
+        else
+            m = image;
+
         float sum = 0;
         for (int i = 0; i < classifiers.size(); i++) {
             Node *node = classifiers[i];
 
             while (node->left) {
                 if (representation->maxCatCount() > 1) {
-                    int c = (int)representation->evaluate(image, node->featureIdx);
+                    int c = (int)representation->evaluate(m, node->featureIdx);
                     node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
-                    double val = representation->evaluate(image, node->featureIdx);
+                    double val = representation->evaluate(m, node->featureIdx);
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }

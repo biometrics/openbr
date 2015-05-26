@@ -53,12 +53,6 @@ class SlidingWindowTransform : public MetaTransform
 
     BR_PROPERTY(QString, model, "")
 
-    void init()
-    {
-        QDataStream stream;
-        load(stream);
-    }
-
     void train(const TemplateList &data)
     {
         classifier->train(data.data(), File::get<float>(data, "Label", -1));
@@ -90,8 +84,7 @@ class SlidingWindowTransform : public MetaTransform
                 Mat m;
                 OpenCVUtils::cvtUChar(t[i], m);
                 std::vector<Rect> rects;
-                std::vector<int> rejectLevels;
-                std::vector<double> levelWeights;
+                std::vector<float> confidences;
 
                 if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
                     maxObjectSize = m.size();
@@ -123,14 +116,15 @@ class SlidingWindowTransform : public MetaTransform
                         for (int x = 0; x < processingRectSize.width; x += step) {
                             Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
-                            float gypWeight;
-                            int result = classifier->classify(window, &gypWeight);
+                            float confidence;
+                            int result = classifier->classify(window, false, &confidence);
 
-                            if (12 - result < 4) {
+                            if (result == 1) {
                                 rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                rejectLevels.push_back(result);
-                                levelWeights.push_back(gypWeight);
+                                confidences.push_back(confidence);
                             }
+
+                            // Add ROC mode
 
                             if (result == 0)
                                 x += step;
@@ -138,6 +132,7 @@ class SlidingWindowTransform : public MetaTransform
                     }
                 }
 
+                // groupRectangles(rects, confidences, eps);
                 groupRectangles(rects, rejectLevels, levelWeights, minNeighbors, eps);
 
                 if (!enrollAll && rects.empty())
