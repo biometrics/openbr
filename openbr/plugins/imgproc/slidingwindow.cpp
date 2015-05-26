@@ -138,7 +138,7 @@ class SlidingWindowTransform : public MetaTransform
                     u.file.set("Confidence", confidences[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
-                    u.file.set(model, rect);
+                    u.file.set("Face", rect);
                     dst.append(u);
                 }
             }
