@@ -106,6 +106,8 @@ class BoostedForestClassifier : public Classifier
 
     void train(const QList<Mat> &images, const QList<float> &labels)
     {
+        representation->train(images, labels);
+
         CascadeBoostParams params(CvBoost::GENTLE, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
 
         FeatureEvaluator featureEvaluator;
@@ -180,6 +182,8 @@ class BoostedForestClassifier : public Classifier
 
     void load(QDataStream &stream)
     {
+        representation->load(stream);
+
         stream >> threshold;
         int numClassifiers; stream >> numClassifiers;
         for (int i = 0; i < numClassifiers; i++) {
@@ -191,6 +195,8 @@ class BoostedForestClassifier : public Classifier
 
     void store(QDataStream &stream) const
     {
+        representation->store(stream);
+
         stream << threshold;
         stream << classifiers.size();
         foreach (const Node *classifier, classifiers)
