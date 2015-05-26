@@ -124,7 +124,7 @@ class SlidingWindowTransform : public MetaTransform
                                 confidences.push_back(confidence);
                             }
 
-                            // TODO: Add ROC mode
+                            // TODO: Add non ROC mode
 
                             if (result == 0)
                                 x += step;
