@@ -400,7 +400,7 @@ public:
 };
 
 // TODO: Make sure case where no confidences are inputted works.
-void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float epsilon)
+void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float confidenceThreshold, float epsilon)
 {
     if (rects.empty())
         return;
@@ -415,7 +415,7 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float e
 
     // Total number of rects in each class
     vector<int> rweights(nClasses, 0);
-    vector<double> rejectWeights(nClasses, -std::numeric_limits<double>::max());
+    vector<float> rejectWeights(nClasses, -std::numeric_limits<float>::max());
 
     for (int i = 0; i < labels.size(); i++)
     {
@@ -452,8 +452,6 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float e
     rects.clear();
     confidences.clear();
 
-    const double threshold = 2;
-
     // Aggregate by comparing average rectangles against other average rectangels
     for (int i = 0; i < nClasses; i++)
     {
@@ -462,17 +460,17 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float e
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
         // int n1 = levelWeights ? rejectLevels[i] : rweights[i];
-        double w1 = rejectWeights[i];
+        float w1 = rejectWeights[i];
 
         // Eliminate rectangle if it doesn't meet confidence criteria
-        if (w1 <= threshold)
+        if (w1 <= confidenceThreshold)
             continue;
 
         // filter out small face rectangles inside large rectangles
         int j;
         for (j = 0; j < nClasses; j++)
         {
-            double w2 = rejectWeights[j];
+            float w2 = rejectWeights[j];
 
             if (j == i)
                 continue;
@@ -493,7 +491,7 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float e
                r1.y >= r2.y - dy &&
                r1.x + r1.width <= r2.x + r2.width + dx &&
                r1.y + r1.height <= r2.y + r2.height + dy &&
-               (w2 > std::max(threshold, w1)))
+               (w2 > std::max(confidenceThreshold, w1)))
                break;
         }
 
