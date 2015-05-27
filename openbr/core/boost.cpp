@@ -172,7 +172,7 @@ CascadeBoostParams::CascadeBoostParams( int _boostType,
         double _weightTrimRate, int _maxDepth, int _maxWeakCount ) :
     CvBoostParams( _boostType, _maxWeakCount, _weightTrimRate, _maxDepth, false, 0 )
 {
-    boost_type = CvBoost::GENTLE;
+    boost_type = _boostType;
     minHitRate = _minHitRate;
     maxFalseAlarm = _maxFalseAlarm;
     use_surrogates = use_1se_rule = truncate_pruned_tree = false;

@@ -89,6 +89,7 @@ static void writeRecursive(FileStorage &fs, const Node *node, int maxCatCount)
 class BoostedForestClassifier : public Classifier
 {
     Q_OBJECT
+    Q_ENUMS(Type)
 
     Q_PROPERTY(br::Representation *representation READ get_representation WRITE set_representation RESET reset_representation STORED false)
     Q_PROPERTY(float minTAR READ get_minTAR WRITE set_minTAR RESET reset_minTAR STORED false)
@@ -96,20 +97,28 @@ class BoostedForestClassifier : public Classifier
     Q_PROPERTY(float trimRate READ get_trimRate WRITE set_trimRate RESET reset_trimRate STORED false)
     Q_PROPERTY(int maxDepth READ get_maxDepth WRITE set_maxDepth RESET reset_maxDepth STORED false)
     Q_PROPERTY(int maxWeakCount READ get_maxWeakCount WRITE set_maxWeakCount RESET reset_maxWeakCount STORED false)
+    Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
 
+public:
+    enum Type { Discrete = CvBoost::DISCRETE,
+                Real = CvBoost::REAL,
+                Logit = CvBoost::LOGIT,
+                Gentle = CvBoost::GENTLE};
+private:
     BR_PROPERTY(br::Representation *, representation, NULL)
     BR_PROPERTY(float, minTAR, 0.995)
     BR_PROPERTY(float, maxFAR, 0.5)
     BR_PROPERTY(float, trimRate, 0.95)
     BR_PROPERTY(int, maxDepth, 1)
     BR_PROPERTY(int, maxWeakCount, 100)
+    BR_PROPERTY(Type, type, Gentle)
 
     QList<Node*> classifiers;
     float threshold;
 
     void train(const QList<Mat> &images, const QList<float> &labels)
     {
-        CascadeBoostParams params(CvBoost::GENTLE, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
+        CascadeBoostParams params(type, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
 
         FeatureEvaluator featureEvaluator;
         featureEvaluator.init(representation, images.size());
