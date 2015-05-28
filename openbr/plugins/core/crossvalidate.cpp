@@ -56,8 +56,10 @@ class CrossValidateTransform : public MetaTransform
     Q_OBJECT
     Q_PROPERTY(QString description READ get_description WRITE set_description RESET reset_description STORED false)
     Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    Q_PROPERTY(unsigned int randomSeed READ get_randomSeed WRITE set_randomSeed RESET reset_randomSeed STORED false)
     BR_PROPERTY(QString, description, "Identity")
     BR_PROPERTY(QString, inputVariable, "Label")
+    BR_PROPERTY(unsigned int, randomSeed, 0)
 
     // numPartitions copies of transform specified by description.
     QList<br::Transform*> transforms;
@@ -67,13 +69,14 @@ class CrossValidateTransform : public MetaTransform
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        QList<int> partitions = data.partition(inputVariable).files().crossValidationPartitions();
-        const int numPartitions = Common::Max(partitions)+1;
-
+        QList<int> partitions = data.partition(inputVariable, randomSeed).files().crossValidationPartitions();
+        const int crossValidate = Globals->crossValidate;
+        // Only train once based on the 0th partition if crossValidate is negative.
+        const int numPartitions = (crossValidate < 0) ? 1 : Common::Max(partitions)+1;
         while (transforms.size() < numPartitions)
             transforms.append(make(description));
 
-        if (numPartitions < 2) {
+        if (std::abs(crossValidate) < 2) {
             transforms.first()->train(data);
             return;
         }
@@ -101,8 +104,13 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        TemplateList partitioned = src.partition(inputVariable);
+        TemplateList partitioned = src.partition(inputVariable, randomSeed);
+        const int crossValidate = Globals->crossValidate;
 
+        if (crossValidate < 0) {
+            transforms[0]->project(partitioned, dst);
+            return;
+        }
         for (int i=0; i<partitioned.size(); i++) {
             int partition = partitioned[i].file.get<int>("Partition", 0);
             transforms[partition]->project(partitioned, dst);

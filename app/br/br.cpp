@@ -69,6 +69,7 @@ public:
 
         bool daemon = false;
         const char *daemon_pipe = NULL;
+        bool isInt = false;
         while (daemon || (argc > 0)) {
             const char *fun;
             int parc;
@@ -78,7 +79,12 @@ public:
 
             fun = argv[0];
             if (fun[0] == '-') fun++;
-            parc = 0; while ((parc+1 < argc) && (argv[parc+1][0] != '-')) parc++;
+            parc = 0;
+            QString(argv[parc+1]).toInt(&isInt);
+            while ((parc+1 < argc) && ((argv[parc+1][0] != '-') || isInt)) {
+                parc++;
+                QString(argv[parc+1]).toInt(&isInt);
+            }
             parv = (const char **)&argv[1];
             argc = argc - (parc+1);
             argv = &argv[parc+1];

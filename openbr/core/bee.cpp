@@ -230,7 +230,7 @@ void makeMask(const QString &targetInput, const QString &queryInput, const QStri
     const FileList targets = TemplateList::fromGallery(targetInput).files();
     const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     const int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) {
+    if (partitions <= 0) {
         writeMatrix(makeMask(targets, queries), mask, targetInput, queryInput);
     } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
@@ -246,7 +246,7 @@ void makePairwiseMask(const QString &targetInput, const QString &queryInput, con
     const FileList targets = TemplateList::fromGallery(targetInput).files();
     const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     const int partitions = targets.first().get<int>("crossValidate");
-    if (partitions == 0) {
+    if (partitions <= 0) {
         writeMatrix(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
     } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");

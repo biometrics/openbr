@@ -45,7 +45,7 @@ class evalOutput : public MatrixOutput
 
         if (data.data) {
             const QString csv = QString(file.name).replace(".eval", ".csv");
-            if ((Globals->crossValidate == 0) || (!crossValidate)) {
+            if ((Globals->crossValidate <= 0) || (!crossValidate)) {
                 Evaluate(data, targetFiles, queryFiles, csv);
             } else {
                 QFutureSynchronizer<float> futures;
