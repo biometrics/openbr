@@ -1424,15 +1424,11 @@ public:
     virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
     virtual float classify(const cv::Mat &image, bool process = true, float *confidence = NULL) const = 0;
 
-    // Slots for representation
+    // Slots for representations
     virtual cv::Mat preprocess(const cv::Mat &image) const = 0;
     virtual cv::Size windowSize(int *dx = NULL, int *dy = NULL) const = 0;
-
-    // OpenCV compatibility
     virtual int numFeatures() const = 0;
     virtual int maxCatCount() const = 0;
-    virtual void write(cv::FileStorage &fs) const { (void)fs; }
-    virtual void read(const cv::FileNode &node) { (void)node; }
 };
 
 /*!

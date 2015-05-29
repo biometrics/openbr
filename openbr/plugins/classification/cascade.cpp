@@ -185,25 +185,21 @@ class CascadeClassifier : public Classifier
         return stages.first()->windowSize(dx, dy);
     }
 
-    void read(const FileNode &node)
+    void load(QDataStream &stream)
     {
-        FileNode stages_fn = node["stages"];
-        for (FileNodeIterator stages_it = stages_fn.begin(); stages_it != stages_fn.end(); ++stages_it) {
+        int numStages; stream >> numStages;
+        for (int i = 0; i < numStages; i++) {
             Classifier *nextStage = Classifier::make(stageDescription, NULL);
-            nextStage->read(*stages_it);
+            nextStage->load(stream);
             stages.append(nextStage);
         }
     }
 
-    void write(FileStorage &fs) const
+    void store(QDataStream &stream) const
     {
-        fs << "stages" << "[";
-        foreach (const Classifier *stage, stages) {
-            fs << "{";
-            stage->write(fs);
-            fs << "}";
-        }
-        fs << "]";
+        stream << stages.size();
+        foreach (const Classifier *stage, stages)
+            stage->store(stream);
     }
 
 private:

@@ -15,9 +15,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <openbr/plugins/openbr_internal.h>
-#include <openbr/core/cascade.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
+
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 
@@ -43,8 +44,6 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
 
-    Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
-
     BR_PROPERTY(br::Classifier *, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
@@ -52,8 +51,6 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(int, minNeighbors, 5)
     BR_PROPERTY(float, confidenceThreshold, 2)
     BR_PROPERTY(float, eps, 0.2)
-
-    BR_PROPERTY(QString, model, "")
 
     void train(const TemplateList &data)
     {
@@ -144,7 +141,7 @@ class SlidingWindowTransform : public MetaTransform
                     u.file.set("Confidence", confidences[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
-                    u.file.set(model, rect);
+                    u.file.set("Face", rect);
                     dst.append(u);
                 }
             }
@@ -153,36 +150,12 @@ class SlidingWindowTransform : public MetaTransform
 
     void load(QDataStream &stream)
     {
-        (void)stream;
-
-        QString filename = model + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::READ);
-        if (!fs.isOpened())
-            return;
-
-        classifier->read(fs.getFirstTopLevelNode());
+        classifier->load(stream);
     }
 
     void store(QDataStream &stream) const
     {
-        (void) stream;
-
-        QString path = model;
-        QtUtils::touchDir(QDir(path));
-
-        QString filename = path + "/cascade.xml";
-        FileStorage fs(filename.toStdString(), FileStorage::WRITE);
-
-        if (!fs.isOpened()) {
-            qWarning("Unable to open file: %s", qPrintable(filename));
-            return;
-        }
-
-        fs << FileStorage::getDefaultObjectName(filename.toStdString()) << "{";
-
-        classifier->write(fs);
-
-        fs << "}";
+        classifier->store(stream);
     }
 };
 

@@ -82,7 +82,7 @@ protected:
 class CascadeBoost : public CvBoost
 {
 public:
-    virtual bool train(const FeatureEvaluator *_featureEvaluator,
+    virtual void train(const FeatureEvaluator *_featureEvaluator,
                        int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                        const CascadeBoostParams &_params=CascadeBoostParams());
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
