@@ -59,6 +59,8 @@ static const QMetaObject *getInterface(const QObject *obj)
 // Note that the convention for displaying metadata is as follows:
 // [] for lists in which argument order does not matter (e.g. [FTO=false, Index=0]),
 // () for lists in which argument order matters (e.g. First_Eye(100.0,100.0)).
+QMap<QString,std::vector<char> > File::MemoryFile;
+
 QString File::flat() const
 {
     QStringList values;
