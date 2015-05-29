@@ -1,4 +1,5 @@
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
@@ -36,7 +37,7 @@ class GradientHistogramRepresentation : public Representation
             for (int y=0; y<height; y++)
                 for (int w=1; w <= width-x; w++)
                     for (int h=1; h <= height-y; h++)
-                        features.append(Rect(x,y,width,height));
+                        features.append(Rect(x,y,w,h));
     }
 
     void preprocess(const Mat &src, Mat &dst) const
@@ -55,7 +56,7 @@ class GradientHistogramRepresentation : public Representation
         // Mask and compute integral image
         std::vector<Mat> outputs;
         for (int i=0; i<bins; i++) {
-            Mat output = (histogram == i);
+            Mat output = (histogram == i)/255;
             Mat integralImg;
             integral(output, integralImg);
             outputs.push_back(integralImg);
@@ -63,8 +64,6 @@ class GradientHistogramRepresentation : public Representation
 
         // Concatenate images into row
         merge(outputs,dst);
-
-        // TODO: Output first image and gradient histogram
     }
 
     /*  ___ ___
@@ -81,16 +80,17 @@ class GradientHistogramRepresentation : public Representation
 
     float evaluate(const Mat &image, int idx) const
     {
-        // TODO: Check that values are at expected locations
-
-        // To which channel does an index belong?
+        // To which channel does idx belong?
         const int index = idx % features.size();
         const int channel = idx / features.size();
 
-        int four = image.ptr<int>(0)[(features[index].y+features[index].height)*(features[index].x+features[index].width)*bins+channel];
-        int one = image.ptr<int>(0)[features[index].y*features[index].x*bins+channel];
-        int two = image.ptr<int>(0)[features[index].y*(features[index].x+features[index].width)*bins+channel];
-        int three = image.ptr<int>(0)[(features[index].y+features[index].height)*features[index].x*bins+channel];
+        int dx, dy;
+        Size size = windowSize(&dx, &dy);
+
+        int four = image.ptr<int>(0)[((features[index].y+features[index].height)*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
+        int one = image.ptr<int>(0)[(features[index].y*(size.height+dy)+features[index].x)*bins+channel];
+        int two = image.ptr<int>(0)[(features[index].y*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
+        int three = image.ptr<int>(0)[(features[index].y+features[index].height*(size.height+dy)+features[index].x)*bins+channel];
 
         return four + one - (two + three);
     }
