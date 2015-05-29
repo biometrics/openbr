@@ -41,7 +41,6 @@ class GradientHistogramRepresentation : public Representation
 
     void preprocess(const Mat &src, Mat &dst) const
     {
-
         // Compute as is done in GradientTransform
         Mat dx, dy, magnitude, angle;
         Sobel(src, dx, CV_32F, 1, 0, CV_SCHARR);
@@ -55,14 +54,17 @@ class GradientHistogramRepresentation : public Representation
 
         // Mask and compute integral image
         std::vector<Mat> outputs;
-        for (int i=0; i<1; i++) {
+        for (int i=0; i<bins; i++) {
             Mat output = (histogram == i);
             Mat integralImg;
             integral(output, integralImg);
             outputs.push_back(integralImg);
         }
 
+        // Concatenate images into row
         merge(outputs,dst);
+
+        // TODO: Output first image and gradient histogram
     }
 
     /*  ___ ___
@@ -79,20 +81,16 @@ class GradientHistogramRepresentation : public Representation
 
     float evaluate(const Mat &image, int idx) const
     {
-        /* Stored in memory as (row,col,channel): (0,0,0), (0,0,1), ... , (0,0,bin-1), (0,1,0), (0,1,1), ... , (0,1,bin-1), ... , (0,cols,0), (0,cols,1), ... , (0,cols,bin-1)
-         *                                        (1,0,0), (1,0,1), ... , (1,0,bin-1), (1,1,0), (1,1,1), ... , (1,1,bin-1), ... , (1,cols,0), (1,cols,1), ... , (1,cols,bin-1)
-         *
-         *                                        (row,0,0), (row,0,1), ... , (row,0,bin-1), (row,1,0), (row,1,1), ... , (row,1,bin-1), ... , (row,cols,0), (row,cols,1), ... , (row,cols,bin-1)
-         */
+        // TODO: Check that values are at expected locations
 
         // To which channel does an index belong?
         const int index = idx % features.size();
         const int channel = idx / features.size();
 
-        int four = image.ptr<int>(features[index].y+features[index].height)[(features[index].x+features[index].width)*channel];
-        int one = image.ptr<int>(features[index].y)[features[index].x*channel];
-        int two = image.ptr<int>(features[index].y)[(features[index].x+features[index].width)*channel];
-        int three = image.ptr<int>(features[index].y+features[index].height)[features[index].x*channel];
+        int four = image.ptr<int>(0)[(features[index].y+features[index].height)*(features[index].x+features[index].width)*bins+channel];
+        int one = image.ptr<int>(0)[features[index].y*features[index].x*bins+channel];
+        int two = image.ptr<int>(0)[features[index].y*(features[index].x+features[index].width)*bins+channel];
+        int three = image.ptr<int>(0)[(features[index].y+features[index].height)*features[index].x*bins+channel];
 
         return four + one - (two + three);
     }
@@ -109,7 +107,7 @@ class GradientHistogramRepresentation : public Representation
 
     int numFeatures() const
     {
-        return features.size();
+        return features.size()*bins;
     }
 
     Size windowSize(int *dx, int *dy) const
