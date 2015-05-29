@@ -221,6 +221,13 @@ class DefaultFormat : public Format
     {
         Template t;
 
+        if ( file.name.startsWith("memory:") )
+        {
+            std::vector<char> memoryimage = file.MemoryFile.value(file.name);
+            Mat m = imdecode(memoryimage,1);
+            t.append(m);
+        }
+        else
         if (file.name.startsWith("http://") || file.name.startsWith("https://") || file.name.startsWith("www.")) {
             if (Factory<Format>::names().contains("url")) {
                 File urlFile = file;
