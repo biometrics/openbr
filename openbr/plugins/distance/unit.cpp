@@ -78,6 +78,11 @@ class UnitDistance : public Distance
     {
         return a * (distance->compare(target, query) - b);
     }
+
+    float compare(const cv::Mat &target, const cv::Mat &query) const
+    {
+        return a * (distance->compare(target, query) - b);
+    }
 };
 
 BR_REGISTER(Distance, UnitDistance)
