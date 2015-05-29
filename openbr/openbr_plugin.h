@@ -326,6 +326,7 @@ struct BR_EXPORT File
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); } /*!< \brief Overwrites the file's rect list. */
 
     bool fte;
+    static QMap<QString,std::vector<char> > MemoryFile;
 private:
     QVariantMap m_metadata;
     BR_EXPORT friend QDataStream &operator<<(QDataStream &stream, const File &file);
