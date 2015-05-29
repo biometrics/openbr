@@ -5,7 +5,8 @@
 #include "openbr/core/common.h"
 using namespace br;
 
-static QSharedPointer<Transform> transform;
+static QSharedPointer<Transform> detect;
+static QSharedPointer<Transform> augment;
 static QSharedPointer<Distance> distance;
 
 size_t janus_max_template_size()
@@ -19,16 +20,15 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
     const char *argv[1] = { "janus" };
     Context::initialize(argc, (char**)argv, sdk_path, false);
     Globals->quiet = true;
+    Globals->enrollAll = true;
     Globals->file.set(QString("temp_path"), QString(temp_path));
     const QString algorithm = model_file;
     if (algorithm.isEmpty()) {
-        transform.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
+        detect.reset(Transform::make("Cvt(Gray)+Cascade(FrontalFace,ROCMode=true)", NULL));
+        augment.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
-    } else if (algorithm.compare("Component") == 0) {
-        transform.reset(Transform::make("StasmManual+Cvt(Gray)+<ComponentEnroll>", NULL));
-        distance = Distance::fromAlgorithm(algorithm);
-     } else {
-        transform.reset(Transform::make(algorithm + "Enroll", NULL));
+    } else {
+        augment.reset(Transform::make(algorithm + "Enroll", NULL));
         distance.reset(Distance::make(algorithm + "Compare", NULL));
     }
     return JANUS_SUCCESS;
@@ -36,7 +36,8 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
 
 janus_error janus_finalize()
 {
-    transform.reset();
+    detect.reset();
+    augment.reset();
     distance.reset();
     Context::finalize();
     return JANUS_SUCCESS;
@@ -51,22 +52,57 @@ janus_error janus_allocate_template(janus_template *template_)
     return JANUS_SUCCESS;
 }
 
-janus_error janus_augment(const janus_image image, const janus_attribute_list attributes, janus_template template_)
+bool compareConfidence(Template a, Template b) { return (a.file.get<float>("Confidence") > b.file.get<float>("Confidence")); }
+
+janus_error janus_detect(const janus_image image, janus_attributes *attributes_array, const size_t num_requested, size_t *num_actual)
+{
+    TemplateList src, dst;
+
+    Template t;
+    cv::Mat input(image.height,
+                  image.width,
+                  image.color_space == JANUS_GRAY8 ? CV_8UC1 : CV_8UC3,
+                  image.data);
+
+    t.append(input);
+    src.append(t);
+    detect->project(src, dst);
+    *num_actual = dst.size();
+    if (dst.size() == 0)
+        return JANUS_FAILURE_TO_DETECT;
+
+    // Sort by confidence, descending
+    std::sort(dst.begin(), dst.end(), compareConfidence);
+
+    size_t count = 0;
+    foreach (const Template &temp, dst) {
+        QRectF rect = temp.file.rects().first();
+        attributes_array->face_x = rect.x();
+        attributes_array->face_y = rect.y();
+        attributes_array->face_width = rect.width();
+        attributes_array->face_height = rect.height();
+        attributes_array->detection_confidence = temp.file.get<float>("Confidence");
+        attributes_array++;
+        if (++count >= num_requested)
+            break;
+    }
+    attributes_array -= count;
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_augment(const janus_image image, janus_attributes *attributes, janus_template template_)
 {
     Template t;
-    for (size_t i=0; i<attributes.size; i++)
-        t.file.set(janus_attribute_to_string(attributes.attributes[i]), attributes.values[i]);
-
-    if (!t.file.contains("FACE_X") ||
-        !t.file.contains("FACE_Y") ||
-        !t.file.contains("FACE_WIDTH") ||
-        !t.file.contains("FACE_HEIGHT"))
+    if (isnan(attributes->face_x) ||
+        isnan(attributes->face_y) ||
+        isnan(attributes->face_width) ||
+        isnan(attributes->face_height))
         return JANUS_MISSING_ATTRIBUTES;
 
-    QRectF rect(t.file.get<float>("FACE_X"),
-                t.file.get<float>("FACE_Y"),
-                t.file.get<float>("FACE_WIDTH"),
-                t.file.get<float>("FACE_HEIGHT"));
+    QRectF rect(attributes->face_x,
+                attributes->face_y,
+                attributes->face_width,
+                attributes->face_height);
 
     if (rect.x() < 0) rect.setX(0);
     if (rect.y() < 0) rect.setY(0);
@@ -80,19 +116,19 @@ janus_error janus_augment(const janus_image image, const janus_attribute_list at
 
     input = input(cv::Rect(rect.x(), rect.y(), rect.width(), rect.height())).clone();
     t.append(input);
-    if (t.file.contains("RIGHT_EYE_X") &&
-        t.file.contains("RIGHT_EYE_Y") &&
-        t.file.contains("LEFT_EYE_X") &&
-        t.file.contains("LEFT_EYE_Y")) {
-        t.file.set("Affine_0", QPointF(t.file.get<float>("RIGHT_EYE_X") - rect.x(), t.file.get<float>("RIGHT_EYE_Y") - rect.y()));
-        t.file.set("Affine_1", QPointF(t.file.get<float>("LEFT_EYE_X") - rect.x(), t.file.get<float>("LEFT_EYE_Y") - rect.y()));
+    if (!isnan(attributes->right_eye_x) &&
+        !isnan(attributes->right_eye_y) &&
+        !isnan(attributes->left_eye_x) &&
+        !isnan(attributes->left_eye_y)) {
+        t.file.set("Affine_0", QPointF(attributes->right_eye_x - rect.x(), attributes->right_eye_y - rect.y()));
+        t.file.set("Affine_1", QPointF(attributes->left_eye_x - rect.x(), attributes->left_eye_y - rect.y()));
         t.file.set("First_Eye", t.file.get<QPointF>("Affine_0"));
         t.file.set("Second_Eye", t.file.get<QPointF>("Affine_1"));
         t.file.appendPoint(t.file.get<QPointF>("Affine_0"));
         t.file.appendPoint(t.file.get<QPointF>("Affine_1"));
     }
     Template u;
-    transform->project(t, u);
+    augment->project(t, u);
     if (u.file.fte) u.m() = cv::Mat();
     template_->append(u);
     return (u.isEmpty() || !u.first().data) ? JANUS_FAILURE_TO_ENROLL : JANUS_SUCCESS;
@@ -206,7 +242,7 @@ janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, cons
     return JANUS_SUCCESS;
 }
 
-janus_error janus_search(const janus_flat_template probe, const size_t probe_bytes, const janus_flat_gallery gallery, const size_t gallery_bytes, int requested_returns, janus_template_id *template_ids, float *similarities, int *actual_returns)
+janus_error janus_search(const janus_flat_template probe, const size_t probe_bytes, const janus_flat_gallery gallery, const size_t gallery_bytes, const size_t requested_returns, janus_template_id *template_ids, float *similarities, size_t *actual_returns)
 {
     typedef QPair<float, int> Pair;
     QList<Pair> comparisons; comparisons.reserve(requested_returns);
@@ -223,7 +259,7 @@ janus_error janus_search(const janus_flat_template probe, const size_t probe_byt
 
         float similarity;
         JANUS_ASSERT(janus_verify(probe, probe_bytes, target_template_flat, target_template_bytes, &similarity))
-        if (comparisons.size() < requested_returns) {
+        if ((size_t)comparisons.size() < requested_returns) {
             comparisons.append(Pair(similarity, target_id));
             std::sort(comparisons.begin(), comparisons.end());
         } else {
