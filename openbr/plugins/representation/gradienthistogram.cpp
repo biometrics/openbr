@@ -62,9 +62,6 @@ class GradientHistogramRepresentation : public Representation
             outputs.push_back(integralImg);
         }
 
-        const float theoreticalMaxMagnitude = sqrt(2*pow(float(2*(3+10+3)*255), 2.f));
-        outputs.push_back(magnitude / theoreticalMaxMagnitude);
-
         // Concatenate images into row
         merge(outputs,dst);
     }
@@ -115,7 +112,7 @@ class GradientHistogramRepresentation : public Representation
 
     int numChannels() const
     {
-        return bins+1;
+        return bins;
     }
 
     Size windowSize(int *dx, int *dy) const
