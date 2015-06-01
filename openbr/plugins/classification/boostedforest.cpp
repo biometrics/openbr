@@ -120,13 +120,13 @@ private:
         CascadeBoostParams params(type, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
 
         FeatureEvaluator featureEvaluator;
-        featureEvaluator.init(representation, images.size());
+        featureEvaluator.init(representation, images.size(), representation->numChannels());
 
         for (int i = 0; i < images.size(); i++)
             featureEvaluator.setImage(images[i], labels[i], i);
 
         CascadeBoost boost;
-        boost.train(&featureEvaluator, images.size(), 1024, 1024, params);
+        boost.train(&featureEvaluator, images.size(), 1024, 1024, representation->numChannels(), params);
 
         threshold = boost.getThreshold();
 

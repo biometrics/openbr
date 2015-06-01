@@ -33,7 +33,7 @@ static int CV_CDECL icvCmpIntegers( const void* a, const void* b )
     return *(const int*)a - *(const int*)b;
 }
 
-static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates=false )
+static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates=false, const int channels = 1 )
 {
     CvMat* idx = 0;
 
@@ -59,10 +59,7 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
     type = CV_MAT_TYPE(idx_arr->type);
     step = CV_IS_MAT_CONT(idx_arr->type) ? 1 : idx_arr->step/CV_ELEM_SIZE(type);
 
-    switch( type )
-    {
-    case CV_8UC1:
-    case CV_8SC1:
+    if (type == CV_8UC(channels) || type == CV_8SC1) {
         // idx_arr is array of 1's and 0's -
         // i.e. it is a mask of the selected components
         if( idx_total != data_arr_size )
@@ -74,9 +71,7 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 
         if( idx_selected == 0 )
             CV_ERROR( CV_StsOutOfRange, "No components/input_variables is selected!" );
-
-        break;
-    case CV_32SC1:
+    } else if (type == CV_32SC(channels)) {
         // idx_arr is array of integer indices of selected components
         if( idx_total > data_arr_size )
             CV_ERROR( CV_StsOutOfRange,
@@ -93,16 +88,15 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
             }
             prev = val;
         }
-        break;
-    default:
+    } else {
         CV_ERROR( CV_StsUnsupportedFormat, "Unsupported index array data type "
                                            "(it should be 8uC1, 8sC1 or 32sC1)" );
     }
 
-    CV_CALL( idx = cvCreateMat( 1, idx_selected, CV_32SC1 ));
+    CV_CALL( idx = cvCreateMat( 1, idx_selected, CV_32SC(channels) ));
     dsti = idx->data.i;
 
-    if( type < CV_32SC1 )
+    if( type < CV_32SC(channels) )
     {
         for( i = 0; i < idx_total; i++ )
             if( srcb[i*step] )
@@ -137,13 +131,13 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 
 //------------------------------------- FeatureEvaluator ---------------------------------------
 
-void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount)
+void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount, int channels)
 {
     representation = _representation;
 
     int dx, dy;
     Size windowSize = representation->windowSize(&dx, &dy);
-    data.create((int)_maxSampleCount, (windowSize.width + dx) * (windowSize.height + dy), CV_32SC1);
+    data.create((int)_maxSampleCount, (windowSize.width + dx) * (windowSize.height + dy), CV_32SC(channels));
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
 }
 
@@ -164,7 +158,7 @@ CascadeBoostParams::CascadeBoostParams() : minHitRate( 0.995F), maxFalseAlarm( 0
     use_surrogates = use_1se_rule = truncate_pruned_tree = false;
 }
 
-CascadeBoostParams::CascadeBoostParams( int _boostType,
+CascadeBoostParams::CascadeBoostParams(int _boostType,
         float _minHitRate, float _maxFalseAlarm,
         double _weightTrimRate, int _maxDepth, int _maxWeakCount ) :
     CvBoostParams( _boostType, _maxWeakCount, _weightTrimRate, _maxDepth, false, 0 )
@@ -190,7 +184,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
 
     if( _subsample_idx )
     {
-        CV_Assert( (isubsample_idx = cvPreprocessIndexArray( _subsample_idx, sample_count )) != 0 );
+        CV_Assert( (isubsample_idx = cvPreprocessIndexArray( _subsample_idx, sample_count, channels )) != 0 );
 
         if( isubsample_idx->cols + isubsample_idx->rows - 1 == sample_count )
         {
@@ -236,7 +230,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
 
         root = new_node( 0, count, 1, 0 );
 
-        CV_Assert( (subsample_co = cvCreateMat( 1, sample_count*2, CV_32SC1 )) != 0);
+        CV_Assert( (subsample_co = cvCreateMat( 1, sample_count*2, CV_32SC(channels) )) != 0);
         cvZero( subsample_co );
         co = subsample_co->data.i;
         for( int i = 0; i < count; i++ )
@@ -342,17 +336,19 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
     return root;
 }
 
-CascadeBoostTrainData::CascadeBoostTrainData( const FeatureEvaluator* _featureEvaluator,
-                                              const CvDTreeParams& _params )
+CascadeBoostTrainData::CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator,
+                                              int _channels,
+                                              const CvDTreeParams& _params)
 {
     is_classifier = true;
     var_all = var_count = (int)_featureEvaluator->getNumFeatures();
 
     featureEvaluator = _featureEvaluator;
+    channels = _channels;
     shared = true;
     set_params( _params );
     max_c_count = MAX( 2, featureEvaluator->getMaxCatCount() );
-    var_type = cvCreateMat( 1, var_count + 2, CV_32SC1 );
+    var_type = cvCreateMat( 1, var_count + 2, CV_32SC(channels) );
     if ( featureEvaluator->getMaxCatCount() > 0 )
     {
         numPrecalcIdx = 0;
@@ -383,11 +379,12 @@ CascadeBoostTrainData::CascadeBoostTrainData( const FeatureEvaluator* _featureEv
     split_heap = cvCreateSet( 0, sizeof(split_heap[0]), maxSplitSize, tree_storage );
 }
 
-CascadeBoostTrainData::CascadeBoostTrainData( const FeatureEvaluator* _featureEvaluator,
+CascadeBoostTrainData::CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator,
                                               int _numSamples,
-                                              int _precalcValBufSize, int _precalcIdxBufSize,
-                                              const CvDTreeParams& _params )
+                                              int _precalcValBufSize, int _precalcIdxBufSize, int _channels ,
+                                              const CvDTreeParams& _params)
 {
+    channels = _channels;
     setData( _featureEvaluator, _numSamples, _precalcValBufSize, _precalcIdxBufSize, _params );
 }
 
@@ -437,7 +434,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     assert( numPrecalcIdx >= 0 && numPrecalcVal >= 0 );
 
     valCache.create( numPrecalcVal, sample_count, CV_32FC1 );
-    var_type = cvCreateMat( 1, var_count + 2, CV_32SC1 );
+    var_type = cvCreateMat( 1, var_count + 2, CV_32SC(channels) );
     if ( featureEvaluator->getMaxCatCount() > 0 )
     {
         numPrecalcIdx = 0;
@@ -478,11 +475,11 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
         CV_Error(CV_StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
     }
     if ( is_buf_16u )
-        buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_16UC1 );
+        buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_16UC(channels) );
     else
-        buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_32SC1 );
+        buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_32SC(channels) );
 
-    cat_count = cvCreateMat( 1, cat_var_count + 1, CV_32SC1 );
+    cat_count = cvCreateMat( 1, cat_var_count + 1, CV_32SC(channels) );
 
     // precalculate valCache and set indices in buf
     precalculate();
@@ -533,9 +530,9 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     priors = cvCreateMat( 1, get_num_classes(), CV_64F );
     cvSet(priors, cvScalar(1));
     priors_mult = cvCloneMat( priors );
-    counts = cvCreateMat( 1, get_num_classes(), CV_32SC1 );
-    direction = cvCreateMat( 1, sample_count, CV_8UC1 );
-    split_buf = cvCreateMat( 1, sample_count, CV_32SC1 );//TODO: make a pointer
+    counts = cvCreateMat( 1, get_num_classes(), CV_32SC(channels) );
+    direction = cvCreateMat( 1, sample_count, CV_8UC(channels) );
+    split_buf = cvCreateMat( 1, sample_count, CV_32SC(channels) );//TODO: make a pointer
 }
 
 void CascadeBoostTrainData::free_train_data()
@@ -1031,13 +1028,16 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 void CascadeBoost::train(const FeatureEvaluator* _featureEvaluator,
                          int _numSamples,
                          int _precalcValBufSize, int _precalcIdxBufSize,
+                         int _channels,
                          const CascadeBoostParams& _params)
 {
     CV_Assert(!data);
     clear();
 
+    channels = _channels;
+
     data = new CascadeBoostTrainData(_featureEvaluator, _numSamples,
-                                        _precalcValBufSize, _precalcIdxBufSize, _params);
+                                        _precalcValBufSize, _precalcIdxBufSize, channels, _params);
 
     set_params(_params);
     if ((_params.boost_type == LOGIT) || (_params.boost_type == GENTLE))

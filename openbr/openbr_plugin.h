@@ -1408,6 +1408,7 @@ public:
     virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
 
     virtual cv::Size windowSize(int *dx = NULL, int *dy = NULL) const = 0; // dx and dy should indicate the change to the original window size after preprocessing
+    virtual int numChannels() const { return 1; };
     virtual int numFeatures() const = 0;
     virtual int maxCatCount() const = 0;
 };

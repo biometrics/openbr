@@ -88,7 +88,10 @@ class HaarRepresentation : public Representation
         return result;
     }
 
-    int numFeatures() const { return features.size(); }
+    int numFeatures() const
+    {
+        return features.size();
+    }
 
     Size windowSize(int *dx, int *dy) const
     {

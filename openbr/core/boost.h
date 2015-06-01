@@ -16,7 +16,7 @@ namespace br
 struct FeatureEvaluator
 {
     ~FeatureEvaluator() {}
-    void init(Representation *_representation, int _maxSampleCount);
+    void init(Representation *_representation, int _maxSampleCount, int channels);
     void setImage(const cv::Mat& img, uchar clsLabel, int idx);
     float operator()(int featureIdx, int sampleIdx) const { return representation->evaluate(data.row(sampleIdx), featureIdx); }
 
@@ -43,9 +43,9 @@ struct CascadeBoostParams : CvBoostParams
 
 struct CascadeBoostTrainData : CvDTreeTrainData
 {
-    CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator, const CvDTreeParams& _params);
+    CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator, int _channels, const CvDTreeParams& _params);
     CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator,
-                          int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
+                          int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize, int _channels,
                           const CvDTreeParams& _params = CvDTreeParams());
     virtual void setData(const FeatureEvaluator* _featureEvaluator,
                          int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
@@ -67,7 +67,7 @@ struct CascadeBoostTrainData : CvDTreeTrainData
     const FeatureEvaluator* featureEvaluator;
     cv::Mat valCache; // precalculated feature values (CV_32FC1)
     CvMat _resp; // for casting
-    int numPrecalcVal, numPrecalcIdx;
+    int numPrecalcVal, numPrecalcIdx, channels;
 };
 
 class CascadeBoostTree : public CvBoostTree
@@ -83,7 +83,7 @@ class CascadeBoost : public CvBoost
 {
 public:
     virtual void train(const FeatureEvaluator *_featureEvaluator,
-                       int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
+                       int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize, int _channels,
                        const CascadeBoostParams &_params=CascadeBoostParams());
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
@@ -99,6 +99,7 @@ protected:
 
     float threshold;
     float minHitRate, maxFalseAlarm;
+    int channels;
 };
 
 } // namespace br
