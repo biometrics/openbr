@@ -49,7 +49,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(int, maxSize, -1)
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(int, minNeighbors, 5)
-    BR_PROPERTY(float, confidenceThreshold, 2)
+    BR_PROPERTY(float, confidenceThreshold, 10)
     BR_PROPERTY(float, eps, 0.2)
 
     void train(const TemplateList &data)
