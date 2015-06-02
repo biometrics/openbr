@@ -88,7 +88,7 @@ class BoostedForestClassifier : public Classifier
     Q_OBJECT
     Q_ENUMS(Type)
 
-    Q_PROPERTY(br::Representation *representation READ get_representation WRITE set_representation RESET reset_representation STORED false)
+    Q_PROPERTY(br::Representation* representation READ get_representation WRITE set_representation RESET reset_representation STORED false)
     Q_PROPERTY(float minTAR READ get_minTAR WRITE set_minTAR RESET reset_minTAR STORED false)
     Q_PROPERTY(float maxFAR READ get_maxFAR WRITE set_maxFAR RESET reset_maxFAR STORED false)
     Q_PROPERTY(float trimRate READ get_trimRate WRITE set_trimRate RESET reset_trimRate STORED false)
@@ -102,7 +102,7 @@ public:
                 Logit = CvBoost::LOGIT,
                 Gentle = CvBoost::GENTLE};
 private:
-    BR_PROPERTY(br::Representation *, representation, NULL)
+    BR_PROPERTY(br::Representation*, representation, NULL)
     BR_PROPERTY(float, minTAR, 0.995)
     BR_PROPERTY(float, maxFAR, 0.5)
     BR_PROPERTY(float, trimRate, 0.95)

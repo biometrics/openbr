@@ -35,7 +35,7 @@ class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
 
-    Q_PROPERTY(br::Classifier *classifier READ get_classifier WRITE set_classifier RESET reset_classifier STORED false)
+    Q_PROPERTY(br::Classifier* classifier READ get_classifier WRITE set_classifier RESET reset_classifier STORED false)
 
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
@@ -44,7 +44,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
 
-    BR_PROPERTY(br::Classifier *, classifier, NULL)
+    BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
     BR_PROPERTY(float, scaleFactor, 1.2)
