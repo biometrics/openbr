@@ -18,18 +18,20 @@ namespace br
 class RandomRepresentation : public Representation
 {
     Q_OBJECT
-    Q_PROPERTY(br::Representation *representation READ get_representation WRITE set_representation RESET reset_representation STORED false)
+
+    Q_PROPERTY(br::Representation* representation READ get_representation WRITE set_representation RESET reset_representation STORED false)
     Q_PROPERTY(int count READ get_count WRITE set_count RESET reset_count STORED false)
-    BR_PROPERTY(br::Representation *, representation, NULL)
+    BR_PROPERTY(br::Representation*, representation, NULL)
     BR_PROPERTY(int, count, 20000)
 
-    void init()
+    QList<int> features;
+
+    void train(const QList<Mat> &images, const QList<float> &labels)
     {
-        representation->init();
+        representation->train(images, labels);
 
         const int nFeatures = representation->numFeatures();
-
-        features = Common::RandSample(count,nFeatures);
+        features = Common::RandSample(count,nFeatures,0,true);
     }
 
     void preprocess(const Mat &src, Mat &dst) const
@@ -76,19 +78,23 @@ class RandomRepresentation : public Representation
 
     void load(QDataStream &stream)
     {
-        stream >> features;
-
         representation->load(stream);
+
+        int numFeatures; stream >> numFeatures;
+        for (int i=0; i<numFeatures; i++) {
+            int feature; stream >> feature;
+            features.append(feature);
+        }
     }
 
     void store(QDataStream &stream) const
     {
-        stream << features;
+        representation->store(stream);
 
-        representation->load(stream);
+        stream << features.size();
+        for (int i=0; i<features.size(); i++)
+            stream << features[i];
     }
-
-    QList<int> features;
 };
 
 BR_REGISTER(Representation, RandomRepresentation)
