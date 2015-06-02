@@ -31,6 +31,10 @@ class RandomRepresentation : public Representation
         representation->train(images, labels);
 
         const int nFeatures = representation->numFeatures();
+
+        if (Globals->verbose)
+            qDebug() << "Randomly sampling from" << nFeatures << "features.";
+
         features = Common::RandSample(count,nFeatures,0,true);
     }
 
