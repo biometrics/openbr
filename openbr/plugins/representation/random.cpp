@@ -39,9 +39,7 @@ class RandomRepresentation : public Representation
 
     float evaluate(const Mat &image, int idx) const
     {
-        Q_UNUSED(image)
-        Q_UNUSED(idx)
-        return 0;
+        return representation->evaluate(image,features[idx]);
     }
 
     Mat evaluate(const Mat &image, const QList<int> &indices) const
