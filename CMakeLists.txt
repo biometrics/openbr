@@ -80,7 +80,7 @@ endif()
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
 if(NOT ${BR_EMBEDDED})
-  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Svg Widgets Xml)
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
   find_package(Qt5${QT_DEPENDENCY})
@@ -89,7 +89,7 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV 2.4.5 REQUIRED)
-set(OPENCV_DEPENDENCIES opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video)
+set(OPENCV_DEPENDENCIES opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video opencv_videostab opencv_superres opencv_stitching opencv_ocl opencv_legacy opencv_contrib)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 
 # Find Alphanum

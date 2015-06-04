@@ -122,7 +122,7 @@ namespace QtUtils
 
         // write to a QByteArray, when max block sized is reached, compress and write
         // it to basis
-        QBuffer * precompressedBlockWriter;
+        QBuffer precompressedBlockWriter;
         QDataStream blockWriter;
         qint64 writeData(const char *data, qint64 remaining);
     };
