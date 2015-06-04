@@ -31,10 +31,10 @@ class WriteTransform : public TimeVaryingTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString outputDirectory READ get_outputDirectory WRITE set_outputDirectory RESET reset_outputDirectory STORED false)
-    Q_PROPERTY(QString imageName READ get_imageName WRITE set_imageName RESET reset_imageName STORED false)
+    Q_PROPERTY(QString underscore READ get_underscore WRITE set_underscore RESET reset_underscore STORED false)
     Q_PROPERTY(QString imgExtension READ get_imgExtension WRITE set_imgExtension RESET reset_imgExtension STORED false)
     BR_PROPERTY(QString, outputDirectory, "Temp")
-    BR_PROPERTY(QString, imageName, "image")
+    BR_PROPERTY(QString, underscore, "")
     BR_PROPERTY(QString, imgExtension, "jpg")
 
     int cnt;
@@ -48,7 +48,8 @@ class WriteTransform : public TimeVaryingTransform
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
-        OpenCVUtils::saveImage(dst.m(), QString("%1/%2_%3.%4").arg(outputDirectory).arg(imageName).arg(cnt++, 5, 10, QChar('0')).arg(imgExtension));
+        QString path = QString("%1/%2%3.%4").arg(outputDirectory).arg(dst.file.baseName()).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
+        OpenCVUtils::saveImage(dst.m(), path);
     }
 
 };
