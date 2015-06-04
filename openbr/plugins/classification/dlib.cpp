@@ -16,6 +16,11 @@ using namespace dlib;
 namespace br
 {
 
+/*!
+ * \ingroup transforms
+ * \brief Wrapper to dlib's landmarker.
+ * \author Scott Klum \cite sklum
+ */
 class DLibShapeResourceMaker : public ResourceMaker<shape_predictor>
 {
 
@@ -66,7 +71,12 @@ private:
 
 BR_REGISTER(Transform, DLandmarkerTransform)
 
-class DObjectDetectTransform : public Transform
+/*!
+ * \ingroup transforms
+ * \brief Wrapper to dlib's trainable object detector.
+ * \author Scott Klum \cite sklum
+ */
+class DObjectDetectorTransform : public Transform
 {
     Q_OBJECT
 
@@ -169,7 +179,7 @@ private:
     }
 };
 
-BR_REGISTER(Transform, DObjectDetectTransform)
+BR_REGISTER(Transform, DObjectDetectorTransform)
 
 } // namespace br
 
