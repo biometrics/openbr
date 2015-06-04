@@ -48,18 +48,20 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        dst = src;
+        dst = src;            
 
         if (!src.file.rects().isEmpty()) {
             shape_predictor *sp = shapeResource.acquire();
 
-            cv_image<bgr_pixel> cimg(src.m().clone());
+            cv_image<unsigned char> cimg(src.m());
+            array2d<unsigned char> image;
+            assign_image(image,cimg);
 
             for (int j=0; j<src.file.rects().size(); ++j)
             {
                 QRectF rect = src.file.rects()[j];
                 rectangle r(rect.left(),rect.top(),rect.right(),rect.bottom());
-                full_object_detection shape = (*sp)(cimg, r);
+                full_object_detection shape = (*sp)(image, r);
                 for (size_t i=0; i<shape.num_parts(); i++)
                     dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
             }
@@ -99,7 +101,7 @@ private:
 
         foreach (const Template &t, data) {
             if (!t.file.rects().isEmpty()) {
-                cv_image<unsigned char> cimg(t.m().clone());
+                cv_image<unsigned char> cimg(t.m());
 
                 array2d<unsigned char> image;
                 assign_image(image,cimg);
@@ -134,7 +136,7 @@ private:
     void project(const Template &src, Template &dst) const
    {
         dst = src;
-        cv_image<unsigned char> cimg(src.m().clone());
+        cv_image<unsigned char> cimg(src.m());
         array2d<unsigned char> image;
         assign_image(image,cimg);
 
