@@ -48,7 +48,7 @@ class WriteTransform : public TimeVaryingTransform
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
-        QString path = QString("%1/%2%3.%4").arg(outputDirectory).arg(dst.file.baseName()).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
+        QString path = QString("%1/image%2%3.%4").arg(outputDirectory).arg(cnt++, 5, 10, QChar('0')).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
         OpenCVUtils::saveImage(dst.m(), path);
     }
 
