@@ -73,6 +73,7 @@ struct CascadeBoostTrainData : CvDTreeTrainData
 class CascadeBoostTree : public CvBoostTree
 {
 public:
+    using CvBoostTree::predict;
     virtual CvDTreeNode* predict(int sampleIdx) const;
 
 protected:
@@ -82,9 +83,12 @@ protected:
 class CascadeBoost : public CvBoost
 {
 public:
+    using CvBoost::train;
     virtual void train(const FeatureEvaluator *_featureEvaluator,
                        int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize, int _channels,
                        const CascadeBoostParams &_params=CascadeBoostParams());
+
+    using CvBoost::predict;
     virtual float predict( int sampleIdx, bool returnSum = false ) const;
 
     float getThreshold() const { return threshold; }
