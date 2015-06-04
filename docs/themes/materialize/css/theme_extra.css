@@ -4,17 +4,8 @@ header {
 
 main {
     padding-left: 300px;
-    background-color: white;
     padding-top: 50px;
-    padding-bottom: 100px;
 }
-
-@media only screen and (max-width : 992px) {
-  header, main {
-    padding-left: 0;
-  }
-}
-
 .side-nav {
     width: 300px;
     background-color: white;
@@ -30,7 +21,10 @@ h3, h4, h5, h6 {
  *
  * https://github.com/mkdocs/mkdocs/issues/233
  */
-code {
+pre code {
+    display: block;
+    padding-top: 5px;
+    padding-bottom: 5px;
     white-space: pre;
 }
 

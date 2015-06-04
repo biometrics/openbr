@@ -208,13 +208,13 @@ It is also possible to:
 
 * Evaluate face recognition performance (Note that this requires [R](http://www.r-project.org/) to be installed):
 
-            $ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
-            -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
-            -enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
-            -compare target.gal query.gal scores.mtx \
-            -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
-            -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
-            -plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
+        $ br -algorithm FaceRecognition -path ../data/MEDS/img/ \
+        -enroll ../data/MEDS/sigset/MEDS_frontal_target.xml target.gal \
+        -enroll ../data/MEDS/sigset/MEDS_frontal_query.xml query.gal \
+        -compare target.gal query.gal scores.mtx \
+        -makeMask ../data/MEDS/sigset/MEDS_frontal_target.xml ../data/MEDS/sigset/MEDS_frontal_query.xml MEDS.mask \
+        -eval scores.mtx MEDS.mask Algorithm_Dataset/FaceRecognition_MEDS.csv \
+        -plot Algorithm_Dataset/FaceRecognition_MEDS.csv MEDS
 
 
 * Perform a 1:N face recognition search:

@@ -38,10 +38,10 @@
 <body>
     <header>
         <div class="navbar fixed">
-            <nav>
+            <nav class="blue-grey darken-3">
                 <div class="nav-wrapper">
                     <form style="height: 64px;" action="{{ base_url }}/search.html" method="get">
-                        <div class="input-field">
+                        <div class="input-field z-depth-3">
                             <input placeholder="search docs" id="search" type="search" style="height: 64px; width: 100%;" required>
                             <label for="search"><i class="mdi-action-search"></i></label>
                         </div>
@@ -63,7 +63,7 @@
             {% endfor %}
         </ul>
     </header>
-
+    
     <main>
         <div class="container">
             <div class="row">
@@ -73,9 +73,9 @@
                     </div>
 
                     <div class="col m3 l2">
-                        <div class="card-panel pinned">
+                        <div class="toc-wrapper" style="position: fixed;">
                             <span class="card-title">Table of Contents</span>
-                            <hr style="margin: 2px;">
+                            <div class="divider"></div>
                             <ul class="section table-of-contents">
                                 {% for toc_item in toc %}
                                     <li class="no-padding"><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
