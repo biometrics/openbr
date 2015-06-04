@@ -41,35 +41,6 @@ struct CascadeBoostParams : CvBoostParams
     virtual ~CascadeBoostParams() {}
 };
 
-struct CascadeBoostTrainData : CvDTreeTrainData
-{
-    CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator, int _channels, const CvDTreeParams& _params);
-    CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator,
-                          int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize, int _channels,
-                          const CvDTreeParams& _params = CvDTreeParams());
-    virtual void setData(const FeatureEvaluator* _featureEvaluator,
-                         int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
-                         const CvDTreeParams& _params=CvDTreeParams());
-    void precalculate();
-
-    virtual CvDTreeNode* subsample_data(const CvMat* _subsample_idx);
-
-    virtual const int* get_class_labels(CvDTreeNode* n, int* labelsBuf);
-    virtual const int* get_cv_labels(CvDTreeNode* n, int* labelsBuf);
-    virtual const int* get_sample_indices(CvDTreeNode* n, int* indicesBuf);
-
-    virtual void get_ord_var_data(CvDTreeNode* n, int vi, float* ordValuesBuf, int* sortedIndicesBuf,
-                                  const float** ordValues, const int** sortedIndices, int* sampleIndicesBuf);
-    virtual const int* get_cat_var_data(CvDTreeNode* n, int vi, int* catValuesBuf);
-    virtual float getVarValue(int vi, int si);
-    virtual void free_train_data();
-
-    const FeatureEvaluator* featureEvaluator;
-    cv::Mat valCache; // precalculated feature values (CV_32FC1)
-    CvMat _resp; // for casting
-    int numPrecalcVal, numPrecalcIdx, channels;
-};
-
 class CascadeBoostTree : public CvBoostTree
 {
 public:
