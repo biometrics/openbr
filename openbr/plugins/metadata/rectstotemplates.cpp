@@ -22,8 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief For each rectangle bounding box in src, a new
- *      template is created.
+ * \brief For each rectangle bounding box in src, a new Template is created.
  * \author Brendan Klare \cite bklare
  */
 class RectsToTemplatesTransform : public UntrainableMetaTransform

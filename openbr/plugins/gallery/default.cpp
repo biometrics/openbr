@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup galleries
- * \brief Treats the gallery as a br::Format.
+ * \brief Treats the gallery as a Format.
  * \author Josh Klontz \cite jklontz
  */
 class DefaultGallery : public Gallery

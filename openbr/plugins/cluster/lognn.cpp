@@ -25,6 +25,7 @@ namespace br
  * \ingroup transforms
  * \brief Log nearest neighbors to specified file.
  * \author Charles Otto \cite caotto
+ * \br_property QString fileName The name of the log file. An empty fileName won't be written to. Default is "".
  */
 class LogNNTransform : public TimeVaryingTransform
 {

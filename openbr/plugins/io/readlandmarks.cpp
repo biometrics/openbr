@@ -21,15 +21,14 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Read landmarks from a file and associate them with the correct templates.
+ * \brief Read landmarks from a file and associate them with the correct Templates.
  * \author Scott Klum \cite sklum
+ * \br_format Example of the format:
  *
- * Example of the format:
- * \code
  * image_001.jpg:146.000000,190.000000,227.000000,186.000000,202.000000,256.000000
  * image_002.jpg:75.000000,235.000000,140.000000,225.000000,91.000000,300.000000
  * image_003.jpg:158.000000,186.000000,246.000000,188.000000,208.000000,233.000000
- * \endcode
+ *
  */
 class ReadLandmarksTransform : public UntrainableMetadataTransform
 {

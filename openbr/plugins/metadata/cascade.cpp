@@ -191,6 +191,7 @@ private:
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV cascade classifier
+ * \br_link http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html
  * \author Josh Klontz \cite jklontz
  * \author David Crouse \cite dgcrouse
  */

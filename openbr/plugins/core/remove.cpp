@@ -21,11 +21,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Removes the matrix from the template at the specified index.
+ * \brief Removes the matrix from the Template at the specified index.
  * \author Josh Klontz \cite jklontz
- * \see IdentityTransform DiscardTransform FirstTransform RestTransform
+ * \br_related_plugin IdentityTransform DiscardTransform FirstTransform RestTransform
  */
-//! [example_transform]
 class RemoveTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
@@ -40,7 +39,6 @@ class RemoveTransform : public UntrainableMetaTransform
 };
 
 BR_REGISTER(Transform, RemoveTransform)
-//! [example_transform]
 
 } // namespace br
 

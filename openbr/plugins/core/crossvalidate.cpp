@@ -29,27 +29,21 @@ static void _train(Transform *transform, TemplateList data) // think data has to
 
 /*!
  * \ingroup transforms
- * \brief Cross validate a trainable transform.
+ * \brief Cross validate a trainable Transform.
+ *
+ * Two flags can be put in File metadata that are related to cross-validation and are used to
+ * extend a testing gallery:
+ *
+ *     flag | description
+ *     --- | ---
+ *     allPartitions | This flag is intended to be used when comparing the performance of an untrainable algorithm (e.g. a COTS algorithm) against a trainable algorithm that was trained using cross-validation. All templates with the allPartitions flag will be compared against for every partition. As untrainable algorithms will have no use for the CrossValidateTransform, this flag is only meaningful at comparison time (but care has been taken so that one can train and enroll without issue if these Files are present in the used Gallery).
+ *     duplicatePartitions | This flag is similar to allPartitions in that it causes the same template to be used during comparison for every partition. The difference is that duplicatePartitions will duplicate each marked template and project it into the model space constituded by the child transforms of CrossValidateTransform. Again, care has been take such that one can train with these templates in the used Gallery successfully (they will simply be omitted).
+ *
+ * To use an extended Gallery, add an allPartitions="true" flag to the gallery sigset for those images that should be compared
+ * against for all testing partitions.
+ *
  * \author Josh Klontz \cite jklontz
  * \author Scott Klum \cite sklum
- * \note  Two flags can be put in File metadata that are related to cross-validation and are used to
- *        extend a testing gallery:
- *        (i) allPartitions - This flag is intended to be used when comparing the
- *                            performance of an untrainable algorithm (e.g. a COTS
- *                            algorithm) against a trainable algorithm that was trained
- *                            using cross-validation. All templates with the allPartitions
- *                            flag will be compared against for every partition.  As
- *                            untrainable algorithms will have no use for the
- *                            CrossValidateTransform, this flag is only meaningful at comparison
- *                            time (but care has been taken so that one can train and enroll
- *                            without issue if these Files are present in the used Gallery).
- *        (ii) duplicatePartitions - This flag is similar to allPartitions in that it causes
- *                            the same template to be used during comparison for every partition.
- *                            The difference is that duplicatePartitions will duplicate each
- *                            marked template and project it into the model space constituded
- *                            by the child transforms of CrossValidateTransform.  Again, care
- *                            has been take such that one can train with these templates in the
- *                            used Gallery successfully (they will simply be omitted).
  */
 class CrossValidateTransform : public MetaTransform
 {

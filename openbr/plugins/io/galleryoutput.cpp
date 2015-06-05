@@ -19,6 +19,10 @@
 namespace br
 {
 
+/*!
+ * \brief DOCUMENT ME CHARLES
+ * \author Unknown \cite unknown
+ */
 class GalleryOutputTransform : public TimeVaryingTransform
 {
     Q_OBJECT

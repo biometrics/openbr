@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block htmltitle %}
+    <title>{% if page_title %}{{ page_title }} - {% endif %}{{ site_name }}</title>
+    {% endblock %}
+
+    {% if favicon %}<link rel="shortcut icon" href="{{ favicon }}">
+    {% else %}<link rel="shortcut icon" href="{{ base_url }}/img/favicon.ico">{% endif %}
+
+    {# CSS #}
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+    <link type="text/css" rel="stylesheet" href="{{ base_url }}/css/materialize.css"  media="screen,projection"/>
+    <link rel="stylesheet" href="{{ base_url }}/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="{{ base_url }}/css/theme_extra.css" type="text/css" />
+    <link rel="stylesheet" href="{{ base_url }}/css/highlight.css">
+    {%- for path in extra_css %}
+    <link href="{{ path }}" rel="stylesheet">
+    {%- endfor %}
+
+    {% if google_analytics %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', '{{ google_analytics[0] }}', '{{ google_analytics[1] }}');
+      ga('send', 'pageview');
+    </script>
+    {% endif %}
+</head>
+
+<body>
+    <header>
+        <div class="navbar fixed">
+            <nav class="blue-grey darken-3">
+                <div class="nav-wrapper">
+                    <form style="height: 64px;" action="{{ base_url }}/search.html" method="get">
+                        <div class="input-field z-depth-3">
+                            <input placeholder="search docs" id="search" type="search" style="height: 64px; width: 100%;" required>
+                            <label for="search"><i class="mdi-action-search"></i></label>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="container">
+            <ul id="slide-out" class="side-nav fixed">
+                <li class="logo" style="height: 120px;">
+                    <a id="logo-container" href="http://openbiometrics.org/" class="brand-logo" style="width: 285px; height: 120px; padding-left: 85px; padding-top: 10px;">
+                        <img src="{{ base_url }}/img/openbr.png" style="width: 100px; height: 100px;">
+                    </a>
+                </li>
+                <hr style="margin: 0px;">
+
+                {% for nav_item in nav %}
+                    {% include "nav.html" %}
+                {% endfor %}
+            </ul>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                {% block content %}
+                    <div class="col s12 m9 l10">
+                        {{ content }}
+                    </div>
+
+                    <div class="col m3 l2">
+                        {% if toc.items %}
+                            {% include "toc.html" %}
+                        {% endif %}
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{{ base_url }}/js/materialize.js"></script>
+    <script type="text/javascript" src="{{ base_url }}/js/highlight.pack.js"></script>
+
+    {%- block extrahead %} {% endblock %}
+
+    {%- for path in extra_javascript %}
+        <script src="{{ path }}"></script>
+    {%- endfor %}
+</body>
+</html>
+
+{% if current_page and current_page.is_homepage %}
+<!--
+MkDocs version : {{ mkdocs_version }}
+Build Date UTC : {{ build_date_utc }}
+-->
+{% endif %}

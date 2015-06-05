@@ -22,8 +22,10 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Incrementally output templates received to a gallery, based on the current filename
+ *
  * When a template is received in projectUpdate for the first time since a finalize, open a new gallery based on the
  * template's filename, and the galleryFormat property.
+ *
  * Templates received in projectUpdate will be output to the gallery with a filename combining their original filename and
  * their FrameNumber property, with the file extension specified by the fileFormat property.
  * \author Charles Otto \cite caotto

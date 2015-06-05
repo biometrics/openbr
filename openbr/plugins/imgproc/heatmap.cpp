@@ -8,6 +8,10 @@ using namespace cv;
 namespace br
 {
 
+/*!
+ * \brief Applies a colormap to src.
+ * \author Scott Klum \cite sklum
+ */
 class HeatmapTransform : public UntrainableTransform
 {
     Q_OBJECT

@@ -46,11 +46,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;
- * "Average of Synthetic Exact Filters,"
- * Computer Vision and Pattern Recognition, 2009. CVPR 2009.
- * IEEE Conference on , vol., no., pp.2105-2112, 20-25 June 2009
- * \author David Bolme
+ * \brief Find eye locations using an ASEF filter
+ * \br_paper Bolme, D.S.; Draper, B.A.; Beveridge, J.R.;
+ *           "Average of Synthetic Exact Filters,"
+ *           Computer Vision and Pattern Recognition, 2009. CVPR 2009. IEEE Conference on , vol., no., pp.2105-2112, 20-25 June 2009
  * \author Josh Klontz \cite jklontz
  */
 class ASEFEyesTransform : public UntrainableTransform

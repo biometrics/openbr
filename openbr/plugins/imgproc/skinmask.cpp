@@ -25,7 +25,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief http://worldofcameras.wordpress.com/tag/skin-detection-opencv/
+ * \brief Make a mask over skin in an image
+ * \br_link http://worldofcameras.wordpress.com/tag/skin-detection-opencv/
  * \author Josh Klontz \cite jklontz
  */
 class SkinMaskTransform : public UntrainableTransform

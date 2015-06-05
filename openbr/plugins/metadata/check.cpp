@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Checks the template for NaN values.
+ * \brief Checks the Template for NaN values.
  * \author Josh Klontz \cite jklontz
  */
 class CheckTransform : public UntrainableMetaTransform

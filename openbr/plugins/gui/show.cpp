@@ -525,8 +525,10 @@ private:
 /*!
  * \ingroup transforms
  * \brief Displays templates in a GUI pop-up window using QT.
- * \author Charles Otto \cite caotto
+ *
  * Can be used with parallelism enabled, although it is considered TimeVarying.
+ *
+ * \author Charles Otto \cite caotto
  */
 class ShowTransform : public TimeVaryingTransform
 {
@@ -945,6 +947,10 @@ public:
 
 BR_REGISTER(Transform, SurveyTransform)
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class FilterTransform : public ShowTransform
 {
     Q_OBJECT

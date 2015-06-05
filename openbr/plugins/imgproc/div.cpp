@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Enforce a multiple of \em n columns.
+ * \brief Enforce a multiple of n columns.
  * \author Josh Klontz \cite jklontz
  */
 class DivTransform : public UntrainableTransform

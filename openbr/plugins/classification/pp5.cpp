@@ -250,10 +250,14 @@ struct PP5Context
 /*!
  * \ingroup transforms
  * \brief Enroll faces in PP5
- *
- * See PittPatt documentation for the relationship between minSize and pixel IPD.
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
+ * \br_property bool detectOnly If true, enroll all detected faces. Otherwise, only enroll faces suitable for recognition. Default is false.
+ * \br_property bool requireLandmarks If true, require the right eye, left eye, and nose base to be detectable by PP5. If this does not happen FTE is set to true for that template. Default is false.
+ * \br_property float adaptiveMinSize The minimum face size as a percentage of total image width. 0.1 corresponds to a minimum face size of 10% the total image width. Default is 0.01.
+ * \br_property int minSize The absolute minimum face size to search for. This is not a pixel value. Please see PittPatt documentation for the relationship between minSize and pixel IPD. Default is 4.
+ * \br_property enum landmarkRange Range of landmarks to search for. Options are Frontal, Extended, Full, and Comprehensive. Default is Comprehensive.
+ * \br_property int searchPruningAggressiveness The amount of aggressiveness involved in search for faces in images. 0 means all scales and locations are searched. 1 means fewer detectors are used in the early stages but all scales are still searched. 2-4 means that the largest faces are found first and then fewer scales are searched. Default is 0.
  */
 class PP5EnrollTransform : public UntrainableMetaTransform
 {
@@ -402,10 +406,9 @@ BR_REGISTER(Transform, PP5EnrollTransform)
 
 /*!
  * \ingroup distances
- * \brief Compare templates with PP5
+ * \brief Compare templates with PP5. PP5 distance is known to be asymmetric
  * \author Josh Klontz \cite jklontz
  * \author E. Taborsky \cite mmtaborsky
- * \note PP5 distance is known to be asymmetric
  */
 class PP5CompareDistance : public UntrainableDistance
                          , public PP5Context
@@ -507,6 +510,10 @@ class PP5CompareDistance : public UntrainableDistance
 
 BR_REGISTER(Distance, PP5CompareDistance)
 
+/*!
+ * \brief DOCUMENT ME
+ * \author Unknown \cite unknown
+ */
 class PP5GalleryTransform: public UntrainableMetaTransform
                          , public PP5Context
 {

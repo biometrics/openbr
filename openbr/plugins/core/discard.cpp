@@ -21,8 +21,8 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Removes all template's matrices.
- * \see IdentityTransform FirstTransform RestTransform RemoveTransform
+ * \brief Removes all matrices from a Template.
+ * \br_related_plugin IdentityTransform FirstTransform RestTransform RemoveTransform
  * \author Josh Klontz \cite jklontz
  */
 class DiscardTransform : public UntrainableMetaTransform

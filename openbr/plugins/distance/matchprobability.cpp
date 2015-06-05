@@ -110,7 +110,7 @@ QDataStream &operator>>(QDataStream &stream, MP &nmp)
 
 /*!
  * \ingroup distances
- * \brief Match Probability \cite klare12
+ * \brief Match Probability
  * \author Josh Klontz \cite jklontz
  */
 class MatchProbabilityDistance : public Distance

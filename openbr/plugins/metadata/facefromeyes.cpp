@@ -21,13 +21,12 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Create face bounding box from two eye locations. `widthPadding` specifies
- *      what percentage of the interpupliary distance (ipd) will be padded in both
- *      horizontal directions. The `verticalLocation` specifies where vertically the
- *      eyes are within the bounding box (0.5 would be the center).
+ * \brief Create face bounding box from two eye locations.
  * \author Brendan Klare \cite bklare
+ *
+ * \br_property double widthPadding Specifies what percentage of the interpupliary distance (ipd) will be padded in both horizontal directions.
+ * \br_property double verticalLocation specifies where vertically the eyes are within the bounding box (0.5 would be the center).
  */
-
 class FaceFromEyesTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT

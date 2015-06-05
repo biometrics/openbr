@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Gives time elapsed over a specified transform as a function of both images (or frames) and pixels.
+ * \brief Gives time elapsed over a specified Transform as a function of both images (or frames) and pixels.
  * \author Jordan Cheney \cite JordanCheney
  * \author Josh Klontz \cite jklontz
  */

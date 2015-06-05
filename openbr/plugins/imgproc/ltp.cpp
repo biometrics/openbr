@@ -27,7 +27,10 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Tan, Xiaoyang, and Bill Triggs. "Enhanced local texture feature sets for face recognition under difficult lighting conditions." Analysis and Modeling of Faces and Gestures. Springer Berlin Heidelberg, 2007. 168-182.
+ * \brief DOCUMENT ME
+ * \br_paper Tan, Xiaoyang, and Bill Triggs.
+ *           "Enhanced local texture feature sets for face recognition under difficult lighting conditions."
+ *           Analysis and Modeling of Faces and Gestures. Springer Berlin Heidelberg, 2007. 168-182.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
  */

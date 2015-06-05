@@ -10,6 +10,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV's thresholding.
+ * \br_link http://docs.opencv.org/modules/imgproc/doc/miscellaneous_transformations.html
  * \author Scott Klum \cite sklum
  */
 class ThresholdTransform : public UntrainableTransform

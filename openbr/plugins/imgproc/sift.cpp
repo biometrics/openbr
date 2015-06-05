@@ -26,6 +26,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Specialize wrapper OpenCV SIFT wrapper
+ * \br_link http://docs.opencv.org/modules/nonfree/doc/feature_detection.html
  * \author Josh Klontz \cite jklontz
  */
 class SIFTDescriptorTransform : public UntrainableTransform

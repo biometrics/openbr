@@ -29,7 +29,10 @@ QVector<Mat> ProductQuantizationLUTs;
 
 /*!
  * \ingroup distances
- * \brief Distance in a product quantized space \cite jegou11
+ * \brief Distance in a product quantized space
+ * \br_paper Jegou, Herve, Matthijs Douze, and Cordelia Schmid.
+ *           "Product quantization for nearest neighbor search."
+ *           Pattern Analysis and Machine Intelligence, IEEE Transactions on 33.1 (2011): 117-128
  * \author Josh Klontz \cite jklontz
  */
 class ProductQuantizationDistance : public UntrainableDistance
@@ -69,7 +72,10 @@ BR_REGISTER(Distance, ProductQuantizationDistance)
 
 /*!
  * \ingroup transforms
- * \brief Product quantization \cite jegou11
+ * \brief Product quantization
+ * \br_paper Jegou, Herve, Matthijs Douze, and Cordelia Schmid.
+ *           "Product quantization for nearest neighbor search."
+ *           Pattern Analysis and Machine Intelligence, IEEE Transactions on 33.1 (2011): 117-128
  * \author Josh Klontz \cite jklontz
  */
 class ProductQuantizationTransform : public Transform

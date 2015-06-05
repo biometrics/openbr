@@ -24,12 +24,11 @@ namespace br
  * \ingroup galleries
  * \brief Treats each line as a file.
  * \author Josh Klontz \cite jklontz
+ * \br_format Columns should be comma separated with first row containing headers.
+ *            The first column in the file should be the path to the file to enroll.
+ *            Other columns will be treated as file metadata.
  *
- * Columns should be comma separated with first row containing headers.
- * The first column in the file should be the path to the file to enroll.
- * Other columns will be treated as file metadata.
- *
- * \see txtGallery
+ * \br_related_plugin txtGallery
  */
 class csvGallery : public FileGallery
 {

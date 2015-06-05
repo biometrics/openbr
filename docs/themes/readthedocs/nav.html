@@ -1,0 +1,30 @@
+<ul class="subnav">
+    {% if nav_item.children %}
+        {% if nav_item.children[0].title == "Overview" %}
+            <li class="l1 {% if nav_item.active %}current{% endif %}">
+                <a href="{{ nav_item.children[0].url }}">{{ nav_item.title }}</a>
+            </li>
+            {% if nav_item.active %}
+                {% for nav_item in nav_item.children[1:] %}
+                    {% include 'nav.html' %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <li><span>{{ nav_item.title }}</span></li>
+            {% for nav_item in nav_item.children %}
+                {% include 'nav.html' %}
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <li class="l1 {% if nav_item.active %}current{% endif %}">
+            <a class="{% if nav_item.active %}current{% endif %}" href="{{ nav_item.url }}">{{ nav_item.title }}</a>
+        </li>
+        {% if nav_item == current_page %}
+            <ul class="subnav">
+                {% for toc_item in toc %}
+                    <li><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</ul>

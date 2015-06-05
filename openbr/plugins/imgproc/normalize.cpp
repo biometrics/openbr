@@ -25,6 +25,11 @@ namespace br
  * \ingroup transforms
  * \brief Normalize matrix to unit length
  * \author Josh Klontz \cite jklontz
+ * \br_property enum NormType Values are: [NORM_INF, NORM_L1, NORM_L2, NORM_MINMAX]
+ * \br_property bool ByRow If true normalize each row independently otherwise normalize the entire matrix.
+ * \br_property int alpha Lower bound if using NORM_MINMAX. Value to normalize to otherwise.
+ * \br_property int beta Upper bound if using NORM_MINMAX. Not used otherwise.
+ * \br_property bool squareRoot If true compute the signed square root of the output after normalization.
  */
 class NormalizeTransform : public UntrainableTransform
 {

@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Add landmarks to the template in a grid layout
+ * \brief Add landmarks to the Template in a grid layout
  * \author Josh Klontz \cite jklontz
  */
 class GridTransform : public UntrainableTransform

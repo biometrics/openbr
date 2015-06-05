@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Crops the width and height of a template's rects by input width and height factors.
+ * \brief Crops the width and height of a Template's rects by input width and height factors.
  * \author Scott Klum \cite sklum
  */
 class CropRectTransform : public UntrainableMetadataTransform

@@ -22,9 +22,10 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief It's like the opposite of ExpandTransform, but not really
- * \author Charles Otto \cite caotto
  *
- * Given a set of templatelists as input, concatenate them onto a single Template
+ * Given a TemplateList as input, concatenate them into a single Template
+ *
+ * \author Charles Otto \cite caotto
  */
 class ContractTransform : public UntrainableMetaTransform
 {

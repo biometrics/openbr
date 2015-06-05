@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup galleries
- * \brief Combine all templates into one large matrix and process it as a br::Format
+ * \brief Combine all Templates into one large matrix and process it as a Format
  * \author Josh Klontz \cite jklontz
  */
 class matrixGallery : public Gallery

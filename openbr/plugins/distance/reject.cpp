@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Sets distance to -FLOAT_MAX if a target template has/doesn't have a key.
+ * \brief Sets Distance to -FLOAT_MAX if a target Template has/doesn't have a key.
  * \author Scott Klum \cite sklum
  */
 class RejectDistance : public UntrainableDistance

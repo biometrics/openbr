@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Caches transform training.
+ * \brief Caches Transform training.
  * \author Josh Klontz \cite jklontz
  */
 class LoadStoreTransform : public MetaTransform

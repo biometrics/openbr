@@ -1,0 +1,201 @@
+site_name: OpenBR
+repo_url: https://github.com/biometrics/openbr
+site_favicon: docs/img/openbr.ico
+copyright: 2012 The MITRE Corporation
+
+theme: readthedocs
+theme_dir: themes/readthedocs/
+#theme_dir: themes/materialize
+
+include_next_prev: False
+
+markdown_extensions:
+- attr_list
+- footnotes
+
+pages:
+- Home: index.md
+- Install: install.md
+- Tutorials: tutorials.md
+- Contribute: contribute.md
+
+- API Documentation:
+    - C API:
+        - Overview: api_docs/c_api.md
+        - Typedefs: api_docs/c_api/typedefs.md
+        - Functions: api_docs/c_api/functions.md
+
+    - Command Line API: api_docs/cl_api.md
+
+    - Python Wrapper API: api_docs/python_api.md
+
+    - C++ Plugin API:
+        - Overview: api_docs/cpp_api.md
+        - API Functions: api_docs/cpp_api/apifunctions.md
+
+        - File:
+            - Overview: api_docs/cpp_api/file/file.md
+            - Members: api_docs/cpp_api/file/members.md
+            - Constructors: api_docs/cpp_api/file/constructors.md
+            - Static Functions: api_docs/cpp_api/file/statics.md
+            - Functions: api_docs/cpp_api/file/functions.md
+
+        - FileList:
+            - Overview: api_docs/cpp_api/filelist/filelist.md
+            - Constructors: api_docs/cpp_api/filelist/constructors.md
+            - Static Functions: api_docs/cpp_api/filelist/statics.md
+            - Functions: api_docs/cpp_api/filelist/functions.md
+
+        - Template:
+            - Overview: api_docs/cpp_api/template/template.md
+            - Members: api_docs/cpp_api/template/members.md
+            - Constructors: api_docs/cpp_api/template/constructors.md
+            - Static Functions: api_docs/cpp_api/template/statics.md
+            - Functions: api_docs/cpp_api/template/functions.md
+
+        - TemplateList:
+            - Overview: api_docs/cpp_api/templatelist/templatelist.md
+            - Constructors: api_docs/cpp_api/templatelist/constructors.md
+            - Static Functions: api_docs/cpp_api/templatelist/statics.md
+            - Functions: api_docs/cpp_api/templatelist/functions.md
+
+        - Factory:
+            - Overview: api_docs/cpp_api/factory/factory.md
+            - Members: api_docs/cpp_api/factory/members.md
+            - Constructors: api_docs/cpp_api/factory/constructors.md
+            - Macros: api_docs/cpp_api/factory/macros.md
+            - Static Functions: api_docs/cpp_api/factory/statics.md
+
+        - Object:
+            - Overview: api_docs/cpp_api/object/object.md
+            - Members: api_docs/cpp_api/object/members.md
+            - Macros: api_docs/cpp_api/object/macros.md
+            - Static Functions: api_docs/cpp_api/object/statics.md
+            - Functions: api_docs/cpp_api/object/functions.md
+
+        - Context:
+            - Overview: api_docs/cpp_api/context/context.md
+            - Members: api_docs/cpp_api/context/members.md
+            - Static Functions: api_docs/cpp_api/context/statics.md
+            - Functions: api_docs/cpp_api/context/functions.md
+
+        - Initializer:
+            - Overview: api_docs/cpp_api/initializer/initializer.md
+            - Constructors: api_docs/cpp_api/initializer/constructors.md
+            - Functions: api_docs/cpp_api/initializer/functions.md
+
+        - Transform:
+            - Overview: api_docs/cpp_api/transform/transform.md
+            - Members: api_docs/cpp_api/transform/members.md
+            - Constructors: api_docs/cpp_api/transform/constructors.md
+            - Static Functions: api_docs/cpp_api/transform/statics.md
+            - Functions: api_docs/cpp_api/transform/functions.md
+
+        - UntrainableTransform:
+            - Overview: api_docs/cpp_api/untrainabletransform/untrainabletransform.md
+            - Constructors: api_docs/cpp_api/untrainabletransform/constructors.md
+
+        - MetaTransform:
+            - Overview: api_docs/cpp_api/metatransform/metatransform.md
+            - Constructors: api_docs/cpp_api/metatransform/constructors.md
+
+        - UntrainableMetaTransform:
+            - Overview: api_docs/cpp_api/untrainablemetatransform/untrainablemetatransform.md
+            - Constructors: api_docs/cpp_api/untrainablemetatransform/constructors.md
+
+        - MetadataTransform:
+            - Overview: api_docs/cpp_api/metadatatransform/metadatatransform.md
+            - Constructors: api_docs/cpp_api/metadatatransform/constructors.md
+            - Functions: api_docs/cpp_api/metadatatransform/functions.md
+
+        - UntrainableMetadataTransform:
+            - Overview: api_docs/cpp_api/untrainablemetadatatransform/untrainablemetadatatransform.md
+            - Constructors: api_docs/cpp_api/untrainablemetadatatransform/constructors.md
+
+        - TimeVaryingTransform:
+            - Overview: api_docs/cpp_api/timevaryingtransform/timevaryingtransform.md
+            - Members: api_docs/cpp_api/timevaryingtransform/members.md
+            - Constructors: api_docs/cpp_api/timevaryingtransform/constructors.md
+            - Functions: api_docs/cpp_api/timevaryingtransform/functions.md
+
+        - CompositeTransform:
+            - Overview: api_docs/cpp_api/compositetransform/compositetransform.md
+            - Properties: api_docs/cpp_api/compositetransform/properties.md
+            - Members: api_docs/cpp_api/compositetransform/members.md
+            - Constructors: api_docs/cpp_api/compositetransform/constructors.md
+            - Functions: api_docs/cpp_api/compositetransform/functions.md
+
+        - WrapperTransform:
+            - Overview: api_docs/cpp_api/wrappertransform/wrappertransform.md
+            - Properties: api_docs/cpp_api/wrappertransform/properties.md
+            - Constructors: api_docs/cpp_api/wrappertransform/constructors.md
+            - Functions: api_docs/cpp_api/wrappertransform/functions.md
+
+        - Distance:
+            - Overview: api_docs/cpp_api/distance/distance.md
+            - Constructors: api_docs/cpp_api/distance/constructors.md
+            - Static Functions: api_docs/cpp_api/distance/statics.md
+            - Functions: api_docs/cpp_api/distance/functions.md
+
+        - UntrainableDistance:
+            - Overview: api_docs/cpp_api/untrainabledistance/untrainabledistance.md
+
+        - Output:
+            - Overview: api_docs/cpp_api/output/output.md
+            - Properties: api_docs/cpp_api/output/properties.md
+            - Members: api_docs/cpp_api/output/members.md
+            - Constructors: api_docs/cpp_api/output/constructors.md
+            - Static Functions: api_docs/cpp_api/output/statics.md
+            - Functions: api_docs/cpp_api/output/functions.md
+
+        - MatrixOutput:
+            - Overview: api_docs/cpp_api/matrixoutput/matrixoutput.md
+            - Members: api_docs/cpp_api/matrixoutput/members.md
+            - Static Functions: api_docs/cpp_api/matrixoutput/statics.md
+            - Functions: api_docs/cpp_api/matrixoutput/functions.md
+
+        - Format:
+            - Overview: api_docs/cpp_api/format/format.md
+            - Constructors: api_docs/cpp_api/format/constructors.md
+            - Static Functions: api_docs/cpp_api/format/statics.md
+            - Functions: api_docs/cpp_api/format/functions.md
+
+        - Gallery:
+            - Overview: api_docs/cpp_api/gallery/gallery.md
+            - Properties: api_docs/cpp_api/gallery/properties.md
+            - Constructors: api_docs/cpp_api/gallery/constructors.md
+            - Static Functions: api_docs/cpp_api/gallery/statics.md
+            - Functions: api_docs/cpp_api/gallery/functions.md
+
+        - FileGallery:
+            - Overview: api_docs/cpp_api/filegallery/filegallery.md
+            - Members: api_docs/cpp_api/filegallery/members.md
+            - Constructors: api_docs/cpp_api/filegallery/constructors.md
+            - Functions: api_docs/cpp_api/filegallery/functions.md
+
+        - Representation:
+            - Overview: api_docs/cpp_api/representation/representation.md
+            - Constructors: api_docs/cpp_api/representation/constructors.md
+            - Static Functions: api_docs/cpp_api/representation/statics.md
+            - Functions: api_docs/cpp_api/representation/functions.md
+
+        - Classifier:
+            - Overview: api_docs/cpp_api/classifier/classifier.md
+            - Constructors: api_docs/cpp_api/classifier/constructors.md
+            - Static Functions: api_docs/cpp_api/classifier/statics.md
+            - Functions: api_docs/cpp_api/classifier/functions.md
+
+- Plugin Documentation:
+    - Classification: plugin_docs/classification.md
+    - Cluster: plugin_docs/cluster.md
+    - Core: plugin_docs/core.md
+    - Distance: plugin_docs/distance.md
+    - Format: plugin_docs/format.md
+    - Gallery: plugin_docs/gallery.md
+    - GUI: plugin_docs/gui.md
+    - Image Processing: plugin_docs/imgproc.md
+    - I/O: plugin_docs/io.md
+    - Metadata: plugin_docs/metadata.md
+    - Output: plugin_docs/output.md
+    - Representation: plugin_docs/representation.md
+    - Video: plugin_docs/video.md

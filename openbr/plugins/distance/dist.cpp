@@ -24,7 +24,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Standard distance metrics
+ * \brief Standard Distance metrics
  * \author Josh Klontz \cite jklontz
  */
 class DistDistance : public UntrainableDistance

@@ -26,7 +26,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Bayesian quantization distance
+ * \brief Bayesian quantization Distance
  * \author Josh Klontz \cite jklontz
  */
 class BayesianQuantizationDistance : public Distance

@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Removes a metadata field from all templates
+ * \brief Removes a metadata field from all Templates
  * \author Brendan Klare \cite bklare
  */
 class RemoveMetadataTransform : public UntrainableMetadataTransform

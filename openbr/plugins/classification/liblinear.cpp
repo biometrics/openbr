@@ -45,6 +45,10 @@ static void loadModel(model &m, QDataStream &stream)
     m = *load_model(qPrintable(tempFile.fileName()));
 }
 
+/*!
+ * \brief Wraps LibLinear's Linear SVM framework.
+ * \author Scott Klum \cite sklum
+ */
 class Linear : public Transform
 {
     Q_OBJECT

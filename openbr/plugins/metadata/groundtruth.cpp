@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Add any ground truth to the template using the file's base name.
+ * \brief Add any ground truth to the Template using the file's base name.
  * \author Josh Klontz \cite jklontz
  */
 class GroundTruthTransform : public UntrainableMetadataTransform

@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup outputs
- * \brief \ref simmat output.
+ * \brief simmat output.
  * \author Josh Klontz \cite jklontz
  */
 class mtxOutput : public Output

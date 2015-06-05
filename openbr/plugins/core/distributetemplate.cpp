@@ -26,6 +26,10 @@ static void _projectList(const Transform *transform, const TemplateList *src, Te
     transform->project(*src, *dst);
 }
 
+/*!
+ * \brief DOCUMENT ME CHARLES
+ * \author Unknown \cite unknown
+ */
 class DistributeTemplateTransform : public MetaTransform
 {
     Q_OBJECT

@@ -26,6 +26,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV Non-Local Means Denoising
+ * \br_link http://docs.opencv.org/modules/photo/doc/denoising.html
  * \author Josh Klontz \cite jklontz
  */
 class NLMeansDenoisingTransform : public UntrainableTransform

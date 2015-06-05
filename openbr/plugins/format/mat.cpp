@@ -25,9 +25,11 @@ namespace br
 /*!
  * \ingroup formats
  * \brief MATLAB <tt>.mat</tt> format.
+ *
+ * matFormat is known not to work with compressed matrices
+ *
  * \author Josh Klontz \cite jklontz
- * http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf
- * \note matFormat is known not to work with compressed matrices
+ * \br_link http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf
  */
 class matFormat : public Format
 {

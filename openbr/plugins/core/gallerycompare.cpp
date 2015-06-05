@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Compare each template to a fixed gallery (with name = galleryName), using the specified distance.
+ * \brief Compare each Template to a fixed Gallery (with name = galleryName), using the specified distance.
  * dst will contain a 1 by n vector of scores.
  * \author Charles Otto \cite caotto
  */

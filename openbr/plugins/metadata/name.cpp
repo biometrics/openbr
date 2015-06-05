@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Sets the template's matrix data to the br::File::name.
+ * \brief Sets the Template's matrix data to the br::File::name.
  * \author Josh Klontz \cite jklontz
  */
 class NameTransform : public UntrainableMetaTransform

@@ -25,9 +25,9 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Fuses similarity scores across multiple matrices of compared templates
+ * \brief Fuses similarity scores across multiple matrices of compared Templates
  * \author Scott Klum \cite sklum
- * \note Operation: Mean, sum, min, max are supported.
+ * \br_property enum Operation Possible values are: [Mean, sum, min, max].
  */
 class FuseDistance : public ListDistance
 {

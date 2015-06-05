@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Remove templates with the specified file extension or metadata value.
+ * \brief Remove Templates with the specified file extension or metadata value.
  * \author Josh Klontz \cite jklontz
  */
 class RemoveTemplatesTransform : public UntrainableMetaTransform

@@ -1,0 +1,9 @@
+<div class="toc-wrapper" style="position: fixed; overflow: scroll; height: 70%; width: 100%;">
+    <span class="card-title">Table of Contents</span>
+    <div class="divider" style="width: 125px;"></div>
+    <ul class="section table-of-contents">
+        {% for toc_item in toc %}
+            <li class="no-padding"><a href="{{ toc_item.url }}"><span>{{ toc_item.title }}</span></a></li>
+        {% endfor %}
+    </ul>
+</div>

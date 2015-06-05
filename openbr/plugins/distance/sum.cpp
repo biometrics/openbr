@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Sum match scores across multiple distances
+ * \brief Sum match scores across multiple Distances
  * \author Scott Klum \cite sklum
  */
 class SumDistance : public ListDistance

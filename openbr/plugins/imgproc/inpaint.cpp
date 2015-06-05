@@ -26,6 +26,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps OpenCV inpainting
+ * \br_link http://docs.opencv.org/modules/photo/doc/inpainting.html
  * \author Josh Klontz \cite jklontz
  */
 class InpaintTransform : public UntrainableTransform

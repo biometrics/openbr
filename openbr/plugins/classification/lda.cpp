@@ -30,7 +30,7 @@ namespace br
 /*!
  * \ingroup initializers
  * \brief Initialize Eigen
- * http://eigen.tuxfamily.org/dox/TopicMultiThreading.html
+ * \br_link http://eigen.tuxfamily.org/dox/TopicMultiThreading.html
  * \author Scott Klum \cite sklum
  */
 class EigenInitializer : public Initializer
@@ -50,6 +50,10 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \brief Projects input into learned Principal Component Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
+ *
+ * \br_property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
+ * \br_property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \br_property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
  */
 class PCATransform : public Transform
 {
@@ -62,12 +66,6 @@ protected:
     Q_PROPERTY(int drop READ get_drop WRITE set_drop RESET reset_drop STORED false)
     Q_PROPERTY(bool whiten READ get_whiten WRITE set_whiten RESET reset_whiten STORED false)
 
-    /*!
-     *     keep <  0: All eigenvalues are retained.
-     *     keep =  0: No PCA performed, eigenvectors form an identity matrix.
-     * 0 < keep <  1: Fraction of the variance to retain.
-     *     keep >= 1: Number of leading eigenvectors to retain.
-     */
     BR_PROPERTY(float, keep, 0.95)
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
@@ -270,8 +268,12 @@ BR_REGISTER(Transform, RowWisePCATransform)
 
 /*!
  * \ingroup transforms
- * \brief Computes Distance From Feature Space (DFFS) \cite moghaddam97.
+ * \brief Computes Distance From Feature Space (DFFS)
+ * \br_paper Moghaddam, Baback, and Alex Pentland.
+ *           "Probabilistic visual learning for object representation."
+ *           Pattern Analysis and Machine Intelligence, IEEE Transactions on 19.7 (1997): 696-710.
  * \author Josh Klontz \cite jklontz
+ * \br_property float keep Sets PCA keep property. Default is 0.95.
  */
 class DFFSTransform : public Transform
 {
@@ -317,6 +319,13 @@ BR_REGISTER(Transform, DFFSTransform)
  * \brief Projects input into learned Linear Discriminant Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
+ * \br_property float pcaKeep BRENDAN OR JOSH FILL ME IN. Default is 0.98.
+ * \br_property bool pcaWhiten BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property int directLDA BRENDAN OR JOSH FILL ME IN. Default is 0.
+ * \br_property float directDrop BRENDAN OR JOSH FILL ME IN. Default is 0.1.
+ * \br_property QString inputVariable BRENDAN OR JOSH FILL ME IN. Default is "Label".
+ * \br_property bool isBinary BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property bool normalize BRENDAN OR JOSH FILL ME IN. Default is true.
  */
 class LDATransform : public Transform
 {
@@ -558,10 +567,11 @@ BR_REGISTER(Transform, LDATransform)
 
 /*!
  * \ingroup transforms
- * \brief Projects input into learned Linear Discriminant Analysis subspace
- *          learned on a sparse subset of features with the highest weight
- *          in the original LDA algorithm.
+ * \brief Projects input into learned Linear Discriminant Analysis subspace learned on a sparse subset of features with the highest weight in the original LDA algorithm.
  * \author Brendan Klare \cite bklare
+ * \br_property float varThreshold BRENDAN FILL ME IN. Default is 1.5.
+ * \br_property float pcaKeep BRENDAN FILL ME IN. Default is 0.98.
+ * \br_property bool normalize BRENDAN FILL ME IN. Default is true.
  */
 class SparseLDATransform : public Transform
 {
@@ -663,7 +673,7 @@ using namespace cv;
  *
  * Like LDA but without the explicit between-class consideration.
  *
- * \par Compression
+ * Note on Compression:
  * Projection matricies can become quite large, resulting in proportionally large model files.
  * WCDA automatically alleviates this issue with lossy compression of the projection matrix.
  * Each element is stored as an 8-bit integer instead of a 32-bit float, resulting in a 75% reduction in the size of the projection matrix.
@@ -846,6 +856,7 @@ QDataStream &operator>>(QDataStream &stream, DecisionBoundary &db)
 /*!
  * \ingroup transforms
  * \brief Boosted Binary LDA classifier for local alignment.
+ * \author Unknown \cite Unknown
  */
 class BBLDAAlignmentTransform : public MetaTransform
 {

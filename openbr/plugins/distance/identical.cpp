@@ -23,7 +23,7 @@ namespace br
 
 /*!
  * \ingroup distances
- * \brief Returns \c true if the templates are identical, \c false otherwise.
+ * \brief Returns true if the Templates are identical, false otherwise.
  * \author Josh Klontz \cite jklontz
  */
 class IdenticalDistance : public UntrainableDistance

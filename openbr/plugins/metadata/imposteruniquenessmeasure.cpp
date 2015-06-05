@@ -22,7 +22,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Impostor Uniqueness Measure \cite klare12
+ * \brief Impostor Uniqueness Measure
  * \author Josh Klontz \cite jklontz
  */
 class ImpostorUniquenessMeasureTransform : public Transform

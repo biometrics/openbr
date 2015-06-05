@@ -25,9 +25,11 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Clones the transform so that it can be applied independently.
+ * \brief Clones the Transform so that it can be applied independently.
+ *
+ * Independent Transforms expect single-matrix Templates.
+ *
  * \author Josh Klontz \cite jklontz
- * \em Independent transforms expect single-matrix templates.
  */
 class IndependentTransform : public MetaTransform
 {

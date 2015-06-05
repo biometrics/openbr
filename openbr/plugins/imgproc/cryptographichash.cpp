@@ -24,6 +24,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \brief Wraps QCryptographicHash
+ * \br_link http://doc.qt.io/qt-5/qcryptographichash.html
  * \author Josh Klontz \cite jklontz
  */
 class CryptographicHashTransform : public UntrainableTransform

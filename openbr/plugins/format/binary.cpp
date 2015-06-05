@@ -26,7 +26,7 @@ namespace br
  * \ingroup formats
  * \brief A simple binary matrix format.
  * \author Josh Klontz \cite jklontz
- * First 4 bytes indicate the number of rows.
+ * \br_format First 4 bytes indicate the number of rows.
  * Second 4 bytes indicate the number of columns.
  * The rest of the bytes are 32-bit floating data elements in row-major order.
  */
