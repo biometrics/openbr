@@ -18,6 +18,16 @@ namespace br
     /* (x + w, y + h) */                                                  \
     (p3) = (rect).x + (rect).width + (step) * ((rect).y + (rect).height);
 
+/*!
+ * \brief An implementation of MBLBP as an OpenBR Representation
+ * \author Jordan Cheney \cite jcheney
+ * \br_property int winWidth The width of the input image. The total feature space is based on this and the winHeight
+ * \br_property int winHeight The height of the input image. The total feature space is based on this and the winWidth.
+ * \br_paper Shengcai Liao, Xiangxin Zhu, Zhen Lei, Lun Zhang, Stan Z. Li
+ *           Learning Multi-scale Block Local Binary Patterns for Face Recognition
+ *           ICB, 2007
+ * \br_link Learning Multi-scale Block Local Binary Patterns for Face Recognition http://www.cbsr.ia.ac.cn/users/lzhang/papers/ICB07/ICB07_Liao.pdf
+ */
 class MBLBPRepresentation : public Representation
 {
     Q_OBJECT

@@ -10,7 +10,7 @@ namespace br
 {
 
 /*!
- * \ingroup galleries
+ * \ingroup representations
  * \brief Computes first order gradient histogram features using an integral image
  * \author Scott Klum \cite sklum
  */

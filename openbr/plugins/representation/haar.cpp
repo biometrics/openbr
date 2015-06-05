@@ -18,6 +18,16 @@ namespace br
     /* (x + w, y + h) */                                                  \
     (p3) = (rect).x + (rect).width + (step) * ((rect).y + (rect).height);
 
+/*!
+ * \brief An implementation of Haar Features for Viola-Jones cascade object detection
+ * \author Jordan Cheney \cite jcheney
+ * \br_property int winWidth The width of the input image. The total feature space is based on this and the winHeight
+ * \br_property int winHeight The height of the input image. The total feature space is based on this and the winWidth.
+ * \br_paper Paul Viola, Michael Jones
+ *           Rapid Object Detection using a Boosted Cascade of Simple Features
+ *           CVPR, 2001
+ * \br_link Rapid Object Detection using a Boosted Cascade of Simple Features https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
+ */
 class HaarRepresentation : public Representation
 {
     Q_OBJECT

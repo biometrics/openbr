@@ -83,6 +83,18 @@ static void storeRecursive(QDataStream &stream, const Node *node, int maxCatCoun
     }
 }
 
+/*!
+ * \brief A classification wrapper on OpenCV's CvBoost class. It uses CvBoost for training a boosted forest and then performs classification using the trained nodes.
+ * \author Jordan Cheney \cite jcheney
+ * \author Scott Klum \cite sklum
+ * \br_property Representation* representation The Representation describing the features used by the boosted forest
+ * \br_property float minTAR The minimum true accept rate during training
+ * \br_property float maxFAR The maximum false accept rate during training
+ * \br_property float trimRate The trim rate during training
+ * \br_property int maxDepth The maximum depth for each trained tree
+ * \br_property int maxWeakCount The maximum number of trees in the forest
+ * \br_property Type type. The type of boosting to perform. Options are [Discrete, Real, Logit, Gentle]. Gentle is the default.
+ */
 class BoostedForestClassifier : public Classifier
 {
     Q_OBJECT

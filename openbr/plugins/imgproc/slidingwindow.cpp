@@ -27,10 +27,17 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Sliding Window Framework
- * \author Jordan Cheney
+ * \brief Sliding Window Framework for object detection. Performs an exhaustive search of an image by sliding a window of a given size around the image and then resizing the image and repeating until terminating conditions are met.
+ * \author Jordan Cheney \cite jcheney
+ * \author Scott Klum \cite sklum
+ * \br_property Classifier* classifier The classifier that determines if a given window is a positive or negative sample. The size of the window is determined using the classifiers *windowSize* method.
+ * \br_property int minSize The smallest sized object to detect in pixels
+ * \br_property int maxSize The largest sized object to detect in pixels. A negative value will set maxSize == image size
+ * \br_property float scaleFactor The factor to scale the image by during each resize.
+ * \br_property int minNeighbors Parameter for non-maximum supression
+ * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
+ * \br_property float eps Parameter for non-maximum supression
  */
-
 class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT

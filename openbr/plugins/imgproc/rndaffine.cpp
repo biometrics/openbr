@@ -8,6 +8,13 @@ using namespace cv;
 namespace br
 {
 
+/*!
+ * \brief Perform a number of random transformations to the points in metadata as "Affine_0" and "Affine_1"
+ * \author Jordan Cheney \cite jcheney
+ * \br_property int numAffines The number of independent random transformations to perform. The result of each transform is stored as its own template in the output TemplateList
+ * \br_property float scaleFactor Controls the magnitude of the random changes to the affine points
+ * \br_property int maxAngle the maximum angle between the original line between the two affine points and the new line between the points.
+ */
 class RndAffineTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
@@ -17,8 +24,6 @@ class RndAffineTransform : public UntrainableMetaTransform
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(int maxAngle READ get_maxAngle WRITE set_maxAngle RESET reset_maxAngle STORED false)
     BR_PROPERTY(int, numAffines, 0)
-    BR_PROPERTY(int, winWidth, 24)
-    BR_PROPERTY(int, winHeight, 24)
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(int, maxAngle, 15)
 
