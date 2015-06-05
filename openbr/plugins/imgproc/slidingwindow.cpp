@@ -16,150 +16,150 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
+#include <openbr/core/qtutils.h>
+
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 
 namespace br
 {
 
-// Find avg aspect ratio
-static float getAspectRatio(const TemplateList &data)
-{
-    double tempRatio = 0;
-    int ratioCnt = 0;
-
-    foreach (const Template &tmpl, data) {
-        QList<Rect> posRects = OpenCVUtils::toRects(tmpl.file.rects());
-        foreach (const Rect &posRect, posRects) {
-            if (posRect.x + posRect.width >= tmpl.m().cols || posRect.y + posRect.height >= tmpl.m().rows || posRect.x < 0 || posRect.y < 0) {
-                continue;
-            }
-            tempRatio += (float)posRect.width / (float)posRect.height;
-            ratioCnt += 1;
-        }
-    }
-    return tempRatio / (double)ratioCnt;
-}
-
 /*!
  * \ingroup transforms
- * \brief Applies a transform to a sliding window.
- *        Discards negative detections.
- * \author Austin Blanton \cite imaus10
+ * \brief Sliding Window Framework
+ * \author Jordan Cheney
  */
-class SlidingWindowTransform : public Transform
+
+class SlidingWindowTransform : public MetaTransform
 {
     Q_OBJECT
-    Q_PROPERTY(br::Transform *transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
-    Q_PROPERTY(int windowWidth READ get_windowWidth WRITE set_windowWidth RESET reset_windowWidth STORED false)
-    Q_PROPERTY(bool takeFirst READ get_takeFirst WRITE set_takeFirst RESET reset_takeFirst STORED false)
-    Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
-    Q_PROPERTY(float stepFraction READ get_stepFraction WRITE set_stepFraction RESET reset_stepFraction STORED false)
-    Q_PROPERTY(int ignoreBorder READ get_ignoreBorder WRITE set_ignoreBorder RESET reset_ignoreBorder STORED true)
-    BR_PROPERTY(br::Transform *, transform, NULL)
-    BR_PROPERTY(int, windowWidth, 24)
-    BR_PROPERTY(bool, takeFirst, false)
-    BR_PROPERTY(float, threshold, 0)
-    BR_PROPERTY(float, stepFraction, 0.25)
-    BR_PROPERTY(int, ignoreBorder, 0)
 
-private:
-    int windowHeight;
-    bool skipProject;
+    Q_PROPERTY(br::Classifier* classifier READ get_classifier WRITE set_classifier RESET reset_classifier STORED false)
+
+    Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
+    Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
+    Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
+    Q_PROPERTY(int minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
+    Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
+    Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
+
+    BR_PROPERTY(br::Classifier*, classifier, NULL)
+    BR_PROPERTY(int, minSize, 20)
+    BR_PROPERTY(int, maxSize, -1)
+    BR_PROPERTY(float, scaleFactor, 1.2)
+    BR_PROPERTY(int, minNeighbors, 5)
+    BR_PROPERTY(float, confidenceThreshold, 10)
+    BR_PROPERTY(float, eps, 0.2)
 
     void train(const TemplateList &data)
     {
-        skipProject = true;
-        float aspectRatio = data.first().file.get<float>("aspectRatio", -1);
-        if (aspectRatio == -1)
-            aspectRatio = getAspectRatio(data);
-        windowHeight = qRound(windowWidth / aspectRatio);
-
-        if (transform->trainable) {
-            TemplateList dataOut = data;
-            if (ignoreBorder > 0) {
-                for (int i = 0; i < dataOut.size(); i++) {
-                    Template t = dataOut[i];
-                    Mat m = t.m();
-                    dataOut.replace(i,Template(t.file, Mat(m,Rect(ignoreBorder,ignoreBorder,m.cols - ignoreBorder * 2, m.rows - ignoreBorder * 2))));
-                }
-            }
-            transform->train(dataOut);
-        }
+        classifier->train(data.data(), File::get<float>(data, "Label", -1));
     }
 
-    void store(QDataStream &stream) const
+    void project(const Template &src, Template &dst) const
     {
-        transform->store(stream);
-        stream << windowHeight;
+        TemplateList temp;
+        project(TemplateList() << src, temp);
+        if (!temp.isEmpty()) dst = temp.first();
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        Size minObjectSize(minSize, minSize);
+        Size maxObjectSize;
+
+        foreach (const Template &t, src) {
+            const bool enrollAll = t.file.getBool("enrollAll");
+
+            // Mirror the behavior of ExpandTransform in the special case
+            // of an empty template.
+            if (t.empty() && !enrollAll) {
+                dst.append(t);
+                continue;
+            }
+
+            for (int i=0; i<t.size(); i++) {
+                Mat m;
+                OpenCVUtils::cvtUChar(t[i], m);
+                std::vector<Rect> rects;
+                std::vector<float> confidences;
+
+                if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
+                    maxObjectSize = m.size();
+
+                Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
+
+                for (double factor = 1; ; factor *= scaleFactor) {
+                    int dx, dy;
+                    Size originalWindowSize = classifier->windowSize(&dx, &dy);
+
+                    Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
+                    Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
+                    Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
+
+                    if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
+                        break;
+                    if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
+                        break;
+                    if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
+                        continue;
+
+                    Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
+                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+
+                    Mat repImage = classifier->preprocess(scaledImage);
+
+                    int step = factor > 2. ? 1 : 2;
+                    for (int y = 0; y < processingRectSize.height; y += step) {
+                        for (int x = 0; x < processingRectSize.width; x += step) {
+                            Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
+
+                            float confidence = 0;
+                            int result = classifier->classify(window, false, &confidence);
+
+                            if (result == 1) {
+                                rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
+                                confidences.push_back(confidence);
+                            }
+
+                            // TODO: Add non ROC mode
+
+                            if (result == 0)
+                                x += step;
+                        }
+                    }
+                }
+
+                OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
+
+                if (!enrollAll && rects.empty())
+                    rects.push_back(Rect(0, 0, m.cols, m.rows));
+
+                for (size_t j=0; j<rects.size(); j++) {
+                    Template u(t.file, m);
+                    u.file.set("Confidence", confidences[j]);
+                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                    u.file.appendRect(rect);
+                    u.file.set("Face", rect);
+                    dst.append(u);
+                }
+            }
+        }
     }
 
     void load(QDataStream &stream)
     {
-        transform->load(stream);
-        stream >> windowHeight;
+        classifier->load(stream);
     }
 
-    void project(const Template &src, Template &dst) const
+    void store(QDataStream &stream) const
     {
-        float scale = src.file.get<float>("scale", 1);
-        projectHelp(src, dst, windowWidth, windowHeight, scale);
-    }
-
- protected:
-     void projectHelp(const Template &src, Template &dst, int windowWidth, int windowHeight, float scale = 1) const
-     {
-
-        dst = src;
-        if (skipProject) {
-            dst = src;
-            return;
-        }
-
-        Template windowTemplate(src.file, src);
-        QList<float> confidences = dst.file.getList<float>("Confidences", QList<float>());
-        for (float y = 0; y + windowHeight < src.m().rows; y += windowHeight*stepFraction) {
-            for (float x = 0; x + windowWidth < src.m().cols; x += windowWidth*stepFraction) {
-                Mat windowMat(src, Rect(x + ignoreBorder, y + ignoreBorder, windowWidth - ignoreBorder * 2, windowHeight - ignoreBorder * 2));
-                windowTemplate.replace(0,windowMat);
-                Template detect;
-                transform->project(windowTemplate, detect);
-                float conf = detect.m().at<float>(0);
-
-                // the result will be in the Label
-                if (conf > threshold) {
-                    dst.file.appendRect(QRectF(x*scale, y*scale, windowWidth*scale, windowHeight*scale));
-                    confidences.append(conf);
-                    if (takeFirst)
-                        return;
-                }
-            }
-        }
-        dst.file.setList<float>("Confidences", confidences);
+        classifier->store(stream);
     }
 };
 
 BR_REGISTER(Transform, SlidingWindowTransform)
-
-/*!
- * \ingroup transforms
- * \brief Overloads SlidingWindowTransform for integral images that should be
- *        sampled at multiple scales.
- * \author Josh Klontz \cite jklontz
- */
-class IntegralSlidingWindowTransform : public SlidingWindowTransform
-{
-    Q_OBJECT
-
- private:
-    void project(const Template &src, Template &dst) const
-    {
-        // TODO: call SlidingWindowTransform::project on multiple scales
-        SlidingWindowTransform::projectHelp(src, dst, 24, 24);
-    }
-};
-
-BR_REGISTER(Transform, IntegralSlidingWindowTransform)
 
 } // namespace br
 
