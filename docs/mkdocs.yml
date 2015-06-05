@@ -4,8 +4,8 @@ site_favicon: docs/img/openbr.ico
 copyright: 2012 The MITRE Corporation
 
 theme: readthedocs
-#theme_dir: themes/readthedocs/
-theme_dir: themes/materialize
+theme_dir: themes/readthedocs/
+#theme_dir: themes/materialize
 
 include_next_prev: False
 

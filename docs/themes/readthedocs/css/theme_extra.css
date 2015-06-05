@@ -37,10 +37,34 @@ h3, h4, h5, h6 {
  */
 .wy-nav-side {
     height: 100%;
+    width: 25%;
     overflow-y: auto;
 }
 
-/*
+.wy-nav-content-wrap {
+    padding-left: 25%;
+    margin-left: 0px;
+    background-color: #FFF;
+}
+
+.toc {
+    position: fixed;
+    margin-top: -50px;
+    padding-left: 750px;
+}
+
+@media (max-width:767px) {
+    .wy-nav-content-wrap {
+        padding-left: 0%;
+    }
+}
+
+@media (max-width: 1300px) {
+    .toc {
+        visibility: hidden;
+    }
+}
+
  * readthedocs theme hides nav items when the window height is
  * too small to contain them.
  *
