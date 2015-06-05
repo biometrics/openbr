@@ -140,6 +140,10 @@ pages:
         - UntrainableDistance:
             - Overview: api_docs/cpp_api/untrainabledistance/untrainabledistance.md
 
+        - ListDistance:
+            - Overview: api_docs/cpp_api/listdistance/listdistance.md
+            - Properties: api_docs/cpp_api/listdistance/properties.md
+
         - Output:
             - Overview: api_docs/cpp_api/output/output.md
             - Properties: api_docs/cpp_api/output/properties.md
