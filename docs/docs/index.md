@@ -13,7 +13,7 @@ Please read [our paper](http://openbiometrics.org/publications/klontz2013open.pd
 
 ---
 
-<figure id="abstraction">
+<figure id="abstraction" style="display:block; margin: 0 auto;">
   <img src="img/abstraction.svg">
   <figcaption>The two principal software artifacts are the shared library 'openbr' and command line application 'br'.</figcaption>
 </figure>

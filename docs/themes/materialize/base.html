@@ -50,20 +50,22 @@
             </nav>
         </div>
 
-        <ul id="slide-out" class="side-nav fixed">
-            <li class="logo" style="height: 120px;">
-                <a id="logo-container" href="http://openbiometrics.org/" class="brand-logo" style="width: 285px; height: 120px; padding-left: 85px; padding-top: 10px;">
-                    <img src="{{ base_url }}/img/openbr.png" style="width: 100px; height: 100px;">
-                </a>
-            </li>
-            <hr style="margin: 0px;">
+        <div class="container">
+            <ul id="slide-out" class="side-nav fixed">
+                <li class="logo" style="height: 120px;">
+                    <a id="logo-container" href="http://openbiometrics.org/" class="brand-logo" style="width: 285px; height: 120px; padding-left: 85px; padding-top: 10px;">
+                        <img src="{{ base_url }}/img/openbr.png" style="width: 100px; height: 100px;">
+                    </a>
+                </li>
+                <hr style="margin: 0px;">
 
-            {% for nav_item in nav %}
-                {% include "nav.html" %}
-            {% endfor %}
-        </ul>
+                {% for nav_item in nav %}
+                    {% include "nav.html" %}
+                {% endfor %}
+            </ul>
+        </div>
     </header>
-    
+
     <main>
         <div class="container">
             <div class="row">
@@ -73,15 +75,9 @@
                     </div>
 
                     <div class="col m3 l2">
-                        <div class="toc-wrapper" style="position: fixed;">
-                            <span class="card-title">Table of Contents</span>
-                            <div class="divider"></div>
-                            <ul class="section table-of-contents">
-                                {% for toc_item in toc %}
-                                    <li class="no-padding"><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                        {% if toc.items %}
+                            {% include "toc.html" %}
+                        {% endif %}
                     </div>
                 {% endblock %}
             </div>
