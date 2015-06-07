@@ -11,9 +11,11 @@ namespace br
 {
 
 /*!
- * \ingroup galleries
- * \brief Computes first order gradient histogram features using an integral image
+ * \ingroup representations
+ * \brief A meta Representation that creates a smaller, random feature space from the full feature space of a given representation.
  * \author Scott Klum \cite sklum
+ * \br_property Representation* representation The representation from which to create the random feature space
+ * \br_property int count The size of the random feature space
  */
 class RandomRepresentation : public Representation
 {

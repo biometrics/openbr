@@ -102,6 +102,19 @@ struct ImageHandler
     Size    winSize;
 };
 
+/*!
+ * \brief A meta Classifier that creates a cascade of another Classifier. The cascade is a series of stages, each with its own instance of a given classifier. A sample can only reach the next stage if it is classified as positive by the previous stage.
+ * \author Jordan Cheney \cite jcheney
+ * \author Scott Klum \cite sklum
+ * \br_property int numStages The number of stages in the cascade
+ * \br_property int numPos The number of positives to feed each stage during training
+ * \br_property int numNegs The number of negatives to feed each stage during training. A negative sample must have been classified by the previous stages in the cascade as positive to be fed to the next stage during training.
+ * \br_property float maxFAR A termination parameter. Calculated as (number of passed negatives) / (total number of checked negatives) for a given stage during training. If that number is below the given maxFAR cascade training is terminated early. This can help prevent overfitting.
+ * \br_paper Paul Viola, Michael Jones
+ *           Rapid Object Detection using a Boosted Cascade of Simple Features
+ *           CVPR, 2001
+ * \br_link Rapid Object Detection using a Boosted Cascade of Simple Features https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
+ */
 class CascadeClassifier : public Classifier
 {
     Q_OBJECT
