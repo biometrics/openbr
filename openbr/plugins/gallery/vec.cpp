@@ -22,15 +22,15 @@ class vecGallery : public FileGallery
 
     ~vecGallery()
     {
-	if (mats.isEmpty())
-	    return;
+        if (mats.isEmpty())
+            return;
 
-	writeOpen();
+        writeOpen();
 
-	// Write header
-	int count = mats.size();
-	int size = width*height;
-	short temp = 0;
+        // Write header
+        int count = mats.size();
+        int size = width*height;
+        short temp = 0;
 
         const size_t write1 = f.write((char*)&count,sizeof(count));
         const size_t write2 = f.write((char*)&size,sizeof(size));
@@ -42,16 +42,16 @@ class vecGallery : public FileGallery
 
         for (int i=0; i<count; i++) {
             uchar tmp = 0;
-	    const size_t write5 = f.write((char*)&tmp,sizeof(tmp));
+            const size_t write5 = f.write((char*)&tmp,sizeof(tmp));
 
             for (int r = 0; r < height; r++)
                 for (int c = 0; c < width; c++) {
-	            short buffer = mats[i].ptr(r)[c];
-		    f.write((char*)&buffer, sizeof(buffer));
-		}
+                    short buffer = mats[i].ptr(r)[c];
+                    f.write((char*)&buffer, sizeof(buffer));
+                }
         }
 
-	f.close();
+        f.close();
     }
 
     TemplateList readBlock(bool *done)
@@ -91,8 +91,8 @@ class vecGallery : public FileGallery
             for (int r = 0; r < height; r++)
                 for (int c = 0; c < width; c++)
                     m.ptr(r)[c] = (uchar)vec[r*width+c];
-	    Template t(m);
-	    t.file.set("Label",1);
+            Template t(m);
+            t.file.set("Label",1);
             templates.append(t);
         }
 
@@ -101,10 +101,10 @@ class vecGallery : public FileGallery
 
     void write(const Template &t)
     {
-	if (t.m().rows == height && t.m().cols == width)
-	    mats.append(t);
-	else
-	    qFatal("Matrix has incorrect width/height.");
+        if (t.m().rows == height && t.m().cols == width && t.m().type() == CV_8UC1)
+            mats.append(t);
+        else
+            qFatal("Matrix has incorrect width/height/type.");
     }
 };
 
