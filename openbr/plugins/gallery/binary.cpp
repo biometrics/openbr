@@ -213,23 +213,22 @@ class utGallery : public BinaryGallery
         Template t;
         br_universal_template ut;
         if (gallery.read((char*)&ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
-            QByteArray data(ut.urlSize + ut.fvSize, Qt::Uninitialized);
+            QByteArray data(ut.mdSize + ut.fvSize, Qt::Uninitialized);
             char *dst = data.data();
-            qint64 bytesNeeded = ut.urlSize + ut.fvSize;
+            qint64 bytesNeeded = ut.mdSize + ut.fvSize;
             while (bytesNeeded > 0) {
                 qint64 bytesRead = gallery.read(dst, bytesNeeded);
                 if (bytesRead <= 0) {
                     qDebug() << gallery.errorString();
-                    qFatal("Unexepected EOF while reading universal template data, needed: %d more of: %d bytes.", int(bytesNeeded), int(ut.urlSize + ut.fvSize));
+                    qFatal("Unexepected EOF while reading universal template data, needed: %d more of: %d bytes.", int(bytesNeeded), int(ut.mdSize + ut.fvSize));
                 }
                 bytesNeeded -= bytesRead;
                 dst += bytesRead;
             }
 
-            t.file.set("ImageID", QVariant(QByteArray((const char*)ut.imageID, 16).toHex()));
             t.file.set("AlgorithmID", ut.algorithmID);
             t.file.set("URL", QString(data.data()));
-            char *dataStart = data.data() + ut.urlSize;
+            char *dataStart = data.data() + ut.mdSize;
             uint32_t dataSize = ut.fvSize;
             if ((ut.algorithmID <= -1) && (ut.algorithmID >= -3)) {
                 t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
@@ -269,7 +268,6 @@ class utGallery : public BinaryGallery
                 dataStart += sizeof(uint16_t);
 
                 // Set metadata
-                t.file.set("Label", ut.label);
                 t.file.set("X", ut.x);
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);
@@ -277,14 +275,12 @@ class utGallery : public BinaryGallery
 
                 t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, matrixDepth), dataStart).clone() /* We don't want a shallow copy! */);
                 return t;
-            }
-            else {
+            } else {
                 t.file.set("X", ut.x);
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);
                 t.file.set("Height", ut.height);
             }
-            t.file.set("Label", ut.label);
             t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
             if (!gallery.atEnd())
@@ -296,15 +292,11 @@ class utGallery : public BinaryGallery
 
     void writeTemplate(const Template &t)
     {
-        const QByteArray imageID = QByteArray::fromHex(t.file.get<QByteArray>("ImageID", QByteArray(32, '0')));
-        if (imageID.size() != 16)
-            qFatal("Expected 16-byte ImageID, got: %d bytes.", imageID.size());
-
         const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
 
         // QUrl::fromUserInput provides some nice functionality in terms of completing URLs
         // e.g. C:/test.jpg -> file://C:/test.jpg and google.com/image.jpg -> http://google.com/image.jpg
-        const QByteArray url = QUrl::fromUserInput(t.file.get<QString>("URL", t.file.name)).toEncoded();
+        const QByteArray metadata = QUrl::fromUserInput(t.file.get<QString>("URL", t.file.name)).toEncoded();
 
         int32_t x = 0, y = 0;
         uint32_t width = 0, height = 0;
@@ -333,24 +325,21 @@ class utGallery : public BinaryGallery
             width = t.file.get<uint32_t>("Width", 0);
             height = t.file.get<uint32_t>("Height", 0);
         }
-        const uint32_t label = t.file.get<uint32_t>("Label", 0);
 
-        gallery.write(imageID);
         gallery.write((const char*) &algorithmID, sizeof(int32_t));
         gallery.write((const char*) &x          , sizeof(int32_t));
         gallery.write((const char*) &y          , sizeof(int32_t));
         gallery.write((const char*) &width      , sizeof(uint32_t));
         gallery.write((const char*) &height     , sizeof(uint32_t));
-        gallery.write((const char*) &label      , sizeof(uint32_t));
 
-        const uint32_t urlSize = url.size() + 1;
-        gallery.write((const char*) &urlSize, sizeof(uint32_t));
+        const uint32_t mdSize = metadata.size() + 1;
+        gallery.write((const char*) &mdSize, sizeof(uint32_t));
 
         const uint32_t signatureSize = (algorithmID == 0) ? 0 : t.m().rows * t.m().cols * t.m().elemSize();
         const uint32_t fvSize = header.size() + signatureSize;
         gallery.write((const char*) &fvSize, sizeof(uint32_t));
 
-        gallery.write((const char*) url.data(), urlSize);
+        gallery.write((const char*) metadata.data(), mdSize);
         if (algorithmID != 0) {
             gallery.write(header);
             gallery.write((const char*) t.m().data, signatureSize);
