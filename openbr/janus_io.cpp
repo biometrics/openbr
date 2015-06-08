@@ -17,6 +17,7 @@ static void _janus_create_template(const char *data_path, TemplateData templateD
     janus_template template_;
     janus_template_id templateID;
     JANUS_ASSERT(TemplateIterator::create(data_path, templateData, &template_, &templateID, verbose))
+    templateData.release();
 
     static QMutex enrollLock;
     QMutexLocker enrollLocker(&enrollLock);
@@ -44,6 +45,7 @@ TemplatePair _janus_create_flat_template(const char *data_path, TemplateData tem
     janus_template template_;
     janus_template_id templateID;
     JANUS_ASSERT(TemplateIterator::create(data_path, templateData, &template_, &templateID, verbose))
+    templateData.release();
     return TemplatePair(templateID, FlatTemplate(template_));
 }
 
