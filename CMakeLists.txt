@@ -43,6 +43,8 @@ else()
   set(BITNESS 32)
 endif()
 
+include(ExternalProject)
+
 # Define resources
 if(WIN32)
   set(CPACK_PACKAGE_ICON "${BR_SHARE_DIR}\\\\openbr_small.png")
