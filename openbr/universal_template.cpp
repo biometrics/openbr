@@ -8,7 +8,7 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, const char *metadata, const char *featureVector, uint32_t fvSize)
+br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, const char *metadata, const char *featureVector, uint32_t fvSize)
 {
     const uint32_t mdSize = strlen(metadata) + 1;
     br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + mdSize + fvSize);
@@ -17,6 +17,7 @@ br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_
     utemplate->y = y;
     utemplate->width = width;
     utemplate->height = height;
+    utemplate->confidence = confidence;
     utemplate->mdSize = mdSize;
     utemplate->fvSize = fvSize;
     memcpy(reinterpret_cast<char*>(utemplate+1) + 0,      metadata , mdSize);

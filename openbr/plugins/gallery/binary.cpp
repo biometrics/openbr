@@ -227,7 +227,7 @@ class utGallery : public BinaryGallery
             }
 
             t.file.set("AlgorithmID", ut.algorithmID);
-            t.file.set("URL", QString(data.data()));
+            t.file.set("Metadata", QString(data.data()));
             char *dataStart = data.data() + ut.mdSize;
             uint32_t dataSize = ut.fvSize;
             if ((ut.algorithmID <= -1) && (ut.algorithmID >= -3)) {
@@ -243,8 +243,7 @@ class utGallery : public BinaryGallery
                 dataSize -= sizeof(uint32_t)*4;
                 t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
                 t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
-            }
-            else if (ut.algorithmID == 7) {
+            } else if (ut.algorithmID == 7) {
                 // binary data consisting of a single channel matrix, of a supported type.
                 // 4 element header:
                 // uint16 datatype (single channel opencv datatype code)
@@ -272,6 +271,7 @@ class utGallery : public BinaryGallery
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);
                 t.file.set("Height", ut.height);
+                t.file.set("Confidence", ut.confidence);
 
                 t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, matrixDepth), dataStart).clone() /* We don't want a shallow copy! */);
                 return t;
@@ -280,6 +280,7 @@ class utGallery : public BinaryGallery
                 t.file.set("Y", ut.y);
                 t.file.set("Width", ut.width);
                 t.file.set("Height", ut.height);
+                t.file.set("Confidence", ut.confidence);
             }
             t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
         } else {
@@ -300,6 +301,7 @@ class utGallery : public BinaryGallery
 
         int32_t x = 0, y = 0;
         uint32_t width = 0, height = 0;
+        float confidence = 0;
         QByteArray header;
         if ((algorithmID <= -1) && (algorithmID >= -3)) {
             const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
@@ -324,6 +326,7 @@ class utGallery : public BinaryGallery
             y = t.file.get<int32_t>("Y", 0);
             width = t.file.get<uint32_t>("Width", 0);
             height = t.file.get<uint32_t>("Height", 0);
+            confidence = t.file.get<uint32_t>("Confidence", 0);
         }
 
         gallery.write((const char*) &algorithmID, sizeof(int32_t));
@@ -331,6 +334,7 @@ class utGallery : public BinaryGallery
         gallery.write((const char*) &y          , sizeof(int32_t));
         gallery.write((const char*) &width      , sizeof(uint32_t));
         gallery.write((const char*) &height     , sizeof(uint32_t));
+        gallery.write((const char*) &confidence , sizeof(float));
 
         const uint32_t mdSize = metadata.size() + 1;
         gallery.write((const char*) &mdSize, sizeof(uint32_t));

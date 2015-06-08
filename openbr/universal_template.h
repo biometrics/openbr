@@ -40,6 +40,7 @@ struct br_universal_template
     int32_t y; /*!< Region of interest vertical offset (pixels). */
     uint32_t width;  /*!< Region of interest horizontal size (pixels). */
     uint32_t height; /*!< Region of interest vertical size (pixels). */
+    float confidence; /*!< Region of interest confidence. */
     uint32_t mdSize; /*!< Length of a null-terminated metadata string at the beginning of _data_,
                           including the null-terminator character itself. */
     uint32_t fvSize; /*!< Length of the feature vector after the metadata in _data_. */
@@ -55,7 +56,7 @@ typedef const struct br_universal_template *br_const_utemplate;
  * \brief br_universal_template constructor.
  * \see br_free_utemplate
  */
-BR_EXPORT br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t label, const char *metadata, const char *featureVector, uint32_t fvSize);
+BR_EXPORT br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, const char *metadata, const char *featureVector, uint32_t fvSize);
 
 /*!
  * \brief br_universal_template destructor.
