@@ -15,6 +15,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <openbr/plugins/openbr_internal.h>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace cv;
 
 namespace br
 {
@@ -30,9 +33,11 @@ class GridTransform : public UntrainableTransform
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
     Q_PROPERTY(int columns READ get_columns WRITE set_columns RESET reset_columns STORED false)
     Q_PROPERTY(float border READ get_border WRITE set_border RESET reset_border STORED false)
+    Q_PROPERTY(float angle READ get_angle WRITE set_angle RESET reset_angle STORED false)
     BR_PROPERTY(int, rows, 1)
     BR_PROPERTY(int, columns, 1)
     BR_PROPERTY(float, border, 0)
+    BR_PROPERTY(float, angle, 0)
 
     void project(const Template &src, Template &dst) const
     {
@@ -44,6 +49,19 @@ class GridTransform : public UntrainableTransform
         for (float y=row_step/2+row_border; y<src.m().rows-row_border; y+=row_step)
             for (float x=column_step/2+col_border; x<src.m().cols-col_border; x+=column_step)
                 landmarks.append(QPointF(x,y));
+
+        if (angle > 0) {
+            Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
+            for (int i=0; i<landmarks.size(); i++) {
+                landmarks.replace(i,QPointF(landmarks.at(i).x()*rotMatrix.at<double>(0,0)+
+                                            landmarks.at(i).y()*rotMatrix.at<double>(0,1)+
+                                            rotMatrix.at<double>(0,2),
+                                            landmarks.at(i).x()*rotMatrix.at<double>(1,0)+
+                                            landmarks.at(i).y()*rotMatrix.at<double>(1,1)+
+                                            rotMatrix.at<double>(1,2)));
+            }
+        }
+
         dst = src;
         dst.file.setPoints(landmarks);
     }
