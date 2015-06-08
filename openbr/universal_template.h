@@ -35,18 +35,17 @@ extern "C" {
  */
 struct br_universal_template
 {
-    unsigned char imageID[16]; /*!< MD5 hash of the undecoded origin file. */
-    int32_t  algorithmID; /*!< interpretation of _data_ after _urlSize_. */
-    int32_t x;      /*!< region of interest horizontal offset (pixels). */
-    int32_t y;      /*!< region of interest vertical offset (pixels). */
-    uint32_t width;  /*!< region of interest horizontal size (pixels). */
-    uint32_t height; /*!< region of interest vertical size (pixels). */
-    uint32_t label; /*!< supervised training class or manually annotated ground truth. */
-    uint32_t urlSize; /*!< length of null-terminated URL at the beginning of _data_,
-                           including the null-terminator character. */
-    uint32_t fvSize; /*!< length of the feature vector after the URL in _data_. */
-    unsigned char data[]; /*!< (_urlSize_ + _fvSize_)-byte buffer.
-                               The first _urlSize_ bytes represent the URL.
+    int32_t algorithmID; /*!< Interpretation of _data_ after _mdSize_. */
+    int32_t x; /*!< Region of interest horizontal offset (pixels). */
+    int32_t y; /*!< Region of interest vertical offset (pixels). */
+    uint32_t width;  /*!< Region of interest horizontal size (pixels). */
+    uint32_t height; /*!< Region of interest vertical size (pixels). */
+    float confidence; /*!< Region of interest confidence. */
+    uint32_t mdSize; /*!< Length of a null-terminated metadata string at the beginning of _data_,
+                          including the null-terminator character itself. */
+    uint32_t fvSize; /*!< Length of the feature vector after the metadata in _data_. */
+    unsigned char data[]; /*!< (_mdSize_ + _fvSize_)-byte buffer.
+                               The first _mdSize_ bytes represent the metadata.
                                The remaining _fvSize_ bytes represent the feature vector. */
 };
 
@@ -57,7 +56,7 @@ typedef const struct br_universal_template *br_const_utemplate;
  * \brief br_universal_template constructor.
  * \see br_free_utemplate
  */
-BR_EXPORT br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize);
+BR_EXPORT br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, const char *metadata, const char *featureVector, uint32_t fvSize);
 
 /*!
  * \brief br_universal_template destructor.

@@ -8,21 +8,20 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(const char *imageID, int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t label, const char *url, const char *fv, uint32_t fvSize)
+br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, const char *metadata, const char *featureVector, uint32_t fvSize)
 {
-    const uint32_t urlSize = strlen(url) + 1;
-    br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + urlSize + fvSize);
-    memcpy(utemplate->imageID, imageID, 16);
+    const uint32_t mdSize = strlen(metadata) + 1;
+    br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + mdSize + fvSize);
     utemplate->algorithmID = algorithmID;
     utemplate->x = x;
     utemplate->y = y;
     utemplate->width = width;
     utemplate->height = height;
-    utemplate->label = label;
-    utemplate->urlSize = urlSize;
+    utemplate->confidence = confidence;
+    utemplate->mdSize = mdSize;
     utemplate->fvSize = fvSize;
-    memcpy(reinterpret_cast<char*>(utemplate+1) + 0,       url , urlSize);
-    memcpy(reinterpret_cast<char*>(utemplate+1) + urlSize, fv, fvSize);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + 0,      metadata , mdSize);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + mdSize, featureVector, fvSize);
     return utemplate;
 }
 
@@ -33,14 +32,14 @@ void br_free_utemplate(br_const_utemplate utemplate)
 
 void br_append_utemplate(FILE *file, br_const_utemplate utemplate)
 {
-    fwrite(utemplate, sizeof(br_universal_template) + utemplate->urlSize + utemplate->fvSize, 1, file);
+    fwrite(utemplate, sizeof(br_universal_template) + utemplate->mdSize + utemplate->fvSize, 1, file);
 }
 
 void br_iterate_utemplates(br_const_utemplate begin, br_const_utemplate end, br_utemplate_callback callback, br_callback_context context)
 {
     while (begin != end) {
         callback(begin, context);
-        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_universal_template) + begin->urlSize + begin->fvSize);
+        begin = reinterpret_cast<br_const_utemplate>(reinterpret_cast<const char*>(begin) + sizeof(br_universal_template) + begin->mdSize + begin->fvSize);
         if (begin > end)
             qFatal("Overshot end of buffer");
     }
@@ -88,8 +87,8 @@ int br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_ca
             break;
         }
 
-        t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->urlSize + t->fvSize);
-        if (!read_buffer(file, (char*) &t->data, t->urlSize + t->fvSize)) {
+        t = (br_utemplate) realloc(t, sizeof(br_universal_template) + t->mdSize + t->fvSize);
+        if (!read_buffer(file, (char*) &t->data, t->mdSize + t->fvSize)) {
             free(t);
 
             // Try to rewind header read
