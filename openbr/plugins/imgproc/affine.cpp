@@ -54,6 +54,7 @@ private:
     Q_PROPERTY(float y3 READ get_y3 WRITE set_y3 RESET reset_y3 STORED false)
     Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
     Q_PROPERTY(bool storeAffine READ get_storeAffine WRITE set_storeAffine RESET reset_storeAffine STORED false)
+    Q_PROPERTY(bool warpPoints READ get_warpPoints WRITE set_warpPoints RESET reset_warpPoints STORED false)
     BR_PROPERTY(int, width, 64)
     BR_PROPERTY(int, height, 64)
     BR_PROPERTY(float, x1, 0)
@@ -64,6 +65,7 @@ private:
     BR_PROPERTY(float, y3, -1)
     BR_PROPERTY(Method, method, Bilin)
     BR_PROPERTY(bool, storeAffine, false)
+    BR_PROPERTY(bool, warpPoints, false)
 
     static Point2f getThirdAffinePoint(const Point2f &a, const Point2f &b)
     {
@@ -112,6 +114,22 @@ private:
         dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
         dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
         if (!twoPoints) dst.file.set("Affine_2", OpenCVUtils::fromPoint(dstPoints[2]));
+
+        if (warpPoints) {
+            QList<QPointF> points = src.file.points();
+            QList<QPointF> rotatedPoints;
+            for (int i=0; i<points.size(); i++) {
+                rotatedPoints.append(QPointF(points.at(i).x()*affineTransform.at<double>(0,0)+
+                                             points.at(i).y()*affineTransform.at<double>(0,1)+
+                                             affineTransform.at<double>(0,2),
+                                             points.at(i).x()*affineTransform.at<double>(1,0)+
+                                             points.at(i).y()*affineTransform.at<double>(1,1)+
+                                             affineTransform.at<double>(1,2)));
+            }
+
+            dst.file.setPoints(rotatedPoints);
+        }
+
         if (storeAffine) {
             QList<float> affineParams;
             for (int i = 0 ; i < 2; i++)
