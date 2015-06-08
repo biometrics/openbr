@@ -2,6 +2,7 @@
 3rdparty/LatentSDK*
 3rdparty/pittpatt*
 3rdparty/cvmatio
+3rdparty/dlib*
 data/*/img
 data/*/vid
 data/PCSO/*

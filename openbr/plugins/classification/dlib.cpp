@@ -2,11 +2,13 @@
 #include "openbr/core/qtutils.h"
 #include "openbr/core/eigenutils.h"
 
+#define DLIB_NO_GUI_SUPPORT
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/svm_threaded.h>
 #include <dlib/image_processing.h>
 #include <dlib/image_io.h>
 #include <dlib/opencv.h>
+#include <dlib/all/source.cpp>
 
 #include <QTemporaryFile>
 
