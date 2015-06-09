@@ -127,7 +127,7 @@ class AdjacentOverlayTransform : public Transform
 
         if (clip_roi.height + target_location.top() >= outIm.rows)
         {
-            clip_roi.height -= abs(outIm.rows - (clip_roi.height + target_location.top() ));
+            clip_roi.height -= abs(int(outIm.rows - (clip_roi.height + target_location.top())));
         }
         if (clip_roi.x + clip_roi.width >= im.cols) {
             clip_roi.width -= abs(im.cols - (clip_roi.x + clip_roi.width + 1));

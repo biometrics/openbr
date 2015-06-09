@@ -40,16 +40,12 @@ class vecGallery : public FileGallery
         if (write1 != sizeof(count) || write2 != sizeof(size) || write3 != sizeof(temp) || write4 != sizeof(temp))
             qFatal("Failed to write header.");
 
-        for (int i=0; i<count; i++) {
-            uchar tmp = 0;
-            const size_t write5 = f.write((char*)&tmp,sizeof(tmp));
-
+        for (int i=0; i<count; i++)
             for (int r = 0; r < height; r++)
                 for (int c = 0; c < width; c++) {
                     short buffer = mats[i].ptr(r)[c];
                     f.write((char*)&buffer, sizeof(buffer));
                 }
-        }
 
         f.close();
     }

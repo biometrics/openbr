@@ -417,7 +417,7 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float c
     vector<int> rweights(nClasses, 0);
     vector<float> rejectWeights(nClasses, -std::numeric_limits<float>::max());
 
-    for (int i = 0; i < labels.size(); i++)
+    for (size_t i = 0; i < labels.size(); i++)
     {
         int cls = labels[i];
         rrects[cls].x += rects[i].x;
@@ -430,7 +430,7 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float c
     if (useConfidences)
     {
         // For each class, find maximum confidence
-        for (int i = 0; i < labels.size(); i++)
+        for (size_t i = 0; i < labels.size(); i++)
         {
             int cls = labels[i];
             if (confidences[i] > rejectWeights[cls])

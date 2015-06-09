@@ -533,7 +533,7 @@ bool BlockCompression::open(QIODevice::OpenMode mode)
         blockReader >> block_size;
         compressedBlock.resize(block_size);
         int read_count = blockReader.readRawData(compressedBlock.data(), block_size);
-        if (read_count != block_size)
+        if (read_count != int(block_size))
             qFatal("Failed to read initial block");
 
         decompressedBlock = qUncompress(compressedBlock);
@@ -572,7 +572,6 @@ void BlockCompression::setBasis(QIODevice *_basis)
 // block from basis
 qint64 BlockCompression::readData(char *data, qint64 remaining)
 {
-    qint64 initial = remaining;
     qint64 read = 0;
     while (remaining > 0) {
         // attempt to read the target amount of data
@@ -596,8 +595,8 @@ qint64 BlockCompression::readData(char *data, qint64 remaining)
 
             compressedBlock.resize(block_size);
             int actualRead = blockReader.readRawData(compressedBlock.data(), block_size);
-            if (actualRead != block_size)
-                qFatal("Bad read on nominal block size: %d, only got %d", block_size, remaining);
+            if (actualRead != int(block_size))
+                qFatal("Bad read on nominal block size: %d, only got %d", block_size, int(remaining));
 
             decompressedBlock = qUncompress(compressedBlock);
 
@@ -654,7 +653,7 @@ qint64 BlockCompression::writeData(const char *data, qint64 remaining)
                 blockWriter << block_size;
 
                 int write_count = blockWriter.writeRawData(compressedBlock.data(), block_size);
-                if (write_count != block_size)
+                if (write_count != int(block_size))
                     qFatal("Didn't write enough data");
             }
             else

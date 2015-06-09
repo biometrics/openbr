@@ -6,7 +6,6 @@
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/svm_threaded.h>
 #include <dlib/image_processing.h>
-#include <dlib/image_io.h>
 #include <dlib/opencv.h>
 #include <dlib/all/source.cpp>
 

@@ -614,7 +614,7 @@ class SparseLDATransform : public Transform
         assert(ldaOrig.projection.cols() == 1);
         float ldaStd = EigenUtils::stddev(ldaOrig.projection);
         for (int i = 0; i < ldaOrig.projection.rows(); i++)
-            if (abs(ldaOrig.projection(i)) > varThreshold * ldaStd)
+            if (abs(int(ldaOrig.projection(i))) > varThreshold * ldaStd)
                 selections.append(i);
 
         TemplateList newSet;
