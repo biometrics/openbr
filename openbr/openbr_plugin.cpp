@@ -1072,9 +1072,13 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 
     QString sep;
 #ifndef _WIN32
+  #ifndef __APPLE__
+    // Modern OS X will only define the DISPLAY environment variable if XQuartz
+    // is installed, so we only do this check on non-Apple Unix systems.
     useGui = useGui && (getenv("DISPLAY") != NULL);
+  #endif // __APPLE__
     sep = ":";
-#else
+#else // _WIN32
     sep = ";";
 #endif // not _WIN32
 
