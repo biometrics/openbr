@@ -56,13 +56,13 @@ class PipeTransform : public CompositeTransform
         while (i < transforms.size()) {
             // Conditional statement covers likely case that first transform is untrainable
             if (transforms[i]->trainable) {
-                qDebug() << "Training " << transforms[i]->description() << "\n...";
+                qDebug() << "Training" << transforms[i]->description() << "\n...";
                 transforms[i]->train(dataLines);
             }
 
             // if the transform is time varying, we can't project it in parallel
             if (transforms[i]->timeVarying()) {
-                qDebug() << "Projecting " << transforms[i]->description() << "\n...";
+                qDebug() << "Projecting" << transforms[i]->description() << "\n...";
                 for (int j=0; j < dataLines.size();j++) {
                     TemplateList junk;
                     splitFTEs(dataLines[j], junk);
