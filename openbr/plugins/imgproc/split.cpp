@@ -43,6 +43,25 @@ class SplitChannelsTransform : public UntrainableTransform
 
 BR_REGISTER(Transform, SplitChannelsTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Split a multi-channel matrix into several single-channel matrices.
+ * \author Josh Klontz \cite jklontz
+ */
+class SplitRowsTransform : public UntrainableTransform
+{
+    Q_OBJECT
+
+    void project(const Template &src, Template &dst) const
+    {
+        const Mat &m = src;
+        for (int i=0; i<m.rows; i++)
+            dst += m.row(i);
+    }
+};
+
+BR_REGISTER(Transform, SplitRowsTransform)
+
 } // namespace br
 
-#include "imgproc/splitchannels.moc"
+#include "imgproc/split.moc"
