@@ -41,6 +41,7 @@
 #include <QVector>
 #include <opencv2/core/core.hpp>
 #include <openbr/openbr.h>
+#include <openbr/universal_template.h>
 #include <assert.h>
 
 namespace br
@@ -292,6 +293,9 @@ struct Template : public QList<cv::Mat>
         foreach (const cv::Mat &m, *this) other += m.clone();
         return other;
     }
+
+    static br_utemplate toUniversalTemplate(const Template &t);
+    static Template fromUniversalTemplate(const br_utemplate &ut);
 };
 
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const Template &t);

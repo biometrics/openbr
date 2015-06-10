@@ -17,6 +17,8 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFutureSynchronizer>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocalSocket>
 #include <QMetaProperty>
 #include <qnumeric.h>
@@ -399,6 +401,44 @@ int FileList::failures() const
 }
 
 /* Template - global methods */
+template <typename T>
+static T findAndRemove(QVariantMap &map, const QString &key, const T &defaultValue)
+{
+    T result = defaultValue;
+    if (map.contains(key)) {
+        result = map.value(key).value<T>();
+        map.remove(key);
+    }
+    return result;
+}
+
+br_utemplate Template::toUniversalTemplate(const Template &t)
+{
+    QVariantMap map = t.file.localMetadata();
+    const int32_t  algorithmID = findAndRemove<int32_t> (map, "AlgorithmID", 0);
+    const int32_t  x           = findAndRemove<int32_t> (map, "X"          , 0);
+    const int32_t  y           = findAndRemove<int32_t> (map, "Y"          , 0);
+    const uint32_t width       = findAndRemove<uint32_t>(map, "Width"      , 0);
+    const uint32_t height      = findAndRemove<uint32_t>(map, "Height"     , 0);
+    const float    confidence  = findAndRemove<float>   (map, "Confidence" , 0);
+    const QByteArray metadata = QJsonDocument(QJsonObject::fromVariantMap(map)).toJson();
+    const Mat &m = t;
+    return br_new_utemplate(algorithmID, x, y, width, height, confidence, metadata.data(), (const char*) m.data, m.rows * m.cols * m.elemSize());
+}
+
+Template Template::fromUniversalTemplate(const br_utemplate &ut)
+{
+    QVariantMap map = QJsonDocument::fromJson(QByteArray((const char*) ut->data)).object().toVariantMap();
+    map.insert("AlgorithmID", ut->algorithmID);
+    map.insert("X"          , ut->x          );
+    map.insert("Y"          , ut->y          );
+    map.insert("Width"      , ut->width      );
+    map.insert("Height"     , ut->height     );
+    map.insert("Confidence" , ut->confidence );
+    const Mat m = Mat(1, ut->fvSize, CV_8UC1, ut->data + ut->mdSize).clone();
+    return Template(File(map), m);
+}
+
 QDataStream &br::operator<<(QDataStream &stream, const Template &t)
 {
     return stream << static_cast<const QList<cv::Mat>&>(t) << t.file;
