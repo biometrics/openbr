@@ -426,7 +426,7 @@ br_utemplate Template::toUniversalTemplate(const Template &t)
     return br_new_utemplate(algorithmID, x, y, width, height, confidence, metadata.data(), (const char*) m.data, m.rows * m.cols * m.elemSize());
 }
 
-Template Template::fromUniversalTemplate(const br_utemplate &ut)
+Template Template::fromUniversalTemplate(br_const_utemplate ut)
 {
     QVariantMap map = QJsonDocument::fromJson(QByteArray((const char*) ut->data)).object().toVariantMap();
     map.insert("AlgorithmID", ut->algorithmID);
@@ -435,7 +435,7 @@ Template Template::fromUniversalTemplate(const br_utemplate &ut)
     map.insert("Width"      , ut->width      );
     map.insert("Height"     , ut->height     );
     map.insert("Confidence" , ut->confidence );
-    const Mat m = Mat(1, ut->fvSize, CV_8UC1, ut->data + ut->mdSize).clone();
+    const Mat m = Mat(1, ut->fvSize, CV_8UC1, (void*)(ut->data + ut->mdSize)).clone();
     return Template(File(map), m);
 }
 
