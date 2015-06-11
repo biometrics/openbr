@@ -1,5 +1,4 @@
 #include <openbr/plugins/openbr_internal.h>
-#include <openbr/core/opencvutils.h>
 
 namespace br
 {
