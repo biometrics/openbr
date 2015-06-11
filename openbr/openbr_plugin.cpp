@@ -439,6 +439,23 @@ Template Template::fromUniversalTemplate(const br_utemplate &ut)
     return Template(File(map), m);
 }
 
+br_utemplate Template::readUniversalTemplate(QFile &file)
+{
+    const size_t headerSize = sizeof(br_universal_template);
+    br_universal_template *t = (br_universal_template*) malloc(headerSize);
+    file.read((char*) t, headerSize);
+
+    const size_t dataSize = t->mdSize + t->fvSize;
+    t = (br_universal_template*) realloc(t, headerSize + dataSize);
+    file.read((char*) &t->data, dataSize);
+    return t;
+}
+
+void Template::freeUniversalTemplate(br_const_utemplate t)
+{
+    free((void*) t);
+}
+
 QDataStream &br::operator<<(QDataStream &stream, const Template &t)
 {
     return stream << static_cast<const QList<cv::Mat>&>(t) << t.file;
