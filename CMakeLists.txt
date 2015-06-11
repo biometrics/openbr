@@ -176,7 +176,7 @@ foreach(DIR ${BR_THIRDPARTY_APPS_DIR})
 endforeach()
 
 # Install
-install(FILES CHANGELOG.md LICENSE.txt README.md DESTINATION share/openbr)
+install(FILES LICENSE.txt README.md DESTINATION share/openbr)
 install(DIRECTORY share DESTINATION .)
 install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
 
