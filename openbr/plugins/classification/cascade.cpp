@@ -7,99 +7,66 @@ using namespace cv;
 namespace br
 {
 
-struct ImageHandler
+struct NegMiner
 {
-    bool create(const QList<Mat> &_posImages, const QList<Mat> &_negImages, Size _winSize)
+    NegMiner(Classifier *_classifier, const QList<Mat> &_negImages)
     {
-        posImages = _posImages;
+        classifier = _classifier;
         negImages = _negImages;
-        winSize = _winSize;
+        winSize = classifier->windowSize();
 
-        posIdx = negIdx = 0;
+        src.create(0, 0, CV_8U);
+        curr.create(0, 0, CV_8U);
 
-        src.create( 0, 0 , CV_8UC1 );
-        img.create( 0, 0, CV_8UC1 );
-        point = offset = Point( 0, 0 );
-        scale       = 1.0F;
-        scaleFactor = 1.4142135623730950488016887242097F;
-        stepFactor  = 0.5F;
-        round = 0;
-
-        return true;
+        negIdx = 0;
+        scaleFactor = 1.2;
     }
 
-    void restart() { posIdx = 0; }
-
-    void nextNeg()
+    void next()
     {
-        int count = negImages.size();
-        for (int i = 0; i < count; i++) {
-            src = negImages[negIdx++];
-
-            round += negIdx / count;
-            round = round % (winSize.width * winSize.height);
-            negIdx %= count;
-
-            offset.x = qMin( (int)round % winSize.width, src.cols - winSize.width );
-            offset.y = qMin( (int)round / winSize.width, src.rows - winSize.height );
-            if (!src.empty() && src.type() == CV_8UC1 && offset.x >= 0 && offset.y >= 0)
-                break;
-        }
-
-        point = offset;
-        scale = max(((float)winSize.width + point.x) / ((float)src.cols),
-                    ((float)winSize.height + point.y) / ((float)src.rows));
-
-        Size sz((int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F));
-        resize(src, img, sz);
+        src = negImages[negIdx++];
+        point = Point(0, 0);
+        scale = max(((float)winSize.width) / ((float)src.cols),
+                    ((float)winSize.height) / ((float)src.rows));
+        Size sz((int)(scale*src.cols + 0.5f), (int)(scale*src.rows + 0.5f));
+        resize(src, curr, sz);
     }
 
-    bool getNeg(Mat &_img)
+    Mat findNeg()
     {
-        if (img.empty())
-            nextNeg();
+        if (curr.empty())
+            next();
 
-        Mat m(winSize.height, winSize.width, CV_8UC1, (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step);
-        m.copyTo(_img);
+        Mat sample = curr(Rect(point, winSize)).clone();
 
-        if ((int)(point.x + (1.0F + stepFactor) * winSize.width) < img.cols)
-            point.x += (int)(stepFactor * winSize.width);
+        if ((point.x + 1) < (curr.cols - winSize.width))
+            point.x += 1;
         else {
-            point.x = offset.x;
-            if ((int)( point.y + (1.0F + stepFactor ) * winSize.height ) < img.rows)
-                point.y += (int)(stepFactor * winSize.height);
+            point.x = 0;
+            if ((point.y + 1) < (curr.rows - winSize.height))
+                point.y += 1;
             else {
-                point.y = offset.y;
+                point.y = 0;
                 scale *= scaleFactor;
                 if (scale <= 1.0F)
-                    resize(src, img, Size((int)(scale*src.cols), (int)(scale*src.rows)));
+                    resize(src, curr, Size((int)(scale*src.cols), (int)(scale*src.rows)));
                 else
-                    nextNeg();
+                    next();
             }
         }
-        return true;
+        return sample;
     }
 
-    bool getPos(Mat &_img)
-    {
-        if (posIdx >= posImages.size())
-            return false;
+    Mat src, curr;
 
-        posImages[posIdx++].copyTo(_img);
-        return true;
-    }
+    int negIdx;
+    float scale, scaleFactor;
 
-    QList<Mat> posImages, negImages;
+    QList<Mat> negImages;
+    Classifier *classifier;
 
-    int posIdx, negIdx;
-
-    Mat     src, img;
-    Point   offset, point;
-    float   scale;
-    float   scaleFactor;
-    float   stepFactor;
-    size_t  round;
-    Size    winSize;
+    Size winSize;
+    Point point;
 };
 
 /*!
@@ -139,8 +106,7 @@ class CascadeClassifier : public Classifier
         for (int i = 0; i < images.size(); i++)
             labels[i] == 1 ? posImages.append(images[i]) : negImages.append(images[i]);
 
-        ImageHandler imgHandler;
-        imgHandler.create(posImages, negImages, Size(24, 24));
+        NegMiner negMiner(Classifier::make(stageDescription, NULL), negImages);
 
         stages.reserve(numStages);
         for (int i = 0; i < numStages; i++) {
@@ -150,7 +116,7 @@ class CascadeClassifier : public Classifier
             QList<Mat> trainingImages;
             QList<float> trainingLabels;
 
-            float currFAR = fillTrainingSet(imgHandler, trainingImages, trainingLabels);
+            float currFAR = fillTrainingSet(posImages, negMiner, trainingImages, trainingLabels);
 
             if (currFAR < maxFAR) {
                 qDebug() << "FAR is below required level! Terminating early";
@@ -216,15 +182,14 @@ class CascadeClassifier : public Classifier
     }
 
 private:
-    float fillTrainingSet(ImageHandler &imgHandler, QList<Mat> &images, QList<float> &labels)
+    float fillTrainingSet(const QList<Mat> posImages, NegMiner &negMiner, QList<Mat> &images, QList<float> &labels)
     {
-        imgHandler.restart();
-
         float confidence = 0.0f;
 
+        int posIdx = 0;
         while (images.size() < numPos) {
-            Mat pos(imgHandler.winSize, CV_8UC1);
-            if (!imgHandler.getPos(pos))
+            Mat pos = posImages[posIdx++];
+            if (posIdx >= posImages.size())
                 qFatal("Cannot get another positive sample!");
 
             if (classify(pos, true, &confidence) > 0.0f) {
@@ -235,14 +200,11 @@ private:
         }
 
         int posCount = images.size();
-        qDebug() << "POS count : consumed  " << posCount << ":" << imgHandler.posIdx;
+        qDebug() << "POS count : consumed  " << posCount << ":" << posIdx;
 
         int passedNegs = 0;
         while ((images.size() - posCount) < numNegs) {
-            Mat neg(imgHandler.winSize, CV_8UC1);
-            if (!imgHandler.getNeg(neg))
-                qFatal("Cannot get another negative sample!");
-
+            Mat neg = negMiner.findNeg();
             if (classify(neg, true, &confidence) > 0.0f) {
                 printf("NEG current samples: %d\r", images.size() - posCount);
                 images.append(neg);
