@@ -295,7 +295,9 @@ struct Template : public QList<cv::Mat>
     }
 
     static br_utemplate toUniversalTemplate(const Template &t);
-    static Template fromUniversalTemplate(const br_utemplate &ut);
+    static Template fromUniversalTemplate(br_const_utemplate ut);
+    static br_utemplate readUniversalTemplate(QFile &file);
+    static void freeUniversalTemplate(br_const_utemplate t);
 };
 
 BR_EXPORT QDataStream &operator<<(QDataStream &stream, const Template &t);

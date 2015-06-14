@@ -155,10 +155,10 @@ class SynthesizePointsTransform : public MetadataTransform
         // Because not all triangulations are the same, we have to decide on a canonical set of triangles at training time.
         QHash<TriangleIndicies, int> counts;
         foreach (const Template &datum, data) {
-
             const QList<QPointF> points = datum.file.points();
-            if (points.size() == 0)
-                    continue;
+            if (points.size() <= 4)
+                continue;
+
             const QList< QList<int> > triangulation = getTriangulation(points, getBounds(points, 10));
             if (triangulation.empty())
                 continue;
@@ -166,6 +166,9 @@ class SynthesizePointsTransform : public MetadataTransform
             foreach (const QList<int> &indicies, triangulation)
                 counts[TriangleIndicies(indicies)]++;
         }
+
+        if (counts.empty())
+            return;
 
         triangles.clear();
         QHash<TriangleIndicies, int>::const_iterator i = counts.constBegin();

@@ -29,8 +29,20 @@ class SelectPointsTransform : public UntrainableMetadataTransform
     Q_OBJECT
     Q_PROPERTY(QList<int> indices READ get_indices WRITE set_indices RESET reset_indices STORED false)
     Q_PROPERTY(bool invert READ get_invert WRITE set_invert RESET reset_invert STORED false) // keep the points _not_ in the list
+    Q_PROPERTY(int rangeStart READ get_rangeStart WRITE set_rangeStart RESET reset_rangeStart STORED false)
+    Q_PROPERTY(int rangeEnd READ get_rangeEnd WRITE set_rangeEnd RESET reset_rangeEnd STORED false)
     BR_PROPERTY(QList<int>, indices, QList<int>())
     BR_PROPERTY(bool, invert, false)
+    BR_PROPERTY(int, rangeStart, -1)
+    BR_PROPERTY(int, rangeEnd, -1)
+
+    void init()
+    {
+        if ((rangeStart != -1) && (rangeEnd != -1))
+            for (int i=rangeStart; i<=rangeEnd; i++)
+                if (!indices.contains(i))
+                    indices.append(i);
+    }
 
     void projectMetadata(const File &src, File &dst) const
     {

@@ -204,154 +204,27 @@ BR_REGISTER(Gallery, galGallery)
  * \brief A contiguous array of br_universal_template.
  * \author Josh Klontz \cite jklontz
  */
-class utGallery : public BinaryGallery
+class tGallery : public BinaryGallery
 {
     Q_OBJECT
 
     Template readTemplate()
     {
-        Template t;
-        br_universal_template ut;
-        if (gallery.read((char*)&ut, sizeof(br_universal_template)) == sizeof(br_universal_template)) {
-            QByteArray data(ut.mdSize + ut.fvSize, Qt::Uninitialized);
-            char *dst = data.data();
-            qint64 bytesNeeded = ut.mdSize + ut.fvSize;
-            while (bytesNeeded > 0) {
-                qint64 bytesRead = gallery.read(dst, bytesNeeded);
-                if (bytesRead <= 0) {
-                    qDebug() << gallery.errorString();
-                    qFatal("Unexepected EOF while reading universal template data, needed: %d more of: %d bytes.", int(bytesNeeded), int(ut.mdSize + ut.fvSize));
-                }
-                bytesNeeded -= bytesRead;
-                dst += bytesRead;
-            }
-
-            t.file.set("AlgorithmID", ut.algorithmID);
-            t.file.set("Metadata", QString(data.data()));
-            char *dataStart = data.data() + ut.mdSize;
-            uint32_t dataSize = ut.fvSize;
-            if ((ut.algorithmID <= -1) && (ut.algorithmID >= -3)) {
-                t.file.set("FrontalFace", QRectF(ut.x, ut.y, ut.width, ut.height));
-                uint32_t *rightEyeX = reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-                uint32_t *rightEyeY = reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-                uint32_t *leftEyeX = reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-                uint32_t *leftEyeY = reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-                dataSize -= sizeof(uint32_t)*4;
-                t.file.set("First_Eye", QPointF(*rightEyeX, *rightEyeY));
-                t.file.set("Second_Eye", QPointF(*leftEyeX, *leftEyeY));
-            } else if (ut.algorithmID == 7) {
-                // binary data consisting of a single channel matrix, of a supported type.
-                // 4 element header:
-                // uint16 datatype (single channel opencv datatype code)
-                // uint32 matrix rows
-                // uint32 matrix cols
-                // uint16 matrix depth (max 512)
-                // Followed by serialized data, in row-major order (in r/c), with depth values
-                // for each layer listed in order (i.e. rgb, rgb etc.)
-                // #### NOTE! matlab's default order is col-major, so some work should
-                // be done on the matlab side to make sure that the initial serialization is correct.
-                uint16_t dataType = *reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint16_t);
-
-                uint32_t matrixRows = *reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-
-                uint32_t matrixCols = *reinterpret_cast<uint32_t*>(dataStart);
-                dataStart += sizeof(uint32_t);
-
-                uint16_t matrixDepth= *reinterpret_cast<uint16_t*>(dataStart);
-                dataStart += sizeof(uint16_t);
-
-                // Set metadata
-                t.file.set("X", ut.x);
-                t.file.set("Y", ut.y);
-                t.file.set("Width", ut.width);
-                t.file.set("Height", ut.height);
-                t.file.set("Confidence", ut.confidence);
-
-                t.append(cv::Mat(matrixRows, matrixCols, CV_MAKETYPE(dataType, matrixDepth), dataStart).clone() /* We don't want a shallow copy! */);
-                return t;
-            } else {
-                t.file.set("X", ut.x);
-                t.file.set("Y", ut.y);
-                t.file.set("Width", ut.width);
-                t.file.set("Height", ut.height);
-                t.file.set("Confidence", ut.confidence);
-            }
-            t.append(cv::Mat(1, dataSize, CV_8UC1, dataStart).clone() /* We don't want a shallow copy! */);
-        } else {
-            if (!gallery.atEnd())
-                qWarning("Failed to read universal template header!");
-            gallery.close();
-        }
+        const br_const_utemplate ut = Template::readUniversalTemplate(gallery);
+        const Template t = Template::fromUniversalTemplate(ut);
+        Template::freeUniversalTemplate(ut);
         return t;
     }
 
     void writeTemplate(const Template &t)
     {
-        const int32_t algorithmID = (t.isEmpty() || t.file.fte) ? 0 : t.file.get<int32_t>("AlgorithmID");
-
-        // QUrl::fromUserInput provides some nice functionality in terms of completing URLs
-        // e.g. C:/test.jpg -> file://C:/test.jpg and google.com/image.jpg -> http://google.com/image.jpg
-        const QByteArray metadata = QUrl::fromUserInput(t.file.get<QString>("URL", t.file.name)).toEncoded();
-
-        int32_t x = 0, y = 0;
-        uint32_t width = 0, height = 0;
-        float confidence = 0;
-        QByteArray header;
-        if ((algorithmID <= -1) && (algorithmID >= -3)) {
-            const QRectF frontalFace = t.file.get<QRectF>("FrontalFace");
-            x      = frontalFace.x();
-            y      = frontalFace.y();
-            width  = frontalFace.width();
-            height = frontalFace.height();
-
-            const QPointF firstEye   = t.file.get<QPointF>("First_Eye");
-            const QPointF secondEye  = t.file.get<QPointF>("Second_Eye");
-            const uint32_t rightEyeX = firstEye.x();
-            const uint32_t rightEyeY = firstEye.y();
-            const uint32_t leftEyeX  = secondEye.x();
-            const uint32_t leftEyeY  = secondEye.y();
-
-            header.append((const char*)&rightEyeX, sizeof(uint32_t));
-            header.append((const char*)&rightEyeY, sizeof(uint32_t));
-            header.append((const char*)&leftEyeX , sizeof(uint32_t));
-            header.append((const char*)&leftEyeY , sizeof(uint32_t));
-        } else {
-            x = t.file.get<int32_t>("X", 0);
-            y = t.file.get<int32_t>("Y", 0);
-            width = t.file.get<uint32_t>("Width", 0);
-            height = t.file.get<uint32_t>("Height", 0);
-            confidence = t.file.get<uint32_t>("Confidence", 0);
-        }
-
-        gallery.write((const char*) &algorithmID, sizeof(int32_t));
-        gallery.write((const char*) &x          , sizeof(int32_t));
-        gallery.write((const char*) &y          , sizeof(int32_t));
-        gallery.write((const char*) &width      , sizeof(uint32_t));
-        gallery.write((const char*) &height     , sizeof(uint32_t));
-        gallery.write((const char*) &confidence , sizeof(float));
-
-        const uint32_t mdSize = metadata.size() + 1;
-        gallery.write((const char*) &mdSize, sizeof(uint32_t));
-
-        const uint32_t signatureSize = (algorithmID == 0) ? 0 : t.m().rows * t.m().cols * t.m().elemSize();
-        const uint32_t fvSize = header.size() + signatureSize;
-        gallery.write((const char*) &fvSize, sizeof(uint32_t));
-
-        gallery.write((const char*) metadata.data(), mdSize);
-        if (algorithmID != 0) {
-            gallery.write(header);
-            gallery.write((const char*) t.m().data, signatureSize);
-        }
+        const br_utemplate ut = Template::toUniversalTemplate(t);
+        gallery.write((const char*) ut, sizeof(br_universal_template) + ut->mdSize + ut->fvSize);
+        Template::freeUniversalTemplate(ut);
     }
 };
 
-BR_REGISTER(Gallery, utGallery)
+BR_REGISTER(Gallery, tGallery)
 
 /*!
  * \ingroup galleries

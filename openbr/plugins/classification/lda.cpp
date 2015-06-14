@@ -478,6 +478,8 @@ class LDATransform : public Transform
             if (normalize)
                 stdDev = sqrt(results.array().square().sum() / trainingSet.size());
         }
+
+        qDebug() << "LDA projection dimensions:" << projection.rows() << "->" << projection.cols();
     }
 
     void project(const Template &src, Template &dst) const

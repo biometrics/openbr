@@ -31,7 +31,9 @@ class xmlGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(bool ignoreMetadata READ get_ignoreMetadata WRITE set_ignoreMetadata RESET reset_ignoreMetadata STORED false)
+    Q_PROPERTY(bool skipMissing READ get_skipMissing WRITE set_skipMissing RESET reset_skipMissing STORED false)
     BR_PROPERTY(bool, ignoreMetadata, false)
+    BR_PROPERTY(bool, skipMissing, false)
     FileList files;
 
     QXmlStreamReader reader;
@@ -116,6 +118,12 @@ class xmlGallery : public FileGallery
 
                         // we read another complete template
                         count++;
+
+                        // optionally remove templates whose files don't exist or are empty
+                        if (skipMissing && !QFileInfo(templates.last().file.resolved()).size()) {
+                            templates.removeLast();
+                            count--;
+                        }
                     }
                 }
             }

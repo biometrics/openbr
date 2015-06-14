@@ -426,7 +426,7 @@ br_utemplate Template::toUniversalTemplate(const Template &t)
     return br_new_utemplate(algorithmID, x, y, width, height, confidence, metadata.data(), (const char*) m.data, m.rows * m.cols * m.elemSize());
 }
 
-Template Template::fromUniversalTemplate(const br_utemplate &ut)
+Template Template::fromUniversalTemplate(br_const_utemplate ut)
 {
     QVariantMap map = QJsonDocument::fromJson(QByteArray((const char*) ut->data)).object().toVariantMap();
     map.insert("AlgorithmID", ut->algorithmID);
@@ -435,8 +435,25 @@ Template Template::fromUniversalTemplate(const br_utemplate &ut)
     map.insert("Width"      , ut->width      );
     map.insert("Height"     , ut->height     );
     map.insert("Confidence" , ut->confidence );
-    const Mat m = Mat(1, ut->fvSize, CV_8UC1, ut->data + ut->mdSize).clone();
+    const Mat m = Mat(1, ut->fvSize, CV_8UC1, (void*)(ut->data + ut->mdSize)).clone();
     return Template(File(map), m);
+}
+
+br_utemplate Template::readUniversalTemplate(QFile &file)
+{
+    const size_t headerSize = sizeof(br_universal_template);
+    br_universal_template *t = (br_universal_template*) malloc(headerSize);
+    file.read((char*) t, headerSize);
+
+    const size_t dataSize = t->mdSize + t->fvSize;
+    t = (br_universal_template*) realloc(t, headerSize + dataSize);
+    file.read((char*) &t->data, dataSize);
+    return t;
+}
+
+void Template::freeUniversalTemplate(br_const_utemplate t)
+{
+    free((void*) t);
 }
 
 QDataStream &br::operator<<(QDataStream &stream, const Template &t)
