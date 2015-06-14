@@ -41,6 +41,7 @@ class QuantizeTransform : public Transform
         minMaxLoc(OpenCVUtils::toMat(data.data()), &minVal, &maxVal);
         a = 255.0/(maxVal-minVal);
         b = -a*minVal;
+        qDebug() << "Quantized dimensions =" << data.first().m().rows * data.first().m().cols;
     }
 
     void project(const Template &src, Template &dst) const
