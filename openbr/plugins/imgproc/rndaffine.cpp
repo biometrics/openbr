@@ -42,29 +42,33 @@ class RndAffineTransform : public UntrainableMetaTransform
             QPointF affine_0 = t.file.get<QPointF>("Affine_0");
             QPointF affine_1 = t.file.get<QPointF>("Affine_1");
 
-            // Append the original points
-            Template u = t;
-            u.file.setPoints(QList<QPointF>() << affine_0 << affine_1);
-            u.file.set("Affine_0", affine_0);
-            u.file.set("Affine_1", affine_1);
-            dst.append(u);
-
-            const double IPD = sqrt(pow(affine_0.x() - affine_1.x(), 2) + pow(affine_0.y() - affine_1.y(), 2));
-            for (int i = 0; i < numAffines; i++) {
-                int angle = (rand() % (2*maxAngle)) - maxAngle;
-
-                int min = (int)(sqrt(1 / scaleFactor) * IPD);
-                int max = (int)(sqrt(scaleFactor) * IPD);
-                int dx = (rand() % (max - min)) + min;
-                int dy = (dx * sin(angle * M_PI / 180))/2;
-
-                QPointF shiftedAffine_0 = QPointF(affine_1.x() - dx, affine_1.y() + dy);
-
+            if (affine_0 != QPoint(-1,-1) && affine_1 != QPoint(-1,-1)) {
+                // Append the original points
                 Template u = t;
-                u.file.setPoints(QList<QPointF>() << shiftedAffine_0 << affine_1);
-                u.file.set("Affine_0", shiftedAffine_0);
+                u.file.setPoints(QList<QPointF>() << affine_0 << affine_1);
+                u.file.set("Affine_0", affine_0);
                 u.file.set("Affine_1", affine_1);
                 dst.append(u);
+
+                const double IPD = sqrt(pow(affine_0.x() - affine_1.x(), 2) + pow(affine_0.y() - affine_1.y(), 2));
+                if (IPD != 0) {
+                    for (int i = 0; i < numAffines; i++) {
+                        int angle = (rand() % (2*maxAngle)) - maxAngle;
+
+                        int min = (int)(sqrt(1 / scaleFactor) * IPD);
+                        int max = (int)(sqrt(scaleFactor) * IPD);
+                        int dx = (rand() % (max - min)) + min;
+                        int dy = (dx * sin(angle * M_PI / 180))/2;
+
+                        QPointF shiftedAffine_0 = QPointF(affine_1.x() - dx, affine_1.y() + dy);
+
+                        Template u = t;
+                        u.file.setPoints(QList<QPointF>() << shiftedAffine_0 << affine_1);
+                        u.file.set("Affine_0", shiftedAffine_0);
+                        u.file.set("Affine_1", affine_1);
+                        dst.append(u);
+                    }
+                }
             }
         }
     }
