@@ -280,6 +280,25 @@ void OpenCVUtils::storeModel(const CvStatModel &model, QDataStream &stream)
     stream << data;
 }
 
+void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
+{
+    // Create local file
+    QTemporaryFile tempFile;
+    tempFile.open();
+    tempFile.close();
+
+    // Save MLP to local file
+    cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::WRITE);
+    model.write(fs);
+    fs.release();
+
+    // Copy local file contents to stream
+    tempFile.open();
+    QByteArray data = tempFile.readAll();
+    tempFile.close();
+    stream << data;
+}
+
 void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
 {
     // Copy local file contents from stream
@@ -294,6 +313,23 @@ void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
 
     // Load MLP from local file
     model.load(qPrintable(tempFile.fileName()));
+}
+
+void OpenCVUtils::loadModel(cv::Algorithm &model, QDataStream &stream)
+{
+    // Copy local file contents from stream
+    QByteArray data;
+    stream >> data;
+
+    // Create local file
+    QTemporaryFile tempFile(QDir::tempPath()+"/model");
+    tempFile.open();
+    tempFile.write(data);
+    tempFile.close();
+
+    // Load MLP from local file
+    cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::READ);
+    model.read(fs[""]);
 }
 
 Point2f OpenCVUtils::toPoint(const QPointF &qPoint)
