@@ -721,7 +721,7 @@ class WCDATransform : public Transform
         projection = decompress(compressed, a, b);
     }
 
-    static void trainCore(MatrixXf data, float keep, VectorXf &mean, VectorXf &eVals, MatrixXf &eVecs)
+    static void trainCore(MatrixXf data, float &keep, VectorXf &mean, VectorXf &eVals, MatrixXf &eVecs)
     {
         const int dimsIn = data.rows();
         const int instances = data.cols();
