@@ -89,4 +89,6 @@ class matlabGallery : public FileGallery
 
 BR_REGISTER(Gallery, matlabGallery)
 
+}
+
 #include "gallery/matlab.moc"
