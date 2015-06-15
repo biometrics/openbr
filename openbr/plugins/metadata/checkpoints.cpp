@@ -7,6 +7,7 @@ namespace br
  * \ingroup transforms
  * \brief Checks the points in a template for missing (-1,-1) values
  * \author Scott Klum \cite sklum
+ * \br_property QList<int> indices Indices of points to check.
  */
 class CheckPointsTransform : public UntrainableMetadataTransform
 {
