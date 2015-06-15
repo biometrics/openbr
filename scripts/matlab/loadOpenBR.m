@@ -1,7 +1,7 @@
 % This script will read a matrix container format where the first two entires are 32-bit ints
 % specifying the number of rows and columns (respectively). The remaining buffer is 32-bit floats
 % with all the matrix contents, in row-major order.
-function [x] = loadBin(filename,reverse)
+function [x] = loadOpenBR(filename,reverse)
    
     if nargin < 2,
         % Use this option if the data was serlialized in column-major order.
