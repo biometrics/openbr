@@ -290,6 +290,7 @@ void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
     // Save MLP to local file
     cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::WRITE);
     model.write(fs);
+    fs.release();
 
     // Copy local file contents to stream
     tempFile.open();
@@ -328,7 +329,7 @@ void OpenCVUtils::loadModel(cv::Algorithm &model, QDataStream &stream)
 
     // Load MLP from local file
     cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::READ);
-    model.read(fs["em"]);
+    model.read(fs[""]);
 }
 
 Point2f OpenCVUtils::toPoint(const QPointF &qPoint)
