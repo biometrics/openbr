@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2012 The MITRE Corporation                                      *
+ * Copyright 2015 Rank One Computing Corporation                             *
  *                                                                           *
  * Licensed under the Apache License, Version 2.0 (the "License");           *
  * you may not use this file except in compliance with the License.          *
@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and       *
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#include <QRegularExpression>
 
 #include <openbr/plugins/openbr_internal.h>
 
