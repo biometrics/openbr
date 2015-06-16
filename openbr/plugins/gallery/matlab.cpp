@@ -51,9 +51,8 @@ class matlabGallery : public FileGallery
         cv::Mat m(r * c, templates.size(), CV_32FC1);
         for (int i = 0; i < templates.size(); i++) {
             cv::Mat temp;
-            templates[i].m().copyTo(temp);
-            temp.reshape(1, 1);
-            m.col(i) = temp;
+            temp = templates[i].m().reshape(1, r * c);
+            temp.copyTo(m.col(i));
         }
 
         f.write((const char *) &m.rows, 4);
