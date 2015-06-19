@@ -432,13 +432,16 @@ float jaccardIndex(const QVector<int> &indicesA, const QVector<int> &indicesB)
 
 // Evaluates clustering algorithms based on metrics described in
 // Santo Fortunato "Community detection in graphs", Physics Reports 486 (2010)
-void br::EvalClustering(const QString &csv, const QString &input, QString truth_property)
+void br::EvalClustering(const QString &clusters, const QString &truth_gallery, QString truth_property, bool cluster_csv, QString cluster_property)
 {
     if (truth_property.isEmpty())
         truth_property = "Label";
-    qDebug("Evaluating %s against %s", qPrintable(csv), qPrintable(input));
+    if (!cluster_csv && cluster_property.isEmpty()) {
+        cluster_property = "ClusterID";
+    }
+    qDebug("Evaluating %s against %s", qPrintable(clusters), qPrintable(truth_gallery));
 
-    TemplateList tList = TemplateList::fromGallery(input);
+    TemplateList tList = TemplateList::fromGallery(truth_gallery);
     QList<int> labels = tList.indexProperty(truth_property);
 
     QHash<int, int> labelToIndex;
@@ -459,7 +462,23 @@ void br::EvalClustering(const QString &csv, const QString &input, QString truth_
         truthClusters[labelToIndex[labels[i]]].append(i);
     }
 
-    Clusters testClusters = ReadClusters(csv);
+    Clusters testClusters;
+    if (cluster_csv) {
+        testClusters = ReadClusters(clusters);
+    } else {
+        // get Clusters from gallery
+        const TemplateList tl(TemplateList::fromGallery(clusters));
+        QHash<int,Cluster > clust_id_map;
+        for (int i=0; i<tl.size(); i++) {
+            const Template &t = tl.at(i);
+            int c = t.file.get<int>(cluster_property);
+            if (!clust_id_map.contains(c)) {
+                clust_id_map.insert(c, Cluster());
+            }
+            clust_id_map[c].append(i);
+        }
+        testClusters = Clusters::fromList(clust_id_map.values());
+    }
 
     QVector<int> testIndices(labels.size());
     for (int i=0; i<testClusters.size(); i++)

@@ -56,7 +56,7 @@ BR_EXPORT float br_inplace_eval(const char * simmat, const char *target, const c
 
 BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "");
 
-BR_EXPORT void br_eval_clustering(const char *csv, const char *gallery, const char * truth_property);
+BR_EXPORT void br_eval_clustering(const char *clusters, const char *truth_gallery, const char *truth_property = "", bool cluster_csv = true, const char *cluster_property = "");
 
 BR_EXPORT float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv = "", bool normalize = false, int minSize = 0, int maxSize = 0);
 

@@ -57,7 +57,7 @@ namespace br
 
     // evaluate clustering results in csv, reading ground truth data from gallery input, using truth_property
     // as the key for ground truth labels.
-    void EvalClustering(const QString &csv, const QString &input, QString truth_property);
+    void EvalClustering(const QString &clusters, const QString &truth_gallery, QString truth_property, bool cluster_csv, QString cluster_property);
 
     // Read/write clusters from a text format, 1 line = 1 cluster, each line contains comma separated list
     // of assigned indices.
