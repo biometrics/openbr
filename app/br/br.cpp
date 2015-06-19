@@ -271,7 +271,7 @@ private:
                "-cat <gallery> ... <gallery> {gallery}\n"
                "-convert (Format|Gallery|Output) <input_file> {output_file}\n"
                "-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth proprty name>\n"
-               "-evalClustering <clusters> <gallery>\n"
+               "-evalClustering <clusters> <truth_gallery> [truth_property [cluster_csv [cluster_property]]]\n"
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]\n"
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
