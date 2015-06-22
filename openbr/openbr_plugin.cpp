@@ -451,6 +451,13 @@ br_utemplate Template::readUniversalTemplate(QFile &file)
     return t;
 }
 
+void Template::writeUniversalTemplate(QFile &file, br_const_utemplate t)
+{
+    const qint64 size = sizeof(br_universal_template) + t->mdSize + t->fvSize;
+    if (file.write((const char *) t, size) != size)
+        qFatal("Failed to write universal template!");
+}
+
 void Template::freeUniversalTemplate(br_const_utemplate t)
 {
     free((void*) t);
