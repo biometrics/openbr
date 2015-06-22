@@ -430,6 +430,31 @@ float jaccardIndex(const QVector<int> &indicesA, const QVector<int> &indicesB)
     return float(a[1][1]) / (a[0][1] + a[1][0] + a[1][1]);
 }
 
+// Cluster purity => Assign each cluster a class based on the majority ground truth value,
+//                   calculate percentage of correct assignments
+// http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html#fig:clustfg3
+float purityMetric(const br::Clusters &clusters, const QVector<int> &truthIdx)
+{
+    float correct = 0.0;
+    int total = 0;
+    foreach(const Cluster &c, clusters) {
+        total += c.size();
+        QList<int> truthVals;
+        foreach(int templateID, c) {
+            truthVals.append(truthIdx[templateID]);
+        }
+        int max = 0;
+        foreach(int clustID, truthVals.toSet()) {
+            int cnt = truthVals.count(clustID);
+            if (cnt > max) {
+                max = cnt;
+            }
+        }
+        correct += max;
+    }
+    return correct/total;
+}
+
 // Evaluates clustering algorithms based on metrics described in
 // Santo Fortunato "Community detection in graphs", Physics Reports 486 (2010)
 void br::EvalClustering(const QString &clusters, const QString &truth_gallery, QString truth_property, bool cluster_csv, QString cluster_property)
@@ -494,7 +519,8 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
     float wI = wallaceMetric(truthClusters, testIndices);
     float wII = wallaceMetric(testClusters, truthIndices);
     float jaccard = jaccardIndex(testIndices, truthIndices);
-    qDebug("Recall: %f  Precision: %f  F-score: %f  Jaccard index: %f", wI, wII, sqrt(wI*wII), jaccard);
+    float purity = purityMetric(testClusters, truthIndices);
+    qDebug("Purity: %f  Recall: %f  Precision: %f  F-score: %f  Jaccard index: %f", purity, wI, wII, sqrt(wI*wII), jaccard);
 }
 
 br::Clusters br::ReadClusters(const QString &csv)
