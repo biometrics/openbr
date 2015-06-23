@@ -3,6 +3,7 @@
 #include "openbr_plugin.h"
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/common.h"
+#include <fstream>
 using namespace br;
 
 static QSharedPointer<Transform> detect;
@@ -168,46 +169,71 @@ janus_error janus_free_template(janus_template template_)
 struct janus_gallery_type : public QList<janus_template>
 {};
 
-janus_error janus_allocate_gallery(janus_gallery *gallery_)
+void unflatten_template(const janus_flat_template flat_template, const size_t template_bytes, janus_gallery gallery, const janus_template_id template_id)
 {
-    *gallery_ = new janus_gallery_type();
-    return JANUS_SUCCESS;
-}
+    janus_template t;
+    JANUS_ASSERT(janus_allocate_template(&t))
+    t->file.set("TEMPLATE_ID", QString::number((int)template_id));
+    janus_flat_template flat_template_ = flat_template;
 
-janus_error janus_enroll(const janus_template template_, const janus_template_id template_id, janus_gallery gallery)
-{    
-    template_->file.set("TEMPLATE_ID", template_id);
-    gallery->push_back(template_);
-    return JANUS_SUCCESS;
-}
+    while (flat_template_ < flat_template + template_bytes) {
+        size_t bytes = *reinterpret_cast<size_t*>(flat_template_);
+        flat_template_ += sizeof(bytes);
 
-janus_error janus_free_gallery(janus_gallery gallery_) {
-    delete gallery_;
-    return JANUS_SUCCESS;
-}
-
-janus_error janus_flatten_gallery(janus_gallery gallery, janus_flat_gallery flat_gallery, size_t *bytes)
-{
-    *bytes = 0;
-    foreach (const janus_template &t, *gallery) {
-        janus_template_id template_id = t->file.get<janus_template_id>("TEMPLATE_ID");
-
-        janus_flat_template u = new janus_data[janus_max_template_size()];
-        size_t t_bytes = 0;
-        JANUS_ASSERT(janus_flatten_template(t, u, &t_bytes))
-        memcpy(flat_gallery, &template_id, sizeof(template_id));
-        flat_gallery += sizeof(template_id);
-        *bytes += sizeof(template_id);
-
-        memcpy(flat_gallery, &t_bytes, sizeof(t_bytes));
-        flat_gallery += sizeof(t_bytes);
-        *bytes += sizeof(t_bytes);
-
-        memcpy(flat_gallery, u, t_bytes);
-        flat_gallery += t_bytes;
-        *bytes += t_bytes;
-        delete[] u;
+        t->append(cv::Mat(1, bytes, CV_8UC1, flat_template_).clone());
+        flat_template_ += bytes;
     }
+    gallery->append(t);
+}
+
+janus_error janus_write_gallery(const janus_flat_template *templates, const size_t *templates_bytes, const janus_template_id *template_ids, const size_t num_templates, janus_gallery_path gallery_path)
+{
+    std::ofstream file;
+    file.open(gallery_path, std::ios::out | std::ios::binary);
+
+    for (size_t i=0; i<num_templates; i++) {
+        file.write((char*)&template_ids[i], sizeof(janus_template_id));
+        file.write((char*)&templates_bytes[i], sizeof(size_t));
+        file.write((char*)templates[i], templates_bytes[i]);
+    }
+
+    file.close();
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_open_gallery(janus_gallery_path gallery_path, janus_gallery *gallery)
+{
+    *gallery = new janus_gallery_type();
+    std::ifstream file;
+    file.open(gallery_path, std::ios::in | std::ios::binary | std::ios::ate);
+    const size_t bytes = file.tellg();
+    file.seekg(0, std::ios::beg);
+    janus_data *templates = new janus_data[bytes];
+    file.read((char*)templates, bytes);
+    file.close();
+
+    janus_data *templates_ = templates;
+    while (templates_ < templates + bytes) {
+        janus_template_id template_id = *reinterpret_cast<janus_template_id*>(templates_);
+        templates_ += sizeof(janus_template_id);
+        const size_t template_bytes = *reinterpret_cast<size_t*>(templates_);
+        templates_ += sizeof(size_t);
+
+        janus_flat_template flat_template = new janus_data[template_bytes];
+        memcpy(flat_template, templates_, template_bytes);
+        templates_ += template_bytes;
+
+        unflatten_template(flat_template, template_bytes, *gallery, template_id);
+        delete[] flat_template;
+    }
+
+    delete[] templates;
+    return JANUS_SUCCESS;
+}
+
+janus_error janus_close_gallery(janus_gallery gallery)
+{
+    delete gallery;
     return JANUS_SUCCESS;
 }
 
@@ -242,23 +268,22 @@ janus_error janus_verify(const janus_flat_template a, const size_t a_bytes, cons
     return JANUS_SUCCESS;
 }
 
-janus_error janus_search(const janus_flat_template probe, const size_t probe_bytes, const janus_flat_gallery gallery, const size_t gallery_bytes, const size_t requested_returns, janus_template_id *template_ids, float *similarities, size_t *actual_returns)
+janus_error janus_search(const janus_flat_template probe, const size_t probe_bytes, const janus_gallery gallery, const size_t requested_returns, janus_template_id *template_ids, float *similarities, size_t *actual_returns)
 {
     typedef QPair<float, int> Pair;
     QList<Pair> comparisons; comparisons.reserve(requested_returns);
-    janus_flat_gallery target_gallery = gallery;
-    while (target_gallery < gallery + gallery_bytes) {
-        janus_template_id target_id = *reinterpret_cast<janus_template_id*>(target_gallery);
-        target_gallery += sizeof(target_id);
+    foreach (const janus_template &target_template, *gallery) {
+        janus_template_id target_id = target_template->file.get<janus_template_id>("TEMPLATE_ID");
 
-        const size_t target_template_bytes = *reinterpret_cast<size_t*>(target_gallery);
-        target_gallery += sizeof(target_template_bytes);
-        janus_flat_template target_template_flat = new janus_data[target_template_bytes];
-        memcpy(target_template_flat, target_gallery, target_template_bytes);
-        target_gallery += target_template_bytes;
+        size_t target_bytes;
+        janus_data *buffer = new janus_data[janus_max_template_size()];
+        JANUS_ASSERT(janus_flatten_template(target_template, buffer, &target_bytes))
+
+        janus_flat_template target_flat = new janus_data[target_bytes];
+        memcpy(target_flat, buffer, target_bytes);
 
         float similarity;
-        JANUS_ASSERT(janus_verify(probe, probe_bytes, target_template_flat, target_template_bytes, &similarity))
+        JANUS_ASSERT(janus_verify(probe, probe_bytes, target_flat, target_bytes, &similarity))
         if ((size_t)comparisons.size() < requested_returns) {
             comparisons.append(Pair(similarity, target_id));
             std::sort(comparisons.begin(), comparisons.end());
@@ -270,7 +295,8 @@ janus_error janus_search(const janus_flat_template probe, const size_t probe_byt
                 std::sort(comparisons.begin(), comparisons.end());
             }
         }
-        delete[] target_template_flat;
+        delete[] buffer;
+        delete[] target_flat;
     }
     *actual_returns = comparisons.size();
     QList<Pair> temp; temp.reserve(comparisons.size());
