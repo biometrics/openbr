@@ -191,11 +191,6 @@ class CascadeClassifier : public Classifier
         return stages.first()->numFeatures();
     }
 
-    int maxCatCount() const
-    {
-        return stages.first()->maxCatCount();
-    }
-
     Mat preprocess(const Mat &image) const
     {
         return stages.first()->preprocess(image);
