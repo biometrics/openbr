@@ -97,7 +97,7 @@ private:
             qDebug("Built %d clusters from %d templates", clusters.size(), templates.size());
 
         for (int i = 0; i < clusters.size(); i++) {
-            // Calculate the center of each cluster
+            // Calculate the centroid of each cluster
             Mat center = Mat::zeros(templates[0].m().rows, templates[0].m().cols, CV_32F);
             foreach (int t, clusters[i]) {
                 Mat converted; templates[t].m().convertTo(converted, CV_32F);
