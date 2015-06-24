@@ -15,6 +15,7 @@ namespace br
  * \br_property int kNN Maximum number of nearest neighbors to keep for each template. Default is 20.
  * \br_property float aggression Clustering aggresiveness. A higher value will result in larger clusters. Default is 10.
  * \br_property bool incremental If true, compute the clusters as each template is processed otherwise compute the templates at the end. Default is false.
+ * \br_property QString evalOutput Path to store cluster informtation. Optional. Default is an empty string.
  * \br_paper Zhu et al.
  *           "A Rank-Order Distance based Clustering Algorithm for Face Tagging"
  *           CVPR 2011
