@@ -1160,6 +1160,33 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 #endif // BR_EMBEDDED
     }
 
+    // Search for SDK
+    if (sdkPath.isEmpty()) {
+        QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
+        checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
+
+        bool foundSDK = false;
+        foreach (const QString &path, checkPaths) {
+            if (foundSDK) break;
+            QDir dir(path);
+            do {
+                sdkPath = dir.absolutePath();
+                foundSDK = checkSDKPath(sdkPath);
+                dir.cdUp();
+            } while (!foundSDK && !dir.isRoot());
+        }
+
+        if (!foundSDK) {
+            qWarning("Unable to locate SDK automatically.");
+            return;
+        }
+    } else {
+        if (!checkSDKPath(sdkPath)) {
+            qWarning("Unable to locate SDK from %s.", qPrintable(sdkPath));
+            return;
+        }
+    }
+
     QCoreApplication::setOrganizationName(COMPANY_NAME);
     QCoreApplication::setApplicationName(PRODUCT_NAME);
     QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
@@ -1187,30 +1214,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals->useGui = useGui;
     Globals->algorithm = "Identity";
     Globals->path = getenv("DATA"); // our convention
+    Globals->sdkPath = sdkPath;
 
     Common::seedRNG();
-
-    // Search for SDK
-    if (sdkPath.isEmpty()) {
-        QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
-        checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
-
-        bool foundSDK = false;
-        foreach (const QString &path, checkPaths) {
-            if (foundSDK) break;
-            QDir dir(path);
-            do {
-                sdkPath = dir.absolutePath();
-                foundSDK = checkSDKPath(sdkPath);
-                dir.cdUp();
-            } while (!foundSDK && !dir.isRoot());
-        }
-
-        if (!foundSDK) qFatal("Unable to locate SDK automatically.");
-    } else {
-        if (!checkSDKPath(sdkPath)) qFatal("Unable to locate SDK from %s.", qPrintable(sdkPath));
-    }
-    Globals->sdkPath = sdkPath;
 
     QThreadPool::globalInstance()->setMaxThreadCount(Globals->parallelism);
 
