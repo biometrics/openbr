@@ -14,8 +14,13 @@ namespace br
 
 /*!
  * \brief A transform that wraps the Caffe Deep learning library
- * \author Jordan Cheney \cite JordanCheney
- * \
+ * \author Jordan Cheney \cite jcheney
+ * \br_property QString modelFile path to prototxt model file
+ * \br_property QString solverFile path to prototxt solver file
+ * \br_property QString weightsFile path to caffemodel file
+ * \br_property int gpuDevice ID of GPU to use. gpuDevice < 0 runs on the CPU only.
+ * \br_link Caffe Integration Tutorial ../tutorials.md#caffe
+ * \br_link Caffe website http://caffe.berkeleyvision.org
  */
 class CaffeTransform : public Transform
 {
