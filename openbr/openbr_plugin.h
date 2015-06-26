@@ -911,7 +911,6 @@ public:
     virtual cv::Mat preprocess(const cv::Mat &image) const = 0;
     virtual cv::Size windowSize(int *dx = NULL, int *dy = NULL) const = 0;
     virtual int numFeatures() const = 0;
-    virtual int maxCatCount() const = 0;
 };
 
 

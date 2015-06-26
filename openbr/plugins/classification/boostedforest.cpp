@@ -184,11 +184,6 @@ private:
         return representation->numFeatures();
     }
 
-    int maxCatCount() const
-    {
-        return representation->maxCatCount();
-    }
-
     Mat preprocess(const Mat &image) const
     {
         Mat dst;
