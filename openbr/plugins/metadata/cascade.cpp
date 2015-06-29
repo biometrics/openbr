@@ -382,6 +382,12 @@ class CascadeTransform : public MetaTransform
     {
         CascadeClassifier *cascade = cascadeResource.acquire();
         foreach (const Template &t, src) {
+            // As a special case, skip detection if the appropriate metadata already exists
+            if (t.file.contains(model)) {
+                dst.append(t);
+                continue;
+            }
+
             const bool enrollAll = t.file.getBool("enrollAll");
 
             // Mirror the behavior of ExpandTransform in the special case
