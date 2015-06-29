@@ -384,7 +384,10 @@ class CascadeTransform : public MetaTransform
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
             if (t.file.contains(model)) {
-                dst.append(t);
+                Template u = t;
+                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>(model));
+                u.file.set("Confidence", t.file.get<float>("Confidence", 1));
+                dst.append(u);
                 continue;
             }
 
