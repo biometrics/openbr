@@ -59,13 +59,13 @@ private:
             else          dst.file.fte = true;
         } else {
             foreach (const Mat &m, src) {
-		if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1))
+                if (((m.rows > 1) && (m.cols > 1)) || (m.type() != CV_8UC1))
                     dst += m;
-		else {
+                else {
                     const Mat img = imdecode(m, mode);
                     if (img.data) dst.append(img);
                     else          dst.file.fte = true;
-		}
+                }
             }
         }
         if (dst.file.fte)
