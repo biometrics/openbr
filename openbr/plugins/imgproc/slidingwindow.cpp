@@ -77,6 +77,15 @@ class SlidingWindowTransform : public MetaTransform
         Size maxObjectSize;
 
         foreach (const Template &t, src) {
+            // As a special case, skip detection if the appropriate metadata already exists
+            if (t.file.contains("Face")) {
+                Template u = t;
+                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>("Face"));
+                u.file.set("Confidence", t.file.get<float>("Confidence", 1));
+                dst.append(u);
+                continue;
+            }
+
             const bool enrollAll = t.file.getBool("enrollAll");
 
             // Mirror the behavior of ExpandTransform in the special case
