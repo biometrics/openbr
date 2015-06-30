@@ -143,7 +143,7 @@ class lmdbGallery : public Gallery
         if (!initialized) {
             db = QSharedPointer<caffe::db::DB> (caffe::db::GetDB("lmdb"));
             db->Open(file.name.toStdString(), caffe::db::NEW);
-            observedLabels.clear()
+            observedLabels.clear();
             initialized = true;
             should_end = false;
             // fire thread
