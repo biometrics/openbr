@@ -80,6 +80,8 @@ class lmdbGallery : public Gallery
     bool should_end;
     TemplateList data;
 
+    QHash<QString, int> observedLabels;
+
     static void commitLoop(lmdbGallery * base)
     {
         QSharedPointer<caffe::db::Transaction> txn;
@@ -111,7 +113,15 @@ class lmdbGallery : public Gallery
                 // add current image to transaction
                 caffe::Datum datum;
                 caffe::CVMatToDatum(t.m(), &datum);
-                datum.set_label(t.file.get<int>("Label"));
+
+                QVariant base_label = t.file.value("Label");
+                QString label_str = base_label.toString();
+
+
+                if (!base->observedLabels.contains(label_str) )
+                    base->observedLabels[label_str] = base->observedLabels.size();
+
+                datum.set_label(base->observedLabels[label_str]);
 
                 std::string out;
                 datum.SerializeToString(&out);
@@ -133,6 +143,7 @@ class lmdbGallery : public Gallery
         if (!initialized) {
             db = QSharedPointer<caffe::db::DB> (caffe::db::GetDB("lmdb"));
             db->Open(file.name.toStdString(), caffe::db::NEW);
+            observedLabels.clear()
             initialized = true;
             should_end = false;
             // fire thread
