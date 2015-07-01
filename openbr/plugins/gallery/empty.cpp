@@ -18,6 +18,7 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
+#include <openbr/gui/utility.h>
 
 namespace br
 {
@@ -67,7 +68,7 @@ class EmptyGallery : public Gallery
             templates.append(future.result());
 
         // Add root folder
-        foreach (const QString &fileName, QtUtils::getFiles(file.name, false))
+        foreach (const QString &fileName, getFiles(file.name, false))
             templates.append(File(fileName, dir.dirName()));
 
         if (!regexp.isEmpty()) {
@@ -112,7 +113,7 @@ class EmptyGallery : public Gallery
 
     static TemplateList getTemplates(const QDir &dir)
     {
-        const QStringList files = QtUtils::getFiles(dir, true);
+        const QStringList files = getFiles(dir, true);
         TemplateList templates; templates.reserve(files.size());
         foreach (const QString &file, files)
             templates.append(File(file, dir.dirName()));

@@ -34,8 +34,6 @@
 namespace QtUtils
 {
     /**** File Utilities ****/
-    QStringList getFiles(QDir dir, bool recursive);
-    QStringList getFiles(const QString &regexp);
     QStringList readLines(const QString &file);
     void readFile(const QString &file, QStringList &lines);
     void readFile(const QString &file, QByteArray &data, bool uncompress = false);
