@@ -19,6 +19,7 @@
 
 #include <QBuffer>
 #include <QByteArray>
+#include <QDataStream>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
