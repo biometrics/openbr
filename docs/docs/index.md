@@ -9,7 +9,7 @@ The project was later published as open source software under the [Apache 2](htt
 
 Please read [our paper](http://openbiometrics.org/publications/klontz2013open.pdf) for more information about OpenBR and kindly cite in your own work:
 
-> J. Klontz, B. Klare, S. Klum, E. Taborsky, M. Burge, A. Jain, “Open Source Biometric Recognition”, Biometrics: Theory, Applications and Systems, 2013.
+> J. Klontz, B. Klare, S. Klum, M. Burge, A. Jain, “Open Source Biometric Recognition”, Biometrics: Theory, Applications and Systems, 2013.
 
 ---
 
