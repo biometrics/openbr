@@ -25,11 +25,14 @@ namespace br
  *          Note that this is not intended to read in .matlab files, as this is simply 
  *          a quick and dirty for analyzing data in a more interactive environment.
  *          Use the loadOpenBR.m script to ingest the resultant file into Matlab
+ * \br_property bool writeLabels Write the subject labels of the instances in the final row of the matrix.
  * \author Brendan Klare \cite bklare
  */
 class matlabGallery : public FileGallery
 {
     Q_OBJECT
+    Q_PROPERTY(bool writeLabels READ get_writeLabels WRITE set_writeLabels RESET reset_writeLabels STORED false)
+    BR_PROPERTY(bool, writeLabels, false)
 
     TemplateList templates;
 
@@ -53,6 +56,18 @@ class matlabGallery : public FileGallery
             cv::Mat temp;
             temp = templates[i].m().reshape(1, r * c);
             temp.copyTo(m.col(i));
+        }
+
+        if (writeLabels) {
+            TemplateList _templates = TemplateList::relabel(templates, "Label", false);
+
+            QList<int> classes = File::get<int>(_templates, "Label");
+            cv::Mat _m(r * c + 1, _templates.size(), CV_32FC1);
+            m.copyTo(_m.rowRange(cv::Range(0, r * c)));
+            for (int i = 0; i < _templates.size(); i++) {
+                _m.at<float>(r * c, i) = (float) classes[i];
+            }
+            m = _m;
         }
 
         f.write((const char *) &m.rows, 4);
