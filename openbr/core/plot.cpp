@@ -286,10 +286,10 @@ struct RPlot
                               ((major.smooth || minor.smooth) && confidence != 0 && data != "CMC" ? QString(" + geom_errorbar(data=%1[seq(1, NROW(%1), by = 29),], aes(x=X, ymin=%2), width=0.1, alpha=I(1/2))").arg(data, flipY ? "(1-lower), ymax=(1-upper)" : "lower, ymax=upper") : QString()) +
                               (major.size > 1 ? getScale("colour", major.header, major.size) : QString()) +
                               (minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(minor.header) : QString()) +
-                              (opts.getBool("xLog") ? QString(" + scale_x_log10(labels=%1) + annotation_logticks(sides=\"b\")").arg(data == "CMC" ? "c(1,5,10,50,100), breaks=c(1,5,10,50,100)" : "trans_format(\"log10\", math_format())")
-                                                    : QString(" + scale_x_continuous(labels=%1, breaks=pretty_breaks(n=%2))").arg(data == "CMC" ? "waiver()" : "percent", opts.get<QString>("xTicks", "10"))) +
-                              (opts.getBool("yLog") ? " + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks(sides=\"l\")"
-                                                    : QString(" + scale_y_continuous(labels=percent, breaks=pretty_breaks(n=%1))").arg(opts.get<QString>("yTicks", "10"))) +
+                              (opts.getBool("xLog") ? QString(" + scale_x_log10(labels=%1, breaks=%2) + annotation_logticks(sides=\"b\")").arg(opts.get<QString>("xLabels", "trans_format(\"log10\", math_format())"), opts.get<QString>("xBreaks", "waiver()"))
+                                                    : QString(" + scale_x_continuous(labels=%1, breaks=%2)").arg(opts.get<QString>("xLabels", "percent"), opts.get<QString>("xBreaks", "pretty_breaks(n=10)"))) +
+                              (opts.getBool("yLog") ? QString(" + scale_y_log10(labels=%1, breaks=%2) + annotation_logticks(sides=\"l\")").arg(opts.get<QString>("yLabels", "trans_format(\"log10\", math_format())"), opts.get<QString>("yBreaks", "waiver()"))
+                                                    : QString(" + scale_y_continuous(labels=%1, breaks=%2)").arg(opts.get<QString>("yLabels", "percent"), opts.get<QString>("yBreaks", "pretty_breaks(n=10)"))) +
                               (opts.contains("xLimits") ? QString(" + xlim%1").arg(QtUtils::toString(opts.get<QPointF>("xLimits", QPointF()))) : QString()) +
                               (opts.contains("yLimits") ? QString(" + ylim%1").arg(QtUtils::toString(opts.get<QPointF>("yLimits", QPointF()))) : QString()) +
                               QString(" + theme(legend.title = element_text(size = %1), legend.text = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),").arg(QString::number(opts.get<float>("textSize",12))) +
@@ -321,7 +321,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     optMap.insert("rocOptions", File(QString("[xLab=False Accept Rate,yLab=True Accept Rate,xLog=true,yLog=false]")));
     optMap.insert("detOptions", File(QString("[xLab=False Accept Rate,yLab=False Reject Rate,xLog=true,yLog=true]")));
     optMap.insert("ietOptions", File(QString("[xLab=False Positive Identification Rate (FPIR),yLab=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
-    optMap.insert("cmcOptions", File(QString("[xLab=Rank,yLab=Retrieval Rate,xLog=true,yLog=false,size=1]")));
+    optMap.insert("cmcOptions", File(QString("[xLab=Rank,yLab=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=c(1,5,10,50,100),xBreaks=c(1,5,10,50,100)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
