@@ -42,20 +42,6 @@ static QString getScale(const QString &mode, const QString &title, int vals)
 // Custom sorting method to ensure datasets are ordered nicely
 static bool sortFiles(const QString &fileA, const QString &fileB)
 {
-    QFileInfo fileInfoA(fileA);
-    QFileInfo fileInfoB(fileB);
-
-    if (fileInfoA.fileName().contains("Good")) return true;
-    if (fileInfoB.fileName().contains("Good")) return false;
-    if (fileInfoA.fileName().contains("Bad")) return true;
-    if (fileInfoB.fileName().contains("Bad")) return false;
-    if (fileInfoA.fileName().contains("Ugly")) return true;
-    if (fileInfoB.fileName().contains("Ugly")) return false;
-    if (fileInfoA.fileName().contains("MEDS")) return true;
-    if (fileInfoB.fileName().contains("MEDS")) return false;
-    if (fileInfoA.fileName().contains("PCSO")) return true;
-    if (fileInfoB.fileName().contains("PCSO")) return false;
-
     return fileA < fileB;
 }
 
@@ -65,7 +51,8 @@ struct RPlot
     QFile file;
     QStringList pivotHeaders;
     QVector< QSet<QString> > pivotItems;
-    float confidence;
+    float confidence; // confidence interval for plotting across splits
+    int ncol;         // Number of columns for plot legends
 
     bool flip;
 
@@ -124,6 +111,7 @@ struct RPlot
             }
             file.write("data <- rbind(data, tmp)\n");
         }
+
         for (int i=0; i<pivotItems.size(); i++) {
             const int size = pivotItems[i].size();
             if (size > major.size) {
@@ -133,13 +121,10 @@ struct RPlot
                 minor = Pivot(i, size, pivotHeaders[i]);
             }
         }
+
         const QString &smooth = destination.get<QString>("smooth", "");
-        if (destination.contains(QString("confidence"))) {
-            const QString &CI = destination.get<QString>("confidence");
-            confidence = !CI.isEmpty() ? CI.toFloat()/100.0 : 0.95;
-        } else {
-            confidence = 0.95;
-        }
+        confidence = destination.get<float>("confidence", 95) / 100.0;
+
         major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
         minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
         if (major.smooth) major.size = 1;
@@ -147,6 +132,7 @@ struct RPlot
         if (major.size < minor.size)
             std::swap(major, minor);
 
+        ncol = destination.get<int>("ncol", major.size > 1 ? major.size : (minor.header.isEmpty() ? major.size : minor.size));
         flip = minor.header == "Algorithm";
         // Format data
         if (isEvalFormat)
@@ -187,7 +173,7 @@ struct RPlot
                        "TS$Y <- as.character(TS$Y)\n"
                        "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
                        "\n"
-                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%7, .drop=TRUE) {\n\t\t"
+                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%3, .drop=TRUE) {\n\t\t"
                        "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
                        "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
                        "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
@@ -197,6 +183,7 @@ struct RPlot
                        "datac$lower <- if(datac[, measurevar] - datac$ci > 0) (datac[, measurevar] - datac$ci) else 0\n\n\t\treturn(datac)\n\t}\n\t"
                        "DET <- summarySE(DET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "IET <- summarySE(IET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
+                       "CMC <- summarySE(CMC, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "ERR <- summarySE(ERR, measurevar=\"X\", groupvars=c(\"Error\", \"%2\", \"Y\"))\n\t"
                        "TF <- summarySE(TF, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
                        "FT <- summarySE(FT, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
@@ -204,80 +191,110 @@ struct RPlot
                        "# Code to format FAR values\n"
                        "far_names <- list('0.001'=\"FAR = 0.1%\", '0.01'=\"FAR = 1%\")\n"
                        "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n"
-                       "\n"
-                       "# Code to format TAR@FAR table\n"
-                       "algs <- unique(%6)\n"
-                       "algs <- algs[!duplicated(algs)]\n"
-                       "mat <- matrix(%3,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                       "colnames(mat) <- algs \n"
-                       "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
-                       "FTtable <- as.table(mat)\n"
-                       "\n"
-                       "# Code to format FAR@TAR table\n"
-                       "mat <- matrix(%4,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                       "colnames(mat) <- algs \n"
-                       "rownames(mat) <- c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")\n"
-                       "F_at_Ttable <- as.table(mat)\n"
-                       "\n"
-                       "# Code to format CMC Table\n"
-                       "mat <- matrix(%5,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                       "colnames(mat) <- algs \n"
-                       "rownames(mat) <- c(\" Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
-                       "CMCtable <- as.table(mat)\n"
-                       "\n"
-                       "# Code to format Template Size Table\n"
-                       "if (nrow(TS) != 0) {\n\t"
-                       "mat <- matrix(TS$Y,nrow=1,ncol=length(algs),byrow=FALSE)\n\t"
-                       "colnames(mat) <- algs\n\t"
-                       "rownames(mat) <- c(\"Template Size (bytes):\")\n\t"
-                       "TStable <- as.table(mat)\n}\n").arg(((major.smooth || minor.smooth) ? "TRUE" : "FALSE"), major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header),
-                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(TF$Y, 3)), round(TF$ci, 3), sep=\"\\u00b1\")" : "TF$Y",
-                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
-                                                            (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
-                                                            (major.size > 1 && minor.size > 1) && !(major.smooth || minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(major.header, minor.header) : QString("TF$%1").arg(major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header)),
-                                                            QString::number(confidence))));
+                       "\n").arg((major.smooth || minor.smooth) ? "TRUE" : "FALSE",
+                                 major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header),
+                                 QString::number(confidence))));
 
         // Open output device
         file.write(qPrintable(QString("\n"
                                       "# Open output device\n"
-                                      "%1(\"%2.%1\")\n").arg(suffix, basename)));
-
-        // Write metadata table
-        if ((suffix == "pdf") && isEvalFormat) {
-            file.write("\n"
-                       "# Write metadata table\n");
-            QString textplot = "MT <- as.data.frame(Metadata[c(1,2,3,4,5),])\n"
-                               "par(mfrow=c(4,1))\n"
-                               "plot.new()\n"
-                               "print(title(paste(\"%1 - %2\",date(),sep=\"\\n\")))\n"
-                               "mat <- matrix(MT$X[c(1,2)],ncol=2)\n"
-                               "colnames(mat) <- c(\"Gallery\", \"Probe\")\n"
-                               "imageTable <- as.table(mat)\n"
-                               "print(textplot(imageTable,show.rownames=FALSE))\n"
-                               "print(title(\"Images\"))\n"
-                               "mat <- matrix(MT$X[c(3,4,5)],ncol=3)\n"
-                               "colnames(mat) <- c(\"Genuine\", \"Impostor\", \"Ignored\")\n"
-                               "matchTable <- as.table(mat)\n"
-                               "print(textplot(matchTable,show.rownames=FALSE))\n"
-                               "print(title(\"Matches\"))\n"
-                               "plot.new()\n"
-                               "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n"
-                               "plot.new()\n"
-                               "print(textplot(FTtable))\n"
-                               "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
-                               "print(textplot(F_at_Ttable))\n"
-                               "print(title(\"Table  of False Accept Rates at various True Accept Rates\"))\n"
-                               "print(textplot(CMCtable))\n"
-                               "print(title(\"Table of retrieval rate at various ranks\"))\n"
-                               "if (nrow(TS) != 0) {\n\t"
-                               "print(textplot(TStable, cex=1.15))\n\t"
-                               "print(title(\"Template Size by Algorithm\"))\n}\n";
-            file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
-        }
+                                      "%1(\"%2.%1\"%3)\n").arg(suffix, basename, suffix != "pdf" ? ", width=1000, height=1000" : "")));
 
         // Write figures
         file.write("\n"
                    "# Write figures\n");
+    }
+
+    void plotMetadata(bool csv)
+    {
+        file.write(qPrintable(QString("# Code to format TAR@FAR table\n"
+                                      "algs <- unique(%4)\n"
+                                      "algs <- algs[!duplicated(algs)]\n"
+                                      "mat <- matrix(%1,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                                      "colnames(mat) <- algs \n"
+                                      "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
+                                      "TFtable <- as.table(mat)\n"
+                                      "\n"
+                                      "# Code to format FAR@TAR table\n"
+                                      "mat <- matrix(%2,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                                      "colnames(mat) <- algs \n"
+                                      "rownames(mat) <- c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")\n"
+                                      "FTtable <- as.table(mat)\n"
+                                      "\n"
+                                      "# Code to format CMC Table\n"
+                                      "mat <- matrix(%3,nrow=6,ncol=length(algs),byrow=FALSE)\n"
+                                      "colnames(mat) <- algs \n"
+                                      "rownames(mat) <- c(\"Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
+                                      "CMCtable <- as.table(mat)\n"
+                                      "\n"
+                                      "# Code to format Template Size Table\n"
+                                      "if (nrow(TS) != 0) {\n\t"
+                                      "mat <- matrix(TS$Y,nrow=1,ncol=length(algs),byrow=FALSE)\n\t"
+                                      "colnames(mat) <- algs\n\t"
+                                      "rownames(mat) <- c(\"Template Size (bytes):\")\n\t"
+                                      "TStable <- as.table(mat)\n}"
+                                      "\n").arg((major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(TF$Y, 3)), round(TF$ci, 3), sep=\"\\u00b1\")" : "TF$Y",
+                                                (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
+                                                (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
+                                                (major.size > 1 && minor.size > 1) && !(major.smooth || minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(major.header, minor.header)
+                                                                                                                      : QString("TF$%1").arg(major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header)))));
+
+        file.write("\n# Write metadata table\n");
+        QString textplot = "MT <- as.data.frame(Metadata[c(1,2,3,4,5),])\n"
+                           "par(mfrow=c(4,1))\n"
+                           "plot.new()\n"
+                           "print(title(paste(\"%1 - %2\",date(),sep=\"\\n\")))\n"
+                           "mat <- matrix(MT$X[c(1,2)],ncol=2)\n"
+                           "colnames(mat) <- c(\"Gallery\", \"Probe\")\n"
+                           "imageTable <- as.table(mat)\n"
+                           "print(textplot(imageTable,show.rownames=FALSE))\n"
+                           "print(title(\"Images\"))\n"
+                           "mat <- matrix(MT$X[c(3,4,5)],ncol=3)\n"
+                           "colnames(mat) <- c(\"Genuine\", \"Impostor\", \"Ignored\")\n"
+                           "matchTable <- as.table(mat)\n"
+                           "print(textplot(matchTable,show.rownames=FALSE))\n"
+                           "print(title(\"Matches\"))\n"
+                           "plot.new()\n"
+                           "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n";
+        file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
+
+        if (csv)
+            textplot = QString("write.csv(TFtable,file=\"%1_TF.csv\")\n"
+                       "write.csv(FTtable,file=\"%1_FT.csv\")\n"
+                       "write.csv(CMCtable,file=\"%1_CMC.csv\")\n\n").arg(basename);
+        else
+            textplot = "plot.new()\n"
+                       "print(textplot(TFtable))\n"
+                       "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
+                       "print(textplot(FTtable))\n"
+                       "print(title(\"Table  of False Accept Rates at various True Accept Rates\"))\n"
+                       "print(textplot(CMCtable))\n"
+                       "print(title(\"Table of retrieval rate at various ranks\"))\n"
+                       "if (nrow(TS) != 0) {\n\t"
+                       "print(textplot(TStable, cex=1.15))\n\t"
+                       "print(title(\"Template Size by Algorithm\"))\n}\n\n";
+        file.write(qPrintable(textplot));
+    }
+
+    void qplot(QString geom, QString data, bool flipY, File opts)
+    {
+        file.write(qPrintable(QString("qplot(X, %1, data=%2, geom=\"%3\", main=\"%4\"").arg(flipY ? "1-Y" : "Y", data, geom, opts.get<QString>("title", "")) +
+                              (opts.contains("size") ? QString(", size=I(%1)").arg(opts.get<QString>("size")) : QString()) +
+                              (major.size > 1 ? QString(", colour=factor(%1)").arg(major.header) : QString()) +
+                              (minor.size > 1 ? QString(", linetype=factor(%1)").arg(minor.header) : QString()) +
+                              (QString(", xlab=\"%1\", ylab=\"%2\") + theme_minimal()").arg(opts.get<QString>("xLab"), opts.get<QString>("yLab"))) +
+                              ((major.smooth || minor.smooth) && confidence != 0 && data != "CMC" ? QString(" + geom_errorbar(data=%1[seq(1, NROW(%1), by = 29),], aes(x=X, ymin=%2), width=0.1, alpha=I(1/2))").arg(data, flipY ? "(1-lower), ymax=(1-upper)" : "lower, ymax=upper") : QString()) +
+                              (major.size > 1 ? getScale("colour", major.header, major.size) : QString()) +
+                              (minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(minor.header) : QString()) +
+                              (opts.getBool("xLog") ? QString(" + scale_x_log10(labels=%1) + annotation_logticks(sides=\"b\")").arg(data == "CMC" ? "c(1,5,10,50,100), breaks=c(1,5,10,50,100)" : "trans_format(\"log10\", math_format())")
+                                                    : QString(" + scale_x_continuous(labels=%1, breaks=pretty_breaks(n=%2))").arg(data == "CMC" ? "waiver()" : "percent", opts.get<QString>("xTicks", "10"))) +
+                              (opts.getBool("yLog") ? " + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks(sides=\"l\")"
+                                                    : QString(" + scale_y_continuous(labels=percent, breaks=pretty_breaks(n=%1))").arg(opts.get<QString>("yTicks", "10"))) +
+                              (opts.contains("xLimits") ? QString(" + xlim%1").arg(QtUtils::toString(opts.get<QPointF>("xLimits", QPointF()))) : QString()) +
+                              (opts.contains("yLimits") ? QString(" + ylim%1").arg(QtUtils::toString(opts.get<QPointF>("yLimits", QPointF()))) : QString()) +
+                              QString(" + theme(legend.title = element_text(size = %1), legend.text = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),").arg(QString::number(opts.get<float>("textSize",12))) +
+                              QString(" legend.position=%1, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"))").arg(opts.contains("legendPosition") ? "c"+QtUtils::toString(opts.get<QPointF>("legendPosition")) : "'bottom'") +
+                              QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(ncol)));
     }
 
     bool finalize(bool show = false)
@@ -297,66 +314,31 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
 
-    const bool minimalist = destination.getBool("minimalist");
-    const bool uncertainty = destination.get<bool>("uncertainty");
-
-    // Use a br::file for simple storage of plot options
-    File cmcOpts;
-    const QStringList cmcOptions = destination.get<QStringList>("cmcOptions", QStringList());
-    foreach (const QString& option, cmcOptions) {
-        QStringList words = QtUtils::parse(option, '=');
-        QtUtils::checkArgsSize(words[0],words,1,2);
-        cmcOpts.set(words[0],words[1]);
-    }
-
-    File rocOpts;
-    const QStringList rocOptions = destination.get<QStringList>("rocOptions", QStringList());
-    foreach (const QString& option, rocOptions) {
-        QStringList words = QtUtils::parse(option, '=');
-        QtUtils::checkArgsSize(words[0],words,1,2);
-        rocOpts.set(words[0],words[1]);
-    }
-
-
     RPlot p(files, destination);
 
-    p.file.write(qPrintable(QString("qplot(X, 1-Y, data=DET, geom=\"line\", main=\"%1\"").arg(rocOpts.get<QString>("title",QString())) +
-                            (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
-                            (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
-                            QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=(1-lower), ymax=(1-upper)), width=0.1, alpha=I(1/2))" : QString()) +
-                            (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                            (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format()))") +
-                            (rocOpts.contains("yLimits") ? QString(" + scale_y_continuous(labels=percent) + coord_cartesian(ylim=%1)").arg("c"+QtUtils::toString(rocOpts.get<QPointF>("yLimits",QPointF()))) : QString(" + scale_y_continuous(labels=percent)")) +
-                            QString(" + annotation_logticks(sides=\"b\")") +
-                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
-                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
+    // Use a br::file for simple storage of plot options
+    QMap<QString,File> optMap;
+    optMap.insert("rocOptions", File(QString("[xLab=False Accept Rate,yLab=True Accept Rate,xLog=true,yLog=false]")));
+    optMap.insert("detOptions", File(QString("[xLab=False Accept Rate,yLab=False Reject Rate,xLog=true,yLog=true]")));
+    optMap.insert("ietOptions", File(QString("[xLab=False Positive Identification Rate (FPIR),yLab=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
+    optMap.insert("cmcOptions", File(QString("[xLab=Rank,yLab=Retrieval Rate,xLog=true,yLog=false,size=1]")));
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=DET, geom=\"line\"") +
-                            (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
-                            (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
-                            QString(", xlab=\"False Accept Rate\", ylab=\"False Reject Rate\") + geom_abline(alpha=0.5, colour=\"grey\", linetype=\"dashed\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=DET[seq(1, NROW(DET), by = 29),], aes(x=X, ymin=lower, ymax=upper), width=0.1, alpha=I(1/2))" : QString()) +
-                            (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                            (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
-                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
+    foreach (const QString &key, optMap.keys()) {
+        const QStringList options = destination.get<QStringList>(key, QStringList());
+        foreach (const QString &option, options) {
+            QStringList words = QtUtils::parse(option, '=');
+            QtUtils::checkArgsSize(words[0], words, 1, 2);
+            optMap[key].set(words[0], words[1]);
+        }
+    }
 
-    p.file.write(qPrintable(QString("qplot(X, Y, data=IET, geom=\"line\"") +
-                            (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
-                            (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
-                            QString(", xlab=\"False Positive Identification Rate (FPIR)\", ylab=\"False Negative Identification Rate (FNIR)\") + theme_minimal()") +
-                            ((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? " + geom_errorbar(data=IET[seq(1, NROW(IET), by = 29),], aes(x=X, ymin=lower, ymax=upper), width=0.1, alpha=I(1/2))" : QString()) +
-                            (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                            (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            QString(" + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
-                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(rocOpts.get<float>("textSize",12)), rocOpts.contains("legendPosition") ? "c"+QtUtils::toString(rocOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + scale_x_log10(labels=trans_format(\"log10\", math_format())) + scale_y_log10(labels=trans_format(\"log10\", math_format())) + annotation_logticks()") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
+    // optional plot metadata and accuracy tables
+    if (destination.getBool("metadata", true))
+        p.plotMetadata(destination.getBool("csv", false));
+    p.qplot("line", "DET", true, optMap["rocOptions"]);
+    p.qplot("line", "DET", false, optMap["detOptions"]);
+    p.qplot("line", "IET", false, optMap["ietOptions"]);
+    p.qplot("line", "CMC", false, optMap["cmcOptions"]);
 
     p.file.write(qPrintable(QString("qplot(X, data=SD, geom=\"histogram\", fill=Y, position=\"identity\", alpha=I(1/2)") +
                             QString(", xlab=\"Score\", ylab=\"Frequency\"") +
@@ -364,18 +346,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg((p.flip ? p.major.header : p.minor.header), (p.flip ? p.minor.header : p.major.header)) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
 
-    p.file.write(qPrintable(QString("ggplot(CMC, aes(x=X, y=Y%1%2)) + ggtitle(\"%3\") + xlab(\"Rank\") + ylab(\"Retrieval Rate\")").arg(p.major.size > 1 ? QString(" ,colour=factor(%1)").arg(p.major.header) : QString(), p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString(), cmcOpts.get<QString>("title",QString())) +
-                            QString(((p.major.smooth || p.minor.smooth) ? (!uncertainty ? " + stat_summary(geom=\"line\", fun.y=mean, size=%1)" : " + stat_summary(geom=\"line\", fun.y=min, aes(linetype=\"Min/Max\"), size=%1) + stat_summary(geom=\"line\", "
-                            "fun.y=max, aes(linetype=\"Min/Max\"), size=%1) + stat_summary(geom=\"line\", fun.y=mean, aes(linetype=\"Mean\"), size=%1) + scale_linetype_manual(\"Legend\", values=c(\"Mean\"=1, \"Min/Max\"=2))") : " + geom_line(size=%1)")).arg(QString::number(cmcOpts.get<float>("thickness",1))) +
-                            (minimalist ? "" : " + scale_x_log10(labels=c(1,5,10,50,100), breaks=c(1,5,10,50,100)) + annotation_logticks(sides=\"b\")") +
-                            (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                            (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                            (cmcOpts.contains("yLimits") ? QString(" + scale_y_continuous(labels=percent) + coord_cartesian(ylim=%1)").arg("c"+QtUtils::toString(cmcOpts.get<QPointF>("yLimits",QPointF()))) : QString(" + scale_y_continuous(labels=percent)")) +
-                            QString(" + theme_minimal() + theme(legend.title = element_text(size = %1), plot.title = element_text(size = %1), axis.text = element_text(size = %1), axis.title.x = element_text(size = %1), axis.title.y = element_text(size = %1),"
-                            " legend.position=%2, legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = \"gray\"), panel.grid.minor = element_line(colour = \"gray\", linetype = \"dashed\"), legend.text = element_text(size = %1))").arg(QString::number(cmcOpts.get<float>("textSize",12)), cmcOpts.contains("legendPosition") ? "c"+QtUtils::toString(cmcOpts.get<QPointF>("legendPosition")) : "'bottom'") +
-                            QString(" + guides(col=guide_legend(ncol=%1))\n\n").arg(destination.get<int>("ncol", p.major.size > 1 ? p.major.size : (p.minor.header.isEmpty() ? p.major.size : p.minor.size)))));
-
-    p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
+     p.file.write(qPrintable(QString("qplot(factor(%1)%2, data=BC, %3").arg(p.major.smooth ? (p.minor.header.isEmpty() ? "Algorithm" : p.minor.header) : p.major.header, (p.major.smooth || p.minor.smooth) ? ", Y" : "", (p.major.smooth || p.minor.smooth) ? "geom=\"boxplot\"" : "geom=\"bar\", position=\"dodge\", weight=Y") +
                             (p.major.size > 1 ? QString(", fill=factor(%1)").arg(p.major.header) : QString()) +
                             QString(", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()") +
                             (p.major.size > 1 ? getScale("fill", p.major.header, p.major.size) : QString()) +
@@ -451,6 +422,20 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination, false);
 
+    // Use a br::file for simple storage of plot options
+    QMap<QString,File> optMap;
+    optMap.insert("rocOptions", File(QString("[xLab=False Accepts Per Image,yLab=True Accept Rate,xLog=true,yLog=false]")));
+    optMap.insert("prOptions", File(QString("[xLab=False Accept Rate,yLab=False Reject Rate,xLog=true,yLog=true]")));
+
+    foreach (const QString &key, optMap.keys()) {
+        const QStringList options = destination.get<QStringList>(key, QStringList());
+        foreach (const QString &option, options) {
+            QStringList words = QtUtils::parse(option, '=');
+            QtUtils::checkArgsSize(words[0], words, 1, 2);
+            optMap[key].set(words[0], words[1]);
+        }
+    }
+
     p.file.write("# Split data into individual plots\n"
                  "plot_index = which(names(data)==\"Plot\")\n"
                  "DiscreteROC <- data[grep(\"DiscreteROC\",data$Plot),-c(1)]\n"
@@ -466,23 +451,15 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     if (filesHaveSinglePoint(files))
         plotType = QString("point");
 
-    foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1ROC%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
-                                (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
-                                (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
-                                QString(", xlab=\"False Accepts Per Image\", ylab=\"True Accept Rate\") + theme_minimal()") +
-                                (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                                (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                                QString(" + scale_x_log10() + scale_y_continuous(labels=percent, limits=c(0,1)) + annotation_logticks(sides=\"b\") + ggtitle(\"%1\") + theme(legend.position=\"bottom\")\n\n").arg(type)));
+    foreach (const QString &type, QStringList() << "Discrete" << "Continuous") {
+        optMap["rocOptions"].set("title", type);
+        p.qplot(plotType, type + "ROC", false, optMap["rocOptions"]);
+    }
 
-    foreach (const QString &type, QStringList() << "Discrete" << "Continuous")
-        p.file.write(qPrintable(QString("qplot(X, Y, data=%1PR%2").arg(type, (p.major.smooth || p.minor.smooth) ? ", geom=\"smooth\", method=loess, level=0.99" : QString(", geom=\"%1\"").arg(plotType)) +
-                                (p.major.size > 1 ? QString(", colour=factor(%1)").arg(p.major.header) : QString()) +
-                                (p.minor.size > 1 ? QString(", linetype=factor(%1)").arg(p.minor.header) : QString()) +
-                                QString(", xlab=\"Recall\", ylab=\"Precision\") + theme_minimal()") +
-                                (p.major.size > 1 ? getScale("colour", p.major.header, p.major.size) : QString()) +
-                                (p.minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(p.minor.header) : QString()) +
-                                QString(" + scale_x_continuous(limits=c(0,1)) + scale_y_continuous(labels=percent, limits=c(0,1)) + ggtitle(\"%1\") + theme(legend.position=\"bottom\")\n\n").arg(type)));
+    foreach (const QString &type, QStringList() << "Discrete" << "Continuous") {
+        optMap["prOptions"].set("title", type);
+        p.qplot(plotType, type + "PR", false, optMap["prOptions"]);
+    }
 
     p.file.write(qPrintable(QString("qplot(X, data=Overlap, geom=\"histogram\", position=\"identity\", xlab=\"Overlap\", ylab=\"Frequency\")") +
                             QString(" + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
