@@ -8,7 +8,7 @@ Mean_Vector=mean(X,2);
 m=repmat(Mean_Vector(:),1,Column);
 X=X-m;
 C=X*X'./Column;
-[V,D]=eig(C,'nobalance');
+[V,D]=eig(C);
 eigenvalues=diag(D);
 %Ordered by eigenvalues%
 [eigenvalues,Index]=sort(eigenvalues);

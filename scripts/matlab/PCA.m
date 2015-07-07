@@ -30,7 +30,7 @@ function [eigenvalues, eigenvectors, meanVector, V]=PCA(X,varargin)
     X=X-M;
 
     C=X'*X./Column;
-    [V,D]=eig(C,'nobalance');    
+    [V,D]=eig(C);
     eigenvalues=diag(D);
     
     %Ordered by eigenvalues%
