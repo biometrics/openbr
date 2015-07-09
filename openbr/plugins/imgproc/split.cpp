@@ -45,7 +45,7 @@ BR_REGISTER(Transform, SplitChannelsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Split a multi-channel matrix into several single-channel matrices.
+ * \brief Split a multi-row matrix into several single-row matrices.
  * \author Josh Klontz \cite jklontz
  */
 class SplitRowsTransform : public UntrainableTransform
