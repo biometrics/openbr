@@ -595,14 +595,15 @@ In order of their output, the figures are:
 1. Metadata table
 2. Receiver Operating Characteristic (ROC)
 3. Detection Error Tradeoff (DET)
-4. Score Distribution (SD) histogram
-5. True Accept Rate Bar Chart (BC)
-6. Cumulative Match Characteristic (CMC)
-7. Error Rate (ERR) curve
+4. Identification Error Tradeoff (IET)
+5. Cumulative Match Characteristic (CMC)
+6. Score Distribution (SD) histogram
+7. True Accept Rate Bar Chart (BC)
+8. Error Rate (ERR) curve
 
 Two files will be created:
  * **destination.R** which is the auto-generated R script used to render the figures.
- * **destination.pdf** which has all of the figures in one file multi-page file.
+ * **destination.pdf** which has all of the figures in one file multi-page file (note that **destination%1d.png** will output each figure to a separate file).
 
 OpenBR uses file and folder names to automatically determine the plot legend.
 For example, let's consider the case where three algorithms (<tt>A</tt>, <tt>B</tt>, & <tt>C</tt>) were each evaluated on two datasets (<tt>Y</tt> & <tt>Z</tt>).
@@ -610,6 +611,37 @@ The suggested way to plot these experiments on the same graph is to create a fol
 The '<tt>_</tt>' character plays a special role in determining the legend title(s) and value(s).
 In this case, <tt>A</tt>, <tt>B</tt>, & <tt>C</tt> will be identified as different values of type <tt>Algorithm</tt>, and each will be assigned its own color; <tt>Y</tt> & <tt>Z</tt> will be identified as different values of type Dataset, and each will be assigned its own line style.
 Matches around the EER will be displayed if the matches parameter is set in [br_eval](#br_eval).
+
+It is possible to customize some aspects of your plots using the [File](../cpp_api/file/file.md) key/value metadata convention; possible keys are described below.
+
+
+Key             | Value          | Description
+---             | ----           | -----------
+smooth          | [QString]      | The file pivot to average across evaluation splits.  Typically "Dataset" if using the folder name from above.
+ncol            | int            | Number of columns in plot legends.
+confidence      | float          | Confidence interval calculated for smooth, defaults to `0.95`
+metadata        | bool           | Optional plot metadata, defaults to `true`
+csv             | bool           | Optional output metadata tables to csv, defaults to `false`
+\*Options       | [QStringList]  | Key/value list of options for a specific plot.  Plots include "roc", "det", "iet", "cmc"
+
+Specific plot options are described below:
+
+Key             | Value          | Description
+---             | ----           | -----------
+title           | [QString]      | Plot title
+size            | float          | Line width
+legendPosition  | [QPointF]      | Legend coordinates on plot, ex. legendPosition=(X,Y)
+textSize        | float          | Size of text for title, legend and axes
+xTitle/yTitle   | [QString]      | Title for x/y axis
+xLog/yLog       | bool           | Plot log scale for x/y axis
+xLimits/yLimits | [QPointF]      | Set x/y axis limits, ex. xLimits=(lower,upper)
+xLabels/yLabels | [QString]      | Labels for ticks on x/y axis, ex. xLabeles=percent or xLabels=c(1,5,10)
+xBreaks/yBreaks | [QString]      | Specify breaks/ticks on x/y axis, ex. xBreaks=pretty_breaks(n=10) or xBreaks=c(1,5,10)
+
+If specifying plot options it is a good idea to wrap the destination file in single quotes to avoid parsing errors.
+The example below plots plots the six br_eval results in the Algorithm_Dataset folder described above, sets the number of legend columns and specifies some options for the CMC plot.
+
+`br -plot Algorithm_Dataset/* 'destination.pdf[ncol=3,cmcOptions=[xLog=false,xLimits=(1,20),xBreaks=pretty_breaks(n=10),xTitle=Ranks 1 through 20]]'`
 
 This function requires a current [R][R] installation with the following packages:
 
@@ -1395,3 +1427,6 @@ Close a provided [Gallery](../cpp_api/gallery/gallery.md).
 <!-- Links -->
 [R]: http://www.r-project.org/ "R"
 [QRegExp]: http://doc.qt.io/qt-5/QRegExp.html "QRegExp"
+[QString]: http://doc.qt.io/qt-5/QString.html "QString"
+[QStringList]: http://doc.qt.io/qt-5/QStringList.html "QStringList"
+[QPointF]: http://doc.qt.io/qt-5/QPointF.html "QPointF"
