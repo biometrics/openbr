@@ -282,7 +282,7 @@ struct RPlot
                               (opts.contains("size") ? QString(", size=I(%1)").arg(opts.get<QString>("size")) : QString()) +
                               (major.size > 1 ? QString(", colour=factor(%1)").arg(major.header) : QString()) +
                               (minor.size > 1 ? QString(", linetype=factor(%1)").arg(minor.header) : QString()) +
-                              (QString(", xlab=\"%1\", ylab=\"%2\") + theme_minimal()").arg(opts.get<QString>("xLab"), opts.get<QString>("yLab"))) +
+                              (QString(", xlab=\"%1\", ylab=\"%2\") + theme_minimal()").arg(opts.get<QString>("xTitle"), opts.get<QString>("yTitle"))) +
                               ((major.smooth || minor.smooth) && confidence != 0 && data != "CMC" ? QString(" + geom_errorbar(data=%1[seq(1, NROW(%1), by = 29),], aes(x=X, ymin=%2), width=0.1, alpha=I(1/2))").arg(data, flipY ? "(1-lower), ymax=(1-upper)" : "lower, ymax=upper") : QString()) +
                               (major.size > 1 ? getScale("colour", major.header, major.size) : QString()) +
                               (minor.size > 1 ? QString(" + scale_linetype_discrete(\"%1\")").arg(minor.header) : QString()) +
@@ -318,10 +318,10 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
-    optMap.insert("rocOptions", File(QString("[xLab=False Accept Rate,yLab=True Accept Rate,xLog=true,yLog=false]")));
-    optMap.insert("detOptions", File(QString("[xLab=False Accept Rate,yLab=False Reject Rate,xLog=true,yLog=true]")));
-    optMap.insert("ietOptions", File(QString("[xLab=False Positive Identification Rate (FPIR),yLab=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
-    optMap.insert("cmcOptions", File(QString("[xLab=Rank,yLab=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=c(1,5,10,50,100),xBreaks=c(1,5,10,50,100)]")));
+    optMap.insert("rocOptions", File(QString("[xTitle=False Accept Rate,yTitle=True Accept Rate,xLog=true,yLog=false]")));
+    optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true]")));
+    optMap.insert("ietOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
+    optMap.insert("cmcOptions", File(QString("[xTitle=Rank,yTitle=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=c(1,5,10,50,100),xBreaks=c(1,5,10,50,100)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
@@ -424,8 +424,8 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
 
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
-    optMap.insert("rocOptions", File(QString("[xLab=False Accepts Per Image,yLab=True Accept Rate,xLog=true,yLog=false]")));
-    optMap.insert("prOptions", File(QString("[xLab=False Accept Rate,yLab=False Reject Rate,xLog=true,yLog=true]")));
+    optMap.insert("rocOptions", File(QString("[xTitle=False Accepts Per Image,yTitle=True Accept Rate,xLog=true,yLog=false]")));
+    optMap.insert("prOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());

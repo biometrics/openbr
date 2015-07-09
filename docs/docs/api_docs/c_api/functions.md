@@ -630,13 +630,18 @@ Key             | Value          | Description
 ---             | ----           | -----------
 title           | [QString]      | Plot title
 size            | float          | Line width
-legendPosition  | [QPointF]      | Legend coordinates on plot
+legendPosition  | [QPointF]      | Legend coordinates on plot, ex. legendPosition=(X,Y)
 textSize        | float          | Size of text for title, legend and axes
-xLab/yLab       | [QString]      | Label for x/y axis
+xTitle/yTitle   | [QString]      | Title for x/y axis
 xLog/yLog       | bool           | Plot log scale for x/y axis
-xLimits/yLimits | [QPointF]      | Set x/y axis limits
-xLabels/yLabels | [QString]      | Labels for ticks on x/y axis
-xBreaks/yBreaks | [QString]      | Specify breaks/ticks on x/y axis
+xLimits/yLimits | [QPointF]      | Set x/y axis limits, ex. xLimits=(lower,upper)
+xLabels/yLabels | [QString]      | Labels for ticks on x/y axis, ex. xLabeles=percent or xLabels=c(1,5,10)
+xBreaks/yBreaks | [QString]      | Specify breaks/ticks on x/y axis, ex. xBreaks=pretty_breaks(n=10) or xBreaks=c(1,5,10)
+
+If specifying plot options it is a good idea to wrap the destination file in single quotes to avoid parsing errors.
+The example below plots plots the six br_eval results in the Algorithm_Dataset folder described above, sets the number of legend columns and specifies some options for the CMC plot.
+
+`br -plot Algorithm_Dataset/* 'destination.pdf[ncol=3,cmcOptions=[xLog=false,xLimits=(1,20),xBreaks=pretty_breaks(n=10),xTitle=Ranks 1 through 20]]'`
 
 This function requires a current [R][R] installation with the following packages:
 
