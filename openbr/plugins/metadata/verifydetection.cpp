@@ -28,7 +28,7 @@ namespace br
  * \br_property int index Index of the landmark to be used.          
  * \author Josh Klontz \cite jklontz
  */
-class VerifyDetectionTransform : public UntrainableTransform
+class VerifyDetectionTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int index READ get_index WRITE set_index RESET reset_index STORED false)
