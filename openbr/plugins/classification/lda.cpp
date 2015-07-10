@@ -52,8 +52,8 @@ BR_REGISTER(Initializer, EigenInitializer)
  * \author Josh Klontz \cite jklontz
  *
  * \br_property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
- * \br_property int drop BRENDAN OR JOSH FILL ME IN. Default is 0.
- * \br_property bool whiten BRENDAN OR JOSH FILL ME IN. Default is false.
+ * \br_property int drop The number of leading eigen-dimensions to drop.
+ * \br_property bool whiten Whether or not to perform PCA whitening (i.e., normalize variance of each dimension to unit norm)
  */
 class PCATransform : public Transform
 {
@@ -275,13 +275,13 @@ BR_REGISTER(Transform, DFFSTransform)
  * \brief Projects input into learned Linear Discriminant Analysis subspace.
  * \author Brendan Klare \cite bklare
  * \author Josh Klontz \cite jklontz
- * \br_property float pcaKeep BRENDAN OR JOSH FILL ME IN. Default is 0.98.
- * \br_property bool pcaWhiten BRENDAN OR JOSH FILL ME IN. Default is false.
- * \br_property int directLDA BRENDAN OR JOSH FILL ME IN. Default is 0.
- * \br_property float directDrop BRENDAN OR JOSH FILL ME IN. Default is 0.1.
- * \br_property QString inputVariable BRENDAN OR JOSH FILL ME IN. Default is "Label".
- * \br_property bool isBinary BRENDAN OR JOSH FILL ME IN. Default is false.
- * \br_property bool normalize BRENDAN OR JOSH FILL ME IN. Default is true.
+ * \br_property float pcaKeep If <= 1, the percentage of variance to retain in initial PCA step. If > 1, the number of dimensions to keep.
+ * \br_property bool pcaWhiten Whether or not to perform whitening during PCA step
+ * \br_property int directLDA Whether or not to use the Direct LDA algorithm.
+ * \br_property float directDrop Parameter for Direct LDA to specify how many leading vectors in within class matrix to drop. Based on variance.
+ * \br_property QString inputVariable Metadata key for subject labels. 
+ * \br_property bool isBinary Whether or not to perform binary LDA. Default is multi-class LDA (i.e., distance metric learning).
+ * \br_property bool normalize For binary LDA, whether or not to z-score normalize projection.
  */
 class LDATransform : public Transform
 {

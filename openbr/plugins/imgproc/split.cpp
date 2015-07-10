@@ -45,7 +45,8 @@ BR_REGISTER(Transform, SplitChannelsTransform)
 
 /*!
  * \ingroup transforms
- * \brief Split a multi-row matrix into several single-row matrices.
+ * \brief Split a multi-row matrix into several single-row or smaller multi-row matrices.
+ * \br_property int step The numbers of rows to include in each output matrix. 
  * \author Josh Klontz \cite jklontz
  */
 class SplitRowsTransform : public UntrainableTransform
