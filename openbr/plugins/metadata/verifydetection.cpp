@@ -26,7 +26,7 @@ namespace br
  *          during training, where the landmarks will be ground truth'd. If one wants to 
  *          using a ground truth bounding box instead, then convert the BB to a landmark.
  * \br_property int index Index of the landmark to be used.          
- * \author Josh Klontz \cite jklontz
+ * \author Brendan Klare \cite bklare
  */
 class VerifyDetectionTransform : public UntrainableMetaTransform
 {
