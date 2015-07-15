@@ -26,7 +26,7 @@ namespace br
  *          the the template's list of mats.
  * \author Brendan Klare \cite bklare
  */
-class RectsToMatsTransform : public UntrainableMetaTransform
+class RectsToMatsTransform : public UntrainableTransform
 {
     Q_OBJECT
 
