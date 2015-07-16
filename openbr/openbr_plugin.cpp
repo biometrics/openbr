@@ -428,7 +428,7 @@ br_utemplate Template::toUniversalTemplate(const Template &t)
         // lists of points and rects, too
         else if (v.type() == QVariant::List) {
             QVariantList oldlist = qvariant_cast<QVariantList>(v);
-            if (oldlist.first().canConvert(QVariant::PointF) || oldlist.first().canConvert(QVariant::RectF)) {
+            if (!oldlist.isEmpty() && (oldlist.first().canConvert(QVariant::PointF) || oldlist.first().canConvert(QVariant::RectF))) {
                 QVariantList newlist;
                 foreach (const QVariant &subv, oldlist) {
                     newlist.append(QtUtils::toString(subv));
@@ -472,7 +472,7 @@ Template Template::fromUniversalTemplate(br_const_utemplate ut)
         // convert lists of rects and points, too
         else if (v.type() == QVariant::List) {
             QVariantList oldlist = qvariant_cast<QVariantList>(v);
-            if (oldlist.first().type() == QVariant::String) {
+            if (!oldlist.isEmpty() && oldlist.first().type() == QVariant::String) {
                 QString test = qvariant_cast<QString>(oldlist.first());
                 QtUtils::toRect(test, &istype);
                 QVariantList newlist;
