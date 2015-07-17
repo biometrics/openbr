@@ -55,7 +55,6 @@ BR_REGISTER(Initializer, EigenInitializer)
 class PCATransform : public Transform
 {
     Q_OBJECT
-    friend class DFFSTransform;
     friend class LDATransform;
 
 protected:
@@ -218,54 +217,6 @@ protected:
 };
 
 BR_REGISTER(Transform, PCATransform)
-
-/*!
- * \ingroup transforms
- * \brief Computes Distance From Feature Space (DFFS)
- * \br_paper Moghaddam, Baback, and Alex Pentland.
- *           "Probabilistic visual learning for object representation."
- *           Pattern Analysis and Machine Intelligence, IEEE Transactions on 19.7 (1997): 696-710.
- * \author Josh Klontz \cite jklontz
- * \br_property float keep Sets PCA keep property. Default is 0.95.
- */
-class DFFSTransform : public Transform
-{
-    Q_OBJECT
-    Q_PROPERTY(float keep READ get_keep WRITE set_keep RESET reset_keep STORED false)
-    BR_PROPERTY(float, keep, 0.95)
-
-    PCATransform pca;
-    Transform *cvtFloat;
-
-    void init()
-    {
-        pca.keep = keep;
-        cvtFloat = make("CvtFloat");
-    }
-
-    void train(const TemplateList &data)
-    {
-        pca.train((*cvtFloat)(data));
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-        dst.file.set("DFFS", sqrt(pca.residualReconstructionError((*cvtFloat)(src))));
-    }
-
-    void store(QDataStream &stream) const
-    {
-        pca.store(stream);
-    }
-
-    void load(QDataStream &stream)
-    {
-        pca.load(stream);
-    }
-};
-
-BR_REGISTER(Transform, DFFSTransform)
 
 /*!
  * \ingroup transforms
