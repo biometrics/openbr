@@ -68,7 +68,7 @@ struct RPlot
 
     Pivot major, minor;
 
-    RPlot(QStringList files, const File &destination, bool isEvalFormat = true)
+    RPlot(QStringList files, const File &destination)
     {
         if (files.isEmpty()) qFatal("Empty file list.");
         qSort(files.begin(), files.end(), sortFiles);
@@ -83,13 +83,9 @@ struct RPlot
         bool success = file.open(QFile::WriteOnly);
         if (!success) qFatal("Failed to open %s for writing.", qPrintable(file.fileName()));
 
-        file.write("# Load libraries\n"
-                   "library(ggplot2)\n"
-                   "library(gplots)\n"
-                   "library(reshape)\n"
-                   "library(scales)\n"
-                   "\n"
-                   "# Read CSVs\n"
+        // Copy plot_utils.R into output script with source()
+        file.write(qPrintable(QString("source(\"%1\")\n\n").arg(Globals->sdkPath + "/share/openbr/plotting/plot_utils.R")));
+        file.write("# Read CSVs\n"
                    "data <- NULL\n");
 
         // Read files and retrieve pivots
@@ -123,8 +119,6 @@ struct RPlot
         }
 
         const QString &smooth = destination.get<QString>("smooth", "");
-        confidence = destination.get<float>("confidence", 95) / 100.0;
-
         major.smooth = !smooth.isEmpty() && (major.header == smooth) && (major.size > 1);
         minor.smooth = !smooth.isEmpty() && (minor.header == smooth) && (minor.size > 1);
         if (major.smooth) major.size = 1;
@@ -132,68 +126,9 @@ struct RPlot
         if (major.size < minor.size)
             std::swap(major, minor);
 
+        confidence = destination.get<float>("confidence", 95) / 100.0;
         ncol = destination.get<int>("ncol", major.size > 1 ? major.size : (minor.header.isEmpty() ? major.size : minor.size));
         flip = minor.header == "Algorithm";
-        // Format data
-        if (isEvalFormat)
-            file.write(qPrintable(QString("\n"
-                       "# Split data into individual plots\n"
-                       "plot_index = which(names(data)==\"Plot\")\n"
-                       "Metadata <- data[grep(\"Metadata\",data$Plot),-c(1)]\n"
-                       "IM <- data[grep(\"IM\",data$Plot),-c(1)]\n"
-                       "GM <- data[grep(\"GM\",data$Plot),-c(1)]\n"
-                       "DET <- data[grep(\"DET\",data$Plot),-c(1)]\n"
-                       "IET <- data[grep(\"IET\",data$Plot),-c(1)]\n"
-                       "FAR <- data[grep(\"FAR\",data$Plot),-c(1)]\n"
-                       "FRR <- data[grep(\"FRR\",data$Plot),-c(1)]\n"
-                       "SD <- data[grep(\"SD\",data$Plot),-c(1)]\n"
-                       "TF <- data[grep(\"TF\",data$Plot),-c(1)]\n"
-                       "FT <- data[grep(\"FT\",data$Plot),-c(1)]\n"
-                       "CT <- data[grep(\"CT\",data$Plot),-c(1)]\n"
-                       "BC <- data[grep(\"BC\",data$Plot),-c(1)]\n"
-                       "TS <- data[grep(\"TS\",data$Plot),-c(1)]\n"
-                       "CMC <- data[grep(\"CMC\",data$Plot),-c(1)]\n"
-                       "FAR$Error <- \"FAR\"\n"
-                       "FRR$Error <- \"FRR\"\n"
-                       "ERR <- rbind(FAR, FRR)\n"
-                       "rm(data, FAR, FRR)\n"
-                       "\n"
-                       "# Format data\n"
-                       "Metadata$Y<-factor(Metadata$Y, levels=c(\"Genuine\",\"Impostor\",\"Ignored\",\"Gallery\",\"Probe\"))\n"
-                       "IM$Y <- as.character(IM$Y)\n"
-                       "GM$Y <- as.character(GM$Y)\n"
-                       "DET$Y <- as.numeric(as.character(DET$Y))\n"
-                       "IET$Y <- as.numeric(as.character(IET$Y))\n"
-                       "ERR$Y <- as.numeric(as.character(ERR$Y))\n"
-                       "SD$Y <- as.factor(unique(as.character(SD$Y)))\n"
-                       "TF$Y <- as.numeric(as.character(TF$Y))\n"
-                       "FT$Y <- as.numeric(as.character(FT$Y))\n"
-                       "CT$Y <- as.numeric(as.character(CT$Y))\n"
-                       "BC$Y <- as.numeric(as.character(BC$Y))\n"
-                       "TS$Y <- as.character(TS$Y)\n"
-                       "CMC$Y <- as.numeric(as.character(CMC$Y))\n"
-                       "\n"
-                       "if (%1) {\n\tsummarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=%3, .drop=TRUE) {\n\t\t"
-                       "require(plyr)\n\n\t\tlength2 <- function (x, na.rm=FALSE) {\n\t\t\tif (na.rm) sum(!is.na(x))\n\t\t\telse       length(x)"
-                       "\n\t\t}\n\n\t\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t\t"
-                       "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t\t},"
-                       "\n\t\t\tmeasurevar\n\t\t)\n\n\t\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\t\tdatac$se <- datac$sd / sqrt(datac$N)"
-                       "\n\t\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\t\tdatac$ci <- datac$se * ciMult\n\n\t\t"
-                       "datac$upper <- if(datac[, measurevar] + datac$ci < 1) (datac[, measurevar] + datac$ci) else 1\n\t\t"
-                       "datac$lower <- if(datac[, measurevar] - datac$ci > 0) (datac[, measurevar] - datac$ci) else 0\n\n\t\treturn(datac)\n\t}\n\t"
-                       "DET <- summarySE(DET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
-                       "IET <- summarySE(IET, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
-                       "CMC <- summarySE(CMC, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
-                       "ERR <- summarySE(ERR, measurevar=\"X\", groupvars=c(\"Error\", \"%2\", \"Y\"))\n\t"
-                       "TF <- summarySE(TF, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
-                       "FT <- summarySE(FT, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n\t"
-                       "CT <- summarySE(CT, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"))\n}\n\n"
-                       "# Code to format FAR values\n"
-                       "far_names <- list('0.001'=\"FAR = 0.1%\", '0.01'=\"FAR = 1%\")\n"
-                       "far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }\n"
-                       "\n").arg((major.smooth || minor.smooth) ? "TRUE" : "FALSE",
-                                 major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header),
-                                 QString::number(confidence))));
 
         // Open output device
         file.write(qPrintable(QString("\n"
@@ -203,77 +138,6 @@ struct RPlot
         // Write figures
         file.write("\n"
                    "# Write figures\n");
-    }
-
-    void plotMetadata(bool csv)
-    {
-        file.write(qPrintable(QString("# Code to format TAR@FAR table\n"
-                                      "algs <- unique(%4)\n"
-                                      "algs <- algs[!duplicated(algs)]\n"
-                                      "mat <- matrix(%1,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                                      "colnames(mat) <- algs \n"
-                                      "rownames(mat) <- c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")\n"
-                                      "TFtable <- as.table(mat)\n"
-                                      "\n"
-                                      "# Code to format FAR@TAR table\n"
-                                      "mat <- matrix(%2,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                                      "colnames(mat) <- algs \n"
-                                      "rownames(mat) <- c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")\n"
-                                      "FTtable <- as.table(mat)\n"
-                                      "\n"
-                                      "# Code to format CMC Table\n"
-                                      "mat <- matrix(%3,nrow=6,ncol=length(algs),byrow=FALSE)\n"
-                                      "colnames(mat) <- algs \n"
-                                      "rownames(mat) <- c(\"Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")\n"
-                                      "CMCtable <- as.table(mat)\n"
-                                      "\n"
-                                      "# Code to format Template Size Table\n"
-                                      "if (nrow(TS) != 0) {\n\t"
-                                      "mat <- matrix(TS$Y,nrow=1,ncol=length(algs),byrow=FALSE)\n\t"
-                                      "colnames(mat) <- algs\n\t"
-                                      "rownames(mat) <- c(\"Template Size (bytes):\")\n\t"
-                                      "TStable <- as.table(mat)\n}"
-                                      "\n").arg((major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(TF$Y, 3)), round(TF$ci, 3), sep=\"\\u00b1\")" : "TF$Y",
-                                                (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(FT$Y, 3)), round(FT$ci, 3), sep=\"\\u00b1\")" : "FT$Y",
-                                                (major.smooth || minor.smooth) && confidence != 0 ? "paste(as.character(round(CT$Y, 3)), round(CT$ci, 3), sep=\"\\u00b1\")" : "CT$Y",
-                                                (major.size > 1 && minor.size > 1) && !(major.smooth || minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(major.header, minor.header)
-                                                                                                                      : QString("TF$%1").arg(major.size > 1 ? major.header : (minor.header.isEmpty() ? major.header : minor.header)))));
-
-        file.write("\n# Write metadata table\n");
-        QString textplot = "MT <- as.data.frame(Metadata[c(1,2,3,4,5),])\n"
-                           "par(mfrow=c(4,1))\n"
-                           "plot.new()\n"
-                           "print(title(paste(\"%1 - %2\",date(),sep=\"\\n\")))\n"
-                           "mat <- matrix(MT$X[c(1,2)],ncol=2)\n"
-                           "colnames(mat) <- c(\"Gallery\", \"Probe\")\n"
-                           "imageTable <- as.table(mat)\n"
-                           "print(textplot(imageTable,show.rownames=FALSE))\n"
-                           "print(title(\"Images\"))\n"
-                           "mat <- matrix(MT$X[c(3,4,5)],ncol=3)\n"
-                           "colnames(mat) <- c(\"Genuine\", \"Impostor\", \"Ignored\")\n"
-                           "matchTable <- as.table(mat)\n"
-                           "print(textplot(matchTable,show.rownames=FALSE))\n"
-                           "print(title(\"Matches\"))\n"
-                           "plot.new()\n"
-                           "print(title(\"Gallery * Probe = Genuine + Impostor + Ignored\"))\n";
-        file.write(qPrintable(textplot.arg(PRODUCT_NAME, PRODUCT_VERSION)));
-
-        if (csv)
-            textplot = QString("write.csv(TFtable,file=\"%1_TF.csv\")\n"
-                       "write.csv(FTtable,file=\"%1_FT.csv\")\n"
-                       "write.csv(CMCtable,file=\"%1_CMC.csv\")\n\n").arg(basename);
-        else
-            textplot = "plot.new()\n"
-                       "print(textplot(TFtable))\n"
-                       "print(title(\"Table of True Accept Rates at various False Accept Rates\"))\n"
-                       "print(textplot(FTtable))\n"
-                       "print(title(\"Table  of False Accept Rates at various True Accept Rates\"))\n"
-                       "print(textplot(CMCtable))\n"
-                       "print(title(\"Table of retrieval rate at various ranks\"))\n"
-                       "if (nrow(TS) != 0) {\n\t"
-                       "print(textplot(TStable, cex=1.15))\n\t"
-                       "print(title(\"Template Size by Algorithm\"))\n}\n\n";
-        file.write(qPrintable(textplot));
     }
 
     void qplot(QString geom, QString data, bool flipY, File opts)
@@ -315,6 +179,25 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
 
     RPlot p(files, destination);
+    p.file.write("\nevalFormatting()\n\n");
+
+    // Set variables in R
+    p.file.write(qPrintable(QString("basename <- \"%1\"\n").arg(p.basename)));
+    p.file.write(qPrintable(QString("errBars <- %1\n").arg((p.major.smooth || p.minor.smooth) && p.confidence != 0 ? "TRUE" : "FALSE")));
+    p.file.write(qPrintable(QString("csv <- %1\n").arg(destination.getBool("csv") ? "TRUE" : "FALSE")));
+    p.file.write(qPrintable(QString("algs <- %1\n").arg((p.major.size > 1 && p.minor.size > 1) && !(p.major.smooth || p.minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(p.major.header, p.minor.header)
+                                                                                                                              : QString("TF$%1").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header)))));
+    p.file.write("algs <- algs[!duplicated(algs)]\n");
+
+    if (p.major.smooth || p.minor.smooth) {
+        QString groupvar = p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header);
+        foreach(const QString &type, QStringList() << "DET" << "IET" << "CMC" << "TF" << "FT" << "CT") {
+            p.file.write(qPrintable(QString("%1 <- summarySE(%1, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"), conf.interval=%3)"
+                                            "\n").arg(type, groupvar, QString::number(p.confidence))));
+        }
+        p.file.write(qPrintable(QString("%1 <- summarySE(%1, measurevar=\"X\", groupvars=c(\"Error\", \"%2\", \"Y\"), conf.interval=%3)"
+                                        "\n\n").arg("ERR", groupvar, QString::number(p.confidence))));
+    }
 
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
@@ -333,8 +216,23 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     }
 
     // optional plot metadata and accuracy tables
-    if (destination.getBool("metadata", true))
-        p.plotMetadata(destination.getBool("csv", false));
+    if (destination.getBool("metadata", true)) {
+        p.file.write("\n# Write metadata table\n");
+        p.file.write(qPrintable(QString("plotMetadata(data=data, title=\"%1 - %2\")\n").arg(PRODUCT_NAME, PRODUCT_VERSION)));
+
+        if (!destination.getBool("csv")) p.file.write("plot.new()\n");
+        QString table = "plotTable(data=%1, name=%2, labels=%3)\n";
+        p.file.write(qPrintable(table.arg("TF", "\"Table of True Accept Rates at various False Accept Rates\"",
+                          "c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")")));
+        p.file.write(qPrintable(table.arg("FT", "\"Table  of False Accept Rates at various True Accept Rates\"",
+                          "c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")")));
+        p.file.write(qPrintable(table.arg("CT", "\"Table of retrieval rate at various ranks\"",
+                          "c(\"Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")")));
+        p.file.write(qPrintable(table.arg("TS", "\"Template Size by Algorithm\"",
+                          "c(\"Template Size (bytes):\")")));
+        p.file.write("\n");
+    }
+
     p.qplot("line", "DET", true, optMap["rocOptions"]);
     p.qplot("line", "DET", false, optMap["detOptions"]);
     p.qplot("line", "IET", false, optMap["ietOptions"]);
@@ -361,12 +259,7 @@ bool Plot(const QStringList &files, const File &destination, bool show)
                             ((p.flip ? p.minor.size : p.major.size) > 1 ? QString(" + facet_wrap(~ %1, scales=\"free_x\")").arg(p.flip ? p.minor.header : p.major.header) : QString()) +
                             QString(" + theme(aspect.ratio=1)\n\n")));
 
-    p.file.write(qPrintable(QString("if (nrow(IM) != 0) {\n\tlibrary(jpeg)\n\tlibrary(png)\n\tlibrary(grid)\n\t") +
-                            QString("multiplot <- function(..., plotlist=NULL, cols) {\n\t") +
-                            QString("\trequire(grid)\n\n\t\t# Make a list from the ... arguments and plotlist\n\t\tplots <- c(list(...), plotlist)\n") + 
-                            QString("\t\tnumPlots = length(plots)\n\n\t\t# Make the panel\n\t\tplotCols = cols\n\t\tplotRows = ceiling(numPlots/plotCols)\n\n") +
-                            QString("\t\t# Set up the page\n\t\tgrid.newpage()\n\t\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols)))\n\t\tvplayout <- function(x, y)\n\t\t\tviewport(layout.pos.row = x, layout.pos.col = y)\n\n") +
-                            QString("\t\t# Make each plot, in the correct location\n\t\tfor (i in 1:numPlots) {\n\t\t\tcurRow = ceiling(i/plotCols)\n\t\t\tcurCol = (i-1) %% plotCols + 1\n\t\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n\t\t}\n\t}\n\n")));
+    p.file.write(qPrintable(QString("if (nrow(IM) != 0) {\n\tlibrary(jpeg)\n\tlibrary(png)\n\tlibrary(grid)\n\t")));
     
     p.file.write(qPrintable(QString("\t# Print impostor matches above the EER\n\tfor (i in 1:nrow(IM)) {\n\t\tscore <- IM[i,1]\n\t\tfiles <- IM[i,2]\n\t\talg <- IM[i,3]\n\t\tfiles <- unlist(strsplit(files, \"[:]\"))\n\n\t\text1 <- unlist(strsplit(files[2], \"[.]\"))[2]\n\t\text2 <- unlist(strsplit(files[4], \"[.]\"))[2]\n\t\t") +
                             QString("if (ext1 == \"jpg\" || ext1 == \"JPEG\" || ext1 == \"jpeg\" || ext1 == \"JPG\") {\n\t\t\timg1 <- readJPEG(files[2])\n\t\t} else if (ext1 == \"PNG\" || ext1 == \"png\") {\n\t\t\timg1 <- readPNG(files[2])\n\t\t} else if (ext1 == \"TIFF\" || ext1 == \"tiff\" || ext1 == \"TIF\" || ext1 == \"tif\") {\n\t\t\timg1 <- readTIFF(files[2])\n\t\t} else {\n\t\t\tnext\n\t\t}\n\t\tif (ext2 == \"jpg\" || ext2 == \"JPEG\" || ext2 == \"jpeg\" || ext2 == \"JPG\") {\n\t\t\timg2 <- readJPEG(files[4])\n\t\t} ") +
@@ -420,7 +313,7 @@ bool filesHaveSinglePoint(const QStringList &files) {
 bool PlotDetection(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
-    RPlot p(files, destination, false);
+    RPlot p(files, destination);
 
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
@@ -478,7 +371,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
 bool PlotLandmarking(const QStringList &files, const File &destination, bool show)
 {
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
-    RPlot p(files, destination, false);
+    RPlot p(files, destination);
 
     p.file.write(qPrintable(QString("# Split data into individual plots\n"
                                     "plot_index = which(names(data)==\"Plot\")\n"
@@ -493,14 +386,6 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
                                     "NormLength <- data[grep(\"NormLength\",data$Plot),-c(1)]\n"
                                     "rm(data)\n"
                                     "\n")));
-
-    p.file.write(qPrintable(QString("summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {\n\t"
-                                    "require(plyr)\n\n\tlength2 <- function (x, na.rm=FALSE) {\n\t\tif (na.rm) sum(!is.na(x))\n\t\telse       length(x)"
-                                    "\n\t}\n\n\tdatac <- ddply(data, groupvars, .drop=.drop, .fun = function(xx, col) {\n\t\t"
-                                    "c(N=length2(xx[[col]], na.rm=na.rm), mean=mean(xx[[col]], na.rm=na.rm), sd=sd(xx[[col]], na.rm=na.rm))\n\t\t},"
-                                    "\n\t\tmeasurevar\n\t)\n\n\tdatac <- rename(datac, c(\"mean\" = measurevar))\n\tdatac$se <- datac$sd / sqrt(datac$N)"
-                                    "\n\tciMult <- qt(conf.interval/2 + .5, datac$N-1)\n\tdatac$ci <- datac$se * ciMult\n\n\treturn(datac)\n}\n")));
-
 
     p.file.write(qPrintable(QString("\nreadData <- function(data) {\n\texamples <- list()\n"
                                     "\tfor (i in 1:nrow(data)) {\n"
@@ -525,27 +410,7 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
 
     p.file.write(qPrintable(QString("\nlibrary(jpeg)\n"
                                     "library(png)\n"
-                                    "library(grid)\n"
-                                    "multiplot <- function(..., plotlist=NULL, cols) {\n"
-                                    "\trequire(grid)\n"
-                                    "\t# Make a list from the ... arguments and plotlist\n"
-                                    "\tplots <- c(list(...), plotlist)\n"
-                                    "\tnumPlots = length(plots)\n"
-                                    "\t# Make the panel\n"
-                                    "\tplotCols = cols\n"
-                                    "\tplotRows = ceiling(numPlots/plotCols)\n"
-                                    "\t# Set up the page\n"
-                                    "\tgrid.newpage()\n"
-                                    "\tpushViewport(viewport(layout = grid.layout(plotRows, plotCols)))\n"
-                                    "\tvplayout <- function(x, y)\n"
-                                    "\tviewport(layout.pos.row = x, layout.pos.col = y)\n"
-                                    "\t# Make each plot, in the correct location\n"
-                                    "\tfor (i in 1:numPlots) {\n"
-                                    "\t\tcurRow = ceiling(i/plotCols)\n"
-                                    "\t\tcurCol = (i-1) %% plotCols + 1\n"
-                                    "\t\tprint(plots[[i]], vp = vplayout(curRow, curCol))\n"
-                                    "\t}\n"
-                                    "}\n")));
+                                    "library(grid)\n")));
 
     p.file.write(qPrintable(QString("\nplotImage <- function(image, title=NULL, label=NULL) { \n"
                                     "\tp <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(rasterGrob(image$image), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=title) + xlab(label)\n"
@@ -599,7 +464,7 @@ bool PlotMetadata(const QStringList &files, const QString &columns, bool show)
 {
     qDebug("Plotting %d metadata file(s) for columns %s", files.size(), qPrintable(columns));
 
-    RPlot p(files, "PlotMetadata", false);
+    RPlot p(files, "PlotMetadata");
     foreach (const QString &column, columns.split(";"))
         p.file.write(qPrintable(QString("qplot(%1, %2, data=data, geom=\"violin\", fill=%1) + coord_flip() + theme_minimal()\nggsave(\"%2.pdf\")\n").arg(p.major.header, column)));
     return p.finalize(show);
