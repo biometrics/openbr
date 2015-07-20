@@ -3,6 +3,9 @@ library("ggplot2")
 library("gplots")
 library("reshape")
 library("scales")
+library("jpeg")
+library("png")
+library("grid")
 
 # Code to format FAR values
 far_names <- list('0.001'="FAR = 0.1%", '0.01'="FAR = 1%")
@@ -51,6 +54,24 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
         print(textplot(table))
         print(title(name))
     }
+}
+
+plotLandmarkTables <- function(tableData=NULL) {
+    if(majorSize > 1) {
+        var <- majorHeader
+    } else {
+        if(minorHeader == "") var <- majorHeader else var <- minorHeader
+    }
+    StatBox <- summarySE(tableData, measurevar="Y", groupvars=c(var,"X"))
+    OverallStatBox <- summarySE(tableData, measurevar="Y", groupvars=c(var))
+    mat <- matrix(paste(as.character(round(StatBox$Y, 3)), round(StatBox$ci, 3), sep=" \u00b1 "), nrow=rows, ncol=length(algs), byrow=FALSE)
+    mat <- rbind(mat, paste(as.character(round(OverallStatBox$Y, 3)), round(OverallStatBox$ci, 3), sep=" \u00b1 "))
+    mat <- rbind(mat, as.character(round(NormLength$Y, 3)))
+    colnames(mat) <- algs
+    rownames(mat) <- c(seq(0, rows-1), "Aggregate","Average IPD")
+    ETable <- as.table(mat)
+    print(textplot(ETable))
+    print(title("Landmarking Error Rates"))
 }
 
 plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="line") {
@@ -138,6 +159,20 @@ plotERR <- function(errData=NULL) {
     return(p)
 }
 
+plotOverlap <- function(overlapData=NULL) {
+    p <- qplot(X, data=overlapData, geom="histogram", position="identity", xlab="Overlap", ylab="Frequency")
+    p <- p + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
+    if(majorSize > 1) {
+        if(minorSize) {
+            p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", majorHeader)), scales="free")
+        } else {
+            p <- p + facet_wrap(facets=as.formula(paste("~", majorHeader)), scales="free")
+        }
+    }
+    p <- p + theme(aspect.ratio=1, legend.position="bottom")
+    return(p)
+}
+
 formatData <- function(type="eval") {
     if (type == "eval") {
 	    # Split data into individual plots
@@ -182,7 +217,6 @@ formatData <- function(type="eval") {
         ContinuousPR <<- data[grep("ContinuousPR",data$Plot),-c(1)]
         Overlap <<- data[grep("Overlap",data$Plot),-c(1)]
         AverageOverlap <<- data[grep("AverageOverlap",data$Plot),-c(1)]
-
     } else if (type == "landmarking") {
         # Split data into individual plots
         Box <<- data[grep("Box",data$Plot),-c(1)]
@@ -194,10 +228,13 @@ formatData <- function(type="eval") {
         EXP <<- data[grep("EXP",data$Plot),-c(1)]
         EXP$X <<- as.character(EXP$X)
         NormLength <<- data[grep("NormLength",data$Plot),-c(1)]
+        sample <<- readImageData(Sample)
+        rows <<- sample[[1]]$value
     }
 }
 
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=0.95, .drop=TRUE) {
+    # derived from http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
 	require(plyr)
 
 	length2 <- function (x, na.rm=FALSE) {
@@ -246,85 +283,88 @@ multiplot <- function(..., plotlist=NULL, cols) {
 plotEERSamples <- function(imData=NULL, gmData=NULL) {
     if(nrow(imData) == 0) return()
 
-    library(jpeg)
-    library(png)
-    library(grid)
+    printImages <- function(images, label) {
+        for (i in 1:nrow(images)) {
+            score <- images[i,1]
+            files <- images[i,2]
+            alg <- images[i,3]
+            files <- unlist(strsplit(files, "[:]"))
 
-    for (i in 1:nrow(imData)) {
-        score <- imData[i,1]
-        files <- imData[i,2]
-        alg <- imData[i,3]
-        files <- unlist(strsplit(files, "[:]"))
+            ext1 <- unlist(strsplit(files[2], "[.]"))[2]
+            ext2 <- unlist(strsplit(files[4], "[.]"))[2]
+            if (ext1 == "jpg" || ext1 == "JPEG" || ext1 == "jpeg" || ext1 == "JPG") {
+                img1 <- readJPEG(files[2])
+            } else if (ext1 == "PNG" || ext1 == "png") {
+                img1 <- readPNG(files[2])
+            } else if (ext1 == "TIFF" || ext1 == "tiff" || ext1 == "TIF" || ext1 == "tif") {
+                img1 <- readTIFF(files[2])
+            } else {
+                next
+            }
+            if (ext2 == "jpg" || ext2 == "JPEG" || ext2 == "jpeg" || ext2 == "JPG") {
+                img2 <- readJPEG(files[4])
+            } else if (ext2 == "PNG" || ext2 == "png") {
+                img2 <- readPNG(files[4])
+            } else if (ext2 == "TIFF" || ext2 == "tiff" || ext2 == "TIF" || ext2 == "tif") {
+                img2 <- readTIFF(files[4])
+            } else {
+                next
+            }
+            name1 <- files[1]
+            name2 <- files[3]
 
-        ext1 <- unlist(strsplit(files[2], "[.]"))[2]
-        ext2 <- unlist(strsplit(files[4], "[.]"))[2]
-        if (ext1 == "jpg" || ext1 == "JPEG" || ext1 == "jpeg" || ext1 == "JPG") {
-            img1 <- readJPEG(files[2])
-        } else if (ext1 == "PNG" || ext1 == "png") {
-            img1 <- readPNG(files[2])
-        } else if (ext1 == "TIFF" || ext1 == "tiff" || ext1 == "TIF" || ext1 == "tif") {
-            img1 <- readTIFF(files[2])
-        } else {
-            next
+            g1 <- rasterGrob(img1, interpolate=TRUE)
+            g2 <- rasterGrob(img2, interpolate=TRUE)
+
+            plot1 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(unlist(strsplit(files[2], "[/]"))[length(unlist(strsplit(files[2], "[/]")))]) + xlab(name1)
+            plot2 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste(label, " score =", score)) + ylab(unlist(strsplit(files[4], "[/]"))[length(unlist(strsplit(files[4], "[/]")))]) + xlab(name2)
+
+            multiplot(plot1, plot2, cols=2)
         }
-        if (ext2 == "jpg" || ext2 == "JPEG" || ext2 == "jpeg" || ext2 == "JPG") {
-            img2 <- readJPEG(files[4])
-        } else if (ext2 == "PNG" || ext2 == "png") {
-            img2 <- readPNG(files[4])
-        } else if (ext2 == "TIFF" || ext2 == "tiff" || ext2 == "TIF" || ext2 == "tif") {
-            img2 <- readTIFF(files[4])
-        } else {
-            next
-        }
-        name1 <- files[1]
-        name2 <- files[3]
-
-        g1 <- rasterGrob(img1, interpolate=TRUE)
-        g2 <- rasterGrob(img2, interpolate=TRUE)
-
-        plot1 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(unlist(strsplit(files[2], "[/]"))[length(unlist(strsplit(files[2], "[/]")))]) + xlab(name1)
-        plot2 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste("Impostor score =", score)) + ylab(unlist(strsplit(files[4], "[/]"))[length(unlist(strsplit(files[4], "[/]")))]) + xlab(name2)
-
-        multiplot(plot1, plot2, cols=2)
     }
-
-    # Print genuine matches below the EER
-    for (i in 1:nrow(gmData)) {
-        score <- gmData[i,1]
-        files <- gmData[i,2]
-        alg <- gmData[i,3]
-        files <- unlist(strsplit(files, "[:]"))
-
-        ext1 <- unlist(strsplit(files[2], "[.]"))[2]
-        ext2 <- unlist(strsplit(files[4], "[.]"))[2]
-        if (ext1 == "jpg" || ext1 == "JPEG" || ext1 == "jpeg" || ext1 == "JPG") {
-            img1 <- readJPEG(files[2])
-        } else if (ext1 == "PNG" || ext1 == "png") {
-            img1 <- readPNG(files[2])
-        } else if (ext1 == "TIFF" || ext1 == "tiff" || ext1 == "TIF" || ext1 == "tif") {
-            img1 <- readTIFF(files[2])
-        } else {
-            next
-        }
-        if (ext2 == "jpg" || ext2 == "JPEG" || ext2 == "jpeg" || ext2 == "JPG") {
-            img2 <- readJPEG(files[4])
-        } else if (ext2 == "PNG" || ext2 == "png") {
-            img2 <- readPNG(files[4])
-        } else if (ext2 == "TIFF" || ext2 == "tiff" || ext2 == "TIF" || ext2 == "tif") {
-            img2 <- readTIFF(files[4])
-        } else {
-            next
-        }
-        name1 <- files[1]
-        name2 <- files[3]
-
-        g1 <- rasterGrob(img1, interpolate=TRUE)
-        g2 <- rasterGrob(img2, interpolate=TRUE)
-
-        plot1 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(unlist(strsplit(files[2], "[/]"))[length(unlist(strsplit(files[2], "[/]")))]) + xlab(name1)
-        plot2 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste("Genuine score =", score)) + ylab(unlist(strsplit(files[4], "[/]"))[length(unlist(strsplit(files[4], "[/]")))]) + xlab(name2)
-
-        multiplot(plot1, plot2, cols=2)
-    }
-
+    printImages(imData, "Impostor")
+    printImages(gmData, "Genuine")
 }
+
+plotLandmarkSamples <- function(samples=NULL, expData=NULL, extData=NULL) {
+    print(plotImage(samples[[1]], "Sample Landmarks", sprintf("Total Landmarks: %s", samples[[1]]$value)))
+    if (nrow(EXT) != 0 && nrow(EXP)) {
+        for (j in 1:length(algs)) {
+            truthSample <- readData(EXT[EXT$. == algs[[j]],])
+            predictedSample <- readData(EXP[EXP$. == algs[[j]],])
+            for (i in 1:length(predictedSample)) {
+                multiplot(plotImage(predictedSample[[i]], sprintf("%s\nPredicted Landmarks", algs[[j]]), sprintf("Average Landmark Error: %.3f", predictedSample[[i]]$value)), plotImage(truthSample[[i]], "Ground Truth\nLandmarks", ""), cols=2)
+            }
+        }
+    }
+}
+
+readImageData <- function(data) {
+    examples <- list()
+    for (i in 1:nrow(data)) {
+        path <- data[i,1]
+        value <- data[i,2]
+        file <- unlist(strsplit(path, "[.]"))[1]
+        ext <- unlist(strsplit(path, "[.]"))[2]
+        if (ext == "jpg" || ext == "JPEG" || ext == "jpeg" || ext == "JPG") {
+            img <- readJPEG(path)
+        } else if (ext == "PNG" || ext == "png") {
+            img <- readPNG(path)
+        } else if (ext == "TIFF" || ext == "tiff" || ext == "TIF" || ext == "tif") {
+            img <- readTIFF(path)
+        }else {
+            next
+        }
+        example <- list(file = file, value = value, image = img)
+        examples[[i]] <- example
+    }
+    return(examples)
+}
+
+plotImage <- function(image, title=NULL, label=NULL) {
+    p <- qplot(1:10, 1:10, geom="blank") + annotation_custom(rasterGrob(image$image), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf)
+    p <- p + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank())
+    p <- p + labs(title=title) + xlab(label)
+    return(p)
+}
+

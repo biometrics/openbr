@@ -232,8 +232,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     p.file.write(qPrintable(QString(plot).arg("CMC", toRList(optMap["cmcOptions"]), "FALSE")));
     p.file.write("plot <- plotSD(sdData=SD)\nplot\n");
     p.file.write("plot <- plotBC(bcData=BC)\nplot\n");
-    p.file.write("plot <- plotERR(errData=ERR)\nplot\n\n");
-    p.file.write("plotEERSamples(imData=IM, gmData=GM");
+    p.file.write("plot <- plotERR(errData=ERR)\nplot\n");
+    p.file.write("plotEERSamples(imData=IM, gmData=GM)\n\n");
 
     return p.finalize(show);
 }
@@ -295,23 +295,19 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     QString plot = "plot <- plotLine(lineData=%1, options=list(%2), flipY=%3, geometry=%4)\nplot\n";
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous") {
         optMap["rocOptions"].set("title", type);
-        p.file.write(qPrintable(QString(plot).arg(type + "ROC", toRList(optMap["rocOptions"]), "FALSE", plotType)));
+        p.file.write(qPrintable(QString(plot).arg(type + "ROC", toRList(optMap["rocOptions"]), "FALSE", "\"" + plotType + "\"")));
     }
 
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous") {
         optMap["prOptions"].set("title", type);
-        p.file.write(qPrintable(QString(plot).arg(type + "PR", toRList(optMap["prOptions"]), "FALSE", plotType)));
+        p.file.write(qPrintable(QString(plot).arg(type + "PR", toRList(optMap["prOptions"]), "FALSE", "\"" + plotType + "\"")));
     }
-
-    p.file.write(qPrintable(QString("qplot(X, data=Overlap, geom=\"histogram\", position=\"identity\", xlab=\"Overlap\", ylab=\"Frequency\")") +
-                            QString(" + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))") +
-                            (p.major.size > 1 ? (p.minor.size > 1 ? QString(" + facet_grid(%2 ~ %1, scales=\"free\")").arg(p.minor.header, p.major.header) : QString(" + facet_wrap(~ %1, scales = \"free\")").arg(p.major.header)) : QString()) +
-                            QString(" + theme(aspect.ratio=1, legend.position=\"bottom\")\n\n")));
+    p.file.write("plot <- plotOverlap(overlapData=Overlap)\nplot\n");
 
     p.file.write(qPrintable(QString("ggplot(AverageOverlap, aes(x=%1, y=%2, label=round(X,3)), main=\"Average Overlap\") + geom_text() + theme_minimal()").arg(p.minor.size > 1 ? p.minor.header : "'X'", p.major.size > 1 ? p.major.header : "'Y'") +
                             QString("%1%2\n\n").arg(p.minor.size > 1 ? "" : " + xlab(NULL)", p.major.size > 1 ? "" : " + ylab(NULL)")));
 
-    p.file.write(qPrintable(QString("ggplot(AverageOverlap, aes(x=%1, y=%2, fill=X)) + geom_tile() + scale_fill_continuous(\"Average Overlap\") + theme_minimal()").arg(p.minor.size > 1 ? p.minor.header : "'X'", p.major.size > 1 ? p.major.header : "'Y'") +
+    p.file.write(qPrintable(QString("ggplot(AverageOverlap, aes(x=%1, y=%2, fill=X)) + geom_tile() + scale_fill_continuous(\"Average Overlap\", guide=FALSE) + theme_minimal()").arg(p.minor.size > 1 ? p.minor.header : "'X'", p.major.size > 1 ? p.major.header : "'Y'") +
                             QString("%1%2\n\n").arg(p.minor.size > 1 ? "" : " + xlab(NULL)", p.major.size > 1 ? "" : " + ylab(NULL)")));
 
     return p.finalize(show);
@@ -322,66 +318,10 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination);
     p.file.write("\nformatData(type=\"landmarking\")\n\n");
-
-    p.file.write(qPrintable(QString("\nreadData <- function(data) {\n\texamples <- list()\n"
-                                    "\tfor (i in 1:nrow(data)) {\n"
-                                    "\t\tpath <- data[i,1]\n"
-                                    "\t\tvalue <- data[i,2]\n"
-                                    "\t\tfile <- unlist(strsplit(path, \"[.]\"))[1]\n"
-                                    "\t\text <- unlist(strsplit(path, \"[.]\"))[2]\n"
-                                    "\t\tif (ext == \"jpg\" || ext == \"JPEG\" || ext == \"jpeg\" || ext == \"JPG\") {\n"
-                                    "\t\t\timg <- readJPEG(path)\n"
-                                    "\t\t} else if (ext == \"PNG\" || ext == \"png\") {\n"
-                                    "\t\t\timg <- readPNG(path)\n"
-                                    "\t\t} else if (ext == \"TIFF\" || ext == \"tiff\" || ext == \"TIF\" || ext == \"tif\") { \n"
-                                    "\t\t\timg <- readTIFF(path)\n"
-                                    "}else {\n"
-                                    "\t\t\tnext\n"
-                                    "\t\t}\n"
-                                    "\t\texample <- list(file = file, value = value, image = img)\n"
-                                    "\t\texamples[[i]] <- example\n"
-                                    "\t}\n"
-                                    "\treturn(examples)\n"
-                                    "}\n")));
-
-    p.file.write(qPrintable(QString("\nlibrary(jpeg)\n"
-                                    "library(png)\n"
-                                    "library(grid)\n")));
-
-    p.file.write(qPrintable(QString("\nplotImage <- function(image, title=NULL, label=NULL) { \n"
-                                    "\tp <- qplot(1:10, 1:10, geom=\"blank\") + annotation_custom(rasterGrob(image$image), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.title.y=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), line=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=title) + xlab(label)\n"
-                                    "\treturn(p)"
-                                    "}\n")));
-
-    p.file.write(qPrintable(QString("\nsample <- readData(Sample) \n"
-                                    "rows <- sample[[1]]$value\n"
-                                    "algs <- unique(Box$%1)\n"
-                                    "algs <- algs[!duplicated(algs)]\n"
-                                    "print(plotImage(sample[[1]],\"Sample Landmarks\",sprintf(\"Total Landmarks: %s\",sample[[1]]$value))) \n"
-                                    "if (nrow(EXT) != 0 && nrow(EXP)) {\n"
-                                    "\tfor (j in 1:length(algs)) {\n"
-                                    "\ttruthSample <- readData(EXT[EXT$. == algs[[j]],])\n"
-                                    "\tpredictedSample <- readData(EXP[EXP$. == algs[[j]],])\n"
-                                    "\t\tfor (i in 1:length(predictedSample)) {\n"
-                                    "\t\t\tmultiplot(plotImage(predictedSample[[i]],sprintf(\"%s\\nPredicted Landmarks\",algs[[j]]),sprintf(\"Average Landmark Error: %.3f\",predictedSample[[i]]$value)),plotImage(truthSample[[i]],\"Ground Truth\\nLandmarks\",\"\"),cols=2)\n"
-                                    "\t\t}\n"
-                                    "\t}\n"
-                                    "}\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
-
-    p.file.write(qPrintable(QString("\n"
-                 "# Code to format error table\n"
-                 "StatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"%1\",\"X\"))\n"
-                 "OverallStatBox <- summarySE(Box, measurevar=\"Y\", groupvars=c(\"%1\"))\n"
-                 "mat <- matrix(paste(as.character(round(StatBox$Y, 3)), round(StatBox$ci, 3), sep=\" \\u00b1 \"),nrow=rows,ncol=length(algs),byrow=FALSE)\n"
-                 "mat <- rbind(mat, paste(as.character(round(OverallStatBox$Y, 3)), round(OverallStatBox$ci, 3), sep=\" \\u00b1 \"))\n"
-                 "mat <- rbind(mat, as.character(round(NormLength$Y, 3)))\n"
-                 "colnames(mat) <- algs\n"
-                 "rownames(mat) <- c(seq(0,rows-1),\"Aggregate\",\"Average IPD\")\n"
-                 "ETable <- as.table(mat)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
-
-    p.file.write(qPrintable(QString("\n"
-                       "print(textplot(ETable))\n"
-                       "print(title(\"Landmarking Error Rates\"))\n")));
+    p.file.write(qPrintable(QString("algs <- uniqueBox$%1)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
+    p.file.write("algs <- algs[!duplicated(algs)]\n");
+    p.file.write("plotLandmarkSamples(samples=sample, expData=EXP, extData=EXT)\n");
+    p.file.write("plotLandmarkTables(tableData=Box)\n");
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
                                                                     p.minor.size > 1 ? QString(", linetype=%1").arg(p.minor.header) : QString()) +

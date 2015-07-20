@@ -587,7 +587,7 @@ Returns names and parameters for the requested objects. Each object is newline s
 
 ---
 
-## I
+## br_plot
 
 Renders recognition performance figures for a set of **.csv** files created by [br_eval](#br_eval).
 
