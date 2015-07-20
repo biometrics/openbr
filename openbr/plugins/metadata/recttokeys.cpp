@@ -5,7 +5,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Convert a rect to X, Y, Width, and Height. Handy to
+ * \brief Convert a rect to X, Y, Width, and Height. Handy for saving universal templates.
  * \author Austin Blanton \cite imaus10
  */
 class RectToKeysTransform : public UntrainableMetadataTransform
