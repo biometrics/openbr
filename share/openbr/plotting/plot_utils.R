@@ -8,8 +8,15 @@ library("scales")
 far_names <- list('0.001'="FAR = 0.1%", '0.01'="FAR = 1%")
 far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }
 
-plotMetadata <-function(data, title) {
-    MT <- as.data.frame(Metadata[c(1, 2, 3, 4, 5),])
+getScale <- function(mode, title, vals) {
+    if      (vals > 12) return(do.call(paste("scale", mode, "discrete", sep="_"), list(title)))
+    else if (vals > 11) return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette="Set3")))
+    else if (vals > 9)  return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette="Paired")))
+    else                return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette="Set1")))
+}
+
+plotMetadata <- function(metadata=NULL, title=NULL) {
+    MT <- as.data.frame(metadata[c(1, 2, 3, 4, 5),])
     par(mfrow=c(4, 1))
     plot.new()
     print(title(paste(title, date(), sep="\n")))
@@ -27,12 +34,12 @@ plotMetadata <-function(data, title) {
     print(title("Gallery * Probe = Genuine + Impostor + Ignored"))
 }
 
-plotTable <- function(data, name, labels) {
-    if (nrow(data) == 0) return()
-    if (errBars) {
-        input = paste(as.character(round(data$Y, 3)), round(data$ci, 3), sep="\u00b1")
+plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
+    if (nrow(tableData) == 0) return()
+    if (smooth && confidence != 0) {
+        input = paste(as.character(round(tableData$Y, 3)), round(tableData$ci, 3), sep="\u00b1")
     } else {
-        input = data$Y
+        input = tableData$Y
     }
     mat <- matrix(input, nrow=length(labels), ncol=length(algs), byrow=FALSE)
     colnames(mat) <- algs
@@ -46,41 +53,148 @@ plotTable <- function(data, name, labels) {
     }
 }
 
-evalFormatting <- function() {
-	# Split data into individual plots
-    plot_index <<- which(names(data)=="Plot")
-    Metadata <<- data[grep("Metadata",data$Plot),-c(1)]
-    IM <<- data[grep("IM",data$Plot),-c(1)]
-    GM <<- data[grep("GM",data$Plot),-c(1)]
-    DET <<- data[grep("DET",data$Plot),-c(1)]
-    IET <<- data[grep("IET",data$Plot),-c(1)]
-    FAR <- data[grep("FAR",data$Plot),-c(1)]
-    FRR <- data[grep("FRR",data$Plot),-c(1)]
-    SD <<- data[grep("SD",data$Plot),-c(1)]
-    TF <<- data[grep("TF",data$Plot),-c(1)]
-    FT <<- data[grep("FT",data$Plot),-c(1)]
-    CT <<- data[grep("CT",data$Plot),-c(1)]
-    BC <<- data[grep("BC",data$Plot),-c(1)]
-    TS <<- data[grep("TS",data$Plot),-c(1)]
-    CMC <<- data[grep("CMC",data$Plot),-c(1)]
-    FAR$Error <- "FAR"
-    FRR$Error <- "FRR"
-    ERR <<- rbind(FAR, FRR)
+plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="line") {
+    textSize <- if("textSize" %in% names(options)) as.numeric(options$textSize) else 12
+    p <- qplot(X, if(flipY) 1-Y else Y, data=lineData, main=options$title, geom=geometry, size=if("size" %in% names(options)) I(as.numeric(options$size)) else I(.5), colour=if(majorSize > 1) factor(eval(parse(text=majorHeader))) else NULL, linetype=if(minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab=options$xTitle, ylab=options$yTitle) + theme_minimal()
+    if (smooth && deparse(substitute(lineData)) != "CMC" && confidence != 0) p <- p + geom_errorbar(data=lineData[seq(1, NROW(lineData), by = 29),], aes(x=X, ymin=if(flipY) (1-lower) else lower, ymax=if(flipY) (1-upper) else upper), width=0.1, alpha=I(1/2))
+    if (majorSize > 1) p <- p + getScale("colour", majorHeader, majorSize)
+    if (minorSize > 1) p <- p + scale_linetype_discrete(minorHeader)
+
+    # Set log/continuous scales, breaks and labels
+    if (options$xLog)
+        p <- p + scale_x_log10(labels=if("xLabels" %in% names(options)) eval(parse(text=options$xLabels)) else trans_format("log10", math_format()), breaks=if("xBreaks" %in% names(options)) eval(parse(text=options$xBreaks)) else waiver()) + annotation_logticks(sides="b")
+    else
+        p <- p + scale_x_continuous(labels=if("xLabels" %in% names(options)) eval(parse(text=options$xLabels)) else percent, breaks=if("xBreaks" %in% names(options)) eval(parse(text=options$xBreaks)) else pretty_breaks(n=10))
+    if (options$yLog)
+        p <- p + scale_y_log10(labels=if("yLabels" %in% names(options)) eval(parse(text=options$yLabels)) else trans_format("log10", math_format()), breaks=if("yBreaks" %in% names(options)) eval(parse(text=options$yBreaks)) else waiver()) + annotation_logticks(sides="l")
+    else
+        p <- p + scale_y_continuous(labels=if("yLabels" %in% names(options)) eval(parse(text=options$yLabels)) else percent, breaks=if("yBreaks" %in% names(options)) eval(parse(text=options$yBreaks)) else pretty_breaks(n=10))
+
+    if ("xLimits" %in% names(options)) p <- p + xlim(eval(parse(text=options$xLimits)))
+    if ("yLimits" %in% names(options)) p <- p + ylim(eval(parse(text=options$yLimits)))
+    p <- p + theme(legend.title = element_text(size = textSize), legend.text = element_text(size = textSize), plot.title = element_text(size = textSize), axis.text = element_text(size = textSize), axis.title.x = element_text(size = textSize), axis.title.y = element_text(size = textSize), legend.position=if("legendPosition" %in% names(options)) eval(parse(text=options$legendPosition)) else "bottom", legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = "gray"), panel.grid.minor = element_line(colour = "gray", linetype = "dashed"))
+    p <- p + guides(col=guide_legend(ncol=ncol))
+    return(p)
+}
+
+plotSD <- function(sdData=NULL) {
+    p <- qplot(X, data=sdData, geom="histogram", fill=Y, position="identity", alpha=I(1/2), xlab="Score", ylab="Frequency")
+    p <- p + scale_fill_manual("Ground Truth", values=c("blue", "red")) + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
+    if (majorSize > 1) {
+        if (minorSize > 1) {
+            if (flip) {
+                A <- minorHeader
+                B <- majorHeader
+            } else {
+                A <- majorHeader
+                B <- minorHeader
+            }
+            p <- p + facet_grid(facets=as.formula(paste(A, "~", B)), scales="free")
+        } else {
+            p <- p + facet_wrap(facets=as.formula(paste("~", majorHeader)), scales="free")
+        }
+    }
+    p <- p + theme(aspect.ratio=1)
+    return(p)
+}
+
+plotBC <- function(bcData=NULL) {
+    factor <- if (majorSmooth) minorHeader else majorHeader
+    plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
+    p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
+    if(majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
+    if(minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X"))) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
+    p <- p + scale_y_continuous(labels=percent) + theme(legend.position="none", axis.text.x=element_text(angle=-90, hjust=0))
+    if(!smooth) p <- p + geom_text(data=bcData, aes(label=bcData$Y, y=0.05))
+    return(p)
+}
+
+plotERR <- function(errData=NULL) {
+    if(flip) {
+        if(majorSize > 1) color <- majorHeader
+    } else {
+        if(minorSize > 1) color <- minorHeader
+    }
+    p <- qplot(X, Y, data=errData, geom="line", linetype=Error, colour=if(exists("color")) factor(eval(parse(text=color))) else NULL, xlab="Score", ylab="Error Rate") + theme_minimal()
+    if(flip) {
+        if(majorSize > 1)
+            p <- p + getScale("colour", majorHeader, majorSize)
+        else if(minorSize > 1)
+            p <- p + getScale("colour", minorHeader, minorSize)
+    }
+    p <- p + scale_y_log10(labels=percent) + annotation_logticks(sides="l")
+    if(flip) {
+        if(minorSize > 1) {
+            facet <- minorHeader
+            p <- p + facet_wrap(as.formula(paste("~", facet)), scales="free_x")
+        }
+    } else {
+        if(majorSize >1) {
+            facet <- majorHeader
+            p <- p + facet_wrap(as.formula(paste("~", facet)), scales="free_x")
+        }
+    }
+    p <- p + theme(aspect.ratio=1)
+    return(p)
+}
+
+formatData <- function(type="eval") {
+    if (type == "eval") {
+	    # Split data into individual plots
+        plot_index <<- which(names(data)=="Plot")
+        Metadata <<- data[grep("Metadata",data$Plot),-c(1)]
+        IM <<- data[grep("IM",data$Plot),-c(1)]
+        GM <<- data[grep("GM",data$Plot),-c(1)]
+        DET <<- data[grep("DET",data$Plot),-c(1)]
+        IET <<- data[grep("IET",data$Plot),-c(1)]
+        FAR <- data[grep("FAR",data$Plot),-c(1)]
+        FRR <- data[grep("FRR",data$Plot),-c(1)]
+        SD <<- data[grep("SD",data$Plot),-c(1)]
+        TF <<- data[grep("TF",data$Plot),-c(1)]
+        FT <<- data[grep("FT",data$Plot),-c(1)]
+        CT <<- data[grep("CT",data$Plot),-c(1)]
+        BC <<- data[grep("BC",data$Plot),-c(1)]
+        TS <<- data[grep("TS",data$Plot),-c(1)]
+        CMC <<- data[grep("CMC",data$Plot),-c(1)]
+        FAR$Error <- "FAR"
+        FRR$Error <- "FRR"
+        ERR <<- rbind(FAR, FRR)
     
-    # Format data
-    Metadata$Y<-factor(Metadata$Y, levels=c("Genuine", "Impostor", "Ignored", "Gallery", "Probe"))
-    IM$Y <<- as.character(IM$Y)
-    GM$Y <<- as.character(GM$Y)
-    DET$Y <<- as.numeric(as.character(DET$Y))
-    IET$Y <<- as.numeric(as.character(IET$Y))
-    ERR$Y <<- as.numeric(as.character(ERR$Y))
-    SD$Y <<- as.factor(unique(as.character(SD$Y)))
-    TF$Y <<- as.numeric(as.character(TF$Y))
-    FT$Y <<- as.numeric(as.character(FT$Y))
-    CT$Y <<- as.numeric(as.character(CT$Y))
-    BC$Y <<- as.numeric(as.character(BC$Y))
-    TS$Y <<- as.character(TS$Y)
-    CMC$Y <<- as.numeric(as.character(CMC$Y))
+        # Format data
+        Metadata$Y<-factor(Metadata$Y, levels=c("Genuine", "Impostor", "Ignored", "Gallery", "Probe"))
+        IM$Y <<- as.character(IM$Y)
+        GM$Y <<- as.character(GM$Y)
+        DET$Y <<- as.numeric(as.character(DET$Y))
+        IET$Y <<- as.numeric(as.character(IET$Y))
+        ERR$Y <<- as.numeric(as.character(ERR$Y))
+        SD$Y <<- as.factor(unique(as.character(SD$Y)))
+        TF$Y <<- as.numeric(as.character(TF$Y))
+        FT$Y <<- as.numeric(as.character(FT$Y))
+        CT$Y <<- as.numeric(as.character(CT$Y))
+        BC$Y <<- as.numeric(as.character(BC$Y))
+        TS$Y <<- as.character(TS$Y)
+        CMC$Y <<- as.numeric(as.character(CMC$Y))
+    } else if (type == "detection") {
+        # Split data into individual plots
+        DiscreteROC <<- data[grep("DiscreteROC",data$Plot),-c(1)]
+        ContinuousROC <<- data[grep("ContinuousROC",data$Plot),-c(1)]
+        DiscretePR <<- data[grep("DiscretePR",data$Plot),-c(1)]
+        ContinuousPR <<- data[grep("ContinuousPR",data$Plot),-c(1)]
+        Overlap <<- data[grep("Overlap",data$Plot),-c(1)]
+        AverageOverlap <<- data[grep("AverageOverlap",data$Plot),-c(1)]
+
+    } else if (type == "landmarking") {
+        # Split data into individual plots
+        Box <<- data[grep("Box",data$Plot),-c(1)]
+        Box$X <<- factor(Box$X, levels = Box$X, ordered = TRUE)
+        Sample <<- data[grep("Sample",data$Plot),-c(1)]
+        Sample$X <<- as.character(Sample$X)
+        EXT <<- data[grep("EXT",data$Plot),-c(1)]
+        EXT$X <<- as.character(EXT$X)
+        EXP <<- data[grep("EXP",data$Plot),-c(1)]
+        EXP$X <<- as.character(EXP$X)
+        NormLength <<- data[grep("NormLength",data$Plot),-c(1)]
+    }
 }
 
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=0.95, .drop=TRUE) {
@@ -108,11 +222,6 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 	return(datac)
 }
 
-plotLine <- function(data=NULL, x=X, y=Y, options=list()) {
-    p <- qplot(x, y, data=data, geom="line")
-    return(p)
-}
-
 multiplot <- function(..., plotlist=NULL, cols) {
     require(grid)
     # Make a list from the ... arguments and plotlist
@@ -134,3 +243,88 @@ multiplot <- function(..., plotlist=NULL, cols) {
     }
 }
 
+plotEERSamples <- function(imData=NULL, gmData=NULL) {
+    if(nrow(imData) == 0) return()
+
+    library(jpeg)
+    library(png)
+    library(grid)
+
+    for (i in 1:nrow(imData)) {
+        score <- imData[i,1]
+        files <- imData[i,2]
+        alg <- imData[i,3]
+        files <- unlist(strsplit(files, "[:]"))
+
+        ext1 <- unlist(strsplit(files[2], "[.]"))[2]
+        ext2 <- unlist(strsplit(files[4], "[.]"))[2]
+        if (ext1 == "jpg" || ext1 == "JPEG" || ext1 == "jpeg" || ext1 == "JPG") {
+            img1 <- readJPEG(files[2])
+        } else if (ext1 == "PNG" || ext1 == "png") {
+            img1 <- readPNG(files[2])
+        } else if (ext1 == "TIFF" || ext1 == "tiff" || ext1 == "TIF" || ext1 == "tif") {
+            img1 <- readTIFF(files[2])
+        } else {
+            next
+        }
+        if (ext2 == "jpg" || ext2 == "JPEG" || ext2 == "jpeg" || ext2 == "JPG") {
+            img2 <- readJPEG(files[4])
+        } else if (ext2 == "PNG" || ext2 == "png") {
+            img2 <- readPNG(files[4])
+        } else if (ext2 == "TIFF" || ext2 == "tiff" || ext2 == "TIF" || ext2 == "tif") {
+            img2 <- readTIFF(files[4])
+        } else {
+            next
+        }
+        name1 <- files[1]
+        name2 <- files[3]
+
+        g1 <- rasterGrob(img1, interpolate=TRUE)
+        g2 <- rasterGrob(img2, interpolate=TRUE)
+
+        plot1 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(unlist(strsplit(files[2], "[/]"))[length(unlist(strsplit(files[2], "[/]")))]) + xlab(name1)
+        plot2 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste("Impostor score =", score)) + ylab(unlist(strsplit(files[4], "[/]"))[length(unlist(strsplit(files[4], "[/]")))]) + xlab(name2)
+
+        multiplot(plot1, plot2, cols=2)
+    }
+
+    # Print genuine matches below the EER
+    for (i in 1:nrow(gmData)) {
+        score <- gmData[i,1]
+        files <- gmData[i,2]
+        alg <- gmData[i,3]
+        files <- unlist(strsplit(files, "[:]"))
+
+        ext1 <- unlist(strsplit(files[2], "[.]"))[2]
+        ext2 <- unlist(strsplit(files[4], "[.]"))[2]
+        if (ext1 == "jpg" || ext1 == "JPEG" || ext1 == "jpeg" || ext1 == "JPG") {
+            img1 <- readJPEG(files[2])
+        } else if (ext1 == "PNG" || ext1 == "png") {
+            img1 <- readPNG(files[2])
+        } else if (ext1 == "TIFF" || ext1 == "tiff" || ext1 == "TIF" || ext1 == "tif") {
+            img1 <- readTIFF(files[2])
+        } else {
+            next
+        }
+        if (ext2 == "jpg" || ext2 == "JPEG" || ext2 == "jpeg" || ext2 == "JPG") {
+            img2 <- readJPEG(files[4])
+        } else if (ext2 == "PNG" || ext2 == "png") {
+            img2 <- readPNG(files[4])
+        } else if (ext2 == "TIFF" || ext2 == "tiff" || ext2 == "TIF" || ext2 == "tif") {
+            img2 <- readTIFF(files[4])
+        } else {
+            next
+        }
+        name1 <- files[1]
+        name2 <- files[3]
+
+        g1 <- rasterGrob(img1, interpolate=TRUE)
+        g2 <- rasterGrob(img2, interpolate=TRUE)
+
+        plot1 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g1, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=alg) + ylab(unlist(strsplit(files[2], "[/]"))[length(unlist(strsplit(files[2], "[/]")))]) + xlab(name1)
+        plot2 <- qplot(1:10, 1:10, geom="blank") + annotation_custom(g2, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) + theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks=element_blank(), panel.background=element_blank()) + labs(title=paste("Genuine score =", score)) + ylab(unlist(strsplit(files[4], "[/]"))[length(unlist(strsplit(files[4], "[/]")))]) + xlab(name2)
+
+        multiplot(plot1, plot2, cols=2)
+    }
+
+}

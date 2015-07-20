@@ -587,7 +587,7 @@ Returns names and parameters for the requested objects. Each object is newline s
 
 ---
 
-## br_plot
+## I
 
 Renders recognition performance figures for a set of **.csv** files created by [br_eval](#br_eval).
 
@@ -635,8 +635,8 @@ textSize        | float          | Size of text for title, legend and axes
 xTitle/yTitle   | [QString]      | Title for x/y axis
 xLog/yLog       | bool           | Plot log scale for x/y axis
 xLimits/yLimits | [QPointF]      | Set x/y axis limits, ex. xLimits=(lower,upper)
-xLabels/yLabels | [QString]      | Labels for ticks on x/y axis, ex. xLabeles=percent or xLabels=c(1,5,10)
-xBreaks/yBreaks | [QString]      | Specify breaks/ticks on x/y axis, ex. xBreaks=pretty_breaks(n=10) or xBreaks=c(1,5,10)
+xLabels/yLabels | [QString]      | Labels for ticks on x/y axis, ex. xLabeles=percent or xLabels=(1,5,10)
+xBreaks/yBreaks | [QString]      | Specify breaks/ticks on x/y axis, ex. xBreaks=pretty_breaks(n=10) or xBreaks=(1,5,10)
 
 If specifying plot options it is a good idea to wrap the destination file in single quotes to avoid parsing errors.
 The example below plots plots the six br_eval results in the Algorithm_Dataset folder described above, sets the number of legend columns and specifies some options for the CMC plot.
