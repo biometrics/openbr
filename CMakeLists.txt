@@ -142,6 +142,7 @@ endif()
 # Look for extensions to OpenBR
 set(BR_THIRDPARTY_PLUGINS_DIR CACHE PATH "")
 set(BR_THIRDPARTY_APPS_DIR CACHE PATH "")
+set(BR_THIRDPARTY_DIR CACHE PATH "")
 mark_as_advanced(BR_THIRDPARTY_PLUGINS_DIR)
 mark_as_advanced(BR_THIRDPARTY_APPS_DIR)
 

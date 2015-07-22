@@ -415,6 +415,29 @@ static T findAndRemove(QVariantMap &map, const QString &key, const T &defaultVal
 br_utemplate Template::toUniversalTemplate(const Template &t)
 {
     QVariantMap map = t.file.localMetadata();
+
+    // QJsonObject::fromVariantMap (below) fails to convert
+    // QRects and QPoints to string, replacing them with null values.
+    // so hand-convert these weirdos
+    foreach (const QString &k, map.keys()) {
+        QVariant v = map[k];
+        if (v.canConvert(QVariant::PointF) || v.canConvert(QVariant::RectF)) {
+            QString newv = QtUtils::toString(v);
+            map[k] = newv;
+        }
+        // lists of points and rects, too
+        else if (v.type() == QVariant::List) {
+            QVariantList oldlist = qvariant_cast<QVariantList>(v);
+            if (!oldlist.isEmpty() && (oldlist.first().canConvert(QVariant::PointF) || oldlist.first().canConvert(QVariant::RectF))) {
+                QVariantList newlist;
+                foreach (const QVariant &subv, oldlist) {
+                    newlist.append(QtUtils::toString(subv));
+                }
+                map[k] = newlist;
+            }
+        }
+    }
+
     const int32_t  algorithmID = findAndRemove<int32_t> (map, "AlgorithmID", 0);
     const int32_t  x           = findAndRemove<int32_t> (map, "X"          , 0);
     const int32_t  y           = findAndRemove<int32_t> (map, "Y"          , 0);
@@ -429,6 +452,49 @@ br_utemplate Template::toUniversalTemplate(const Template &t)
 Template Template::fromUniversalTemplate(br_const_utemplate ut)
 {
     QVariantMap map = QJsonDocument::fromJson(QByteArray((const char*) ut->data)).object().toVariantMap();
+
+    // QJsonDocument::fromJson doesn't know about QRects and QPoints
+    // so convert any QStrings that can be converted
+    foreach (const QString &k, map.keys()) {
+        QVariant v = map[k];
+        QVariant newv;
+        bool istype;
+        if (v.type() == QVariant::String) {
+            QString vstr = qvariant_cast<QString>(v);
+            newv = QtUtils::toRect(vstr, &istype);
+            if (!istype) {
+                newv = QtUtils::toPoint(vstr, &istype);
+            } else if (!istype) {
+                newv = v;
+            }
+            map[k] = newv;
+        }
+        // convert lists of rects and points, too
+        else if (v.type() == QVariant::List) {
+            QVariantList oldlist = qvariant_cast<QVariantList>(v);
+            if (!oldlist.isEmpty() && oldlist.first().type() == QVariant::String) {
+                QString test = qvariant_cast<QString>(oldlist.first());
+                QtUtils::toRect(test, &istype);
+                QVariantList newlist;
+                if (istype) {
+                    foreach (const QVariant &subv, oldlist) {
+                        newlist.append(QtUtils::toRect(qvariant_cast<QString>(subv)));
+                    }
+                } else {
+                    QtUtils::toPoint(test, &istype);
+                    if (istype) {
+                        foreach (const QVariant &subv, oldlist) {
+                            newlist.append(QtUtils::toPoint(qvariant_cast<QString>(subv)));
+                        }
+                    } else {
+                        newlist = oldlist;
+                    }
+                }
+                map[k] = newlist;
+            }
+        }
+    }
+
     map.insert("AlgorithmID", ut->algorithmID);
     map.insert("X"          , ut->x          );
     map.insert("Y"          , ut->y          );

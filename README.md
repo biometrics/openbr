@@ -8,4 +8,4 @@ Identify the latest [tagged release](https://github.com/biometrics/openbr/releas
     $ git submodule init
     $ git submodule update
     
-**[Build Instructions](http://openbiometrics.org/doxygen/latest/installation.html)**
+**[Build Instructions](http://openbiometrics.org/docs/install/)**
