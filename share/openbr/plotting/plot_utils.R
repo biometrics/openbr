@@ -124,9 +124,9 @@ plotBC <- function(bcData=NULL) {
     plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
     p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
     if(majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
-    if(minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X"))) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
+    if(minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
     p <- p + scale_y_continuous(labels=percent) + theme(legend.position="none", axis.text.x=element_text(angle=-90, hjust=0))
-    if(!smooth) p <- p + geom_text(data=bcData, aes(label=bcData$Y, y=0.05))
+    if(!smooth) p <- p + geom_text(data=bcData, aes(label=Y, y=0.05))
     return(p)
 }
 
