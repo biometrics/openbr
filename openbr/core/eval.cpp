@@ -379,7 +379,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 						      QString::number(getOperatingPointGivenFAR(operatingPoints, far).TAR, 'f', 3))));
 
     // Write FAR@TAR Table (FT)
-    foreach (float tar, QList<float>() << 0.95 << 0.85 << 0.75 << 0.65 << 0.5 << 0.4)
+    foreach (float tar, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
       lines.append(qPrintable(QString("FT,%1,%2").arg(
                          QString::number(tar, 'f', 2),
                          QString::number(getOperatingPointGivenTAR(operatingPoints, tar).FAR, 'f', 3))));
