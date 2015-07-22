@@ -1,19 +1,3 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2012 The MITRE Corporation                                      *
- *                                                                           *
- * Licensed under the Apache License, Version 2.0 (the "License");           *
- * you may not use this file except in compliance with the License.          *
- * You may obtain a copy of the License at                                   *
- *                                                                           *
- *     http://www.apache.org/licenses/LICENSE-2.0                            *
- *                                                                           *
- * Unless required by applicable law or agreed to in writing, software       *
- * distributed under the License is distributed on an "AS IS" BASIS,         *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
- * See the License for the specific language governing permissions and       *
- * limitations under the License.                                            *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
@@ -33,9 +17,11 @@ class WriteTransform : public TimeVaryingTransform
     Q_PROPERTY(QString outputDirectory READ get_outputDirectory WRITE set_outputDirectory RESET reset_outputDirectory STORED false)
     Q_PROPERTY(QString underscore READ get_underscore WRITE set_underscore RESET reset_underscore STORED false)
     Q_PROPERTY(QString imgExtension READ get_imgExtension WRITE set_imgExtension RESET reset_imgExtension STORED false)
+    Q_PROPERTY(int padding READ get_padding WRITE set_padding RESET reset_padding STORED false)
     BR_PROPERTY(QString, outputDirectory, "Temp")
     BR_PROPERTY(QString, underscore, "")
     BR_PROPERTY(QString, imgExtension, "jpg")
+    BR_PROPERTY(int, padding, 5)
 
     int cnt;
 
@@ -48,7 +34,7 @@ class WriteTransform : public TimeVaryingTransform
     void projectUpdate(const Template &src, Template &dst)
     {
         dst = src;
-        QString path = QString("%1/image%2%3.%4").arg(outputDirectory).arg(cnt++, 5, 10, QChar('0')).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
+        QString path = QString("%1/image%2%3.%4").arg(outputDirectory).arg(cnt++, padding, 10, QChar('0')).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
         OpenCVUtils::saveImage(dst.m(), path);
     }
 
