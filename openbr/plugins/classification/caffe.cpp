@@ -1,39 +1,45 @@
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
+#include <openbr/core/qtutils.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
 #include <caffe/caffe.hpp>
 
 using caffe::Caffe;
-using caffe::Solver;
 using caffe::Net;
+using caffe::MemoryDataLayer;
 using caffe::Blob;
 using caffe::shared_ptr;
-using caffe::vector;
+
+using namespace cv;
 
 namespace br
 {
 
 /*!
- * \brief A transform that wraps the Caffe Deep learning library
+ * \brief A transform that wraps the Caffe deep learning library. This transform expects the input to a given Caffe model to be a MemoryDataLayer.
+ * The output of the Caffe network is treated as a feature vector and is stored in dst. Batch processing is possible. For a given batch size set in
+ * the memory data layer, src is expected to have an equal number of mats. Dst will always have the same size (number of mats) as src and the ordering
+ * will be preserved, so dst[1] is the output of src[1] after it passes through the
  * \author Jordan Cheney \cite jcheney
- * \br_property QString modelFile path to prototxt model file
- * \br_property QString solverFile path to prototxt solver file
- * \br_property QString weightsFile path to caffemodel file
+ * \br_property QString model path to prototxt model file
+ * \br_property QString weights path to caffemodel file
  * \br_property int gpuDevice ID of GPU to use. gpuDevice < 0 runs on the CPU only.
  * \br_link Caffe Integration Tutorial ../tutorials.md#caffe
  * \br_link Caffe website http://caffe.berkeleyvision.org
  */
-class CaffeTransform : public Transform
+class CaffeFVTransform : public UntrainableTransform
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString modelFile READ get_modelFile WRITE set_modelFile RESET reset_modelFile STORED false)
-    Q_PROPERTY(QString solverFile READ get_solverFile WRITE set_solverFile RESET reset_solverFile STORED false)
-    Q_PROPERTY(QString weightsFile READ get_weightsFile WRITE set_weightsFile RESET reset_weightsFile STORED false)
+    Q_PROPERTY(QString model READ get_model WRITE set_model RESET reset_model STORED false)
+    Q_PROPERTY(QString weights READ get_weights WRITE set_weights RESET reset_weights STORED false)
     Q_PROPERTY(int gpuDevice READ get_gpuDevice WRITE set_gpuDevice RESET reset_gpuDevice STORED false)
-    BR_PROPERTY(QString, modelFile, "")
-    BR_PROPERTY(QString, solverFile, "")
-    BR_PROPERTY(QString, weightsFile, "")
+    BR_PROPERTY(QString, model, "")
+    BR_PROPERTY(QString, weights, "")
     BR_PROPERTY(int, gpuDevice, -1)
+
+    QSharedPointer<Net<float> > net;
 
     void init()
     {
@@ -43,47 +49,31 @@ class CaffeTransform : public Transform
         } else {
             Caffe::set_mode(Caffe::CPU);
         }
-    }
 
-    void train(const TemplateList &data)
-    {
-        (void) data;
-
-        caffe::SolverParameter solver_param;
-        caffe::ReadProtoFromTextFileOrDie(solverFile.toStdString(), &solver_param);
-
-        shared_ptr<Solver<float> > solver(caffe::GetSolver<float>(solver_param));
-        solver->Solve();
+        net.reset(new Net<float>(model.toStdString(), caffe::TEST));
+        net->CopyTrainedLayersFrom(weights.toStdString());
     }
 
     void project(const Template &src, Template &dst) const
     {
-        (void)src; (void)dst;
-        Net<float> net(modelFile.toStdString(), caffe::TEST);
-        net.CopyTrainedLayersFrom(weightsFile.toStdString());
+        MemoryDataLayer<float> *data_layer = static_cast<MemoryDataLayer<float> *>(net->layers()[0].get());
 
-        vector<Blob<float> *> bottom_vec; // perhaps src data should go here?
-        vector<int> test_score_output_id;
-        vector<float> test_score;
+        if (src.size() != data_layer->batch_size())
+            qFatal("src should have %d (batch size) mats. It has %d mats.", data_layer->batch_size(), src.size());
 
-        float loss;
-        const vector<Blob<float> *> &result = net.Forward(bottom_vec, &loss);
+        dst.file = src.file;
 
-        int idx = 0;
-        for (int i = 0; i < (int)result.size(); i++) {
-            const float *result_data = result[i]->cpu_data();
-            for (int j = 0; j < result[i]->count(); j++, idx++) {
-                test_score.push_back(result_data[j]);
-                test_score_output_id.push_back(i);
+        data_layer->AddMatVector(src.toVector().toStdVector(), std::vector<int>(src.size(), 0));
 
-                if (Globals->verbose)
-                    qDebug("%s = %f", net.blob_names()[net.output_blob_indices()[i]].c_str(), result_data[j]);
-            }
-        }
+        Blob<float> *output = net->ForwardPrefilled()[1]; // index 0 is the labels from the data layer (in this case the 0 array we passed in above).
+                                                          // index 1 is the ouput of the final layer, which is what we want
+        int dim_features = output->count() / data_layer->batch_size();
+        for (int n = 0; n < data_layer->batch_size(); n++)
+            dst += Mat(1, dim_features, CV_32FC1, output->mutable_cpu_data() + output->offset(n));
     }
 };
 
-BR_REGISTER(Transform, CaffeTransform)
+BR_REGISTER(Transform, CaffeFVTransform)
 
 } // namespace br
 
