@@ -1,0 +1,11 @@
+set(BR_WITH_CAFFE OFF CACHE BOOL "Build with Caffe")
+
+if(${BR_WITH_CAFFE})
+  find_package(Caffe)
+  include_directories(${Caffe_INCLUDE_DIRS})
+  add_definitions(${Caffe_DEFINITIONS})
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Caffe_LIBRARIES})
+else()
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/classification/caffe.cpp)
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/gallery/lmdb.cpp)
+endif()

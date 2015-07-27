@@ -26,12 +26,16 @@ namespace br
  * \ingroup transforms
  * \brief Crops the rectangular regions of interest.
  * \author Josh Klontz \cite jklontz
+ * \br_property QString propName Optional property name for a rectangle in metadata. If no propName is given the transform will use rects stored in the file.rects field or build a rectangle using "X", "Y", "Width", and "Height" fields if they exist.
+ * \br_property bool copyOnCrop If true make a clone of each crop before appending the crop to dst. This guarantees that the crops will be continuous in memory, which is an occasionally useful property. Default is false.
  */
 class ROITransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
+    Q_PROPERTY(bool copyOnCrop READ get_copyOnCrop WRITE set_copyOnCrop RESET reset_copyOnCrop STORED false)
     BR_PROPERTY(QString, propName, "")
+    BR_PROPERTY(bool, copyOnCrop, false)
 
     void project(const Template &src, Template &dst) const
     {
@@ -52,6 +56,10 @@ class ROITransform : public UntrainableTransform
                 qWarning("No rects present in file.");
         }
         dst.file.clearRects();
+
+        if (copyOnCrop)
+            for (int i = 0; i < dst.size(); i++)
+                dst.replace(i, dst[i].clone());
     }
 };
 
