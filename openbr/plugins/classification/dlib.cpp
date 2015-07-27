@@ -49,15 +49,21 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        dst = src;            
+        dst = src;
 
-        if (!src.file.rects().isEmpty()) {
-            shape_predictor *sp = shapeResource.acquire();
+        shape_predictor *sp = shapeResource.acquire();
 
-            cv_image<unsigned char> cimg(src.m());
-            array2d<unsigned char> image;
-            assign_image(image,cimg);
+        cv_image<unsigned char> cimg(src.m());
+        array2d<unsigned char> image;
+        assign_image(image,cimg);
 
+        if (src.file.rects().isEmpty()) { //If the image has no rects assume the whole image is a face
+            rectangle r(0, 0, src.m().cols, src.m().rows);
+            full_object_detection shape = (*sp)(image, r);
+            for (size_t i = 0; i < shape.num_parts(); i++)
+                dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
+        }
+        else { // Crop the image on the rects
             for (int j=0; j<src.file.rects().size(); ++j)
             {
                 QRectF rect = src.file.rects()[j];
@@ -66,9 +72,9 @@ private:
                 for (size_t i=0; i<shape.num_parts(); i++)
                     dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
             }
-
-            shapeResource.release(sp);
         }
+
+        shapeResource.release(sp);
     }
 };
 
