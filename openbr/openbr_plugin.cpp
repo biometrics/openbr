@@ -464,8 +464,9 @@ Template Template::fromUniversalTemplate(br_const_utemplate ut)
             newv = QtUtils::toRect(vstr, &istype);
             if (!istype) {
                 newv = QtUtils::toPoint(vstr, &istype);
-            } else if (!istype) {
-                newv = v;
+                if (!istype) {
+                    newv = v;
+                }
             }
             map[k] = newv;
         }
