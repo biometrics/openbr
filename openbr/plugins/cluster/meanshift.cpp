@@ -6,6 +6,15 @@ using namespace cv;
 namespace br
 {
 
+/*!
+ * \brief A transform implementing the mean shift clustering algorithm.
+ * \author Jordan Cheney \cite JordanCheney
+ * \br_property br::Distance* distance The distance used to compute the distance between templates
+ * \br_property int kernelBandwidth The size of the kernel used to converge points to a cluster center
+ * \br_property float shiftThreshold The cutoff threshold distance for a shifted point. A value lower then this threshold indicates a point has finished shifting to a cluster center.
+ * \br_property float distanceThreshold The distance threshold for a point to join a cluster. A point must be at least this close to another point to be included in the same cluster as that point.
+ * \br_link http://spin.atomicobject.com/2015/05/26/mean-shift-clustering/
+ */
 class MeanShiftClusteringTransform : public TimeVaryingTransform
 {
     Q_OBJECT
@@ -65,11 +74,11 @@ private:
         for (int i = 0; i < original_points.size(); i++)
             distances.at<float>(0, i) = distance->compare(point, original_points[i]);
 
-        Mat weights = gaussian_kernel(distances, kernelBandwidth);
+        Mat weights = gaussianKernel(distances, kernelBandwidth);
         point = (weights * OpenCVUtils::toMat(original_points)) /  sum(weights)[0];
     }
 
-    inline Mat gaussian_kernel(const Mat &distance, const float bandwidth)
+    inline Mat gaussianKernel(const Mat &distance, const float bandwidth)
     {
         Mat p, e;
         pow(distance / bandwidth, 2, p);
@@ -89,7 +98,8 @@ private:
             groups.append(group);
         }
 
-        qDebug("created %d clusters from %d templates", newGroupIdx, points.size());
+        if (Globals->verbose)
+            qDebug("created %d clusters from %d templates", newGroupIdx, points.size());
 
         return groups;
     }
