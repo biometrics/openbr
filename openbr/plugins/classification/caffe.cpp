@@ -93,7 +93,7 @@ class CaffeFVTransform : public UntrainableMetaTransform
         if (net->layers()[0]->layer_param().type() != "MemoryData")
             qFatal("OpenBR requires the first layer in the network to be a MemoryDataLayer");
 
-        MemoryDataLayer<float> *dataLayer = dynamic_cast<MemoryDataLayer<float> *>(net->layers()[0].get());
+        MemoryDataLayer<float> *dataLayer = static_cast<MemoryDataLayer<float> *>(net->layers()[0].get());
 
         if (src.size() != dataLayer->batch_size())
             qFatal("src should have %d (batch size) mats. It has %d mats.", dataLayer->batch_size(), src.size());
