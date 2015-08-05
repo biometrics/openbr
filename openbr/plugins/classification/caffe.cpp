@@ -1,8 +1,6 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
-#include <openbr/core/qtutils.h>
 
-#include <opencv2/imgproc/imgproc.hpp>
 #include <caffe/caffe.hpp>
 
 using caffe::Caffe;
@@ -101,8 +99,9 @@ protected:
 
         dataLayer->AddMatVector(src.toVector().toStdVector(), std::vector<int>(src.size(), 0));
 
-        Blob<float> *output = net->ForwardPrefilled()[1]; // index 0 is the labels from the data layer (in this case the 0 array we passed in above).
-                                                          // index 1 is the ouput of the final layer, which is what we want
+        net->ForwardPrefilled();
+        Blob<float> *output = net->blobs().back().get();
+
         int dimFeatures = output->count() / dataLayer->batch_size();
         for (int n = 0; n < dataLayer->batch_size(); n++)
             dst += Mat(1, dimFeatures, CV_32FC1, output->mutable_cpu_data() + output->offset(n));
@@ -115,6 +114,9 @@ protected:
  * \brief This transform treats the output of the network as a feature vector and appends it unchanged to dst. Dst will have
  * length equal to the batch size of the network.
  * \author Jordan Cheney \cite JordanCheney
+ * \br_property QString model path to prototxt model file
+ * \br_property QString weights path to caffemodel file
+ * \br_property int gpuDevice ID of GPU to use. gpuDevice < 0 runs on the CPU only.
  */
 class CaffeFVTransform : public CaffeBaseTransform
 {
@@ -139,6 +141,9 @@ BR_REGISTER(Transform, CaffeFVTransform)
  * using the keys "Labels" and "Confidences" respectively. The length of these lists is equivalent to the provided batch size.
  * If batch size == 1, the results are stored as a float and int using the keys "Label", and "Confidence" respectively.
  * \author Jordan Cheney \cite jcheney
+ * \br_property QString model path to prototxt model file
+ * \br_property QString weights path to caffemodel file
+ * \br_property int gpuDevice ID of GPU to use. gpuDevice < 0 runs on the CPU only.
  */
 class CaffeClassifierTransform : public CaffeBaseTransform
 {
