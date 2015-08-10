@@ -8,19 +8,21 @@
 
 #include "universal_template.h"
 
-br_utemplate br_new_utemplate(int32_t algorithmID, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, const char *metadata, const char *featureVector, uint32_t fvSize)
+br_utemplate br_new_utemplate(int32_t algorithmID, uint32_t frame, int32_t x, int32_t y, uint32_t width, uint32_t height, float confidence, uint32_t personID, const char *metadata, const char *featureVector, uint32_t fvSize)
 {
     const uint32_t mdSize = strlen(metadata) + 1;
     br_utemplate utemplate = (br_utemplate) malloc(sizeof(br_universal_template) + mdSize + fvSize);
     utemplate->algorithmID = algorithmID;
+    utemplate->frame = frame;
     utemplate->x = x;
     utemplate->y = y;
     utemplate->width = width;
     utemplate->height = height;
     utemplate->confidence = confidence;
+    utemplate->personID = personID;
     utemplate->mdSize = mdSize;
     utemplate->fvSize = fvSize;
-    memcpy(reinterpret_cast<char*>(utemplate+1) + 0,      metadata , mdSize);
+    memcpy(reinterpret_cast<char*>(utemplate+1) + 0,      metadata     , mdSize);
     memcpy(reinterpret_cast<char*>(utemplate+1) + mdSize, featureVector, fvSize);
     return utemplate;
 }
