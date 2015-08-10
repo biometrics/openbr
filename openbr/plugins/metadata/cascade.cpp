@@ -417,7 +417,7 @@ class CascadeTransform : public MetaTransform
                     if (rejectLevels.size() > j)
                         u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
                     else 
-                        u.file.set("Confidence", 1);
+                        u.file.set("Confidence", rects[j].area());
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                     u.file.appendRect(rect);
                     u.file.set(model, rect);
