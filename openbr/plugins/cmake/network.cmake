@@ -1,4 +1,9 @@
 set(BR_WITH_QTNETWORK ON CACHE BOOL "Build with QtNetwork")
+
+if (${BR_EMBEDDED})
+  set(BR_WITH_QTNETWORK OFF)
+endif()
+
 if(${BR_WITH_QTNETWORK})
   find_package(Qt5Network)
   find_package(HttpParser)
@@ -9,4 +14,7 @@ else()
   set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/format/url.cpp)
   set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/format/post.cpp)
   set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/gallery/post.cpp)
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/gallery/google.cpp)
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/io/download.cpp)
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/core/processwrapper.cpp)
 endif()

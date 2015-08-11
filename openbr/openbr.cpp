@@ -303,6 +303,7 @@ const char *br_version()
     return version.data();
 }
 
+#ifdef BR_WITH_QTNETWORK 
 void br_slave_process(const char *baseName)
 {
     WorkerProcess *worker = new WorkerProcess;
@@ -311,6 +312,7 @@ void br_slave_process(const char *baseName)
     worker->mainLoop();
     delete worker;
 }
+#endif
 
 br_template br_load_img(const char *data, int len)
 {

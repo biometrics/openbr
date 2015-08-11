@@ -366,6 +366,7 @@ protected:
     CompositeTransform() : TimeVaryingTransform(false) {}
 };
 
+#ifdef BR_WITH_QTNETWORK
 class EnrollmentWorker;
 
 // Implemented in plugins/process.cpp
@@ -377,6 +378,7 @@ struct WorkerProcess
 
     void mainLoop();
 };
+#endif
 
 class MetadataTransform : public Transform
 {
