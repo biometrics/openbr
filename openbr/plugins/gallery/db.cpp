@@ -14,9 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef BR_EMBEDDED
 #include <QtSql>
-#endif // BR_EMBEDDED
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
@@ -40,7 +38,6 @@ class dbGallery : public Gallery
         QString query = file.get<QString>("query");
         QString subset = file.get<QString>("subset", "");
 
-#ifndef BR_EMBEDDED
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(file);
         if (!db.open()) qFatal("Failed to open SQLite database %s.", qPrintable(file.name));
@@ -169,7 +166,6 @@ class dbGallery : public Gallery
         }
 
         db.close();
-#endif // BR_EMBEDDED
 
         *done = true;
         return templates;
