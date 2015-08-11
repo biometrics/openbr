@@ -18,7 +18,7 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
-#include <openbr/gui/utility.h>
+#include <openbr/core/utility.h>
 
 namespace br
 {
