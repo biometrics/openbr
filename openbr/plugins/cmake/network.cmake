@@ -1,4 +1,5 @@
 set(BR_WITH_QTNETWORK ON CACHE BOOL "Build with QtNetwork")
+add_definitions(-DBR_WITH_QTNETWORK)
 
 if (${BR_EMBEDDED})
   set(BR_WITH_QTNETWORK OFF)
