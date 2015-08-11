@@ -14,7 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef BR_EMBEDDED
 #include <QtSql>
+#endif // BR_EMBEDDED
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>

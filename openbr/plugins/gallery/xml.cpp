@@ -14,7 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef BR_EMBEDDED
 #include <QtXml>
+#endif // BR_EMBEDDED
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/bee.h>
@@ -36,10 +38,12 @@ class xmlGallery : public FileGallery
     BR_PROPERTY(bool, skipMissing, false)
     FileList files;
 
+#ifndef BR_EMBEDDED
     QXmlStreamReader reader;
+    bool signatureActive;
+#endif // BR_EMBEDDED
 
     QString currentSignatureName;
-    bool signatureActive;
 
     ~xmlGallery()
     {
@@ -50,14 +54,16 @@ class xmlGallery : public FileGallery
 
     TemplateList readBlock(bool *done)
     {
+        TemplateList templates;
+
+#ifndef BR_EMBEDDED
+        qint64 count = 0;
+
         if (readOpen())
             reader.setDevice(&f);
 
         if (reader.atEnd())
             f.seek(0);
-
-        TemplateList templates;
-        qint64 count = 0;
 
         while (!reader.atEnd())
         {
@@ -169,8 +175,9 @@ class xmlGallery : public FileGallery
                 }
             }
         }
-        *done = true;
+#endif // BR_EMBEDDED
 
+        *done = true;
         return templates;
     }
 
