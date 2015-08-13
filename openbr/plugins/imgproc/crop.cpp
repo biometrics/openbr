@@ -35,8 +35,8 @@ class CropTransform : public UntrainableTransform
     Q_PROPERTY(int height READ get_height WRITE set_height RESET reset_height STORED false)
     BR_PROPERTY(int, x, 0)
     BR_PROPERTY(int, y, 0)
-    BR_PROPERTY(int, width, -1)
-    BR_PROPERTY(int, height, -1)
+    BR_PROPERTY(int, width, 0)
+    BR_PROPERTY(int, height, 0)
 
     void project(const Template &src, Template &dst) const
     {
