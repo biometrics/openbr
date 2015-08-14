@@ -132,7 +132,7 @@ static inline void unpackOctave(const KeyPoint &kpt, int &octave, int &layer, fl
     scale = octave >= 0 ? 1.f/(1 << octave) : (float)(1 << -octave);
 }
 
-static Mat createInitialImage( const Mat& img, bool doubleImageSize, float sigma, float initSigma )
+static Mat createInitialImage( const Mat& img, bool doubleImageSize, float sigma)
 {
     Mat gray, gray_fpt;
     if( img.channels() == 3 || img.channels() == 4 )
@@ -145,7 +145,7 @@ static Mat createInitialImage( const Mat& img, bool doubleImageSize, float sigma
 
     if( doubleImageSize )
     {
-        sig_diff = sqrtf( std::max(sigma * sigma - initSigma * initSigma * 4, 0.01f) );
+        sig_diff = sqrtf( std::max(sigma * sigma, 0.01f) );
         Mat dbl;
         resize(gray_fpt, dbl, Size(gray.cols*2, gray.rows*2), 0, 0, INTER_LINEAR);
         GaussianBlur(dbl, dbl, Size(), sig_diff, sig_diff);
@@ -153,7 +153,7 @@ static Mat createInitialImage( const Mat& img, bool doubleImageSize, float sigma
     }
     else
     {
-        sig_diff = sqrtf( std::max(sigma * sigma - initSigma * initSigma, 0.01f) );
+        sig_diff = sqrtf( std::max(sigma * sigma, 0.01f) );
         GaussianBlur(gray_fpt, gray_fpt, Size(), sig_diff, sig_diff);
         return gray_fpt;
     }
@@ -385,7 +385,7 @@ static int descriptorSize(int bins, int width)
     return width*width*bins;
 }
 
-static void extractSIFT(const Mat &image, vector<KeyPoint> &keypoints, Mat &descriptors, int nOctaveLayers, double sigma, int bins, int width, float initSigma)
+static void extractSIFT(const Mat &image, vector<KeyPoint> &keypoints, Mat &descriptors, int nOctaveLayers, double sigma, int bins, int width)
 {
     if( image.empty() || image.depth() != CV_8U )
         CV_Error( CV_StsBadArg, "image is empty or has incorrect depth (!=CV_8U)" );
@@ -404,7 +404,7 @@ static void extractSIFT(const Mat &image, vector<KeyPoint> &keypoints, Mat &desc
     CV_Assert( firstOctave >= -1 && actualNLayers <= nOctaveLayers );
     actualNOctaves = maxOctave - firstOctave + 1;
 
-    const Mat base = createInitialImage(image, firstOctave < 0, (float)sigma, initSigma);
+    const Mat base = createInitialImage(image, firstOctave < 0, (float)sigma);
     const int nOctaves = actualNOctaves > 0 ? actualNOctaves : cvRound(log( (double)std::min( base.cols, base.rows ) ) / log(2.) - 2) - firstOctave;
 
     vector<Mat> gpyr, dogpyr;
@@ -432,12 +432,10 @@ class CustomSIFTTransform : public UntrainableTransform
     Q_PROPERTY(QList<int> sizes READ get_sizes WRITE set_sizes RESET reset_sizes STORED false)
     Q_PROPERTY(int bins READ get_bins WRITE set_bins RESET reset_bins STORED false)
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
-    Q_PROPERTY(float initSigma READ get_initSigma WRITE set_initSigma RESET reset_initSigma STORED false)
     BR_PROPERTY(int, size, 1)
     BR_PROPERTY(QList<int>, sizes, QList<int>())
     BR_PROPERTY(int, bins, 8)
     BR_PROPERTY(int, width, 4)
-    BR_PROPERTY(float, initSigma, 0.5f)
 
     void init()
     {
@@ -453,7 +451,7 @@ class CustomSIFTTransform : public UntrainableTransform
                 keyPoints.push_back(KeyPoint(val.x(), val.y(), sz));
 
         Mat m;
-        extractSIFT(src, keyPoints, m, 3, 1.6f, bins, width, initSigma);
+        extractSIFT(src, keyPoints, m, 3, 1.6f, bins, width);
         m.setTo(0, m<0); // SIFT returns large negative values when it goes off the edge of the image.
         dst += m;
     }
