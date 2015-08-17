@@ -49,3 +49,6 @@ data/CaltechPedestrians/*.xml
 *.check_cache
 *.sublime-project
 *.sublime-workspace
+
+### ROC ###
+ROC.lic
