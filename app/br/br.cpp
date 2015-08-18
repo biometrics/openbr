@@ -215,8 +215,12 @@ public:
                 daemon = true;
                 daemon_pipe = parv[0];
             } else if (!strcmp(fun, "slave")) {
+                #ifdef BR_WITH_QTNETWORK
                 check(parc == 1, "Incorrect parameter count for 'slave'");
                 br_slave_process(parv[0]);
+                #else
+                qFatal("Build with QtNetwork to use the slave option");
+                #endif
             } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;

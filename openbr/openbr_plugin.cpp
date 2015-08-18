@@ -19,7 +19,6 @@
 #include <QFutureSynchronizer>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QLocalSocket>
 #include <QMetaProperty>
 #include <qnumeric.h>
 #include <QPointF>
@@ -34,7 +33,12 @@
 
 #ifndef BR_EMBEDDED
 #include <QApplication>
-#endif
+#endif // BR_EMBEDDED
+
+#ifdef BR_WITH_QTNETWORK
+#include <QLocalSocket>
+Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
+#endif // BR_WITH_QTNETWORK
 
 #include "openbr_plugin.h"
 #include "version.h"
@@ -46,8 +50,6 @@
 
 using namespace br;
 using namespace cv;
-
-Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
 
 static const QMetaObject *getInterface(const QObject *obj)
 {
@@ -1277,8 +1279,11 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     qRegisterMetaType< QList<br::Distance*> >();
     qRegisterMetaType< QList<br::Representation* > >();
     qRegisterMetaType< QList<br::Classifier* > >();
+    
+#ifdef BR_WITH_QTNETWORK
     qRegisterMetaType< QAbstractSocket::SocketState> ();
     qRegisterMetaType< QLocalSocket::LocalSocketState> ();
+#endif // BR_WITH_QTNETWORK
 
     Globals = new Context();
     Globals->init(File());
