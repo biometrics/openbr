@@ -57,10 +57,10 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
 }
 
 plotLandmarkTables <- function(tableData=NULL) {
-    if(majorSize > 1) {
+    if (majorSize > 1) {
         var <- majorHeader
     } else {
-        if(minorHeader == "") var <- majorHeader else var <- minorHeader
+        if (minorHeader == "") var <- majorHeader else var <- minorHeader
     }
     StatBox <- summarySE(tableData, measurevar="Y", groupvars=c(var,"X"))
     OverallStatBox <- summarySE(tableData, measurevar="Y", groupvars=c(var))
@@ -123,37 +123,24 @@ plotBC <- function(bcData=NULL) {
     factor <- if (majorSmooth) minorHeader else majorHeader
     plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
     p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
-    if(majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
-    if(minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
+    if (majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
+    if (minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
     p <- p + scale_y_continuous(labels=percent) + theme(legend.position="none", axis.text.x=element_text(angle=-90, hjust=0))
-    if(!smooth) p <- p + geom_text(data=bcData, aes(label=Y, y=0.05))
+    if (!smooth) p <- p + geom_text(data=bcData, aes(label=Y, y=0.05))
     return(p)
 }
 
 plotERR <- function(errData=NULL) {
-    if(flip) {
-        if(majorSize > 1) color <- majorHeader
-    } else {
-        if(minorSize > 1) color <- minorHeader
-    }
-    p <- qplot(X, Y, data=errData, geom="line", linetype=Error, colour=if(exists("color")) factor(eval(parse(text=color))) else NULL, xlab="Score", ylab="Error Rate") + theme_minimal()
-    if(flip) {
-        if(majorSize > 1)
-            p <- p + getScale("colour", majorHeader, majorSize)
-        else if(minorSize > 1)
-            p <- p + getScale("colour", minorHeader, minorSize)
-    }
+    p <- qplot(X, Y, data=errData, geom="line", linetype=Error, colour=if(flip && (majorSize > 1)) factor(eval(parse(text=majorHeader))) else if (minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab="Score", ylab="Error Rate") + theme_minimal()
+
+    if (flip && (majorSize > 1)) p <- p + getScale("colour", majorHeader, majorSize) + labs(colour=majorHeader)
+    else if (minorSize > 1)      p <- p + getScale("colour", minorHeader, minorSize) + labs(colour=minorHeader)
+
     p <- p + scale_y_log10(labels=percent) + annotation_logticks(sides="l")
-    if(flip) {
-        if(minorSize > 1) {
-            facet <- minorHeader
-            p <- p + facet_wrap(as.formula(paste("~", facet)), scales="free_x")
-        }
-    } else {
-        if(majorSize >1) {
-            facet <- majorHeader
-            p <- p + facet_wrap(as.formula(paste("~", facet)), scales="free_x")
-        }
+    if (flip && (minorSize > 1)) {
+        p <- p + facet_wrap(as.formula(paste("~", minorHeader)), scales="free_x")
+    } else if (majorSize > 1) {
+        p <- p + facet_wrap(as.formula(paste("~", majorHeader)), scales="free_x")
     }
     p <- p + theme(aspect.ratio=1)
     return(p)
@@ -162,8 +149,8 @@ plotERR <- function(errData=NULL) {
 plotOverlap <- function(overlapData=NULL) {
     p <- qplot(X, data=overlapData, geom="histogram", position="identity", xlab="Overlap", ylab="Frequency")
     p <- p + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
-    if(majorSize > 1) {
-        if(minorSize) {
+    if (majorSize > 1) {
+        if (minorSize > 1) {
             p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", majorHeader)), scales="free")
         } else {
             p <- p + facet_wrap(facets=as.formula(paste("~", majorHeader)), scales="free")
