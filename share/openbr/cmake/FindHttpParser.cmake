@@ -1,4 +1,4 @@
-find_path(HTTPPARSER_DIR http_parser.h ${CMAKE_SOURCE_DIR}/3rdparty/*)
+find_path(HTTPPARSER_DIR http_parser.h ${PROJECT_SOURCE_DIR}/3rdparty/*)
 mark_as_advanced(HTTPPARSER_DIR)
 include_directories(${HTTPPARSER_DIR})
 set(HTTPPARSER_SRC ${HTTPPARSER_DIR}/http_parser.c)

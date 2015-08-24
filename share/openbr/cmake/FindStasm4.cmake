@@ -8,7 +8,7 @@
 #   target_link_libraries(MY_TARGET ${Stasm4_LIBS})
 # ================================================================
 
-find_path(Stasm_DIR stasm/stasm_lib.h ${CMAKE_SOURCE_DIR}/3rdparty/* NO_DEFAULT_PATH)
+find_path(Stasm_DIR stasm/stasm_lib.h ${PROJECT_SOURCE_DIR}/3rdparty/* NO_DEFAULT_PATH)
 mark_as_advanced(Stasm_DIR)
 include_directories(${Stasm_DIR}/stasm)
 include_directories(${Stasm_DIR}/stasm/MOD_1)

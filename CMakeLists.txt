@@ -97,7 +97,7 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
 find_package(Alphanum REQUIRED)
 
 # Add RandomLib
-set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_SOURCE_DIR}/3rdparty/RandomLib-1.9/src/Random.cpp)
+set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/RandomLib-1.9/src/Random.cpp)
 include_directories(3rdparty/RandomLib-1.9/include)
 
 # Find cvmatio (if using it)
