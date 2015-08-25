@@ -84,7 +84,7 @@ private:
         pow(distance / bandwidth, 2, p);
         exp(-0.5 * p, e);
 
-        return (1.0 / (bandwidth * sqrt(2 * M_PI))) * e;
+        return (1.0 / (bandwidth * sqrt(2 * CV_PI))) * e;
     }
 
     QList<int> assignClusterID(const QList<Mat> &points)
