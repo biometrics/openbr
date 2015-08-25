@@ -2,6 +2,7 @@
 #define _BOOST_H_
 
 #include "ml.h"
+#include <time.h>
 #include <openbr/openbr_plugin.h>
 
 #ifdef _WIN32
