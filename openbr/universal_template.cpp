@@ -94,7 +94,7 @@ int br_iterate_utemplates_file(FILE *file, br_utemplate_callback callback, br_ca
             free(t);
 
             // Try to rewind header read
-            if (fseek(file, -sizeof(br_universal_template), SEEK_CUR))
+            if (fseek(file, -long(sizeof(br_universal_template)), SEEK_CUR))
                 qFatal("Unable to recover from partial template read!");
 
             break;
