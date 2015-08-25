@@ -82,7 +82,7 @@ private:
         params.nu = 0.5;
         params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, termCriteria, FLT_EPSILON);
 
-        if ((C == -1) || ((gamma == -1) && (kernel == CvSVM::RBF))) {
+        if ((C == -1) || ((gamma == -1) && (kernel == RBF))) {
             try {
                 svm.train_auto(deltaData, deltaLab, Mat(), Mat(), params, folds,
                                CvSVM::get_default_grid(CvSVM::C),

@@ -53,7 +53,7 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        if (src.m().channels() > 1 || colorSpace == CV_GRAY2BGR) cvtColor(src, dst, colorSpace);
+        if (src.m().channels() > 1 || colorSpace == Color) cvtColor(src, dst, colorSpace);
         else dst = src;
 
         if (channel != -1) {

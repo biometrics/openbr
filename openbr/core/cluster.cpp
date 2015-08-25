@@ -232,7 +232,7 @@ Neighborhood br::loadkNN(const QString &infile)
             neighborhood.append(neighbors);
             continue;
         }
-        bool off = false;
+
         QStringList list = line.trimmed().split(",", QString::SkipEmptyParts);
         foreach (const QString &item, list) {
             QStringList parts = item.trimmed().split(":", QString::SkipEmptyParts);
@@ -246,12 +246,9 @@ Neighborhood br::loadkNN(const QString &infile)
             if (idx  <min_idx)
                 min_idx = idx;
 
-            if (idx >= lines.size()) {
-                off = true;
+            if (idx >= lines.size())
                 continue;
-            }
             neighbors.append(qMakePair(idx, score));
-
 
             if (!intOK && floatOK)
                 qFatal("Failed to parse word: %s", qPrintable(item));
