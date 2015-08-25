@@ -34,7 +34,7 @@ class VerifyDetectionTransform : public UntrainableMetaTransform
     Q_PROPERTY(int index READ get_index WRITE set_index RESET reset_index STORED false)
     BR_PROPERTY(int, index, 14)
 
-    void project(const Template &src, Template &dst) const
+    void project(const Template &, Template &dst) const
     {
         qWarning("Single template project not supported by VerifyDetectionTransform.");
         dst.file.fte = true;
