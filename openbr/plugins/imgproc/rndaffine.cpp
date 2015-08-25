@@ -58,7 +58,7 @@ class RndAffineTransform : public UntrainableMetaTransform
                         int min = (int)(sqrt(1 / scaleFactor) * IPD);
                         int max = (int)(sqrt(scaleFactor) * IPD);
                         int dx = (rand() % (max - min)) + min;
-                        int dy = (dx * sin(angle * M_PI / 180))/2;
+                        int dy = (dx * sin(angle * CV_PI / 180))/2;
 
                         QPointF shiftedAffine_0 = QPointF(affine_1.x() - dx, affine_1.y() + dy);
 
