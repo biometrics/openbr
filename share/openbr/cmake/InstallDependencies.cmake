@@ -116,3 +116,32 @@ function(install_r_runtime)
     install(DIRECTORY ${R_DIR}/ DESTINATION R)
   endif()
 endfunction()
+
+# FFMPEG
+function(install_ffmpeg)
+  if(${BR_INSTALL_DEPENDENCIES})
+    if(WIN32)
+
+    else()
+      find_library(AVCODEC avcodec)
+      if(${AVCODEC})
+        install(FILES ${AVCODEC} DESTINATION lib)
+      endif()
+
+      find_library(AVUTIL avutil)
+      if(${AVUTIL})
+        install(FILES ${AVUTIL} DESTINATION lib)
+      endif()
+
+      find_library(AVFORMAT avformat)
+      if(${AVFORMAT})
+        install(FILES ${AVFORMAT} DESTINATION lib)
+      endif()
+
+      find_library(SWSCALE swscale)
+      if(${SWSCALE})
+        install(FILES ${SWSCALE} DESTINATION lib)
+      endif()
+    endif()
+  endif()
+endfunction()
