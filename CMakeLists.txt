@@ -86,8 +86,8 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV 2.4.5 REQUIRED)
-set(OPENCV_DEPENDENCIES opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video opencv_videostab opencv_superres opencv_stitching opencv_ocl opencv_legacy opencv_contrib)
-set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OpenCV_LIBS})
+set(OPENCV_DEPENDENCIES opencv_core opencv_features2d opencv_flann opencv_highgui opencv_imgproc opencv_ml opencv_nonfree opencv_objdetect opencv_photo opencv_video opencv_contrib)
+set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OPENCV_DEPENDENCIES})
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)
