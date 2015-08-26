@@ -177,9 +177,12 @@ foreach(DIR ${BR_THIRDPARTY_APPS_DIR})
 endforeach()
 
 # Install
-install(FILES LICENSE.txt README.md DESTINATION share/openbr)
-install(DIRECTORY share DESTINATION .)
-install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
+option(BR_INSTALL_SHARE "Install share/openbr files." ON)
+if(${BR_INSTALL_SHARE})
+  install(FILES LICENSE.txt README.md DESTINATION share/openbr)
+  install(DIRECTORY share DESTINATION .)
+  install(DIRECTORY ${BR_THIRDPARTY_SHARE} DESTINATION share)
+endif()
 
 # install brpy
 option(BR_INSTALL_BRPY "Install brpy, the Python wrapper to the C API (requires Python)")
