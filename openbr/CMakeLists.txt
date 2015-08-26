@@ -32,14 +32,14 @@ target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
 
 # Janus implementation
-set(BR_WITH_JANUS ON CACHE BOOL "Build IARPA Janus related applications.")
-if (BR_WITH_JANUS)
-set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
-set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
-mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
-mark_as_advanced(JANUS_BUILD_DOCS)
-set(JANUS_IMPLEMENTATION openbr)
-add_subdirectory(janus)
+option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
+if(BR_WITH_JANUS)
+  set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
+  set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
+  mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
+  mark_as_advanced(JANUS_BUILD_DOCS)
+  set(JANUS_IMPLEMENTATION openbr)
+  add_subdirectory(janus)
 endif()
 
 # Install
