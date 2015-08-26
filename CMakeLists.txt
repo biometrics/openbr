@@ -80,7 +80,7 @@ endif()
 # Find Qt
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
-if(NOT ${BR_EMBEDDED})
+if(NOT BR_EMBEDDED)
   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
@@ -189,7 +189,7 @@ if(${BR_INSTALL_BRPY})
 endif()
 
 # Package
-if(NOT ${BR_PACKAGE_THIRDPARTY})
+if(NOT BR_PACKAGE_THIRDPARTY)
   set(CPACK_PACKAGE_EXECUTABLES "OpenBR" "OpenBR")
   set(CPACK_CREATE_DESKTOP_LINKS "OpenBR")
   if(CMAKE_HOST_WIN32)
