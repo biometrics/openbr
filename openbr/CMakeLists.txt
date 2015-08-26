@@ -2,16 +2,23 @@
 configure_file(${BR_SHARE_DIR}/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-# Janus API
-include_directories(janus/include)
-install(DIRECTORY janus/include DESTINATION .)
-set(BR_JANUS janus/src/opencv_io/opencv_io.cpp)
-add_definitions(-DJANUS_LIBRARY)
-
 # Collect source files
-aux_source_directory(. SRC)
+set(SRC openbr.cpp
+        openbr_plugin.cpp
+        universal_template.cpp)
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
+
+# Janus API
+option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
+if(BR_WITH_JANUS)
+  include_directories(janus/include)
+  install(DIRECTORY janus/include DESTINATION .)
+  set(BR_JANUS janus.cpp
+               janus_io.cpp
+               janus/src/opencv_io/opencv_io.cpp)
+  add_definitions(-DJANUS_LIBRARY)
+endif()
 
 # Optional GUI module
 if(NOT BR_EMBEDDED)
@@ -32,7 +39,6 @@ target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
 
 # Janus implementation
-option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
 if(BR_WITH_JANUS)
   set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
   set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
