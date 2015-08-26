@@ -67,16 +67,6 @@ if(${BR_EMBEDDED})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
 endif()
 
-option(BR_DISTRIBUTED "Target distributed memory models")
-if(${BR_DISTRIBUTED})
-  find_package(MPI REQUIRED)
-  set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
-  set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
-  include_directories(MPI_INCLUDE_PATH)
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -DBR_DISTRIBUTED)
-  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${MPI_LIBRARY})
-endif()
-
 # Find Qt
 set(QT_DEPENDENCIES Concurrent Core)
 option(BR_EMBEDDED "Limit software dependencies")
