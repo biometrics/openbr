@@ -8,7 +8,10 @@ if(${BR_WITH_QTNETWORK})
     install(FILES ${HTTPPARSER_LICENSE} RENAME http-parser DESTINATION share/openbr/licenses)
   endif()
 else()
-  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/format/url.cpp)
-  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/format/post.cpp)
-  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/gallery/post.cpp)
+  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/core/processwrapper.cpp
+                                                 plugins/io/download.cpp
+                                                 plugins/format/url.cpp
+                                                 plugins/format/post.cpp
+                                                 plugins/gallery/google.cpp
+                                                 plugins/gallery/post.cpp)
 endif()

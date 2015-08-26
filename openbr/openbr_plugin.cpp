@@ -19,7 +19,6 @@
 #include <QFutureSynchronizer>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QLocalSocket>
 #include <QMetaProperty>
 #include <qnumeric.h>
 #include <QPointF>
@@ -46,8 +45,6 @@
 
 using namespace br;
 using namespace cv;
-
-Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
 
 static const QMetaObject *getInterface(const QObject *obj)
 {
@@ -1277,8 +1274,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     qRegisterMetaType< QList<br::Distance*> >();
     qRegisterMetaType< QList<br::Representation* > >();
     qRegisterMetaType< QList<br::Classifier* > >();
-    qRegisterMetaType< QAbstractSocket::SocketState> ();
-    qRegisterMetaType< QLocalSocket::LocalSocketState> ();
 
     Globals = new Context();
     Globals->init(File());
