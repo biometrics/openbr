@@ -240,8 +240,8 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 	ciMult <- qt(conf.interval/2 + .5, datac$N-1)
 	datac$ci <- datac$se * ciMult
 
-	datac$upper <- if(datac[, measurevar] + datac$ci < 1) (datac[, measurevar] + datac$ci) else 1
-	datac$lower <- if(datac[, measurevar] - datac$ci > 0) (datac[, measurevar] - datac$ci) else 0
+	datac$upper <- ifelse(datac[,measurevar] + datac$ci < 1, datac[,measurevar] + datac$ci, 1)
+	datac$lower <- ifelse(datac[,measurevar] - datac$ci > 0, datac[,measurevar] - datac$ci, 0)
 
 	return(datac)
 }
