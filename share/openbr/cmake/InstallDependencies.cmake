@@ -118,30 +118,31 @@ function(install_r_runtime)
 endfunction()
 
 # FFMPEG
+function(install_ffmpeg_help LIB)
+  if(LIB)
+    string(REGEX REPLACE "\\.[^.]*$" "" STRIPEXT ${LIB})
+    file(GLOB LIBS "${STRIPEXT}.*[^a]")
+    install(FILES ${LIBS} DESTINATION lib)
+  endif()
+endfunction()
+
 function(install_ffmpeg)
   if(${BR_INSTALL_DEPENDENCIES})
     if(WIN32)
 
     else()
       find_library(AVCODEC avcodec)
-      if(AVCODEC)
-        install(FILES ${AVCODEC} DESTINATION lib)
-      endif()
+      install_ffmpeg_help(${AVCODEC})
 
       find_library(AVUTIL avutil)
-      if(AVUTIL)
-        install(FILES ${AVUTIL} DESTINATION lib)
-      endif()
+      install_ffmpeg_help(${AVUTIL})
 
       find_library(AVFORMAT avformat)
-      if(AVFORMAT)
-        install(FILES ${AVFORMAT} DESTINATION lib)
-      endif()
+      install_ffmpeg_help(${AVFORMAT})
 
       find_library(SWSCALE swscale)
-      if(SWSCALE)
-        install(FILES ${SWSCALE} DESTINATION lib)
-      endif()
+      install_ffmpeg_help(${SWSCALE})
+
     endif()
   endif()
 endfunction()
