@@ -26,6 +26,8 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+Q_DECLARE_METATYPE(QLocalSocket::LocalSocketState)
+
 using namespace cv;
 
 namespace br
@@ -39,6 +41,9 @@ public:
     QThread *basis;
     CommunicationManager()
     {
+        qRegisterMetaType< QAbstractSocket::SocketState> ();
+        qRegisterMetaType< QLocalSocket::LocalSocketState> ();
+
         timeout_ms = 30000;
 
         basis = new QThread;

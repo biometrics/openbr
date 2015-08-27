@@ -2,19 +2,26 @@
 configure_file(${BR_SHARE_DIR}/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-# Janus API
-include_directories(janus/include)
-install(DIRECTORY janus/include DESTINATION .)
-set(BR_JANUS janus/src/opencv_io/opencv_io.cpp)
-add_definitions(-DJANUS_LIBRARY)
-
 # Collect source files
-aux_source_directory(. SRC)
+set(SRC openbr.cpp
+        openbr_plugin.cpp
+        universal_template.cpp)
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
+# Janus API
+option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
+if(BR_WITH_JANUS)
+  include_directories(janus/include)
+  install(DIRECTORY janus/include DESTINATION .)
+  set(BR_JANUS janus.cpp
+               janus_io.cpp
+               janus/src/opencv_io/opencv_io.cpp)
+  add_definitions(-DJANUS_LIBRARY)
+endif()
+
 # Optional GUI module
-if(NOT ${BR_EMBEDDED})
+if(NOT BR_EMBEDDED)
   aux_source_directory(gui BR_GUI)
   qt5_add_resources(BR_ICONS ../share/openbr/icons.qrc)
   file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/gui/*.h)
@@ -32,14 +39,13 @@ target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
 
 # Janus implementation
-set(BR_WITH_JANUS ON CACHE BOOL "Build IARPA Janus related applications.")
-if (BR_WITH_JANUS)
-set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
-set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
-mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
-mark_as_advanced(JANUS_BUILD_DOCS)
-set(JANUS_IMPLEMENTATION openbr)
-add_subdirectory(janus)
+if(BR_WITH_JANUS)
+  set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
+  set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
+  mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
+  mark_as_advanced(JANUS_BUILD_DOCS)
+  set(JANUS_IMPLEMENTATION openbr)
+  add_subdirectory(janus)
 endif()
 
 # Install
@@ -52,6 +58,9 @@ install(FILES ${HEADERS} DESTINATION include/openbr)
 include(InstallDependencies)
 install_compiler_libraries()
 install_qt_libraries(QT_DEPENDENCIES)
-install_qt_imageformats()
+if(NOT BR_EMBEDDED)
+  install_qt_imageformats()
+endif()
 install_qt_misc()
 install_opencv_libraries(OPENCV_DEPENDENCIES)
+install_ffmpeg()
