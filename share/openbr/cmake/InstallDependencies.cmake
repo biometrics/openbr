@@ -137,59 +137,17 @@ function(install_ffmpeg)
       endif()
       install(FILES ${cv_lib_stripped}/../bin/${BR_INSTALL_DEPENDENCIES_PREFIX}opencv_ffmpeg${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}${FFMPEGSUFFIX}.dll DESTINATION bin)
     else()
-      find_library(AVCODEC avcodec)
-      install_ffmpeg_help(${AVCODEC})
+      # find_library(AVCODEC avcodec)
+      # install_ffmpeg_help(${AVCODEC})
 
-      find_library(AVUTIL avutil)
-      install_ffmpeg_help(${AVUTIL})
+      # find_library(AVUTIL avutil)
+      # install_ffmpeg_help(${AVUTIL})
 
-      find_library(AVFORMAT avformat)
-      install_ffmpeg_help(${AVFORMAT})
+      # find_library(AVFORMAT avformat)
+      # install_ffmpeg_help(${AVFORMAT})
 
-      find_library(SWSCALE swscale)
-      install_ffmpeg_help(${SWSCALE})
-
-      find_library(XVIDCORE xvidcore)
-      install_ffmpeg_help(${XVIDCORE})
-
-      find_library(X264 x264)
-      install_ffmpeg_help(${X264})
-
-      find_library(BVPX bvpx)
-      install_ffmpeg_help(${BVPX})
-
-      find_library(VORBISENC vorbisenc)
-      install_ffmpeg_help(${VORBISENC})
-
-      find_library(VORBIS vorbis)
-      install_ffmpeg_help(${VORBIS})
-
-      find_library(THEORAENC theoraenc)
-      install_ffmpeg_help(${THEORAENC})
-
-      find_library(THEORADEC theoradec)
-      install_ffmpeg_help(${THEORADEC})
-
-      find_library(SPEEX speex)
-      install_ffmpeg_help(${SPEEX})
-
-      find_library(SCHROEDINGER-1.0 schroedinger-1.0)
-      install_ffmpeg_help(${SCHROEDINGER-1.0})
-
-      find_library(OPUS opus)
-      install_ffmpeg_help(${OPUS})
-
-      find_library(OPENJPEG openjpeg)
-      install_ffmpeg_help(${OPENJPEG})
-
-      find_library(MP3LAME mp3lame)
-      install_ffmpeg_help(${MP3LAME})
-
-      find_library(GSM gsm)
-      install_ffmpeg_help(${GSM})
-
-      find_library(VA va)
-      install_ffmpeg_help(${VA})
+      # find_library(SWSCALE swscale)
+      # install_ffmpeg_help(${SWSCALE})
     endif()
   endif()
 endfunction()
