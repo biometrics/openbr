@@ -36,9 +36,7 @@ class PointDisplacementTransform : public UntrainableMetadataTransform
         QList<QPointF> normalizedPoints;
 
         for (int i=0; i<points.size(); i++)
-            for (int j=0; j<points.size(); j++)
-                // There is redundant information here
-                if (j!=i) {
+            for (int j=i+1; j<points.size(); j++) {
                     QPointF normalizedPoint = points[i]-points[j];
                     normalizedPoint.setX(pow(normalizedPoint.x(),2));
                     normalizedPoint.setY(pow(normalizedPoint.y(),2));
