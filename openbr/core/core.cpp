@@ -548,6 +548,11 @@ private:
         QFileInfo fileInfo(description);
         if (!fileInfo.exists() || fileInfo.isDir())
             fileInfo = QFileInfo(Globals->sdkPath + "/share/openbr/models/algorithms/" + description);
+
+        // Also check up one directory to handle the scenario where OpenBR is a submodule of another project
+        if (!fileInfo.exists() || fileInfo.isDir())
+            fileInfo = QFileInfo(Globals->sdkPath + "/../share/openbr/models/algorithms/" + description);
+
         if (fileInfo.exists() && !fileInfo.isDir()) {
             const QString filePath = fileInfo.canonicalFilePath();
             qDebug("Loading %s", qPrintable(filePath));
