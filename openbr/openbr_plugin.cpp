@@ -1200,8 +1200,6 @@ static QCoreApplication *application = NULL;
 
 void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useGui)
 {
-    qInstallMessageHandler(messageHandler);
-
     QString sep;
 #ifndef _WIN32
   #ifndef __APPLE__
@@ -1245,7 +1243,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
         }
 
         if (!foundSDK) {
-            qWarning("Unable to locate SDK automatically.");
+            qWarning("Unable to locate SDK automatically from paths: %s", qPrintable(checkPaths.join("\n")));
             return;
         }
     } else {
@@ -1281,6 +1279,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     Globals->algorithm = "Identity";
     Globals->path = getenv("DATA"); // our convention
     Globals->sdkPath = sdkPath;
+
+    // The message handler requires a valid `Globals` so we set it after `Globals` is constructed
+    qInstallMessageHandler(messageHandler);
 
     Common::seedRNG();
 
