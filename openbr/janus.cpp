@@ -24,13 +24,13 @@ janus_error janus_initialize(const char *sdk_path, const char *temp_path, const 
     Globals->enrollAll = true;
     Globals->file.set(QString("temp_path"), QString(temp_path));
     const QString algorithm = model_file;
+    detect.reset(Transform::make("Cvt(Gray)+Cascade(FrontalFace,ROCMode=true)", NULL));
     if (algorithm.isEmpty()) {
-        detect.reset(Transform::make("Cvt(Gray)+Cascade(FrontalFace,ROCMode=true)", NULL));
         augment.reset(Transform::make("Cvt(Gray)+Affine(88,88,0.25,0.35)+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>", NULL));
         distance = Distance::fromAlgorithm("FaceRecognition");
     } else {
-        augment.reset(Transform::make(algorithm + "Enroll", NULL));
-        distance.reset(Distance::make(algorithm + "Compare", NULL));
+        augment = Transform::fromAlgorithm(algorithm);
+        distance = Distance::fromAlgorithm(algorithm);
     }
     return JANUS_SUCCESS;
 }
