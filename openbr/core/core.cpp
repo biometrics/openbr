@@ -266,7 +266,7 @@ struct AlgorithmCore
 
     void retrieveOrEnroll(const File &file, QScopedPointer<Gallery> &gallery, FileList &galleryFiles)
     {
-        if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template" << "ut").contains(file.suffix())) {
+        if (!file.getBool("enroll") && (QStringList() << "gal" << "mem" << "template" << "t").contains(file.suffix())) {
             // Retrieve it
             gallery.reset(Gallery::make(file));
             galleryFiles = gallery->files();
@@ -443,7 +443,7 @@ struct AlgorithmCore
             colEnrolledGallery = colGallery.baseName() + colGallery.hash() + '.' + targetExtension;
 
             // Check if we have to do real enrollment, and not just convert the gallery's type.
-            if (!(QStringList() << "gal" << "template" << "mem" << "ut").contains(colGallery.suffix()))
+            if (!(QStringList() << "gal" << "template" << "mem" << "t").contains(colGallery.suffix()))
                 enroll(colGallery, colEnrolledGallery);
 
             // If the gallery does have enrolled templates, but is not the right type, we do a simple
@@ -465,7 +465,7 @@ struct AlgorithmCore
         // which compares incoming templates against a gallery, we will handle enrollment of the row set by simply
         // building a transform that does enrollment (using the current algorithm), then does the comparison in one
         // step. This way, we don't have to retain the complete enrolled row gallery in memory, or on disk.
-        else if (!(QStringList() << "gal" << "mem" << "template" << "ut").contains(rowGallery.suffix()))
+        else if (!(QStringList() << "gal" << "mem" << "template" << "t").contains(rowGallery.suffix()))
             needEnrollRows = true;
 
         // At this point, we have decided how we will structure the comparison (either in transpose mode, or not), 
