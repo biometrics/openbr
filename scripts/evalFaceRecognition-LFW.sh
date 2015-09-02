@@ -20,7 +20,7 @@ if [ ! -e Algorithm_Dataset ]; then
 fi
 
 # Run the LFW test protocol
-br -algorithm $ALGORITHM -path ../data/LFW/img/ -crossValidate 10 -pairwiseCompare ../data/LFW/sigset/test_image_restricted_target.xml ../data/LFW/sigset/test_image_restricted_query.xml ${ALGORITHM}_LFW.mtx -convert Output ${ALGORITHM}_lfw.mtx Algorithm_Dataset/${ALGORITHM}_LFW%1.eval
+br -algorithm $ALGORITHM -path ../data/LFW/img/ -crossValidate 10 -pairwiseCompare ../data/LFW/sigset/test_image_restricted_target.xml ../data/LFW/sigset/test_image_restricted_query.xml ${ALGORITHM}_LFW.mtx -convert Output ${ALGORITHM}_LFW.mtx Algorithm_Dataset/${ALGORITHM}_LFW%1.eval
 
 # Plot results
-br -plot Algorithm_Dataset/* 'lfw_results.pdf[smooth=Dataset,rocOptions[yLimits=(0,1)]]'
+br -plot Algorithm_Dataset/* 'lfw_results.pdf[smooth=Dataset,rocOptions=[yLimits=(0,1)]]'
