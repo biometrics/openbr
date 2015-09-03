@@ -100,9 +100,6 @@ public:
             } else if (!strcmp(fun, "compare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'compare'.");
                 br_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
-            } else if (!strcmp(fun, "pairwiseCompare")) {
-                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
-                br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "eval")) {
                 check((parc >= 1) && (parc <= 4), "Incorrect parameter count for 'eval'.");
                 if (parc == 1) {
@@ -126,9 +123,6 @@ public:
                 } else {
                     br_eval(parv[0], parv[1], parv[2], atoi(parv[3]));
                 }
-            } else if (!strcmp(fun, "inplaceEval")) {
-                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
-                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
                 br_plot(parc-1, parv, parv[parc-1], true);
@@ -174,6 +168,12 @@ public:
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
+            } else if (!strcmp(fun, "pairwiseCompare")) {
+                check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
+                br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
+            } else if (!strcmp(fun, "inplaceEval")) {
+                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
+                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
             } else if (!strcmp(fun, "plotDetection")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
                 br_plot_detection(parc-1, parv, parv[parc-1], true);
@@ -257,10 +257,8 @@ private:
                "-train <gallery> ... <gallery> [{model}]\n"
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
-               "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
                "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
-               "-inplaceEval <simmat> <target> <query> [{csv}]\n"
-               "-plot <file> ... <file> {destination}\n"
+               "-plot <csv> ... <csv> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
                "-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
@@ -275,6 +273,8 @@ private:
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]\n"
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
+               "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
+               "-inplaceEval <simmat> <target> <query> [{csv}]\n"
                "-assertEval <simmat> <mask> <accuracy>\n"
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotLandmarking <file> ... <file> {destination}\n"
