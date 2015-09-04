@@ -42,7 +42,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("FR_Detect", "(FaceDetection+Stasm+Rename(StasmLeftEye,Affine_1,true)+Rename(StasmRightEye,Affine_0,true)+Affine(136,136,0.35,0.35,warpPoints=true))");
         Globals->abbreviations.insert("FR_Represent", "((DenseHOG/DenseLBP)+Cat+LDA(.98)+Normalize(L2))");
 
-        Globals->abbreviations.insert("FaceRecognition_0_5", "FaceDetection+FaceRecognitionRegistration+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+Normalize(L2):Dist(L2)");
         Globals->abbreviations.insert("GenderClassification", "FaceDetection+Expand+FaceClassificationRegistration+Expand+<FaceClassificationExtraction>+<GenderClassifier>+Discard");
         Globals->abbreviations.insert("AgeRegression", "FaceDetection+Expand+FaceClassificationRegistration+Expand+<FaceClassificationExtraction>+<AgeRegressor>+Discard");
         Globals->abbreviations.insert("FaceQuality", "Open+Expand+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+ImageQuality+Cvt(Gray)+DFFS+Discard");
@@ -50,7 +49,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("BlurredFaceDetection", "Open+LimitSize(1024)+SkinMask/(Cvt(Gray)+GradientMask)+And+Morph(Erode,16)+LargestConvexArea");
         Globals->abbreviations.insert("DrawFaceDetection", "Open+Cascade(FrontalFace)+Expand+ASEFEyes+Draw(inPlace=true)");
         Globals->abbreviations.insert("ShowFaceDetection", "DrawFaceDetection+Contract+First+Show+Discard");
-        Globals->abbreviations.insert("DownloadFaceRecognition", "Download+Open+ROI+Cvt(Gray)+Cascade(FrontalFace)+FaceRecognitionRegistration+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+Normalize(L2)+SetMetadata(AlgorithmID,-1):Dist(L2)");
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
@@ -103,8 +101,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("DenseSIFT", "(Grid(10,10)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("DenseSIFT2", "(Grid(5,5)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("FaceRecognitionRegistration", "ASEFEyes+Affine(88,88,0.25,0.35)");
-        Globals->abbreviations.insert("FaceRecognitionExtraction", "(Mask+DenseSIFT/DenseLBP+DownsampleTraining(PCA(0.95),instances=1)+Normalize(L2)+Cat)");
-        Globals->abbreviations.insert("FaceRecognitionEmbedding", "(Dup(12)+RndSubspace(0.05,1)+DownsampleTraining(LDA(0.98),instances=-2)+Cat+DownsampleTraining(PCA(768),instances=1))");
         Globals->abbreviations.insert("FaceClassificationRegistration", "ASEFEyes+Affine(56,72,0.33,0.45)");
         Globals->abbreviations.insert("FaceClassificationExtraction", "((Grid(7,7)+SIFTDescriptor(8)+ByRow)/DenseLBP+DownsampleTraining(PCA(0.95),instances=-1, inputVariable=Gender)+Cat)");
         Globals->abbreviations.insert("AgeRegressor", "DownsampleTraining(Center(Range),instances=-1, inputVariable=Age)+DownsampleTraining(SVM(RBF,EPS_SVR,inputVariable=Age),instances=100, inputVariable=Age)");
