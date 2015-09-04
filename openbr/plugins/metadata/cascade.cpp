@@ -401,18 +401,22 @@ class CascadeTransform : public MetaTransform
             }
 
             for (int i=0; i<t.size(); i++) {
+                const int maxDetections = t.file.get<int>("MaxDetections", std::numeric_limits<int>::max());
+                const int flags = (enrollAll && (maxDetections != 1)) ? 0 : CASCADE_FIND_BIGGEST_OBJECT;
+
                 Mat m;
                 OpenCVUtils::cvtUChar(t[i], m);
                 std::vector<Rect> rects;
                 std::vector<int> rejectLevels;
                 std::vector<double> levelWeights;
-                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, (enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT) | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
-                else         cascade->detectMultiScale(m, rects, 1.2, minNeighbors, enrollAll ? 0 : CASCADE_FIND_BIGGEST_OBJECT, Size(minSize, minSize));
+                if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, flags | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
+                else         cascade->detectMultiScale(m, rects, 1.2, minNeighbors, flags, Size(minSize, minSize));
 
                 if (!enrollAll && rects.empty())
                     rects.push_back(Rect(0, 0, m.cols, m.rows));
 
-                for (size_t j=0; j<rects.size(); j++) {
+                const size_t detections = std::min(size_t(maxDetections), rects.size());
+                for (size_t j=0; j<detections; j++) {
                     Template u(t.file, m);
                     if (rejectLevels.size() > j)
                         u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
