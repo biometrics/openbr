@@ -45,7 +45,7 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
         input = tableData$Y
     }
     mat <- matrix(input, nrow=length(labels), ncol=length(algs), byrow=FALSE)
-    colnames(mat) <- algs
+    colnames(mat) <- algs[order(tolower(algs))]
     rownames(mat) <- labels
     table <- as.table(mat)
     if (csv) {
