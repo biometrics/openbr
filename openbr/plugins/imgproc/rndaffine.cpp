@@ -19,13 +19,9 @@ class RndAffineTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(int numAffines READ get_numAffines WRITE set_numAffines RESET reset_numAffines STORED false)
-    Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
-    Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(int maxAngle READ get_maxAngle WRITE set_maxAngle RESET reset_maxAngle STORED false)
     BR_PROPERTY(int, numAffines, 0)
-    BR_PROPERTY(int, winWidth, 22)
-    BR_PROPERTY(int, winHeight, 22)
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(int, maxAngle, 15)
 
