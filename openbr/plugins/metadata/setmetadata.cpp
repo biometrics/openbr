@@ -36,6 +36,8 @@ class SetMetadataTransform : public UntrainableMetadataTransform
     {
         dst = src;
         dst.set(key, value);
+        if (key == "FTE")
+            dst.fte = true;
     }
 };
 
