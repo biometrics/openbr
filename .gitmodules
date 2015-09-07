@@ -1,6 +1,3 @@
-[submodule "share/openbr/models"]
-	path = share/openbr/models
-	url = https://github.com/biometrics/openbr-models.git
 [submodule "openbr/janus"]
 	path = openbr/janus
 	url = https://github.com/biometrics/janus.git

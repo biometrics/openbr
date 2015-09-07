@@ -10,10 +10,10 @@ set(CPACK_PACKAGE_VENDOR "OpenBiometrics")
 set(CPACK_PACKAGE_DESCRIPTION "Open Source Biometric Recognition")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 if(NOT DEFINED CPACK_PACKAGE_VERSION_MAJOR)
-  set(CPACK_PACKAGE_VERSION_MAJOR 0)
+  set(CPACK_PACKAGE_VERSION_MAJOR 1)
 endif()
 if(NOT DEFINED CPACK_PACKAGE_VERSION_MINOR)
-  set(CPACK_PACKAGE_VERSION_MINOR 6)
+  set(CPACK_PACKAGE_VERSION_MINOR 0)
 endif()
 if(NOT DEFINED CPACK_PACKAGE_VERSION_PATCH)
   set(CPACK_PACKAGE_VERSION_PATCH 0)
@@ -155,6 +155,15 @@ else()
   set(BR_THIRDPARTY_DIR "" CACHE PATH "Path to proprietary software")
   mark_as_advanced(BR_THIRDPARTY_DIR)
 endif()
+
+# Download the models
+ExternalProject_Add(models
+                    URL http://github.com/biometrics/openbr/releases/download/v1.0.0/models.tar.gz
+                    URL_MD5 0a7c79226d6629954aa32c835a1007b9
+                    SOURCE_DIR "${PROJECT_SOURCE_DIR}/share/openbr/models"
+                    CONFIGURE_COMMAND ""
+                    BUILD_COMMAND ""
+                    INSTALL_COMMAND "")
 
 # Build the SDK
 include_directories(BEFORE .) # Find the local headers first

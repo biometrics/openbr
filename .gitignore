@@ -10,6 +10,7 @@ data/lfpw
 data/LFW
 build*
 scripts/results
+share/openbr/models
 
 ### Generic ###
 *.log
