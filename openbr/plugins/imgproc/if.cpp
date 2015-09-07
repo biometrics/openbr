@@ -6,6 +6,7 @@ namespace br
 /*!
  * \ingroup transforms
  * \author Scott Klum \cite sklum
+ * \brief Document Me!
  */
 class IfTransform : public Transform
 {
