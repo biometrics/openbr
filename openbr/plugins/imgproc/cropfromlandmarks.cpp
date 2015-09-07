@@ -1,4 +1,5 @@
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 
@@ -43,7 +44,13 @@ class CropFromLandmarksTransform : public UntrainableTransform
         int padW = qRound((maxX - minX) * (paddingHorizontal / 2));
         int padH = qRound((maxY - minY) * (paddingVertical / 2));
 
-        dst = Mat(src, Rect(minX - padW, minY - padH, (maxX - minX + 1) + padW * 2, (maxY - minY + 1) + padH * 2));
+        QRectF rect(minX - padW, minY - padH, (maxX - minX + 1) + padW * 2, (maxY - minY + 1) + padH * 2);
+        if (rect.x() < 0) rect.setX(0);
+        if (rect.y() < 0) rect.setY(0);
+        if (rect.x() + rect.width() > src.m().cols) rect.setWidth(src.m().cols - rect.x());
+        if (rect.y() + rect.width() > src.m().rows) rect.setHeight(src.m().rows - rect.y());
+
+        dst = Mat(src, OpenCVUtils::toRect(rect));
     }
 };
 
