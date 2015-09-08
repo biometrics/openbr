@@ -1243,7 +1243,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
         }
 
         if (!foundSDK) {
-            qWarning("Unable to locate SDK automatically from paths: %s", qPrintable(checkPaths.join("\n")));
+            qWarning("Unable to locate SDK (share/openbr/openbr.bib) automatically from paths: %s", qPrintable(checkPaths.join("\n")));
             return;
         }
     } else {
