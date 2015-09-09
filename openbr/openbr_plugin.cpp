@@ -542,7 +542,7 @@ QDataStream &br::operator>>(QDataStream &stream, Template &t)
 }
 
 /* TemplateList - public methods */
-TemplateList TemplateList::fromGallery(const br::File &gallery)
+TemplateList TemplateList::fromGallery(const br::File &gallery, bool partition)
 {
     TemplateList templates;
     foreach (const br::File &file, gallery.split()) {
@@ -566,7 +566,7 @@ TemplateList TemplateList::fromGallery(const br::File &gallery)
         if (gallery.getBool("reduce"))
             newTemplates = newTemplates.reduced();
 
-        if (abs(Globals->crossValidate) > 1)
+        if (abs(Globals->crossValidate) > 1 && partition)
             newTemplates = newTemplates.partition("Label");
 
         if (!templates.isEmpty() && gallery.get<bool>("merge", false)) {
@@ -661,7 +661,7 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
     return result;
 }
 
-TemplateList TemplateList::partition(const QString &inputVariable, unsigned int randomSeed) const
+TemplateList TemplateList::partition(const QString &inputVariable, unsigned int randomSeed, bool overwrite) const
 {
     const int crossValidate = std::abs(Globals->crossValidate);
     if (crossValidate < 2)
@@ -672,28 +672,39 @@ TemplateList TemplateList::partition(const QString &inputVariable, unsigned int 
     RandomLib::Random rng;
 
     TemplateList partitioned = *this;
+
+    if (Globals->verbose)
+        qDebug() << "Total templates before partition:" << partitioned.size();
+
     for (int i=partitioned.size()-1; i>=0; i--) {
         // See CrossValidateTransform for description of these variables
         if (partitioned[i].file.getBool("duplicatePartitions")) {
-            for (int j=crossValidate-1; j>=0; j--) {
-                Template duplicateTemplate = partitioned[i];
+            partitioned[i].file.set("Partition", QVariant(0));
+            for (int j=crossValidate-1; j>0; j--) {
+                Template duplicateTemplate = partitioned[i].clone();
                 duplicateTemplate.file.set("Partition", j);
                 partitioned.insert(i+1, duplicateTemplate);
             }
         } else if (partitioned[i].file.getBool("allPartitions")) {
             partitioned[i].file.set("Partition", -1);
         } else {
-            const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
-            if (randomSeed) {
-                quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
-                rng.Reseed(labelSeed);
-                partitioned[i].file.set("Partition", rng.Integer() % crossValidate);
-            } else if (!partitioned[i].file.contains(("Partition"))) {
-                // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
-                partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
-            }
+            if (partitioned[i].file.contains(inputVariable)) {
+                const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
+                if (randomSeed) {
+                    quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
+                    rng.Reseed(labelSeed);
+                    partitioned[i].file.set("Partition", rng.Integer() % crossValidate);
+                } else if (!partitioned[i].file.contains("Partition") || overwrite) {
+                    // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
+                    partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
+                }
+            } else if (Globals->verbose)
+                qDebug() << QString("Template does not contain %1 key/value pair used to partition!").arg(inputVariable);
         }
     }
+
+    if (Globals->verbose)
+        qDebug() << "Total templates after partition:" << partitioned.size();
 
     return partitioned;
 }

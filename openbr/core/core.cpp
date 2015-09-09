@@ -67,11 +67,11 @@ struct AlgorithmCore
                model.isEmpty() ? "" : qPrintable(" to " + model));
 
         QScopedPointer<Transform> trainingWrapper(br::wrapTransform(transform.data(), "Stream(readMode=DistributeFrames)"));
-        TemplateList data(TemplateList::fromGallery(input));
+        TemplateList data(TemplateList::fromGallery(input,false));
 
         if (abs(Globals->crossValidate) > 1)
             for (int i=data.size()-1; i>=0; i--)
-                if (data[i].file.get<bool>("allPartitions",false) || data[i].file.get<bool>("duplicatePartitions",false))
+                if (data[i].file.get<bool>("allPartitions",false))
                     data.removeAt(i);
 
         if (transform.isNull()) qFatal("Null transform.");

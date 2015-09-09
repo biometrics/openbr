@@ -63,7 +63,9 @@ class CrossValidateTransform : public MetaTransform
     // is generally incorrect behavior.
     void train(const TemplateList &data)
     {
-        QList<int> partitions = data.partition(inputVariable, randomSeed).files().crossValidationPartitions();
+        TemplateList partitionedData = data.partition(inputVariable, randomSeed, true);
+        QList<int> partitions = partitionedData.files().crossValidationPartitions();
+
         const int crossValidate = Globals->crossValidate;
         // Only train once based on the 0th partition if crossValidate is negative.
         const int numPartitions = (crossValidate < 0) ? 1 : Common::Max(partitions)+1;
@@ -77,13 +79,17 @@ class CrossValidateTransform : public MetaTransform
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<numPartitions; i++) {
-            TemplateList partitionedData = data;
-            for (int j=partitionedData.size()-1; j>=0; j--)
+            TemplateList partition = partitionedData;
+            for (int j=partition.size()-1; j>=0; j--) {
                 if (partitions[j] == i)
                     // Remove data, it's designated for testing
-                    partitionedData.removeAt(j);
+                    partition.removeAt(j);
+            }
+            if (Globals->verbose)
+                qDebug() << QString("Training partition %1 on %2 templates.").arg(QString::number(i),QString::number(partition.size()));
+
             // Train on the remaining templates
-            futures.addFuture(QtConcurrent::run(_train, transforms[i], partitionedData));
+            futures.addFuture(QtConcurrent::run(_train, transforms[i], partition));
         }
         futures.waitForFinished();
     }
@@ -98,7 +104,7 @@ class CrossValidateTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        TemplateList partitioned = src.partition(inputVariable, randomSeed);
+        TemplateList partitioned = src.partition(inputVariable, randomSeed, true);
         const int crossValidate = Globals->crossValidate;
 
         if (crossValidate < 0) {
