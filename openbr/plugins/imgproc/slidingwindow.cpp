@@ -73,9 +73,6 @@ class SlidingWindowTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Size minObjectSize(minSize, minSize);
-        Size maxObjectSize;
-
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
             if (t.file.contains("Face")) {
@@ -94,6 +91,10 @@ class SlidingWindowTransform : public MetaTransform
                 dst.append(t);
                 continue;
             }
+
+            const int minSize = t.file.get<int>("MinSize", this->minSize);
+            Size minObjectSize(minSize, minSize);
+            Size maxObjectSize;
 
             for (int i=0; i<t.size(); i++) {
                 Mat m;
