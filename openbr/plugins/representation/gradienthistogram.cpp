@@ -21,23 +21,30 @@ class GradientHistogramRepresentation : public Representation
     Q_PROPERTY(int winWidth READ get_winWidth WRITE set_winWidth RESET reset_winWidth STORED false)
     Q_PROPERTY(int winHeight READ get_winHeight WRITE set_winHeight RESET reset_winHeight STORED false)
     Q_PROPERTY(int bins READ get_bins WRITE set_bins RESET reset_bins STORED false)
+    Q_PROPERTY(bool squareOnly READ get_squareOnly WRITE set_squareOnly RESET reset_squareOnly STORED false)
     BR_PROPERTY(int, winWidth, 24)
     BR_PROPERTY(int, winHeight, 24)
     BR_PROPERTY(int, bins, 6)
+    BR_PROPERTY(bool, squareOnly, false)
 
     void init()
     {
-        int dx, dy;
-        Size size = windowSize(&dx,&dy);
+        if (features.isEmpty()) {
+            int dx, dy;
+            Size size = windowSize(&dx,&dy);
 
-        int width = size.width+dx, height = size.height+dy;
+            int width = size.width+dx, height = size.height+dy;
 
-        // Enumerate all possible rectangles
-        for (int x=0; x<width; x++)
-            for (int y=0; y<height; y++)
-                for (int w=1; w <= width-x; w++)
-                    for (int h=1; h <= height-y; h++)
-                        features.append(Rect(x,y,w,h));
+            // Enumerate all possible rectangles
+            for (int x=0; x<width; x++)
+                for (int y=0; y<height; y++)
+                    for (int w=1; w < width-x; w++)
+                        for (int h=1; h < height-y; h++)
+                            if (!squareOnly || w == h)
+                                features.append(Rect(x,y,w,h));
+        }
+
+        qDebug() << "Number of Gradient Histogram features:" << features.size();
     }
 
     void preprocess(const Mat &src, Mat &dst) const
@@ -62,7 +69,6 @@ class GradientHistogramRepresentation : public Representation
             outputs.push_back(integralImg);
         }
 
-        // Concatenate images into row
         merge(outputs,dst);
     }
 
@@ -87,10 +93,12 @@ class GradientHistogramRepresentation : public Representation
         int dx, dy;
         Size size = windowSize(&dx, &dy);
 
-        int four = image.ptr<int>(0)[((features[index].y+features[index].height)*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
-        int one = image.ptr<int>(0)[(features[index].y*(size.height+dy)+features[index].x)*bins+channel];
-        int two = image.ptr<int>(0)[(features[index].y*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
-        int three = image.ptr<int>(0)[(features[index].y+features[index].height*(size.height+dy)+features[index].x)*bins+channel];
+        const int *ptr = image.ptr<int>();
+
+        int four = ptr[((features[index].y+features[index].height)*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
+        int one = ptr[(features[index].y*(size.height+dy)+features[index].x)*bins+channel];
+        int two = ptr[(features[index].y*(size.height+dy)+(features[index].x+features[index].width))*bins+channel];
+        int three = ptr[((features[index].y+features[index].height)*(size.height+dy)+features[index].x)*bins+channel];
 
         return four + one - (two + three);
     }
@@ -102,6 +110,7 @@ class GradientHistogramRepresentation : public Representation
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
             result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+
         return result;
     }
 
