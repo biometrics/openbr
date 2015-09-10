@@ -412,13 +412,18 @@ class CascadeTransform : public MetaTransform
                 if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, flags | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
                 else         cascade->detectMultiScale(m, rects, 1.2, minNeighbors, flags, Size(minSize, minSize));
 
-                if (!enrollAll && rects.empty())
+                bool empty = false;
+                if (!enrollAll && rects.empty()) {
+                    empty = true;
                     rects.push_back(Rect(0, 0, m.cols, m.rows));
+                }
 
                 const size_t detections = std::min(size_t(maxDetections), rects.size());
                 for (size_t j=0; j<detections; j++) {
                     Template u(t.file, m);
-                    if (rejectLevels.size() > j)
+                    if (empty) {
+                        u.file.set("Confidence",-std::numeric_limits<float>::max());
+                    } else if (rejectLevels.size() > j)
                         u.file.set("Confidence", rejectLevels[j]*levelWeights[j]);
                     else 
                         u.file.set("Confidence", rects[j].area());
