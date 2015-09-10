@@ -15,7 +15,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <opencv2/imgproc/imgproc.hpp>
-
 #include <openbr/plugins/openbr_internal.h>
 
 using namespace cv;
@@ -39,7 +38,7 @@ class RndRotateTransform : public UntrainableTransform
         int span = range.first() - range.last();
         int angle = (rand() % span) + range.first();
         Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
-        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows));
+        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_LINEAR,BORDER_REFLECT_101);
 
         QList<QPointF> points = src.file.points();
         QList<QPointF> rotatedPoints;
