@@ -129,12 +129,14 @@ class CascadeClassifier : public Classifier
     Q_PROPERTY(int numPos READ get_numPos WRITE set_numPos RESET reset_numPos STORED false)
     Q_PROPERTY(int numNegs READ get_numNegs WRITE set_numNegs RESET reset_numNegs STORED false)
     Q_PROPERTY(float maxFAR READ get_maxFAR WRITE set_maxFAR RESET reset_maxFAR STORED false)
+    Q_PROPERTY(bool requireAllStages READ get_requireAllStages WRITE set_requireAllStages RESET reset_requireAllStages STORED false)
 
     BR_PROPERTY(QString, stageDescription, "")
     BR_PROPERTY(int, numStages, 20)
     BR_PROPERTY(int, numPos, 1000)
     BR_PROPERTY(int, numNegs, 1000)
     BR_PROPERTY(float, maxFAR, pow(0.5, numStages))
+    BR_PROPERTY(bool, requireAllStages, false)
 
     QList<Classifier *> stages;
 
@@ -143,6 +145,8 @@ class CascadeClassifier : public Classifier
         QList<Mat> posImages, negImages;
         for (int i = 0; i < images.size(); i++)
             labels[i] == 1 ? posImages.append(images[i]) : negImages.append(images[i]);
+
+        qDebug() << "Total images:" << images.size() << "\nTotal positive images:" << posImages.size() << "\nTotal negative images:" << negImages.size();
 
         stages.reserve(numStages);
         for (int i = 0; i < numStages; i++) {
@@ -162,7 +166,7 @@ class CascadeClassifier : public Classifier
 
             float currFAR = fillTrainingSet(imgHandler, trainingImages, trainingLabels);
 
-            if (currFAR < maxFAR) {
+            if (currFAR < maxFAR && !requireAllStages) {
                 qDebug() << "FAR is below required level! Terminating early";
                 return;
             }
@@ -240,7 +244,7 @@ private:
         int posCount = images.size();
         qDebug() << "POS count : consumed  " << posCount << ":" << imgHandler.posIdx;
 
-        int passedNegs = 0;
+        int64 passedNegs = 0;
         while ((images.size() - posCount) < numNegs) {
             Mat neg(imgHandler.winSize, CV_8UC1);
             if (!imgHandler.getNeg(neg))
@@ -251,6 +255,12 @@ private:
                 images.append(neg);
                 labels.append(0.0f);
             }
+
+            if (passedNegs == std::numeric_limits<int64>::max()) {
+                qDebug() << "Can no longer track negative samples.";
+                return (images.size() - posCount) / (double)passedNegs;
+            }
+
             passedNegs++;
         }
 
