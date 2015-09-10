@@ -35,7 +35,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 0.5
+        $ git checkout 1.0
         $ git submodule init
         $ git submodule update
 
@@ -71,8 +71,14 @@ A hacker's guide to building, editing, and running OpenBR.
         $ sudo cpack -G TGZ
 
 10. (Optional) Build OpenBR documentation!
+    1. Build the docs
 
-Need to rewrite this step for the new docs!
+            $ pip install mkdocs
+            $ cd openbr/docs
+            $ sh build_docs.sh
+            $ mkdocs serve
+
+    2. Navigate to `http://127.0.0.1:8000` in your browser to view the docs.
 
 ---
 
@@ -83,13 +89,13 @@ Need to rewrite this step for the new docs!
 2. [Download CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz)
 
             $ cd ~/Downloads
-            $ tar -xf cmake-2.8.11.2.tar.gz
-            $ cd cmake-2.8.11.2
+            $ tar -xf cmake-3.0.2.tar.gz
+            $ cd cmake-3.0.2
             $ ./configure
             $ make -j4
             $ sudo make install
             $ cd ..
-            $ rm -rf cmake-2.8.11.2*
+            $ rm -rf cmake-3.0.2*
 
 3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download)
 
@@ -110,7 +116,7 @@ Need to rewrite this step for the new docs!
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 0.5
+        $ git checkout 1.0
         $ git submodule init
         $ git submodule update
 
@@ -148,8 +154,14 @@ Need to rewrite this step for the new docs!
 
 
 10. (Optional) Build OpenBR documentation!
+    1. Build the docs
 
-Need to remake this step with the new docs!
+            $ pip install mkdocs
+            $ cd openbr/docs
+            $ sh build_docs.sh
+            $ mkdocs serve
+
+    2. Navigate to `http://127.0.0.1:8000` in your browser to view the docs.
 
 ---
 
@@ -184,7 +196,7 @@ Need to remake this step with the new docs!
             $ cd /c
             $ git clone https://github.com/biometrics/openbr.git
             $ cd openbr
-            $ git checkout 0.5
+            $ git checkout 1.0
             $ git submodule init
             $ git submodule update
 
@@ -265,7 +277,7 @@ Need to remake this step with the new docs!
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 0.5
+        $ git checkout 1.0
         $ git submodule init
         $ git submodule update
 

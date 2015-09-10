@@ -59,7 +59,7 @@ public:
         : resourceMaker(rm)
         , availableResources(new QList<T*>())
         , lock(new QMutex())
-        , totalResources(new QSemaphore(br::Globals->parallelism))
+        , totalResources(new QSemaphore(Globals->parallelism ? Globals->parallelism : std::max(QThread::idealThreadCount(), 1)))
     {}
 
     ~Resource()
@@ -70,13 +70,15 @@ public:
     T *acquire() const
     {
         totalResources->acquire();
-        lock->lock();
 
-        if (availableResources->isEmpty())
-            availableResources->append(resourceMaker->make());
-        T* resource = availableResources->takeFirst();
-
-        lock->unlock();
+        T* resource;
+        if (availableResources->isEmpty()) {
+            resource = resourceMaker->make();
+        } else {
+            lock->lock();
+            resource = availableResources->takeFirst();
+            lock->unlock();
+        }
 
         return resource;
     }

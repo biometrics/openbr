@@ -31,20 +31,29 @@ class AlgorithmsInitializer : public Initializer
     void initialize() const
     {
         // Face
-        Globals->abbreviations.insert("FaceRecognition", "FaceDetection+FaceRecognitionRegistration+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>+SetMetadata(AlgorithmID,-1):Unit(ByteL1)");
+        Globals->abbreviations.insert("FaceRecognition", "FaceRecognition_1_0");
+
+        Globals->abbreviations.insert("FaceRecognition_1_0", "FR_Detect+(FR_Eyes+FR_Represent)/(FR_Eyebrows+FR_Represent)/(FR_Mouth+FR_Represent)/(FR_Nose+FR_Represent)/(FR_Face+FR_Represent+ScaleMat(2.0))+Cat+LDA(768)+Normalize(L2):Dist(L2)");
+        Globals->abbreviations.insert("FR_Eyes", "(CropFromLandmarks([30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47],paddingVertical=.8,paddingHorizontal=.2)+Resize(24,48))");
+        Globals->abbreviations.insert("FR_Eyebrows", "(CropFromLandmarks([16,17,18,19,20,21,22,23,24,25,26,27],paddingVertical=.8,paddingHorizontal=.2)+Resize(24,48))");
+        Globals->abbreviations.insert("FR_Mouth", "(CropFromLandmarks([59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76])+Resize(24,48))");
+        Globals->abbreviations.insert("FR_Nose", "(CropFromLandmarks([16,17,18,19,20,21,22,23,24,25,26,27],padding=3)+Resize(36,36))");
+        Globals->abbreviations.insert("FR_Face", "(Crop(24,24,88,88)+Resize(44,44))");
+        Globals->abbreviations.insert("FR_Detect", "(FaceDetection+Stasm+Rename(StasmLeftEye,Affine_1,true)+Rename(StasmRightEye,Affine_0,true)+Affine(136,136,0.35,0.35,warpPoints=true))");
+        Globals->abbreviations.insert("FR_Represent", "((DenseHOG/DenseLBP)+Cat+LDA(.98)+Normalize(L2))");
+
         Globals->abbreviations.insert("GenderClassification", "FaceDetection+Expand+FaceClassificationRegistration+Expand+<FaceClassificationExtraction>+<GenderClassifier>+Discard");
         Globals->abbreviations.insert("AgeRegression", "FaceDetection+Expand+FaceClassificationRegistration+Expand+<FaceClassificationExtraction>+<AgeRegressor>+Discard");
+        Globals->abbreviations.insert("FaceQuality", "Open+Expand+Cascade(FrontalFace)+ASEFEyes+Affine(64,64,0.25,0.35)+ImageQuality+Cvt(Gray)+DFFS+Discard");
         Globals->abbreviations.insert("MedianFace", "Open+Expand+Cascade(FrontalFace)+ASEFEyes+Affine(256,256,0.37,0.45)+Center(Median)");
         Globals->abbreviations.insert("BlurredFaceDetection", "Open+LimitSize(1024)+SkinMask/(Cvt(Gray)+GradientMask)+And+Morph(Erode,16)+LargestConvexArea");
         Globals->abbreviations.insert("DrawFaceDetection", "Open+Cascade(FrontalFace)+Expand+ASEFEyes+Draw(inPlace=true)");
         Globals->abbreviations.insert("ShowFaceDetection", "DrawFaceDetection+Contract+First+Show+Discard");
-        Globals->abbreviations.insert("DownloadFaceRecognition", "Download+Open+ROI+Cvt(Gray)+Cascade(FrontalFace)+FaceRecognitionRegistration+<FaceRecognitionExtraction>+<FaceRecognitionEmbedding>+<FaceRecognitionQuantization>+SetMetadata(AlgorithmID,-1):Unit(ByteL1)");
         Globals->abbreviations.insert("OpenBR", "FaceRecognition");
         Globals->abbreviations.insert("GenderEstimation", "GenderClassification");
         Globals->abbreviations.insert("AgeEstimation", "AgeRegression");
-        Globals->abbreviations.insert("FaceRecognition2", "{PP5Register+Affine(128,128,0.25,0.35)+Cvt(Gray)}+(Gradient+HistBin(0,360,9,true))/(Blur(1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2,true)+HistBin(0,10,10,true))+Merge+Integral+RecursiveIntegralSampler(4,2,8,LDA(.98)+Normalize(L1))+Cat+PCA(768)+Normalize(L1)+Quantize:UCharL1");
         Globals->abbreviations.insert("CropFace", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.25,0.35)");
-        Globals->abbreviations.insert("4SF", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Cat+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1)+Quantize:NegativeLogPlusOne(ByteL1)");
+        Globals->abbreviations.insert("4SF", "Open+Cvt(Gray)+Cascade(FrontalFace)+ASEFEyes+Affine(128,128,0.33,0.45)+(Grid(10,10)+SIFTDescriptor(12)+ByRow)/(Blur(1.1)+Gamma(0.2)+DoG(1,2)+ContrastEq(0.1,10)+LBP(1,2)+RectRegions(8,8,6,6)+Hist(59))+PCA(0.95)+Cat+Normalize(L2)+Dup(12)+RndSubspace(0.05,1)+LDA(0.98)+Cat+PCA(0.95)+Normalize(L1):NegativeLogPlusOne(ByteL1)");
 
         // Video
         Globals->abbreviations.insert("DisplayVideo", "FPSLimit(30)+Show(false,[FrameNumber])+Discard");
@@ -92,9 +101,6 @@ class AlgorithmsInitializer : public Initializer
         Globals->abbreviations.insert("DenseSIFT", "(Grid(10,10)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("DenseSIFT2", "(Grid(5,5)+SIFTDescriptor(12)+ByRow)");
         Globals->abbreviations.insert("FaceRecognitionRegistration", "ASEFEyes+Affine(88,88,0.25,0.35)");
-        Globals->abbreviations.insert("FaceRecognitionExtraction", "(Mask+DenseSIFT/DenseLBP+DownsampleTraining(PCA(0.95),instances=1)+Normalize(L2)+Cat)");
-        Globals->abbreviations.insert("FaceRecognitionEmbedding", "(Dup(12)+RndSubspace(0.05,1)+DownsampleTraining(LDA(0.98),instances=-2)+Cat+DownsampleTraining(PCA(768),instances=1))");
-        Globals->abbreviations.insert("FaceRecognitionQuantization", "(Normalize(L1)+Quantize)");
         Globals->abbreviations.insert("FaceClassificationRegistration", "ASEFEyes+Affine(56,72,0.33,0.45)");
         Globals->abbreviations.insert("FaceClassificationExtraction", "((Grid(7,7)+SIFTDescriptor(8)+ByRow)/DenseLBP+DownsampleTraining(PCA(0.95),instances=-1, inputVariable=Gender)+Cat)");
         Globals->abbreviations.insert("AgeRegressor", "DownsampleTraining(Center(Range),instances=-1, inputVariable=Age)+DownsampleTraining(SVM(RBF,EPS_SVR,inputVariable=Age),instances=100, inputVariable=Age)");

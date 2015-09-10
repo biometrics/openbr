@@ -402,6 +402,7 @@ class CascadeTransform : public MetaTransform
 
             for (int i=0; i<t.size(); i++) {
                 const int maxDetections = t.file.get<int>("MaxDetections", std::numeric_limits<int>::max());
+                const int minSize = t.file.get<int>("MinSize", this->minSize);
                 const int flags = (enrollAll && (maxDetections != 1)) ? 0 : CASCADE_FIND_BIGGEST_OBJECT;
 
                 Mat m;

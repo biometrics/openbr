@@ -1181,8 +1181,8 @@ void br::Context::setProperty(const QString &key, const QString &value)
     qDebug("Set %s%s", qPrintable(key), value.isEmpty() ? "" : qPrintable(" to " + value));
 
     if (key == "parallelism") {
-        if (parallelism <= 0) parallelism = 1;
-        QThreadPool::globalInstance()->setMaxThreadCount(parallelism);
+        if (parallelism != 0)
+            QThreadPool::globalInstance()->setMaxThreadCount(abs(parallelism));
     } else if (key == "log") {
         logFile.close();
         if (log.isEmpty()) return;
@@ -1254,7 +1254,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
         }
 
         if (!foundSDK) {
-            qWarning("Unable to locate SDK automatically from paths: %s", qPrintable(checkPaths.join("\n")));
+            qWarning("Unable to locate SDK (share/openbr/openbr.bib) automatically from paths: %s", qPrintable(checkPaths.join("\n")));
             return;
         }
     } else {
@@ -1295,8 +1295,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     qInstallMessageHandler(messageHandler);
 
     Common::seedRNG();
-
-    QThreadPool::globalInstance()->setMaxThreadCount(Globals->parallelism);
 
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
