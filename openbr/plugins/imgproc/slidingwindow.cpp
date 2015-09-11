@@ -153,7 +153,7 @@ class SlidingWindowTransform : public MetaTransform
                     confidences.append(-std::numeric_limits<float>::max());
                 }
 
-                for (size_t j=0; j<rects.size(); j++) {
+                for (int j=0; j<rects.size(); j++) {
                     Template u(t.file, m);
                     u.file.set("Confidence", confidences[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);
