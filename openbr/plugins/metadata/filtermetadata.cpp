@@ -23,10 +23,10 @@ namespace br
  * \ingroup transforms
  * \brief Filters templates such that the only remaining template wills have metadata values witihin the
  *          the specified ranges. 
- * \br_property QString key1,key2 The meta-data key(s) to filter on
- * \br_property float value1,value2 The values to compare the values of key1 and key2 entires against
+ * \br_property QString key1 The meta-data key(s) to filter on
+ * \br_property float value1 The values to compare the values of key1 and key2 entires against
  * \br_property QString compareType1 The comparison operation to perform. "le" ->  val(key1) <= value1, "lt" -> val(key1) < value1,
- *                      "ge" -> val(key1) >= value1, "gt" -> val(key1) > value1.
+ *                      "ge" -> val(key1) >= value1, "gt" -> val(key1) > value1, "eq" -> val(key) == value1.
  * \author Brendan Klare \cite bklare
  */
 class FilterMetadataTransform : public UntrainableMetaTransform
@@ -50,6 +50,8 @@ class FilterMetadataTransform : public UntrainableMetaTransform
             pass = val1 < val2;
         else if (compareType == "le")
             pass = val1 <= val2;
+        else if (compareType == "eq")
+            pass = val1 == val2;
         else
             qDebug() << "Unknown compare type: " << compareType;
         return pass;
