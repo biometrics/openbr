@@ -71,14 +71,13 @@ public:
     {
         totalResources->acquire();
 
-        T* resource;
-        if (availableResources->isEmpty()) {
-            resource = resourceMaker->make();
-        } else {
-            lock->lock();
+        T *resource = NULL;
+        lock->lock();
+        if (!availableResources->isEmpty())
             resource = availableResources->takeFirst();
-            lock->unlock();
-        }
+        lock->unlock();
+        if (!resource)
+            resource = resourceMaker->make();
 
         return resource;
     }
