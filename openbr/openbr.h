@@ -115,6 +115,8 @@ BR_EXPORT const char *br_version();
 
 BR_EXPORT void br_slave_process(const char * baseKey);
 
+BR_EXPORT void br_likely(const char *input_type, const char *output_type, const char *output_source_file);
+
 // to avoid having to include unwanted headers
 // this will be this header's conception of a Template
 // any functions that need a Template pointer

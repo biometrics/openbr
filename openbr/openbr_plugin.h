@@ -813,6 +813,7 @@ public:
     }
 
     virtual Transform * simplify(bool &newTransform) { newTransform = false; return this; }
+    virtual QByteArray likely(const QByteArray &indentation) const { (void) indentation; return "src"; }
 
 protected:
     Transform(bool independent = true, bool trainable = true);

@@ -179,6 +179,23 @@ class PipeTransform : public CompositeTransform
         CompositeTransform::init();
     }
 
+    QByteArray likely(const QByteArray &indentation) const
+    {
+        QByteArray result;
+        result.append("{\n");
+        foreach (Transform *t, transforms) {
+            const QByteArray dst = t->likely(indentation + "  ");
+            if (dst == "src")
+                continue; // Not implemented
+            result.append(indentation + "  src := ");
+            result.append(dst);
+            result.append("\n");
+        }
+
+        result.append(indentation + "  src\n}");
+        return result;
+    }
+
 protected:
     // Template list project -- process templates in parallel through Transform::project
     // or if parallelism is disabled, handle them sequentially

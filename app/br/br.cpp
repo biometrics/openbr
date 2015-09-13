@@ -189,6 +189,9 @@ public:
             } else if (!strcmp(fun, "deduplicate")) {
                 check(parc == 3, "Incorrect parameter count for 'deduplicate'.");
                 br_deduplicate(parv[0], parv[1], parv[2]);
+            } else if (!strcmp(fun, "likely")) {
+                check(parc == 3, "Incorrect parameter count for 'likely'.");
+                br_likely(parv[0], parv[1], parv[2]);
             }
 
             // Miscellaneous
@@ -280,7 +283,8 @@ private:
                "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-project <input_gallery> {output_gallery}\n"
-               "-deduplicate <input_gallery> <output_gallery> <threshold>"
+               "-deduplicate <input_gallery> <output_gallery> <threshold>\n"
+               "-likely <input_type> <output_type> <output_likely_source>\n"
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"
                "-<key> <value>\n"

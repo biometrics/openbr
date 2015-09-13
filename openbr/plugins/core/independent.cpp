@@ -222,6 +222,13 @@ class IndependentTransform : public MetaTransform
         for (int i=0; i<size; i++)
             transforms[i]->load(stream);
     }
+
+    QByteArray likely(const QByteArray &indentation) const
+    {
+        if (transforms.size() != 1)
+            return "src"; // TODO: implement
+        return transforms.first()->likely(indentation);
+    }
 };
 
 BR_REGISTER(Transform, IndependentTransform)

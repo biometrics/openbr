@@ -48,6 +48,21 @@ class QuantizeTransform : public Transform
     {
         src.m().convertTo(dst, CV_8U, a, b);
     }
+
+    QByteArray likely(const QByteArray &indentation) const
+    {
+        QByteArray result;
+        result.append("\n" + indentation + "{ ; Quantize\n");
+        result.append(indentation + "  dst := (imitate-size src (imitate-dimensions u8 src.type))\n");
+        result.append(indentation + "  (dst src) :=>\n");
+        result.append(indentation + "    dst :<- src.(* ");
+        result.append(QByteArray::number(a, 'g', 9));
+        result.append(").(+ ");
+        result.append(QByteArray::number(b, 'g', 9));
+        result.append(")\n");
+        result.append(indentation + "}");
+        return result;
+    }
 };
 
 BR_REGISTER(Transform, QuantizeTransform)

@@ -20,6 +20,7 @@
 #include "core/cluster.h"
 #include "core/eval.h"
 #include "core/fuse.h"
+#include "core/likely.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
@@ -480,4 +481,9 @@ void br_close_gallery(br_gallery gallery)
 void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold)
 {
     br::Deduplicate(input_gallery, output_gallery, threshold);
+}
+
+void br_likely(const char *input_type, const char *output_type, const char *output_source_file)
+{
+    br::Likely(input_type, output_type, output_source_file);
 }
