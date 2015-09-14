@@ -232,7 +232,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
 ---
 
-# Raspian
+# Raspbian
 
 1. Install CMake 2.8.9
 
