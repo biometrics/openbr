@@ -27,7 +27,7 @@ def _var_string_args_func(func, n, *args):
     '''
     def call_func(one, two, *rest):
         arr_type = c_char_p*len(two)
-        func.argtypes = [c_int, arr_type] + _string_args(n) + args
+        func.argtypes = [c_int, arr_type] + _string_args(n) + list(args)
         arr = arr_type(*map(c_char_p, two))
         return func(one, arr, *rest)
     return call_func
