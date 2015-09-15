@@ -786,11 +786,12 @@ QSharedPointer<br::Distance> br::Distance::fromAlgorithm(const QString &algorith
 class pathInitializer : public Initializer
 {
     Q_OBJECT
+
     void initialize() const
     {
-        Globals->modelSearch.append(Globals->sdkPath + "/share/openbr/models/transforms/");
+        Globals->modelSearch.append(Globals->sdkPath + "/share/openbr/models/transforms");
+        Globals->modelSearch.append(Globals->sdkPath + "/../share/openbr/models/transforms");
     }
-
 };
 BR_REGISTER(Initializer, pathInitializer)
 

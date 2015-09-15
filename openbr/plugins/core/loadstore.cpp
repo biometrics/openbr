@@ -202,7 +202,8 @@ private:
     QString getFileName() const
     {
         foreach (const QString &file, QStringList() << fileName
-                                                    << Globals->sdkPath + "/share/openbr/models/distances/" + fileName)
+                                                    << Globals->sdkPath + "/share/openbr/models/distances/" + fileName
+                                                    << Globals->sdkPath + "/../share/openbr/models/distances/" + fileName)
             if (QFileInfo(file).exists())
                 return file;
         return QString();
