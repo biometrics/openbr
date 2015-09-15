@@ -1686,15 +1686,17 @@ Distance *Distance::make(QString str, QObject *parent)
     if (Globals->abbreviations.contains(str))
         return make(Globals->abbreviations[str], parent);
 
+    // Check for use of '<...>' as shorthand for LoadStore(...)
+    if (str.startsWith('<') && str.endsWith('>'))
+        return make("LoadStore(" + str.mid(1, str.size()-2) + ")", parent);
+
     { // Check for use of '+' as shorthand for Pipe(...)
         QStringList words = parse(str, '+');
         if (words.size() > 1)
             return make("Pipe([" + words.join(",") + "])", parent);
     }
 
-    File f = "." + str;
-    Distance *distance = Factory<Distance>::make(f);
-
+    Distance *const distance = Factory<Distance>::make("." + str);
     distance->setParent(parent);
     return distance;
 }
