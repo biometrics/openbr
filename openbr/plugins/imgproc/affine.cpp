@@ -101,19 +101,12 @@ private:
                 srcPoints[0] = landmarks[0];
                 srcPoints[1] = landmarks[1];
                 if (!twoPoints) srcPoints[2] = landmarks[2];
-
-                dst.file.set("Affine_0", OpenCVUtils::fromPoint(landmarks[0]));
-                dst.file.set("Affine_1", OpenCVUtils::fromPoint(landmarks[1]));
-                if (!twoPoints) dst.file.set("Affine_2", OpenCVUtils::fromPoint(landmarks[2]));
             }
         }
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
         Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
         warpAffine(src, dst, affineTransform, Size(width, height), method);
-        dst.file.set("Affine_0", OpenCVUtils::fromPoint(dstPoints[0]));
-        dst.file.set("Affine_1", OpenCVUtils::fromPoint(dstPoints[1]));
-        if (!twoPoints) dst.file.set("Affine_2", OpenCVUtils::fromPoint(dstPoints[2]));
 
         if (warpPoints) {
             QList<QPointF> points = src.file.points();
