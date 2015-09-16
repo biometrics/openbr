@@ -192,7 +192,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     float result = -1;
 
     // Make comparisons
-    QList<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
+    QVector<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
 
     // Flags rows as being mated or non-mated searches
     // Positive value: mated search, negative value: non-mated search
