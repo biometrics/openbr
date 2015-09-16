@@ -541,54 +541,60 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     }
 }
 
-void OpenCVUtils::flip(const br::Template &src, br::Template &dst, int axis)
+void OpenCVUtils::flip(const br::Template &src, br::Template &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
 {
-    cv::flip(src, dst, axis);
-    dst.file = src.file;
+    if (flipMat) {
+        cv::flip(src, dst, axis);
+        dst.file = src.file;
+    } else
+        dst = src;
 
-    QList<QPointF> flippedPoints;
-    foreach(const QPointF &point, src.file.points()) {
-        // Check for missing data using the QPointF(-1,-1) convention
-        if (point != QPointF(-1,-1)) {
-            if (axis == 0) {
-                flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
-            } else if (axis == 1) {
-                flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
-            } else {
-                flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+    if (flipPoints) {
+        QList<QPointF> flippedPoints;
+        foreach(const QPointF &point, src.file.points()) {
+            // Check for missing data using the QPointF(-1,-1) convention
+            if (point != QPointF(-1,-1)) {
+                if (axis == 0) {
+                    flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
+                } else if (axis == 1) {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
+                } else {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+                }
             }
         }
+        dst.file.setPoints(flippedPoints);
     }
 
-    QList<QRectF> flippedRects;
-    foreach(const QRectF &rect, src.file.rects()) {
-        if (axis == 0) {
-            flippedRects.append(QRectF(rect.x(),
-                                       src.m().rows-rect.bottom(),
-                                       rect.width(),
-                                       rect.height()));
-        } else if (axis == 1) {
-            flippedRects.append(QRectF(src.m().cols-rect.right(),
-                                       rect.y(),
-                                       rect.width(),
-                                       rect.height()));
-        } else {
-            flippedRects.append(QRectF(src.m().cols-rect.right(),
-                                       src.m().rows-rect.bottom(),
-                                       rect.width(),
-                                       rect.height()));
+    if (flipRects) {
+        QList<QRectF> flippedRects;
+        foreach(const QRectF &rect, src.file.rects()) {
+            if (axis == 0) {
+                flippedRects.append(QRectF(rect.x(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            } else if (axis == 1) {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           rect.y(),
+                                           rect.width(),
+                                           rect.height()));
+            } else {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            }
         }
+        dst.file.setRects(flippedRects);
     }
-
-    dst.file.setPoints(flippedPoints);
-    dst.file.setRects(flippedRects);
 }
 
-void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, int axis)
+void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;
-        flip(src[i], t, axis);
+        flip(src[i], t, axis, flipMat, flipPoints, flipRects);
         dst.append(t);
     }
 }
