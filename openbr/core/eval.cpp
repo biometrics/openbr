@@ -234,7 +234,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     if (impostorCount == 0) qFatal("No impostor scores!");
 
     // Sort comparisons by simmat_val (score)
-    std::stable_sort(comparisons.begin(), comparisons.end());
+    std::sort(comparisons.begin(), comparisons.end());
 
     QList<OperatingPoint> operatingPoints;
     QList<OperatingPoint> searchOperatingPoints;
