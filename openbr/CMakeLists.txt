@@ -53,8 +53,12 @@ install(TARGETS openbr
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
-file(GLOB HEADERS *.h)
-install(FILES ${HEADERS} DESTINATION include/openbr)
+
+if(NOT BR_EMBEDDED)
+  file(GLOB HEADERS *.h)
+  install(FILES ${HEADERS} DESTINATION include/openbr)
+endif()
+
 include(InstallDependencies)
 install_compiler_libraries()
 install_qt_libraries(QT_DEPENDENCIES)

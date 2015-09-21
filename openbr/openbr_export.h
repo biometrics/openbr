@@ -17,17 +17,21 @@
 #ifndef OPENBR_EXPORT_H
 #define OPENBR_EXPORT_H
 
-#if defined BR_LIBRARY
-#  if defined _WIN32 || defined __CYGWIN__
-#    define BR_EXPORT __declspec(dllexport)
-#  else
-#    define BR_EXPORT __attribute__((visibility("default")))
-#  endif
+#if defined BR_EMBEDDED
+#  define BR_EXPORT
 #else
-#  if defined _WIN32 || defined __CYGWIN__
-#    define BR_EXPORT __declspec(dllimport)
+#  if defined BR_LIBRARY
+#    if defined _WIN32 || defined __CYGWIN__
+#      define BR_EXPORT __declspec(dllexport)
+#    else
+#      define BR_EXPORT __attribute__((visibility("default")))
+#    endif
 #  else
-#    define BR_EXPORT
+#    if defined _WIN32 || defined __CYGWIN__
+#      define BR_EXPORT __declspec(dllimport)
+#    else
+#      define BR_EXPORT
+#    endif
 #  endif
 #endif
 
