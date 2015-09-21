@@ -21,7 +21,7 @@ if(BR_WITH_JANUS)
 endif()
 
 # Optional GUI module
-if (NOT ${BR_EMBEDDED})
+if(NOT BR_EMBEDDED)
   aux_source_directory(gui BR_GUI)
   qt5_add_resources(BR_ICONS ../share/openbr/icons.qrc)
   file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/gui/*.h)
@@ -31,15 +31,12 @@ endif()
 add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
+                             DEFINE_SYMBOL BR_LIBRARY
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                              SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}
                              LINK_INTERFACE_LIBRARIES "")
 target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
-
-if (NOT ${BR_EMBEDDED})
-  set_target_properties(openbr PROPERTIES DEFINE_SYMBOL BR_LIBRARY)
-endif()
 
 # Janus implementation
 if(BR_WITH_JANUS)
@@ -56,12 +53,8 @@ install(TARGETS openbr
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
-
-if (NOT ${BR_EMBEDDED})
-  file(GLOB HEADERS *.h)
-  install(FILES ${HEADERS} DESTINATION include/openbr)
-endif()
-
+file(GLOB HEADERS *.h)
+install(FILES ${HEADERS} DESTINATION include/openbr)
 include(InstallDependencies)
 install_compiler_libraries()
 install_qt_libraries(QT_DEPENDENCIES)
