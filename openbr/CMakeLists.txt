@@ -28,6 +28,10 @@ if (NOT ${BR_EMBEDDED})
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
+if (NOT ${BR_EMBEDDED})
+  add_definitions(-DBR_LIBRARY)
+endif()
+
 add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
@@ -36,10 +40,6 @@ set_target_properties(openbr PROPERTIES
                              LINK_INTERFACE_LIBRARIES "")
 target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
-
-if (NOT ${BR_EMBEDDED})
-  set_target_properties(openbr PROPERTIES DEFINE_SYMBOL BR_LIBRARY)
-endif()
 
 # Janus implementation
 if(BR_WITH_JANUS)
