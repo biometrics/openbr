@@ -3,6 +3,7 @@
 3rdparty/pittpatt*
 3rdparty/cvmatio
 3rdparty/dlib*
+3rdparty/libav*
 data/*/img
 data/*/vid
 data/PCSO/*
