@@ -1,110 +1,71 @@
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include <opencv2/highgui/highgui.hpp>
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/common.h>
+
+#include <QtConcurrent>
 
 using namespace cv;
 
 namespace br
 {
 
-struct ImageHandler
+struct Miner
 {
-    bool create(const QList<Mat> &_posImages, const QList<Mat> &_negImages, Size _winSize)
+    Mat src;
+    Mat scaledSrc;
+    Size windowSize;
+    Point offset, point;
+    float scale, scaleFactor, stepFactor;
+
+    Miner(const Mat &m, const Size &windowSize, const Point &offset) :
+        src(m),
+        windowSize(windowSize),
+        offset(offset),
+        point(offset)
     {
-        posImages = _posImages;
-        negImages = _negImages;
-        winSize = _winSize;
-
-        posIdx = negIdx = 0;
-
-        src.create( 0, 0 , CV_8UC1 );
-        img.create( 0, 0, CV_8UC1 );
-        point = offset = Point( 0, 0 );
         scale       = 1.0F;
         scaleFactor = 1.4142135623730950488016887242097F;
         stepFactor  = 0.5F;
-        round = 0;
 
-        indices = Common::RandSample(posImages.size(),posImages.size(),true);
-
-        return true;
+        scale = max(((float)windowSize.width + point.x) / ((float)src.cols),
+                    ((float)windowSize.height + point.y) / ((float)src.rows));
+        Size size((int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F));
+        resize(src, scaledSrc, size);
     }
 
-    void restart() { posIdx = 0; }
-
-    void nextNeg()
+    Mat mine(bool *newImg)
     {
-        int count = negImages.size();
-        for (int i = 0; i < count; i++) {
-            src = negImages[negIdx++];
+        // Copy region of winSize region of img into m
+        Mat window(windowSize.height, windowSize.width, CV_8UC1,
+                   (void*)(scaledSrc.data + point.y * scaledSrc.step + point.x * scaledSrc.elemSize()),
+                   scaledSrc.step);
 
-            round += negIdx / count;
-            round = round % (winSize.width * winSize.height);
-            negIdx %= count;
+        Mat sample;
+        window.copyTo(sample);
 
-            offset.x = qMin( (int)round % winSize.width, src.cols - winSize.width );
-            offset.y = qMin( (int)round / winSize.width, src.rows - winSize.height );
-            if (!src.empty() && src.type() == CV_8UC1 && offset.x >= 0 && offset.y >= 0)
-                break;
-        }
-
-        point = offset;
-        scale = max(((float)winSize.width + point.x) / ((float)src.cols),
-                    ((float)winSize.height + point.y) / ((float)src.rows));
-
-        Size sz((int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F));
-        resize(src, img, sz);
-    }
-
-    bool getNeg(Mat &_img)
-    {
-        if (img.empty())
-            nextNeg();
-
-        Mat m(winSize.height, winSize.width, CV_8UC1, (void*)(img.data + point.y * img.step + point.x * img.elemSize()), img.step);
-        m.copyTo(_img);
-
-        if ((int)(point.x + (1.0F + stepFactor) * winSize.width) < img.cols)
-            point.x += (int)(stepFactor * winSize.width);
+        if ((int)(point.x + (1.0F + stepFactor) * windowSize.width) < scaledSrc.cols)
+            point.x += (int)(stepFactor * windowSize.width);
         else {
             point.x = offset.x;
-            if ((int)( point.y + (1.0F + stepFactor ) * winSize.height ) < img.rows)
-                point.y += (int)(stepFactor * winSize.height);
+            if ((int)(point.y + (1.0F + stepFactor) * windowSize.height) < scaledSrc.rows)
+                point.y += (int)(stepFactor * windowSize.height);
             else {
                 point.y = offset.y;
                 scale *= scaleFactor;
-                if (scale <= 1.0F)
-                    resize(src, img, Size((int)(scale*src.cols), (int)(scale*src.rows)));
-                else
-                    nextNeg();
+                if (scale <= 1.0F) {
+                    Size size((int)(scale*src.cols), (int)(scale*src.rows));
+                    resize(src, scaledSrc, size);
+                } else {
+                    *newImg = true;
+                    return sample;
+                }
             }
         }
-        return true;
+
+        *newImg = false;
+        return sample;
     }
-
-    bool getPos(Mat &_img)
-    {
-        if (posIdx >= posImages.size())
-            return false;
-
-        posImages[indices[posIdx++]].copyTo(_img);
-        return true;
-    }
-
-    QList<Mat> posImages, negImages;
-
-    int posIdx, negIdx;
-
-    Mat     src, img;
-    Point   offset, point;
-    float   scale;
-    float   scaleFactor;
-    float   stepFactor;
-    size_t  round;
-    Size    winSize;
-
-    QList<int> indices;
 };
 
 /*!
@@ -139,14 +100,100 @@ class CascadeClassifier : public Classifier
     BR_PROPERTY(bool, requireAllStages, false)
 
     QList<Classifier *> stages;
+    QList<Mat> posImages, negImages;
+    QList<Mat> posSamples, negSamples;
+
+    QList<int> indices;
+    int negIndex, posIndex, samplingRound;
+
+    QMutex samplingMutex, miningMutex, passedMutex;
+
+    void init()
+    {
+        negIndex = posIndex = samplingRound = 0;
+    }
+
+    bool getPositive(Mat &img)
+    {
+        if (posIndex >= posImages.size())
+            return false;
+
+        posImages[indices[posIndex++]].copyTo(img);
+        return true;
+    }
+
+    Mat getNegative(Point &offset)
+    {
+        Mat negative;
+
+        const Size size = windowSize();
+        // Grab negative from list
+        int count = negImages.size();
+        for (int i = 0; i < count; i++) {
+            negative = negImages[negIndex++];
+
+            samplingRound += negIndex / count;
+            samplingRound = samplingRound % (size.width * size.height);
+            negIndex %= count;
+
+            offset.x = qMin( (int)samplingRound % size.width, negative.cols - size.width);
+            offset.y = qMin( (int)samplingRound / size.width, negative.rows - size.height);
+            if (!negative.empty() && negative.type() == CV_8UC1
+                    && offset.x >= 0 && offset.y >= 0)
+                break;
+        }
+
+        return negative;
+    }
+
+    int mine()
+    {
+        int passedNegatives = 0;
+        forever {
+            Mat negative;
+            Point offset;
+            samplingMutex.lock();
+            negative = getNegative(offset);
+            samplingMutex.unlock();
+
+            Miner miner(negative, windowSize(), offset);
+            forever {
+                bool newImg;
+                Mat sample = miner.mine(&newImg);
+                if (!newImg) {
+                    if (negSamples.size() >= numNegs)
+                        return passedNegatives;
+
+                    float confidence;
+                    if (classify(sample, true, &confidence) != 0) {
+                        miningMutex.lock();
+                        if (negSamples.size() >= numNegs) {
+                            miningMutex.unlock();
+                            return passedNegatives;
+                        }
+
+                        negSamples.append(sample);
+                        printf("Negative samples: %d\r", negSamples.size());
+                        miningMutex.unlock();
+                    }
+
+                    passedNegatives++;
+                } else
+                    break;
+            }
+        }
+    }
 
     void train(const QList<Mat> &images, const QList<float> &labels)
     {
-        QList<Mat> posImages, negImages;
         for (int i = 0; i < images.size(); i++)
             labels[i] == 1 ? posImages.append(images[i]) : negImages.append(images[i]);
 
-        qDebug() << "Total images:" << images.size() << "\nTotal positive images:" << posImages.size() << "\nTotal negative images:" << negImages.size();
+        qDebug() << "Total images:" << images.size()
+                 << "\nTotal positive images:" << posImages.size()
+                 << "\nTotal negative images:" << negImages.size();
+
+        indices = Common::RandSample(posImages.size(),posImages.size(),true);
 
         stages.reserve(numStages);
         for (int i = 0; i < numStages; i++) {
@@ -154,24 +201,28 @@ class CascadeClassifier : public Classifier
             stages.append(next_stage);
         }
 
-        ImageHandler imgHandler;
-        imgHandler.create(posImages, negImages, windowSize());
-
         for (int i = 0; i < numStages; i++) {
             qDebug() << "===== TRAINING" << i << "stage =====";
             qDebug() << "<BEGIN";
 
-            QList<Mat> trainingImages;
-            QList<float> trainingLabels;
-
-            float currFAR = fillTrainingSet(imgHandler, trainingImages, trainingLabels);
+            float currFAR = getSamples();
 
             if (currFAR < maxFAR && !requireAllStages) {
                 qDebug() << "FAR is below required level! Terminating early";
                 return;
             }
 
-            stages[i]->train(trainingImages, trainingLabels);
+            QList<float> posLabels;
+            posLabels.reserve(posSamples.size());
+            for (int j=0; j<posSamples.size(); j++)
+                posLabels.append(1);
+
+            QList<float> negLabels;
+            negLabels.reserve(negSamples.size());
+            for (int j=0; j<negSamples.size(); j++)
+                negLabels.append(0);
+
+            stages[i]->train(posSamples+negSamples, posLabels+negLabels);
 
             qDebug() << "END>";
         }
@@ -223,49 +274,42 @@ class CascadeClassifier : public Classifier
     }
 
 private:
-    float fillTrainingSet(ImageHandler &imgHandler, QList<Mat> &images, QList<float> &labels)
+    float getSamples()
     {
-        imgHandler.restart();
+        posSamples.clear();
+        posSamples.reserve(numPos);
+        negSamples.clear();
+        negSamples.reserve(numNegs);
+        posIndex = 0;
 
-        float confidence = 0.0f;
+        float confidence;
+        while (posSamples.size() < numPos) {
+            Mat pos(windowSize(), CV_8UC1);
 
-        while (images.size() < numPos) {
-            Mat pos(imgHandler.winSize, CV_8UC1);
-            if (!imgHandler.getPos(pos))
+            if (!getPositive(pos))
                 qFatal("Cannot get another positive sample!");
 
             if (classify(pos, true, &confidence) > 0.0f) {
-                printf("POS current samples: %d\r", images.size());
-                images.append(pos);
-                labels.append(1.0f);
+                printf("POS current samples: %d\r", posSamples.size());
+                posSamples.append(pos);
             }
         }
 
-        int posCount = images.size();
-        qDebug() << "POS count : consumed  " << posCount << ":" << imgHandler.posIdx;
+        qDebug() << "POS count : consumed  " << posSamples.size() << ":" << posIndex;
 
-        int64 passedNegs = 0;
-        while ((images.size() - posCount) < numNegs) {
-            Mat neg(imgHandler.winSize, CV_8UC1);
-            if (!imgHandler.getNeg(neg))
-                qFatal("Cannot get another negative sample!");
+        QFutureSynchronizer<int> futures;
+        for (int i=0; i<QThread::idealThreadCount(); i++)
+            futures.addFuture(QtConcurrent::run(this, &CascadeClassifier::mine));
+        futures.waitForFinished();
 
-            if (classify(neg, true, &confidence) > 0.0f) {
-                printf("NEG current samples: %d\r", images.size() - posCount);
-                images.append(neg);
-                labels.append(0.0f);
-            }
+        int passedNegs = 0;
+        QList<QFuture<int> > results = futures.futures();
+        for (int i=0; i<results.size(); i++)
+            passedNegs += results[i].result();
 
-            if (passedNegs == std::numeric_limits<int64>::max()) {
-                qDebug() << "Can no longer track negative samples.";
-                return (images.size() - posCount) / (double)passedNegs;
-            }
+        double acceptanceRatio = negSamples.size() / (double)passedNegs;
+        qDebug() << "NEG count : acceptanceRatio  " << negSamples.size() << ":" << acceptanceRatio;
 
-            passedNegs++;
-        }
-
-        double acceptanceRatio = (images.size() - posCount) / (double)passedNegs;
-        qDebug() << "NEG count : acceptanceRatio  " << images.size() - posCount << ":" << acceptanceRatio;
         return acceptanceRatio;
     }
 };
