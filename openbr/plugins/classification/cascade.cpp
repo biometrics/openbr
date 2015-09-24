@@ -106,7 +106,7 @@ class CascadeClassifier : public Classifier
     QList<int> indices;
     int negIndex, posIndex, samplingRound;
 
-    QMutex samplingMutex, miningMutex, passedMutex;
+    QMutex samplingMutex, miningMutex;
 
     void init()
     {
@@ -152,9 +152,9 @@ class CascadeClassifier : public Classifier
         forever {
             Mat negative;
             Point offset;
-            samplingMutex.lock();
+            QMutexLocker samplingLocker(&samplingMutex);
             negative = getNegative(offset);
-            samplingMutex.unlock();
+            samplingLocker.unlock();
 
             Miner miner(negative, windowSize(), offset);
             forever {
@@ -166,15 +166,12 @@ class CascadeClassifier : public Classifier
 
                     float confidence;
                     if (classify(sample, true, &confidence) != 0) {
-                        miningMutex.lock();
-                        if (negSamples.size() >= numNegs) {
-                            miningMutex.unlock();
+                        QMutexLocker miningLocker(&miningMutex);
+                        if (negSamples.size() >= numNegs)
                             return passedNegatives;
-                        }
 
                         negSamples.append(sample);
                         printf("Negative samples: %d\r", negSamples.size());
-                        miningMutex.unlock();
                     }
 
                     passedNegatives++;
