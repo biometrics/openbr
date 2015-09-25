@@ -59,6 +59,7 @@ public:
         fps = 0.f;
         time_base = 0.f;
         idx = 0;
+        idxOffset = -1;
     }
 
     ~keyframesGallery()
@@ -95,6 +96,9 @@ public:
         frame = av_frame_alloc();
         cvt_frame = av_frame_alloc();
 
+        av_init_packet(&packet);
+        packet.data = NULL;
+        packet.size = 0;
         // Get fps, stream time_base and allocate space for frame buffer with av_malloc.
         fps = (float)avFormatCtx->streams[streamID]->avg_frame_rate.num /
               (float)avFormatCtx->streams[streamID]->avg_frame_rate.den;
@@ -128,26 +132,50 @@ public:
         Template output;
         output.file = file;
 
-        AVPacket packet;
-        av_init_packet(&packet);
+
         int ret = 0;
         while (!ret) {
             if (av_read_frame(avFormatCtx, &packet) >= 0) {
                 if (packet.stream_index == streamID) {
                     avcodec_decode_video2(avCodecCtx, frame, &ret, &packet);
-                    idx = packet.dts; // decompression timestamp
+                    // Use presentation timestamp if available
+                    // Otherwise decode timestamp
+                    if (frame->pkt_pts != AV_NOPTS_VALUE)
+                        idx = frame->pkt_pts;
+                    else
+                        idx = frame->pkt_dts;
+
                     av_free_packet(&packet);
                 } else {
                     av_free_packet(&packet);
                 }
             } else {
-                av_free_packet(&packet);
-                release();
-                *done = true;
-                return TemplateList();
+                AVPacket empty_packet;
+                av_init_packet(&empty_packet);
+                empty_packet.data = NULL;
+                empty_packet.size = 0;
+
+                avcodec_decode_video2(avCodecCtx, frame, &ret, &empty_packet);
+                if (frame->pkt_pts != AV_NOPTS_VALUE)
+                    idx = frame->pkt_pts;
+                else if (frame->pkt_dts != AV_NOPTS_VALUE)
+                    idx = frame->pkt_dts;
+                else // invalid frame
+                    ret = 0;
+
+                if (!ret) {
+                    av_free_packet(&packet);
+                    av_free_packet(&empty_packet);
+                    release();
+                    *done = true;
+                    return TemplateList();
+                }
             }
         }
 
+        if (idxOffset < 0) {
+            idxOffset = idx;
+        }
         // Convert from native format
         sws_scale(avSwsCtx,
                   frame->data,
@@ -164,9 +192,9 @@ public:
             avcodec_flush_buffers(avCodecCtx);
 
             QString URL = file.get<QString>("URL", file.name);
-            output.file.set("URL", URL + "#t=" + QString::number((int)(idx * time_base)) + "s");
-            output.file.set("timestamp", QString::number((int)(idx * time_base * 1000)));
-            output.file.set("frame", QString::number(idx * time_base * fps));
+            output.file.set("URL", URL + "#t=" + QString::number((int)((idx-idxOffset) * time_base)) + "s");
+            output.file.set("timestamp", QString::number((int)((idx-idxOffset) * time_base * 1000)));
+            output.file.set("frame", QString::number((idx-idxOffset) * time_base * fps));
             TemplateList dst;
             dst.append(output);
             return dst;
@@ -204,7 +232,10 @@ protected:
     AVCodec *avCodec;
     AVFrame *frame;
     AVFrame *cvt_frame;
+    AVPacket packet;
     uint8_t *buffer;
+
+    int64_t idxOffset;
     bool opened;
     int streamID;
     float fps;
