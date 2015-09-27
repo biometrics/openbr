@@ -83,6 +83,19 @@ function(install_qt_imageformats)
   endif()
 endfunction()
 
+function(install_qt_platforms)
+  if(${BR_INSTALL_DEPENDENCIES})
+    if(CMAKE_HOST_WIN32)
+      #TODO
+    elseif(CMAKE_HOST_APPLE)
+      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqcocoa.dylib
+              DESTINATION bin/platforms)
+    else()
+      #TODO
+    endif()
+  endif()
+endfunction()
+
 # Qt Other
 function(install_qt_misc)
   if(MSVC)
