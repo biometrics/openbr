@@ -145,6 +145,11 @@ void br_eval_regression(const char *predicted_gallery, const char *truth_gallery
     EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
+void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *iet)
+{
+    EvalKNN(knnGraph, knnTruth, iet);
+}
+
 void br_finalize()
 {
     Context::finalize();

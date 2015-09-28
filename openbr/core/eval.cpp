@@ -1300,4 +1300,132 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
     qDebug("MAE = %f", maeError/predicted.size());
 }
 
+void readKNN(size_t &templateCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly))
+        qFatal("Failed to open k-NN file for reading!");
+    file.read((char*) &templateCount, sizeof(size_t));
+    file.read((char*) &k, sizeof(size_t));
+    neighbors.resize(templateCount * k);
+
+    file.read((char*) neighbors.data(), templateCount * k * sizeof(Candidate));
+}
+
+void readKNNTruth(size_t templateCount, QVector< QList<size_t> > &groundTruth, const QString &fileName)
+{
+    groundTruth.reserve(templateCount);
+    QFile truthFile(fileName);
+    if (!truthFile.open(QFile::ReadOnly | QFile::Text))
+        qFatal("Failed to open k-NN ground truth file for reading!");
+    size_t i=0;
+    while (!truthFile.atEnd()) {
+        const QString line = truthFile.readLine().trimmed();
+        if (!line.isEmpty())
+            foreach (const QString &index, line.split('\t')) {
+                bool ok;
+                groundTruth[i].append(index.toLong(&ok));
+                if (!ok)
+                    qFatal("Failed to parse long in k-NN ground truth!");
+            }
+        i++;
+    }
+    if (i != templateCount)
+        qFatal("Invalid ground truth file!");
+}
+
+void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &iet)
+{
+    qDebug("Evaluating k-NN of %s against %s", qPrintable(knnGraph), qPrintable(knnTruth));
+
+    size_t templateCount;
+    size_t k;
+    QVector<Candidate> neighbors;
+    readKNN(templateCount, k, neighbors, knnGraph);
+
+    /*
+     * Read the ground truth from disk.
+     * Line i contains the template indicies of the mates for probe i.
+     * See the `gtGallery` implementation for details.
+     */
+    QVector< QList<size_t> > truth(templateCount);
+    readKNNTruth(templateCount, truth, knnTruth);
+
+    /*
+     * For each probe, record the similarity of the highest mate (if one exists) and the highest non-mate.
+     */
+    QList<float> matedSimilarities, unmatedSimilarities;
+    size_t numMatedSearches = 0;
+    for (size_t i=0; i<templateCount; i++) {
+        const QList<size_t> &mates = truth[i];
+        if (!mates.empty())
+            numMatedSearches++;
+
+        bool recordedHighestMatedSimilarity = false;
+        bool recordedHighestUnmatedSimilarity = false;
+        for (size_t j=0; j<k; j++) {
+            const Candidate &neighbor = neighbors[i*k+j];
+
+            if (mates.contains(neighbor.index)) {
+                // Found a mate
+                if (!recordedHighestMatedSimilarity) {
+                    matedSimilarities.append(neighbor.similarity);
+                    recordedHighestMatedSimilarity = true;
+                }
+            } else {
+                // Found a non-mate
+                if (!recordedHighestUnmatedSimilarity) {
+                    unmatedSimilarities.append(neighbor.similarity);
+                    recordedHighestUnmatedSimilarity = true;
+                }
+            }
+
+            if (recordedHighestMatedSimilarity && recordedHighestUnmatedSimilarity)
+                break; // we can stop scanning the candidate list for this probe
+        }
+    }
+
+    // Sort the similarity scores lowest-to-highest
+    std::sort(matedSimilarities.begin(), matedSimilarities.end());
+    std::sort(unmatedSimilarities.begin(), unmatedSimilarities.end());
+    const size_t numMatedSimilarities = matedSimilarities.size();
+    const size_t numUnmatedSimilarities = unmatedSimilarities.size();
+
+    if (numMatedSimilarities == 0)
+        qFatal("No mated searches!");
+
+    if (numUnmatedSimilarities == 0)
+        qFatal("No unmated searches!");
+
+    printf("Rank-%zu Return Rate: %g\n", k, double(numMatedSimilarities) / double(numMatedSearches));
+
+    // Open the output file
+    QFile ietFile(iet);
+    if (!ietFile.open(QFile::WriteOnly | QFile::Text))
+        qFatal("Failed to open IET file for writing!");
+    ietFile.write("Threshold,FPIR,FNIR\n");
+
+    /*
+     * Iterate through the similarity scores highest-to-lowest,
+     * for each threshold count the number mated and unmated searches,
+     * record the corresponding FPIR and FNIR values for the threshold.
+     */
+    size_t matedCount = 0;
+    size_t unmatedCount = 0;
+    while (!matedSimilarities.empty()) {
+        const float threshold = matedSimilarities.back();
+        while (!matedSimilarities.empty() && (matedSimilarities.back() >= threshold)) {
+            matedSimilarities.removeLast();
+            matedCount++;
+        }
+        while (!unmatedSimilarities.empty() && (unmatedSimilarities.back() >= threshold)) {
+            unmatedSimilarities.removeLast();
+            unmatedCount++;
+        }
+        ietFile.write(qPrintable(QString::number(threshold) + "," +
+                                 QString::number(double(unmatedCount) / double(numUnmatedSimilarities)) + "," +
+                                 QString::number(1.0 - double(matedCount) / double(numMatedSimilarities)) + "\n"));
+    }
+}
+
 } // namespace br
