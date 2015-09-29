@@ -1399,12 +1399,11 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
     std::sort(matedSimilarities.begin(), matedSimilarities.end());
     std::sort(unmatedSimilarities.begin(), unmatedSimilarities.end());
     const size_t numMatedSimilarities = matedSimilarities.size();
-    const size_t numUnmatedSimilarities = unmatedSimilarities.size();
 
-    if (numMatedSimilarities == 0)
+    if (numMatedSearches == 0)
         qFatal("No mated searches!");
 
-    if (numUnmatedSimilarities == 0)
+    if (numUnmatedSearches == 0)
         qFatal("No unmated searches!");
 
     printf("Rank-%i Return Rate: %g\n", 1, getCMC(firstGenuineReturns, 1, numMatedSearches));
@@ -1443,8 +1442,8 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
             previousMatedCount = matedCount;
             previousUnmatedCount = unmatedCount;
             operatingPoints.append(OperatingPoint(threshold,
-                                                  double(unmatedCount) / double(numUnmatedSimilarities),
-                                                  1.0 - double(matedCount) / double(numMatedSimilarities)));
+                                                  double(unmatedCount) / double(numUnmatedSearches),
+                                                  1.0 - double(matedCount) / double(numMatedSearches)));
         }
     }
 
