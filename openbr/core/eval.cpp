@@ -1358,14 +1358,19 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
      */
     QVector<int> firstGenuineReturns(probeCount, 0);
     QList<float> matedSimilarities, unmatedSimilarities;
-    size_t numMatedSearches = 0;
+    size_t numMatedSearches = 0, numUnmatedSearches = 0;
     for (size_t i=0; i<probeCount; i++) {
         const QList<size_t> &mates = truth[i];
-        if (!mates.empty())
-            numMatedSearches++;
-
         bool recordedHighestMatedSimilarity = false;
         bool recordedHighestUnmatedSimilarity = false;
+        if (!mates.empty()) {
+            numMatedSearches++;
+            recordedHighestUnmatedSimilarity = true;
+        } else {
+            numUnmatedSearches++;
+            recordedHighestMatedSimilarity = true;
+        }
+
         for (size_t j=0; j<k; j++) {
             const Candidate &neighbor = neighbors[i*k+j];
 
@@ -1421,8 +1426,9 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
      * for each threshold count the number mated and unmated searches,
      * record the corresponding FPIR and FNIR values for the threshold.
      */
-    size_t matedCount = 0;
-    size_t unmatedCount = 0;
+    QList<OperatingPoint> operatingPoints;
+    size_t matedCount = 0, previousMatedCount = 0;
+    size_t unmatedCount = 0, previousUnmatedCount = 0;
     while (!matedSimilarities.empty()) {
         const float threshold = matedSimilarities.back();
         while (!matedSimilarities.empty() && (matedSimilarities.back() >= threshold)) {
@@ -1433,10 +1439,19 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
             unmatedSimilarities.removeLast();
             unmatedCount++;
         }
-        ietFile.write(qPrintable(QString::number(threshold) + "," +
-                                 QString::number(double(unmatedCount) / double(numUnmatedSimilarities)) + "," +
-                                 QString::number(1.0 - double(matedCount) / double(numMatedSimilarities)) + "\n"));
+        if ((unmatedCount > previousUnmatedCount) && (matedCount > previousMatedCount)) {
+            previousMatedCount = matedCount;
+            previousUnmatedCount = unmatedCount;
+            operatingPoints.append(OperatingPoint(threshold,
+                                                  double(unmatedCount) / double(numUnmatedSimilarities),
+                                                  1.0 - double(matedCount) / double(numMatedSimilarities)));
+        }
     }
+
+    foreach(const OperatingPoint &operatingPoint, operatingPoints)
+        ietFile.write(qPrintable(QString::number(operatingPoint.score) + "," +
+                                 QString::number(operatingPoint.FAR) + "," +
+                                 QString::number(operatingPoint.TAR) + "\n"));
 }
 
 } // namespace br
