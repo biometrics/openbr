@@ -35,7 +35,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 1.0
+        $ git checkout v1.1.0
         $ git submodule init
         $ git submodule update
 
@@ -116,7 +116,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 1.0
+        $ git checkout v1.1.0
         $ git submodule init
         $ git submodule update
 
@@ -196,7 +196,7 @@ A hacker's guide to building, editing, and running OpenBR.
             $ cd /c
             $ git clone https://github.com/biometrics/openbr.git
             $ cd openbr
-            $ git checkout 1.0
+            $ git checkout v1.1.0
             $ git submodule init
             $ git submodule update
 
@@ -277,7 +277,7 @@ A hacker's guide to building, editing, and running OpenBR.
 
         $ git clone https://github.com/biometrics/openbr.git
         $ cd openbr
-        $ git checkout 1.0
+        $ git checkout v1.1.0
         $ git submodule init
         $ git submodule update
 
