@@ -102,12 +102,14 @@ static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &ope
 }
 
 
-static float getCMC(const QVector<int> &firstGenuineReturns, int rank)
+static float getCMC(const QVector<int> &firstGenuineReturns, int rank, size_t possibleReturns = 0)
 {
-    int realizedReturns = 0, possibleReturns = 0;
+    bool calcPossible = possibleReturns ? false : true;
+    int realizedReturns = 0;
     foreach (int firstGenuineReturn, firstGenuineReturns) {
         if (firstGenuineReturn > 0) {
-            possibleReturns++;
+            if (calcPossible)
+                possibleReturns++;
             if (firstGenuineReturn <= rank) realizedReturns++;
         }
     }
@@ -1300,21 +1302,21 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
     qDebug("MAE = %f", maeError/predicted.size());
 }
 
-void readKNN(size_t &templateCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
+void readKNN(size_t &probeCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly))
         qFatal("Failed to open k-NN file for reading!");
-    file.read((char*) &templateCount, sizeof(size_t));
+    file.read((char*) &probeCount, sizeof(size_t));
     file.read((char*) &k, sizeof(size_t));
-    neighbors.resize(templateCount * k);
+    neighbors.resize(probeCount * k);
 
-    file.read((char*) neighbors.data(), templateCount * k * sizeof(Candidate));
+    file.read((char*) neighbors.data(), probeCount * k * sizeof(Candidate));
 }
 
-void readKNNTruth(size_t templateCount, QVector< QList<size_t> > &groundTruth, const QString &fileName)
+void readKNNTruth(size_t probeCount, QVector< QList<size_t> > &groundTruth, const QString &fileName)
 {
-    groundTruth.reserve(templateCount);
+    groundTruth.reserve(probeCount);
     QFile truthFile(fileName);
     if (!truthFile.open(QFile::ReadOnly | QFile::Text))
         qFatal("Failed to open k-NN ground truth file for reading!");
@@ -1330,7 +1332,7 @@ void readKNNTruth(size_t templateCount, QVector< QList<size_t> > &groundTruth, c
             }
         i++;
     }
-    if (i != templateCount)
+    if (i != probeCount)
         qFatal("Invalid ground truth file!");
 }
 
@@ -1338,25 +1340,26 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
 {
     qDebug("Evaluating k-NN of %s against %s", qPrintable(knnGraph), qPrintable(knnTruth));
 
-    size_t templateCount;
+    size_t probeCount;
     size_t k;
     QVector<Candidate> neighbors;
-    readKNN(templateCount, k, neighbors, knnGraph);
+    readKNN(probeCount, k, neighbors, knnGraph);
 
     /*
      * Read the ground truth from disk.
      * Line i contains the template indicies of the mates for probe i.
      * See the `gtGallery` implementation for details.
      */
-    QVector< QList<size_t> > truth(templateCount);
-    readKNNTruth(templateCount, truth, knnTruth);
+    QVector< QList<size_t> > truth(probeCount);
+    readKNNTruth(probeCount, truth, knnTruth);
 
     /*
      * For each probe, record the similarity of the highest mate (if one exists) and the highest non-mate.
      */
+    QVector<int> firstGenuineReturns(probeCount, 0);
     QList<float> matedSimilarities, unmatedSimilarities;
     size_t numMatedSearches = 0;
-    for (size_t i=0; i<templateCount; i++) {
+    for (size_t i=0; i<probeCount; i++) {
         const QList<size_t> &mates = truth[i];
         if (!mates.empty())
             numMatedSearches++;
@@ -1372,12 +1375,14 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
                     matedSimilarities.append(neighbor.similarity);
                     recordedHighestMatedSimilarity = true;
                 }
+                if (firstGenuineReturns[i] < 1) firstGenuineReturns[i] = abs(firstGenuineReturns[i])+1;
             } else {
                 // Found a non-mate
                 if (!recordedHighestUnmatedSimilarity) {
                     unmatedSimilarities.append(neighbor.similarity);
                     recordedHighestUnmatedSimilarity = true;
                 }
+                if (firstGenuineReturns[i] < 1) firstGenuineReturns[i]--;
             }
 
             if (recordedHighestMatedSimilarity && recordedHighestUnmatedSimilarity)
@@ -1396,6 +1401,12 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
 
     if (numUnmatedSimilarities == 0)
         qFatal("No unmated searches!");
+
+    printf("Rank-%i Return Rate: %g\n", 1, getCMC(firstGenuineReturns, 1, numMatedSearches));
+    if (k >=5)
+        printf("Rank-%i Return Rate: %g\n", 5, getCMC(firstGenuineReturns, 5, numMatedSearches));
+    if (k >=10)
+        printf("Rank-%i Return Rate: %g\n", 10, getCMC(firstGenuineReturns, 10, numMatedSearches));
 
     printf("Rank-%zu Return Rate: %g\n", k, double(numMatedSimilarities) / double(numMatedSearches));
 

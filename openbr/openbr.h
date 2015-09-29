@@ -64,7 +64,7 @@ BR_EXPORT float br_eval_landmarking(const char *predicted_gallery, const char *t
 
 BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "");
 
-BR_EXPORT void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *iet = "");
+BR_EXPORT void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *iet);
 
 BR_EXPORT void br_finalize();
 

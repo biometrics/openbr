@@ -169,8 +169,8 @@ public:
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
             } else if (!strcmp(fun, "evalKNN")) {
-                check(parc >=2 && parc < 4, "Incorrect parameter count for 'evalKNN'.");
-                br_eval_knn(parv[0], parv[1], parc >= 3 ? parv[2] : "");
+                check(parc == 3, "Incorrect parameter count for 'evalKNN'.");
+                br_eval_knn(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "pairwiseCompare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
