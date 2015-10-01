@@ -217,6 +217,12 @@ formatData <- function(type="eval") {
         NormLength <<- data[grep("NormLength",data$Plot),-c(1)]
         sample <<- readImageData(Sample)
         rows <<- sample[[1]]$value
+    } else if (type == "knn") {
+        # Split data into individual plots
+        IET <<- data[grep("IET",data$Plot),-c(1)]
+        IET$Y <<- as.numeric(as.character(IET$Y))
+        CMC <<- data[grep("CMC",data$Plot),-c(1)]
+        CMC$Y <<- as.numeric(as.character(CMC$Y))
     }
 }
 

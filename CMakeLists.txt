@@ -13,7 +13,7 @@ if(NOT DEFINED CPACK_PACKAGE_VERSION_MAJOR)
   set(CPACK_PACKAGE_VERSION_MAJOR 1)
 endif()
 if(NOT DEFINED CPACK_PACKAGE_VERSION_MINOR)
-  set(CPACK_PACKAGE_VERSION_MINOR 0)
+  set(CPACK_PACKAGE_VERSION_MINOR 1)
 endif()
 if(NOT DEFINED CPACK_PACKAGE_VERSION_PATCH)
   set(CPACK_PACKAGE_VERSION_PATCH 0)
@@ -158,8 +158,8 @@ endif()
 
 # Download the models
 ExternalProject_Add(models
-                    URL http://github.com/biometrics/openbr/releases/download/v1.0.0/models.tar.gz
-                    URL_MD5 0a7c79226d6629954aa32c835a1007b9
+                    URL http://github.com/biometrics/openbr/releases/download/v1.1.0/models.tar.gz
+                    URL_MD5 d06927071120d5a50eee9475fe8da280
                     SOURCE_DIR "${PROJECT_SOURCE_DIR}/share/openbr/models"
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""

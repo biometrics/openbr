@@ -168,6 +168,9 @@ public:
             } else if (!strcmp(fun, "evalRegression")) {
                 check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
                 br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
+            } else if (!strcmp(fun, "evalKNN")) {
+                check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'evalKNN'.");
+                br_eval_knn(parv[0], parv[1], parc > 2 ? parv[2] : "");
             } else if (!strcmp(fun, "pairwiseCompare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
@@ -183,6 +186,9 @@ public:
             } else if (!strcmp(fun, "plotMetadata")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotMetadata'.");
                 br_plot_metadata(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "plotKNN")) {
+                check(parc >=2, "Incorrect parameter count for 'plotKNN'.");
+                br_plot_knn(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "project")) {
                 check(parc == 2, "Insufficient parameter count for 'project'.");
                 br_project(parv[0], parv[1]);
@@ -276,12 +282,14 @@ private:
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}]\n"
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
+               "-evalKNN <knn_graph> <knn_truth> [{csv}]\n"
                "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
                "-inplaceEval <simmat> <target> <query> [{csv}]\n"
                "-assertEval <simmat> <mask> <accuracy>\n"
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
+               "-plotKNN <file> ... <file> {destination}\n"
                "-project <input_gallery> {output_gallery}\n"
                "-deduplicate <input_gallery> <output_gallery> <threshold>\n"
                "-likely <input_type> <output_type> <output_likely_source>\n"

@@ -1,3 +1,4 @@
+#include <opencv2/imgproc/imgproc.hpp>
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/opencv.h>
 
@@ -45,14 +46,18 @@ private:
     {
         dst = src;
 
-        shape_predictor *sp = shapeResource.acquire();
+        shape_predictor *const sp = shapeResource.acquire();
 
-        cv_image<unsigned char> cimg(src.m());
+        cv::Mat cvImage = src.m();
+        if (cvImage.channels() == 3)
+            cv::cvtColor(cvImage, cvImage, CV_BGR2GRAY);
+
+        cv_image<unsigned char> cimg(cvImage);
         array2d<unsigned char> image;
         assign_image(image,cimg);
 
         if (src.file.rects().isEmpty()) { //If the image has no rects assume the whole image is a face
-            rectangle r(0, 0, src.m().cols, src.m().rows);
+            rectangle r(0, 0, cvImage.cols, cvImage.rows);
             full_object_detection shape = (*sp)(image, r);
             for (size_t i = 0; i < shape.num_parts(); i++)
                 dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));

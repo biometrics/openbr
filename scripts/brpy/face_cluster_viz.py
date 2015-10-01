@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from PIL import Image
 import csv, sys, json, argparse
+from brpy.html_viz import crop_to_bb
 
 parser = argparse.ArgumentParser(description='Visualize face cluster results in an HTML page.')
 parser.add_argument('input_file', type=str, help='Results from clustering (in csv format)')
@@ -16,24 +16,15 @@ clustmap = dict()
 with open(args.input_file) as f:
     for line in csv.DictReader(f):
         c = int(line[args.cluster_key])
+        if c not in clustmap:
+            clustmap[c] = []
         x,y,width,height = [ float(line[k]) for k in ('Face_X','Face_Y','Face_Width','Face_Height') ]
         imname = '%s/%s' % (args.img_loc, line['File'])
         try:
-            img = Image.open(imname)
-            imwidth, imheight = img.size
+            html = crop_to_bb(x,y,width,height,imname,maxheight=400)
         except IOError:
             print('problem with %s' % imname)
             continue
-        ratio = maxheight / height
-        # note for future me:
-        # image is cropped with div width/height + overflow:hidden,
-        # resized with img height,
-        # and positioned with img margin
-        html = '<div style="overflow:hidden;display:inline-block;width:%ipx;height:%ipx;">' % (width*ratio, maxheight)
-        html += '<img src="%s" style="height:%ipx;margin:-%ipx 0 0 -%ipx;"/>' % (imname, imheight*ratio, y*ratio, x*ratio)
-        html += '</div>'
-        if c not in clustmap:
-            clustmap[c] = []
         clustmap[c].append(html)
 
 # browsers crash for a DOM with this many img tags,

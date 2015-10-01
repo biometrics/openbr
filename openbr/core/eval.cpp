@@ -102,12 +102,14 @@ static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &ope
 }
 
 
-static float getCMC(const QVector<int> &firstGenuineReturns, int rank)
+static float getCMC(const QVector<int> &firstGenuineReturns, int rank, size_t possibleReturns = 0)
 {
-    int realizedReturns = 0, possibleReturns = 0;
+    bool calcPossible = possibleReturns ? false : true;
+    int realizedReturns = 0;
     foreach (int firstGenuineReturn, firstGenuineReturns) {
         if (firstGenuineReturn > 0) {
-            possibleReturns++;
+            if (calcPossible)
+                possibleReturns++;
             if (firstGenuineReturn <= rank) realizedReturns++;
         }
     }
@@ -1298,6 +1300,170 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
 
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
     qDebug("MAE = %f", maeError/predicted.size());
+}
+
+void readKNN(size_t &probeCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly))
+        qFatal("Failed to open k-NN file for reading!");
+    file.read((char*) &probeCount, sizeof(size_t));
+    file.read((char*) &k, sizeof(size_t));
+    neighbors.resize(probeCount * k);
+
+    file.read((char*) neighbors.data(), probeCount * k * sizeof(Candidate));
+}
+
+void readKNNTruth(size_t probeCount, QVector< QList<size_t> > &groundTruth, const QString &fileName)
+{
+    groundTruth.reserve(probeCount);
+    QFile truthFile(fileName);
+    if (!truthFile.open(QFile::ReadOnly | QFile::Text))
+        qFatal("Failed to open k-NN ground truth file for reading!");
+    size_t i=0;
+    while (!truthFile.atEnd()) {
+        const QString line = truthFile.readLine().trimmed();
+        if (!line.isEmpty())
+            foreach (const QString &index, line.split('\t')) {
+                bool ok;
+                groundTruth[i].append(index.toLong(&ok));
+                if (!ok)
+                    qFatal("Failed to parse long in k-NN ground truth!");
+            }
+        i++;
+    }
+    if (i != probeCount)
+        qFatal("Invalid ground truth file!");
+}
+
+void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &csv)
+{
+    qDebug("Evaluating k-NN of %s against %s", qPrintable(knnGraph), qPrintable(knnTruth));
+
+    size_t probeCount;
+    size_t k;
+    QVector<Candidate> neighbors;
+    readKNN(probeCount, k, neighbors, knnGraph);
+
+    /*
+     * Read the ground truth from disk.
+     * Line i contains the template indicies of the mates for probe i.
+     * See the `gtGallery` implementation for details.
+     */
+    QVector< QList<size_t> > truth(probeCount);
+    readKNNTruth(probeCount, truth, knnTruth);
+
+    /*
+     * For each probe, record the similarity of the highest mate (if one exists) and the highest non-mate.
+     */
+    QVector<int> firstGenuineReturns(probeCount, 0);
+    QList<float> matedSimilarities, unmatedSimilarities;
+    size_t numMatedSearches = 0, numUnmatedSearches = 0;
+    for (size_t i=0; i<probeCount; i++) {
+        const QList<size_t> &mates = truth[i];
+        bool recordedHighestMatedSimilarity = false;
+        bool recordedHighestUnmatedSimilarity = false;
+        if (!mates.empty()) {
+            numMatedSearches++;
+            recordedHighestUnmatedSimilarity = true;
+        } else {
+            numUnmatedSearches++;
+            recordedHighestMatedSimilarity = true;
+        }
+
+        for (size_t j=0; j<k; j++) {
+            const Candidate &neighbor = neighbors[i*k+j];
+
+            if (mates.contains(neighbor.index)) {
+                // Found a mate
+                if (!recordedHighestMatedSimilarity) {
+                    matedSimilarities.append(neighbor.similarity);
+                    recordedHighestMatedSimilarity = true;
+                }
+                if (firstGenuineReturns[i] < 1) firstGenuineReturns[i] = abs(firstGenuineReturns[i])+1;
+            } else {
+                // Found a non-mate
+                if (!recordedHighestUnmatedSimilarity) {
+                    unmatedSimilarities.append(neighbor.similarity);
+                    recordedHighestUnmatedSimilarity = true;
+                }
+                if (firstGenuineReturns[i] < 1) firstGenuineReturns[i]--;
+            }
+
+            if (recordedHighestMatedSimilarity && recordedHighestUnmatedSimilarity)
+                break; // we can stop scanning the candidate list for this probe
+        }
+    }
+
+    // Sort the similarity scores lowest-to-highest
+    std::sort(matedSimilarities.begin(), matedSimilarities.end());
+    std::sort(unmatedSimilarities.begin(), unmatedSimilarities.end());
+    const size_t numMatedSimilarities = matedSimilarities.size();
+
+    if (numMatedSearches == 0)
+        qFatal("No mated searches!");
+
+    if (numUnmatedSearches == 0)
+        qFatal("No unmated searches!");
+
+
+    qDebug("Rank-%d Return Rate: %.3f", 1, getCMC(firstGenuineReturns, 1, numMatedSearches));
+    if (k >=5)
+        qDebug("Rank-%d Return Rate: %.3f", 5, getCMC(firstGenuineReturns, 5, numMatedSearches));
+    if (k >=10)
+        qDebug("Rank-%d Return Rate: %.3f", 10, getCMC(firstGenuineReturns, 10, numMatedSearches));
+
+    qDebug("Rank-%zu Return Rate: %.3f", k, double(numMatedSimilarities) / double(numMatedSearches));
+
+    /*
+     * Iterate through the similarity scores highest-to-lowest,
+     * for each threshold count the number mated and unmated searches,
+     * record the corresponding FPIR and FNIR values for the threshold.
+     */
+    QList<OperatingPoint> operatingPoints;
+    size_t matedCount = 0, previousMatedCount = 0;
+    size_t unmatedCount = 0, previousUnmatedCount = 0;
+    while (!matedSimilarities.empty()) {
+        const float threshold = matedSimilarities.back();
+        while (!matedSimilarities.empty() && (matedSimilarities.back() >= threshold)) {
+            matedSimilarities.removeLast();
+            matedCount++;
+        }
+        while (!unmatedSimilarities.empty() && (unmatedSimilarities.back() >= threshold)) {
+            unmatedSimilarities.removeLast();
+            unmatedCount++;
+        }
+        if ((unmatedCount > previousUnmatedCount) && (matedCount > previousMatedCount)) {
+            previousMatedCount = matedCount;
+            previousUnmatedCount = unmatedCount;
+            operatingPoints.append(OperatingPoint(threshold,
+                                                  double(unmatedCount) / double(numUnmatedSearches),
+                                                  1.0 - double(matedCount) / double(numMatedSearches)));
+        }
+    }
+
+    if (!csv.isEmpty()) {
+        // Open the output file
+        QFile ietFile(csv);
+        if (!ietFile.open(QFile::WriteOnly | QFile::Text))
+            qFatal("Failed to open IET file for writing!");
+        ietFile.write("Plot,X,Y,Z\n");
+        // Write CMC
+        const int Max_Retrieval = min(200, (int)k);
+        for (int i=1; i<=Max_Retrieval; i++) {
+            const float retrievalRate = getCMC(firstGenuineReturns, i, numMatedSearches);
+            ietFile.write(qPrintable(QString("CMC,%1,%2,0\n").arg(QString::number(i), QString::number(retrievalRate))));
+        }
+
+        foreach(const OperatingPoint &operatingPoint, operatingPoints)
+            ietFile.write(qPrintable("IET," +
+                                     QString::number(operatingPoint.FAR) + "," +
+                                     QString::number(operatingPoint.TAR) + "," +
+                                     QString::number(operatingPoint.score) + "\n"));
+    }
+
+    qDebug("FNIR @ FPIR = 0.1:   %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.1).TAR);
+    qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
 }
 
 } // namespace br
