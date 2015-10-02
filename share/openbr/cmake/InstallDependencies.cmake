@@ -92,7 +92,7 @@ function(install_qt_platforms)
       install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqcocoa.dylib
               DESTINATION bin/platforms)
     else()
-      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqxcb.so
+      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqlinuxfb.so
               DESTINATION bin/platforms)
     endif()
   endif()
