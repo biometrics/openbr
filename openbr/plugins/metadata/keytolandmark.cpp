@@ -24,28 +24,35 @@ namespace br
  * \brief Convert values of key_X, key_Y, key_Width, key_Height to a rect.
  * \author Jordan Cheney \cite JordanCheney
  */
-class KeyToRectTransform : public UntrainableMetadataTransform
+class KeyToLandmarkTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
+    Q_PROPERTY(bool point READ get_point WRITE set_point RESET reset_point STORED false)
     BR_PROPERTY(QString, key, "")
+    BR_PROPERTY(bool, point, false)
 
     void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
 
-        if (src.contains(QStringList() << key + "_X" << key + "_Y" << key + "_Width" << key + "_Height"))
-            dst.appendRect(QRectF(src.get<int>(key + "_X"),
-                                  src.get<int>(key + "_Y"),
-                                  src.get<int>(key + "_Width"),
-                                  src.get<int>(key + "_Height")));
+        if (point) {
+            if (src.contains(QStringList() << key + "_X" << key + "_Y"))
+                dst.appendPoint(QPointF(src.get<float>(key + "_X"),
+                                        src.get<float>(key + "_Y")));
+        } else {
+            if (src.contains(QStringList() << key + "_X" << key + "_Y" << key + "_Width" << key + "_Height"))
+                dst.appendRect(QRectF(src.get<float>(key + "_X"),
+                                      src.get<float>(key + "_Y"),
+                                      src.get<float>(key + "_Width"),
+                                      src.get<float>(key + "_Height")));
+        }
 
     }
-
 };
 
-BR_REGISTER(Transform, KeyToRectTransform)
+BR_REGISTER(Transform, KeyToLandmarkTransform)
 
 } // namespace br
 
-#include "metadata/keytorect.moc"
+#include "metadata/keytolandmark.moc"
