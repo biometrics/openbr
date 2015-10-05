@@ -76,12 +76,18 @@ class UnitDistance : public Distance
 
     float compare(const Template &target, const Template &query) const
     {
-        return a * (distance->compare(target, query) - b);
+        return normalize(distance->compare(target, query));
     }
 
     float compare(const cv::Mat &target, const cv::Mat &query) const
     {
-        return a * (distance->compare(target, query) - b);
+        return normalize(distance->compare(target, query));
+    }
+	
+	float normalize(float score) const
+    {
+        if (!Globals->scoreNormalization) return score;
+        return a * (score - b);
     }
 };
 
