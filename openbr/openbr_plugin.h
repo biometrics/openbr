@@ -310,7 +310,7 @@ struct TemplateList : public QList<Template>
     TemplateList() {}
     TemplateList(const QList<Template> &templates) { append(templates); }
     TemplateList(const QList<File> &files) { foreach (const File &file, files) append(file); }
-    BR_EXPORT static TemplateList fromGallery(const File &gallery, bool partition = true);
+    BR_EXPORT static TemplateList fromGallery(const File &gallery);
 
 
     BR_EXPORT static TemplateList fromBuffer(const QByteArray &buffer);
@@ -319,7 +319,7 @@ struct TemplateList : public QList<Template>
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
     /*!< \brief Assign templates to folds partitions. */
-    BR_EXPORT TemplateList partition(const QString &inputVariable, unsigned int randomSeed = 0, bool overwrite = false) const;
+    BR_EXPORT TemplateList partition(const QString &inputVariable, unsigned int randomSeed = 0) const;
 
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
@@ -813,7 +813,6 @@ public:
     }
 
     virtual Transform * simplify(bool &newTransform) { newTransform = false; return this; }
-    virtual QByteArray likely(const QByteArray &indentation) const { (void) indentation; return "src"; }
 
 protected:
     Transform(bool independent = true, bool trainable = true);
@@ -882,13 +881,9 @@ public:
 
     static Representation *make(QString str, QObject *parent); /*!< \brief Make a representation from a string. */
 
-    virtual void preprocess(const cv::Mat &src, cv::Mat &dst) const { dst = src; }
-    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) { (void) images; (void)labels; }
-
-    virtual float evaluate(const cv::Mat &image, int idx) const = 0;
-    // By convention, an empty indices list will result in all feature responses being calculated
-    // and returned.
-    virtual cv::Mat evaluate(const cv::Mat &image, const QList<int> &indices = QList<int>()) const = 0;
+    virtual Template preprocess(const Template &src) const { return src; }
+    virtual void train(const TemplateList &data) { (void)data; }
+    virtual float evaluate(const Template &src, int idx) const = 0;
 
     virtual cv::Size windowSize(int *dx = NULL, int *dy = NULL) const = 0; // dx and dy should indicate the change to the original window size after preprocessing
     virtual int numChannels() const { return 1; }
@@ -905,11 +900,11 @@ public:
 
     static Classifier *make(QString str, QObject *parent);
 
-    virtual void train(const QList<cv::Mat> &images, const QList<float> &labels) = 0;
-    virtual float classify(const cv::Mat &image, bool process = true, float *confidence = NULL) const = 0;
+    virtual void train(const TemplateList &data) = 0;
+    virtual float classify(const Template &src, bool process = true, float *confidence = NULL) const = 0;
 
     // Slots for representations
-    virtual cv::Mat preprocess(const cv::Mat &image) const = 0;
+    virtual Template preprocess(const Template &src) const = 0;
     virtual cv::Size windowSize(int *dx = NULL, int *dy = NULL) const = 0;
     virtual int numFeatures() const = 0;
 };

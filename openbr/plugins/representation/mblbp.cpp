@@ -48,23 +48,25 @@ class MBLBPRepresentation : public Representation
                             features.append(Feature(offset, x, y, w, h ) );
     }
 
-    void preprocess(const Mat &src, Mat &dst) const
+    Template preprocess(const Template &src) const
     {
+        Template dst;
         integral(src, dst);
+        return dst;
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return (float)features[idx].calc(image);
+        return (float)features[idx].calc(src.m());
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         int size = indices.empty() ? numFeatures() : indices.size();
 
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
-            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+            result.at<float>(i) = evaluate(src, indices.empty() ? i : indices[i]);
         return result;
     }
 

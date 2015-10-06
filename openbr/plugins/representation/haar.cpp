@@ -39,64 +39,64 @@ class HaarRepresentation : public Representation
 
     void init()
     {
-        if (features.isEmpty()) {
-            int offset = winWidth + 1;
-            for (int x = 0; x < winWidth; x++) {
-                for (int y = 0; y < winHeight; y++) {
-                    for (int dx = 1; dx <= winWidth; dx++) {
-                        for (int dy = 1; dy <= winHeight; dy++) {
-                            // haar_x2
-                            if ((x+dx*2 <= winWidth) && (y+dy <= winHeight))
-                                features.append(Feature(offset,
-                                                        x,    y, dx*2, dy, -1,
-                                                        x+dx, y, dx  , dy, +2));
-                            // haar_y2
-                            if ((x+dx <= winWidth) && (y+dy*2 <= winHeight))
-                                features.append(Feature(offset,
-                                                        x,    y, dx, dy*2, -1,
-                                                        x, y+dy, dx, dy,   +2));
-                            // haar_x3
-                            if ((x+dx*3 <= winWidth) && (y+dy <= winHeight))
-                                features.append(Feature(offset,
-                                                        x,    y, dx*3, dy, -1,
-                                                        x+dx, y, dx  , dy, +3));
-                            // haar_y3
-                            if ((x+dx <= winWidth) && (y+dy*3 <= winHeight))
-                                features.append(Feature(offset,
-                                                        x, y,    dx, dy*3, -1,
-                                                        x, y+dy, dx, dy,   +3));
-                            // x2_y2
-                            if ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight))
-                                features.append(Feature(offset,
-                                                        x,    y,    dx*2, dy*2, -1,
-                                                        x,    y,    dx,   dy,   +2,
-                                                        x+dx, y+dy, dx,   dy,   +2));
+        int offset = winWidth + 1;
+        for (int x = 0; x < winWidth; x++) {
+            for (int y = 0; y < winHeight; y++) {
+                for (int dx = 1; dx <= winWidth; dx++) {
+                    for (int dy = 1; dy <= winHeight; dy++) {
+                        // haar_x2
+                        if ((x+dx*2 <= winWidth) && (y+dy <= winHeight))
+                            features.append(Feature(offset,
+                                                    x,    y, dx*2, dy, -1,
+                                                    x+dx, y, dx  , dy, +2));
+                        // haar_y2
+                        if ((x+dx <= winWidth) && (y+dy*2 <= winHeight))
+                            features.append(Feature(offset,
+                                                    x,    y, dx, dy*2, -1,
+                                                    x, y+dy, dx, dy,   +2));
+                        // haar_x3
+                        if ((x+dx*3 <= winWidth) && (y+dy <= winHeight))
+                            features.append(Feature(offset,
+                                                    x,    y, dx*3, dy, -1,
+                                                    x+dx, y, dx  , dy, +3));
+                        // haar_y3
+                        if ((x+dx <= winWidth) && (y+dy*3 <= winHeight))
+                            features.append(Feature(offset,
+                                                    x, y,    dx, dy*3, -1,
+                                                    x, y+dy, dx, dy,   +3));
+                        // x2_y2
+                        if ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight))
+                            features.append(Feature(offset,
+                                                    x,    y,    dx*2, dy*2, -1,
+                                                    x,    y,    dx,   dy,   +2,
+                                                    x+dx, y+dy, dx,   dy,   +2));
 
 
-                        }
                     }
                 }
             }
         }
     }
 
-    void preprocess(const Mat &src, Mat &dst) const
+    Template preprocess(const Template &src) const
     {
+        Template dst;
         integral(src, dst);
+        return dst;
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return (float)features[idx].calc(image);
+        return (float)features[idx].calc(src.m());
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         int size = indices.empty() ? numFeatures() : indices.size();
 
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
-            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+            result.at<float>(i) = evaluate(src, indices.empty() ? i : indices[i]);
         return result;
     }
 

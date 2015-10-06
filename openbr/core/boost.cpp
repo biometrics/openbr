@@ -131,23 +131,17 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 
 //------------------------------------- FeatureEvaluator ---------------------------------------
 
-void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount, int channels)
+void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount)
 {
     representation = _representation;
-
-    int dx, dy;
-    Size windowSize = representation->windowSize(&dx, &dy);
-    data.create((int)_maxSampleCount, (windowSize.width + dx) * (windowSize.height + dy), CV_32SC(channels));
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
 }
 
-void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
+void FeatureEvaluator::setImage(const Template &src, uchar clsLabel, int idx)
 {
     cls.ptr<float>(idx)[0] = clsLabel;
-
-    Mat pp;
-    representation->preprocess(img, pp);
-    pp.reshape(0, 1).copyTo(data.row(idx));
+    data.append(representation->preprocess(src));
+    //data.append(src);
 }
 
 //----------------------------- CascadeBoostParams -------------------------------------------------
