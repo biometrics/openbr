@@ -24,6 +24,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <assert.h>
+#include <openbr/openbr_plugin.h>
 
 namespace OpenCVUtils
 {
@@ -102,7 +103,8 @@ namespace OpenCVUtils
 
     // Misc
     void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, float epsilon);
-    void group(std::vector<cv::Rect> &rects, std::vector<float> &confidences, float confidenceThreshold, float epsilon);
+    void flip(const br::Template &src, br::Template &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
+    void flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
 
     int getFourcc();
 }

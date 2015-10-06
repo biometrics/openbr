@@ -310,7 +310,7 @@ struct TemplateList : public QList<Template>
     TemplateList() {}
     TemplateList(const QList<Template> &templates) { append(templates); }
     TemplateList(const QList<File> &files) { foreach (const File &file, files) append(file); }
-    BR_EXPORT static TemplateList fromGallery(const File &gallery);
+    BR_EXPORT static TemplateList fromGallery(const File &gallery, bool partition = true);
 
 
     BR_EXPORT static TemplateList fromBuffer(const QByteArray &buffer);
@@ -319,7 +319,7 @@ struct TemplateList : public QList<Template>
     BR_EXPORT static TemplateList relabel(const TemplateList &tl, const QString &propName, bool preserveIntegers);
 
     /*!< \brief Assign templates to folds partitions. */
-    BR_EXPORT TemplateList partition(const QString &inputVariable, unsigned int randomSeed = 0) const;
+    BR_EXPORT TemplateList partition(const QString &inputVariable, unsigned int randomSeed = 0, bool overwrite = false) const;
 
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> * valueMap=NULL,QHash<int, QVariant> * reverseLookup = NULL) const;
     BR_EXPORT QList<int> indexProperty(const QString &propName, QHash<QString, int> &valueMap, QHash<int, QVariant> &reverseLookup) const;
@@ -813,6 +813,7 @@ public:
     }
 
     virtual Transform * simplify(bool &newTransform) { newTransform = false; return this; }
+    virtual QByteArray likely(const QByteArray &indentation) const { (void) indentation; return "src"; }
 
 protected:
     Transform(bool independent = true, bool trainable = true);

@@ -73,9 +73,6 @@ class SlidingWindowTransform : public MetaTransform
 
     void project(const TemplateList &src, TemplateList &dst) const
     {
-        Size minObjectSize(minSize, minSize);
-        Size maxObjectSize;
-
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
             if (t.file.contains("Face")) {
@@ -95,12 +92,15 @@ class SlidingWindowTransform : public MetaTransform
                 continue;
             }
 
-            for (int i = 0; i < t.size(); i++) {
+            const int minSize = t.file.get<int>("MinSize", this->minSize);
+            Size minObjectSize(minSize, minSize);
+            Size maxObjectSize;
+
+            for (int i=0; i<t.size(); i++) {
                 Mat m;
                 OpenCVUtils::cvtUChar(t[i], m);
-
-                std::vector<Rect> rects;
-                std::vector<float> confidences;
+                QList<Rect> rects;
+                QList<float> confidences;
 
                 if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
                     maxObjectSize = m.size();
@@ -122,7 +122,7 @@ class SlidingWindowTransform : public MetaTransform
                     if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
                         continue;
 
-                    Mat scaledImage(scaledImageSize, CV_8UC1);
+                    Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
                     resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
 
                     Template repImage(t.file, scaledImage);
@@ -138,8 +138,8 @@ class SlidingWindowTransform : public MetaTransform
                             int result = classifier->classify(t, false, &confidence);
 
                             if (result == 1) {
-                                rects.push_back(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                confidences.push_back(confidence);
+                                rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
+                                confidences.append(confidence);
                             }
 
                             // TODO: Add non ROC mode
@@ -152,10 +152,12 @@ class SlidingWindowTransform : public MetaTransform
 
                 OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
 
-                if (!enrollAll && rects.empty())
-                    rects.push_back(Rect(0, 0, m.cols, m.rows));
+                if (!enrollAll && rects.empty()) {
+                    rects.append(Rect(0, 0, m.cols, m.rows));
+                    confidences.append(-std::numeric_limits<float>::max());
+                }
 
-                for (size_t j=0; j<rects.size(); j++) {
+                for (int j=0; j<rects.size(); j++) {
                     Template u(t.file, m);
                     u.file.set("Confidence", confidences[j]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[j]);

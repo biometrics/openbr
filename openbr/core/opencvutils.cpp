@@ -435,27 +435,16 @@ public:
     double eps;
 };
 
+// TODO: Make sure case where no confidences are inputted works.
 void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, float epsilon)
 {
-    vector<Rect> vRects = rects.toVector().toStdVector();
-    vector<float> vConfidences = confidences.toVector().toStdVector();
-
-    group(vRects, vConfidences, confidenceThreshold, epsilon);
-
-    rects = QList<Rect>::fromVector(QVector<Rect>::fromStdVector(vRects));
-    confidences = QList<float>::fromVector(QVector<float>::fromStdVector(vConfidences));
-}
-
-// TODO: Make sure case where no confidences are inputted works.
-void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float confidenceThreshold, float epsilon)
-{
-    if (rects.empty())
+    if (rects.isEmpty())
         return;
 
-    const bool useConfidences = !confidences.empty();
+    const bool useConfidences = !confidences.isEmpty();
 
     vector<int> labels;
-    int nClasses = cv::partition(rects, labels, SimilarRects(epsilon));
+    int nClasses = cv::partition(rects.toVector().toStdVector(), labels, SimilarRects(epsilon));
 
     // Rect for each class (class meaning identity assigned by partition)
     vector<Rect> rrects(nClasses);
@@ -545,10 +534,68 @@ void OpenCVUtils::group(vector<Rect> &rects, vector<float> &confidences, float c
         // Need to return rects and confidences
         if( j == nClasses )
         {
-            rects.push_back(r1);
+            rects.append(r1);
             if (useConfidences)
-                confidences.push_back(w1);
+                confidences.append(w1);
         }
+    }
+}
+
+void OpenCVUtils::flip(const br::Template &src, br::Template &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
+{
+    if (flipMat) {
+        cv::flip(src, dst, axis);
+        dst.file = src.file;
+    } else
+        dst = src;
+
+    if (flipPoints) {
+        QList<QPointF> flippedPoints;
+        foreach(const QPointF &point, src.file.points()) {
+            // Check for missing data using the QPointF(-1,-1) convention
+            if (point != QPointF(-1,-1)) {
+                if (axis == 0) {
+                    flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
+                } else if (axis == 1) {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
+                } else {
+                    flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
+                }
+            }
+        }
+        dst.file.setPoints(flippedPoints);
+    }
+
+    if (flipRects) {
+        QList<QRectF> flippedRects;
+        foreach(const QRectF &rect, src.file.rects()) {
+            if (axis == 0) {
+                flippedRects.append(QRectF(rect.x(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            } else if (axis == 1) {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           rect.y(),
+                                           rect.width(),
+                                           rect.height()));
+            } else {
+                flippedRects.append(QRectF(src.m().cols-rect.right(),
+                                           src.m().rows-rect.bottom(),
+                                           rect.width(),
+                                           rect.height()));
+            }
+        }
+        dst.file.setRects(flippedRects);
+    }
+}
+
+void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
+{
+    for (int i=0; i<src.size(); i++) {
+        br::Template t;
+        flip(src[i], t, axis, flipMat, flipPoints, flipRects);
+        dst.append(t);
     }
 }
 
