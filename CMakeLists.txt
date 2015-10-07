@@ -159,7 +159,7 @@ endif()
 # Download the models
 ExternalProject_Add(models
                     URL http://github.com/biometrics/openbr/releases/download/v1.1.0/models.tar.gz
-                    URL_MD5 22b158958907e08e611f11b1c62547c6
+                    URL_MD5 942690c9bb9e9f9cf758564d1064a0f6
                     SOURCE_DIR "${PROJECT_SOURCE_DIR}/share/openbr/models"
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
