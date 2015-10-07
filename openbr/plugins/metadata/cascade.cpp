@@ -413,6 +413,17 @@ class CascadeTransform : public MetaTransform
                 if (ROCMode) cascade->detectMultiScale(m, rects, rejectLevels, levelWeights, 1.2, minNeighbors, flags | CASCADE_SCALE_IMAGE, Size(minSize, minSize), Size(), true);
                 else         cascade->detectMultiScale(m, rects, 1.2, minNeighbors, flags, Size(minSize, minSize));
 
+                // It appears that flags is ignored for new model files:
+                // http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html#cascadeclassifier-detectmultiscale
+                if ((flags == CASCADE_FIND_BIGGEST_OBJECT) && (rects.size() > 1)) {
+                    Rect biggest = rects[0];
+                    for (size_t j=0; j<rects.size(); j++)
+                        if (rects[j].area() > biggest.area())
+                            biggest = rects[j];
+                    rects.clear();
+                    rects.push_back(biggest);
+                }
+
                 bool empty = false;
                 if (!enrollAll && rects.empty()) {
                     empty = true;
