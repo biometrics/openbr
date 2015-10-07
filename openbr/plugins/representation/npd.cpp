@@ -16,9 +16,11 @@ class NPDRepresentation : public Representation
 
     void init()
     {
-        for (int p1 = 0; p1 < (winWidth * winHeight); p1++)
-            for (int p2 = p1; p2 < (winWidth * winHeight); p2++)
-                features.append(Feature(p1, p2));
+        if (features.isEmpty()) {
+            for (int p1 = 0; p1 < (winWidth * winHeight); p1++)
+                for (int p2 = p1; p2 < (winWidth * winHeight); p2++)
+                    features.append(Feature(p1, p2));
+        }
     }
 
     float evaluate(const Template &src, int idx) const

@@ -141,7 +141,6 @@ void FeatureEvaluator::setImage(const Template &src, uchar clsLabel, int idx)
 {
     cls.ptr<float>(idx)[0] = clsLabel;
     data.append(representation->preprocess(src));
-    //data.append(src);
 }
 
 //----------------------------- CascadeBoostParams -------------------------------------------------

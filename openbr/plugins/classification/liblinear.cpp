@@ -138,7 +138,7 @@ private:
             param.weight = NULL;
         }
 
-        m = *train_svm(&prob, &param);
+        //m = *train_svm(&prob, &param);
 
         delete[] param.weight;
         delete[] param.weight_label;

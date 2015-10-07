@@ -50,6 +50,18 @@ class RandomRepresentation : public Representation
         return representation->evaluate(src, features[idx]);
     }
 
+    Mat evaluate(const Template &src, const QList<int> &indices) const
+    {
+        QList<int> newIndices;
+        if (indices.empty())
+            newIndices = features;
+        else
+            for (int i = 0; i < indices.size(); i++)
+                newIndices.append(features[indices[i]]);
+
+        return representation->evaluate(src, newIndices);
+    }
+
     int numFeatures() const
     {
         return features.size();

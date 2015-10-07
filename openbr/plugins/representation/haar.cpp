@@ -39,39 +39,41 @@ class HaarRepresentation : public Representation
 
     void init()
     {
-        int offset = winWidth + 1;
-        for (int x = 0; x < winWidth; x++) {
-            for (int y = 0; y < winHeight; y++) {
-                for (int dx = 1; dx <= winWidth; dx++) {
-                    for (int dy = 1; dy <= winHeight; dy++) {
-                        // haar_x2
-                        if ((x+dx*2 <= winWidth) && (y+dy <= winHeight))
-                            features.append(Feature(offset,
-                                                    x,    y, dx*2, dy, -1,
-                                                    x+dx, y, dx  , dy, +2));
-                        // haar_y2
-                        if ((x+dx <= winWidth) && (y+dy*2 <= winHeight))
-                            features.append(Feature(offset,
-                                                    x,    y, dx, dy*2, -1,
-                                                    x, y+dy, dx, dy,   +2));
-                        // haar_x3
-                        if ((x+dx*3 <= winWidth) && (y+dy <= winHeight))
-                            features.append(Feature(offset,
-                                                    x,    y, dx*3, dy, -1,
-                                                    x+dx, y, dx  , dy, +3));
-                        // haar_y3
-                        if ((x+dx <= winWidth) && (y+dy*3 <= winHeight))
-                            features.append(Feature(offset,
-                                                    x, y,    dx, dy*3, -1,
-                                                    x, y+dy, dx, dy,   +3));
-                        // x2_y2
-                        if ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight))
-                            features.append(Feature(offset,
-                                                    x,    y,    dx*2, dy*2, -1,
-                                                    x,    y,    dx,   dy,   +2,
-                                                    x+dx, y+dy, dx,   dy,   +2));
+        if (features.isEmpty()) {
+            int offset = winWidth + 1;
+            for (int x = 0; x < winWidth; x++) {
+                for (int y = 0; y < winHeight; y++) {
+                    for (int dx = 1; dx <= winWidth; dx++) {
+                        for (int dy = 1; dy <= winHeight; dy++) {
+                            // haar_x2
+                            if ((x+dx*2 <= winWidth) && (y+dy <= winHeight))
+                                features.append(Feature(offset,
+                                                        x,    y, dx*2, dy, -1,
+                                                        x+dx, y, dx  , dy, +2));
+                            // haar_y2
+                            if ((x+dx <= winWidth) && (y+dy*2 <= winHeight))
+                                features.append(Feature(offset,
+                                                        x,    y, dx, dy*2, -1,
+                                                        x, y+dy, dx, dy,   +2));
+                            // haar_x3
+                            if ((x+dx*3 <= winWidth) && (y+dy <= winHeight))
+                                features.append(Feature(offset,
+                                                        x,    y, dx*3, dy, -1,
+                                                        x+dx, y, dx  , dy, +3));
+                            // haar_y3
+                            if ((x+dx <= winWidth) && (y+dy*3 <= winHeight))
+                                features.append(Feature(offset,
+                                                        x, y,    dx, dy*3, -1,
+                                                        x, y+dy, dx, dy,   +3));
+                            // x2_y2
+                            if ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight))
+                                features.append(Feature(offset,
+                                                        x,    y,    dx*2, dy*2, -1,
+                                                        x,    y,    dx,   dy,   +2,
+                                                        x+dx, y+dy, dx,   dy,   +2));
 
 
+                        }
                     }
                 }
             }
