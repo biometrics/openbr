@@ -146,9 +146,9 @@ class CascadeClassifier : public Classifier
         return negative;
     }
 
-    int mine()
+    uint64 mine()
     {
-        int passedNegatives = 0;
+        uint64 passedNegatives = 0;
         forever {
             Mat negative;
             Point offset;
@@ -294,13 +294,13 @@ private:
 
         qDebug() << "POS count : consumed  " << posSamples.size() << ":" << posIndex;
 
-        QFutureSynchronizer<int> futures;
+        QFutureSynchronizer<uint64> futures;
         for (int i=0; i<QThread::idealThreadCount(); i++)
             futures.addFuture(QtConcurrent::run(this, &CascadeClassifier::mine));
         futures.waitForFinished();
 
-        int passedNegs = 0;
-        QList<QFuture<int> > results = futures.futures();
+        uint64 passedNegs = 0;
+        QList<QFuture<uint64> > results = futures.futures();
         for (int i=0; i<results.size(); i++)
             passedNegs += results[i].result();
 
