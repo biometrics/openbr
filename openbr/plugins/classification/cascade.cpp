@@ -1,5 +1,5 @@
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/common.h>
 
@@ -100,8 +100,8 @@ class CascadeClassifier : public Classifier
     BR_PROPERTY(bool, requireAllStages, false)
 
     QList<Classifier *> stages;
-    QList<Mat> posImages, negImages;
-    QList<Mat> posSamples, negSamples;
+    TemplateList posImages, negImages;
+    TemplateList posSamples, negSamples;
 
     QList<int> indices;
     int negIndex, posIndex, samplingRound;
@@ -113,18 +113,17 @@ class CascadeClassifier : public Classifier
         negIndex = posIndex = samplingRound = 0;
     }
 
-    bool getPositive(Mat &img)
+    bool getPositive(Template &img)
     {
         if (posIndex >= posImages.size())
             return false;
-
-        posImages[indices[posIndex++]].copyTo(img);
+        img = posImages[indices[posIndex++]];
         return true;
     }
 
-    Mat getNegative(Point &offset)
+    Template getNegative(Point &offset)
     {
-        Mat negative;
+        Template negative;
 
         const Size size = windowSize();
         // Grab negative from list
@@ -136,9 +135,9 @@ class CascadeClassifier : public Classifier
             samplingRound = samplingRound % (size.width * size.height);
             negIndex %= count;
 
-            offset.x = qMin( (int)samplingRound % size.width, negative.cols - size.width);
-            offset.y = qMin( (int)samplingRound / size.width, negative.rows - size.height);
-            if (!negative.empty() && negative.type() == CV_8UC1
+            offset.x = qMin( (int)samplingRound % size.width, negative.m().cols - size.width);
+            offset.y = qMin( (int)samplingRound / size.width, negative.m().rows - size.height);
+            if (!negative.m().empty() && negative.m().type() == CV_8UC1
                     && offset.x >= 0 && offset.y >= 0)
                 break;
         }
@@ -150,16 +149,16 @@ class CascadeClassifier : public Classifier
     {
         uint64 passedNegatives = 0;
         forever {
-            Mat negative;
+            Template negative;
             Point offset;
             QMutexLocker samplingLocker(&samplingMutex);
             negative = getNegative(offset);
             samplingLocker.unlock();
 
-            Miner miner(negative, windowSize(), offset);
+            Miner miner(negative.m(), windowSize(), offset);
             forever {
                 bool newImg;
-                Mat sample = miner.mine(&newImg);
+                Template sample(negative.file, miner.mine(&newImg));
                 if (!newImg) {
                     if (negSamples.size() >= numNegs)
                         return passedNegatives;
@@ -181,16 +180,16 @@ class CascadeClassifier : public Classifier
         }
     }
 
-    void train(const QList<Mat> &images, const QList<float> &labels)
+    void train(const TemplateList &data)
     {
-        for (int i = 0; i < images.size(); i++)
-            labels[i] == 1 ? posImages.append(images[i]) : negImages.append(images[i]);
+        foreach (const Template &t, data)
+            t.file.get<float>("Label") == 1.0f ? posImages.append(t) : negImages.append(t);
 
-        qDebug() << "Total images:" << images.size()
+        qDebug() << "Total images:" << data.size()
                  << "\nTotal positive images:" << posImages.size()
                  << "\nTotal negative images:" << negImages.size();
 
-        indices = Common::RandSample(posImages.size(),posImages.size(),true);
+        indices = Common::RandSample(posImages.size(), posImages.size(), true);
 
         stages.reserve(numStages);
         for (int i = 0; i < numStages; i++) {
@@ -209,27 +208,17 @@ class CascadeClassifier : public Classifier
                 return;
             }
 
-            QList<float> posLabels;
-            posLabels.reserve(posSamples.size());
-            for (int j=0; j<posSamples.size(); j++)
-                posLabels.append(1);
-
-            QList<float> negLabels;
-            negLabels.reserve(negSamples.size());
-            for (int j=0; j<negSamples.size(); j++)
-                negLabels.append(0);
-
-            stages[i]->train(posSamples+negSamples, posLabels+negLabels);
+            stages[i]->train(posSamples + negSamples);
 
             qDebug() << "END>";
         }
     }
 
-    float classify(const Mat &image, bool process, float *confidence) const
+    float classify(const Template &src, bool process, float *confidence) const
     {
         float stageConf = 0.0f;
         foreach (const Classifier *stage, stages) {
-            float result = stage->classify(image, process, &stageConf);
+            float result = stage->classify(src, process, &stageConf);
             if (confidence)
                 *confidence += stageConf;
             if (result == 0.0f)
@@ -243,9 +232,9 @@ class CascadeClassifier : public Classifier
         return stages.first()->numFeatures();
     }
 
-    Mat preprocess(const Mat &image) const
+    Template preprocess(const Template &src) const
     {
-        return stages.first()->preprocess(image);
+        return stages.first()->preprocess(src);
     }
 
     Size windowSize(int *dx = NULL, int *dy = NULL) const
@@ -273,16 +262,13 @@ class CascadeClassifier : public Classifier
 private:
     float getSamples()
     {
-        posSamples.clear();
-        posSamples.reserve(numPos);
-        negSamples.clear();
-        negSamples.reserve(numNegs);
+        posSamples.clear(); posSamples.reserve(numPos);
+        negSamples.clear(); negSamples.reserve(numNegs);
         posIndex = 0;
 
         float confidence;
         while (posSamples.size() < numPos) {
-            Mat pos(windowSize(), CV_8UC1);
-
+            Template pos;
             if (!getPositive(pos))
                 qFatal("Cannot get another positive sample!");
 

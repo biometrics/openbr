@@ -16,23 +16,25 @@ class NPDRepresentation : public Representation
 
     void init()
     {
-        for (int p1 = 0; p1 < (winWidth * winHeight); p1++)
-            for (int p2 = p1; p2 < (winWidth * winHeight); p2++)
-                features.append(Feature(p1, p2));
+        if (features.isEmpty()) {
+            for (int p1 = 0; p1 < (winWidth * winHeight); p1++)
+                for (int p2 = p1; p2 < (winWidth * winHeight); p2++)
+                    features.append(Feature(p1, p2));
+        }
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return features[idx].calc(image);
+        return features[idx].calc(src.m());
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         int size = indices.empty() ? numFeatures() : indices.size();
 
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
-            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+            result.at<float>(i) = evaluate(src, indices.empty() ? i : indices[i]);
         return result;
     }
 
@@ -49,10 +51,10 @@ class NPDRepresentation : public Representation
     struct Feature
     {
         Feature() {}
-        Feature(int p1, int p2) { p[0] = p1; p[1] = p2; }
+        Feature(int p0, int p1) : p0(p0), p1(p1) {}
         float calc(const Mat &image) const;
 
-        int p[2];
+        int p0, p1;
     };
     QList<Feature> features;
 };
@@ -61,9 +63,9 @@ BR_REGISTER(Representation, NPDRepresentation)
 
 inline float NPDRepresentation::Feature::calc(const Mat &image) const
 {
-    const int *ptr = image.ptr<int>();
-    int v1 = ptr[p[0]], v2 = ptr[p[1]];
-    return v1 == 0 && v2 == 0 ? 0 : ((float)(v1 - v2)) / (v1 + v2);
+    const uchar *ptr = image.ptr();
+    int v1 = (int)ptr[p0], v2 = (int)ptr[p1];
+    return (v1 + v2) == 0 ? 0 : (1.0 * (v1 - v2)) / (v1 + v2);
 }
 
 } // namespace br
