@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/common.h>
+#include "openbr/core/opencvutils.h"
 
 #include <QtConcurrent>
 
@@ -37,7 +38,7 @@ struct Miner
     Mat mine(bool *newImg)
     {
         // Copy region of winSize region of img into m
-        Mat window(windowSize.height, windowSize.width, CV_8UC1,
+        Mat window(windowSize.height, windowSize.width, CV_8U,
                    (void*)(scaledSrc.data + point.y * scaledSrc.step + point.x * scaledSrc.elemSize()),
                    scaledSrc.step);
 
@@ -138,7 +139,7 @@ class CascadeClassifier : public Classifier
 
             offset.x = qMin( (int)samplingRound % size.width, negative.cols - size.width);
             offset.y = qMin( (int)samplingRound / size.width, negative.rows - size.height);
-            if (!negative.empty() && negative.type() == CV_8UC1
+            if (!negative.empty() && negative.type() == CV_8U
                     && offset.x >= 0 && offset.y >= 0)
                 break;
         }
@@ -281,7 +282,7 @@ private:
 
         float confidence;
         while (posSamples.size() < numPos) {
-            Mat pos(windowSize(), CV_8UC1);
+            Mat pos(windowSize(), CV_8U);
 
             if (!getPositive(pos))
                 qFatal("Cannot get another positive sample!");
