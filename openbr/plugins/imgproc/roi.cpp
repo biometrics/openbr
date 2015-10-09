@@ -34,8 +34,10 @@ class ROITransform : public UntrainableTransform
     Q_OBJECT
     Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
     Q_PROPERTY(bool copyOnCrop READ get_copyOnCrop WRITE set_copyOnCrop RESET reset_copyOnCrop STORED false)
+    Q_PROPERTY(int shiftPoints READ get_shiftPoints WRITE set_shiftPoints RESET reset_shiftPoints STORED false)
     BR_PROPERTY(QString, propName, "")
     BR_PROPERTY(bool, copyOnCrop, false)
+    BR_PROPERTY(int, shiftPoints, -1)
 
     void project(const Template &src, Template &dst) const
     {
@@ -55,6 +57,16 @@ class ROITransform : public UntrainableTransform
             if (Globals->verbose)
                 qWarning("No rects present in file.");
         }
+
+        if (shiftPoints != -1) {
+            // Shift the points to the rect with the index provided
+            QRectF rect = src.file.rects()[shiftPoints];
+            QList<QPointF> points = src.file.points();
+            for (int i=0; i<points.size(); i++)
+                points[i] -= rect.topLeft();
+            dst.file.setPoints(points);
+        }
+
         dst.file.clearRects();
 
         if (copyOnCrop)

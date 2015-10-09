@@ -55,9 +55,15 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        if (!preserveAspect)
+        if (!preserveAspect) {
             resize(src, dst, Size((columns == -1) ? src.m().cols*rows/src.m().rows : columns, rows), 0, 0, method);
-        else {
+            const float rowScaleFactor = (float)rows/src.m().rows;
+            const float colScaleFactor = (float)columns/src.m().cols;
+            QList<QPointF> points = src.file.points();
+            for (int i=0; i<points.size(); i++)
+                points[i] = QPointF(points[i].x() * colScaleFactor,points[i].y() * rowScaleFactor);
+            dst.file.setPoints(points);
+        } else {
             float inRatio = (float) src.m().rows / src.m().cols;
             float outRatio = (float) rows / columns;
             dst = Mat::zeros(rows, columns, src.m().type());
