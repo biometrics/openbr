@@ -125,20 +125,20 @@ private:
     QList<Node*> classifiers;
     float threshold;
 
-    void train(const QList<Mat> &images, const QList<float> &labels)
+    void train(const TemplateList &data)
     {
-        representation->train(images, labels);
+        representation->train(data);
 
         CascadeBoostParams params(type, minTAR, maxFAR, trimRate, maxDepth, maxWeakCount);
 
         FeatureEvaluator featureEvaluator;
-        featureEvaluator.init(representation, images.size(), representation->numChannels());
+        featureEvaluator.init(representation, data.size());
 
-        for (int i = 0; i < images.size(); i++)
-            featureEvaluator.setImage(images[i], labels[i], i);
+        for (int i = 0; i < data.size(); i++)
+            featureEvaluator.setImage(data[i], data[i].file.get<float>("Label"), i);
 
         CascadeBoost boost;
-        boost.train(&featureEvaluator, images.size(), 1024, 1024, representation->numChannels(), params);
+        boost.train(&featureEvaluator, data.size(), 1024, 1024, representation->numChannels(), params);
 
         threshold = boost.getThreshold();
 
@@ -149,13 +149,9 @@ private:
         }
     }
 
-    float classify(const Mat &image, bool process, float *confidence) const
+    float classify(const Template &src, bool process, float *confidence) const
     {
-        Mat m;
-        if (process)
-            m = preprocess(image);
-        else
-            m = image;
+        Template t = process ? preprocess(src) : src;
 
         float sum = 0;
         for (int i = 0; i < classifiers.size(); i++) {
@@ -163,10 +159,10 @@ private:
 
             while (node->left) {
                 if (representation->maxCatCount() > 0) {
-                    int c = (int)representation->evaluate(m, node->featureIdx);
+                    int c = (int)representation->evaluate(t, node->featureIdx);
                     node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
-                    double val = representation->evaluate(m, node->featureIdx);
+                    double val = representation->evaluate(t, node->featureIdx);
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
@@ -184,11 +180,9 @@ private:
         return representation->numFeatures();
     }
 
-    Mat preprocess(const Mat &image) const
+    Template preprocess(const Template &src) const
     {
-        Mat dst;
-        representation->preprocess(image, dst);
-        return dst;
+        return representation->preprocess(src);
     }
 
     Size windowSize(int *dx, int *dy) const
