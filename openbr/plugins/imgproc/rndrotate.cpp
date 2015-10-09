@@ -16,6 +16,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 
@@ -32,12 +33,14 @@ class RndRotateTransform : public UntrainableTransform
     Q_OBJECT
 
     Q_PROPERTY(QList<int> range READ get_range WRITE set_range RESET reset_range STORED false)
+    Q_PROPERTY(int center READ get_center WRITE set_center RESET reset_center STORED false)
     BR_PROPERTY(QList<int>, range, QList<int>() << -15 << 15)
+    BR_PROPERTY(int, center, -1)
 
     void project(const Template &src, Template &dst) const {
         int span = range.first() - range.last();
         int angle = (rand() % span) + range.first();
-        Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
+        Mat rotMatrix = getRotationMatrix2D(center == -1 ? Point2f(src.m().rows/2,src.m().cols/2) : OpenCVUtils::toPoint(src.file.points()[center]),angle,1.0);
         warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_LINEAR,BORDER_REFLECT_101);
 
         QList<QPointF> points = src.file.points();
