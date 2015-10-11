@@ -160,7 +160,8 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
     const char* data,
     const int width,
     const int height,
-    StasmCascadeClassifier cascade)
+    StasmCascadeClassifier cascade,
+    FaceDet &detection)
 {
     int returnval = 1;     // assume success
     *foundface = 0;        // but assume no face found
@@ -176,15 +177,14 @@ int stasm_search_auto_ext( // extended version of stasm_search_auto
         // Allocate image
         Image img = Image(height, width,(unsigned char*)data);
 
-        FaceDet facedet;
-
         // call the face detector to detect the face rectangle(s)
-        facedet.DetectFaces_(img, NULL, false, 10, NULL, cascade.faceCascade);
+        if (detection.detpars_.empty())
+            detection.DetectFaces_(img, NULL, true, 10, NULL, cascade.faceCascade);
 
         // Get the start shape for the next face in the image, and the ROI around it.
         // The shape will be wrt the ROI frame.
         if (NextStartShapeAndRoi(shape, face_roi, detpar_roi, detpar,
-                                 img, mods_g, facedet, cascade))
+                                 img, mods_g, detection, cascade))
         {
             // now working with maybe flipped ROI and start shape in ROI frame
             *foundface = 1;
@@ -219,9 +219,10 @@ int stasm_search_auto(// call repeatedly to find all faces
     const char *data,
     const int width,
     const int height,
-    StasmCascadeClassifier cascade)
+    StasmCascadeClassifier cascade,
+    FaceDet &detection)
 {
-    return stasm_search_auto_ext(foundface, landmarks, NULL, data, width, height, cascade);
+    return stasm_search_auto_ext(foundface, landmarks, NULL, data, width, height, cascade, detection);
 }
 
 int stasm_search_single(   // wrapper for stasm_search_auto and friends
@@ -237,7 +238,8 @@ int stasm_search_single(   // wrapper for stasm_search_auto and friends
     (void) datadir;
     (void) imgpath;
 
-    return stasm_search_auto(foundface, landmarks, img, width, height, cascade);
+    FaceDet detection;
+    return stasm_search_auto(foundface, landmarks, img, width, height, cascade, detection);
 }
 
 int stasm_search_pinned(    // call after the user has pinned some points

@@ -39,9 +39,9 @@ public:
     FaceDet() {}                  // constructor
 
 
-private:
     vector<DetPar>  detpars_;     // all the valid faces in the current image
 
+private:
     int             iface_;       // index of current face for NextFace_
                                   // indexes into detpars_
 
