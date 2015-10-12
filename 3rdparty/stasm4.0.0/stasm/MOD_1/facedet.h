@@ -38,13 +38,11 @@ public:
 
     FaceDet() {}                  // constructor
 
-
+    int             iface_;       // index of current face for NextFace_
+                                  // indexes into detpars_
     vector<DetPar>  detpars_;     // all the valid faces in the current image
 
 private:
-    int             iface_;       // index of current face for NextFace_
-                                  // indexes into detpars_
-
     DISALLOW_COPY_AND_ASSIGN(FaceDet);
 
 }; // end class FaceDet

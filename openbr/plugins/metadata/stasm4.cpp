@@ -67,6 +67,8 @@ class StasmTransform : public UntrainableMetaTransform
     BR_PROPERTY(QList<float>, pinPoints, QList<float>())
     Q_PROPERTY(QStringList pinLabels READ get_pinLabels WRITE set_pinLabels RESET reset_pinLabels STORED false)
     BR_PROPERTY(QStringList, pinLabels, QStringList())
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, "FrontalFace")
 
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
@@ -158,6 +160,21 @@ class StasmTransform : public UntrainableMetaTransform
                 StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
                 foundFace = 1;
                 stasm::FaceDet detection;
+
+                QList<QRectF> rects = t.file.contains(inputVariable) ? QList<QRectF>() << t.file.get<QRectF>(inputVariable) : t.file.rects();
+                if (!rects.isEmpty()) detection.iface_ = 0;
+                for (int i=0; i<rects.size(); i++) {
+                    Rect rect = OpenCVUtils::toRect(rects[i]);
+                    stasm::DetPar detpar;
+                    detpar.x = rect.x + rect.width / 2.;
+                    detpar.y = rect.y + rect.height / 2.;
+                    detpar.width  = double(rect.width);
+                    detpar.height = double(rect.height);
+                    detpar.yaw = 0;
+                    detpar.eyaw = stasm::EYAW00;
+                    detection.detpars_.push_back(detpar);
+                }
+
                 while (foundFace) {
                     stasm_search_auto(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, detection);
                     if (foundFace) {
