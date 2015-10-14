@@ -48,6 +48,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
+    Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
 
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
@@ -55,6 +56,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(float, confidenceThreshold, 10)
     BR_PROPERTY(float, eps, 0.2)
+    BR_PROPERTY(int, minNeighbors, 3)
 
     void train(const TemplateList &data)
     {
@@ -147,7 +149,7 @@ class SlidingWindowTransform : public MetaTransform
                     }
                 }
 
-                OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
+                OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
 
                 if (!enrollAll && rects.empty()) {
                     rects.append(Rect(0, 0, m.cols, m.rows));
