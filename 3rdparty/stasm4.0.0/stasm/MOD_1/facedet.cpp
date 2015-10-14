@@ -47,28 +47,16 @@ void DetectFaces(          // all face rects into detpars
     int          minwidth,
     cv::CascadeClassifier cascade) // in: as percent of img width
 {
-    int leftborder = 0, topborder = 0; // border size in pixels
-    Image bordered_img(BORDER_FRAC == 0?
-                       img: EnborderImg(leftborder, topborder, img));
-
-    // Detection results are very slightly better with equalization
-    // (tested on the MUCT images, which are not pre-equalized), and
-    // it's quick enough to equalize (roughly 10ms on a 1.6 GHz laptop).
-
-    Image equalized_img; cv::equalizeHist(bordered_img, equalized_img);
-
     CV_Assert(minwidth >= 1 && minwidth <= 100);
 
-    int minpix = MAX(100, cvRound(img.cols * minwidth / 100.));
-
     // the params below are accurate but slow
-    static const double SCALE_FACTOR   = 1.1;
-    static const int    MIN_NEIGHBORS  = 3;
+    static const double SCALE_FACTOR   = 1.2;
+    static const int    MIN_NEIGHBORS  = 5;
     static const int    DETECTOR_FLAGS = 0;
 
     vec_Rect facerects = // all face rects in image
-        Detect(equalized_img, &cascade, NULL,
-               SCALE_FACTOR, MIN_NEIGHBORS, DETECTOR_FLAGS, minpix);
+        Detect(img, &cascade, NULL,
+               SCALE_FACTOR, MIN_NEIGHBORS, DETECTOR_FLAGS, 64);
 
     // copy face rects into the detpars vector
 
@@ -80,8 +68,6 @@ void DetectFaces(          // all face rects into detpars
         // detpar.x and detpar.y is the center of the face rectangle
         detpar.x = facerect->x + facerect->width / 2.;
         detpar.y = facerect->y + facerect->height / 2.;
-        detpar.x -= leftborder; // discount the border we added earlier
-        detpar.y -= topborder;
         detpar.width  = double(facerect->width);
         detpar.height = double(facerect->height);
         detpar.yaw = 0; // assume face has no yaw in this version of Stasm
@@ -187,10 +173,10 @@ void FaceDet::DetectFaces_(  // call once per image to find all the faces
     //CV_Assert(!facedet_g.empty()); // check that OpenFaceDetector_ was called
 
     DetectFaces(detpars_, img, minwidth, cascade);
-    DiscardMissizedFaces(detpars_);
+    //DiscardMissizedFaces(detpars_);
     if (multiface) // order faces on increasing distance from left margin
     {
-        sort(detpars_.begin(), detpars_.end(), IncreasingLeftMargin);
+        sort(detpars_.begin(), detpars_.end(), DecreasingWidth);
     }
     else
     {
