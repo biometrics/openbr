@@ -59,6 +59,17 @@ DOCUMENT ME
 
 * **wraps:** [br_pairwise_compare](c_api/functions.md#br_pairwise_compare)
 
+### -crossValidate {: #crossvalidate }
+
+Either performs n fold cross validation (if nFolds > 0), or a single iteration of a train / test split with the first of the n folds as the test partition (nFolds < 0).
+
+* **arguments:**
+
+    -crossValidate <nFolds> -algorithm "CrossValidate(description=$ALG,randomSeed=5):CrossValidate+Dist" -train <inputFile> <model>
+
+    -crossValidate <nFolds> -algorithm <model> -enroll <inputFile> input.gal -compare input.gal . out.eval
+
+   
 ### -eval {: #eval }
 
 Evaluate a similarity matrix
