@@ -825,15 +825,24 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
                 if (prevFP / numImages < 0.1 && FP / numImages > 0.1 && discrete) {
                     qDebug("TAR @ FAR => %f : 0.1", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
                 } else if (prevFP / numImages < 0.01 && FP / numImages > 0.01 && discrete) {
                     qDebug("TAR @ FAR => %f : 0.01", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
+                } else if (prevFP / numImages < 0.001 && FP / numImages > 0.001 && discrete) {
+                    qDebug("TAR @ FAR => %f : 0.001", TP / totalTrueDetections);
+                    qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
                 }
+
                 points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections, numImages));
                 prevFP = FP;
             }
         }
     }
+
+    if (discrete) qDebug("Total TP vs. FP: %f to %f", TP, FP);
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");
