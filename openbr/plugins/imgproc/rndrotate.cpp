@@ -39,7 +39,7 @@ class RndRotateTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const {
         int span = range.first() - range.last();
-        int angle = (rand() % span) + range.first();
+        int angle = span == 0 ? range.first() : (rand() % span) + range.first();
         Mat rotMatrix = getRotationMatrix2D(center == -1 ? Point2f(src.m().rows/2,src.m().cols/2) : OpenCVUtils::toPoint(src.file.points()[center]),angle,1.0);
         warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_LINEAR,BORDER_REFLECT_101);
 
