@@ -13,14 +13,14 @@ namespace br
 
 struct Miner
 {
-    Mat src;
-    Mat scaledSrc;
+    Template src;
+    Template scaledSrc;
     Size windowSize;
     Point offset, point;
     float scale, scaleFactor, stepFactor;
 
-    Miner(const Mat &m, const Size &windowSize, const Point &offset) :
-        src(m),
+    Miner(const Template &t, const Size &windowSize, const Point &offset) :
+        src(t),
         windowSize(windowSize),
         offset(offset),
         point(offset)
@@ -29,43 +29,57 @@ struct Miner
         scaleFactor = 1.4142135623730950488016887242097F;
         stepFactor  = 0.5F;
 
-        scale = max(((float)windowSize.width + point.x) / ((float)src.cols),
-                    ((float)windowSize.height + point.y) / ((float)src.rows));
-        Size size((int)(scale*src.cols + 0.5F), (int)(scale*src.rows + 0.5F));
-        resize(src, scaledSrc, size);
+        scale = max(((float)windowSize.width + point.x) / ((float)src.m().cols),
+                    ((float)windowSize.height + point.y) / ((float)src.m().rows));
+        Size size((int)(scale*src.m().cols + 0.5F), (int)(scale*src.m().rows + 0.5F));
+        scaledSrc = resize(src, size);
     }
 
-    Mat mine(bool *newImg)
+    Template resize(const Template &src, const Size &size)
     {
+        Template dst(src.file);
+        for (int i=0; i<src.size(); i++) {
+            Mat buffer;
+            cv::resize(src[i], buffer, size);
+            dst.append(buffer);
+        }
+        return dst;
+    }
+
+    Template mine(bool *newImg)
+    {
+        Template dst(src.file);
         // Copy region of winSize region of img into m
-        Mat window(windowSize.height, windowSize.width, CV_8U,
-                   (void*)(scaledSrc.data + point.y * scaledSrc.step + point.x * scaledSrc.elemSize()),
-                   scaledSrc.step);
+        for (int i=0; i<scaledSrc.size(); i++) {
+            Mat window(windowSize.height, windowSize.width, CV_8U,
+                       (void*)(scaledSrc[i].data + point.y * scaledSrc[i].step + point.x * scaledSrc[i].elemSize()),
+                       scaledSrc[i].step);
+            Mat sample;
+            window.copyTo(sample);
+            dst.append(sample);
+        }
 
-        Mat sample;
-        window.copyTo(sample);
-
-        if ((int)(point.x + (1.0F + stepFactor) * windowSize.width) < scaledSrc.cols)
+        if ((int)(point.x + (1.0F + stepFactor) * windowSize.width) < scaledSrc.m().cols)
             point.x += (int)(stepFactor * windowSize.width);
         else {
             point.x = offset.x;
-            if ((int)(point.y + (1.0F + stepFactor) * windowSize.height) < scaledSrc.rows)
+            if ((int)(point.y + (1.0F + stepFactor) * windowSize.height) < scaledSrc.m().rows)
                 point.y += (int)(stepFactor * windowSize.height);
             else {
                 point.y = offset.y;
                 scale *= scaleFactor;
                 if (scale <= 1.0F) {
-                    Size size((int)(scale*src.cols), (int)(scale*src.rows));
-                    resize(src, scaledSrc, size);
+                    Size size((int)(scale*src.m().cols), (int)(scale*src.m().rows));
+                    scaledSrc = resize(src, size);
                 } else {
                     *newImg = true;
-                    return sample;
+                    return dst;
                 }
             }
         }
 
         *newImg = false;
-        return sample;
+        return dst;
     }
 };
 
@@ -156,10 +170,10 @@ class CascadeClassifier : public Classifier
             negative = getNegative(offset);
             samplingLocker.unlock();
 
-            Miner miner(negative.m(), windowSize(), offset);
+            Miner miner(negative, windowSize(), offset);
             forever {
                 bool newImg;
-                Template sample(negative.file, miner.mine(&newImg));
+                Template sample = miner.mine(&newImg);
                 if (!newImg) {
                     if (negSamples.size() >= numNegs)
                         return passedNegatives;
@@ -169,7 +183,6 @@ class CascadeClassifier : public Classifier
                         QMutexLocker miningLocker(&miningMutex);
                         if (negSamples.size() >= numNegs)
                             return passedNegatives;
-
                         negSamples.append(sample);
                         printf("Negative samples: %d\r", negSamples.size());
                     }
@@ -198,7 +211,7 @@ class CascadeClassifier : public Classifier
             stages.append(next_stage);
         }
 
-        for (int i = 0; i < numStages; i++) {
+        for (int i = 0; i < stages.size(); i++) {
             qDebug() << "===== TRAINING" << i << "stage =====";
             qDebug() << "<BEGIN";
 

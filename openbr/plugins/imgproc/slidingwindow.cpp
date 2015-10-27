@@ -95,75 +95,77 @@ class SlidingWindowTransform : public MetaTransform
             Size minObjectSize(minSize, minSize);
             Size maxObjectSize;
 
-            for (int i=0; i<t.size(); i++) {
-                Mat m;
-                OpenCVUtils::cvtUChar(t[i], m);
-                QList<Rect> rects;
-                QList<float> confidences;
+            Mat m = t.m();
+            QList<Rect> rects;
+            QList<float> confidences;
 
-                if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
-                    maxObjectSize = m.size();
+            if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
+                maxObjectSize = m.size();
 
-                Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
+            for (double factor = 1; ; factor *= scaleFactor) {
+                int dx, dy;
+                Size originalWindowSize = classifier->windowSize(&dx, &dy);
 
-                for (double factor = 1; ; factor *= scaleFactor) {
-                    int dx, dy;
-                    Size originalWindowSize = classifier->windowSize(&dx, &dy);
+                Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
+                Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
+                Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
 
-                    Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
-                    Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
-                    Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
+                if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
+                    break;
+                if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
+                    break;
+                if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
+                    continue;
 
-                    if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
-                        break;
-                    if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
-                        break;
-                    if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
-                        continue;
+                Template scaleBuffer(t.file);
+                for (int i=0; i<t.size(); i++) {
+                    Mat scaledImage;
+                    resize(t[i], scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+                    scaleBuffer.append(scaledImage);
+                }
 
-                    Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
-                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+                Template rep(t.file);
+                rep = classifier->preprocess(scaleBuffer);
 
-                    Template repImage(t.file, scaledImage);
-                    repImage = classifier->preprocess(repImage);
-
-                    int step = factor > 2. ? 1 : 2;
-                    for (int y = 0; y < processingRectSize.height; y += step) {
-                        for (int x = 0; x < processingRectSize.width; x += step) {
-                            Mat window = repImage.m()(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
-                            Template t(window);
-
-                            float confidence = 0;
-                            int result = classifier->classify(t, false, &confidence);
-
-                            if (result == 1) {
-                                rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                confidences.append(confidence);
-                            }
-
-                            // TODO: Add non ROC mode
-
-                            if (result == 0)
-                                x += step;
+                int step = factor > 2. ? 1 : 2;
+                for (int y = 0; y < processingRectSize.height; y += step) {
+                    for (int x = 0; x < processingRectSize.width; x += step) {
+                        Template window(t.file);
+                        for (int i=0; i<rep.size(); i++) {
+                            Mat w = rep[i](Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
+                            window.append(w);
                         }
+
+                        float confidence = 0;
+                        int result = classifier->classify(window, false, &confidence);
+
+                        if (result == 1) {
+                            rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
+                            confidences.append(confidence);
+                        }
+
+                        // TODO: Add non ROC mode
+
+                        if (result == 0)
+                            x += step;
                     }
                 }
+            }
 
-                OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
+            OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
 
-                if (!enrollAll && rects.empty()) {
-                    rects.append(Rect(0, 0, m.cols, m.rows));
-                    confidences.append(-std::numeric_limits<float>::max());
-                }
+            if (!enrollAll && rects.empty()) {
+                rects.append(Rect(0, 0, m.cols, m.rows));
+                confidences.append(-std::numeric_limits<float>::max());
+            }
 
-                for (int j=0; j<rects.size(); j++) {
-                    Template u(t.file, m);
-                    u.file.set("Confidence", confidences[j]);
-                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
-                    u.file.appendRect(rect);
-                    u.file.set("Face", rect);
-                    dst.append(u);
-                }
+            for (int j=0; j<rects.size(); j++) {
+                Template u(t.file, m);
+                u.file.set("Confidence", confidences[j]);
+                const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                u.file.appendRect(rect);
+                u.file.set("Face", rect);
+                dst.append(u);
             }
         }
     }
