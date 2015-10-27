@@ -39,32 +39,36 @@ class MBLBPRepresentation : public Representation
 
     void init()
     {
-        int offset = winWidth + 1;
-        for (int x = 0; x < winWidth; x++ )
-            for (int y = 0; y < winHeight; y++ )
-                for (int w = 1; w <= winWidth / 3; w++ )
-                    for (int h = 1; h <= winHeight / 3; h++ )
-                        if ((x+3*w <= winWidth) && (y+3*h <= winHeight) )
-                            features.append(Feature(offset, x, y, w, h ) );
+        if (features.isEmpty()) {
+            int offset = winWidth + 1;
+            for (int x = 0; x < winWidth; x++ )
+                for (int y = 0; y < winHeight; y++ )
+                    for (int w = 1; w <= winWidth / 3; w++ )
+                        for (int h = 1; h <= winHeight / 3; h++ )
+                            if ((x+3*w <= winWidth) && (y+3*h <= winHeight) )
+                                features.append(Feature(offset, x, y, w, h ) );
+        }
     }
 
-    void preprocess(const Mat &src, Mat &dst) const
+    Template preprocess(const Template &src) const
     {
+        Template dst;
         integral(src, dst);
+        return dst;
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return (float)features[idx].calc(image);
+        return (float)features[idx].calc(src.m());
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         int size = indices.empty() ? numFeatures() : indices.size();
 
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
-            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+            result.at<float>(i) = evaluate(src, indices.empty() ? i : indices[i]);
         return result;
     }
 

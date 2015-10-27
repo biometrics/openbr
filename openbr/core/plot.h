@@ -28,6 +28,7 @@ namespace br
     bool PlotDetection(const QStringList &files, const File &destination, bool show = false);
     bool PlotLandmarking(const QStringList &files, const File &destination, bool show = false);
     bool PlotMetadata(const QStringList &files, const QString &destination, bool show = false);
+    bool PlotKNN(const QStringList &files, const File &destination, bool show = false);
 }
 
 #endif // BR_PLOT_H

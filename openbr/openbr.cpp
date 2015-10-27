@@ -145,9 +145,9 @@ void br_eval_regression(const char *predicted_gallery, const char *truth_gallery
     EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
 }
 
-void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *iet)
+void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv)
 {
-    EvalKNN(knnGraph, knnTruth, iet);
+    EvalKNN(knnGraph, knnTruth, csv);
 }
 
 void br_finalize()
@@ -219,6 +219,11 @@ bool br_plot_landmarking(int num_files, const char *files[], const char *destina
 bool br_plot_metadata(int num_files, const char *files[], const char *columns, bool show)
 {
     return PlotMetadata(QtUtils::toStringList(num_files, files), columns, show);
+}
+
+bool br_plot_knn(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotKNN(QtUtils::toStringList(num_files, files), destination, show);
 }
 
 float br_progress()

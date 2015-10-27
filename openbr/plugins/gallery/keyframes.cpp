@@ -26,6 +26,12 @@ extern "C"
 #include <libswscale/swscale.h>
 }
 
+// http://stackoverflow.com/questions/24057248/ffmpeg-undefined-references-to-av-frame-alloc
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55,28,1)
+#define av_frame_alloc avcodec_alloc_frame
+#define av_frame_free avcodec_free_frame
+#endif
+
 using namespace cv;
 
 namespace br

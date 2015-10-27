@@ -346,4 +346,32 @@ bool PlotMetadata(const QStringList &files, const QString &columns, bool show)
     return p.finalize(show);
 }
 
+bool PlotKNN(const QStringList &files, const File &destination, bool show)
+{
+    qDebug("Plotting %d k-NN file(s) to %s", files.size(), qPrintable(destination));
+    RPlot p(files, destination);
+    p.file.write("\nformatData(type=\"knn\")\n\n");
+
+    QMap<QString,File> optMap;
+    optMap.insert("rocOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=True Positive Identification Rate (TPIR),xLog=true,yLog=false]")));
+    optMap.insert("ietOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
+    optMap.insert("cmcOptions", File(QString("[xTitle=Rank,yTitle=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=(1,5,10,50,100),xBreaks=(1,5,10,50,100)]")));
+
+    foreach (const QString &key, optMap.keys()) {
+        const QStringList options = destination.get<QStringList>(key, QStringList());
+        foreach (const QString &option, options) {
+            QStringList words = QtUtils::parse(option, '=');
+            QtUtils::checkArgsSize(words[0], words, 1, 2);
+            optMap[key].set(words[0], words[1]);
+        }
+    }
+
+    QString plot = "plot <- plotLine(lineData=%1, options=list(%2), flipY=%3)\nplot\n";
+    p.file.write(qPrintable(QString(plot).arg("IET", toRList(optMap["rocOptions"]), "TRUE")));
+    p.file.write(qPrintable(QString(plot).arg("IET", toRList(optMap["ietOptions"]), "FALSE")));
+    p.file.write(qPrintable(QString(plot).arg("CMC", toRList(optMap["cmcOptions"]), "FALSE")));
+
+    return p.finalize(show);
+}
+
 } // namespace br

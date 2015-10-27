@@ -436,7 +436,7 @@ public:
 };
 
 // TODO: Make sure case where no confidences are inputted works.
-void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, float epsilon)
+void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon)
 {
     if (rects.isEmpty())
         return;
@@ -450,7 +450,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     vector<Rect> rrects(nClasses);
 
     // Total number of rects in each class
-    vector<int> rweights(nClasses, 0);
+    vector<int> neighbors(nClasses, 0);
     vector<float> rejectWeights(nClasses, -std::numeric_limits<float>::max());
 
     for (size_t i = 0; i < labels.size(); i++)
@@ -460,7 +460,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         rrects[cls].y += rects[i].y;
         rrects[cls].width += rects[i].width;
         rrects[cls].height += rects[i].height;
-        rweights[cls]++;
+        neighbors[cls]++;
     }
 
     if (useConfidences)
@@ -478,7 +478,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     for (int i = 0; i < nClasses; i++)
     {
         Rect r = rrects[i];
-        float s = 1.f/rweights[i];
+        float s = 1.f/neighbors[i];
         rrects[i] = Rect(saturate_cast<int>(r.x*s),
              saturate_cast<int>(r.y*s),
              saturate_cast<int>(r.width*s),
@@ -488,7 +488,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     rects.clear();
     confidences.clear();
 
-    // Aggregate by comparing average rectangles against other average rectangels
+    // Aggregate by comparing average rectangles against other average rectangles
     for (int i = 0; i < nClasses; i++)
     {
         // Average rectangle
@@ -496,19 +496,22 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
         // int n1 = levelWeights ? rejectLevels[i] : rweights[i];
-        float w1 = rejectWeights[i];
+        const float w1 = rejectWeights[i];
 
         // Eliminate rectangle if it doesn't meet confidence criteria
         if (w1 <= confidenceThreshold)
+            continue;
+
+        const int n1 = neighbors[i];
+        if (n1 < minNeighbors)
             continue;
 
         // filter out small face rectangles inside large rectangles
         int j;
         for (j = 0; j < nClasses; j++)
         {
-            float w2 = rejectWeights[j];
-
-            if (j == i)
+            const int n2 = neighbors[j];
+            if (j == i || n2 < minNeighbors)
                 continue;
 
             Rect r2 = rrects[j];
@@ -516,13 +519,11 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
             int dx = saturate_cast<int>(r2.width * epsilon);
             int dy = saturate_cast<int>(r2.height * epsilon);
 
+            float w2 = rejectWeights[j];
+
             // If, r1 is within the r2 AND
-            // the second rectangle reaches a later stage than the first
-            // where both the first and the second must have a stage greater than three OR
-            // the first doens't reach the third stage.
-            // Changeto: second rectangle has a higher confidence than the first OR
-            // the first has a low confidence.
-            // Then, eliminate the first rectangle.
+            // r2 has a higher confidence than r1
+            // then, eliminate the r1
             if(r1.x >= r2.x - dx &&
                r1.y >= r2.y - dy &&
                r1.x + r1.width <= r2.x + r2.width + dx &&
@@ -531,7 +532,6 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
                break;
         }
 
-        // Need to return rects and confidences
         if( j == nClasses )
         {
             rects.append(r1);

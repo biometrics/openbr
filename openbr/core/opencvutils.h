@@ -102,7 +102,7 @@ namespace OpenCVUtils
     float overlap(const QRectF &rect1, const QRectF &rect2);
 
     // Misc
-    void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, float epsilon);
+    void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon);
     void flip(const br::Template &src, br::Template &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
     void flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
 

@@ -28,9 +28,9 @@ class RandomRepresentation : public Representation
 
     QList<int> features;
 
-    void train(const QList<Mat> &images, const QList<float> &labels)
+    void train(const TemplateList &data)
     {
-        representation->train(images, labels);
+        representation->train(data);
 
         const int nFeatures = representation->numFeatures();
 
@@ -40,17 +40,17 @@ class RandomRepresentation : public Representation
         features = Common::RandSample(count,nFeatures,0,true);
     }
 
-    void preprocess(const Mat &src, Mat &dst) const
+    Template preprocess(const Template &src) const
     {
-        representation->preprocess(src,dst);
+        return representation->preprocess(src);
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return representation->evaluate(image,features[idx]);
+        return representation->evaluate(src, features[idx]);
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         QList<int> newIndices;
         if (indices.empty())
@@ -59,7 +59,7 @@ class RandomRepresentation : public Representation
             for (int i = 0; i < indices.size(); i++)
                 newIndices.append(features[indices[i]]);
 
-        return representation->evaluate(image,newIndices);
+        return representation->evaluate(src, newIndices);
     }
 
     int numFeatures() const
@@ -108,6 +108,3 @@ BR_REGISTER(Representation, RandomRepresentation)
 } // namespace br
 
 #include "representation/random.moc"
-
-
-

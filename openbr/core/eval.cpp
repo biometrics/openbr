@@ -825,15 +825,24 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
                 if (prevFP / numImages < 0.1 && FP / numImages > 0.1 && discrete) {
                     qDebug("TAR @ FAR => %f : 0.1", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
                 } else if (prevFP / numImages < 0.01 && FP / numImages > 0.01 && discrete) {
                     qDebug("TAR @ FAR => %f : 0.01", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
+                } else if (prevFP / numImages < 0.001 && FP / numImages > 0.001 && discrete) {
+                    qDebug("TAR @ FAR => %f : 0.001", TP / totalTrueDetections);
+                    qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
                 }
+
                 points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections, numImages));
                 prevFP = FP;
             }
         }
     }
+
+    if (discrete) qDebug("Total TP vs. FP: %f to %f", TP, FP);
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");
@@ -1336,7 +1345,7 @@ void readKNNTruth(size_t probeCount, QVector< QList<size_t> > &groundTruth, cons
         qFatal("Invalid ground truth file!");
 }
 
-void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &iet)
+void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &csv)
 {
     qDebug("Evaluating k-NN of %s against %s", qPrintable(knnGraph), qPrintable(knnTruth));
 
@@ -1406,19 +1415,14 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
     if (numUnmatedSearches == 0)
         qFatal("No unmated searches!");
 
-    printf("Rank-%i Return Rate: %g\n", 1, getCMC(firstGenuineReturns, 1, numMatedSearches));
+
+    qDebug("Rank-%d Return Rate: %.3f", 1, getCMC(firstGenuineReturns, 1, numMatedSearches));
     if (k >=5)
-        printf("Rank-%i Return Rate: %g\n", 5, getCMC(firstGenuineReturns, 5, numMatedSearches));
+        qDebug("Rank-%d Return Rate: %.3f", 5, getCMC(firstGenuineReturns, 5, numMatedSearches));
     if (k >=10)
-        printf("Rank-%i Return Rate: %g\n", 10, getCMC(firstGenuineReturns, 10, numMatedSearches));
+        qDebug("Rank-%d Return Rate: %.3f", 10, getCMC(firstGenuineReturns, 10, numMatedSearches));
 
-    printf("Rank-%zu Return Rate: %g\n", k, double(numMatedSimilarities) / double(numMatedSearches));
-
-    // Open the output file
-    QFile ietFile(iet);
-    if (!ietFile.open(QFile::WriteOnly | QFile::Text))
-        qFatal("Failed to open IET file for writing!");
-    ietFile.write("Threshold,FPIR,FNIR\n");
+    qDebug("Rank-%zu Return Rate: %.3f", k, double(numMatedSimilarities) / double(numMatedSearches));
 
     /*
      * Iterate through the similarity scores highest-to-lowest,
@@ -1447,10 +1451,28 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &ie
         }
     }
 
-    foreach(const OperatingPoint &operatingPoint, operatingPoints)
-        ietFile.write(qPrintable(QString::number(operatingPoint.score) + "," +
-                                 QString::number(operatingPoint.FAR) + "," +
-                                 QString::number(operatingPoint.TAR) + "\n"));
+    if (!csv.isEmpty()) {
+        // Open the output file
+        QFile ietFile(csv);
+        if (!ietFile.open(QFile::WriteOnly | QFile::Text))
+            qFatal("Failed to open IET file for writing!");
+        ietFile.write("Plot,X,Y,Z\n");
+        // Write CMC
+        const int Max_Retrieval = min(200, (int)k);
+        for (int i=1; i<=Max_Retrieval; i++) {
+            const float retrievalRate = getCMC(firstGenuineReturns, i, numMatedSearches);
+            ietFile.write(qPrintable(QString("CMC,%1,%2,0\n").arg(QString::number(i), QString::number(retrievalRate))));
+        }
+
+        foreach(const OperatingPoint &operatingPoint, operatingPoints)
+            ietFile.write(qPrintable("IET," +
+                                     QString::number(operatingPoint.FAR) + "," +
+                                     QString::number(operatingPoint.TAR) + "," +
+                                     QString::number(operatingPoint.score) + "\n"));
+    }
+
+    qDebug("FNIR @ FPIR = 0.1:   %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.1).TAR);
+    qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
 }
 
 } // namespace br

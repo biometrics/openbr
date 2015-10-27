@@ -17,7 +17,6 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -35,7 +34,6 @@ namespace br
  * \br_property int minSize The smallest sized object to detect in pixels
  * \br_property int maxSize The largest sized object to detect in pixels. A negative value will set maxSize == image size
  * \br_property float scaleFactor The factor to scale the image by during each resize.
- * \br_property int minNeighbors Parameter for non-maximum supression
  * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
  * \br_property float eps Parameter for non-maximum supression
  */
@@ -50,6 +48,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
     Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
+    Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
 
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
@@ -57,10 +56,11 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(float, scaleFactor, 1.2)
     BR_PROPERTY(float, confidenceThreshold, 10)
     BR_PROPERTY(float, eps, 0.2)
+    BR_PROPERTY(int, minNeighbors, 3)
 
     void train(const TemplateList &data)
     {
-        classifier->train(data.data(), File::get<float>(data, "Label", -1));
+        classifier->train(data);
     }
 
     void project(const Template &src, Template &dst) const
@@ -123,15 +123,18 @@ class SlidingWindowTransform : public MetaTransform
 
                     Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
                     resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
-                    Mat repImage = classifier->preprocess(scaledImage);
+
+                    Template repImage(t.file, scaledImage);
+                    repImage = classifier->preprocess(repImage);
 
                     int step = factor > 2. ? 1 : 2;
                     for (int y = 0; y < processingRectSize.height; y += step) {
                         for (int x = 0; x < processingRectSize.width; x += step) {
-                            Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
+                            Mat window = repImage.m()(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
+                            Template t(window);
 
                             float confidence = 0;
-                            int result = classifier->classify(window, false, &confidence);
+                            int result = classifier->classify(t, false, &confidence);
 
                             if (result == 1) {
                                 rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
@@ -146,7 +149,7 @@ class SlidingWindowTransform : public MetaTransform
                     }
                 }
 
-                OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
+                OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
 
                 if (!enrollAll && rects.empty()) {
                     rects.append(Rect(0, 0, m.cols, m.rows));

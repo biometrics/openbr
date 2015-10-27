@@ -64,6 +64,10 @@
 
 #include "stasmcascadeclassifier.h"
 
+namespace stasm {
+    class FaceDet;
+}
+
 static const int stasm_NLANDMARKS = 77; // number of landmarks
 
 extern const char* const stasm_VERSION;
@@ -89,7 +93,8 @@ int stasm_search_auto(       // call repeatedly to find all faces
     const char*  data,
     const int    width,
     const int    height,
-    StasmCascadeClassifier cascade);
+    StasmCascadeClassifier cascade,
+    stasm::FaceDet &detection);
 
 extern "C"
 int stasm_search_single(     // wrapper for stasm_search_auto and friends
