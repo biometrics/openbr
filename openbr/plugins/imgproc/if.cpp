@@ -48,11 +48,13 @@ class IfTransform : public Transform
 public:
     void train(const TemplateList &data)
     {
-        TemplateList passed;
-        for (int i=0; i<data.size(); i++)
-            if (compare(data[i].file.get<QString>(key)))
-                passed.append(data[i]);
-        transform->train(passed);
+        if (transform->trainable) {
+            TemplateList passed;
+            for (int i=0; i<data.size(); i++)
+                if (compare(data[i].file.get<QString>(key)))
+                    passed.append(data[i]);
+            transform->train(passed);
+        }
     }
 
     void project(const Template &src, Template &dst) const {
