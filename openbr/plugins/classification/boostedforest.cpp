@@ -151,16 +151,18 @@ private:
 
     float classifyPreprocessed(const Template &t, float *confidence) const
     {
+        const bool categorical = representation->maxCatCount() > 0;
+
         float sum = 0;
         for (int i = 0; i < classifiers.size(); i++) {
-            Node *node = classifiers[i];
+            const Node *node = classifiers[i];
 
             while (node->left) {
-                if (representation->maxCatCount() > 0) {
-                    int c = (int)representation->evaluate(t, node->featureIdx);
+                const float val = representation->evaluate(t, node->featureIdx);
+                if (categorical) {
+                    const int c = (int)val;
                     node = (node->subset[c >> 5] & (1 << (c & 31))) ? node->left : node->right;
                 } else {
-                    double val = representation->evaluate(t, node->featureIdx);
                     node = val <= node->threshold ? node->left : node->right;
                 }
             }
