@@ -149,10 +149,8 @@ private:
         }
     }
 
-    float classify(const Template &src, bool process, float *confidence) const
+    float classifyPreprocessed(const Template &t, float *confidence) const
     {
-        Template t = process ? preprocess(src) : src;
-
         float sum = 0;
         for (int i = 0; i < classifiers.size(); i++) {
             Node *node = classifiers[i];
@@ -173,6 +171,12 @@ private:
         if (confidence)
             *confidence = sum;
         return sum < threshold - THRESHOLD_EPS ? 0.0f : 1.0f;
+    }
+
+    float classify(const Template &src, bool process, float *confidence) const
+    {
+        // This code is written in a way to avoid an unnecessary copy construction and destruction of `src` when `process` is false.
+        return process ? classifyPreprocessed(preprocess(src), confidence) : classifyPreprocessed(src, confidence);
     }
 
     int numFeatures() const
