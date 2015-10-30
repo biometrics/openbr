@@ -91,50 +91,44 @@ class SlidingWindowTransform : public MetaTransform
                 continue;
             }
 
+            // SlidingWindow assumes that all matricies in a template represent
+            // different channels of the same image!
+            const Size imageSize = t.m().size();
             const int minSize = t.file.get<int>("MinSize", this->minSize);
-            Size minObjectSize(minSize, minSize);
-            Size maxObjectSize;
-
-            Mat m = t.m();
             QList<Rect> rects;
             QList<float> confidences;
 
-            if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
-                maxObjectSize = m.size();
+            int dx, dy;
+            const Size originalWindowSize = classifier->windowSize(&dx, &dy);
 
             for (double factor = 1; ; factor *= scaleFactor) {
-                int dx, dy;
-                Size originalWindowSize = classifier->windowSize(&dx, &dy);
-
-                Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
-                Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
-                Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
+                const Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor));
+                const Size scaledImageSize(cvRound(imageSize.width/factor), cvRound(imageSize.height/factor));
+                const Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
 
                 if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
                     break;
-                if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
-                    break;
-                if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
+                if (windowSize.width < minSize || windowSize.height < minSize)
                     continue;
 
-                Template scaleBuffer(t.file);
-                for (int i=0; i<t.size(); i++) {
-                    Mat scaledImage;
-                    resize(t[i], scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
-                    scaleBuffer.append(scaledImage);
-                }
-
                 Template rep(t.file);
-                rep = classifier->preprocess(scaleBuffer);
+                foreach (const Mat &m, t) {
+                    Mat scaledImage;
+                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+                    rep.append(scaledImage);
+                }
+                rep = classifier->preprocess(rep);
 
-                int step = factor > 2. ? 1 : 2;
+                // Pre-allocate the window to avoid constructing this every iteration
+                Template window(t.file);
+                for (int i=0; i<rep.size(); i++)
+                    window.append(Mat());
+
+                const int step = factor > 2.0 ? 1 : 2;
                 for (int y = 0; y < processingRectSize.height; y += step) {
                     for (int x = 0; x < processingRectSize.width; x += step) {
-                        Template window(t.file);
-                        for (int i=0; i<rep.size(); i++) {
-                            Mat w = rep[i](Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
-                            window.append(w);
-                        }
+                        for (int i=0; i<rep.size(); i++)
+                            window[i] = rep[i](Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
 
                         float confidence = 0;
                         int result = classifier->classify(window, false, &confidence);
@@ -155,12 +149,12 @@ class SlidingWindowTransform : public MetaTransform
             OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
 
             if (!enrollAll && rects.empty()) {
-                rects.append(Rect(0, 0, m.cols, m.rows));
+                rects.append(Rect(0, 0, imageSize.width, imageSize.height));
                 confidences.append(-std::numeric_limits<float>::max());
             }
 
             for (int j=0; j<rects.size(); j++) {
-                Template u(t.file, m);
+                Template u = t;
                 u.file.set("Confidence", confidences[j]);
                 const QRectF rect = OpenCVUtils::fromRect(rects[j]);
                 u.file.appendRect(rect);
