@@ -1,4 +1,5 @@
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/common.h>
@@ -118,7 +119,7 @@ class CascadeClassifier : public Classifier
     TemplateList posImages, negImages;
     TemplateList posSamples, negSamples;
 
-    QList<int> indices;
+    QList<int> negIndices, posIndices;
     int negIndex, posIndex, samplingRound;
 
     QMutex samplingMutex, miningMutex;
@@ -132,7 +133,7 @@ class CascadeClassifier : public Classifier
     {
         if (posIndex >= posImages.size())
             return false;
-        img = posImages[indices[posIndex++]];
+        img = posImages[posIndices[posIndex++]];
         return true;
     }
 
@@ -144,7 +145,7 @@ class CascadeClassifier : public Classifier
         // Grab negative from list
         int count = negImages.size();
         for (int i = 0; i < count; i++) {
-            negative = negImages[negIndex++];
+            negative = negImages[negIndices[negIndex++]];
 
             samplingRound += negIndex / count;
             samplingRound = samplingRound % (size.width * size.height);
@@ -203,17 +204,16 @@ class CascadeClassifier : public Classifier
                  << "\nTotal positive images:" << posImages.size()
                  << "\nTotal negative images:" << negImages.size();
 
-        indices = Common::RandSample(posImages.size(), posImages.size(), true);
+        posIndices = Common::RandSample(posImages.size(), posImages.size(), true);
+        negIndices = Common::RandSample(negImages.size(), negImages.size(), true);
 
         stages.reserve(numStages);
         for (int i = 0; i < numStages; i++) {
-            Classifier *next_stage = Classifier::make(stageDescription, NULL);
-            stages.append(next_stage);
-        }
-
-        for (int i = 0; i < stages.size(); i++) {
             qDebug() << "===== TRAINING" << i << "stage =====";
             qDebug() << "<BEGIN";
+
+            Classifier *next_stage = Classifier::make(stageDescription, NULL);
+            stages.append(next_stage);
 
             float currFAR = getSamples();
 
@@ -222,7 +222,7 @@ class CascadeClassifier : public Classifier
                 return;
             }
 
-            stages[i]->train(posSamples + negSamples);
+            stages.last()->train(posSamples + negSamples);
 
             qDebug() << "END>";
         }

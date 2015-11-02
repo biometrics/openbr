@@ -42,6 +42,23 @@ private:
         shapeResource.setResourceMaker(new DLibShapeResourceMaker());
     }
 
+    QPointF averagePoints(const QList<QPointF> &points, int rangeBegin, int rangeEnd) const
+    {
+	QPointF point;
+        for (int i=rangeBegin; i<rangeEnd; i++)
+            point += points[i];
+        point /= (rangeEnd-rangeBegin);
+	return point;
+    }
+
+    void setFacePoints(Template &dst) const
+    {
+        const QList<QPointF> points = dst.file.points();
+        dst.file.set("LeftEye",averagePoints(points,36,42));
+        dst.file.set("RightEye",averagePoints(points,42,48));
+        dst.file.set("Chin",points[8]);
+    }
+
     void project(const Template &src, Template &dst) const
     {
         dst = src;
@@ -61,6 +78,7 @@ private:
             full_object_detection shape = (*sp)(image, r);
             for (size_t i = 0; i < shape.num_parts(); i++)
                 dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
+            setFacePoints(dst);
         }
         else { // Crop the image on the rects
             for (int j=0; j<src.file.rects().size(); ++j)
@@ -70,6 +88,7 @@ private:
                 full_object_detection shape = (*sp)(image, r);
                 for (size_t i=0; i<shape.num_parts(); i++)
                     dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
+                setFacePoints(dst);
             }
         }
 
