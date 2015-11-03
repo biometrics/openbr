@@ -645,7 +645,7 @@ The example below plots plots the six br_eval results in the Algorithm_Dataset f
 
 This function requires a current [R][R] installation with the following packages:
 
-        install.packages(c("ggplot2", "gplots", "reshape", "scales", "jpg", "png"))
+        install.packages(c("ggplot2", "gplots", "reshape", "scales", "jpeg", "png"))
 
 * **function definiton:**
 
@@ -684,7 +684,7 @@ When computing *continuous* curves, true positives and false negatives are measu
 
 This function requires a current [R](http://www.r-project.org/) installation with the following packages:
 
-    install.packages(c("ggplot2", "gplots", "reshape", "scales", "jpg", "png"))
+    install.packages(c("ggplot2", "gplots", "reshape", "scales", "jpeg", "png"))
 
 * **function definition:**
 
