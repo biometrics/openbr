@@ -8,7 +8,7 @@ namespace br
  * \author Scott Klum \cite sklum
  * \brief Document Me!
  */
-class IfTransform : public Transform
+class IfTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
