@@ -45,6 +45,7 @@ private:
 
         CaffeNet *net = new CaffeNet(model, caffe::TEST);
         net->CopyTrainedLayersFrom(weights.toStdString());
+        FLAGS_minloglevel = google::ERROR; // Disable Caffe's verbose output after loading the first model
         return net;
     }
 };
@@ -104,7 +105,7 @@ protected:
 
         int dimFeatures = output->count() / dataLayer->batch_size();
         for (int n = 0; n < dataLayer->batch_size(); n++)
-            dst += Mat(1, dimFeatures, CV_32FC1, output->mutable_cpu_data() + output->offset(n));
+            dst += Mat(1, dimFeatures, CV_32FC1, output->mutable_cpu_data() + output->offset(n)).clone();
 
         caffeResource.release(net);
     }
