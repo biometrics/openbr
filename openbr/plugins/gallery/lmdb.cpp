@@ -119,7 +119,7 @@ class lmdbGallery : public Gallery
 
 
                 if (!base->observedLabels.contains(label_str) )
-                    base->observedLabels[label_str] = base->observedLabels.size();
+                    base->observedLabels.insert(label_str, base->observedLabels.size());
 
                 datum.set_label(base->observedLabels[label_str]);
 
