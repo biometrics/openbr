@@ -9,7 +9,13 @@ library("grid")
 
 # Code to format FAR values
 far_names <- list('0.001'="FAR = 0.1%", '0.01'="FAR = 1%")
-far_labeller <- function(variable,value) { return(far_names[as.character(value)]) }
+far_labeller <- function(variable,value) {
+    if (as.character(value) %in% names(far_names)) {
+        return(far_names[as.character(value)])
+    } else {
+        return(as.character(value))
+    }
+}
 
 getScale <- function(mode, title, vals) {
     if      (vals > 12) return(do.call(paste("scale", mode, "discrete", sep="_"), list(title)))
@@ -45,7 +51,7 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
         input = tableData$Y
     }
     mat <- matrix(input, nrow=length(labels), ncol=length(algs), byrow=FALSE)
-    colnames(mat) <- algs[order(tolower(algs))]
+    colnames(mat) <- algs
     rownames(mat) <- labels
     table <- as.table(mat)
     if (csv) {
