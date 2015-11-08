@@ -842,7 +842,10 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
         }
     }
 
-    if (discrete) qDebug("Total TP vs. FP: %f to %f", TP, FP);
+    if (discrete) {
+        qDebug("Total TP vs. FP: %f to %f", TP, FP);
+        qDebug("Overall Recall (TP vs. possible TP): %f (%f vs. %d)", TP / totalTrueDetections, TP, totalTrueDetections);
+    }
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");
