@@ -19,6 +19,7 @@
 #include <openbr/core/qtutils.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 
@@ -50,6 +51,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
     Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(bool group READ get_group WRITE set_group RESET reset_group STORED false)
+    Q_PROPERTY(int shrinkingFactor READ get_shrinkingFactor WRITE set_shrinkingFactor RESET reset_shrinkingFactor STORED false)
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
@@ -58,6 +60,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(float, eps, 0.2)
     BR_PROPERTY(int, minNeighbors, 3)
     BR_PROPERTY(bool, group, true)
+    BR_PROPERTY(int, shrinkingFactor, 1)
 
     void train(const TemplateList &data)
     {
@@ -100,42 +103,47 @@ class SlidingWindowTransform : public MetaTransform
             QList<float> confidences;
 
             int dx, dy;
-            const Size originalWindowSize = classifier->windowSize(&dx, &dy);
+            const Size classifierSize = classifier->windowSize(&dx, &dy);
 
             for (double factor = 1; ; factor *= scaleFactor) {
-                const Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor));
-                const Size scaledImageSize(cvRound(imageSize.width/factor), cvRound(imageSize.height/factor));
-                const Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
+		// TODO: This should support non-square sizes
+		// Compute the size of the window in which we will detect faces
+		const Size detectionSize(cvRound(minSize*factor),cvRound(minSize*factor));
 
-                if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
-                    break;
-                if (windowSize.width < minSize || windowSize.height < minSize)
-                    continue;
+		// Stop if detection size is bigger than the image itself
+		if (detectionSize.width > imageSize.width || detectionSize.height > imageSize.height)
+		    break;
+
+		const float widthScale = (float)classifierSize.width/detectionSize.width;
+		const float heightScale = (float)classifierSize.height/detectionSize.height;
+		
+		// Scale the image such that the detection size within the image corresponds to the respresentation size
+                const Size scaledImageSize(cvRound(imageSize.width*widthScale), cvRound(imageSize.height*heightScale));
 
                 Template rep(t.file);
                 foreach (const Mat &m, t) {
                     Mat scaledImage;
-                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
+                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_AREA);
                     rep.append(scaledImage);
                 }
                 rep = classifier->preprocess(rep);
-
+		
                 // Pre-allocate the window to avoid constructing this every iteration
                 Template window(t.file);
                 for (int i=0; i<rep.size(); i++)
                     window.append(Mat());
 
-                const int step = factor > 2.0 ? 1 : 2;
-                for (int y = 0; y < processingRectSize.height; y += step) {
-                    for (int x = 0; x < processingRectSize.width; x += step) {
+                const int step = factor > 2.0 ? shrinkingFactor : shrinkingFactor*2;
+                for (int y = 0; y < scaledImageSize.height-classifierSize.height; y += step) {
+                    for (int x = 0; x < scaledImageSize.width-classifierSize.width; x += step) {
                         for (int i=0; i<rep.size(); i++)
-                            window[i] = rep[i](Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
+                            window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
 
                         float confidence = 0;
                         int result = classifier->classify(window, false, &confidence);
 
                         if (result == 1) {
-                            rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
+                            rects.append(Rect(cvRound(x/widthScale), cvRound(y/heightScale), detectionSize.width, detectionSize.height));
                             confidences.append(confidence);
                         }
 
