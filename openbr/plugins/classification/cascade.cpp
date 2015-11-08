@@ -92,6 +92,8 @@ struct Miner
  * \br_property int numPos The number of positives to feed each stage during training
  * \br_property int numNegs The number of negatives to feed each stage during training. A negative sample must have been classified by the previous stages in the cascade as positive to be fed to the next stage during training.
  * \br_property float maxFAR A termination parameter. Calculated as (number of passed negatives) / (total number of checked negatives) for a given stage during training. If that number is below the given maxFAR cascade training is terminated early. This can help prevent overfitting.
+ * \br_property bool requireAllStages If true, the cascade will train until it has the number of stages specified by numStages even if the FAR at a given is lower than maxFAR.
+ * \br_property int maxStage Parameter to limit the stages used at test time. If -1 (default), all numStages stages will be used.
  * \br_paper Paul Viola, Michael Jones
  *           Rapid Object Detection using a Boosted Cascade of Simple Features
  *           CVPR, 2001
@@ -107,6 +109,7 @@ class CascadeClassifier : public Classifier
     Q_PROPERTY(int numNegs READ get_numNegs WRITE set_numNegs RESET reset_numNegs STORED false)
     Q_PROPERTY(float maxFAR READ get_maxFAR WRITE set_maxFAR RESET reset_maxFAR STORED false)
     Q_PROPERTY(bool requireAllStages READ get_requireAllStages WRITE set_requireAllStages RESET reset_requireAllStages STORED false)
+    Q_PROPERTY(int maxStage READ get_maxStage WRITE set_maxStage RESET reset_maxStage STORED false)
 
     BR_PROPERTY(QString, stageDescription, "")
     BR_PROPERTY(int, numStages, 20)
@@ -114,6 +117,7 @@ class CascadeClassifier : public Classifier
     BR_PROPERTY(int, numNegs, 1000)
     BR_PROPERTY(float, maxFAR, pow(0.5, numStages))
     BR_PROPERTY(bool, requireAllStages, false)
+    BR_PROPERTY(int, maxStage, -1)
 
     QList<Classifier *> stages;
     TemplateList posImages, negImages;
@@ -231,7 +235,11 @@ class CascadeClassifier : public Classifier
     float classify(const Template &src, bool process, float *confidence) const
     {
         float stageConf = 0.0f;
-        foreach (const Classifier *stage, stages) {
+	const int stopStage = maxStage == -1 ? numStages : maxStage;
+	int stageIndex = 0;
+	foreach (const Classifier *stage, stages) {
+	    if (stageIndex == stopStage)
+		break;
             float result = stage->classify(src, process, &stageConf);
             if (confidence)
                 *confidence += stageConf;
