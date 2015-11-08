@@ -106,18 +106,18 @@ class SlidingWindowTransform : public MetaTransform
             const Size classifierSize = classifier->windowSize(&dx, &dy);
 
             for (double factor = 1; ; factor *= scaleFactor) {
-		// TODO: This should support non-square sizes
-		// Compute the size of the window in which we will detect faces
-		const Size detectionSize(cvRound(minSize*factor),cvRound(minSize*factor));
+                // TODO: This should support non-square sizes
+                // Compute the size of the window in which we will detect faces
+                const Size detectionSize(cvRound(minSize*factor),cvRound(minSize*factor));
 
-		// Stop if detection size is bigger than the image itself
-		if (detectionSize.width > imageSize.width || detectionSize.height > imageSize.height)
-		    break;
+                // Stop if detection size is bigger than the image itself
+                if (detectionSize.width > imageSize.width || detectionSize.height > imageSize.height)
+                    break;
 
-		const float widthScale = (float)classifierSize.width/detectionSize.width;
-		const float heightScale = (float)classifierSize.height/detectionSize.height;
-		
-		// Scale the image such that the detection size within the image corresponds to the respresentation size
+                const float widthScale = (float)classifierSize.width/detectionSize.width;
+                const float heightScale = (float)classifierSize.height/detectionSize.height;
+
+                // Scale the image such that the detection size within the image corresponds to the respresentation size
                 const Size scaledImageSize(cvRound(imageSize.width*widthScale), cvRound(imageSize.height*heightScale));
 
                 Template rep(t.file);

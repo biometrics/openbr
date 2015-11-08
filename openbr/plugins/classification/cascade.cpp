@@ -235,11 +235,11 @@ class CascadeClassifier : public Classifier
     float classify(const Template &src, bool process, float *confidence) const
     {
         float stageConf = 0.0f;
-	const int stopStage = maxStage == -1 ? numStages : maxStage;
-	int stageIndex = 0;
-	foreach (const Classifier *stage, stages) {
-	    if (stageIndex == stopStage)
-		break;
+        const int stopStage = maxStage == -1 ? numStages : maxStage;
+        int stageIndex = 0;
+        foreach (const Classifier *stage, stages) {
+            if (stageIndex == stopStage)
+                break;
             float result = stage->classify(src, process, &stageConf);
             if (confidence)
                 *confidence += stageConf;
