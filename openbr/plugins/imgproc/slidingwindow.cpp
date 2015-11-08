@@ -36,6 +36,7 @@ namespace br
  * \br_property float scaleFactor The factor to scale the image by during each resize.
  * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
  * \br_property float eps Parameter for non-maximum supression
+ * \br_property bool toRectList If true, then append all detection to the metadata rects. If false, create a new template for every detectoin
  */
 class SlidingWindowTransform : public MetaTransform
 {
@@ -50,6 +51,7 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
     Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(bool group READ get_group WRITE set_group RESET reset_group STORED false)
+    Q_PROPERTY(bool toRectList READ get_toRectList WRITE set_toRectList RESET reset_toRectList STORED false)
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
@@ -58,6 +60,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(float, eps, 0.2)
     BR_PROPERTY(int, minNeighbors, 3)
     BR_PROPERTY(bool, group, true)
+    BR_PROPERTY(bool, toRectList, false)
 
     void train(const TemplateList &data)
     {
@@ -74,6 +77,8 @@ class SlidingWindowTransform : public MetaTransform
     void project(const TemplateList &src, TemplateList &dst) const
     {
         foreach (const Template &t, src) {
+            Template out = t;
+
             // As a special case, skip detection if the appropriate metadata already exists
             if (t.file.contains("Face")) {
                 Template u = t;
@@ -156,13 +161,20 @@ class SlidingWindowTransform : public MetaTransform
             }
 
             for (int j=0; j<rects.size(); j++) {
-                Template u = t;
-                u.file.set("Confidence", confidences[j]);
-                const QRectF rect = OpenCVUtils::fromRect(rects[j]);
-                u.file.appendRect(rect);
-                u.file.set("Face", rect);
-                dst.append(u);
+                if (toRectList) {
+                    out.file.appendRect(rects[j]);
+                } else {
+                    Template u = t;
+                    u.file.set("Confidence", confidences[j]);
+                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                    u.file.appendRect(rect);
+                    u.file.set("Face", rect);
+                    dst.append(u);
+                }
             }
+
+            if (toRectList) 
+                dst.append(out);
         }
     }
 
