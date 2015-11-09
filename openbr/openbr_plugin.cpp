@@ -971,6 +971,17 @@ QList<Object *> Object::getChildren() const
                     output.append((Object *) dist);
             }
         }
+        else if (variant.canConvert<Classifier *>()) {
+            Classifier *classifier = variant.value<Classifier *>();
+            if (classifier)
+                output.append((Object* ) variant.value<Classifier *>());
+        }
+        else if (variant.canConvert<QList<Classifier *> >()) {
+            foreach (const Classifier *classifier, variant.value<QList<Classifier *> >()) {
+                if (classifier)
+                    output.append((Object *) classifier);
+            }
+        }
     }
     return output;
 }
