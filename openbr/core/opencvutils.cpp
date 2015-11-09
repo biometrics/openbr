@@ -597,7 +597,7 @@ void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, int
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;
-        flip(src[i], t, degrees, rotateMat, rotatePoints, rotateRects);
+        rotate(src[i], t, degrees, rotateMat, rotatePoints, rotateRects);
         dst.append(t);
     }
 }
