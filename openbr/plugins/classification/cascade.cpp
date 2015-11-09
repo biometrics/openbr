@@ -238,7 +238,7 @@ class CascadeClassifier : public Classifier
         const int stopStage = maxStage == -1 ? numStages : maxStage;
         int stageIndex = 0;
         foreach (const Classifier *stage, stages) {
-            if (stageIndex == stopStage)
+            if (stageIndex++ == stopStage)
                 break;
             float result = stage->classify(src, process, &stageConf);
             if (confidence)
