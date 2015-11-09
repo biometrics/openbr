@@ -277,7 +277,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
     optMap.insert("rocOptions", File(QString("[xTitle=False Accepts Per Image,yTitle=True Accept Rate,xLog=true,yLog=false]")));
-    optMap.insert("prOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true]")));
+    optMap.insert("prOptions", File(QString("[xTitle=Recall,yTitle=Precision,xLog=false,yLog=false]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
