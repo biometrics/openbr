@@ -132,6 +132,9 @@ public:
             else if (!strcmp(fun, "fuse")) {
                 check(parc >= 4, "Insufficient parameter count for 'fuse'.");
                 br_fuse(parc-3, parv, parv[parc-3], parv[parc-2], parv[parc-1]);
+            } else if (!strcmp(fun, "ssm")) {
+                check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'ssm'");
+                br_ssm(parv[0], parv[1], parc == 3 ? parv[2] : "Scores");
             } else if (!strcmp(fun, "cluster")) {
                 check(parc >= 3, "Insufficient parameter count for 'cluster'.");
                 br_cluster(parc-2, parv, atof(parv[parc-2]), parv[parc-1]);
@@ -271,6 +274,7 @@ private:
                "\n"
                "==== Other Commands ====\n"
                "-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
+               "-ssm <image_gallery> <subject_gallery>\n"
                "-cluster <simmat> ... <simmat> <aggressiveness> {csv}\n"
                "-makeMask <target_gallery> <query_gallery> {mask}\n"
                "-makePairwiseMask <target_gallery> <query_gallery> {mask}\n"

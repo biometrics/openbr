@@ -20,6 +20,7 @@
 #include "core/cluster.h"
 #include "core/eval.h"
 #include "core/fuse.h"
+#include "core/ssm.h"
 #include "core/likely.h"
 #include "core/plot.h"
 #include "core/qtutils.h"
@@ -159,6 +160,11 @@ void br_fuse(int num_input_simmats, const char *input_simmats[],
              const char *normalization, const char *fusion, const char *output_simmat)
 {
     Fuse(QtUtils::toStringList(num_input_simmats, input_simmats), normalization, fusion, output_simmat);
+}
+
+void br_ssm(const char *image_gallery, const char *subject_gallery, const char *method)
+{
+    SSM(image_gallery, subject_gallery, method);
 }
 
 void br_initialize(int &argc, char *argv[], const char *sdk_path, bool use_gui)

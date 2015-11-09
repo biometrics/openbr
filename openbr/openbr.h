@@ -71,6 +71,8 @@ BR_EXPORT void br_finalize();
 BR_EXPORT void br_fuse(int num_input_simmats, const char *input_simmats[],
                        const char *normalization, const char *fusion, const char *output_simmat);
 
+BR_EXPORT void br_ssm(const char *image_gallery, const char *subject_gallery, const char *method);
+
 BR_EXPORT void br_initialize(int &argc, char *argv[], const char *sdk_path = "", bool use_gui = false);
 
 BR_EXPORT void br_initialize_default();
