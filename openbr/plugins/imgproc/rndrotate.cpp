@@ -40,21 +40,7 @@ class RndRotateTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const {
         int span = range.first() - range.last();
         int angle = span == 0 ? range.first() : (rand() % span) + range.first();
-        Mat rotMatrix = getRotationMatrix2D(center == -1 ? Point2f(src.m().rows/2,src.m().cols/2) : OpenCVUtils::toPoint(src.file.points()[center]),angle,1.0);
-        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_LINEAR,BORDER_REFLECT_101);
-
-        QList<QPointF> points = src.file.points();
-        QList<QPointF> rotatedPoints;
-        for (int i=0; i<points.size(); i++) {
-            rotatedPoints.append(QPointF(points.at(i).x()*rotMatrix.at<double>(0,0)+
-                                         points.at(i).y()*rotMatrix.at<double>(0,1)+
-                                         rotMatrix.at<double>(0,2),
-                                         points.at(i).x()*rotMatrix.at<double>(1,0)+
-                                         points.at(i).y()*rotMatrix.at<double>(1,1)+
-                                         rotMatrix.at<double>(1,2)));
-        }
-
-        dst.file.setPoints(rotatedPoints);
+        OpenCVUtils::rotate(src, dst, angle);
     }
 };
 

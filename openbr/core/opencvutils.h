@@ -103,6 +103,8 @@ namespace OpenCVUtils
 
     // Misc
     void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon);
+    void rotate(const br::Template &src, br::Template &dst, int degrees, bool rotateMat=true, bool rotatePoints=true, bool rotateRects=true);
+    void rotate(const br::TemplateList &src, br::TemplateList &dst, int degrees, bool rotateMat=true, bool rotatePoint=true, bool rotateRects=true);
     void flip(const br::Template &src, br::Template &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
     void flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);
 
