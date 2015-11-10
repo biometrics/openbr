@@ -37,6 +37,10 @@ namespace br
  * \br_property float scaleFactor The factor to scale the image by during each resize.
  * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
  * \br_property float eps Parameter for non-maximum supression
+ * \br_property int minNeighbors Parameter for non-maximum supression
+ * \br_property bool group If false, non-maxima supression will not be performed
+ * \br_property int shrinkingFactor Step value for sliding window
+ * \br_property bool clone If false, window will not be cloned (i.e. the representation used by the classifier does not need continuous matrix data)
  */
 class SlidingWindowTransform : public MetaTransform
 {
@@ -52,6 +56,8 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(bool group READ get_group WRITE set_group RESET reset_group STORED false)
     Q_PROPERTY(int shrinkingFactor READ get_shrinkingFactor WRITE set_shrinkingFactor RESET reset_shrinkingFactor STORED false)
+    Q_PROPERTY(bool clone READ get_clone WRITE set_clone RESET reset_clone STORED false)
+
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
@@ -61,6 +67,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(int, minNeighbors, 3)
     BR_PROPERTY(bool, group, true)
     BR_PROPERTY(int, shrinkingFactor, 1)
+    BR_PROPERTY(bool, clone, true)
 
     void train(const TemplateList &data)
     {
@@ -136,8 +143,12 @@ class SlidingWindowTransform : public MetaTransform
                 const int step = factor > 2.0 ? shrinkingFactor : shrinkingFactor*2;
                 for (int y = 0; y < scaledImageSize.height-classifierSize.height; y += step) {
                     for (int x = 0; x < scaledImageSize.width-classifierSize.width; x += step) {
-                        for (int i=0; i<rep.size(); i++)
-                            window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
+                        for (int i=0; i<rep.size(); i++) {
+			     if (clone)
+                            	 window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
+			     else
+				 window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy)));
+			}
 
                         float confidence = 0;
                         int result = classifier->classify(window, false, &confidence);
