@@ -237,6 +237,9 @@ public:
             } else if (!strcmp(fun, "setHeader")) {
                 check(parc == 3, "Incorrect parameter count for 'setHeader'.");
                 br_set_header(parv[0], parv[1], parv[2]);
+            } else if (!strcmp(fun, "srand")) {
+                check(parc == 1, "Incorrect parameter count for 'srand'.");
+                srand(atoi(parv[1]));
             } else if (!strcmp(fun, "br")) {
                 printf("That's me!\n");
             } else if (parc <= 1) {
@@ -305,7 +308,8 @@ private:
                "-version\n"
                "-daemon\n"
                "-slave\n"
-               "-exit\n");
+               "-exit\n"
+               "-srand <int>\n");
     }
 };
 

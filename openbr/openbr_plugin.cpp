@@ -29,7 +29,6 @@
 #include <QtConcurrentRun>
 #include <algorithm>
 #include <iostream>
-#include <RandomLib/Random.hpp>
 
 #ifndef BR_EMBEDDED
 #include <QApplication>
@@ -661,15 +660,11 @@ QList<int> TemplateList::applyIndex(const QString &propName, const QHash<QString
     return result;
 }
 
-TemplateList TemplateList::partition(const QString &inputVariable, unsigned int randomSeed, bool overwrite) const
+TemplateList TemplateList::partition(const QString &inputVariable, bool random, bool overwrite) const
 {
     const int crossValidate = std::abs(Globals->crossValidate);
     if (crossValidate < 2)
         return *this;
-
-    // Use separate RNG from Common::randN() to avoid re-seeding the global RNG.
-    // rng is seeded with the inputVariable hash in order to maintain partition across br runs, given the same randomSeed seed.
-    RandomLib::Random rng;
 
     TemplateList partitioned = *this;
 
@@ -690,10 +685,8 @@ TemplateList TemplateList::partition(const QString &inputVariable, unsigned int 
         } else {
             if (partitioned[i].file.contains(inputVariable)) {
                 const QByteArray md5 = QCryptographicHash::hash(partitioned[i].file.get<QString>(inputVariable).toLatin1(), QCryptographicHash::Md5);
-                if (randomSeed) {
-                    quint64 labelSeed = md5.toHex().right(8).toULongLong(0, 16) + randomSeed;
-                    rng.Reseed(labelSeed);
-                    partitioned[i].file.set("Partition", rng.Integer() % crossValidate);
+                if (random) {
+                    partitioned[i].file.set("Partition", rand() % crossValidate);
                 } else if (!partitioned[i].file.contains("Partition") || overwrite) {
                     // Select the right 8 hex characters so that it can be represented as a 64 bit integer without overflow
                     partitioned[i].file.set("Partition", md5.toHex().right(8).toULongLong(0, 16) % crossValidate);
@@ -1305,7 +1298,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // The message handler requires a valid `Globals` so we set it after `Globals` is constructed
     qInstallMessageHandler(messageHandler);
 
-    Common::seedRNG();
+    // We seed with 0 instead of time(NULL) to have reproducible randomness
+    srand(0);
 
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
