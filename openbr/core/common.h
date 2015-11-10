@@ -229,7 +229,6 @@ double randN();
  * If unique then there will be no repeated integers.
  * \note Algorithm is inefficient for unique vectors where n ~= max-min.
  */
-void seedRNG();
 QList<int> RandSample(int n, int max, int min = 0, bool unique = false);
 QList<int> RandSample(int n, const QSet<int> &values, bool unique = false);
 

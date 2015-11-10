@@ -30,7 +30,7 @@ namespace br
  * \brief Generates a random subspace.
  * \author Josh Klontz \cite jklontz
  */
-class RndSubspaceTransform : public Transform
+class RndSubspaceTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(float fraction READ get_fraction WRITE set_fraction RESET reset_fraction STORED false)
@@ -38,54 +38,66 @@ class RndSubspaceTransform : public Transform
     BR_PROPERTY(float, fraction, 0.5)
     BR_PROPERTY(bool, weighted, false)
 
-    Mat map;
+    QList<Mat> maps;
 
     void train(const TemplateList &data)
     {
-        int cols = data.first().m().cols;
-        int size = data.first().m().rows * cols;
-        QList<float> weights; weights.reserve(size);
-        if (weighted) {
-            Mat flatData = OpenCVUtils::toMat(data.data());
-            for (int i=0; i<size; i++) {
-                Scalar mean, stddev;
-                cv::meanStdDev(flatData.col(i), mean, stddev);
-                weights.append(pow(stddev[0],2.0));
+        // While RndSubspace transform could be independent, making it a MetaTransform is a workaround
+        // for parallel random number generation being difficult on Windows due to thread-local
+        // RNG states all initialized with the same seed and thus producing the same sequence of random numbers.
+        for (int index=0; index<data.first().size(); index++) {
+            const int cols = data.first()[index].cols;
+            const int size = data.first()[index].rows * cols;
+            QList<float> weights; weights.reserve(size);
+            if (weighted) {
+                Mat flatData = OpenCVUtils::toMat(data.data());
+                for (int i=0; i<size; i++) {
+                    Scalar mean, stddev;
+                    cv::meanStdDev(flatData.col(i), mean, stddev);
+                    weights.append(pow(stddev[0],2.0));
+                }
+            } else {
+                for (int i=0; i<size; i++)
+                    weights.append(1);
             }
-        } else {
-            for (int i=0; i<size; i++)
-                weights.append(1);
-        }
-        const int dimsOut = std::max(int(weights.size()*fraction), 1);
+            const int dimsOut = std::max(int(weights.size()*fraction), 1);
 
-        QList<int> sample = Common::RandSample(dimsOut, weights);
-        Mat xMap(1, dimsOut, CV_16SC1);
-        Mat yMap(1, dimsOut, CV_16SC1);
-        for (int j=0; j<dimsOut; j++) {
-            int index = sample[j];
-            xMap.at<short>(0,j) = index % cols;
-            yMap.at<short>(0,j) = index / cols;
-        }
-        std::vector<Mat> mv;
-        mv.push_back(xMap);
-        mv.push_back(yMap);
+            QList<int> sample = Common::RandSample(dimsOut, weights);
+            Mat xMap(1, dimsOut, CV_16SC1);
+            Mat yMap(1, dimsOut, CV_16SC1);
+            for (int j=0; j<dimsOut; j++) {
+                int index = sample[j];
+                xMap.at<short>(0,j) = index % cols;
+                yMap.at<short>(0,j) = index / cols;
+            }
+            std::vector<Mat> mv;
+            mv.push_back(xMap);
+            mv.push_back(yMap);
 
-        merge(mv, map);
+            Mat map;
+            merge(mv, map);
+            maps.append(map);
+        }
     }
 
     void project(const Template &src, Template &dst) const
     {
-        remap(src, dst, map, Mat(), INTER_NEAREST);
+        dst.file = src.file;
+        for (int i=0; i<src.size(); i++) {
+            Mat m;
+            remap(src, m, maps[i], Mat(), INTER_NEAREST);
+            dst.append(m);
+        }
     }
 
     void store(QDataStream &stream) const
     {
-        stream << fraction << weighted << map;
+        stream << maps;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> fraction >> weighted >> map;
+        stream >> maps;
     }
 };
 
