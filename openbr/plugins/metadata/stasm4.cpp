@@ -193,6 +193,20 @@ class StasmTransform : public UntrainableMetaTransform
             }
         }
     }
+
+    // An unfortunate hack to preserve FaceRecognition binary compatibility
+    // from when StasmTransform was independent.
+    void load(QDataStream &stream)
+    {
+        int size;
+        stream >> size;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        const int size = 1;
+        stream << size;
+    }
 };
 
 BR_REGISTER(Transform, StasmTransform)
