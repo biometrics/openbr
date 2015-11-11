@@ -29,35 +29,36 @@ private:
         return -std::numeric_limits<float>::max();
     }
 
+    inline QList<bool> setAlignment(const QList<bool> &list) const
+    {
+        bool aligned = false;
+        foreach (bool a, list)
+            if (a) { aligned = true; break; }
+
+        if (aligned) return list; // if some templates are aligned just return the list
+
+        QList<bool> realigned; // if no templates are aligned we treat all templates as aligned
+        for (int i = 0; i < list.size(); i++)
+            realigned.append(true);
+
+        return realigned;
+    }
+
     inline float compareAverage(const Template &a, const Template &b) const
     {
-        float score = 0.0f;
-        QList<bool> aAlign = a.file.getList<bool>("well-aligned");
-        QList<bool> bAlign = b.file.getList<bool>("well-aligned");
+        QList<bool> aAlign = setAlignment(a.file.getList<bool>("well-aligned"));
+        QList<bool> bAlign = setAlignment(b.file.getList<bool>("well-aligned"));
 
-        bool alignedA = false, alignedB = false;
-        foreach (bool ab, aAlign)
-            if (ab) alignedA = true;
-        foreach (bool bb, bAlign)
-            if (bb) alignedB = true;
-
-        if (alignedA && alignedB) {
-            int count = 0;
-            for (int i = 0; i < a.size(); i++) {
-                if (!aAlign[i]) continue;
-                for (int j = 0; j < b.size(); j++) {
-                    if (!bAlign[j]) continue;
-                    score += distance->compare(a[i], b[j]);
-                    count++;
-                }
+        int count = 0; float score = 0.0f;
+        for (int i = 0; i < a.size(); i++) {
+            if (!aAlign[i]) continue;
+            for (int j = 0; j < b.size(); j++) {
+                if (!bAlign[j]) continue;
+                score += distance->compare(a[i], b[j]);
+                count++;
             }
-            return score / count;
         }
-
-        foreach (const Mat &ma, a)
-            foreach (const Mat &mb, b)
-                score += distance->compare(ma, mb);
-        return score / (a.size() + b.size());
+        return score / count;
     }
 
     inline float compareMax(const Template &a, const Template &b) const
