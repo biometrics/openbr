@@ -32,6 +32,28 @@ private:
     inline float compareAverage(const Template &a, const Template &b) const
     {
         float score = 0.0f;
+        QList<bool> aAlign = a.file.getList<bool>("well-aligned");
+        QList<bool> bAlign = b.file.getList<bool>("well-aligned");
+
+        bool alignedA = false, alignedB = false;
+        foreach (bool ab, aAlign)
+            if (ab) alignedA = true;
+        foreach (bool bb, bAlign)
+            if (bb) alignedB = true;
+
+        if (alignedA && alignedB) {
+            int count = 0;
+            for (int i = 0; i < a.size(); i++) {
+                if (!aAlign[i]) continue;
+                for (int j = 0; j < b.size(); j++) {
+                    if (!bAlign[j]) continue;
+                    score += distance->compare(a[i], b[j]);
+                    count++;
+                }
+            }
+            return score / count;
+        }
+
         foreach (const Mat &ma, a)
             foreach (const Mat &mb, b)
                 score += distance->compare(ma, mb);

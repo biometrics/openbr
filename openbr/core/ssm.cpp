@@ -6,14 +6,18 @@ using namespace br;
 void scoresMerge(const QMap<int, TemplateList> &subjectMap, TemplateList &subjects)
 {
     foreach (const TemplateList &tlist, subjectMap.values()) {
-        Template subject;
+        Template subject; QList<bool> alignment;
         foreach (const Template &t, tlist) {
-            if (!t.file.fte)
+            if (!t.file.fte) {
                 subject.merge(t);
+                alignment.append(t.file.get<bool>("well-aligned"));
+            }
         }
 
         if (subject.empty())
             subject.file.fte = true;
+
+        subject.file.setList<bool>("well-aligned", alignment);
         subjects.append(subject);
     }
 }
@@ -72,6 +76,8 @@ void br::SSM(const QString &image_gallery, const QString &subject_gallery, const
         frontalMerge(subjectMap, subjects);
     else
         qFatal("Unknown SSM method %s. Options are Scores|Average|Frontal", method.toStdString().c_str());
+
+    qDebug() << "Subjects:" << subjects.size();
 
     QScopedPointer<Gallery> output(Gallery::make(subject_gallery));
     output->writeBlock(subjects);
