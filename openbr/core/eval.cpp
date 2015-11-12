@@ -970,9 +970,10 @@ static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QL
     int count = 0, totalTrueDetections = 0;
 
     foreach (Detections detections, all.values()) {
-        totalTrueDetections += detections.truth.size();
-        // Try to associate ground truth detections with predicted detections
+        for (int i=0; i<detections.truth.size(); i++)
+            if (!detections.truth[i].ignore) totalTrueDetections++;
 
+        // Try to associate ground truth detections with predicted detections
         QList<SortedDetection> sortedDetections; sortedDetections.reserve(detections.truth.size() * detections.predicted.size());
         for (int t = 0; t < detections.truth.size(); t++) {
             const Detection truth = detections.truth[t];
@@ -1062,12 +1063,12 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
                     filteredDetections.predicted.append(detections.predicted[i]);
                 }
             }
-            
+
             for (int i = 0; i < detections.truth.size(); i++) {
                 QRectF box = detections.truth[i].boundingBox;
-                if (min(box.width(), box.height()) > minSize) {
-                    filteredDetections.truth.append(detections.truth[i]);
-                }
+                if (min(box.width(), box.height()) < minSize)
+                    detections.truth[i].ignore = true;
+                filteredDetections.truth.append(detections.truth[i]);
             }
             if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
         }
@@ -1090,9 +1091,9 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 
             for (int i = 0; i < detections.truth.size(); i++) {
                 QRectF box = detections.truth[i].boundingBox;
-                if (min(box.width(), box.height()) < maxSize) {
-                    filteredDetections.truth.append(detections.truth[i]);
-                }
+                if (min(box.width(), box.height()) > maxSize)
+                    detections.truth[i].ignore = true;
+                filteredDetections.truth.append(detections.truth[i]);
             }
             if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
         }
