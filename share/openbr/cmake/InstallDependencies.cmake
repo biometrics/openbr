@@ -3,7 +3,9 @@ set(BR_INSTALL_DEPENDENCIES OFF CACHE BOOL "Install runtime dependencies.")
 # OpenCV Libs
 function(install_opencv_library lib)
   if(${BR_INSTALL_DEPENDENCIES})
-    if(CMAKE_HOST_WIN32)
+    if(ANDROID)
+      # Do nothing assuming we are using OpenCV static libs
+    elseif(CMAKE_HOST_WIN32)
       if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         set(BR_INSTALL_DEPENDENCIES_SUFFIX "d")
       endif()
@@ -35,7 +37,9 @@ endfunction()
 # Qt Libs
 function(install_qt_library lib)
   if(${BR_INSTALL_DEPENDENCIES})
-    if(CMAKE_HOST_WIN32)
+    if(ANDROID)
+      install(FILES ${_qt5Core_install_prefix}/lib/libQt5${lib}.so DESTINATION lib)
+    elseif(CMAKE_HOST_WIN32)
       if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         set(BR_INSTALL_DEPENDENCIES_SUFFIX "d")
       endif()
@@ -85,7 +89,10 @@ endfunction()
 
 function(install_qt_platforms)
   if(${BR_INSTALL_DEPENDENCIES})
-    if(CMAKE_HOST_WIN32)
+    if(ANDROID)
+      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/android/libqtforandroid.so
+              DESTINATION bin/platforms)
+    elseif(CMAKE_HOST_WIN32)
       install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll
               DESTINATION bin/platforms)
     elseif(CMAKE_HOST_APPLE)
