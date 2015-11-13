@@ -63,12 +63,17 @@ private:
 
     inline float compareMax(const Template &a, const Template &b) const
     {
+        QList<bool> aAlign = setAlignment(a.file.getList<bool>("well-aligned"));
+        QList<bool> bAlign = setAlignment(b.file.getList<bool>("well-aligned"));
+
         float score = -std::numeric_limits<float>::max();
-        foreach (const Mat &ma, a) {
-            foreach (const Mat &mb, b) {
-                float dist = distance->compare(ma, mb);
-                if (dist > score)
-                    score = dist;
+        for (int i = 0; i < a.size(); i++) {
+            if (!aAlign[i]) continue;
+            for (int j = 0; j < b.size(); j++) {
+                if (!bAlign[j]) continue;
+                float tScore = distance->compare(a[i], b[j]);
+                if (tScore > score)
+                    score = tScore;
             }
         }
         return score;
@@ -76,12 +81,17 @@ private:
 
     inline float compareMin(const Template &a, const Template &b) const
     {
+        QList<bool> aAlign = setAlignment(a.file.getList<bool>("well-aligned"));
+        QList<bool> bAlign = setAlignment(b.file.getList<bool>("well-aligned"));
+
         float score = std::numeric_limits<float>::max();
-        foreach (const Mat &ma, a) {
-            foreach (const Mat &mb, b) {
-                float dist = distance->compare(ma, mb);
-                if (dist < score)
-                    score = dist;
+        for (int i = 0; i < a.size(); i++) {
+            if (!aAlign[i]) continue;
+            for (int j = 0; j < b.size(); j++) {
+                if (!bAlign[j]) continue;
+                float tScore = distance->compare(a[i], b[j]);
+                if (tScore < score)
+                    score = tScore;
             }
         }
         return score;

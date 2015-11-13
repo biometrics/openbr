@@ -10,7 +10,7 @@ void scoresMerge(const QMap<int, TemplateList> &subjectMap, TemplateList &subjec
         foreach (const Template &t, tlist) {
             if (!t.file.fte) {
                 subject.merge(t);
-                alignment.append(t.file.get<bool>("well-aligned"));
+                alignment.append(t.file.get<bool>("well-aligned", false));
             }
         }
 
