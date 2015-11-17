@@ -156,11 +156,7 @@ class SlidingWindowTransform : public MetaTransform
                         if (result == 1) {
                             rects.append(Rect(cvRound(x/widthScale), cvRound(y/heightScale), detectionSize.width, detectionSize.height));
                             confidences.append(confidence);
-                        }
-
-                        // TODO: Add non ROC mode
-
-                        if (result == 0)
+                        } else
                             x += step;
                     }
                 }
