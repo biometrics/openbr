@@ -451,6 +451,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
 
     // Total number of rects in each class
     vector<int> neighbors(nClasses, 0);
+    vector<float> classConfidence(nClasses, 0);
     vector<float> rejectWeights(nClasses, -std::numeric_limits<float>::max());
 
     for (size_t i = 0; i < labels.size(); i++)
@@ -461,6 +462,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         rrects[cls].width += rects[i].width;
         rrects[cls].height += rects[i].height;
         neighbors[cls]++;
+        classConfidence[cls] += confidences[i];
     }
 
     if (useConfidences)
@@ -495,11 +497,10 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         Rect r1 = rrects[i];
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
-        // int n1 = levelWeights ? rejectLevels[i] : rweights[i];
         const float w1 = rejectWeights[i];
 
         // Eliminate rectangle if it doesn't meet confidence criteria
-        if (w1 <= confidenceThreshold)
+        if (w1 < confidenceThreshold)
             continue;
 
         const int n1 = neighbors[i];
@@ -536,7 +537,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         {
             rects.append(r1);
             if (useConfidences)
-                confidences.append(w1);
+                confidences.append(classConfidence[i]);
         }
     }
 }
