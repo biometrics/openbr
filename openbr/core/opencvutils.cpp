@@ -441,8 +441,6 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     if (rects.isEmpty())
         return;
 
-    const bool useConfidences = !confidences.isEmpty();
-
     vector<int> labels;
     int nClasses = cv::partition(rects.toVector().toStdVector(), labels, SimilarRects(epsilon));
 
@@ -452,7 +450,6 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     // Total number of rects in each class
     vector<int> neighbors(nClasses, 0);
     vector<float> classConfidence(nClasses, 0);
-    vector<float> rejectWeights(nClasses, -std::numeric_limits<float>::max());
 
     for (size_t i = 0; i < labels.size(); i++)
     {
@@ -463,17 +460,6 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         rrects[cls].height += rects[i].height;
         neighbors[cls]++;
         classConfidence[cls] += confidences[i];
-    }
-
-    if (useConfidences)
-    {
-        // For each class, find maximum confidence
-        for (size_t i = 0; i < labels.size(); i++)
-        {
-            int cls = labels[i];
-            if (confidences[i] > rejectWeights[cls])
-                rejectWeights[cls] = confidences[i];
-        }
     }
 
     // Find average rectangle for all classes
@@ -497,7 +483,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         Rect r1 = rrects[i];
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
-        const float w1 = rejectWeights[i];
+        const float w1 = classConfidence[i];
 
         // Eliminate rectangle if it doesn't meet confidence criteria
         if (w1 < confidenceThreshold)
@@ -520,7 +506,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
             int dx = saturate_cast<int>(r2.width * epsilon);
             int dy = saturate_cast<int>(r2.height * epsilon);
 
-            float w2 = rejectWeights[j];
+            float w2 = classConfidence[j];
 
             // If, r1 is within the r2 AND
             // r2 has a higher confidence than r1
@@ -536,8 +522,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         if( j == nClasses )
         {
             rects.append(r1);
-            if (useConfidences)
-                confidences.append(classConfidence[i]);
+            confidences.append(w1);
         }
     }
 }
