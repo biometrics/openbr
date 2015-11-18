@@ -144,11 +144,11 @@ class SlidingWindowTransform : public MetaTransform
                 for (int y = 0; y < scaledImageSize.height-classifierSize.height; y += step) {
                     for (int x = 0; x < scaledImageSize.width-classifierSize.width; x += step) {
                         for (int i=0; i<rep.size(); i++) {
-			     if (clone)
-                            	 window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
-			     else
-				 window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy)));
-			}
+                            if (clone)
+                                window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
+                            else
+                                window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy)));
+                        }
 
                         float confidence = 0;
                         int result = classifier->classify(window, false, &confidence);
