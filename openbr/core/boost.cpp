@@ -788,14 +788,17 @@ void CascadeBoostTrainData::precalculate()
 {
     int minNum = MIN( numPrecalcVal, numPrecalcIdx);
 
-    double proctime = -TIME( 0 );
+    QTime time;
+    time.start();
+
     parallel_for_( Range(numPrecalcVal, numPrecalcIdx),
                    FeatureIdxOnlyPrecalc(featureEvaluator, buf, sample_count, is_buf_16u!=0) );
     parallel_for_( Range(0, minNum),
                    FeatureValAndIdxPrecalc(featureEvaluator, buf, &valCache, sample_count, is_buf_16u!=0) );
     parallel_for_( Range(minNum, numPrecalcVal),
-                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );        
-    cout << "Precalculation time: " << (proctime + TIME( 0 )) << endl;
+                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );
+
+    cout << "Precalculation time (ms): " << time.elapsed() << endl;
 }
 
 //-------------------------------- CascadeBoostTree ----------------------------------------

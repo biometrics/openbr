@@ -4,12 +4,6 @@
 #include "ml.h"
 #include <openbr/openbr_plugin.h>
 
-#ifdef _WIN32
-#define TIME( arg ) (((double) clock()) / CLOCKS_PER_SEC)
-#else
-#define TIME( arg ) (time( arg ))
-#endif
-
 namespace br
 {
 
