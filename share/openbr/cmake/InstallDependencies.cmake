@@ -2,10 +2,8 @@ set(BR_INSTALL_DEPENDENCIES OFF CACHE BOOL "Install runtime dependencies.")
 
 # OpenCV Libs
 function(install_opencv_library lib)
-  if(${BR_INSTALL_DEPENDENCIES})
-    if(ANDROID)
-      # Do nothing assuming we are using OpenCV static libs
-    elseif(CMAKE_HOST_WIN32)
+  if(${BR_INSTALL_DEPENDENCIES} AND ${OpenCV_SHARED})
+    if(CMAKE_HOST_WIN32)
       if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         set(BR_INSTALL_DEPENDENCIES_SUFFIX "d")
       endif()
