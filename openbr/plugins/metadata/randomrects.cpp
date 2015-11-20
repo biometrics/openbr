@@ -21,7 +21,7 @@ class RandomRectsTransform : public UntrainableMetaTransform
     BR_PROPERTY(int, numRects, 135)
     BR_PROPERTY(int, minSize, 24)
 
-    void project(const Template &src, Template &dst) const
+    void project(const Template &, Template &) const
     {
         qFatal("NOT SUPPORTED");
     }

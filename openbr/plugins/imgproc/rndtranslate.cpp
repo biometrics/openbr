@@ -38,7 +38,7 @@ class RndTranslateTransform : public UntrainableMetaTransform
     Q_PROPERTY(int nStages READ get_nStages WRITE set_nStages RESET reset_nStages STORED false)
     BR_PROPERTY(int, nStages, 3)
 
-    void project(const Template &src, Template &dst) const 
+    void project(const Template &, Template &) const
     {
         qFatal("Shoult not  be here (RndTranslate)");
     }
