@@ -1602,7 +1602,8 @@ Transform *Transform::make(QString str, QObject *parent)
     // Base name not found? Try constructing it via LoadStore
     if (!Factory<Transform>::names().contains(parsed.suffix())
         && (QFileInfo(parsed.suffix()).exists()
-            || QFileInfo(Globals->sdkPath + "/share/openbr/models/transforms/"+parsed.suffix()).exists())) {
+            || QFileInfo(Globals->sdkPath + "/share/openbr/models/transforms/"+parsed.suffix()).exists()
+            || QFileInfo(Globals->sdkPath + "/../share/openbr/models/transforms/"+parsed.suffix()).exists())) {
         Transform *tform = make("<"+parsed.suffix()+">", parent);
         applyAdditionalProperties(parsed, tform);
         return tform;
