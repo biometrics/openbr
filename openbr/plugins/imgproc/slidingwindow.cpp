@@ -90,9 +90,9 @@ class SlidingWindowTransform : public MetaTransform
     {
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
-            if (t.file.contains("Face")) {
+            if (t.file.contains(outputVariable)) {
                 Template u = t;
-                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>("Face"));
+                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>(outputVariable));
                 u.file.set("Confidence", t.file.get<float>("Confidence", 1));
                 dst.append(u);
                 continue;
@@ -111,6 +111,9 @@ class SlidingWindowTransform : public MetaTransform
             // different channels of the same image!
             const Size imageSize = t.m().size();
             const int minSize = t.file.get<int>("MinSize", this->minSize);
+            const int maxDetections = t.file.get<int>("MaxDetections", std::numeric_limits<int>::max());
+            const bool findMostConfident = (enrollAll && (maxDetections != 1)) ? false : true;
+
             QList<Rect> rects;
             QList<float> confidences;
 
@@ -170,17 +173,31 @@ class SlidingWindowTransform : public MetaTransform
             if (group)
                 OpenCVUtils::group(rects, confidences, minGroupingConfidence, minNeighbors, eps);
 
+            if (findMostConfident && !rects.isEmpty()) {
+                Rect rect = rects.first();
+                float maxConfidence = confidences.first();
+                for (int i=0; i<rects.size(); i++)
+                    if (confidences[i] > maxConfidence) {
+                        rect = rects[i];
+                        maxConfidence = confidences[i];
+                    }
+                rects.clear();
+                confidences.clear();
+                rects.append(rect);
+                confidences.append(maxConfidence);
+            }
+
             if (!enrollAll && rects.empty()) {
                 rects.append(Rect(0, 0, imageSize.width, imageSize.height));
                 confidences.append(-std::numeric_limits<float>::max());
             }
 
             const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
-            for (int j=0; j<rects.size(); j++) {
-                if (ROCMode || confidences[j] >= minConfidence) {
+            for (int i=0; i<rects.size(); i++) {
+                if (ROCMode || !enrollAll || confidences[i] >= minConfidence) {
                     Template u = t;
-                    u.file.set("Confidence", confidences[j]);
-                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+                    u.file.set("Confidence", confidences[i]);
+                    const QRectF rect = OpenCVUtils::fromRect(rects[i]);
                     u.file.appendRect(rect);
                     u.file.set(outputVariable, rect);
                     dst.append(u);
