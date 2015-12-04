@@ -72,7 +72,7 @@ class SlidingWindowTransform : public MetaTransform
     BR_PROPERTY(bool, clone, true)
     BR_PROPERTY(float, minConfidence, 0)
     BR_PROPERTY(bool, ROCMode, false)
-    BR_PROPERTY(QString, outputVariable, "FrontalFace")
+    BR_PROPERTY(QString, outputVariable, "Face")
 
     void train(const TemplateList &data)
     {
@@ -173,7 +173,7 @@ class SlidingWindowTransform : public MetaTransform
             if (group)
                 OpenCVUtils::group(rects, confidences, minGroupingConfidence, minNeighbors, eps);
 
-            if (findMostConfident && !rects.isEmpty()) {
+            if (!ROCMode && findMostConfident && !rects.isEmpty()) {
                 Rect rect = rects.first();
                 float maxConfidence = confidences.first();
                 for (int i=0; i<rects.size(); i++)
