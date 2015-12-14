@@ -1,5 +1,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 
@@ -35,7 +36,7 @@ private:
         int top, bottom, left, right;
         top = percent*src.m().rows; bottom = percent*src.m().rows;
         left = percent*src.m().cols; right = percent*src.m().cols;
-        copyMakeBorder(src, dst, top, bottom, left, right, border, Scalar(value));
+        OpenCVUtils::pad(src,dst,true,QList<int>() << top << bottom << left << right,true,true,border,value);
     }
 };
 
