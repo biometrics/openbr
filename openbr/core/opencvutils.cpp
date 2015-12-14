@@ -527,6 +527,42 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     }
 }
 
+void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+{
+    // Padding is expected to be top, bottom, left, right
+    if (padMat)
+        copyMakeBorder(src, dst, padding[0], padding[1], padding[2], padding[3], border, Scalar(value));
+    else
+        dst = src;
+
+    if (padPoints) {
+        QList<QPointF> points = src.file.points();
+        QList<QPointF> paddedPoints;
+        for (int i=0; i<points.size(); i++)
+            paddedPoints.append(points[i] += QPointF(padding[2],padding[0]));
+        dst.file.setPoints(paddedPoints);
+    }
+
+    if (padRects) {
+        QList<QRectF> rects = src.file.rects();
+        QList<QRectF> paddedRects;
+        for (int i=0; i<rects.size(); i++)
+            paddedRects.append(rects[i].translated(QPointF(padding[2],padding[0])));
+        dst.file.setRects(paddedRects);
+    }
+
+
+}
+
+void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+{
+    for (int i=0; i<src.size(); i++) {
+        br::Template t;
+        pad(src[i], t, padMat, padding, padPoints, padRects, border, value);
+        dst.append(t);
+    }
+}
+
 void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, int degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
 {
     Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),degrees,1.0);
