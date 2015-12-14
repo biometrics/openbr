@@ -839,6 +839,14 @@ static QStringList computeDetectionResults(const QList<ResolvedDetection> &detec
                     qDebug("TAR @ FAR => %f : 1", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
                     qDebug("TP vs. FP: %f to %f", TP, FP);
+                } else if (prevFP / numImages < 0.5 && FP / numImages >= 0.5 && discrete) {
+                    qDebug("TAR @ FAR => %f : 0.5", TP / totalTrueDetections);
+                    qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
+                } else if (prevFP / numImages < 0.2 && FP / numImages >= 0.2 && discrete) {
+                    qDebug("TAR @ FAR => %f : 0.2", TP / totalTrueDetections);
+                    qDebug("Confidence: %f", detection.confidence);
+                    qDebug("TP vs. FP: %f to %f", TP, FP);
                 } else if (prevFP / numImages < 0.1 && FP / numImages >= 0.1 && discrete) {
                     qDebug("TAR @ FAR => %f : 0.1", TP / totalTrueDetections);
                     qDebug("Confidence: %f", detection.confidence);
