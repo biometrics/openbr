@@ -480,7 +480,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     for (int i = 0; i < nClasses; i++)
     {
         // Average rectangle
-        Rect r1 = rrects[i];
+        const Rect r1 = rrects[i];
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
         const float w1 = classConfidence[i];
@@ -501,21 +501,19 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
             if (j == i || n2 < minNeighbors)
                 continue;
 
-            Rect r2 = rrects[j];
+            const Rect r2 = rrects[j];
 
-            int dx = saturate_cast<int>(r2.width * epsilon);
-            int dy = saturate_cast<int>(r2.height * epsilon);
+            const int dx = saturate_cast<int>(r2.width * epsilon);
+            const int dy = saturate_cast<int>(r2.height * epsilon);
 
-            float w2 = classConfidence[j];
+            const float w2 = classConfidence[j];
 
-            // If, r1 is within the r2 AND
-            // r2 has a higher confidence than r1
-            // then, eliminate the r1
             if(r1.x >= r2.x - dx &&
                r1.y >= r2.y - dy &&
                r1.x + r1.width <= r2.x + r2.width + dx &&
                r1.y + r1.height <= r2.y + r2.height + dy &&
-               (w2 > std::max(confidenceThreshold, w1)))
+               (w2 > w1) &&
+               (n2 > n1))
                break;
         }
 
