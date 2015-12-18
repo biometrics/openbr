@@ -53,6 +53,10 @@ def _handle_string_func(func, *moretypes):
         return msg
     return call_func
 
+# TODO: small wrapper around any objects that need br_free_*
+#       so when python object dies, user doesn't need to call br_free_*
+# TODO: iterator for templatelist object
+#       (or mimic C++ obj API via C? overkill?)
 def init_brpy(br_loc='/usr/local/lib'):
     """Initializes all function inputs and outputs for the br ctypes lib object"""
 

@@ -32,6 +32,9 @@ share/openbr/models
 *.RData
 *.Rhistory
 
+### Python ###
+*.pyc
+
 ### Subversion ###
 *.svn*
 
