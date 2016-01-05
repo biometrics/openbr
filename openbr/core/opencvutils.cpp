@@ -436,7 +436,7 @@ public:
 };
 
 // TODO: Make sure case where no confidences are inputted works.
-void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon)
+void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon, bool useMax)
 {
     if (rects.isEmpty())
         return;
@@ -449,7 +449,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
 
     // Total number of rects in each class
     vector<int> neighbors(nClasses, 0);
-    vector<float> classConfidence(nClasses, 0);
+    vector<float> classConfidence(nClasses, useMax ? -std::numeric_limits<float>::max() : 0);
 
     for (size_t i = 0; i < labels.size(); i++)
     {
@@ -459,7 +459,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         rrects[cls].width += rects[i].width;
         rrects[cls].height += rects[i].height;
         neighbors[cls]++;
-        classConfidence[cls] += confidences[i];
+        classConfidence[cls] = useMax ? std::max(classConfidence[cls], confidences[i]) : classConfidence[cls]+confidences[i];
     }
 
     // Find average rectangle for all classes
