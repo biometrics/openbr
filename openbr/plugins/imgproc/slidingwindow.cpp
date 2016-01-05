@@ -194,7 +194,7 @@ class SlidingWindowTransform : public MetaTransform
 
             const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
             for (int i=0; i<rects.size(); i++) {
-                if (ROCMode || !enrollAll || confidences[i] >= minConfidence) {
+                if (ROCMode || confidences[i] >= minConfidence || (!enrollAll && confidences[i] == -std::numeric_limits<float>::max())) {
                     Template u = t;
                     u.file.set("Confidence", confidences[i]);
                     const QRectF rect = OpenCVUtils::fromRect(rects[i]);
