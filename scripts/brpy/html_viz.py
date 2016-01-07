@@ -18,7 +18,7 @@ def crop_to_bb(x, y, width, height, imname, maxheight=None):
     imwidth, imheight = img.size
     if not maxheight:
         maxheight = height
-    ratio = maxheight / height
+    ratio = float(maxheight) / height
     # note for future me:
     # image is cropped with div width/height + overflow:hidden,
     # resized with img height,
@@ -37,7 +37,7 @@ def bbs_for_image(imname, bbs, maxheight=None, colors=None):
     imwidth, imheight = img.size
     if not maxheight:
         maxheight = imheight
-    ratio = maxheight/imheight
+    ratio = float(maxheight)/imheight
     html = [
             '<div style="position:relative">',
             '<img src="%s" style="height:%ipx" />' % (imname, maxheight)
