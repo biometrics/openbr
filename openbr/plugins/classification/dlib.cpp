@@ -55,9 +55,9 @@ private:
     void setFacePoints(Template &dst) const
     {
         const QList<QPointF> points = dst.file.points();
-        dst.file.set("LeftEye",averagePoints(points,36,42));
-        dst.file.set("RightEye",averagePoints(points,42,48));
-        dst.file.set("Chin",points[8]);
+        dst.file.set("RightEye", averagePoints(points, 36, 42));
+        dst.file.set("LeftEye" , averagePoints(points, 42, 48));
+        dst.file.set("Chin", points[8]);
     }
 
     void project(const Template &src, Template &dst) const
