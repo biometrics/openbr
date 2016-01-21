@@ -561,7 +561,7 @@ void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool p
     }
 }
 
-void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, int degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
 {
     Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),degrees,1.0);
     if (rotateMat) {
@@ -613,7 +613,7 @@ void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, int degrees
     }
 }
 
-void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, int degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;
