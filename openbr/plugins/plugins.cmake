@@ -31,7 +31,7 @@ endforeach()
 # Collect all source files except for excluded plugins
 foreach(DIR ${BR_PLUGINS_DIR} ${BR_THIRDPARTY_PLUGINS_DIR})
   get_filename_component(DIR_NAME ${DIR} NAME)
-  file(GLOB PLUGINS ${DIR}/*.cpp ${DIR}/*.h)
+  file(GLOB PLUGINS ${DIR}/*.cpp ${DIR}/*.cu ${DIR}/*.h)
   foreach(PLUGIN ${PLUGINS})
     get_filename_component(PLUGIN_NAME ${PLUGIN} NAME)
     set(EXCLUDE FALSE)

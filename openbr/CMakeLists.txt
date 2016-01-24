@@ -8,7 +8,12 @@ set(SRC openbr.cpp
         universal_template.cpp)
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
-include(cuda-plugins/cuda-plugins.cmake)
+
+# CUDA shit
+FIND_PACKAGE(CUDA REQUIRED)
+SET(CUDA_SEPARABLE_COMPILATION ON)
+SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -arch=sm_20;--compiler-options "-fPIC")
+SET(CUDA_VERBOSE_BUILD ON)
 
 # Janus API
 option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
@@ -29,24 +34,17 @@ if(NOT BR_EMBEDDED)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
-# normal BR library declaration
-add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
+# normal BR library declaration - added openbr-cuda library
+message(STATUS "BR_THIRDPARTY_SRC")
+message(STATUS ${BR_THIRDPARTY_SRC})
+cuda_add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                              SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
-target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
+target_link_libraries(openbr ${BR_THIRDPARTY_LIBS} ${CUDA_LIBRARIES})
 add_cppcheck(openbr)
-
-# CUDA portion of BR
-
-cuda_add_library(openbr-cuda SHARED ${BR_THIRDPARTY_CUDA_SRC})
-qt5_use_modules(openbr-cuda ${QT_DEPENDENCIES})
-set_target_properties(openbr-cuda PROPERTIES
-                                  DEFINE_SYMBOL BR_CUDA_LIBRARY
-                                  VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
-                                SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
 
 # Janus implementation
 if(BR_WITH_JANUS)
