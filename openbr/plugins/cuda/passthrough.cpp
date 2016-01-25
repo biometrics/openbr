@@ -6,9 +6,9 @@
 using namespace cv;
 using namespace cv::gpu;
 
-#include <iostream>
+#include "passthrough.hpp"
 
-extern void br_cuda_device_wrapper(GpuMat& src, GpuMat& dst);
+#include <iostream>
 
 string type2str(int type) {
   string r;
@@ -49,7 +49,7 @@ private:
       srcGpuMat.upload(src.m());
       dstGpuMat.upload(src.m());
 
-      br_cuda_device_wrapper(srcGpuMat, dstGpuMat);
+      br::cuda::passthrough_wrapper(srcGpuMat, dstGpuMat);
 
       dstGpuMat.download(dst.m());
 

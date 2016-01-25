@@ -5,30 +5,35 @@
 using namespace cv;
 using namespace cv::gpu;
 
-__global__ void br_cuda_device_kernel(uint8_t* srcPtr, uint8_t* dstPtr, size_t srcStep, size_t dstStep, int cols, int rows) {
-  int rowInd = blockIdx.y*blockDim.y+threadIdx.y;
-  int colInd = blockIdx.x*blockDim.x+threadIdx.x;
+#include "passthrough.hpp"
 
-  uint8_t srcVal = (srcPtr + rowInd*srcStep)[colInd];
-  uint8_t* rowDstPtr = dstPtr + rowInd*dstStep;
+namespace br { namespace cuda {
+  __global__ void passthrough_kernel(uint8_t* srcPtr, uint8_t* dstPtr, size_t srcStep, size_t dstStep, int cols, int rows) {
+    int rowInd = blockIdx.y*blockDim.y+threadIdx.y;
+    int colInd = blockIdx.x*blockDim.x+threadIdx.x;
 
-  rowDstPtr[colInd] = srcVal;
-}
+    uint8_t srcVal = (srcPtr + rowInd*srcStep)[colInd];
+    uint8_t* rowDstPtr = dstPtr + rowInd*dstStep;
 
-void br_cuda_device_wrapper(GpuMat& src, GpuMat& dst) {
-  // convert the GpuMats to pointers
-  uint8_t* srcPtr = (uint8_t*)src.data;
-  uint8_t* dstPtr = (uint8_t*)dst.data;
+    rowDstPtr[colInd] = srcVal;
+  }
 
-  int imageWidth = src.cols;
-  int imageHeight = src.rows;
+  void passthrough_wrapper(GpuMat& src, GpuMat& dst) {
+    // convert the GpuMats to pointers
+    uint8_t* srcPtr = (uint8_t*)src.data;
+    uint8_t* dstPtr = (uint8_t*)dst.data;
 
-  // make 8 * 8 = 64 square block
-  dim3 threadsPerBlock(8, 8);
-  dim3 numBlocks(imageWidth / threadsPerBlock.x,
-                 imageHeight / threadsPerBlock.y);
+    int imageWidth = src.cols;
+    int imageHeight = src.rows;
 
-  br_cuda_device_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, src.step, dst.step, imageWidth, imageHeight);
-}
+    // make 8 * 8 = 64 square block
+    dim3 threadsPerBlock(8, 8);
+    dim3 numBlocks(imageWidth / threadsPerBlock.x,
+                   imageHeight / threadsPerBlock.y);
+
+    passthrough_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, src.step, dst.step, imageWidth, imageHeight);
+  }
+}}
+
 
 // read http://stackoverflow.com/questions/31927297/array-of-ptrstepszgpumat-to-a-c-cuda-kernel
