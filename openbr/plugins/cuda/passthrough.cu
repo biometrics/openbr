@@ -19,7 +19,7 @@ namespace br { namespace cuda {
     uint8_t srcVal = (srcPtr + rowInd*srcStep)[colInd];
     uint8_t* rowDstPtr = dstPtr + rowInd*dstStep;
 
-    rowDstPtr[colInd] = srcVal * 2;
+    rowDstPtr[colInd] = srcVal;
   }
 
   void passthrough_wrapper(GpuMat& src, GpuMat& dst) {
