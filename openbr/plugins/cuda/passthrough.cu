@@ -12,10 +12,14 @@ namespace br { namespace cuda {
     int rowInd = blockIdx.y*blockDim.y+threadIdx.y;
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
 
+    // don't do anything if we are outside the allowable positions
+    if (rowInd >= rows || colInd >= cols)
+      return;
+
     uint8_t srcVal = (srcPtr + rowInd*srcStep)[colInd];
     uint8_t* rowDstPtr = dstPtr + rowInd*dstStep;
 
-    rowDstPtr[colInd] = srcVal;
+    rowDstPtr[colInd] = srcVal * 2;
   }
 
   void passthrough_wrapper(GpuMat& src, GpuMat& dst) {
@@ -28,8 +32,8 @@ namespace br { namespace cuda {
 
     // make 8 * 8 = 64 square block
     dim3 threadsPerBlock(8, 8);
-    dim3 numBlocks(imageWidth / threadsPerBlock.x,
-                   imageHeight / threadsPerBlock.y);
+    dim3 numBlocks(imageWidth / threadsPerBlock.x + 1,
+                   imageHeight / threadsPerBlock.y + 1);
 
     passthrough_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, src.step, dst.step, imageWidth, imageHeight);
   }
