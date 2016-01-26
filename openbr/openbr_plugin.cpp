@@ -1210,7 +1210,8 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
 }
 
-// We create our own when the user hasn't
+// We create our own when the user hasn't.
+// Since we can't ensure that it gets deleted last, we never delete it.
 static QCoreApplication *application = NULL;
 
 void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useGui)
@@ -1230,7 +1231,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
-    // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
         if (useGui) application = new QApplication(argc, argv);
@@ -1316,9 +1316,6 @@ void br::Context::finalize()
 
     delete Globals;
     Globals = NULL;
-
-    delete application;
-    application = NULL;
 }
 
 QString br::Context::about()
