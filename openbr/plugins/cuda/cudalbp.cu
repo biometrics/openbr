@@ -51,9 +51,9 @@ namespace br { namespace cuda {
     dim3 numBlocks(imageWidth/threadsPerBlock.x + 1,
                    imageHeight/threadsPerBlock.y + 1);
 
-    printf("Src Image Dimesions:\n\trows: %d\tcols: %d\n", src.rows, src.cols);
-    printf("Dst Image Dimesions:\n\trows: %d\tcols: %d\n", dst.rows, dst.cols);
-    printf("Running CUDALBP\nBlock Dimensions:\n\tx: %d\ty: %d\n", numBlocks.x, numBlocks.y);
+    //printf("Src Image Dimesions:\n\trows: %d\tcols: %d\n", src.rows, src.cols);
+    //printf("Dst Image Dimesions:\n\trows: %d\tcols: %d\n", dst.rows, dst.cols);
+    //printf("Running CUDALBP\nBlock Dimensions:\n\tx: %d\ty: %d\n", numBlocks.x, numBlocks.y);
 
     cudalbp_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, src.step, dst.step, imageHeight, imageWidth, lut);
   }
