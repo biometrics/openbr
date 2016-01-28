@@ -33,6 +33,7 @@
 #include <openbr/plugins/openbr_internal.h>
 
 #include "cudalbp.hpp"
+#include "GpuMatManager.hpp"
 
 using namespace cv;
 
@@ -88,8 +89,8 @@ class CUDALBPTransform : public UntrainableTransform
     uint8_t* lutGpuPtr;
     uchar null;
 
-    //std::mutex uploadMutex;
-    pthread_mutex_t* uploadMutex;
+
+    cuda::GpuMatManager* matManager;
 
   public:
     /* Returns the number of 0->1 or 1->0 transitions in i */
@@ -141,66 +142,35 @@ class CUDALBPTransform : public UntrainableTransform
             if (!set[i])
                 lut[i] = null; // Set to null id
 
+        // init the mat manager for managing 10 mats
+        matManager = new cuda::GpuMatManager(10);
 
         // copy lut over to the GPU
         br::cuda::cudalbp_init_wrapper(lut, &lutGpuPtr);
 
-        // initialize the mutex
-        std::cout << "STARING EVERYTHING" << std::endl<< std::flush;
-        if (uploadMutex == NULL) {
-          uploadMutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-          pthread_mutex_init(uploadMutex, NULL);
-        }
+        std::cout << "Initialized CUDALBP" << std::endl;
     }
 
     void project(const Template &src, Template &dst) const
     {
-        int myCtr = ctr++;
-        GpuMat a, b;
-        const Mat& m = src.m();
+        Mat& m = (Mat&)src.m();
 
-        std::cout << "PID: " << getpid() << std::endl << std::flush;
+        GpuMat* a;
+        GpuMat* b;
+        a = matManager->reserve();
+        matManager->upload(a, m);
 
-        //std::cout << "START: " << myCtr << std::endl << std::flush;
+        // reserve the second mat and check the dimensiosn
+        b = matManager->reserve();
+        matManager->matchDimensions(b, a);
 
+        br::cuda::cudalbp_wrapper(*a, *b, lutGpuPtr);
 
-        //std::cout << "Image type: " << type2str(m.type()) << std::endl << std::flush;
-        pthread_mutex_lock(uploadMutex);
-        a.create(m.size(), m.type());
-        b.create(m.size(), m.type());
-        pthread_mutex_unlock(uploadMutex);
+        matManager->download(b, dst);
 
-        pthread_mutex_lock(uploadMutex);
-        a.upload(m);
-        b.upload(m);
-        pthread_mutex_unlock(uploadMutex);
-
-        // resize the mats
-        //if (m.size() != srcGpuMat->size()) {
-        //  printf("resizing...\n");
-        //  srcGpuMat->release();                    dstGpuMat->release();
-        //  srcGpuMat->create(m.size(), CV_8UC1);    dstGpuMat->create(m.size(), CV_8UC1);
-        //}
-
-        // copy the data to the GPU
-        //srcGpuMat->upload(m);
-
-        // call the kernel function
-        //br::cuda::cudalbp_wrapper(*srcGpuMat, *dstGpuMat, lutGpuPtr);
-        pthread_mutex_lock(uploadMutex);
-        br::cuda::cudalbp_wrapper(a, b, lutGpuPtr);
-        pthread_mutex_unlock(uploadMutex);
-
-        // download the result to the destination
-        //dstGpuMat->download(dst.m());
-        pthread_mutex_lock(uploadMutex);
-        b.download(dst.m());
-        pthread_mutex_unlock(uploadMutex);
-
-        pthread_mutex_lock(uploadMutex);
-        a.release();
-        b.release();
-        pthread_mutex_unlock(uploadMutex);
+        // release both the mats
+        matManager->release(a);
+        matManager->release(b);
     }
 };
 
