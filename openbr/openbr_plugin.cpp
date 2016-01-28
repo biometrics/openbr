@@ -1245,6 +1245,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
         checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
+        QSet<QString> checkedPaths; // Avoid infinite loops from symlinks
 
         bool foundSDK = false;
         foreach (const QString &path, checkPaths) {
@@ -1252,6 +1253,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
             QDir dir(path);
             do {
                 sdkPath = dir.absolutePath();
+                if (checkedPaths.contains(sdkPath)) break;
+                else                                checkedPaths.insert(sdkPath);
                 foundSDK = checkSDKPath(sdkPath);
                 dir.cdUp();
             } while (!foundSDK && !dir.isRoot());
