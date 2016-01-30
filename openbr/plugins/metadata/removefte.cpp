@@ -6,7 +6,8 @@ namespace br
 /*!
  * \ingroup transforms
  * \author Brendan Klare \cite bklare
- * \brief Remove any templates that failed to enroll (FTE)
+ * \brief Remove any templates that failed to enroll (FTE).
+ * 	Important note: this will not work without the global enrollAll being true
  */
 class RemoveFTETransform : public UntrainableMetaTransform
 {
