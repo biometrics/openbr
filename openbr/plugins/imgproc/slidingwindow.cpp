@@ -187,21 +187,28 @@ class SlidingWindowTransform : public MetaTransform
                 confidences.append(maxConfidence);
             }
 
-            if (!enrollAll && rects.empty()) {
-                rects.append(Rect(0, 0, imageSize.width, imageSize.height));
-                confidences.append(-std::numeric_limits<float>::max());
+            const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
+            QList<QRectF> rectsAboveMinConfidence;
+            QList<float> confidencesAboveMinConfidence;
+            for (int i=0; i<rects.size(); i++) {
+                if (ROCMode || confidences[i] >= minConfidence) {
+                    rectsAboveMinConfidence.append(OpenCVUtils::fromRect(rects[i]));
+                    confidencesAboveMinConfidence.append(confidences[i]);
+                }
             }
 
-            const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
-            for (int i=0; i<rects.size(); i++) {
-                if (ROCMode || confidences[i] >= minConfidence || (!enrollAll && confidences[i] == -std::numeric_limits<float>::max())) {
-                    Template u = t;
-                    u.file.set("Confidence", confidences[i]);
-                    const QRectF rect = OpenCVUtils::fromRect(rects[i]);
-                    u.file.appendRect(rect);
-                    u.file.set(outputVariable, rect);
-                    dst.append(u);
-                }
+            if (!enrollAll && rectsAboveMinConfidence.isEmpty()) {
+                rectsAboveMinConfidence.append(QRectF(0, 0, t.m().cols, t.m().rows));
+                confidencesAboveMinConfidence.append(-std::numeric_limits<float>::max());
+            }
+
+            for (int i=0; i<rectsAboveMinConfidence.size(); i++) {
+                Template u(t.file, t.m());
+                u.file.set("Confidence", confidencesAboveMinConfidence[i]);
+                const QRectF rect = rectsAboveMinConfidence[i];
+                u.file.set(outputVariable, rect);
+                u.file.appendRect(rect);
+                dst.append(u);
             }
         }
     }
