@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and       *
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-// CUDA includes
-#include <cusolverDn.h>
+#include <iostream>
+using namespace std;
 
 #include <Eigen/Dense>
 #include <openbr/plugins/openbr_internal.h>
@@ -22,6 +22,8 @@
 #include <openbr/core/common.h>
 #include <openbr/core/eigenutils.h>
 #include <openbr/core/opencvutils.h>
+
+#include "cudapca.hpp"
 
 namespace br
 {
@@ -74,12 +76,12 @@ private:
         if (trainingSet.first().m().type() != CV_32FC1)
             qFatal("Requires single channel 32-bit floating point matrices.");
 
-        originalRows = trainingSet.first().m().rows;
-        int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols;
-        const int instances = trainingSet.size();
+        originalRows = trainingSet.first().m().rows;    // get number of rows of first image
+        int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
+        const int instances = trainingSet.size();       // get the number of training set instances
 
         // Map into 64-bit Eigen matrix
-        Eigen::MatrixXd data(dimsIn, instances);
+        Eigen::MatrixXd data(dimsIn, instances);        // create a mat
         for (int i=0; i<instances; i++)
             data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
 
@@ -90,12 +92,16 @@ private:
     {
         dst = cv::Mat(1, keep, CV_32FC1);
 
+        // perform the operation on the graphics card
+        cuda::cudapca_projectwrapper((float*)src.m().ptr<float>(), (float*)dst.m().ptr<float>());
+
         // Map Eigen into OpenCV
-        Eigen::Map<const Eigen::MatrixXf> inMap(src.m().ptr<float>(), src.m().rows*src.m().cols, 1);
-        Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), keep, 1);
+        //Mat cpuDst = cv::Mat(1, keep, CV_32FC1);
+        //Eigen::Map<const Eigen::MatrixXf> inMap(src.m().ptr<float>(), src.m().rows*src.m().cols, 1);
+        //Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), keep, 1);
 
         // Do projection
-        outMap = eVecs.transpose() * (inMap - mean);
+        //cpuOutMap = eVecs.transpose() * (inMap - mean);
     }
 
     void store(QDataStream &stream) const
@@ -106,6 +112,41 @@ private:
     void load(QDataStream &stream)
     {
         stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
+
+        cout << "Mean Dimensions" << endl;
+        cout << "\tRows: " << mean.rows() << " Cols: " << mean.cols() << endl;
+        cout << "eVecs Dimensions" << endl;
+        cout << "\tRows: " << eVecs.rows() << " Cols: " << eVecs.cols() << endl;
+        cout << "eVals Dimensions" << endl;
+        cout << "\tRows: " << eVals.rows() << " Cols: " << eVals.cols() << endl;
+        cout << "Keep: " << keep << endl;
+
+        cout << "Mean first value: " << mean(0, 0) << endl;
+
+        // TODO(colin): use Eigen Map class to generate map files so we don't have to copy the data
+        // serialize the eigenvectors
+        float* evBuffer = new float[eVecs.rows() * eVecs.cols()];
+        for (int i=0; i < eVecs.rows(); i++) {
+          for (int j=0; j < eVecs.cols(); j++) {
+            evBuffer[i*eVecs.cols() + j] = eVecs(i, j);
+          }
+        }
+
+        // serialize the mean
+        float* meanBuffer = new float[mean.rows() * mean.cols()];
+        for (int i=0; i < mean.rows(); i++) {
+          for (int j=0; j < mean.cols(); j++) {
+            meanBuffer[i*mean.cols() + j] = mean(i, j);
+          }
+        }
+
+        cout << "Meanbuffer first value: " << meanBuffer[0] << endl;
+
+        // call the wrapper function
+        cuda::cudapca_loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows(), mean.cols(), keep);
+
+        delete evBuffer;
+        delete meanBuffer;
     }
 
 protected:
