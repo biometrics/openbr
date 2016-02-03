@@ -57,25 +57,23 @@ namespace br { namespace cuda {
   }
 
   float* cudaEvPtr; int _evRows; int _evCols;
-  float* cudaMeanPtr; int _meanRows; int _meanCols;
-  int _keep;
+  float* cudaMeanPtr; int _meanElems;
 
   void cudapca_initwrapper() {
 
   }
 
-  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanRows, int meanCols, int keep) {
+  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
     _evRows = evRows; _evCols = evCols;
-    _meanRows = meanRows; _meanCols = meanCols;
-    _keep = keep;
+    _meanElems = meanElems;
 
     // copy the eigenvectors to the GPU
     cudaMalloc(&cudaEvPtr, evRows*evCols*sizeof(float));
     cudaMemcpy(cudaEvPtr, evPtr, evRows*evCols*sizeof(float), cudaMemcpyHostToDevice);
 
     // copy the mean to the GPU
-    cudaMalloc(&cudaMeanPtr, meanRows*meanCols*sizeof(float));
-    cudaMemcpy(cudaMeanPtr, meanPtr, meanRows*meanCols*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc(&cudaMeanPtr, meanElems*sizeof(float));
+    cudaMemcpy(cudaMeanPtr, meanPtr, meanElems*sizeof(float), cudaMemcpyHostToDevice);
   }
 
   void cudapca_trainwrapper() {
@@ -176,24 +174,24 @@ namespace br { namespace cuda {
   void cudapca_projectwrapper(float* src, float* dst) {
     // copy the image to the GPU
     float* cudaSrcPtr;
-    cudaMalloc(&cudaSrcPtr, _meanRows*_meanCols*sizeof(float));
-    cudaMemcpy(cudaSrcPtr, src, _meanRows*_meanCols*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc(&cudaSrcPtr, _meanElems*sizeof(float));
+    cudaMemcpy(cudaSrcPtr, src, _meanElems*sizeof(float), cudaMemcpyHostToDevice);
 
     float* cudaDstPtr;
-    cudaMalloc(&cudaDstPtr, _keep*sizeof(float));
+    cudaMalloc(&cudaDstPtr, _evCols*sizeof(float));
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
-    int numBlocks = _meanRows*_meanCols / threadsPerBlock;
-    cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>(cudaSrcPtr, cudaMeanPtr, _meanRows*_meanCols);
+    int numBlocks = _meanElems / threadsPerBlock;
+    cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>(cudaSrcPtr, cudaMeanPtr, _meanElems);
 
     // perform the multiplication
     threadsPerBlock = 64;
-    numBlocks = _keep / threadsPerBlock;
+    numBlocks = _evCols / threadsPerBlock;
     cudapca_project_multiply_kernel<<<numBlocks, threadsPerBlock>>>(cudaSrcPtr, cudaDstPtr, cudaEvPtr, _evRows, _evCols);
 
     // copy the data back to the CPU
-    cudaMemcpy(dst, cudaDstPtr, _keep*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(dst, cudaDstPtr, _evCols*sizeof(float), cudaMemcpyDeviceToHost);
 
     cudaFree(cudaSrcPtr);
     cudaFree(cudaDstPtr);

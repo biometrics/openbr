@@ -7,7 +7,7 @@ using namespace cv::gpu;
 namespace br { namespace cuda {
   void cudapca_initwrapper();
 
-  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanRows, int meanCols, int keep);
+  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
   void cudapca_trainwrapper();
 
   void cudapca_projectwrapper(float* src, float* dst);

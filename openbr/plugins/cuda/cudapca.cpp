@@ -143,7 +143,7 @@ private:
         cout << "Meanbuffer first value: " << meanBuffer[0] << endl;
 
         // call the wrapper function
-        cuda::cudapca_loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows(), mean.cols(), keep);
+        cuda::cudapca_loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
 
         delete evBuffer;
         delete meanBuffer;
