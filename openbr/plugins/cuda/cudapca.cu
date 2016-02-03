@@ -58,6 +58,8 @@ namespace br { namespace cuda {
 
   float* cudaEvPtr; int _evRows; int _evCols;
   float* cudaMeanPtr; int _meanElems;
+  float* _cudaSrcPtr;
+  float* _cudaDstPtr;
 
   void cudapca_initwrapper() {
 
@@ -74,6 +76,9 @@ namespace br { namespace cuda {
     // copy the mean to the GPU
     cudaMalloc(&cudaMeanPtr, meanElems*sizeof(float));
     cudaMemcpy(cudaMeanPtr, meanPtr, meanElems*sizeof(float), cudaMemcpyHostToDevice);
+
+    cudaMalloc(&_cudaSrcPtr, _meanElems*sizeof(float));
+    cudaMalloc(&_cudaDstPtr, _evCols*sizeof(float));
   }
 
   void cudapca_trainwrapper() {
@@ -173,27 +178,19 @@ namespace br { namespace cuda {
 
   void cudapca_projectwrapper(float* src, float* dst) {
     // copy the image to the GPU
-    float* cudaSrcPtr;
-    cudaMalloc(&cudaSrcPtr, _meanElems*sizeof(float));
-    cudaMemcpy(cudaSrcPtr, src, _meanElems*sizeof(float), cudaMemcpyHostToDevice);
-
-    float* cudaDstPtr;
-    cudaMalloc(&cudaDstPtr, _evCols*sizeof(float));
+    cudaMemcpy(_cudaSrcPtr, src, _meanElems*sizeof(float), cudaMemcpyHostToDevice);
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
     int numBlocks = _meanElems / threadsPerBlock;
-    cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>(cudaSrcPtr, cudaMeanPtr, _meanElems);
+    cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>(_cudaSrcPtr, cudaMeanPtr, _meanElems);
 
     // perform the multiplication
     threadsPerBlock = 64;
     numBlocks = _evCols / threadsPerBlock;
-    cudapca_project_multiply_kernel<<<numBlocks, threadsPerBlock>>>(cudaSrcPtr, cudaDstPtr, cudaEvPtr, _evRows, _evCols);
+    cudapca_project_multiply_kernel<<<numBlocks, threadsPerBlock>>>(_cudaSrcPtr, _cudaDstPtr, cudaEvPtr, _evRows, _evCols);
 
     // copy the data back to the CPU
-    cudaMemcpy(dst, cudaDstPtr, _evCols*sizeof(float), cudaMemcpyDeviceToHost);
-
-    cudaFree(cudaSrcPtr);
-    cudaFree(cudaDstPtr);
+    cudaMemcpy(dst, _cudaDstPtr, _evCols*sizeof(float), cudaMemcpyDeviceToHost);
   }
 }}
