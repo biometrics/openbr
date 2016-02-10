@@ -44,11 +44,11 @@ namespace br { namespace cuda {
     }
   }
 
-  __global__ void cudapca_project_subtractmean_kernel(float* out, float* mean, int cols) {
+  __global__ void cudapca_project_subtractmean_kernel(float* out, float* mean, int numCols) {
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
 
     // perform bound checking
-    if (colInd >= cols) {
+    if (colInd >= numCols) {
       return;
     }
 
@@ -60,10 +60,6 @@ namespace br { namespace cuda {
   float* cudaMeanPtr; int _meanElems;
   float* _cudaSrcPtr;
   float* _cudaDstPtr;
-
-  void cudapca_initwrapper() {
-
-  }
 
   void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
     _evRows = evRows; _evCols = evCols;
@@ -182,12 +178,12 @@ namespace br { namespace cuda {
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
-    int numBlocks = _meanElems / threadsPerBlock;
+    int numBlocks = _meanElems / threadsPerBlock + 1;
     cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>(_cudaSrcPtr, cudaMeanPtr, _meanElems);
 
     // perform the multiplication
     threadsPerBlock = 64;
-    numBlocks = _evCols / threadsPerBlock;
+    numBlocks = _evCols / threadsPerBlock + 1;
     cudapca_project_multiply_kernel<<<numBlocks, threadsPerBlock>>>(_cudaSrcPtr, _cudaDstPtr, cudaEvPtr, _evRows, _evCols);
 
     // copy the data back to the CPU

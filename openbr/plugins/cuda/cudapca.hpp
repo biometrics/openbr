@@ -5,8 +5,6 @@ using namespace cv;
 using namespace cv::gpu;
 
 namespace br { namespace cuda {
-  void cudapca_initwrapper();
-
   void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
   void cudapca_trainwrapper();
 

@@ -98,10 +98,10 @@ private:
         // Map Eigen into OpenCV
         //Mat cpuDst = cv::Mat(1, keep, CV_32FC1);
         //Eigen::Map<const Eigen::MatrixXf> inMap(src.m().ptr<float>(), src.m().rows*src.m().cols, 1);
-        //Eigen::Map<Eigen::MatrixXf> outMap(dst.m().ptr<float>(), keep, 1);
+        //Eigen::Map<Eigen::MatrixXf> outMap(cpuDst.ptr<float>(), keep, 1);
 
         // Do projection
-        //cpuOutMap = eVecs.transpose() * (inMap - mean);
+        //outMap = eVecs.transpose() * (inMap - mean);
     }
 
     void store(QDataStream &stream) const
