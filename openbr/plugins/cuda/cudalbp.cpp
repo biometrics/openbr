@@ -33,7 +33,7 @@
 #include <openbr/plugins/openbr_internal.h>
 
 #include "cudalbp.hpp"
-#include "GpuMatManager.hpp"
+#include "MatManager.hpp"
 
 using namespace cv;
 
@@ -90,7 +90,7 @@ class CUDALBPTransform : public UntrainableTransform
     uchar null;
 
 
-    cuda::GpuMatManager* matManager;
+    cuda::MatManager* matManager;
 
   public:
     /* Returns the number of 0->1 or 1->0 transitions in i */
@@ -143,7 +143,7 @@ class CUDALBPTransform : public UntrainableTransform
                 lut[i] = null; // Set to null id
 
         // init the mat manager for managing 10 mats
-        matManager = new cuda::GpuMatManager(10);
+        matManager = new cuda::MatManager(10);
 
         // copy lut over to the GPU
         br::cuda::cudalbp_init_wrapper(lut, &lutGpuPtr);
@@ -154,23 +154,29 @@ class CUDALBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat& m = (Mat&)src.m();
-
-        GpuMat* a;
-        GpuMat* b;
-        a = matManager->reserve();
+        uint8_t* a;
+        uint8_t* b;
+        a = matManager->reserve(&m);
+//        std::cout << "m: " << m.size() << ", " << m.type() << std::endl << std::flush;
+//        std::cout << "a: " << a->size() << ", " << a->type() << std::endl << std::flush;
         matManager->upload(a, m);
 
         // reserve the second mat and check the dimensiosn
-        b = matManager->reserve();
-        matManager->matchDimensions(b, a);
+        b = matManager->reserve(&m);
+        //matManager->matchDimensions(b, a);
+        
+        //std::cout << "Coming to here" << std::endl << std::flush;
+        br::cuda::cudalbp_wrapper(a, b, lutGpuPtr, m.cols, m.rows, m.step1());
+        //std::cout << "Coming out of here" << std::endl << std::flush;
 
-        br::cuda::cudalbp_wrapper(*a, *b, lutGpuPtr);
-
+        //std::cout << "Start to download" << std::endl << std::flush;
         matManager->download(b, dst);
+        //std::cout << "finish download" << std::endl << std::flush;
 
         // release both the mats
         matManager->release(a);
         matManager->release(b);
+        std::cout << "finish release" << std::endl << std::flush;
     }
 };
 
