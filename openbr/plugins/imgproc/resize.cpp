@@ -48,13 +48,20 @@ private:
     Q_PROPERTY(int columns READ get_columns WRITE set_columns RESET reset_columns STORED false)
     Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
     Q_PROPERTY(bool preserveAspect READ get_preserveAspect WRITE set_preserveAspect RESET reset_preserveAspect STORED false)
+    Q_PROPERTY(bool pad READ get_pad WRITE set_pad RESET reset_pad STORED false)
     BR_PROPERTY(int, rows, -1)
     BR_PROPERTY(int, columns, -1)
     BR_PROPERTY(Method, method, Bilin)
     BR_PROPERTY(bool, preserveAspect, false)
+    BR_PROPERTY(bool, pad, true)
 
     void project(const Template &src, Template &dst) const
     {
+        if ((rows == -1) && (columns == -1)) {
+            dst = src;
+            return;
+        }
+
         if (!preserveAspect) {
             resize(src, dst, Size((columns == -1) ? src.m().cols*rows/src.m().rows : columns, rows), 0, 0, method);
             const float rowScaleFactor = (float)rows/src.m().rows;
@@ -63,6 +70,13 @@ private:
             for (int i=0; i<points.size(); i++)
                 points[i] = QPointF(points[i].x() * colScaleFactor,points[i].y() * rowScaleFactor);
             dst.file.setPoints(points);
+        } else if (!pad) {
+            const int size = std::max(rows, columns);
+            float ratio = (float) src.m().rows / src.m().cols;
+            if (src.m().rows > src.m().cols)
+                resize(src, dst, Size(size/ratio, size), 0, 0, method);
+            else
+                resize(src, dst, Size(size, size*ratio), 0, 0, method);
         } else {
             float inRatio = (float) src.m().rows / src.m().cols;
             float outRatio = (float) rows / columns;
