@@ -41,7 +41,7 @@ namespace br { namespace cuda {
     sem_init(_matSemaphore, 0, _numMats);
   }
 
-  MatManager::matindex MatManager::reserve(Mat *mat) {
+  MatManager::matindex MatManager::reserve(Mat &mat) {
     int reservedMatIndex = 0;
     //std::cout << "Reserving" << std::endl << std::flush;
 
@@ -66,16 +66,11 @@ namespace br { namespace cuda {
 
     // reallocate if size does not match
     pthread_mutex_lock(_matsDimensionLock);
-    if (*_matsDimension[reservedMatIndex] != mat->rows * mat->cols) {
-      //printSizeChangingMat(reservedMat);
-      //reservedMat->release();
-      //reservedMat->create(mat->size(), mat->type());
-      //std::cout << "Size mismatch" << std::endl << std::flush;
-      // re malloc
+    if (*_matsDimension[reservedMatIndex] != mat.rows * mat.cols) {
       cudaFree(_mats[reservedMatIndex]); // free the previous memory first
-      cudaMalloc(&_mats[reservedMatIndex], mat->rows * mat->cols * sizeof(uint8_t));
+      cudaMalloc(&_mats[reservedMatIndex], mat.rows * mat.cols * sizeof(uint8_t));
       // change the dimension of that matrix
-      *_matsDimension[reservedMatIndex] = mat->rows * mat->cols;
+      *_matsDimension[reservedMatIndex] = mat.rows * mat.cols;
 
     }
     pthread_mutex_unlock(_matsDimensionLock);

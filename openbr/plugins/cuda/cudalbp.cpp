@@ -156,13 +156,13 @@ class CUDALBPTransform : public UntrainableTransform
         Mat& m = (Mat&)src.m();
         cuda::MatManager::matindex a;
         cuda::MatManager::matindex b;
-        a = matManager->reserve(&m);
+        a = matManager->reserve(m);
 //        std::cout << "m: " << m.size() << ", " << m.type() << std::endl << std::flush;
 //        std::cout << "a: " << a->size() << ", " << a->type() << std::endl << std::flush;
         matManager->upload(a, m);
 
         // reserve the second mat and check the dimensiosn
-        b = matManager->reserve(&m);
+        b = matManager->reserve(m);
         //matManager->matchDimensions(b, a);
         
         //std::cout << "Coming to here" << std::endl << std::flush;

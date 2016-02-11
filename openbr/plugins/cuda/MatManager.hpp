@@ -28,7 +28,7 @@ namespace br { namespace cuda {
     typedef int matindex;
     MatManager(int num);
 
-    int reserve(Mat *mat);
+    int reserve(Mat &mat);
     void upload(matindex reservedMatIndex, Mat& mat);
     void download(matindex reservedMatIndex, Mat& dstMat);
     void release(matindex matIndex);
