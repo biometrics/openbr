@@ -25,13 +25,14 @@ namespace br { namespace cuda {
     sem_t* _matSemaphore;
 
   public:
+    typedef int matindex;
     MatManager(int num);
 
     int reserve(Mat *mat);
-    void upload(int reservedMatIndex, Mat& mat);
-    void download(int reservedMatIndex, Mat& dstMat);
-    void release(int matIndex);
-    uint8_t* get_mat_pointer_from_index(int matIndex);
+    void upload(matindex reservedMatIndex, Mat& mat);
+    void download(matindex reservedMatIndex, Mat& dstMat);
+    void release(matindex matIndex);
+    uint8_t* get_mat_pointer_from_index(matindex matIndex);
 
     ~MatManager();
     //void printMats();

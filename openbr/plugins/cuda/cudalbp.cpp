@@ -154,8 +154,8 @@ class CUDALBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat& m = (Mat&)src.m();
-        int a;
-        int b;
+        cuda::MatManager::matindex a;
+        cuda::MatManager::matindex b;
         a = matManager->reserve(&m);
 //        std::cout << "m: " << m.size() << ", " << m.type() << std::endl << std::flush;
 //        std::cout << "a: " << a->size() << ", " << a->type() << std::endl << std::flush;
