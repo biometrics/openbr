@@ -1,3 +1,8 @@
+/*
+NOTES
+Mat reservations should return a handle instead of a pointer
+*/
+
 #include <pthread.h>
 #include <semaphore.h>
 

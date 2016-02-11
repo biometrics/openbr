@@ -15,12 +15,13 @@ namespace br { namespace cuda {
     // initialize the an array of Mats
     _mats = (uint8_t**)malloc(num * sizeof(uint8_t*));
     _matTaken = (bool**)malloc(num * sizeof(bool*));
-    _matsDimension = (int**) malloc(num * sizeof(int));
+    _matsDimension = (int**)malloc(num * sizeof(int*));
 
     for (int i=0; i < num; i++) {
       cudaMalloc(&_mats[i], 1 * sizeof(uint8_t));
       //_mats[i] = new GpuMat();
 
+      // initialize matTaken
       _matTaken[i] = new bool;
       (*_matTaken[i]) = false;
 
@@ -69,14 +70,14 @@ namespace br { namespace cuda {
       //printSizeChangingMat(reservedMat);
       //reservedMat->release();
       //reservedMat->create(mat->size(), mat->type());
-      std::cout << "Size mismatch" << std::endl << std::flush; 
+      std::cout << "Size mismatch" << std::endl << std::flush;
       // re malloc
       cudaFree(_mats[reservedMatIndex]); // free the previous memory first
       cudaMalloc(&_mats[reservedMatIndex], mat->rows * mat->cols * sizeof(uint8_t));
       // change the dimension of that matrix
-      *_matsDimension[reservedMatIndex] = mat->rows * mat->cols; 
+      *_matsDimension[reservedMatIndex] = mat->rows * mat->cols;
 
-    } 
+    }
     pthread_mutex_unlock(_matsDimensionLock);
     return _mats[reservedMatIndex];
   }
@@ -99,7 +100,7 @@ namespace br { namespace cuda {
     reservedMat->download(dstMat);
     pthread_mutex_unlock(_matsDimensionLock);
     */
-    
+
     // copy the mat data back
     int dimension = dstMat.rows * dstMat.cols;
     cudaMemcpy(dstMat.ptr<uint8_t>(), reservedMat, dimension, cudaMemcpyDeviceToHost);
@@ -128,9 +129,9 @@ namespace br { namespace cuda {
     int type = reservedMat->type();
     reservedMat->release();
     reservedMat->create(size, type);
-    
 
-    
+
+
     pthread_mutex_unlock(_matsDimensionLock);
     */
 
