@@ -27,10 +27,11 @@ namespace br { namespace cuda {
   public:
     MatManager(int num);
 
-    uint8_t* reserve(Mat *mat);
-    void upload(uint8_t* reservedMat, Mat& mat);
-    void download(uint8_t* reservedMat, Mat& dstMat);
-    void release(uint8_t* mat);
+    int reserve(Mat *mat);
+    void upload(int reservedMatIndex, Mat& mat);
+    void download(int reservedMatIndex, Mat& dstMat);
+    void release(int matIndex);
+    uint8_t* get_mat_pointer_from_index(int matIndex);
 
     ~MatManager();
     //void printMats();

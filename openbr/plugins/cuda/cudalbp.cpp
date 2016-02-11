@@ -154,8 +154,8 @@ class CUDALBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat& m = (Mat&)src.m();
-        uint8_t* a;
-        uint8_t* b;
+        int a;
+        int b;
         a = matManager->reserve(&m);
 //        std::cout << "m: " << m.size() << ", " << m.type() << std::endl << std::flush;
 //        std::cout << "a: " << a->size() << ", " << a->type() << std::endl << std::flush;
@@ -166,7 +166,9 @@ class CUDALBPTransform : public UntrainableTransform
         //matManager->matchDimensions(b, a);
         
         //std::cout << "Coming to here" << std::endl << std::flush;
-        br::cuda::cudalbp_wrapper(a, b, lutGpuPtr, m.cols, m.rows, m.step1());
+        uint8_t* srcMatPtr = matManager->get_mat_pointer_from_index(a);
+        uint8_t* dstMatPtr = matManager->get_mat_pointer_from_index(b);
+        br::cuda::cudalbp_wrapper(srcMatPtr, dstMatPtr, lutGpuPtr, m.cols, m.rows, m.step1());
         //std::cout << "Coming out of here" << std::endl << std::flush;
 
         //std::cout << "Start to download" << std::endl << std::flush;
@@ -176,7 +178,7 @@ class CUDALBPTransform : public UntrainableTransform
         // release both the mats
         matManager->release(a);
         matManager->release(b);
-        std::cout << "finish release" << std::endl << std::flush;
+        //std::cout << "finish release" << std::endl << std::flush;
     }
 };
 

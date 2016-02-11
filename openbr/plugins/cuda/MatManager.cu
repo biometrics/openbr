@@ -41,9 +41,9 @@ namespace br { namespace cuda {
     sem_init(_matSemaphore, 0, _numMats);
   }
 
-  uint8_t* MatManager::reserve(Mat *mat) {
+  int MatManager::reserve(Mat *mat) {
     int reservedMatIndex = 0;
-    std::cout << "Reserving" << std::endl << std::flush;
+    //std::cout << "Reserving" << std::endl << std::flush;
 
     sem_wait(_matSemaphore);
     pthread_mutex_lock(_matTakenLock);
@@ -52,7 +52,7 @@ namespace br { namespace cuda {
       if ( !(*_matTaken[i]) ) {
         *_matTaken[i] = true;
         reservedMatIndex = i;
-        std::cout << "Taking " << i << std::endl << std::flush;
+        //std::cout << "Taking " << i << std::endl << std::flush;
         break;
       }
     }
@@ -70,7 +70,7 @@ namespace br { namespace cuda {
       //printSizeChangingMat(reservedMat);
       //reservedMat->release();
       //reservedMat->create(mat->size(), mat->type());
-      std::cout << "Size mismatch" << std::endl << std::flush;
+      //std::cout << "Size mismatch" << std::endl << std::flush;
       // re malloc
       cudaFree(_mats[reservedMatIndex]); // free the previous memory first
       cudaMalloc(&_mats[reservedMatIndex], mat->rows * mat->cols * sizeof(uint8_t));
@@ -79,10 +79,10 @@ namespace br { namespace cuda {
 
     }
     pthread_mutex_unlock(_matsDimensionLock);
-    return _mats[reservedMatIndex];
+    return reservedMatIndex;
   }
 
-  void MatManager::upload(uint8_t* reservedMat, Mat& mat) {
+  void MatManager::upload(int reservedMatIndex, Mat& mat) {
     // upload the image
     /*
     pthread_mutex_lock(_matsDimensionLock);
@@ -91,10 +91,11 @@ namespace br { namespace cuda {
     */
 
     // copy the content of the Mat to GPU
+    uint8_t* reservedMat = _mats[reservedMatIndex];
     cudaMemcpy(reservedMat, mat.ptr<uint8_t>(), mat.rows * mat.cols, cudaMemcpyHostToDevice);
   }
 
-  void MatManager::download(uint8_t* reservedMat, Mat& dstMat) {
+  void MatManager::download(int reservedMatIndex, Mat& dstMat) {
     /*
     pthread_mutex_lock(_matsDimensionLock);
     reservedMat->download(dstMat);
@@ -103,10 +104,12 @@ namespace br { namespace cuda {
 
     // copy the mat data back
     int dimension = dstMat.rows * dstMat.cols;
+    uint8_t* reservedMat = _mats[reservedMatIndex];
     cudaMemcpy(dstMat.ptr<uint8_t>(), reservedMat, dimension, cudaMemcpyDeviceToHost);
   }
 
-  void MatManager::release(uint8_t* reservedMat) {
+  void MatManager::release(int reservedMatIndex) {
+    uint8_t* reservedMat = _mats[reservedMatIndex];
     pthread_mutex_lock(_matTakenLock);
     bool foundMatch = false;
     for (int i=0; i < _numMats; i++) {
@@ -141,7 +144,7 @@ namespace br { namespace cuda {
   MatManager::~MatManager() {
     // assume a single thread is destroying the manager
     // TODO(colin): add the destroy code
-    std::cout << "Start to destroy.." << std::endl << std::flush;
+    //std::cout << "Start to destroy.." << std::endl << std::flush;
   }
 
   /*
@@ -182,5 +185,8 @@ namespace br { namespace cuda {
     std::cout << "can't release mat at address: " << gpuMat << std::endl << std::flush;
   }
 */
+  uint8_t* MatManager::get_mat_pointer_from_index(int matIndex) {
+    return _mats[matIndex];
+  }
 
 }}
