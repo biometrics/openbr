@@ -21,7 +21,7 @@ namespace br { namespace cuda {
     int* _matsDimension;   // holds the dimension of the Mats
 
     pthread_mutex_t* _matTakenLock;            // lock for matTaken table
-    pthread_mutex_t* _matsDimensionLock;     // lock for OpenCV upload/download/realloc operations
+    pthread_mutex_t* _matsDimensionLock;     // lock for _matsDimension table and _mats table
     sem_t* _matSemaphore;
 
   public:
@@ -35,9 +35,5 @@ namespace br { namespace cuda {
     uint8_t* get_mat_pointer_from_index(matindex matIndex);
 
     ~MatManager();
-    //void printMats();
-    //void printSemValue();
-    //void printSizeChangingMat(uint8_t* gpuMat);
-    //void printReleasingMat(uint8_t* gpuMat);
   };
 }}

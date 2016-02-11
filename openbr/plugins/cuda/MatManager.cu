@@ -19,20 +19,11 @@ namespace br { namespace cuda {
 
     for (int i=0; i < num; i++) {
       cudaMalloc(&_mats[i], 1 * sizeof(uint8_t));
-      //_mats[i] = new GpuMat();
 
       // initialize matTaken
-      /*
-      _matTaken[i] = new bool;
-      (*_matTaken[i]) = false;
-      */
       _matTaken[i] = false;
 
       // initialize all mat dimensions to be 1
-      /*
-      _matsDimension[i] = new int;
-      (*_matsDimension[i]) = 1;
-      */
       _matsDimension[i] = 1;
     }
 
@@ -49,7 +40,6 @@ namespace br { namespace cuda {
 
   MatManager::matindex MatManager::reserve(Mat &mat) {
     int reservedMatIndex = 0;
-    //std::cout << "Reserving" << std::endl << std::flush;
 
     sem_wait(_matSemaphore);
     pthread_mutex_lock(_matTakenLock);
@@ -58,7 +48,6 @@ namespace br { namespace cuda {
       if ( !_matTaken[i] ) {
         _matTaken[i] = true;
         reservedMatIndex = i;
-        //std::cout << "Taking " << i << std::endl << std::flush;
         break;
       }
     }
@@ -66,8 +55,6 @@ namespace br { namespace cuda {
       std::cout << "Cannot reserve a mat. Not enough GpuMat resourses\n" << std::endl << std::flush;
     }
 
-    //printMats();
-    //printSemValue();
     pthread_mutex_unlock(_matTakenLock);
 
     // reallocate if size does not match
@@ -84,25 +71,12 @@ namespace br { namespace cuda {
   }
 
   void MatManager::upload(MatManager::matindex reservedMatIndex, Mat& mat) {
-    // upload the image
-    /*
-    pthread_mutex_lock(_matsDimensionLock);
-    reservedMat->upload(mat);
-    pthread_mutex_unlock(_matsDimensionLock);
-    */
-
     // copy the content of the Mat to GPU
     uint8_t* reservedMat = _mats[reservedMatIndex];
     cudaMemcpy(reservedMat, mat.ptr<uint8_t>(), mat.rows * mat.cols, cudaMemcpyHostToDevice);
   }
 
   void MatManager::download(MatManager::matindex reservedMatIndex, Mat& dstMat) {
-    /*
-    pthread_mutex_lock(_matsDimensionLock);
-    reservedMat->download(dstMat);
-    pthread_mutex_unlock(_matsDimensionLock);
-    */
-
     // copy the mat data back
     int dimension = dstMat.rows * dstMat.cols;
     uint8_t* reservedMat = _mats[reservedMatIndex];
@@ -126,19 +100,6 @@ namespace br { namespace cuda {
       std::cout << "Reservedmat is not in the _mats array" << std::endl << std::flush;
       return;
     }
-    /*
-    printReleasingMat(reservedMat);
-    pthread_mutex_lock(_matsDimensionLock);
-    Size size = reservedMat->size();
-    int type = reservedMat->type();
-    reservedMat->release();
-    reservedMat->create(size, type);
-
-
-
-    pthread_mutex_unlock(_matsDimensionLock);
-    */
-
     sem_post(_matSemaphore);
   }
 
@@ -148,44 +109,6 @@ namespace br { namespace cuda {
     //std::cout << "Start to destroy.." << std::endl << std::flush;
   }
 
-  /*
-  void MatManager::printMats() {
-    for (int i = 0; i < _numMats; i++) {
-      if ((*_matTaken[i]) == true) {
-        std::cout << i << ": Taken, " << _mats[i]->size() << std::endl << std::flush;
-      } else {
-        std::cout << i << ": Not taken, " << _mats[i]->size() << std::endl << std::flush;
-      }
-    }
-    std::cout << std::endl << std::flush;
-  }
-
-  void MatManager::printSemValue() {
-    int semValue;
-    sem_getvalue(_matSemaphore, &semValue);
-    std::cout << "Sem value: " << semValue << std::endl << std::flush;
-  }
-
-  void MatManager::printSizeChangingMat(GpuMat* gpuMat) {
-    for (int i=0; i < _numMats; i++) {
-      if (gpuMat == _mats[i]) {
-        std::cout << "changing is size of" << i << " at " << gpuMat <<  std::endl << std::flush;
-        return;
-      }
-    }
-    std::cout << "can't change size of mat at address: " << gpuMat << std::endl << std::flush;
-  }
-
-  void MatManager::printReleasingMat(GpuMat* gpuMat) {
-    for (int i=0; i < _numMats; i++) {
-      if (gpuMat == _mats[i]) {
-        std::cout << "releasing mat" << i << " at " << gpuMat <<  std::endl << std::flush;
-        return;
-      }
-    }
-    std::cout << "can't release mat at address: " << gpuMat << std::endl << std::flush;
-  }
-*/
   uint8_t* MatManager::get_mat_pointer_from_index(MatManager::matindex matIndex) {
     return _mats[matIndex];
   }
