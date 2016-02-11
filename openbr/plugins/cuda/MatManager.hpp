@@ -17,8 +17,8 @@ namespace br { namespace cuda {
   private:
     int _numMats;
     uint8_t** _mats;         // holds all the mats
-    bool** _matTaken;       // holds whether or not they are taken
-    int** _matsDimension;   // holds the dimension of the Mats
+    bool* _matTaken;       // holds whether or not they are taken
+    int* _matsDimension;   // holds the dimension of the Mats
 
     pthread_mutex_t* _matTakenLock;            // lock for matTaken table
     pthread_mutex_t* _matsDimensionLock;     // lock for OpenCV upload/download/realloc operations

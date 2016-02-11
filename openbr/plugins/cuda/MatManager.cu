@@ -14,20 +14,26 @@ namespace br { namespace cuda {
 
     // initialize the an array of Mats
     _mats = (uint8_t**)malloc(num * sizeof(uint8_t*));
-    _matTaken = (bool**)malloc(num * sizeof(bool*));
-    _matsDimension = (int**)malloc(num * sizeof(int*));
+    _matTaken = (bool*)malloc(num * sizeof(bool));
+    _matsDimension = (int*)malloc(num * sizeof(int));
 
     for (int i=0; i < num; i++) {
       cudaMalloc(&_mats[i], 1 * sizeof(uint8_t));
       //_mats[i] = new GpuMat();
 
       // initialize matTaken
+      /*
       _matTaken[i] = new bool;
       (*_matTaken[i]) = false;
+      */
+      _matTaken[i] = false;
 
       // initialize all mat dimensions to be 1
+      /*
       _matsDimension[i] = new int;
       (*_matsDimension[i]) = 1;
+      */
+      _matsDimension[i] = 1;
     }
 
     // initialize the locks
@@ -49,8 +55,8 @@ namespace br { namespace cuda {
     pthread_mutex_lock(_matTakenLock);
     int i;
     for (i=0; i < _numMats; i++) {
-      if ( !(*_matTaken[i]) ) {
-        *_matTaken[i] = true;
+      if ( !_matTaken[i] ) {
+        _matTaken[i] = true;
         reservedMatIndex = i;
         //std::cout << "Taking " << i << std::endl << std::flush;
         break;
@@ -66,11 +72,11 @@ namespace br { namespace cuda {
 
     // reallocate if size does not match
     pthread_mutex_lock(_matsDimensionLock);
-    if (*_matsDimension[reservedMatIndex] != mat.rows * mat.cols) {
+    if (_matsDimension[reservedMatIndex] != mat.rows * mat.cols) {
       cudaFree(_mats[reservedMatIndex]); // free the previous memory first
       cudaMalloc(&_mats[reservedMatIndex], mat.rows * mat.cols * sizeof(uint8_t));
       // change the dimension of that matrix
-      *_matsDimension[reservedMatIndex] = mat.rows * mat.cols;
+      _matsDimension[reservedMatIndex] = mat.rows * mat.cols;
 
     }
     pthread_mutex_unlock(_matsDimensionLock);
@@ -109,7 +115,7 @@ namespace br { namespace cuda {
     bool foundMatch = false;
     for (int i=0; i < _numMats; i++) {
       if (reservedMat == _mats[i]) {
-        *_matTaken[i] = false;
+        _matTaken[i] = false;
         foundMatch = true;
       }
     }
