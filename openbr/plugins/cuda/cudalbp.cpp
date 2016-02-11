@@ -33,7 +33,7 @@
 #include <openbr/plugins/openbr_internal.h>
 
 #include "cudalbp.hpp"
-#include "GpuMatManager.hpp"
+#include "MatManager.hpp"
 
 using namespace cv;
 
@@ -90,7 +90,7 @@ class CUDALBPTransform : public UntrainableTransform
     uchar null;
 
 
-    cuda::GpuMatManager* matManager;
+    cuda::MatManager* matManager;
 
   public:
     /* Returns the number of 0->1 or 1->0 transitions in i */
@@ -143,7 +143,7 @@ class CUDALBPTransform : public UntrainableTransform
                 lut[i] = null; // Set to null id
 
         // init the mat manager for managing 10 mats
-        matManager = new cuda::GpuMatManager(10);
+        matManager = new cuda::MatManager(10);
 
         // copy lut over to the GPU
         br::cuda::cudalbp_init_wrapper(lut, &lutGpuPtr);
@@ -154,17 +154,17 @@ class CUDALBPTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat& m = (Mat&)src.m();
-
-        GpuMat* a;
-        GpuMat* b;
-        a = matManager->reserve();
+        cuda::MatManager::matindex a;
+        cuda::MatManager::matindex b;
+        a = matManager->reserve(m);
         matManager->upload(a, m);
 
         // reserve the second mat and check the dimensiosn
-        b = matManager->reserve();
-        matManager->matchDimensions(b, a);
-
-        br::cuda::cudalbp_wrapper(*a, *b, lutGpuPtr);
+        b = matManager->reserve(m);
+        
+        uint8_t* srcMatPtr = matManager->get_mat_pointer_from_index(a);
+        uint8_t* dstMatPtr = matManager->get_mat_pointer_from_index(b);
+        br::cuda::cudalbp_wrapper(srcMatPtr, dstMatPtr, lutGpuPtr, m.cols, m.rows, m.step1());
 
         matManager->download(b, dst);
 

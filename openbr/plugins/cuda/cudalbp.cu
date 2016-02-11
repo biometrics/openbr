@@ -36,15 +36,8 @@ namespace br { namespace cuda {
     dstRowPtr[colInd] = val;
   }
 
-  void cudalbp_wrapper(GpuMat& src, GpuMat& dst, uint8_t* lut)
+  void cudalbp_wrapper(uint8_t* srcPtr, uint8_t* dstPtr, uint8_t* lut, int imageWidth, int imageHeight, size_t step)
   {
-    // convert the GpuMats to pointers
-    uint8_t* srcPtr = (uint8_t*)src.data;
-    uint8_t* dstPtr = (uint8_t*)dst.data;
-
-    int imageWidth = src.cols;
-    int imageHeight = src.rows;
-
     // make 8 * 8 = 64 square block
     dim3 threadsPerBlock(8, 8);
 
@@ -55,7 +48,7 @@ namespace br { namespace cuda {
     //printf("Dst Image Dimesions:\n\trows: %d\tcols: %d\n", dst.rows, dst.cols);
     //printf("Running CUDALBP\nBlock Dimensions:\n\tx: %d\ty: %d\n", numBlocks.x, numBlocks.y);
 
-    cudalbp_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, src.step, dst.step, imageHeight, imageWidth, lut);
+    cudalbp_kernel<<<numBlocks, threadsPerBlock>>>(srcPtr, dstPtr, step, step, imageHeight, imageWidth, lut);
   }
 
   void cudalbp_init_wrapper(uint8_t* lut, uint8_t** lutGpuPtrPtr) {
