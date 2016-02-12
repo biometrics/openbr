@@ -1,14 +1,20 @@
 #include <iostream>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/gpu/gpu.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
 
 using namespace std;
 
 using namespace cv;
-using namespace cv::gpu;
+
+extern string type2str(int type);
+
+namespace br { namespace cuda { namespace cudacopyto {
+  //template<typename T>
+  //void wrapper(const T* in, void** out, const int rows, const int cols);
+  void wrapper(const unsigned char* in, void** out, const int rows, const int cols);
+}}}
 
 namespace br
 {
@@ -19,32 +25,35 @@ namespace br
 private:
     void project(const Template &src, Template &dst) const
     {
-      // get the mat to send to the GPU
-      GpuMat* gpuMat = new GpuMat;
+      const Mat& srcMat = src.m();
+      const int rows = srcMat.rows;
+      const int cols = srcMat.cols;
 
-      try
-      {
-        // copy the contents to the GPU
-        gpuMat->upload(src.m());
+      void* cudaMemPtr;
+      switch(srcMat.type()) {
+      //case CV_32FC1:
+      //  br::cuda::cudacopyfrom::wrapper<float>(srcMat.ptr<float>(), &cudaMemPtr, rows, cols);
+      //  break;
+      case CV_8UC1:
+        //br::cuda::cudacopyfrom::wrapper<unsigned char>(srcMat.ptr<unsigned char>(), &cudaMemPtr, rows, cols);
+        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &cudaMemPtr, rows, cols);
+        break;
+      default:
+        cout << "ERR: Invalid image type! " << type2str(srcMat.type()) << endl;
+        return;
       }
-      catch(const cv::Exception& ex)
-      {
-        cout << "Error: " << ex.what() << endl;
-      }
 
-      // now create a new Mat that contains the 64-bit pointer
-      Mat m = Mat(2, 1, CV_32S);
+      // output will be a single pointer to graphics card memory
+      Mat dstMat = Mat(4, 1, DataType<void*>::type);
+      void** dstMatData = dstMat.ptr<void*>();
 
-      // pointer magic
-      uint64_t gpuMatInt = (uint64_t)gpuMat;
-      m.at<int>(0,0) = (int32_t)(gpuMatInt &  0x00000000FFFFFFFF);
-      m.at<int>(1,0) = (int32_t)((gpuMatInt & 0xFFFFFFFF00000000) >> (uint64_t)32);
+      // save cuda ptr, rows, cols, then type
+      dstMatData[0] = cudaMemPtr;
+      dstMatData[1] = new int; *((int*)dstMatData[1]) = rows;
+      dstMatData[2] = new int; *((int*)dstMatData[2]) = cols;
+      dstMatData[3] = new int; *((int*)dstMatData[3]) = srcMat.type();
 
-      printf("gpuMatInt: %li\n", gpuMatInt);
-      printf("m.at(0,0): %i\nm.at(1,0): %i\n", m.at<int>(0,0), m.at<int>(1,0));
-
-      // save away in the destination mat
-      dst += m;
+      dst = dstMat;
     }
   };
 

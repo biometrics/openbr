@@ -1,15 +1,18 @@
 #include <iostream>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/gpu/gpu.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
 
 using namespace std;
 
 using namespace cv;
-using namespace cv::gpu;
 
+// extern CUDA declaration
+namespace br { namespace cuda { namespace cudacopyfrom {
+  //template <typename T> void wrapper(void* src, T* out, int rows, int cols) {
+  void wrapper(void* src, unsigned char* out, const int rows, const int cols);
+}}}
 
 namespace br
 {
@@ -20,20 +23,16 @@ namespace br
 private:
     void project(const Template &src, Template &dst) const
     {
-      // reassemble the integer and then build pointer to it
-      uint64_t gpuMatInt = (((uint64_t)src.m().at<int>(1,0)) << (uint64_t)32) + ((uint64_t)src.m().at<int>(0,0));
-      GpuMat* gpuMat = (GpuMat*)gpuMatInt;
+      // pull the data back out of the Mat
+      void* const* dataPtr = src.m().ptr<void*>();
+      void* cudaMemPtr = dataPtr[0];
+      int rows = *((int*)dataPtr[1]);
+      int cols = *((int*)dataPtr[2]);
+      int type = *((int*)dataPtr[3]);
 
-      printf("gpuMatInt: %li\n", gpuMatInt);
-      printf("m.at(0,0): %i\nm.at(1,0): %i\n", src.m().at<int>(0,0), src.m().at<int>(1,0));
+      dst = Mat(rows, cols, type);
 
-      // download the data back into the destination
-      Size size = gpuMat->size();
-      Mat out = Mat(size.height, size.width, gpuMat->depth());
-
-      gpuMat->download(out);
-
-      dst = out;
+      br::cuda::cudacopyfrom::wrapper(cudaMemPtr, dst.m().ptr<unsigned char>(), rows, cols);
     }
   };
 
