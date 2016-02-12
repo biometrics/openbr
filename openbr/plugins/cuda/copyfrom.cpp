@@ -23,6 +23,8 @@ namespace br
 private:
     void project(const Template &src, Template &dst) const
     {
+      cout << "CUDACopyFrom Start" << endl;
+
       // pull the data back out of the Mat
       void* const* dataPtr = src.m().ptr<void*>();
       void* cudaMemPtr = dataPtr[0];
@@ -30,9 +32,16 @@ private:
       int cols = *((int*)dataPtr[2]);
       int type = *((int*)dataPtr[3]);
 
+      cout << "cudaMemPtr: " << cudaMemPtr << endl;
+      cout << "rows: " << rows << endl;
+      cout << "cols: " << cols << endl;
+      cout << "type: " << type << endl;
+
       dst = Mat(rows, cols, type);
 
       br::cuda::cudacopyfrom::wrapper(cudaMemPtr, dst.m().ptr<unsigned char>(), rows, cols);
+
+      cout << "CUDACopyFrom End" << endl;
     }
   };
 

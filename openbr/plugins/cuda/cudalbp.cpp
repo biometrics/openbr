@@ -15,8 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <iostream>
-//#include <thread>
-//#include <mutex>
+using namespace std;
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -32,7 +31,6 @@
 
 #include <openbr/plugins/openbr_internal.h>
 
-#include "cudalbp.hpp"
 #include "MatManager.hpp"
 
 using namespace cv;
@@ -60,19 +58,17 @@ string type2str(int type) {
   return r;
 }
 
-int ctr = 0;
-pthread_mutex_t* uploadMutex = NULL;
+namespace br { namespace cuda {
+  void cudalbp_wrapper(void* srcPtr, void** dstPtr, int rows, int cols);
+  void cudalbp_init_wrapper(uint8_t* lut);
+}}
 
 namespace br
 {
-
 /*!
  * \ingroup transforms
- * \brief Convert the image into a feature vector using Local Binary Patterns
- * \br_paper Ahonen, T.; Hadid, A.; Pietikainen, M.;
- *           "Face Description with Local Binary Patterns: Application to Face Recognition"
- *           Pattern Analysis and Machine Intelligence, IEEE Transactions, vol.28, no.12, pp.2037-2041, Dec. 2006
- * \author Josh Klontz \cite jklontz
+ * \brief Convert the image into a feature vector using Local Binary Patterns in CUDA
+ * \author Colin Heinzmann, Li Li \cite DepthDeluxe, booli
  */
 class CUDALBPTransform : public UntrainableTransform
 {
@@ -86,9 +82,7 @@ class CUDALBPTransform : public UntrainableTransform
 
   private:
     uchar lut[256];
-    uint8_t* lutGpuPtr;
     uchar null;
-
 
     cuda::MatManager* matManager;
 
@@ -146,31 +140,50 @@ class CUDALBPTransform : public UntrainableTransform
         matManager = new cuda::MatManager(10);
 
         // copy lut over to the GPU
-        br::cuda::cudalbp_init_wrapper(lut, &lutGpuPtr);
+        br::cuda::cudalbp_init_wrapper(lut);
 
         std::cout << "Initialized CUDALBP" << std::endl;
     }
 
     void project(const Template &src, Template &dst) const
     {
-        Mat& m = (Mat&)src.m();
-        cuda::MatManager::matindex a;
-        cuda::MatManager::matindex b;
-        a = matManager->reserve(m);
-        matManager->upload(a, m);
+        //Mat& m = (Mat&)src.m();
+        //cuda::MatManager::matindex a;
+        //cuda::MatManager::matindex b;
+        //a = matManager->reserve(m);
+        //matManager->upload(a, m);
 
         // reserve the second mat and check the dimensiosn
-        b = matManager->reserve(m);
-        
-        uint8_t* srcMatPtr = matManager->get_mat_pointer_from_index(a);
-        uint8_t* dstMatPtr = matManager->get_mat_pointer_from_index(b);
-        br::cuda::cudalbp_wrapper(srcMatPtr, dstMatPtr, lutGpuPtr, m.cols, m.rows, m.step1());
+        //b = matManager->reserve(m);
 
-        matManager->download(b, dst);
+        //uint8_t* srcMatPtr = matManager->get_mat_pointer_from_index(a);
+        //uint8_t* dstMatPtr = matManager->get_mat_pointer_from_index(b);
+        //br::cuda::cudalbp_wrapper(srcMatPtr, dstMatPtr, lutGpuPtr, m.cols, m.rows, m.step1());
+
+        //matManager->download(b, dst);
 
         // release both the mats
-        matManager->release(a);
-        matManager->release(b);
+        //matManager->release(a);
+        //matManager->release(b);
+
+        cout << "CUDALBP Start" << endl;
+
+        void* const* srcDataPtr = src.m().ptr<void*>();
+        void* cudaSrcPtr = srcDataPtr[0];
+        int rows = *((int*)srcDataPtr[1]);
+        int cols = *((int*)srcDataPtr[2]);
+        int type = *((int*)srcDataPtr[3]);
+
+        Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
+        void** dstDataPtr = dstMat.ptr<void*>();
+        dstDataPtr[1] = srcDataPtr[1];
+        dstDataPtr[2] = srcDataPtr[2];
+        dstDataPtr[3] = srcDataPtr[3];
+
+        br::cuda::cudalbp_wrapper(cudaSrcPtr, &dstDataPtr[0], rows, cols);
+        dst = dstMat;
+
+        cout << "CUDALBP End" << endl;
     }
 };
 
