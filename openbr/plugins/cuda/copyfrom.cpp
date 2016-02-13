@@ -22,8 +22,6 @@ namespace br
 private:
     void project(const Template &src, Template &dst) const
     {
-      cout << "CUDACopyFrom Start" << endl << endl << endl;
-
       // pull the data back out of the Mat
       void* const* dataPtr = src.m().ptr<void*>();
       void* cudaMemPtr = dataPtr[0];
@@ -44,8 +42,6 @@ private:
         break;
       }
       dst = dstMat;
-
-      cout << "CUDACopyFrom End" << endl;
     }
   };
 

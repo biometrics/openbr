@@ -47,6 +47,8 @@ namespace br { namespace cuda {
 
     cudaMalloc(dstPtr, rows*cols*sizeof(uint8_t));
     cudalbp_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*)(*dstPtr), rows, cols, lut);
+
+    cudaFree(srcPtr);
   }
 
   void cudalbp_init_wrapper(uint8_t* cpuLut) {

@@ -27,8 +27,6 @@ class CUDACvtFloatTransform : public UntrainableTransform
   public:
     void project(const Template &src, Template &dst) const
     {
-      cout << "CUDACvtFloat Start" << endl;
-
       void* const* srcDataPtr = src.m().ptr<void*>();
       void* srcMemPtr = srcDataPtr[0];
       int rows = *((int*)srcDataPtr[1]);
@@ -51,8 +49,6 @@ class CUDACvtFloatTransform : public UntrainableTransform
 
       br::cuda::cudacvtfloat::wrapper((const unsigned char*)srcMemPtr, &dstDataPtr[0], rows, cols);
       dst = dstMat;
-
-      cout << "CUDACvtFloat End" << endl;
     }
 };
 

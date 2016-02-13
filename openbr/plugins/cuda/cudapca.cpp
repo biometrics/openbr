@@ -16,14 +16,23 @@
 #include <iostream>
 using namespace std;
 
-#include <Eigen/Dense>
-#include <openbr/plugins/openbr_internal.h>
+#include <QList>
 
+#include <Eigen/Dense>
+
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+#include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/common.h>
 #include <openbr/core/eigenutils.h>
 #include <openbr/core/opencvutils.h>
 
-#include "cudapca.hpp"
+namespace br { namespace cuda {
+  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
+  void cudapca_trainwrapper(const void* cudaDataPtr, float* dataPtr, int rows, int cols);
+  void cudapca_projectwrapper(void* src, void** dst);
+}}
 
 namespace br
 {
@@ -71,14 +80,30 @@ private:
         return (srcMap - mean).squaredNorm() - projMap.squaredNorm();
     }
 
-    void train(const TemplateList &trainingSet)
+    void train(const TemplateList &cudaTrainingSet)
     {
+        const int instances = cudaTrainingSet.size();       // get the number of training set instances
+        QList<Template> trainingQlist;
+        for(int i=0; i<instances; i++) {
+          Template currentTemplate = cudaTrainingSet[i];
+          void* const* srcDataPtr = currentTemplate.m().ptr<void*>();
+          const void* cudaMemPtr = srcDataPtr[0];
+          int rows = *((int*)srcDataPtr[1]);
+          int cols = *((int*)srcDataPtr[2]);
+          int type = *((int*)srcDataPtr[3]);
+
+          Mat mat = Mat(rows, cols, type);
+          br::cuda::cudapca_trainwrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
+          trainingQlist.append(Template(mat));
+        TemplateList trainingSet;
+        }
+        TemplateList trainingSet(trainingQlist);
+
         if (trainingSet.first().m().type() != CV_32FC1)
             qFatal("Requires single channel 32-bit floating point matrices.");
 
         originalRows = trainingSet.first().m().rows;    // get number of rows of first image
         int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
-        const int instances = trainingSet.size();       // get the number of training set instances
 
         // Map into 64-bit Eigen matrix
         Eigen::MatrixXd data(dimsIn, instances);        // create a mat
@@ -90,10 +115,32 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        dst = cv::Mat(1, keep, CV_32FC1);
+
+      void* const* srcDataPtr = src.m().ptr<void*>();
+      void* cudaMemPtr = srcDataPtr[0];
+      int rows = *((int*)srcDataPtr[1]);
+      int cols = *((int*)srcDataPtr[2]);
+      int type = *((int*)srcDataPtr[3]);
+
+      if (type != CV_32FC1) {
+        cout << "ERR: Invalid image type" << endl;
+        return;
+      }
+
+      Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
+      void** dstDataPtr = dstMat.ptr<void*>();
+      dstDataPtr[1] = srcDataPtr[1];  *((int*)dstDataPtr[1]) = 1;
+      dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
+      dstDataPtr[3] = srcDataPtr[3];
+
+      br::cuda::cudapca_projectwrapper(cudaMemPtr, &dstDataPtr[0]);
+
+      dst = dstMat;
+
+        //dst = cv::Mat(1, keep, CV_32FC1);
 
         // perform the operation on the graphics card
-        cuda::cudapca_projectwrapper((float*)src.m().ptr<float>(), (float*)dst.m().ptr<float>());
+        //cuda::cudapca_projectwrapper((float*)src.m().ptr<float>(), (float*)dst.m().ptr<float>());
 
         // Map Eigen into OpenCV
         //Mat cpuDst = cv::Mat(1, keep, CV_32FC1);

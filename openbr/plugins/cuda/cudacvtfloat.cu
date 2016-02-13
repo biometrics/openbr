@@ -31,6 +31,9 @@ namespace br { namespace cuda { namespace cudacvtfloat {
     );
 
     kernel<<<threadsPerBlock, blocks>>>(src, (float*)(*dst), rows, cols);
+
+    // free the src memory since it is now in a newly allocated dst
+    cudaFree((void*)src);
   }
 
 }}}

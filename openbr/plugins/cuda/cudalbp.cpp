@@ -166,8 +166,6 @@ class CUDALBPTransform : public UntrainableTransform
         //matManager->release(a);
         //matManager->release(b);
 
-        cout << "CUDALBP Start" << endl;
-
         void* const* srcDataPtr = src.m().ptr<void*>();
         void* cudaSrcPtr = srcDataPtr[0];
         int rows = *((int*)srcDataPtr[1]);
@@ -182,8 +180,6 @@ class CUDALBPTransform : public UntrainableTransform
 
         br::cuda::cudalbp_wrapper(cudaSrcPtr, &dstDataPtr[0], rows, cols);
         dst = dstMat;
-
-        cout << "CUDALBP End" << endl;
     }
 };
 
