@@ -10,8 +10,7 @@ using namespace cv;
 
 // extern CUDA declaration
 namespace br { namespace cuda { namespace cudacopyfrom {
-  //template <typename T> void wrapper(void* src, T* out, int rows, int cols) {
-  void wrapper(void* src, float* out, const int rows, const int cols);
+  template <typename T> void wrapper(void* src, T* out, int rows, int cols);
 }}}
 
 namespace br
@@ -32,26 +31,21 @@ private:
       int cols = *((int*)dataPtr[2]);
       int type = *((int*)dataPtr[3]);
 
-      if (type != CV_32FC1) {
-        cout << "ERR: Invalid data type!" << endl;
-        return;
-      }
-
-      cout << "cudaMemPtr: " << cudaMemPtr << endl;
-      cout << "rows: " << rows << endl;
-      cout << "cols: " << cols << endl;
-      cout << "type: " << type << endl;
-
       Mat dstMat = Mat(rows, cols, type);
-      br::cuda::cudacopyfrom::wrapper(cudaMemPtr, dstMat.ptr<float>(), rows, cols);
+      switch(type) {
+      case CV_32FC1:
+        br::cuda::cudacopyfrom::wrapper(cudaMemPtr, dstMat.ptr<float>(), rows, cols);
+        break;
+      case CV_8UC1:
+        br::cuda::cudacopyfrom::wrapper(cudaMemPtr, dstMat.ptr<unsigned char>(), rows, cols);
+        break;
+      default:
+        cout << "ERR: Invalid image format" << endl;
+        break;
+      }
       dst = dstMat;
 
       cout << "CUDACopyFrom End" << endl;
-
-      cout << "DST Data" << endl;
-      cout << "rows: " << dstMat.rows << endl;
-      cout << "cols: " << dstMat.cols << endl;
-      cout << "type: " << dstMat.type() << endl;
     }
   };
 

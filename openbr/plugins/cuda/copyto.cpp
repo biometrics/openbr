@@ -11,9 +11,7 @@ using namespace cv;
 extern string type2str(int type);
 
 namespace br { namespace cuda { namespace cudacopyto {
-  //template<typename T>
-  //void wrapper(const T* in, void** out, const int rows, const int cols);
-  void wrapper(const unsigned char* in, void** out, const int rows, const int cols);
+  template <typename T> void wrapper(const T* in, void** out, const int rows, const int cols);
 }}}
 
 namespace br
@@ -31,11 +29,10 @@ private:
 
       void* cudaMemPtr;
       switch(srcMat.type()) {
-      //case CV_32FC1:
-      //  br::cuda::cudacopyfrom::wrapper<float>(srcMat.ptr<float>(), &cudaMemPtr, rows, cols);
-      //  break;
+      case CV_32FC1:
+        br::cuda::cudacopyto::wrapper(srcMat.ptr<float>(), &cudaMemPtr, rows, cols);
+        break;
       case CV_8UC1:
-        //br::cuda::cudacopyfrom::wrapper<unsigned char>(srcMat.ptr<unsigned char>(), &cudaMemPtr, rows, cols);
         br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &cudaMemPtr, rows, cols);
         break;
       default:
