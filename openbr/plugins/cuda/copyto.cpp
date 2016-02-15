@@ -27,28 +27,27 @@ private:
       const int rows = srcMat.rows;
       const int cols = srcMat.cols;
 
-      void* cudaMemPtr;
-      switch(srcMat.type()) {
-      case CV_32FC1:
-        br::cuda::cudacopyto::wrapper(srcMat.ptr<float>(), &cudaMemPtr, rows, cols);
-        break;
-      case CV_8UC1:
-        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &cudaMemPtr, rows, cols);
-        break;
-      default:
-        cout << "ERR: Invalid image type! " << type2str(srcMat.type()) << endl;
-        return;
-      }
-
       // output will be a single pointer to graphics card memory
       Mat dstMat = Mat(4, 1, DataType<void*>::type);
       void** dstMatData = dstMat.ptr<void*>();
 
       // save cuda ptr, rows, cols, then type
-      dstMatData[0] = cudaMemPtr;
       dstMatData[1] = new int; *((int*)dstMatData[1]) = rows;
       dstMatData[2] = new int; *((int*)dstMatData[2]) = cols;
       dstMatData[3] = new int; *((int*)dstMatData[3]) = srcMat.type();
+
+      void* cudaMemPtr;
+      switch(srcMat.type()) {
+      case CV_32FC1:
+        br::cuda::cudacopyto::wrapper(srcMat.ptr<float>(), &dstMatData[0], rows, cols);
+        break;
+      case CV_8UC1:
+        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, cols);
+        break;
+      default:
+        cout << "ERR: Invalid image type! " << type2str(srcMat.type()) << endl;
+        return;
+      }
 
       dst = dstMat;
     }

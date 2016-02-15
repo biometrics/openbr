@@ -15,6 +15,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #include <iostream>
 using namespace std;
+#include <unistd.h>
 
 #include <QList>
 
@@ -30,7 +31,7 @@ using namespace cv;
 
 namespace br { namespace cuda {
   void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
-  void cudapca_trainwrapper(const void* cudaDataPtr, float* dataPtr, int rows, int cols);
+  void cudapca_trainwrapper(void* cudaDataPtr, float* dataPtr, int rows, int cols);
   void cudapca_projectwrapper(void* src, void** dst);
 }}
 
@@ -82,12 +83,13 @@ private:
 
     void train(const TemplateList &cudaTrainingSet)
     {
+      // copy the data back from the graphics card so the training can be done on the CPU
         const int instances = cudaTrainingSet.size();       // get the number of training set instances
         QList<Template> trainingQlist;
         for(int i=0; i<instances; i++) {
           Template currentTemplate = cudaTrainingSet[i];
           void* const* srcDataPtr = currentTemplate.m().ptr<void*>();
-          const void* cudaMemPtr = srcDataPtr[0];
+          void* cudaMemPtr = srcDataPtr[0];
           int rows = *((int*)srcDataPtr[1]);
           int cols = *((int*)srcDataPtr[2]);
           int type = *((int*)srcDataPtr[3]);
@@ -95,29 +97,30 @@ private:
           Mat mat = Mat(rows, cols, type);
           br::cuda::cudapca_trainwrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
           trainingQlist.append(Template(mat));
-        TemplateList trainingSet;
         }
+
+        // assemble a TemplateList from the list of data
         TemplateList trainingSet(trainingQlist);
 
-        if (trainingSet.first().m().type() != CV_32FC1)
-            qFatal("Requires single channel 32-bit floating point matrices.");
+        if (trainingSet.first().m().type() != CV_32FC1) {
+          qFatal("Requires single channel 32-bit floating point matrices.");
+        }
 
         originalRows = trainingSet.first().m().rows;    // get number of rows of first image
         int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
 
         // Map into 64-bit Eigen matrix
         Eigen::MatrixXd data(dimsIn, instances);        // create a mat
-        for (int i=0; i<instances; i++)
-            data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
+        for (int i=0; i<instances; i++) {
+          data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
+        }
 
         trainCore(data);
     }
 
     void project(const Template &src, Template &dst) const
     {
-
       void* const* srcDataPtr = src.m().ptr<void*>();
-      void* cudaMemPtr = srcDataPtr[0];
       int rows = *((int*)srcDataPtr[1]);
       int cols = *((int*)srcDataPtr[2]);
       int type = *((int*)srcDataPtr[3]);
@@ -133,7 +136,7 @@ private:
       dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
       dstDataPtr[3] = srcDataPtr[3];
 
-      br::cuda::cudapca_projectwrapper(cudaMemPtr, &dstDataPtr[0]);
+      br::cuda::cudapca_projectwrapper(srcDataPtr[0], &dstDataPtr[0]);
 
       dst = dstMat;
 

@@ -1,15 +1,14 @@
 #include <iostream>
-#include <unistd.h>
 using namespace std;
+#include <unistd.h>
 
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
 #include <openbr/plugins/openbr_internal.h>
 
-
 namespace br { namespace cuda { namespace cudacvtfloat {
-  void wrapper(const unsigned char* src, void** dst, int rows, int cols);
+  void wrapper(void* src, void** dst, int rows, int cols);
 }}}
 
 namespace br
@@ -28,7 +27,6 @@ class CUDACvtFloatTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
       void* const* srcDataPtr = src.m().ptr<void*>();
-      void* srcMemPtr = srcDataPtr[0];
       int rows = *((int*)srcDataPtr[1]);
       int cols = *((int*)srcDataPtr[2]);
       int type = *((int*)srcDataPtr[3]);
@@ -47,7 +45,7 @@ class CUDACvtFloatTransform : public UntrainableTransform
       dstDataPtr[2] = srcDataPtr[2];
       dstDataPtr[3] = srcDataPtr[3]; *((int*)dstDataPtr[3]) = CV_32FC1;
 
-      br::cuda::cudacvtfloat::wrapper((const unsigned char*)srcMemPtr, &dstDataPtr[0], rows, cols);
+      br::cuda::cudacvtfloat::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
       dst = dstMat;
     }
 };

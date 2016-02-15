@@ -4,6 +4,8 @@ using namespace std;
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
+#include "cudadefines.hpp"
+
 using namespace cv;
 using namespace cv::gpu;
 
@@ -63,39 +65,45 @@ namespace br { namespace cuda {
     _evRows = evRows; _evCols = evCols;
     _meanElems = meanElems;
 
+    cudaError_t err;
+
     // copy the eigenvectors to the GPU
-    cudaMalloc(&cudaEvPtr, evRows*evCols*sizeof(float));
-    cudaMemcpy(cudaEvPtr, evPtr, evRows*evCols*sizeof(float), cudaMemcpyHostToDevice);
+    CUDA_SAFE_MALLOC(&cudaEvPtr, evRows*evCols*sizeof(float), &err);
+    CUDA_SAFE_MEMCPY(cudaEvPtr, evPtr, evRows*evCols*sizeof(float), cudaMemcpyHostToDevice, &err);
 
     // copy the mean to the GPU
-    cudaMalloc(&cudaMeanPtr, meanElems*sizeof(float));
-    cudaMemcpy(cudaMeanPtr, meanPtr, meanElems*sizeof(float), cudaMemcpyHostToDevice);
+    CUDA_SAFE_MALLOC(&cudaMeanPtr, meanElems*sizeof(float), &err);
+    CUDA_SAFE_MEMCPY(cudaMeanPtr, meanPtr, meanElems*sizeof(float), cudaMemcpyHostToDevice, &err);
 
-    cudaMalloc(&_cudaSrcPtr, _meanElems*sizeof(float));
-    cudaMalloc(&_cudaDstPtr, _evCols*sizeof(float));
+    CUDA_SAFE_MALLOC(&_cudaSrcPtr, _meanElems*sizeof(float), &err);
+    CUDA_SAFE_MALLOC(&_cudaDstPtr, _evCols*sizeof(float), &err);
   }
 
-  void cudapca_trainwrapper(const void* cudaDataPtr, float* dataPtr, int rows, int cols) {
-    cudaMemcpy(dataPtr, cudaDataPtr, rows*cols*sizeof(float), cudaMemcpyDeviceToHost);
+  void cudapca_trainwrapper(void* cudaDataPtr, float* dataPtr, int rows, int cols) {
+    cudaError_t err;
+    CUDA_SAFE_MEMCPY(dataPtr, cudaDataPtr, rows*cols*sizeof(float), cudaMemcpyDeviceToHost, &err);
+    CUDA_SAFE_FREE(cudaDataPtr, &err);
   }
 
   void cudapca_projectwrapper(void* src, void** dst) {
     // copy the image to the GPU
     //cudaMemcpy(_cudaSrcPtr, src, _meanElems*sizeof(float), cudaMemcpyHostToDevice);
-
-    cudaMalloc(dst, _evRows*_evCols*sizeof(float));
+    cudaError_t err;
+    CUDA_SAFE_MALLOC(dst, _evRows*_evCols*sizeof(float), &err);
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
     int numBlocks = _meanElems / threadsPerBlock + 1;
     cudapca_project_subtractmean_kernel<<<numBlocks, threadsPerBlock>>>((float*)src, cudaMeanPtr, _meanElems);
+    CUDA_KERNEL_ERR_CHK(&err);
 
     // perform the multiplication
     threadsPerBlock = 64;
     numBlocks = _evCols / threadsPerBlock + 1;
     cudapca_project_multiply_kernel<<<numBlocks, threadsPerBlock>>>((float*)src, (float*)(*dst), cudaEvPtr, _evRows, _evCols);
+    CUDA_KERNEL_ERR_CHK(&err);
 
-    //cudaFree(src);    // TODO(colin): figure out why adding this free causes memory corruption...
+    CUDA_SAFE_FREE(src, &err);    // TODO(colin): figure out why adding this free causes memory corruption...
 
     // copy the data back to the CPU
     //cudaMemcpy(dst, _cudaDstPtr, _evCols*sizeof(float), cudaMemcpyDeviceToHost);

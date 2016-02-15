@@ -84,7 +84,7 @@ class CUDALBPTransform : public UntrainableTransform
     uchar lut[256];
     uchar null;
 
-    cuda::MatManager* matManager;
+    //cuda::MatManager* matManager;
 
   public:
     /* Returns the number of 0->1 or 1->0 transitions in i */
@@ -137,7 +137,7 @@ class CUDALBPTransform : public UntrainableTransform
                 lut[i] = null; // Set to null id
 
         // init the mat manager for managing 10 mats
-        matManager = new cuda::MatManager(10);
+        //matManager = new cuda::MatManager(10);
 
         // copy lut over to the GPU
         br::cuda::cudalbp_init_wrapper(lut);
@@ -167,7 +167,6 @@ class CUDALBPTransform : public UntrainableTransform
         //matManager->release(b);
 
         void* const* srcDataPtr = src.m().ptr<void*>();
-        void* cudaSrcPtr = srcDataPtr[0];
         int rows = *((int*)srcDataPtr[1]);
         int cols = *((int*)srcDataPtr[2]);
         int type = *((int*)srcDataPtr[3]);
@@ -178,7 +177,7 @@ class CUDALBPTransform : public UntrainableTransform
         dstDataPtr[2] = srcDataPtr[2];
         dstDataPtr[3] = srcDataPtr[3];
 
-        br::cuda::cudalbp_wrapper(cudaSrcPtr, &dstDataPtr[0], rows, cols);
+        br::cuda::cudalbp_wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
         dst = dstMat;
     }
 };
