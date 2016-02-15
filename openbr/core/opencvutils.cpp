@@ -448,7 +448,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     vector<Rect> rrects(nClasses);
 
     // Total number of rects in each class
-    vector<int> neighbors(nClasses, 0);
+    vector<int> neighbors(nClasses, -1);
     vector<float> classConfidence(nClasses, useMax ? -std::numeric_limits<float>::max() : 0);
 
     for (size_t i = 0; i < labels.size(); i++)
@@ -465,12 +465,14 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     // Find average rectangle for all classes
     for (int i = 0; i < nClasses; i++)
     {
-        Rect r = rrects[i];
-        float s = 1.f/neighbors[i];
-        rrects[i] = Rect(saturate_cast<int>(r.x*s),
-             saturate_cast<int>(r.y*s),
-             saturate_cast<int>(r.width*s),
-             saturate_cast<int>(r.height*s));
+        if (neighbors[i] > 0) {
+            Rect r = rrects[i];
+            float s = 1.f/(neighbors[i]+1);
+            rrects[i] = Rect(saturate_cast<int>(r.x*s),
+                 saturate_cast<int>(r.y*s),
+                 saturate_cast<int>(r.width*s),
+                 saturate_cast<int>(r.height*s));
+        }
     }
 
     rects.clear();
