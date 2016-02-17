@@ -66,10 +66,12 @@ private:
         if (transform != NULL) return;
         if (fileName.isEmpty()) fileName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
 
-        if (!tryLoad())
+        if (!tryLoad()) {
             transform = make(transformString);
-        else
+            trainable = transform->trainable;
+        } else {
             trainable = false;
+        }
     }
 
     bool timeVarying() const
