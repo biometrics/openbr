@@ -70,7 +70,7 @@ private:
         std::cout << "rows: " << rows << std::endl;
         std::cout << "cols: " << cols << std::endl;
 
-        Mat dstMat = Mat(src.m().rows, src.m().cols, CV_8UC1);
+        Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
         void** dstDataPtr = dstMat.ptr<void*>();
         dstDataPtr[1] = srcDataPtr[1];
         dstDataPtr[2] = srcDataPtr[2];

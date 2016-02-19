@@ -27,7 +27,7 @@ namespace br{ namespace cuda {
       }
     }
 
-    dstPtr[index] = 0;
+    dstPtr[index] = 0.299f * srcPtr[3*index] + 0.587f * srcPtr[3*index+1] + 0.114f * srcPtr[3*index+2];
     return;
   }
 
@@ -41,7 +41,7 @@ namespace br{ namespace cuda {
     CUDA_SAFE_MALLOC(dstPtr, rows*cols*sizeof(uint8_t), &err);
     std::cout << "After malloc" << std::endl;
 
-    //cudacvt_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*) (*dstPtr), rows, cols);
+    cudacvt_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*) (*dstPtr), rows, cols);
     CUDA_KERNEL_ERR_CHK(&err);
     CUDA_SAFE_FREE(srcPtr, &err);
   } 
