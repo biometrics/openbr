@@ -25,7 +25,10 @@ private:
     {
       const Mat& srcMat = src.m();
       const int rows = srcMat.rows;
-      const int cols = srcMat.cols;
+      const int cols = srcMat.cols; 
+std::cout << "CopyTo" << std::endl;
+       std::cout << "rows: " << rows << std::endl;
+        std::cout << "cols: " << cols << std::endl;
 
       // output will be a single pointer to graphics card memory
       Mat dstMat = Mat(4, 1, DataType<void*>::type);
@@ -43,6 +46,9 @@ private:
         break;
       case CV_8UC1:
         br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, cols);
+        break;
+      case CV_8UC3:
+        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, 3*cols);
         break;
       default:
         cout << "ERR: Invalid image type! " << type2str(srcMat.type()) << endl;

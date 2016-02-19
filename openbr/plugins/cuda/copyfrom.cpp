@@ -36,6 +36,9 @@ private:
       case CV_8UC1:
         br::cuda::cudacopyfrom::wrapper(dataPtr[0], dstMat.ptr<unsigned char>(), rows, cols);
         break;
+      case CV_8UC3:
+        br::cuda::cudacopyfrom::wrapper(dataPtr[0], dstMat.ptr<unsigned char>(), rows, cols * 3);
+        break;
       default:
         cout << "ERR: Invalid image format" << endl;
         break;
