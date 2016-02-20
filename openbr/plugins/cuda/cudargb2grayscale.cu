@@ -14,7 +14,7 @@ using namespace cv::gpu;
 
 namespace br{ namespace cuda {
 
-  __global__ void cudacvt_kernel(uint8_t* srcPtr, uint8_t* dstPtr, int rows, int cols)
+  __global__ void cudargb2grayscale_kernel(uint8_t* srcPtr, uint8_t* dstPtr, int rows, int cols)
   {
     int rowInd = blockIdx.y*blockDim.y+threadIdx.y;
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
@@ -31,17 +31,15 @@ namespace br{ namespace cuda {
     return;
   }
 
-  void cudacvt_wrapper(void* srcPtr, void** dstPtr, int rows, int cols)
+  void cudargb2grayscale_wrapper(void* srcPtr, void** dstPtr, int rows, int cols)
   {
     cudaError_t err;
     dim3 threadsPerBlock(8, 8);
     dim3 numBlocks(cols/threadsPerBlock.x + 1,
                    rows/threadsPerBlock.y + 1);
-    std::cout << "Before malloc" << std::endl;
     CUDA_SAFE_MALLOC(dstPtr, rows*cols*sizeof(uint8_t), &err);
-    std::cout << "After malloc" << std::endl;
 
-    cudacvt_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*) (*dstPtr), rows, cols);
+    cudargb2grayscale_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*) (*dstPtr), rows, cols);
     CUDA_KERNEL_ERR_CHK(&err);
     CUDA_SAFE_FREE(srcPtr, &err);
   } 

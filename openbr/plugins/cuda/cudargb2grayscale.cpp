@@ -26,7 +26,7 @@
 using namespace cv;
 
 namespace br { namespace cuda{
-  void cudacvt_wrapper(void* srcPtr, void**dstPtr, int rows, int cols);
+  void cudargb2grayscale_wrapper(void* srcPtr, void**dstPtr, int rows, int cols);
 }}
 
 namespace br
@@ -37,38 +37,19 @@ namespace br
  * \brief Colorspace conversion.
  * \author Li Li \cite Josh Klontz \cite jklontz
  */
-class CUDACvtTransform : public UntrainableTransform
+class CUDARGB2GrayScaleTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_ENUMS(ColorSpace)
-    Q_PROPERTY(ColorSpace colorSpace READ get_colorSpace WRITE set_colorSpace RESET reset_colorSpace STORED false)
-    Q_PROPERTY(int channel READ get_channel WRITE set_channel RESET reset_channel STORED false)
 
 public:
-    enum ColorSpace { Gray = CV_BGR2GRAY,
-                      RGBGray = CV_RGB2GRAY,
-                      HLS = CV_BGR2HLS,
-                      HSV = CV_BGR2HSV,
-                      Lab = CV_BGR2Lab,
-                      Luv = CV_BGR2Luv,
-                      RGB = CV_BGR2RGB,
-                      XYZ = CV_BGR2XYZ,
-                      YCrCb = CV_BGR2YCrCb,
-                      Color = CV_GRAY2BGR };
 
 private:
-    BR_PROPERTY(ColorSpace, colorSpace, Gray)
-    BR_PROPERTY(int, channel, -1)
-
     void project(const Template &src, Template &dst) const
     {
         void* const* srcDataPtr = src.m().ptr<void*>();
         int rows = *((int*) srcDataPtr[1]);
         int cols = *((int*) srcDataPtr[2]);
         int type = *((int*) srcDataPtr[3]);
-        std::cout << "CVT" << std::endl;
-        std::cout << "rows: " << rows << std::endl;
-        std::cout << "cols: " << cols << std::endl;
 
         Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
         void** dstDataPtr = dstMat.ptr<void*>();
@@ -77,7 +58,7 @@ private:
         dstDataPtr[3] = srcDataPtr[3];
         *((int*)dstDataPtr[3]) = CV_8UC1; // not sure if the type of the new mat is the same
        
-        br::cuda::cudacvt_wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
+        br::cuda::cudargb2grayscale_wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
         dst = dstMat;
 
         /*
@@ -92,8 +73,8 @@ private:
     }
 };
 
-BR_REGISTER(Transform, CUDACvtTransform)
+BR_REGISTER(Transform, CUDARGB2GrayScaleTransform)
 
 } // namespace br
 
-#include "imgproc/cudacvt.moc"
+#include "imgproc/cudargb2grayscale.moc"

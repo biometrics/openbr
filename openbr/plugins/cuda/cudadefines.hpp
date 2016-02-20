@@ -16,7 +16,7 @@ using namespace std;
     cout << pthread_self() << ": CUDA Malloc Error(" << *errPtr  << "): " << cudaGetErrorString(*errPtr) << endl; \
     throw 0; \
   } \
-  cout << pthread_self() << ": CUDA Malloc: " << (void*)*(int**)cudaPtrPtr << endl;
+  //cout << pthread_self() << ": CUDA Malloc: " << (void*)*(int**)cudaPtrPtr << endl;
 
 #define CUDA_SAFE_MEMCPY(dstPtr, srcPtr, count, kind, errPtr) \
   *errPtr = cudaMemcpy(dstPtr, srcPtr, count, kind); \
