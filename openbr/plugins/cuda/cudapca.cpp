@@ -159,11 +159,7 @@ private:
 
     void load(QDataStream &stream)
     {
-        Eigen::MatrixXf originalEVecs;
-        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> originalEVecs;
-
-        // perform transpose before copying over
-        eVecs = originalEVecs; //originalEVecs.transpose();
+        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
 
         cout << "Mean Dimensions" << endl;
         cout << "\tRows: " << mean.rows() << " Cols: " << mean.cols() << endl;

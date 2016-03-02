@@ -18,10 +18,12 @@ namespace br { namespace cuda { namespace pca {
       return;
     }
 
-    dst[colInd] = 0;
+    float acc = 0;
     for (int i=0; i < evRows; i++) {
-      dst[colInd] += evPtr[evCols*i + colInd] * src[i];
+      acc += evPtr[evCols*i + colInd] * src[i];
     }
+
+    dst[colInd] = acc;
   }
 
   __global__ void subtractMeanKernel(float* out, float* mean, int numCols) {
