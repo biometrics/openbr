@@ -2,6 +2,8 @@
 
 #include <opencv2/opencv.hpp>
 
+//#include <gperftools/profiler.h>
+
 #include <openbr/plugins/openbr_internal.h>
 
 using namespace std;
@@ -22,6 +24,8 @@ namespace br
 private:
     void project(const Template &src, Template &dst) const
     {
+//      ProfilerStart("PROFILEME.log");
+
       // pull the data back out of the Mat
       void* const* dataPtr = src.m().ptr<void*>();
       int rows = *((int*)dataPtr[1]);
@@ -44,6 +48,8 @@ private:
         break;
       }
       dst = dstMat;
+
+//      ProfilerStop();
     }
   };
 

@@ -29,11 +29,10 @@ using namespace cv;
 #include <openbr/core/eigenutils.h>
 #include <openbr/core/opencvutils.h>
 
-namespace br { namespace cuda {
-  void cudapca_loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
-  void cudapca_trainwrapper(void* cudaDataPtr, float* dataPtr, int rows, int cols);
-  void cudapca_projectwrapper(void* src, void** dst);
-}}
+namespace br { namespace cuda { namespace pca {
+  void loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
+  void wrapper(void* src, void** dst);
+}}}
 
 namespace br
 {
@@ -95,7 +94,6 @@ private:
           int type = *((int*)srcDataPtr[3]);
 
           Mat mat = Mat(rows, cols, type);
-          br::cuda::cudapca_trainwrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
           trainingQlist.append(Template(mat));
         }
 
@@ -136,7 +134,7 @@ private:
       dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
       dstDataPtr[3] = srcDataPtr[3];
 
-      br::cuda::cudapca_projectwrapper(srcDataPtr[0], &dstDataPtr[0]);
+      br::cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0]);
 
       dst = dstMat;
 
@@ -161,7 +159,11 @@ private:
 
     void load(QDataStream &stream)
     {
-        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
+        Eigen::MatrixXf originalEVecs;
+        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> originalEVecs;
+
+        // perform transpose before copying over
+        eVecs = originalEVecs; //originalEVecs.transpose();
 
         cout << "Mean Dimensions" << endl;
         cout << "\tRows: " << mean.rows() << " Cols: " << mean.cols() << endl;
@@ -172,6 +174,7 @@ private:
         cout << "Keep: " << keep << endl;
 
         cout << "Mean first value: " << mean(0, 0) << endl;
+
 
         // TODO(colin): use Eigen Map class to generate map files so we don't have to copy the data
         // serialize the eigenvectors
@@ -191,7 +194,7 @@ private:
         }
 
         // call the wrapper function
-        cuda::cudapca_loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
+        br::cuda::pca::loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
 
         delete evBuffer;
         delete meanBuffer;
