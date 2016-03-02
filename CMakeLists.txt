@@ -106,9 +106,7 @@ endif()
 
 # Compiler flags
 if(UNIX)
-  #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=gnu++11)
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pthread)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -Wno-comment -Wno-unknown-pragmas -fvisibility=hidden -fno-omit-frame-pointer")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-strict-overflow -Wno-comment -Wno-unknown-pragmas -fvisibility=hidden -fno-omit-frame-pointer -pthread")
   set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${_qt5Core_install_prefix}/lib)
   if(NOT APPLE)
     if(${CMAKE_CXX_COMPILER} STREQUAL "/opt/intel/bin/icpc")
