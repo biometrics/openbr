@@ -169,9 +169,6 @@ private:
         cout << "\tRows: " << eVals.rows() << " Cols: " << eVals.cols() << endl;
         cout << "Keep: " << keep << endl;
 
-        cout << "Mean first value: " << mean(0, 0) << endl;
-
-
         // TODO(colin): use Eigen Map class to generate map files so we don't have to copy the data
         // serialize the eigenvectors
         float* evBuffer = new float[eVecs.rows() * eVecs.cols()];

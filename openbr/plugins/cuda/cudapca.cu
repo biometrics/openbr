@@ -10,8 +10,12 @@ using namespace cv;
 using namespace cv::gpu;
 
 namespace br { namespace cuda { namespace pca {
-  __global__ void multiplyKernel(float* src, float* dst, float* evPtr, int evRows, int evCols) {
+  __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int evCols, int stepSize) {
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
+
+    int stepNum = threadIdx.y;
+    int iStart = stepNum*stepSize;
+    int iEnd = iStart+stepSize;
 
     // check dimensions
     if (colInd >= evCols) {
@@ -19,8 +23,23 @@ namespace br { namespace cuda { namespace pca {
     }
 
     float acc = 0;
-    for (int i=0; i < evRows; i++) {
+    for (int i=iStart; i < iEnd; i++) {
       acc += evPtr[evCols*i + colInd] * src[i];
+    }
+
+    intermediaryBuffer[stepSize*stepNum + colInd] = acc;
+  }
+
+  __global__ void multiplyJoinKernel(float* intermediaryBuffer, float* dst, int evCols, int numSteps, int stepSize) {
+    int colInd = blockIdx.x*blockDim.x+threadIdx.x;
+
+    if (colInd >= evCols) {
+      return;
+    }
+
+    float acc = 0;
+    for (int i = 0; i < numSteps; i++) {
+      acc += intermediaryBuffer[stepSize*i + colInd];
     }
 
     dst[colInd] = acc;
@@ -43,6 +62,9 @@ namespace br { namespace cuda { namespace pca {
   float* _cudaSrcPtr;
   float* _cudaDstPtr;
 
+  int _numSteps = 2; int _stepSize;
+  float* intermediaryBuffer;
+
   void loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
     _evRows = evRows; _evCols = evCols;
     _meanElems = meanElems;
@@ -59,13 +81,16 @@ namespace br { namespace cuda { namespace pca {
 
     CUDA_SAFE_MALLOC(&_cudaSrcPtr, _meanElems*sizeof(float), &err);
     CUDA_SAFE_MALLOC(&_cudaDstPtr, _evCols*sizeof(float), &err);
+
+    // initialize the intermediary working space,
+    _stepSize = _evRows / _numSteps;
+    CUDA_SAFE_MALLOC(&intermediaryBuffer, _numSteps*_evCols*sizeof(float), &err);
   }
 
   void wrapper(void* src, void** dst) {
-    // copy the image to the GPU
-    //cudaMemcpy(_cudaSrcPtr, src, _meanElems*sizeof(float), cudaMemcpyHostToDevice);
     cudaError_t err;
-    CUDA_SAFE_MALLOC(dst, _evRows*_evCols*sizeof(float), &err);
+    CUDA_SAFE_MALLOC(dst, _evCols*sizeof(float), &err);
+
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
@@ -74,9 +99,14 @@ namespace br { namespace cuda { namespace pca {
     CUDA_KERNEL_ERR_CHK(&err);
 
     // perform the multiplication
+    dim3 threadsPerBlock2d(64, _numSteps);
+    dim3 numBlocks2d(_evCols / threadsPerBlock2d.x + 1, 1);
+    multiplyKernel<<<numBlocks2d, threadsPerBlock2d>>>((float*)src, intermediaryBuffer, cudaEvPtr, _evCols, _stepSize);
+    CUDA_KERNEL_ERR_CHK(&err);
+
     threadsPerBlock = 64;
     numBlocks = _evCols / threadsPerBlock + 1;
-    multiplyKernel<<<numBlocks, threadsPerBlock>>>((float*)src, (float*)(*dst), cudaEvPtr, _evRows, _evCols);
+    multiplyJoinKernel<<<numBlocks, threadsPerBlock>>>(intermediaryBuffer, (float*)(*dst), _evCols, _numSteps, _stepSize);
     CUDA_KERNEL_ERR_CHK(&err);
 
     CUDA_SAFE_FREE(src, &err);    // TODO(colin): figure out why adding this free causes memory corruption...
