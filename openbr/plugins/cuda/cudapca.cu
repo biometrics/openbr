@@ -10,16 +10,20 @@ using namespace cv;
 using namespace cv::gpu;
 
 namespace br { namespace cuda { namespace pca {
-  __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int evCols, int stepSize) {
+  __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int evRows, int evCols, int stepSize) {
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
+    if (colInd >= evCols) {
+      return;
+    }
 
     int stepNum = threadIdx.y;
     int iStart = stepNum*stepSize;
     int iEnd = iStart+stepSize;
-
-    // check dimensions
-    if (colInd >= evCols) {
+    if (iStart >= evRows) {
       return;
+    }
+    if (iEnd > evRows) {
+      iEnd = evRows;
     }
 
     float acc = 0;
@@ -30,9 +34,8 @@ namespace br { namespace cuda { namespace pca {
     intermediaryBuffer[stepSize*stepNum + colInd] = acc;
   }
 
-  __global__ void multiplyJoinKernel(float* intermediaryBuffer, float* dst, int evCols, int numSteps, int stepSize) {
+  __global__ void multiplyJoinKernel(float* intermediaryBuffer, float* dst, int evRows, int evCols, int numSteps, int stepSize) {
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
-
     if (colInd >= evCols) {
       return;
     }
@@ -62,7 +65,7 @@ namespace br { namespace cuda { namespace pca {
   float* _cudaSrcPtr;
   float* _cudaDstPtr;
 
-  int _numSteps = 2; int _stepSize;
+  int _numSteps; int _stepSize;
   float* intermediaryBuffer;
 
   void loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
@@ -83,7 +86,8 @@ namespace br { namespace cuda { namespace pca {
     CUDA_SAFE_MALLOC(&_cudaDstPtr, _evCols*sizeof(float), &err);
 
     // initialize the intermediary working space,
-    _stepSize = _evRows / _numSteps;
+    _numSteps = 16;
+    _stepSize = _evRows / _numSteps + 1;
     CUDA_SAFE_MALLOC(&intermediaryBuffer, _numSteps*_evCols*sizeof(float), &err);
   }
 
@@ -101,12 +105,12 @@ namespace br { namespace cuda { namespace pca {
     // perform the multiplication
     dim3 threadsPerBlock2d(64, _numSteps);
     dim3 numBlocks2d(_evCols / threadsPerBlock2d.x + 1, 1);
-    multiplyKernel<<<numBlocks2d, threadsPerBlock2d>>>((float*)src, intermediaryBuffer, cudaEvPtr, _evCols, _stepSize);
+    multiplyKernel<<<numBlocks2d, threadsPerBlock2d>>>((float*)src, intermediaryBuffer, cudaEvPtr, _evRows, _evCols, _stepSize);
     CUDA_KERNEL_ERR_CHK(&err);
 
     threadsPerBlock = 64;
     numBlocks = _evCols / threadsPerBlock + 1;
-    multiplyJoinKernel<<<numBlocks, threadsPerBlock>>>(intermediaryBuffer, (float*)(*dst), _evCols, _numSteps, _stepSize);
+    multiplyJoinKernel<<<numBlocks, threadsPerBlock>>>(intermediaryBuffer, (float*)(*dst), _evRows, _evCols, _numSteps, _stepSize);
     CUDA_KERNEL_ERR_CHK(&err);
 
     CUDA_SAFE_FREE(src, &err);    // TODO(colin): figure out why adding this free causes memory corruption...
