@@ -35,21 +35,21 @@ class DLandmarkerTransform : public UntrainableTransform
     Q_OBJECT
 
 private:
-
     Resource<shape_predictor> shapeResource;
 
     void init()
     {
         shapeResource.setResourceMaker(new DLibShapeResourceMaker());
+        shapeResource.release(shapeResource.acquire()); // Pre-load one instance of the model
     }
 
     QPointF averagePoints(const QList<QPointF> &points, int rangeBegin, int rangeEnd) const
     {
-	QPointF point;
+        QPointF point;
         for (int i=rangeBegin; i<rangeEnd; i++)
             point += points[i];
         point /= (rangeEnd-rangeBegin);
-	return point;
+        return point;
     }
 
     void setFacePoints(Template &dst) const
