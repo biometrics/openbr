@@ -34,6 +34,7 @@ class AffineTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_ENUMS(Method)
+    Q_ENUMS(BorderMode)
 
 public:
     /*!< */
@@ -41,7 +42,14 @@ public:
                   Area = INTER_AREA,
                   Bilin = INTER_LINEAR,
                   Cubic = INTER_CUBIC,
-                  Lanczo = INTER_LANCZOS4};
+                  Lanczo = INTER_LANCZOS4 };
+    enum BorderMode { Replicate   = BORDER_REPLICATE,
+                      Constant    = BORDER_CONSTANT,
+                      Reflect     = BORDER_REFLECT,
+                      Wrap        = BORDER_WRAP,
+                      Reflect_101 = BORDER_REFLECT_101,
+                      Transparent = BORDER_TRANSPARENT,
+                      Isolated    = BORDER_ISOLATED };
 
 private:
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
@@ -53,6 +61,7 @@ private:
     Q_PROPERTY(float x3 READ get_x3 WRITE set_x3 RESET reset_x3 STORED false)
     Q_PROPERTY(float y3 READ get_y3 WRITE set_y3 RESET reset_y3 STORED false)
     Q_PROPERTY(Method method READ get_method WRITE set_method RESET reset_method STORED false)
+    Q_PROPERTY(BorderMode borderMode READ get_borderMode WRITE set_borderMode RESET reset_borderMode STORED false)
     Q_PROPERTY(bool storeAffine READ get_storeAffine WRITE set_storeAffine RESET reset_storeAffine STORED false)
     Q_PROPERTY(bool warpPoints READ get_warpPoints WRITE set_warpPoints RESET reset_warpPoints STORED false)
     BR_PROPERTY(int, width, 64)
@@ -64,6 +73,7 @@ private:
     BR_PROPERTY(float, x3, -1)
     BR_PROPERTY(float, y3, -1)
     BR_PROPERTY(Method, method, Bilin)
+    BR_PROPERTY(BorderMode, borderMode, Constant)
     BR_PROPERTY(bool, storeAffine, false)
     BR_PROPERTY(bool, warpPoints, false)
 
@@ -106,7 +116,7 @@ private:
         if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
         Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
-        warpAffine(src, dst, affineTransform, Size(width, height), method);
+        warpAffine(src, dst, affineTransform, Size(width, height), method, borderMode);
 
         if (warpPoints) {
             QList<QPointF> points = src.file.points();
