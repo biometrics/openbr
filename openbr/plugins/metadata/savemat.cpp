@@ -59,7 +59,11 @@ class JustTransform : public UntrainableMetaTransform
         Template tmp;
         transform->project(src, tmp);
         foreach (const QString &key, keys)
-            dst.file.set(key, tmp.file.value(key));
+            if (key == "_Points") {
+                dst.file.setPoints(tmp.file.points());
+            } else {
+                dst.file.set(key, tmp.file.value(key));
+            }
     }
 };
 
