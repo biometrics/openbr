@@ -216,13 +216,13 @@ formatData <- function(type="eval") {
         Box$X <<- factor(Box$X, levels = Box$X, ordered = TRUE)
         Sample <<- data[grep("Sample",data$Plot),-c(1)]
         Sample$X <<- as.character(Sample$X)
+        displaySample <<- readImageData(Sample)
+        rows <<- displaySample[[1]]$value
         EXT <<- data[grep("EXT",data$Plot),-c(1)]
         EXT$X <<- as.character(EXT$X)
         EXP <<- data[grep("EXP",data$Plot),-c(1)]
         EXP$X <<- as.character(EXP$X)
         NormLength <<- data[grep("NormLength",data$Plot),-c(1)]
-        sample <<- readImageData(Sample)
-        rows <<- sample[[1]]$value
     } else if (type == "knn") {
         # Split data into individual plots
         IET <<- data[grep("IET",data$Plot),-c(1)]
@@ -325,12 +325,13 @@ plotEERSamples <- function(imData=NULL, gmData=NULL) {
     printImages(gmData, "Genuine")
 }
 
-plotLandmarkSamples <- function(samples=NULL, expData=NULL, extData=NULL) {
-    print(plotImage(samples[[1]], "Sample Landmarks", sprintf("Total Landmarks: %s", samples[[1]]$value)))
+plotLandmarkSamples <- function(displaySample=NULL, expData=NULL, extData=NULL) {
+    print(plotImage(displaySample[[1]], "Sample Landmarks", sprintf("Total Landmarks: %s", displaySample[[1]]$value)))
+    column <- if(majorSize > 1) majorHeader else "File"
     if (nrow(EXT) != 0 && nrow(EXP)) {
         for (j in 1:length(algs)) {
-            truthSample <- readData(EXT[EXT$. == algs[[j]],])
-            predictedSample <- readData(EXP[EXP$. == algs[[j]],])
+            truthSample <- readImageData(EXT[EXT[,column] == algs[[j]],])
+            predictedSample <- readImageData(EXP[EXP[,column] == algs[[j]],])
             for (i in 1:length(predictedSample)) {
                 multiplot(plotImage(predictedSample[[i]], sprintf("%s\nPredicted Landmarks", algs[[j]]), sprintf("Average Landmark Error: %.3f", predictedSample[[i]]$value)), plotImage(truthSample[[i]], "Ground Truth\nLandmarks", ""), cols=2)
             }

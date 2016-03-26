@@ -318,9 +318,9 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
     qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination);
     p.file.write("\nformatData(type=\"landmarking\")\n\n");
-    p.file.write(qPrintable(QString("algs <- uniqueBox$%1)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
+    p.file.write(qPrintable(QString("algs <- unique(Box$%1)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
     p.file.write("algs <- algs[!duplicated(algs)]\n");
-    p.file.write("plotLandmarkSamples(samples=sample, expData=EXP, extData=EXT)\n");
+    p.file.write("plotLandmarkSamples(displaySample=displaySample, expData=EXP, extData=EXT)\n");
     p.file.write("plotLandmarkTables(tableData=Box)\n");
 
     p.file.write(qPrintable(QString("ggplot(Box, aes(Y,%1%2))").arg(p.major.size > 1 ? QString(", colour=%1").arg(p.major.header) : QString(),
