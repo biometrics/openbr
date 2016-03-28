@@ -160,4 +160,4 @@ BR_REGISTER(Format, DefaultFormat)
 
 } // namespace br
 
-#include "format/video.moc"
+#include "format/videoFormats.moc"
