@@ -906,7 +906,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     // Get best and worst performing examples
     QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
 
-    QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)+CropFromLandmarks+Resize(128,method=Area)",NULL));
+    QScopedPointer<Transform> t(Transform::make("Open+CropFromLandmarks(paddingHorizontal=.3,paddingVertical=.3,shiftPoints=true)+Resize(128,method=Area)+Draw(rects=false,pointRadius=2)",NULL));
 
     for (int i=0; i<totalExamples; i++) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();

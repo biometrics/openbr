@@ -65,7 +65,7 @@ private:
         if (!preserveAspect) {
             resize(src, dst, Size((columns == -1) ? src.m().cols*rows/src.m().rows : columns, rows), 0, 0, method);
             const float rowScaleFactor = (float)rows/src.m().rows;
-            const float colScaleFactor = (float)columns/src.m().cols;
+            const float colScaleFactor = (columns == -1) ? rowScaleFactor : (float)columns/src.m().cols;
             QList<QPointF> points = src.file.points();
             for (int i=0; i<points.size(); i++)
                 points[i] = QPointF(points[i].x() * colScaleFactor,points[i].y() * rowScaleFactor);
