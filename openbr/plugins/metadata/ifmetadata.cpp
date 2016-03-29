@@ -21,7 +21,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Clear Templates without the required metadata.
+ * \brief Remove templates without the required metadata.
  * \author Josh Klontz \cite jklontz
  */
 class IfMetadataTransform : public UntrainableMetadataTransform
@@ -29,17 +29,15 @@ class IfMetadataTransform : public UntrainableMetadataTransform
     Q_OBJECT
     Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key STORED false)
     Q_PROPERTY(QString value READ get_value WRITE set_value RESET reset_value STORED false)
-    Q_PROPERTY(bool fte READ get_fte WRITE set_fte RESET reset_fte STORED false)
     BR_PROPERTY(QString, key, "")
     BR_PROPERTY(QString, value, "")
-    BR_PROPERTY(bool, fte, false)
 
     void projectMetadata(const File &src, File &dst) const
     {
-        if (src.get<QString>(key, "") == value)
-            dst = src;
-	else if (fte) 
-            dst.fte = true;
+        if (key == "_basename")
+            dst.fte = src.baseName() != value;
+        else
+            dst.fte = src.get<QString>(key, "") != value;
     }
 };
 
