@@ -333,7 +333,7 @@ plotLandmarkSamples <- function(displaySample=NULL, expData=NULL, extData=NULL) 
             truthSample <- readImageData(EXT[EXT[,column] == algs[[j]],])
             predictedSample <- readImageData(EXP[EXP[,column] == algs[[j]],])
             for (i in 1:length(predictedSample)) {
-                multiplot(plotImage(predictedSample[[i]], sprintf("%s\nPredicted Landmarks", algs[[j]]), sprintf("Average Landmark Error: %.3f", predictedSample[[i]]$value)), plotImage(truthSample[[i]], "Ground Truth\nLandmarks", ""), cols=2)
+                multiplot(plotImage(predictedSample[[i]], sprintf("%s\nPredicted Landmarks", algs[[j]]), sprintf("Average Landmark Error: %.3f", predictedSample[[i]]$value)), plotImage(truthSample[[i]], "Ground Truth\nLandmarks", truthSample[[i]]$path), cols=2)
             }
         }
     }
@@ -342,20 +342,20 @@ plotLandmarkSamples <- function(displaySample=NULL, expData=NULL, extData=NULL) 
 readImageData <- function(data) {
     examples <- list()
     for (i in 1:nrow(data)) {
-        path <- data[i,1]
+        examplePath <- unlist(strsplit(data[i,1], "[:]"))[1]
+        path <- unlist(strsplit(data[i,1], "[:]"))[2]
         value <- data[i,2]
-        file <- unlist(strsplit(path, "[.]"))[1]
-        ext <- unlist(strsplit(path, "[.]"))[2]
+        ext <- unlist(strsplit(examplePath, "[.]"))[2]
         if (ext == "jpg" || ext == "JPEG" || ext == "jpeg" || ext == "JPG") {
-            img <- readJPEG(path)
+            img <- readJPEG(examplePath)
         } else if (ext == "PNG" || ext == "png") {
-            img <- readPNG(path)
+            img <- readPNG(examplePath)
         } else if (ext == "TIFF" || ext == "tiff" || ext == "TIF" || ext == "tif") {
-            img <- readTIFF(path)
+            img <- readTIFF(examplePath)
         }else {
             next
         }
-        example <- list(file = file, value = value, image = img)
+        example <- list(path = path, value = value, image = img)
         examples[[i]] <- example
     }
     return(examples)

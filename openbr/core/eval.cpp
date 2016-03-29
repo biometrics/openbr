@@ -911,21 +911,21 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     for (int i=0; i<totalExamples; i++) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
-        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXT,"+filePath+":"+truth[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
 
         filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
-        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXP,"+filePath+":"+ predicted[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
-        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXT,"+filePath+":"+truth[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
 
         filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
-        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXP,"+filePath+":"+predicted[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=0; i<pointErrors.size(); i++) {
