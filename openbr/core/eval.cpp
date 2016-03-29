@@ -898,7 +898,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     {
         QScopedPointer<Transform> t(Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL));
 
-        QString filePath = "landmarking_examples_truth/"+truth[sampleIndex].file.fileName();
+        QString filePath = "landmarking_examples_truth/sample.jpg";
         projectAndWrite(t.data(), truth[sampleIndex],filePath);
         lines.append("Sample,"+filePath+","+QString::number(truth[sampleIndex].file.points().size()));
     }
@@ -906,7 +906,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     // Get best and worst performing examples
     QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
 
-    QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)",NULL));
+    QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)+CropFromLandmarks+Resize(128,method=Area)",NULL));
 
     for (int i=0; i<totalExamples; i++) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();

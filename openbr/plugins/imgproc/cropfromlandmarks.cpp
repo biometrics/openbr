@@ -25,20 +25,25 @@ class CropFromLandmarksTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
+        QList<int> cropIndices = indices;
+        if (cropIndices.isEmpty() && !src.file.points().isEmpty())
+            for (int i=0; i<src.file.points().size(); i++)
+                cropIndices.append(i);
+
         int minX = src.m().cols - 1,
             maxX = 1,
             minY = src.m().rows - 1,
             maxY = 1;
 
-        for (int i = 0; i <indices.size(); i++) {
-            if (minX > src.file.points()[indices[i]].x())
-                minX = src.file.points()[indices[i]].x();
-            if (minY > src.file.points()[indices[i]].y())
-                minY = src.file.points()[indices[i]].y();
-            if (maxX < src.file.points()[indices[i]].x())
-                maxX = src.file.points()[indices[i]].x();
-            if (maxY < src.file.points()[indices[i]].y())
-                maxY = src.file.points()[indices[i]].y();
+        for (int i = 0; i <cropIndices.size(); i++) {
+            if (minX > src.file.points()[cropIndices[i]].x())
+                minX = src.file.points()[cropIndices[i]].x();
+            if (minY > src.file.points()[cropIndices[i]].y())
+                minY = src.file.points()[cropIndices[i]].y();
+            if (maxX < src.file.points()[cropIndices[i]].x())
+                maxX = src.file.points()[cropIndices[i]].x();
+            if (maxY < src.file.points()[cropIndices[i]].y())
+                maxY = src.file.points()[cropIndices[i]].y();
         }
 
         int padW = qRound((maxX - minX) * (paddingHorizontal / 2));
