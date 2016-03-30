@@ -19,7 +19,8 @@ using namespace std;
 
 #include <openbr/plugins/openbr_internal.h>
 
-namespace br { namespace cuda { namespace L2{
+// definitions from the CUDA source file
+namespace br { namespace cuda { namespace L2 {
   void wrapper(float* cudaAPtr, float* cudaBPtr, int length, float* outPtr);
 }}}
 
@@ -29,7 +30,7 @@ namespace br
 /*!
  * \ingroup distances
  * \brief L2 distance computed using eigen.
- * \author Josh Klontz \cite jklontz
+ * \author Colin Heinzmann \cite DepthDeluxe
  */
 class CUDAL2Distance : public UntrainableDistance
 {
@@ -45,7 +46,7 @@ class CUDAL2Distance : public UntrainableDistance
       float* cudaBPtr = (float*)b.ptr<void*>()[0];
 
       float out;
-      br::cuda::L2::wrapper(cudaAPtr, cudaBPtr, rows*cols, &out);
+      cuda::L2::wrapper(cudaAPtr, cudaBPtr, rows*cols, &out);
 
       return out;
     }
@@ -55,4 +56,4 @@ BR_REGISTER(Distance, CUDAL2Distance)
 
 } // namespace br
 
-#include "cuda/CUDAL2.moc"
+#include "cuda/cudal2.moc"

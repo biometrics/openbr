@@ -1,6 +1,7 @@
 #include "cudadefines.hpp"
 
-namespace br { namespace cuda { namespace cudacopyto {
+namespace br { namespace cuda { namespace copyto {
+
   template <typename T> void wrapper(const T* in, void** out, const int rows, const int cols) {
     cudaError_t err;
     CUDA_SAFE_MALLOC(out, rows*cols*sizeof(T), &err);
@@ -9,4 +10,5 @@ namespace br { namespace cuda { namespace cudacopyto {
 
   template void wrapper(const float* in, void** out, const int rows, const int cols);
   template void wrapper(const unsigned char* in, void** out, const int rows, const int cols);
+
 }}}

@@ -9,6 +9,10 @@ using namespace std;
 using namespace cv;
 using namespace cv::gpu;
 
+/*
+ * These are the CUDA functions for CUDAPCA.  See cudapca.cpp for more details
+ */
+
 namespace br { namespace cuda { namespace pca {
   __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int evRows, int evCols, int stepSize) {
     int colInd = blockIdx.x*blockDim.x+threadIdx.x;
@@ -68,7 +72,7 @@ namespace br { namespace cuda { namespace pca {
   int _numSteps; int _stepSize;
   float* intermediaryBuffer;
 
-  void loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
+  void initializeWrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems) {
     _evRows = evRows; _evCols = evCols;
     _meanElems = meanElems;
 
@@ -95,7 +99,6 @@ namespace br { namespace cuda { namespace pca {
     cudaError_t err;
     CUDA_SAFE_MALLOC(dst, _evCols*sizeof(float), &err);
 
-
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;
     int numBlocks = _meanElems / threadsPerBlock + 1;
@@ -114,8 +117,5 @@ namespace br { namespace cuda { namespace pca {
     CUDA_KERNEL_ERR_CHK(&err);
 
     CUDA_SAFE_FREE(src, &err);    // TODO(colin): figure out why adding this free causes memory corruption...
-
-    // copy the data back to the CPU
-    //cudaMemcpy(dst, _cudaDstPtr, _evCols*sizeof(float), cudaMemcpyDeviceToHost);
   }
 }}}

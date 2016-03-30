@@ -3,7 +3,7 @@ using namespace std;
 
 #include "cudadefines.hpp"
 
-namespace br { namespace cuda { namespace cudacvtfloat {
+namespace br { namespace cuda { namespace cvtfloat {
 
   __global__ void kernel(const unsigned char* src, float* dst, int rows, int cols) {
     // get my index
@@ -20,12 +20,6 @@ namespace br { namespace cuda { namespace cudacvtfloat {
   }
 
   void wrapper(void* src, void** dst, int rows, int cols) {
-    //unsigned char* cudaSrc;
-    //cudaMalloc(&cudaSrc, rows*cols*sizeof(unsigned char));
-    //cudaMemcpy(cudaSrc, src, rows*cols*sizeof(unsigned char), cudaMemcpyHostToDevice);
-
-    //float* cudaDst;
-    //cudaMalloc(&cudaDst, rows*cols*sizeof(float));
     cudaError_t err;
     CUDA_SAFE_MALLOC(dst, rows*cols*sizeof(float), &err);
 

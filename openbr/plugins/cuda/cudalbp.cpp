@@ -31,44 +31,21 @@ using namespace std;
 
 #include <openbr/plugins/openbr_internal.h>
 
-#include "MatManager.hpp"
-
 using namespace cv;
 
-string type2str(int type) {
-  string r;
-
-  uchar depth = type & CV_MAT_DEPTH_MASK;
-  uchar chans = 1 + (type >> CV_CN_SHIFT);
-
-  switch ( depth ) {
-    case CV_8U:  r = "8U"; break;
-    case CV_8S:  r = "8S"; break;
-    case CV_16U: r = "16U"; break;
-    case CV_16S: r = "16S"; break;
-    case CV_32S: r = "32S"; break;
-    case CV_32F: r = "32F"; break;
-    case CV_64F: r = "64F"; break;
-    default:     r = "User"; break;
-  }
-
-  r += "C";
-  r += (chans+'0');
-
-  return r;
-}
-
-namespace br { namespace cuda {
-  void cudalbp_wrapper(void* srcPtr, void** dstPtr, int rows, int cols);
-  void cudalbp_init_wrapper(uint8_t* lut);
-}}
+// definitions from the CUDA source file
+namespace br { namespace cuda { namespace lbp {
+  void wrapper(void* srcPtr, void** dstPtr, int rows, int cols);
+  void initializeWrapper(uint8_t* lut);
+}}}
 
 namespace br
 {
 /*!
  * \ingroup transforms
- * \brief Convert the image into a feature vector using Local Binary Patterns in CUDA
- * \author Colin Heinzmann, Li Li \cite DepthDeluxe, booli
+ * \brief Convert the image into a feature vector using Local Binary Patterns in CUDA.  Modified from stock OpenBR plugin.
+ * \author Colin Heinzmann \cite DepthDeluxe
+ * \author Li Li \cite booli
  */
 class CUDALBPTransform : public UntrainableTransform
 {
@@ -83,8 +60,6 @@ class CUDALBPTransform : public UntrainableTransform
   private:
     uchar lut[256];
     uchar null;
-
-    //cuda::MatManager* matManager;
 
   public:
     /* Returns the number of 0->1 or 1->0 transitions in i */
@@ -136,36 +111,14 @@ class CUDALBPTransform : public UntrainableTransform
             if (!set[i])
                 lut[i] = null; // Set to null id
 
-        // init the mat manager for managing 10 mats
-        //matManager = new cuda::MatManager(10);
-
         // copy lut over to the GPU
-        br::cuda::cudalbp_init_wrapper(lut);
+        cuda::lbp::initializeWrapper(lut);
 
         std::cout << "Initialized CUDALBP" << std::endl;
     }
 
     void project(const Template &src, Template &dst) const
     {
-        //Mat& m = (Mat&)src.m();
-        //cuda::MatManager::matindex a;
-        //cuda::MatManager::matindex b;
-        //a = matManager->reserve(m);
-        //matManager->upload(a, m);
-
-        // reserve the second mat and check the dimensiosn
-        //b = matManager->reserve(m);
-
-        //uint8_t* srcMatPtr = matManager->get_mat_pointer_from_index(a);
-        //uint8_t* dstMatPtr = matManager->get_mat_pointer_from_index(b);
-        //br::cuda::cudalbp_wrapper(srcMatPtr, dstMatPtr, lutGpuPtr, m.cols, m.rows, m.step1());
-
-        //matManager->download(b, dst);
-
-        // release both the mats
-        //matManager->release(a);
-        //matManager->release(b);
-
         void* const* srcDataPtr = src.m().ptr<void*>();
         int rows = *((int*)srcDataPtr[1]);
         int cols = *((int*)srcDataPtr[2]);
@@ -177,13 +130,13 @@ class CUDALBPTransform : public UntrainableTransform
         dstDataPtr[2] = srcDataPtr[2];
         dstDataPtr[3] = srcDataPtr[3];
 
-        br::cuda::cudalbp_wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
+        cuda::lbp::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
         dst = dstMat;
     }
 };
 
 BR_REGISTER(Transform, CUDALBPTransform)
 
-} // namespace br
+}
 
 #include "cuda/cudalbp.moc"

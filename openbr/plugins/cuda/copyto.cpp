@@ -8,14 +8,20 @@ using namespace std;
 
 using namespace cv;
 
-extern string type2str(int type);
-
-namespace br { namespace cuda { namespace cudacopyto {
+// definitions from the CUDA source file
+namespace br { namespace cuda { namespace copyto {
   template <typename T> void wrapper(const T* in, void** out, const int rows, const int cols);
 }}}
 
 namespace br
 {
+
+  /*!
+  * \ingroup transforms
+  * \brief Copies a transform to the GPU.
+  * \author Colin Heinzmann \cite DepthDeluxe
+  * \note Method: Automatically matches image dimensions, works for 32-bit single channel, 8-bit single channel, and 8-bit 3 channel
+  */
   class CUDACopyTo : public UntrainableTransform
   {
     Q_OBJECT
@@ -25,7 +31,7 @@ private:
     {
       const Mat& srcMat = src.m();
       const int rows = srcMat.rows;
-      const int cols = srcMat.cols; 
+      const int cols = srcMat.cols;
 
       // output will be a single pointer to graphics card memory
       Mat dstMat = Mat(4, 1, DataType<void*>::type);
@@ -39,16 +45,16 @@ private:
       void* cudaMemPtr;
       switch(srcMat.type()) {
       case CV_32FC1:
-        br::cuda::cudacopyto::wrapper(srcMat.ptr<float>(), &dstMatData[0], rows, cols);
+        cuda::copyto::wrapper(srcMat.ptr<float>(), &dstMatData[0], rows, cols);
         break;
       case CV_8UC1:
-        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, cols);
+        cuda::copyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, cols);
         break;
       case CV_8UC3:
-        br::cuda::cudacopyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, 3*cols);
+        cuda::copyto::wrapper(srcMat.ptr<unsigned char>(), &dstMatData[0], rows, 3*cols);
         break;
       default:
-        cout << "ERR: Invalid image type! " << type2str(srcMat.type()) << endl;
+        cout << "ERR: Invalid image type (" << srcMat.type() << ")" << endl;
         return;
       }
 

@@ -25,17 +25,18 @@
 
 using namespace cv;
 
-namespace br { namespace cuda{
-  void cudargb2grayscale_wrapper(void* srcPtr, void**dstPtr, int rows, int cols);
-}}
+// definitions from the CUDA source file
+namespace br { namespace cuda { namespace rgb2grayscale {
+  void wrapper(void* srcPtr, void**dstPtr, int rows, int cols);
+}}}
 
 namespace br
 {
 
 /*!
  * \ingroup transforms
- * \brief Colorspace conversion.
- * \author Li Li \cite Josh Klontz \cite jklontz
+ * \brief Converts 3-channel images to grayscale
+ * \author Li Li \cite booli
  */
 class CUDARGB2GrayScaleTransform : public UntrainableTransform
 {
@@ -57,8 +58,8 @@ private:
         dstDataPtr[2] = srcDataPtr[2];
         dstDataPtr[3] = srcDataPtr[3];
         *((int*)dstDataPtr[3]) = CV_8UC1; // not sure if the type of the new mat is the same
-       
-        br::cuda::cudargb2grayscale_wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
+
+        cuda::rgb2grayscale::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
         dst = dstMat;
 
         /*

@@ -11,30 +11,30 @@ using namespace std;
 using namespace cv;
 using namespace cv::gpu;
 
-namespace br { namespace cuda {
+namespace br { namespace cuda { namespace affine {
 
-    __device__ __forceinline__ uint8_t cudaaffine_kernel_get_pixel_value(int row, int col, uint8_t* srcPtr, int rows, int cols) {
+    __device__ __forceinline__ uint8_t getPixelValueDevice(int row, int col, uint8_t* srcPtr, int rows, int cols) {
         if (row < 0 || row > rows || col < 0 || col > cols) {
             if (row > rows || col > cols) {
                 return 0;
             } else{
-                return 0; 
+                return 0;
             }
         }
         return (srcPtr + row*cols)[col];
     }
 
 
-    __device__ __forceinline__ uint8_t cudaaffine_kernel_get_bilinear_pixel_value(double row, double col, uint8_t* srcPtr, int rows, int cols) {
+    __device__ __forceinline__ uint8_t getBilinearPixelValueDevice(double row, double col, uint8_t* srcPtr, int rows, int cols) {
         // don't do anything if the index is out of bounds
         if (row < 0 || row > rows || col < 0 || col > cols) {
             if (row > rows || col > cols) {
                 return 0;
             } else{
-                return 0; 
+                return 0;
             }
         }
-        
+
         // http://www.sci.utah.edu/~acoste/uou/Image/project3/ArthurCOSTE_Project3.pdf
         // Bilinear Transformation
         // f(Px, Py) = f(Q11)×(1−Rx)×(1−Sy)+f(Q21)×(Rx)×(1−Sy)+f(Q12)×(1−Rx)×(Sy)+f(Q22)×(Rx)×(Sy)
@@ -48,22 +48,22 @@ namespace br { namespace cuda {
         double d_row = row - row1;
         double d_col = col - col1;
 
-        int Q11 = cudaaffine_kernel_get_pixel_value(row1, col1, srcPtr, rows, cols);
-        int Q21 = cudaaffine_kernel_get_pixel_value(row2, col1, srcPtr, rows, cols);
-        int Q12 = cudaaffine_kernel_get_pixel_value(row1, col2, srcPtr, rows, cols);
-        int Q22 = cudaaffine_kernel_get_pixel_value(row2, col2, srcPtr, rows, cols);
+        int Q11 = getPixelValueDevice(row1, col1, srcPtr, rows, cols);
+        int Q21 = getPixelValueDevice(row2, col1, srcPtr, rows, cols);
+        int Q12 = getPixelValueDevice(row1, col2, srcPtr, rows, cols);
+        int Q22 = getPixelValueDevice(row2, col2, srcPtr, rows, cols);
 
         double val = Q22*(d_row*d_col) + Q12*((1-d_row)*d_col) + Q21*(d_row*(1-d_col)) + Q11*((1-d_row)*(1-d_col));
         return ((uint8_t) round(val));
     }
 
-    __device__ __forceinline__ uint8_t cudaaffine_kernel_get_distance_pixel_value(double row, double col, uint8_t* srcPtr, int rows, int cols) {
+    __device__ __forceinline__ uint8_t getDistancePixelValueDevice(double row, double col, uint8_t* srcPtr, int rows, int cols) {
         // don't do anything if the index is out of bounds
         if (row < 1 || row >= rows-1 || col < 1 || col >= cols-1) {
             if (row >= rows || col >= cols) {
                 return 0;
             } else{
-                return 0; 
+                return 0;
             }
         }
 
@@ -90,10 +90,10 @@ namespace br { namespace cuda {
         double w3 = d3/sum;
         double w4 = d4/sum;
 
-        uint8_t v1 = cudaaffine_kernel_get_pixel_value(row1, col1, srcPtr, rows, cols);
-        uint8_t v2 = cudaaffine_kernel_get_pixel_value(row2, col1, srcPtr, rows, cols);
-        uint8_t v3 = cudaaffine_kernel_get_pixel_value(row1, col2, srcPtr, rows, cols);
-        uint8_t v4 = cudaaffine_kernel_get_pixel_value(row2, col2, srcPtr, rows, cols);
+        uint8_t v1 = getPixelValueDevice(row1, col1, srcPtr, rows, cols);
+        uint8_t v2 = getPixelValueDevice(row2, col1, srcPtr, rows, cols);
+        uint8_t v3 = getPixelValueDevice(row1, col2, srcPtr, rows, cols);
+        uint8_t v4 = getPixelValueDevice(row2, col2, srcPtr, rows, cols);
 
         return round(w1*v1 + w2*v2 + w3*v3 + w4*v4);
     }
@@ -105,16 +105,16 @@ namespace br { namespace cuda {
      * src_row            - The computed source pixel row (mapping from this row)
      * src_col            - The computed source pixel column (mapping from this col)
      */
-    __device__ __forceinline__ void cudaaffine_kernel_get_src_coord(double *trans_inv, int dst_row, int dst_col, double* src_row_pnt, double* src_col_pnt){
+    __device__ __forceinline__ void getSrcCoordDevice(double *trans_inv, int dst_row, int dst_col, double* src_row_pnt, double* src_col_pnt){
         *src_col_pnt = dst_col * trans_inv[0] + dst_row * trans_inv[3] + trans_inv[6];
         *src_row_pnt = dst_col * trans_inv[1] + dst_row * trans_inv[4] + trans_inv[7];
 
         //printf("Dst: [%d, %d, 1] = [%d, %d, 1] \n[ %0.4f, %0.4f, %0.4f] \n[ %0.4f, %0.4f, %0.4f ]\n[ %0.4f, %0.4f, %0.4f ]\n\n", *src_col, *src_row, dst_col, dst_row, trans_inv[0], trans_inv[1], trans_inv[2], trans_inv[3], trans_inv[4], trans_inv[5], trans_inv[6], trans_inv[7], trans_inv[8]);
 
 		}
-				
 
-    __global__ void cudaaffine_kernel(uint8_t* srcPtr, uint8_t* dstPtr, double* trans_inv, int src_rows, int src_cols, int dst_rows, int dst_cols){
+
+    __global__ void affineKernel(uint8_t* srcPtr, uint8_t* dstPtr, double* trans_inv, int src_rows, int src_cols, int dst_rows, int dst_cols){
         int dstRowInd = blockIdx.y*blockDim.y+threadIdx.y;
         int dstColInd = blockIdx.x*blockDim.x+threadIdx.x;
         int dstIndex = dstRowInd*dst_cols + dstColInd;
@@ -134,15 +134,15 @@ namespace br { namespace cuda {
             }
         }
 
-        cudaaffine_kernel_get_src_coord(trans_inv, dstRowInd, dstColInd, &srcRowPnt, &srcColPnt);
-        //const uint8_t cval = cudaaffine_kernel_get_distance_pixel_value(srcRowPnt, srcColPnt, srcPtr, src_rows, src_cols); // Get initial pixel value
-        const uint8_t cval = cudaaffine_kernel_get_bilinear_pixel_value(srcRowPnt, srcColPnt, srcPtr, src_rows, src_cols); // Get initial pixel value
-        //const uint8_t cval = cudaaffine_kernel_get_pixel_value(round(srcRowPnt), round(srcColPnt), srcPtr, src_rows, src_cols); // Get initial pixel value
+        getSrcCoordDevice(trans_inv, dstRowInd, dstColInd, &srcRowPnt, &srcColPnt);
+        //const uint8_t cval = getDistancePixelValueDevice(srcRowPnt, srcColPnt, srcPtr, src_rows, src_cols); // Get initial pixel value
+        const uint8_t cval = getBilinearPixelValueDevice(srcRowPnt, srcColPnt, srcPtr, src_rows, src_cols); // Get initial pixel value
+        //const uint8_t cval = getPixelValueDevice(round(srcRowPnt), round(srcColPnt), srcPtr, src_rows, src_cols); // Get initial pixel value
 
         dstPtr[dstIndex] = cval;
     }
 
-    void cudaaffine_wrapper(void* srcPtr, void** dstPtr, Mat affineTransform, int src_rows, int src_cols, int dst_rows, int dst_cols) {
+    void wrapper(void* srcPtr, void** dstPtr, Mat affineTransform, int src_rows, int src_cols, int dst_rows, int dst_cols) {
         cudaError_t err;
         double* gpuInverse;
 
@@ -152,7 +152,7 @@ namespace br { namespace cuda {
 
         //************************************************************************
         // Input affine is a 2x3 Mat whose transpose is used in the computations
-        // [x, y, 1] = [u, v, 1] [ a^T | [0 0 1]^T ] 
+        // [x, y, 1] = [u, v, 1] [ a^T | [0 0 1]^T ]
         // See "Digital Image Warping" by George Wolburg (p. 50)
         //************************************************************************
 
@@ -210,7 +210,7 @@ namespace br { namespace cuda {
 
         CUDA_SAFE_MEMCPY(gpuInverse, affineInverse, 9*sizeof(double), cudaMemcpyHostToDevice, &err);
 
-        cudaaffine_kernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*)(*dstPtr), gpuInverse, src_rows, src_cols, dst_rows, dst_cols);
+        affineKernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*)(*dstPtr), gpuInverse, src_rows, src_cols, dst_rows, dst_cols);
         CUDA_KERNEL_ERR_CHK(&err);
 
         CUDA_SAFE_FREE(srcPtr, &err);
@@ -225,5 +225,4 @@ namespace br { namespace cuda {
         // }
         // printf("\n");
     }
-} // end cuda
-} // end br
+}}}

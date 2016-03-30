@@ -29,8 +29,9 @@ using namespace cv;
 #include <openbr/core/eigenutils.h>
 #include <openbr/core/opencvutils.h>
 
+// definitions from the CUDA source file
 namespace br { namespace cuda { namespace pca {
-  void loadwrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
+  void initializeWrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
   void wrapper(void* src, void** dst);
 }}}
 
@@ -38,9 +39,7 @@ namespace br
 {
 /*!
  * \ingroup transforms
- * \brief Projects input into learned Principal Component Analysis subspace using CUDA.
- * \author Brendan Klare \cite bklare
- * \author Josh Klontz \cite jklontz
+ * \brief Projects input into learned Principal Component Analysis subspace using CUDA. Modified from original PCA plugin.
  * \author Colin Heinzmann \cite DepthDeluxe
  *
  * \br_property float keep Options are: [keep < 0 - All eigenvalues are retained, keep == 0 - No PCA is performed and the eigenvectors form an identity matrix, 0 < keep < 1 - Keep is the fraction of the variance to retain, keep >= 1 - keep is the number of leading eigenvectors to retain] Default is 0.95.
@@ -134,22 +133,9 @@ private:
       dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
       dstDataPtr[3] = srcDataPtr[3];
 
-      br::cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0]);
+      cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0]);
 
       dst = dstMat;
-
-        //dst = cv::Mat(1, keep, CV_32FC1);
-
-        // perform the operation on the graphics card
-        //cuda::cudapca_projectwrapper((float*)src.m().ptr<float>(), (float*)dst.m().ptr<float>());
-
-        // Map Eigen into OpenCV
-        //Mat cpuDst = cv::Mat(1, keep, CV_32FC1);
-        //Eigen::Map<const Eigen::MatrixXf> inMap(src.m().ptr<float>(), src.m().rows*src.m().cols, 1);
-        //Eigen::Map<Eigen::MatrixXf> outMap(cpuDst.ptr<float>(), keep, 1);
-
-        // Do projection
-        //outMap = eVecs.transpose() * (inMap - mean);
     }
 
     void store(QDataStream &stream) const
@@ -160,14 +146,6 @@ private:
     void load(QDataStream &stream)
     {
         stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
-
-        cout << "Mean Dimensions" << endl;
-        cout << "\tRows: " << mean.rows() << " Cols: " << mean.cols() << endl;
-        cout << "eVecs Dimensions" << endl;
-        cout << "\tRows: " << eVecs.rows() << " Cols: " << eVecs.cols() << endl;
-        cout << "eVals Dimensions" << endl;
-        cout << "\tRows: " << eVals.rows() << " Cols: " << eVals.cols() << endl;
-        cout << "Keep: " << keep << endl;
 
         // TODO(colin): use Eigen Map class to generate map files so we don't have to copy the data
         // serialize the eigenvectors
@@ -187,7 +165,7 @@ private:
         }
 
         // call the wrapper function
-        br::cuda::pca::loadwrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
+        cuda::pca::initializeWrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
 
         delete evBuffer;
         delete meanBuffer;

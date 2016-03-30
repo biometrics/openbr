@@ -7,7 +7,8 @@ using namespace cv;
 
 #include <openbr/plugins/openbr_internal.h>
 
-namespace br { namespace cuda { namespace cudacvtfloat {
+// definitions from the CUDA source file
+namespace br { namespace cuda { namespace cvtfloat {
   void wrapper(void* src, void** dst, int rows, int cols);
 }}}
 
@@ -16,7 +17,7 @@ namespace br
 
 /*!
  * \ingroup transforms
- * \brief Converts byte to floating point
+ * \brief Converts 8-bit images currently on GPU into 32-bit floating point equivalent.
  * \author Colin Heinzmann \cite DepthDeluxe
  */
 class CUDACvtFloatTransform : public UntrainableTransform
@@ -45,7 +46,7 @@ class CUDACvtFloatTransform : public UntrainableTransform
       dstDataPtr[2] = srcDataPtr[2];
       dstDataPtr[3] = srcDataPtr[3]; *((int*)dstDataPtr[3]) = CV_32FC1;
 
-      br::cuda::cudacvtfloat::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
+      cuda::cvtfloat::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
       dst = dstMat;
     }
 };

@@ -4,7 +4,7 @@
 
 namespace br { namespace cuda { namespace L2 {
 
-  __global__ void my_subtract_kernel(float* aPtr, float* bPtr, float* workPtr, int length) {
+  __global__ void subtractKernel(float* aPtr, float* bPtr, float* workPtr, int length) {
     int index = blockIdx.x*blockDim.x+threadIdx.x;
 
     if (index >= length) {
@@ -18,7 +18,7 @@ namespace br { namespace cuda { namespace L2 {
     workPtr[index] = workPtr[index] * workPtr[index];
   }
 
-  __global__ void collapse_kernel(float* inPtr, float* outPtr, int length) {
+  __global__ void collapseKernel(float* inPtr, float* outPtr, int length) {
     // make sure there is only one thread that we are calling
     if (blockIdx.x != 0 || threadIdx.x != 0) {
       return;
@@ -45,11 +45,11 @@ namespace br { namespace cuda { namespace L2 {
     // perform the subtraction
     int threadsPerBlock = 64;
     int numBlocks = length / threadsPerBlock + 1;
-    my_subtract_kernel<<<threadsPerBlock, numBlocks>>>(cudaAPtr, cudaBPtr, cudaWorkBufferPtr, length);
+    subtractKernel<<<threadsPerBlock, numBlocks>>>(cudaAPtr, cudaBPtr, cudaWorkBufferPtr, length);
     CUDA_KERNEL_ERR_CHK(&err);
 
     // perform the collapse
-    collapse_kernel<<<1,1>>>(cudaWorkBufferPtr, cudaOutPtr, length);
+    collapseKernel<<<1,1>>>(cudaWorkBufferPtr, cudaOutPtr, length);
     CUDA_KERNEL_ERR_CHK(&err);
 
     // copy the single value back to the destinsion
@@ -63,6 +63,3 @@ namespace br { namespace cuda { namespace L2 {
     CUDA_SAFE_FREE(cudaWorkBufferPtr, &err);
   }
 }}}
-
-// 128CUDAEigenfaces on 6400 ATT: 54.367s
-// 128CUDAEigenfacesL2 on 6400 ATT: 
