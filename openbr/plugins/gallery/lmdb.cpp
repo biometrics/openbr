@@ -112,7 +112,19 @@ class lmdbGallery : public Gallery
             foreach(const Template &t, working) {
                 // add current image to transaction
                 caffe::Datum datum;
-                caffe::CVMatToDatum(t.m(), &datum);
+
+                const cv::Mat &m = t.m();
+                if (m.depth() == CV_32F) {
+                    datum.set_channels(m.channels());
+                    datum.set_height(m.rows);
+                    datum.set_width(m.cols);
+                    for (int i=0; i<m.channels(); i++) // Follow Caffe's channel-major ordering convention
+                        for (int j=0; j<m.rows; j++)
+                            for (int k=0; k<m.cols; k++)
+                                datum.add_float_data(m.ptr<float>(j)[k*m.channels()+i]);
+                } else {
+                    caffe::CVMatToDatum(m, &datum);
+                }
 
                 QVariant base_label = t.file.value("Label");
                 QString label_str = base_label.toString();

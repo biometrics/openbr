@@ -35,7 +35,7 @@ namespace br
  * \br_property int minSize The smallest sized object to detect in pixels
  * \br_property int maxSize The largest sized object to detect in pixels. A negative value will set maxSize == image size
  * \br_property float scaleFactor The factor to scale the image by during each resize.
- * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
+ * \br_property float minGroupingConfidence A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
  * \br_property float eps Parameter for non-maximum supression
  * \br_property int minNeighbors Parameter for non-maximum supression
  * \br_property bool group If false, non-maxima supression will not be performed
@@ -51,23 +51,28 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
-    Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
+    Q_PROPERTY(float minGroupingConfidence READ get_minGroupingConfidence WRITE set_minGroupingConfidence RESET reset_minGroupingConfidence STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
     Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
     Q_PROPERTY(bool group READ get_group WRITE set_group RESET reset_group STORED false)
     Q_PROPERTY(int shrinkingFactor READ get_shrinkingFactor WRITE set_shrinkingFactor RESET reset_shrinkingFactor STORED false)
     Q_PROPERTY(bool clone READ get_clone WRITE set_clone RESET reset_clone STORED false)
-
+    Q_PROPERTY(float minConfidence READ get_minConfidence WRITE set_minConfidence RESET reset_minConfidence STORED false)
+    Q_PROPERTY(bool ROCMode READ get_ROCMode WRITE set_ROCMode RESET reset_ROCMode STORED false)
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
     BR_PROPERTY(float, scaleFactor, 1.2)
-    BR_PROPERTY(float, confidenceThreshold, 10)
+    BR_PROPERTY(float, minGroupingConfidence, -std::numeric_limits<float>::max())
     BR_PROPERTY(float, eps, 0.2)
     BR_PROPERTY(int, minNeighbors, 3)
     BR_PROPERTY(bool, group, true)
     BR_PROPERTY(int, shrinkingFactor, 1)
     BR_PROPERTY(bool, clone, true)
+    BR_PROPERTY(float, minConfidence, 0)
+    BR_PROPERTY(bool, ROCMode, false)
+    BR_PROPERTY(QString, outputVariable, "Face")
 
     void train(const TemplateList &data)
     {
@@ -85,9 +90,9 @@ class SlidingWindowTransform : public MetaTransform
     {
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
-            if (t.file.contains("Face")) {
+            if (t.file.contains(outputVariable)) {
                 Template u = t;
-                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>("Face"));
+                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>(outputVariable));
                 u.file.set("Confidence", t.file.get<float>("Confidence", 1));
                 dst.append(u);
                 continue;
@@ -106,6 +111,9 @@ class SlidingWindowTransform : public MetaTransform
             // different channels of the same image!
             const Size imageSize = t.m().size();
             const int minSize = t.file.get<int>("MinSize", this->minSize);
+            const int maxDetections = t.file.get<int>("MaxDetections", std::numeric_limits<int>::max());
+            const bool findMostConfident = (enrollAll && (maxDetections != 1)) ? false : true;
+
             QList<Rect> rects;
             QList<float> confidences;
 
@@ -163,19 +171,43 @@ class SlidingWindowTransform : public MetaTransform
             }
 
             if (group)
-                OpenCVUtils::group(rects, confidences, confidenceThreshold, minNeighbors, eps);
+                OpenCVUtils::group(rects, confidences, minGroupingConfidence, minNeighbors, eps);
 
-            if (!enrollAll && rects.empty()) {
-                rects.append(Rect(0, 0, imageSize.width, imageSize.height));
-                confidences.append(-std::numeric_limits<float>::max());
+            if (!ROCMode && findMostConfident && !rects.isEmpty()) {
+                Rect rect = rects.first();
+                float maxConfidence = confidences.first();
+                for (int i=0; i<rects.size(); i++)
+                    if (confidences[i] > maxConfidence) {
+                        rect = rects[i];
+                        maxConfidence = confidences[i];
+                    }
+                rects.clear();
+                confidences.clear();
+                rects.append(rect);
+                confidences.append(maxConfidence);
             }
 
-            for (int j=0; j<rects.size(); j++) {
-                Template u = t;
-                u.file.set("Confidence", confidences[j]);
-                const QRectF rect = OpenCVUtils::fromRect(rects[j]);
+            const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
+            QList<QRectF> rectsAboveMinConfidence;
+            QList<float> confidencesAboveMinConfidence;
+            for (int i=0; i<rects.size(); i++) {
+                if (ROCMode || confidences[i] >= minConfidence) {
+                    rectsAboveMinConfidence.append(OpenCVUtils::fromRect(rects[i]));
+                    confidencesAboveMinConfidence.append(confidences[i]);
+                }
+            }
+
+            if (!enrollAll && rectsAboveMinConfidence.isEmpty()) {
+                rectsAboveMinConfidence.append(QRectF(0, 0, t.m().cols, t.m().rows));
+                confidencesAboveMinConfidence.append(-std::numeric_limits<float>::max());
+            }
+
+            for (int i=0; i<rectsAboveMinConfidence.size(); i++) {
+                Template u(t.file, t.m());
+                u.file.set("Confidence", confidencesAboveMinConfidence[i]);
+                const QRectF rect = rectsAboveMinConfidence[i];
+                u.file.set(outputVariable, rect);
                 u.file.appendRect(rect);
-                u.file.set("Face", rect);
                 dst.append(u);
             }
         }

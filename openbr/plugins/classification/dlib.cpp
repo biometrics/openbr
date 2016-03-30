@@ -1,5 +1,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <dlib/image_processing/frontal_face_detector.h>
+#include <dlib/image_processing.h>
 #include <dlib/opencv.h>
 
 #include "openbr/plugins/openbr_internal.h"
@@ -34,29 +35,29 @@ class DLandmarkerTransform : public UntrainableTransform
     Q_OBJECT
 
 private:
-
     Resource<shape_predictor> shapeResource;
 
     void init()
     {
         shapeResource.setResourceMaker(new DLibShapeResourceMaker());
+        shapeResource.release(shapeResource.acquire()); // Pre-load one instance of the model
     }
 
     QPointF averagePoints(const QList<QPointF> &points, int rangeBegin, int rangeEnd) const
     {
-	QPointF point;
+        QPointF point;
         for (int i=rangeBegin; i<rangeEnd; i++)
             point += points[i];
         point /= (rangeEnd-rangeBegin);
-	return point;
+        return point;
     }
 
     void setFacePoints(Template &dst) const
     {
         const QList<QPointF> points = dst.file.points();
-        dst.file.set("LeftEye",averagePoints(points,36,42));
-        dst.file.set("RightEye",averagePoints(points,42,48));
-        dst.file.set("Chin",points[8]);
+        dst.file.set("RightEye", averagePoints(points, 36, 42));
+        dst.file.set("LeftEye" , averagePoints(points, 42, 48));
+        dst.file.set("Chin", points[8]);
     }
 
     void project(const Template &src, Template &dst) const
@@ -73,24 +74,20 @@ private:
         array2d<unsigned char> image;
         assign_image(image,cimg);
 
-        if (src.file.rects().isEmpty()) { //If the image has no rects assume the whole image is a face
-            rectangle r(0, 0, cvImage.cols, cvImage.rows);
-            full_object_detection shape = (*sp)(image, r);
-            for (size_t i = 0; i < shape.num_parts(); i++)
-                dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
-            setFacePoints(dst);
+        rectangle r;
+        if (src.file.rects().isEmpty()) { // If the image has no rects assume the whole image is a face
+            r = rectangle(0, 0, cvImage.cols, cvImage.rows);
+        } else { // Crop the image on the first rect
+            const QRectF rect = src.file.rects().first();
+            r = rectangle(rect.left(), rect.top(), rect.right(), rect.bottom());
         }
-        else { // Crop the image on the rects
-            for (int j=0; j<src.file.rects().size(); ++j)
-            {
-                QRectF rect = src.file.rects()[j];
-                rectangle r(rect.left(),rect.top(),rect.right(),rect.bottom());
-                full_object_detection shape = (*sp)(image, r);
-                for (size_t i=0; i<shape.num_parts(); i++)
-                    dst.file.appendPoint(QPointF(shape.part(i)(0),shape.part(i)(1)));
-                setFacePoints(dst);
-            }
-        }
+
+        full_object_detection shape = (*sp)(image, r);
+        QList<QPointF> points;
+        for (size_t i=0; i<shape.num_parts(); i++)
+            points.append(QPointF(shape.part(i)(0), shape.part(i)(1)));
+        dst.file.setPoints(points);
+        setFacePoints(dst);
 
         shapeResource.release(sp);
     }

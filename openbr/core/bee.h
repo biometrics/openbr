@@ -34,21 +34,21 @@ namespace BEE
     const MaskValue DontCare(0x00);
 
     // Sigset
-    br::FileList readSigset(const br::File &sigset, bool ignoreMetadata = false);
-    void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
+    BR_EXPORT br::FileList readSigset(const br::File &sigset, bool ignoreMetadata = false);
+    BR_EXPORT void writeSigset(const QString &sigset, const br::FileList &files, bool ignoreMetadata = false);
 
     // Matrix
-    cv::Mat readMatrix(const br::File &mat, QString *targetSigset = NULL, QString *querySigset = NULL);
-    void writeMatrix(const cv::Mat &m, const QString &fileName, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
-    void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset);
-    void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset);
+    BR_EXPORT cv::Mat readMatrix(const br::File &mat, QString *targetSigset = NULL, QString *querySigset = NULL);
+    BR_EXPORT void writeMatrix(const cv::Mat &m, const QString &fileName, const QString &targetSigset = "Unknown_Target", const QString &querySigset = "Unknown_Query");
+    BR_EXPORT void readMatrixHeader(const QString &matrix, QString *targetSigset, QString *querySigset);
+    BR_EXPORT void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset);
 
     // Mask
-    void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
-    cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
-    void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask);
-    cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
-    void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
+    BR_EXPORT void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
+    BR_EXPORT cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
+    BR_EXPORT void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask);
+    BR_EXPORT cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
+    BR_EXPORT void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 
 #endif // BEE_BEE_H

@@ -1210,7 +1210,8 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
     return QFileInfo(sdkPath + "/share/openbr/openbr.bib").exists();
 }
 
-// We create our own when the user hasn't
+// We create our own when the user hasn't.
+// Since we can't ensure that it gets deleted last, we never delete it.
 static QCoreApplication *application = NULL;
 
 void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useGui)
@@ -1230,7 +1231,6 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // We take in argc as a reference due to:
     //   https://bugreports.qt-project.org/browse/QTBUG-5637
     // QApplication should be initialized before anything else.
-    // Since we can't ensure that it gets deleted last, we never delete it.
     if (QCoreApplication::instance() == NULL) {
 #ifndef BR_EMBEDDED
         if (useGui) application = new QApplication(argc, argv);
@@ -1245,6 +1245,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
         checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
+        QSet<QString> checkedPaths; // Avoid infinite loops from symlinks
 
         bool foundSDK = false;
         foreach (const QString &path, checkPaths) {
@@ -1252,6 +1253,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
             QDir dir(path);
             do {
                 sdkPath = dir.absolutePath();
+                if (checkedPaths.contains(sdkPath)) break;
+                else                                checkedPaths.insert(sdkPath);
                 foundSDK = checkSDKPath(sdkPath);
                 dir.cdUp();
             } while (!foundSDK && !dir.isRoot());
@@ -1316,9 +1319,6 @@ void br::Context::finalize()
 
     delete Globals;
     Globals = NULL;
-
-    delete application;
-    application = NULL;
 }
 
 QString br::Context::about()
@@ -1602,7 +1602,8 @@ Transform *Transform::make(QString str, QObject *parent)
     // Base name not found? Try constructing it via LoadStore
     if (!Factory<Transform>::names().contains(parsed.suffix())
         && (QFileInfo(parsed.suffix()).exists()
-            || QFileInfo(Globals->sdkPath + "/share/openbr/models/transforms/"+parsed.suffix()).exists())) {
+            || QFileInfo(Globals->sdkPath + "/share/openbr/models/transforms/"+parsed.suffix()).exists()
+            || QFileInfo(Globals->sdkPath + "/../share/openbr/models/transforms/"+parsed.suffix()).exists())) {
         Transform *tform = make("<"+parsed.suffix()+">", parent);
         applyAdditionalProperties(parsed, tform);
         return tform;

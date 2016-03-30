@@ -46,6 +46,14 @@ The Python API is a light wrapper of the C API. It creates an object that has [a
     br.br_free_template_list(query)
     br.br_finalize()
 
+Some functions were made more pythonic and thus differ slightly from the C API. In particular, the C functions that populate a string buffer have that logic abstracted away. For example, `br_get_filename(char * buffer, int buffer_length, br_template tmpl)` in C becomes `filename = br.br_get_filename(tmpl)` in Python. Here are the functions that differ from the C API:
+
+- br_most_recent_message
+- br_objects
+- br_scratch_path
+- br_get_filename
+- br_get_metadata_string
+
 To enable the module, add `-DBR_INSTALL_BRPY=ON` to your cmake command (or use the ccmake GUI - highly recommended).
 
 Currently only OS X and Linux are supported.

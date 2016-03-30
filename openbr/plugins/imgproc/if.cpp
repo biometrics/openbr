@@ -64,6 +64,19 @@ public:
             dst = src;
     }
 
+    void project(const TemplateList &src, TemplateList &dst) const {
+        TemplateList ifTrue, ifFalse;
+        foreach (const Template &t, src) {
+            if (compare(t.file.get<QString>(key)))
+                ifTrue.append(t);
+            else
+                ifFalse.append(t);
+        }
+
+        transform->project(ifTrue,dst);
+        dst.append(ifFalse);
+    }
+
 };
 BR_REGISTER(Transform, IfTransform)
 

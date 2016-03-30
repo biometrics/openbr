@@ -14,7 +14,7 @@ class RandomTemplatesTransform : public UntrainableMetaTransform
     Q_PROPERTY(float percent READ get_percent WRITE set_percent RESET reset_percent)
     BR_PROPERTY(float, percent, .01)
 
-    void project(const Template &src, Template &dst) const {
+    void project(const Template &, Template &) const {
 		qFatal("Not supported in RandomTemplates.");
     }
 

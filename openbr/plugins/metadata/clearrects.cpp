@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright 2012 The MITRE Corporation                                      *
+ * Copyright 2016 Rank One Computing Corporation.
  *                                                                           *
  * Licensed under the Apache License, Version 2.0 (the "License");           *
  * you may not use this file except in compliance with the License.          *
@@ -16,37 +16,27 @@
 
 #include <openbr/plugins/openbr_internal.h>
 
-using namespace cv;
-
 namespace br
 {
 
 /*!
  * \ingroup transforms
- * \brief Compress two uchar into one uchar.
- * \author Josh Klontz \cite jklontz
+ * \brief Clears the rects from a Template
+ * \author Brendan Klare \cite bklare
  */
-class PackTransform : public UntrainableTransform
+class ClearRectsTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
 
-    void project(const Template &src, Template &dst) const
+    void projectMetadata(const File &src, File &dst) const
     {
-        const Mat &m = src;
-        if ((m.cols % 2 != 0) || (m.type() != CV_8UC1))
-            qFatal("Invalid template format.");
-
-        Mat n(m.rows, m.cols/2, CV_8UC1);
-        for (int i=0; i<m.rows; i++)
-            for (int j=0; j<m.cols/2; j++)
-                n.at<uchar>(i,j) = ((m.at<uchar>(i,2*j+0) >> 4) << 4) +
-                                   ((m.at<uchar>(i,2*j+1) >> 4) << 0);
-        dst = n;
+        dst = src;
+        dst.clearRects();
     }
 };
 
-BR_REGISTER(Transform, PackTransform)
+BR_REGISTER(Transform, ClearRectsTransform)
 
 } // namespace br
 
-#include "imgproc/pack.moc"
+#include "metadata/clearrects.moc"

@@ -436,7 +436,7 @@ public:
 };
 
 // TODO: Make sure case where no confidences are inputted works.
-void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon)
+void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon, bool useMax, QList<int> *maxIndices)
 {
     if (rects.isEmpty())
         return;
@@ -448,8 +448,9 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     vector<Rect> rrects(nClasses);
 
     // Total number of rects in each class
-    vector<int> neighbors(nClasses, 0);
-    vector<float> classConfidence(nClasses, 0);
+    vector<int> neighbors(nClasses, -1);
+    vector<float> classConfidence(nClasses, useMax ? -std::numeric_limits<float>::max() : 0);
+    vector<int> classMax(nClasses, 0);
 
     for (size_t i = 0; i < labels.size(); i++)
     {
@@ -459,18 +460,26 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         rrects[cls].width += rects[i].width;
         rrects[cls].height += rects[i].height;
         neighbors[cls]++;
-        classConfidence[cls] += confidences[i];
+        if (useMax) {
+            if (confidences[i] > classConfidence[cls]) {
+                classConfidence[cls] = confidences[i];
+                classMax[cls] = i;
+            }
+        } else
+            classConfidence[cls] += confidences[i];
     }
 
     // Find average rectangle for all classes
     for (int i = 0; i < nClasses; i++)
     {
-        Rect r = rrects[i];
-        float s = 1.f/neighbors[i];
-        rrects[i] = Rect(saturate_cast<int>(r.x*s),
-             saturate_cast<int>(r.y*s),
-             saturate_cast<int>(r.width*s),
-             saturate_cast<int>(r.height*s));
+        if (neighbors[i] > 0) {
+            Rect r = rrects[i];
+            float s = 1.f/(neighbors[i]+1);
+            rrects[i] = Rect(saturate_cast<int>(r.x*s),
+                 saturate_cast<int>(r.y*s),
+                 saturate_cast<int>(r.width*s),
+                 saturate_cast<int>(r.height*s));
+        }
     }
 
     rects.clear();
@@ -480,7 +489,7 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     for (int i = 0; i < nClasses; i++)
     {
         // Average rectangle
-        Rect r1 = rrects[i];
+        const Rect r1 = rrects[i];
 
         // Used to eliminate rectangles with few neighbors in the case of no weights
         const float w1 = classConfidence[i];
@@ -501,21 +510,19 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
             if (j == i || n2 < minNeighbors)
                 continue;
 
-            Rect r2 = rrects[j];
+            const Rect r2 = rrects[j];
 
-            int dx = saturate_cast<int>(r2.width * epsilon);
-            int dy = saturate_cast<int>(r2.height * epsilon);
+            const int dx = saturate_cast<int>(r2.width * epsilon);
+            const int dy = saturate_cast<int>(r2.height * epsilon);
 
-            float w2 = classConfidence[j];
+            const float w2 = classConfidence[j];
 
-            // If, r1 is within the r2 AND
-            // r2 has a higher confidence than r1
-            // then, eliminate the r1
             if(r1.x >= r2.x - dx &&
                r1.y >= r2.y - dy &&
                r1.x + r1.width <= r2.x + r2.width + dx &&
                r1.y + r1.height <= r2.y + r2.height + dy &&
-               (w2 > std::max(confidenceThreshold, w1)))
+               (w2 > w1) &&
+               (n2 > n1))
                break;
         }
 
@@ -523,11 +530,49 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         {
             rects.append(r1);
             confidences.append(w1);
+            if (maxIndices)
+                maxIndices->append(classMax[i]);
         }
     }
 }
 
-void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, int degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+{
+    // Padding is expected to be top, bottom, left, right
+    if (padMat)
+        copyMakeBorder(src, dst, padding[0], padding[1], padding[2], padding[3], border, Scalar(value));
+    else
+        dst = src;
+
+    if (padPoints) {
+        QList<QPointF> points = src.file.points();
+        QList<QPointF> paddedPoints;
+        for (int i=0; i<points.size(); i++)
+            paddedPoints.append(points[i] += QPointF(padding[2],padding[0]));
+        dst.file.setPoints(paddedPoints);
+    }
+
+    if (padRects) {
+        QList<QRectF> rects = src.file.rects();
+        QList<QRectF> paddedRects;
+        for (int i=0; i<rects.size(); i++)
+            paddedRects.append(rects[i].translated(QPointF(padding[2],padding[0])));
+        dst.file.setRects(paddedRects);
+    }
+
+
+}
+
+void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+{
+    for (int i=0; i<src.size(); i++) {
+        br::Template t;
+        pad(src[i], t, padMat, padding, padPoints, padRects, border, value);
+        dst.append(t);
+    }
+}
+
+void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
 {
     Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),degrees,1.0);
     if (rotateMat) {
@@ -579,7 +624,7 @@ void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, int degrees
     }
 }
 
-void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, int degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;

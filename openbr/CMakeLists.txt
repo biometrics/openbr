@@ -34,10 +34,7 @@ if(NOT BR_EMBEDDED)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
-# normal BR library declaration - added openbr-cuda library
-message(STATUS "BR_THIRDPARTY_SRC")
-message(STATUS ${BR_THIRDPARTY_SRC})
-cuda_add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC})
+cuda_add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY

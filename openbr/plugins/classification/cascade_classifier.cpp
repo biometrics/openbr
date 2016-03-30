@@ -323,4 +323,4 @@ BR_REGISTER(Classifier, CascadeClassifier)
 
 } // namespace br
 
-#include "classification/cascade.moc"
+#include "classification/cascade_classifier.moc"
