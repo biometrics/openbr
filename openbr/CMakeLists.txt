@@ -9,11 +9,6 @@ set(SRC openbr.cpp
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
-# CUDA shit
-FIND_PACKAGE(CUDA REQUIRED)
-SET(CUDA_SEPARABLE_COMPILATION ON)
-SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -arch=sm_20;--compiler-options "-fPIC")
-SET(CUDA_VERBOSE_BUILD ON)
 
 # Janus API
 option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
@@ -34,13 +29,30 @@ if(NOT BR_EMBEDDED)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
-cuda_add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
+# add CUDA compiler flags if CUDA support is enabled
+option(BR_WITH_CUDA "Build CUDA-accelerate plugins." OFF)
+if (BR_WITH_CUDA)
+  FIND_PACKAGE(CUDA REQUIRED)
+  SET(CUDA_SEPARABLE_COMPILATION ON)
+  SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -arch=sm_20;--compiler-options "-fPIC")
+
+  cuda_add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
+else()
+  # otherwise, build with normal system
+  add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
+endif()
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                              SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
-target_link_libraries(openbr ${BR_THIRDPARTY_LIBS} ${CUDA_LIBRARIES})
+target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
+
+# include CUDA dependencies
+if (BR_WITH_CUDA)
+  target_link_libraries(openbr ${CUDA_LIBRARIES})
+endif()
+
 add_cppcheck(openbr)
 
 # Janus implementation
