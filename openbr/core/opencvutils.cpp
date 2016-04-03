@@ -455,18 +455,24 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     for (size_t i = 0; i < labels.size(); i++)
     {
         int cls = labels[i];
-        rrects[cls].x += rects[i].x;
-        rrects[cls].y += rects[i].y;
-        rrects[cls].width += rects[i].width;
-        rrects[cls].height += rects[i].height;
-        neighbors[cls]++;
         if (useMax) {
             if (confidences[i] > classConfidence[cls]) {
                 classConfidence[cls] = confidences[i];
                 classMax[cls] = i;
+                rrects[cls].x = rects[i].x;
+                rrects[cls].y = rects[i].y;
+                rrects[cls].width = rects[i].width;
+                rrects[cls].height = rects[i].height;
+                neighbors[cls] = 0;
             }
-        } else
+        } else {
             classConfidence[cls] += confidences[i];
+            rrects[cls].x += rects[i].x;
+            rrects[cls].y += rects[i].y;
+            rrects[cls].width += rects[i].width;
+            rrects[cls].height += rects[i].height;
+            neighbors[cls]++;
+        }
     }
 
     // Find average rectangle for all classes

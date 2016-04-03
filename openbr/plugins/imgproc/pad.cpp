@@ -15,7 +15,10 @@ namespace br
 class PadTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_ENUMS(Method)
+    Q_ENUMS(Border)
+    Q_PROPERTY(Border border READ get_border WRITE set_border RESET reset_border STORED false)
+    Q_PROPERTY(float percent READ get_percent WRITE set_percent RESET reset_percent STORED false)
+    Q_PROPERTY(int value READ get_value WRITE set_value RESET reset_value STORED false)
 
 public:
     /*!< */
@@ -24,9 +27,6 @@ public:
                   Constant = BORDER_CONSTANT};
 
 private:
-    Q_PROPERTY(Border border READ get_border WRITE set_border RESET reset_border STORED false)
-    Q_PROPERTY(float percent READ get_percent WRITE set_percent RESET reset_percent STORED false)
-    Q_PROPERTY(int value READ get_value WRITE set_value RESET reset_value STORED false)
     BR_PROPERTY(Border, border, Replicate)
     BR_PROPERTY(float, percent, .1)
     BR_PROPERTY(float, value, 0)
