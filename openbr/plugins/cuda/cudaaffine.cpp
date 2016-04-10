@@ -38,6 +38,7 @@ using namespace cv;
 
 // definitions from the CUDA source file
 namespace br { namespace cuda { namespace affine {
+	void resizeWrapper(void* srcPtr, void** dstPtr, int src_rows, int src_cols, int dst_rows, int dst_cols);
 	void wrapper(void* srcPtr, void** dstPtr, Mat affineTransform, int src_rows, int src_cols, int dst_rows, int dst_cols);
 }}}
 
@@ -115,7 +116,20 @@ namespace br
 	            const QList<Point2f> landmarks = OpenCVUtils::toPoints(src.file.points());
 
 	            if ((landmarks.size() < 2) || (!twoPoints && (landmarks.size() < 3))) {
-	                resize(src, dst, Size(width, height));
+                  void* const* srcDataPtr = src.m().ptr<void*>();
+                  int rows = *((int*)srcDataPtr[1]);
+                  int cols = *((int*)srcDataPtr[2]);
+                  int type = *((int*)srcDataPtr[3]);
+
+                  Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
+                  void** dstDataPtr = dstMat.ptr<void*>();
+
+                  dstDataPtr[1] = srcDataPtr[1]; *((int*)dstDataPtr[1]) = height;  // rows
+                  dstDataPtr[2] = srcDataPtr[2]; *((int*)dstDataPtr[2]) = width;   // cols
+                  dstDataPtr[3] = srcDataPtr[3];
+
+                  cuda::affine::resizeWrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols, height, width);
+                  dst = dstMat;
 	                return;
 	            } else {
 	                srcPoints[0] = landmarks[0];

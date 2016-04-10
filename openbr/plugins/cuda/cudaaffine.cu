@@ -127,6 +127,28 @@ namespace br { namespace cuda { namespace affine {
         *src_row_pnt = dst_col * trans_inv[1] + dst_row * trans_inv[4] + trans_inv[7];
 		}
 
+    __global__ void bilinearKernel(uint8_t* srcPtr, uint8_t* dstPtr, int srcRows, int srcCols, int dstRows, int dstCols) {
+        int dstRowInd = blockIdx.y*blockDim.y+threadIdx.y;
+        int dstColInd = blockIdx.x*blockDim.x+threadIdx.x;
+        int dstIndex = dstRowInd*dstCols + dstColInd;
+
+        // don't do anything if the index is out of bounds
+        if (dstRowInd < 1 || dstRowInd >= dstRows-1 || dstColInd < 1 || dstColInd >= dstCols-1) {
+            if (dstRowInd >= dstRows || dstColInd >= dstCols) {
+                return;
+            } else{
+                dstPtr[dstIndex] = 0;
+                return;
+            }
+        }
+
+        double rowScaleFactor = (double)dstRows / (double)srcRows;
+        double colScaleFactor = (double)dstCols / (double)srcCols;
+
+        uint8_t out = getBilinearPixelValueDevice(dstRowInd/rowScaleFactor, dstColInd/colScaleFactor, srcPtr, srcRows, srcCols);
+
+        dstPtr[dstIndex] = out;
+    }
 
     __global__ void affineKernel(uint8_t* srcPtr, uint8_t* dstPtr, double* trans_inv, int src_rows, int src_cols, int dst_rows, int dst_cols){
         int dstRowInd = blockIdx.y*blockDim.y+threadIdx.y;
@@ -150,6 +172,24 @@ namespace br { namespace cuda { namespace affine {
         const uint8_t cval = getBilinearPixelValueDevice(srcRowPnt, srcColPnt, srcPtr, src_rows, src_cols); // Get initial pixel value
 
         dstPtr[dstIndex] = cval;
+    }
+
+    void resizeWrapper(void* srcPtr, void** dstPtr, int srcRows, int srcCols, int dstRows, int dstCols) {
+      // perform bilinear filtering
+
+      // allocate space for destination
+      cudaError_t err;
+      CUDA_SAFE_MALLOC(dstPtr, dstRows*dstCols*sizeof(uint8_t), &err);
+
+      // call the bilinear kernel function
+      dim3 threadsPerBlock(8, 8);
+      dim3 numBlocks(dstCols/threadsPerBlock.x + 1,
+                     dstRows/threadsPerBlock.y + 1);
+
+      bilinearKernel<<<numBlocks, threadsPerBlock>>>((uint8_t*)srcPtr, (uint8_t*)*dstPtr, srcRows, srcCols, dstRows, dstCols);
+      CUDA_KERNEL_ERR_CHK(&err);
+
+      CUDA_SAFE_FREE(srcPtr, &err);
     }
 
     void wrapper(void* srcPtr, void** dstPtr, Mat affineTransform, int src_rows, int src_cols, int dst_rows, int dst_cols) {
