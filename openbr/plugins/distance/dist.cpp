@@ -14,9 +14,6 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <iostream>
-using namespace std;
-
 #include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/plugins/openbr_internal.h>
 
@@ -55,15 +52,6 @@ private:
 
     float compare(const Mat &a, const Mat &b) const
     {
-      /*
-      cout << "Mat A" << endl;
-      cout << "rows: " << a.rows << "\tcols: " << a.cols << endl;
-      cout << "a.ptr<float>()[0]: " << a.ptr<float>()[0] << endl;
-      cout << "Mat B" << endl;
-      cout << "rows: " << b.rows << "\tcols: " << b.cols << endl;
-      cout << "b.ptr<float>()[0]: " << b.ptr<float>()[0] << endl;
-      */
-
         if ((a.size != b.size) ||
             (a.type() != b.type()))
                 return -std::numeric_limits<float>::max();
