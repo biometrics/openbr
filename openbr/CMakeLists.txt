@@ -9,7 +9,6 @@ set(SRC openbr.cpp
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
-
 # Janus API
 option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
 if(BR_WITH_JANUS)
@@ -29,7 +28,11 @@ if(NOT BR_EMBEDDED)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
-  # otherwise, build with normal system
+# Compile third party resources
+if(BR_THIRDPARTY_RESOURCES)
+  qt5_add_resources(THIRDPARTY_RESOURCES ${BR_THIRDPARTY_RESOURCES})
+endif()
+
 add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
@@ -37,7 +40,6 @@ set_target_properties(openbr PROPERTIES
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                              SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
 target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})
-
 add_cppcheck(openbr)
 
 # Janus implementation
