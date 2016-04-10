@@ -125,13 +125,6 @@ namespace br
 	        }
 	        if (twoPoints) srcPoints[2] = getThirdAffinePoint(srcPoints[0], srcPoints[1]);
 
-	        // Code section being altered (original)
-	        //
-	        // Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
-	        // warpAffine(src, dst, affineTransform, Size(width, height), method);
-	        //
-	        // end original
-
 	        Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
 
 	        void* const* srcDataPtr = src.m().ptr<void*>();
@@ -145,14 +138,6 @@ namespace br
 	        dstDataPtr[1] = srcDataPtr[1]; *((int*)dstDataPtr[1]) = height;  // rows
 	        dstDataPtr[2] = srcDataPtr[2]; *((int*)dstDataPtr[2]) = width;   // cols
 	        dstDataPtr[3] = srcDataPtr[3];
-
-	        // Print the transform
-	        //for(int x = 0; x < affineTransform.rows; x++){
-	            //for(int y = 0; y < affineTransform.cols; y++){
-	                //printf("%8.3f\t", affineTransform.at<double>(x, y));
-	            //}
-	            //printf("\n");
-	        //}
 
 	        cuda::affine::wrapper(srcDataPtr[0], &dstDataPtr[0], affineTransform, rows, cols, height, width);
 

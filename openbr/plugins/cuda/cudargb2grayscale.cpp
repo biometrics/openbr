@@ -61,16 +61,6 @@ private:
 
         cuda::rgb2grayscale::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
         dst = dstMat;
-
-        /*
-        if (src.m().channels() > 1 || colorSpace == Color) cvtColor(src, dst, colorSpace);
-        else dst = src;
-
-        if (channel != -1) {
-            std::vector<Mat> mv;
-            split(dst, mv);
-            dst = mv[channel % (int)mv.size()];
-        } */
     }
 };
 
