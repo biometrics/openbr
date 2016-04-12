@@ -42,8 +42,16 @@ class CUDAL2Distance : public UntrainableDistance
       float* cudaAPtr = (float*)srcDataPtr[0];
       int rows = *((int*)srcDataPtr[1]);
       int cols = *((int*)srcDataPtr[2]);
+      int srcType = *((int*)srcDataPtr[3]);
 
-      float* cudaBPtr = (float*)b.ptr<void*>()[0];
+      void* const* dstDataPtr = b.ptr<void*>();
+      float* cudaBPtr = (float*)dstDataPtr[0];
+      int dstType = *((int*)dstDataPtr[3]);
+
+      if (srcType != dstType) {
+        cout << "ERR: Type mismatch" << endl;
+        throw 0;
+      }
 
       float out;
       cuda::L2::wrapper(cudaAPtr, cudaBPtr, rows*cols, &out);
