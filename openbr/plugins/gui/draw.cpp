@@ -66,7 +66,7 @@ class DrawTransform : public UntrainableTransform
             }
         }
         if (rects) {
-            foreach (const Rect &rect, OpenCVUtils::toRects(src.file.namedRects() + src.file.rects()))
+            foreach (const Rect &rect, OpenCVUtils::toRects((named) ? src.file.namedRects() + src.file.rects() : src.file.rects()))
                 rectangle(dst, rect, color, lineThickness);
         }
     }
