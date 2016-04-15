@@ -917,8 +917,10 @@ class DirectStreamTransform : public CompositeTransform
 
 public:
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
+    Q_PROPERTY(br::Transform* startPoint READ get_startPoint WRITE set_startPoint RESET reset_startPoint STORED true)
     Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     BR_PROPERTY(int, activeFrames, 100)
+    BR_PROPERTY(br::Transform*, startPoint, NULL)
     BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     friend class StreamTransfrom;
@@ -933,7 +935,7 @@ public:
         // Set transforms to the start, up to end_idx
         QList<Transform *> backup = this->transforms;
         transforms = backup.mid(0,end_idx);
-        // We use collector to retain the project structure at the end of the
+        // We use collector to retain the  structure at the end of the
         // truncated stream.
         transforms.append(&collector);
 
@@ -1123,11 +1125,23 @@ public:
         readStage->stages = &this->processingStages;
         readStage->threads = this->threads;
 
-        // Initialize and link a processing stage for each of our child
-        // transforms.
         int next_stage_id = 1;
         bool prev_stage_variance = true;
-        for (int i =0; i < transforms.size(); i++)
+        // Connect readStage to startPoint, if it exists
+        int startIndex = 0;
+        if (startPoint) {
+            processingStages.append(new SingleThreadStage(prev_stage_variance));
+            processingStages.last()->stage_id = next_stage_id++;
+            processingStages[startIndex++]->nextStage = processingStages[startIndex];
+            processingStages.last()->stages = &this->processingStages;
+            processingStages.last()->threads = this->threads;
+            processingStages.last()->transform = startPoint;
+            prev_stage_variance = false;
+        }
+
+        // Initialize and link a processing stage for each of our child
+        // transforms.
+        for (int i=startIndex; i < transforms.size(); i++)
         {
             if (stage_variance[i])
                 // Whether or not the previous stage is multi-threaded controls
@@ -1145,7 +1159,7 @@ public:
             processingStages.last()->stages = &this->processingStages;
             processingStages.last()->threads = this->threads;
 
-            processingStages.last()->transform = transforms[i];
+            processingStages.last()->transform = transforms[i-startIndex];
             prev_stage_variance = stage_variance[i];
         }
 
@@ -1236,10 +1250,12 @@ public:
     {
     }
 
+    Q_PROPERTY(br::Transform* startPoint READ get_startPoint WRITE set_startPoint RESET reset_startPoint STORED true)
     Q_PROPERTY(br::Transform* endPoint READ get_endPoint WRITE set_endPoint RESET reset_endPoint STORED true)
     Q_PROPERTY(int activeFrames READ get_activeFrames WRITE set_activeFrames RESET reset_activeFrames)
 
     BR_PROPERTY(int, activeFrames, 100)
+    BR_PROPERTY(br::Transform*, startPoint, NULL)
     BR_PROPERTY(br::Transform*, endPoint, make("CollectOutput"))
 
     bool timeVarying() const { return true; }
@@ -1281,6 +1297,7 @@ public:
         basis = QSharedPointer<DirectStreamTransform>((DirectStreamTransform *) Transform::make("DirectStream",this));
         basis->transforms.clear();
         basis->activeFrames = this->activeFrames;
+        basis->startPoint = this->startPoint;
         basis->endPoint = this->endPoint;
 
         // We need at least a CompositeTransform * to acess transform's children.

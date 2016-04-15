@@ -208,9 +208,10 @@ struct AlgorithmCore
         QList<Transform *> stages;
         stages.append(enroll);
 
+        QString inputDesc;
         QString outputDesc;
         if (fileExclusion)
-            outputDesc = "FileExclusion(" + gallery.flat() + ")+";
+            inputDesc = "FileExclusion(" + gallery.flat() + ")";
         if (!noOutput)
             outputDesc.append("GalleryOutput("+gallery.flat()+")+");
 
@@ -218,7 +219,7 @@ struct AlgorithmCore
         stages.append(progressCounter.data());
 
         QScopedPointer<Transform> pipeline(pipeTransforms(stages));
-        QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery, endPoint="+outputDesc+")"));
+        QScopedPointer<Transform> stream(wrapTransform(pipeline.data(), "Stream(readMode=StreamGallery,endPoint="+outputDesc+(inputDesc.isEmpty() ? ")" : ",startPoint="+inputDesc+")")));
 
         foreach (const br::File &file, input.split()) {
             qDebug("Enrolling %s%s", qPrintable(file.name),
