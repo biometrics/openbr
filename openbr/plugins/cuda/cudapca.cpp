@@ -33,6 +33,7 @@ using namespace cv;
 // definitions from the CUDA source file
 namespace br { namespace cuda { namespace pca {
   void initializeWrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
+  void trainWrapper(void* cudaSrc, float* dst, int rows, int cols);
   void wrapper(void* src, void** dst);
 }}}
 
@@ -94,6 +95,7 @@ private:
           int type = *((int*)srcDataPtr[3]);
 
           Mat mat = Mat(rows, cols, type);
+          br::cuda::pca::trainWrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
           trainingQlist.append(Template(mat));
         }
 

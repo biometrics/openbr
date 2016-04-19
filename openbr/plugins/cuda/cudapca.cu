@@ -111,6 +111,11 @@ namespace br { namespace cuda { namespace pca {
     CUDA_SAFE_MALLOC(&intermediaryBuffer, _numSteps*_evCols*sizeof(float), &err);
   }
 
+  void trainWrapper(void* cudaSrc, float* data, int rows, int cols) {
+    cudaError_t err;
+    CUDA_SAFE_MEMCPY(data, cudaSrc, rows*cols*sizeof(float), cudaMemcpyDeviceToHost, &err);
+  }
+
   void wrapper(void* src, void** dst) {
     cudaError_t err;
     CUDA_SAFE_MALLOC(dst, _evCols*sizeof(float), &err);
