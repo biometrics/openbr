@@ -31,27 +31,11 @@ using namespace cv::gpu;
 namespace br { namespace cuda { namespace affine {
 
     __device__ __forceinline__ uint8_t getPixelValueDevice(int row, int col, uint8_t* srcPtr, int rows, int cols) {
-        if (row < 0 || row > rows || col < 0 || col > cols) {
-            if (row > rows || col > cols) {
-                return 0;
-            } else{
-                return 0;
-            }
-        }
         return (srcPtr + row*cols)[col];
     }
 
 
     __device__ __forceinline__ uint8_t getBilinearPixelValueDevice(double row, double col, uint8_t* srcPtr, int rows, int cols) {
-        // don't do anything if the index is out of bounds
-        if (row < 0 || row > rows || col < 0 || col > cols) {
-            if (row > rows || col > cols) {
-                return 0;
-            } else{
-                return 0;
-            }
-        }
-
         // http://www.sci.utah.edu/~acoste/uou/Image/project3/ArthurCOSTE_Project3.pdf
         // Bilinear Transformation
         // f(Px, Py) = f(Q11)×(1−Rx)×(1−Sy)+f(Q21)×(Rx)×(1−Sy)+f(Q12)×(1−Rx)×(Sy)+f(Q22)×(Rx)×(Sy)
@@ -75,15 +59,6 @@ namespace br { namespace cuda { namespace affine {
     }
 
     __device__ __forceinline__ uint8_t getDistancePixelValueDevice(double row, double col, uint8_t* srcPtr, int rows, int cols) {
-        // don't do anything if the index is out of bounds
-        if (row < 1 || row >= rows-1 || col < 1 || col >= cols-1) {
-            if (row >= rows || col >= cols) {
-                return 0;
-            } else{
-                return 0;
-            }
-        }
-
         int row1 = floor(row);
         int row2 = row1+1;
 
@@ -128,26 +103,42 @@ namespace br { namespace cuda { namespace affine {
 		}
 
     __global__ void bilinearKernel(uint8_t* srcPtr, uint8_t* dstPtr, int srcRows, int srcCols, int dstRows, int dstCols) {
-        int dstRowInd = blockIdx.y*blockDim.y+threadIdx.y;
-        int dstColInd = blockIdx.x*blockDim.x+threadIdx.x;
-        int dstIndex = dstRowInd*dstCols + dstColInd;
+      int dstRowInd = blockIdx.y*blockDim.y+threadIdx.y;
+      int dstColInd = blockIdx.x*blockDim.x+threadIdx.x;
+      int dstIndex = dstRowInd*dstCols+dstColInd;
 
-        // don't do anything if the index is out of bounds
-        if (dstRowInd < 1 || dstRowInd >= dstRows-1 || dstColInd < 1 || dstColInd >= dstCols-1) {
-            if (dstRowInd >= dstRows || dstColInd >= dstCols) {
-                return;
-            } else{
-                dstPtr[dstIndex] = 0;
-                return;
-            }
-        }
+      // destination boundary checking
+      if (dstRowInd >= dstRows || dstColInd >= dstCols) {
+        return;
+      }
 
-        double rowScaleFactor = (double)dstRows / (double)srcRows;
-        double colScaleFactor = (double)dstCols / (double)srcCols;
+      // get the reference indices and relative amounts
+      float exactSrcRowInd = (float)dstRowInd / (float)dstRows * (float)srcRows;
+      int minSrcRowInd = (int)exactSrcRowInd;
+      int maxSrcRowInd = minSrcRowInd+1;
+      float relSrcRowInd = 1.-(exactSrcRowInd-(float)minSrcRowInd);
 
-        uint8_t out = getBilinearPixelValueDevice(dstRowInd/rowScaleFactor, dstColInd/colScaleFactor, srcPtr, srcRows, srcCols);
+      // get the reference indices and relative amounts
+      double exactSrcColInd = (double)dstColInd / (double)dstCols * (double)srcCols;
+      int minSrcColInd = (int)exactSrcColInd;
+      int maxSrcColInd = minSrcColInd+1;
+      float relSrcColInd = 1.-(exactSrcColInd-(float)minSrcColInd);
 
-        dstPtr[dstIndex] = out;
+      // perform boundary checking
+      if (minSrcRowInd < 0 || maxSrcRowInd >= srcRows || minSrcColInd < 0 || maxSrcColInd >= srcCols) {
+        dstPtr[dstIndex] = 0;
+        return;
+      }
+
+      // get each of the pixel values
+      float topLeft = srcPtr[minSrcRowInd*srcCols+minSrcColInd];
+      float topRight = srcPtr[minSrcRowInd*srcCols+maxSrcColInd];
+      float bottomLeft = srcPtr[maxSrcRowInd*srcCols+minSrcColInd];
+      float bottomRight = srcPtr[maxSrcRowInd*srcCols+maxSrcColInd];
+
+      float out = relSrcRowInd*relSrcColInd*topLeft + relSrcRowInd*(1.-relSrcColInd)*topRight + (1.-relSrcRowInd)*relSrcColInd*bottomLeft + (1.-relSrcRowInd)*(1.-relSrcColInd)*bottomRight;
+
+      dstPtr[dstIndex] = (int)out;
     }
 
     __global__ void affineKernel(uint8_t* srcPtr, uint8_t* dstPtr, double* trans_inv, int src_rows, int src_cols, int dst_rows, int dst_cols){
@@ -159,13 +150,12 @@ namespace br { namespace cuda { namespace affine {
         double srcColPnt;
 
         // don't do anything if the index is out of bounds
-        if (dstRowInd < 1 || dstRowInd >= dst_rows-1 || dstColInd < 1 || dstColInd >= dst_cols-1) {
-            if (dstRowInd >= dst_rows || dstColInd >= dst_cols) {
-                return;
-            } else{
-                dstPtr[dstIndex] = 0;
-                return;
-            }
+        if (dstRowInd >= dst_rows || dstColInd >= dst_cols) {
+          return;
+        }
+        if (dstRowInd == 0 || dstRowInd == dst_rows-1 || dstColInd ==0 || dstColInd == dst_cols-1) {
+          dstPtr[dstIndex] = 0;
+          return;
         }
 
         getSrcCoordDevice(trans_inv, dstRowInd, dstColInd, &srcRowPnt, &srcColPnt);

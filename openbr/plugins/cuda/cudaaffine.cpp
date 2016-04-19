@@ -95,6 +95,11 @@ namespace br
                   int cols = *((int*)srcDataPtr[2]);
                   int type = *((int*)srcDataPtr[3]);
 
+                  if (type != CV_8UC1) {
+                    cout << "ERR: Invalid image format!" << endl;
+                    return;
+                  }
+
                   Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
                   void** dstDataPtr = dstMat.ptr<void*>();
 
@@ -118,6 +123,12 @@ namespace br
 	        int rows = *((int*)srcDataPtr[1]);
 	        int cols = *((int*)srcDataPtr[2]);
 	        int type = *((int*)srcDataPtr[3]);
+
+          if (type != CV_8UC1) {
+            cout << "ERR: Invalid image format!" << endl;
+            return;
+          }
+
 
 	        Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
 	        void** dstDataPtr = dstMat.ptr<void*>();
