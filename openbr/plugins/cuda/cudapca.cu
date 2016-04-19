@@ -116,9 +116,14 @@ namespace br { namespace cuda { namespace pca {
     CUDA_SAFE_MEMCPY(data, cudaSrc, rows*cols*sizeof(float), cudaMemcpyDeviceToHost, &err);
   }
 
-  void wrapper(void* src, void** dst) {
+  void wrapper(void* src, void** dst, int imgRows, int imgCols) {
     cudaError_t err;
     CUDA_SAFE_MALLOC(dst, _evCols*sizeof(float), &err);
+
+    if (imgRows*imgCols != _evRows) {
+      cout << "ERR: Image dimension mismatch!" << endl;
+      throw 0;
+    }
 
     // subtract out the mean of the image (mean is 1xpixels in size)
     int threadsPerBlock = 64;

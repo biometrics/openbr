@@ -34,7 +34,7 @@ using namespace cv;
 namespace br { namespace cuda { namespace pca {
   void initializeWrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
   void trainWrapper(void* cudaSrc, float* dst, int rows, int cols);
-  void wrapper(void* src, void** dst);
+  void wrapper(void* src, void** dst, int imgRows, int imgCols);
 }}}
 
 namespace br
@@ -136,7 +136,7 @@ private:
       dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
       dstDataPtr[3] = srcDataPtr[3];
 
-      cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0]);
+      cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
 
       dst = dstMat;
     }
@@ -150,7 +150,6 @@ private:
     {
         stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
 
-        // TODO(colin): use Eigen Map class to generate map files so we don't have to copy the data
         // serialize the eigenvectors
         float* evBuffer = new float[eVecs.rows() * eVecs.cols()];
         for (int i=0; i < eVecs.rows(); i++) {
