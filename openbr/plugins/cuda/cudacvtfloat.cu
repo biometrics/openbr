@@ -41,12 +41,12 @@ namespace br { namespace cuda { namespace cvtfloat {
     CUDA_SAFE_MALLOC(dst, rows*cols*sizeof(float), &err);
 
     dim3 threadsPerBlock(8, 8);
-    dim3 blocks(
+    dim3 numBlocks(
       cols / threadsPerBlock.x + 1,
       rows / threadsPerBlock.y + 1
     );
 
-    kernel<<<threadsPerBlock, blocks>>>((const unsigned char*)src, (float*)(*dst), rows, cols);
+    kernel<<<numBlocks, threadsPerBlock>>>((const unsigned char*)src, (float*)(*dst), rows, cols);
     CUDA_KERNEL_ERR_CHK(&err);
 
     // free the src memory since it is now in a newly allocated dst
