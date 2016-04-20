@@ -1312,6 +1312,8 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
 
 void br::Context::finalize()
 {
+    qInstallMessageHandler(0);
+
     // Trigger registered finalizers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
