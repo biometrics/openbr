@@ -94,6 +94,10 @@ private:
           int cols = *((int*)srcDataPtr[2]);
           int type = *((int*)srcDataPtr[3]);
 
+          if (type != CV_32FC1) {
+            qFatal("Requires single channel 32-bit floating point matrices.");
+          }
+
           Mat mat = Mat(rows, cols, type);
           br::cuda::pca::trainWrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
           trainingQlist.append(Template(mat));
@@ -102,9 +106,6 @@ private:
         // assemble a TemplateList from the list of data
         TemplateList trainingSet(trainingQlist);
 
-        if (trainingSet.first().m().type() != CV_32FC1) {
-          qFatal("Requires single channel 32-bit floating point matrices.");
-        }
 
         originalRows = trainingSet.first().m().rows;    // get number of rows of first image
         int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
@@ -127,7 +128,7 @@ private:
 
       if (type != CV_32FC1) {
         cout << "ERR: Invalid image type" << endl;
-        return;
+        throw 0;
       }
 
       Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());

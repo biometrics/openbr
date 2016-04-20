@@ -30,61 +30,67 @@ using namespace cv::gpu;
  */
 
 namespace br { namespace cuda { namespace pca {
-  __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int evRows, int evCols, int stepSize) {
-    int colInd = blockIdx.x*blockDim.x+threadIdx.x;
-    if (colInd >= evCols) {
-      return;
-    }
+  __global__ void multiplyKernel(float* src, float* intermediaryBuffer, float* evPtr, int numEigenvectors, int numSteps, int stepSize, int numPixels) {
+    int evIdx = blockIdx.x*blockDim.x+threadIdx.x;
+    int stepIdx = blockIdx.y*blockDim.y+threadIdx.y;
 
-    int stepNum = threadIdx.y;
-    int iStart = stepNum*stepSize;
-    int iEnd = iStart+stepSize;
-    if (iStart >= evRows) {
-      return;
-    }
-    if (iEnd > evRows) {
-      iEnd = evRows;
-    }
-
-    float acc = 0;
-    for (int i=iStart; i < iEnd; i++) {
-      acc += evPtr[evCols*i + colInd] * src[i];
-    }
-
-    intermediaryBuffer[stepSize*stepNum + colInd] = acc;
-  }
-
-  __global__ void multiplyJoinKernel(float* intermediaryBuffer, float* dst, int evRows, int evCols, int numSteps, int stepSize) {
-    int colInd = blockIdx.x*blockDim.x+threadIdx.x;
-    if (colInd >= evCols) {
+    if (evIdx >= numEigenvectors || stepIdx >= numSteps) {
       return;
     }
 
     float acc = 0;
-    for (int i = 0; i < numSteps; i++) {
-      acc += intermediaryBuffer[stepSize*i + colInd];
+    int startIdx = stepSize*stepIdx;
+    int stopIdx = startIdx+stepSize;
+    if (startIdx >= numPixels) {
+      return;
+    }
+    if (stopIdx >= numPixels) {
+      stopIdx = numPixels;
+    }
+    for(int i=startIdx; i < stopIdx; i++) {
+      acc += src[i]*evPtr[i*numEigenvectors + evIdx];
     }
 
-    dst[colInd] = acc;
+    intermediaryBuffer[stepIdx*stepSize + evIdx] = acc;
   }
 
-  __global__ void subtractMeanKernel(float* out, float* mean, int numCols) {
-    int colInd = blockIdx.x*blockDim.x+threadIdx.x;
+  __global__ void multiplyJoinKernel(float* intermediaryBuffer, float* out, int numEigenvectors, int numSteps, int stepSize) {
+    int evIdx = blockIdx.x*blockDim.x+threadIdx.x;
+    if (evIdx >= numEigenvectors) {
+      return;
+    }
+
+    float acc = 0;
+    for (int i=0; i < numSteps; i++) {
+      int ibIdx = i*stepSize + evIdx;
+      if (ibIdx >= numSteps*stepSize) {
+        break;
+      }
+      acc += intermediaryBuffer[ibIdx];
+    }
+
+    out[evIdx] = acc;
+  }
+
+  __global__ void subtractMeanKernel(float* out, float* mean, int numElems) {
+    int idx = blockIdx.x*blockDim.x+threadIdx.x;
 
     // perform bound checking
-    if (colInd >= numCols) {
+    if (idx >= numElems) {
       return;
     }
 
     // subtract out the mean
-    out[colInd] -= mean[colInd];
+    out[idx] -= mean[idx];
   }
 
+  // _evRows: the number of pixels in the trained images
+  // _evCols: the number of eigenvectors
+  // _meanElems: the number of pixels in an image
+  // _stepSize: the number of pixels in a single step
+  // _numSteps: the number of steps required to complete operation
   float* cudaEvPtr; int _evRows; int _evCols;
   float* cudaMeanPtr; int _meanElems;
-  float* _cudaSrcPtr;
-  float* _cudaDstPtr;
-
   int _numSteps; int _stepSize;
   float* intermediaryBuffer;
 
@@ -102,13 +108,10 @@ namespace br { namespace cuda { namespace pca {
     CUDA_SAFE_MALLOC(&cudaMeanPtr, meanElems*sizeof(float), &err);
     CUDA_SAFE_MEMCPY(cudaMeanPtr, meanPtr, meanElems*sizeof(float), cudaMemcpyHostToDevice, &err);
 
-    CUDA_SAFE_MALLOC(&_cudaSrcPtr, _meanElems*sizeof(float), &err);
-    CUDA_SAFE_MALLOC(&_cudaDstPtr, _evCols*sizeof(float), &err);
-
     // initialize the intermediary working space,
-    _numSteps = 16;
-    _stepSize = _evRows / _numSteps + 1;
-    CUDA_SAFE_MALLOC(&intermediaryBuffer, _numSteps*_evCols*sizeof(float), &err);
+    _stepSize = 2048;
+    _numSteps = _evRows / _stepSize + 1;
+    CUDA_SAFE_MALLOC(&intermediaryBuffer, _numSteps*_stepSize*sizeof(float), &err);
   }
 
   void trainWrapper(void* cudaSrc, float* data, int rows, int cols) {
@@ -120,28 +123,31 @@ namespace br { namespace cuda { namespace pca {
     cudaError_t err;
     CUDA_SAFE_MALLOC(dst, _evCols*sizeof(float), &err);
 
-    if (imgRows*imgCols != _evRows) {
+    if (imgRows*imgCols != _evRows || imgRows*imgCols != _meanElems) {
       cout << "ERR: Image dimension mismatch!" << endl;
       throw 0;
     }
 
-    // subtract out the mean of the image (mean is 1xpixels in size)
-    int threadsPerBlock = 64;
+    // subtract out the mean of the image (mean is 1xpixels in size), perform in place (in src)
+    int threadsPerBlock = 512;
     int numBlocks = _meanElems / threadsPerBlock + 1;
     subtractMeanKernel<<<numBlocks, threadsPerBlock>>>((float*)src, cudaMeanPtr, _meanElems);
     CUDA_KERNEL_ERR_CHK(&err);
 
-    // perform the multiplication
-    dim3 threadsPerBlock2d(64, _numSteps);
-    dim3 numBlocks2d(_evCols / threadsPerBlock2d.x + 1, 1);
-    multiplyKernel<<<numBlocks2d, threadsPerBlock2d>>>((float*)src, intermediaryBuffer, cudaEvPtr, _evRows, _evCols, _stepSize);
+    // perform matrix multiplication
+    dim3 threadsPerBlock2d(512, 1);
+    dim3 numBlocks2d(
+        _evCols / threadsPerBlock2d.x + 1,
+        _numSteps / threadsPerBlock2d.y + 1);
+    multiplyKernel<<<numBlocks2d, threadsPerBlock2d>>>((float*)src, intermediaryBuffer, cudaEvPtr, _evCols, _numSteps, _stepSize, _meanElems);
     CUDA_KERNEL_ERR_CHK(&err);
 
-    threadsPerBlock = 64;
+    threadsPerBlock = 512;
     numBlocks = _evCols / threadsPerBlock + 1;
-    multiplyJoinKernel<<<numBlocks, threadsPerBlock>>>(intermediaryBuffer, (float*)(*dst), _evRows, _evCols, _numSteps, _stepSize);
+    multiplyJoinKernel<<<numBlocks, threadsPerBlock>>>(intermediaryBuffer, (float*)*dst, _evCols, _numSteps, _stepSize);
     CUDA_KERNEL_ERR_CHK(&err);
 
-    CUDA_SAFE_FREE(src, &err);    // TODO(colin): figure out why adding this free causes memory corruption...
+    // free the src memory
+    CUDA_SAFE_FREE(src, &err);
   }
 }}}
