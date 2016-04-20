@@ -27,11 +27,10 @@ namespace br { namespace cuda { namespace L2 {
       return;
     }
 
-    // perform the subtraction in-place
-    // use b because it is the comparison
-    // image
-    workPtr[index] = aPtr[index] - bPtr[index];
-    workPtr[index] = workPtr[index] * workPtr[index];
+    // perform the subtraction
+    float res = aPtr[index] - bPtr[index];
+    res = res * res;
+    workPtr[index] = res;
   }
 
   __global__ void collapseKernel(float* inPtr, float* outPtr, int length) {
@@ -41,25 +40,46 @@ namespace br { namespace cuda { namespace L2 {
     }
 
     // sum up all the values
-    *outPtr = 0;
+    float acc = 0;
     for (int i=0; i < length; i++) {
-      *outPtr = *outPtr + inPtr[i];
+      acc += inPtr[i];
     }
 
-    // take the square root
-    *outPtr = sqrtf(*outPtr);
+    *outPtr = acc;
   }
 
-  void wrapper(float* cudaAPtr, float* cudaBPtr, int length, float* outPtr) {
-    cudaError_t err;
-    float* cudaOutPtr;
-    CUDA_SAFE_MALLOC(&cudaOutPtr, sizeof(float), &err);
+  float* cudaAPtr = NULL;
+  float* cudaBPtr = NULL;
+  float* cudaWorkBufferPtr = NULL;
+  float* cudaOutPtr = NULL;
+  int bufferLen = 0;
 
-    float* cudaWorkBufferPtr;
-    CUDA_SAFE_MALLOC(&cudaWorkBufferPtr, sizeof(float)*length, &err);
+  void wrapper(float const* aPtr, float const* bPtr, int length, float* outPtr) {
+    cudaError_t err;
+
+    // allocate memory for the mats and copy data to graphics card
+    // only allocate if there is a mismatch in image size, otherwise
+    // use the existing allocated memory
+    if (length != bufferLen) {
+      if (cudaAPtr != NULL) {
+        CUDA_SAFE_FREE(cudaAPtr, &err);
+        CUDA_SAFE_FREE(cudaBPtr, &err);
+        CUDA_SAFE_FREE(cudaWorkBufferPtr, &err);
+        CUDA_SAFE_FREE(cudaOutPtr, &err);
+      }
+      CUDA_SAFE_MALLOC(&cudaAPtr, length*sizeof(float), &err);
+      CUDA_SAFE_MALLOC(&cudaBPtr, length*sizeof(float), &err);
+      CUDA_SAFE_MALLOC(&cudaWorkBufferPtr, sizeof(float)*length, &err);
+      CUDA_SAFE_MALLOC(&cudaOutPtr, sizeof(float), &err);
+      bufferLen = length;
+    }
+
+    // copy data over from CPU
+    CUDA_SAFE_MEMCPY(cudaAPtr, aPtr, length*sizeof(float), cudaMemcpyHostToDevice, &err);
+    CUDA_SAFE_MEMCPY(cudaBPtr, bPtr, length*sizeof(float), cudaMemcpyHostToDevice, &err);
 
     // perform the subtraction
-    int threadsPerBlock = 64;
+    int threadsPerBlock = 512;
     int numBlocks = length / threadsPerBlock + 1;
     subtractKernel<<<threadsPerBlock, numBlocks>>>(cudaAPtr, cudaBPtr, cudaWorkBufferPtr, length);
     CUDA_KERNEL_ERR_CHK(&err);
@@ -70,12 +90,5 @@ namespace br { namespace cuda { namespace L2 {
 
     // copy the single value back to the destinsion
     CUDA_SAFE_MEMCPY(outPtr, cudaOutPtr, sizeof(float), cudaMemcpyDeviceToHost, &err);
-
-    CUDA_SAFE_FREE(cudaOutPtr, &err);
-
-    // do not free aPtr which should be the reference library
-    // only free bPtr, which is the image we are comparing
-    CUDA_SAFE_FREE(cudaBPtr, &err);
-    CUDA_SAFE_FREE(cudaWorkBufferPtr, &err);
   }
 }}}

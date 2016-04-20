@@ -21,7 +21,7 @@ using namespace std;
 
 // definitions from the CUDA source file
 namespace br { namespace cuda { namespace L2 {
-  void wrapper(float* cudaAPtr, float* cudaBPtr, int length, float* outPtr);
+  void wrapper(float const* aPtr, float const* bPtr, int length, float* outPtr);
 }}}
 
 namespace br
@@ -38,23 +38,17 @@ class CUDAL2Distance : public UntrainableDistance
 
     float compare(const cv::Mat &a, const cv::Mat &b) const
     {
-      void* const* srcDataPtr = a.ptr<void*>();
-      float* cudaAPtr = (float*)srcDataPtr[0];
-      int rows = *((int*)srcDataPtr[1]);
-      int cols = *((int*)srcDataPtr[2]);
-      int srcType = *((int*)srcDataPtr[3]);
-
-      void* const* dstDataPtr = b.ptr<void*>();
-      float* cudaBPtr = (float*)dstDataPtr[0];
-      int dstType = *((int*)dstDataPtr[3]);
-
-      if (srcType != dstType) {
+      if (a.type() != CV_32FC1 || b.type() != CV_32FC1) {
         cout << "ERR: Type mismatch" << endl;
         throw 0;
       }
+      if (a.rows*a.cols != b.rows*b.cols) {
+        cout << "ERR: Dimension mismatch" << endl;
+        throw 1;
+      }
 
       float out;
-      cuda::L2::wrapper(cudaAPtr, cudaBPtr, rows*cols, &out);
+      cuda::L2::wrapper(a.ptr<float>(), b.ptr<float>(), a.rows*a.cols, &out);
 
       return out;
     }
