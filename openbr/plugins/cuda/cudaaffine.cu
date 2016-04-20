@@ -172,7 +172,7 @@ namespace br { namespace cuda { namespace affine {
       CUDA_SAFE_MALLOC(dstPtr, dstRows*dstCols*sizeof(uint8_t), &err);
 
       // call the bilinear kernel function
-      dim3 threadsPerBlock(8, 8);
+      dim3 threadsPerBlock(32, 16);
       dim3 numBlocks(dstCols/threadsPerBlock.x + 1,
                      dstRows/threadsPerBlock.y + 1);
 
@@ -186,7 +186,7 @@ namespace br { namespace cuda { namespace affine {
         cudaError_t err;
         double* gpuInverse;
 
-        dim3 threadsPerBlock(8, 8);
+        dim3 threadsPerBlock(32, 16);
         dim3 numBlocks(dst_cols/threadsPerBlock.x + 1,
                        dst_rows/threadsPerBlock.y + 1);
 
