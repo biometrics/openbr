@@ -60,12 +60,13 @@ namespace br { namespace cuda { namespace pca {
       return;
     }
 
+    if (numSteps*stepSize+evIdx >= numEigenvectors) {
+      numSteps--;
+    }
+
     float acc = 0;
     for (int i=0; i < numSteps; i++) {
       int ibIdx = i*stepSize + evIdx;
-      if (ibIdx >= numSteps*stepSize) {
-        break;
-      }
       acc += intermediaryBuffer[ibIdx];
     }
 
