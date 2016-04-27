@@ -9,7 +9,7 @@ fi
 if [ ! -d ../data/ATT/img ]; then
   echo "Downloading AT&T…"
   if hash curl 2>/dev/null; then
-    curl -OL http://www.cl.cam.ac.uk/Research/DTG/attarchive/pub/data/att_faces.zip
+    curl -C- -OL http://www.cl.cam.ac.uk/Research/DTG/attarchive/pub/data/att_faces.zip
   else
     wget http://www.cl.cam.ac.uk/Research/DTG/attarchive/pub/data/att_faces.zip
   fi
@@ -24,7 +24,7 @@ fi
 if [ ! -d ../data/BioID/img ]; then
   echo "Downloading BioID..."
   if hash curl 2>/dev/null; then
-    curl -OL ftp://ftp.uni-erlangen.de/pub/facedb/BioID-FaceDatabase-V1.2.zip
+    curl -C- -OL ftp://ftp.uni-erlangen.de/pub/facedb/BioID-FaceDatabase-V1.2.zip
   else
     wget ftp://ftp.uni-erlangen.de/pub/facedb/BioID-FaceDatabase-V1.2.zip
   fi
@@ -42,7 +42,7 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
     fname=`printf "set%02d.tar" $seq`
     dlpath="$prefix/$fname"
     if hash curl 2>/dev/null; then
-      curl -OL $dlpath
+      curl -C- -OL $dlpath
     else
       wget $dlpath
     fi
@@ -53,7 +53,7 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
   ./writeCaltechPedestrianSigset.sh 6 10 test > ../data/CaltechPedestrians/test.xml
   mkdir -p ../data/CaltechPedestrians/vid && mv set* $_
   if hash curl 2>/dev/null; then
-    curl -OL "$prefix/annotations.zip"
+    curl -C- -OL "$prefix/annotations.zip"
   else
     wget "$prefix/annotations.zip"
   fi
@@ -66,7 +66,7 @@ fi
 if [ ! -d ../data/INRIAPerson/img ]; then
   echo "Downloading INRIA person dataset..."
   if hash curl 2>/dev/null; then
-    curl -OL http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
+    curl -C- -OL http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
   else
     wget http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
   fi
@@ -87,7 +87,7 @@ if [ ! -d ../data/KTH/vid ]; then
   mkdir -p ../data/KTH/sigset
   for vidclass in {'boxing','handclapping','handwaving','jogging','running','walking'}; do
     if hash curl 2>/dev/null; then
-      curl -OL http://www.nada.kth.se/cvap/actions/${vidclass}.zip
+      curl -C- -OL http://www.nada.kth.se/cvap/actions/${vidclass}.zip
     else
       wget http://www.nada.kth.se/cvap/actions/${vidclass}.zip
     fi
@@ -105,7 +105,7 @@ fi
 if [ ! -d ../data/LFW/img ]; then
   echo "Downloading LFW..."
   if hash curl 2>/dev/null; then
-    curl -OL http://vis-www.cs.umass.edu/lfw/lfw.tgz
+    curl -C- -OL http://vis-www.cs.umass.edu/lfw/lfw.tgz
   else
     wget http://vis-www.cs.umass.edu/lfw/lfw.tgz
   fi
@@ -121,7 +121,7 @@ fi
 if [ ! -d ../data/lfpw/trainset ]; then
   echo "Downloading LFPW..."
   if hash curl 2>/dev/null; then
-    curl -OL http://ibug.doc.ic.ac.uk/media/uploads/competitions/lfpw.zip
+    curl -C- -OL http://ibug.doc.ic.ac.uk/media/uploads/competitions/lfpw.zip
   else
     wget  http://ibug.doc.ic.ac.uk/media/uploads/competitions/lfpw.zip
   fi
@@ -133,4 +133,3 @@ if [ ! -d ../data/lfpw/trainset ]; then
   cd ../../scripts
   rm lfpw.zip
 fi
-
