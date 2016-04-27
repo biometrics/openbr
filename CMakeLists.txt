@@ -86,15 +86,11 @@ set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 
 # Find OpenCV
 find_package(OpenCV 2.4.5 REQUIRED)
-set(OPENCV_DEPENDENCIES opencv_core opencv_highgui opencv_imgproc opencv_ml opencv_objdetect)
+set(OPENCV_DEPENDENCIES opencv_core opencv_highgui opencv_imgproc opencv_ml)
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OPENCV_DEPENDENCIES})
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)
-
-# Add RandomLib
-set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/RandomLib-1.9/src/Random.cpp)
-include_directories(3rdparty/RandomLib-1.9/include)
 
 # Find cvmatio (if using it)
 set(BR_WITH_CVMATIO OFF CACHE BOOL "Build with cvmatio library to read Matlab data files (required to use Caltech Pedestrians dataset)")

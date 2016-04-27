@@ -1,6 +1,7 @@
 #include <QString>
-#include <stasm_lib.h>
 #include <stasmcascadeclassifier.h>
+#include <stasm_lib.h>
+#include <stasm.h>
 #include <opencv2/opencv.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
@@ -56,18 +57,18 @@ BR_REGISTER(Initializer, StasmInitializer)
  * \brief Wraps STASM key point detector
  * \author Scott Klum \cite sklum
  */
-class StasmTransform : public UntrainableTransform
+class StasmTransform : public UntrainableMetaTransform
 {
     Q_OBJECT
 
     Q_PROPERTY(bool stasm3Format READ get_stasm3Format WRITE set_stasm3Format RESET reset_stasm3Format STORED false)
     BR_PROPERTY(bool, stasm3Format, false)
-    Q_PROPERTY(bool clearLandmarks READ get_clearLandmarks WRITE set_clearLandmarks RESET reset_clearLandmarks STORED false)
-    BR_PROPERTY(bool, clearLandmarks, false)
     Q_PROPERTY(QList<float> pinPoints READ get_pinPoints WRITE set_pinPoints RESET reset_pinPoints STORED false)
     BR_PROPERTY(QList<float>, pinPoints, QList<float>())
     Q_PROPERTY(QStringList pinLabels READ get_pinLabels WRITE set_pinLabels RESET reset_pinLabels STORED false)
     BR_PROPERTY(QStringList, pinLabels, QStringList())
+    Q_PROPERTY(QString inputVariable READ get_inputVariable WRITE set_inputVariable RESET reset_inputVariable STORED false)
+    BR_PROPERTY(QString, inputVariable, "FrontalFace")
 
     Resource<StasmCascadeClassifier> stasmCascadeResource;
 
@@ -77,87 +78,134 @@ class StasmTransform : public UntrainableTransform
         stasmCascadeResource.setResourceMaker(new StasmResourceMaker());
     }
 
+    QList<QPointF> convertLandmarks(int nLandmarks, float *landmarks) const
+    {
+        if (stasm3Format)
+            stasm_convert_shape(landmarks, 76);
+
+        QList<QPointF> points;
+        for (int i = 0; i < nLandmarks; i++) {
+            QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
+            points.append(point);
+        }
+
+        return points;
+    }
+
     void project(const Template &src, Template &dst) const
     {
-        Mat stasmSrc(src);
-        if (src.m().channels() == 3)
-            cvtColor(src, stasmSrc, CV_BGR2GRAY);
-        else if (src.m().channels() != 1)
-            qFatal("Stasm expects single channel matrices.");
+        TemplateList temp;
+        project(TemplateList() << src, temp);
+        if (!temp.isEmpty()) dst = temp.first();
+    }
 
-        if (!stasmSrc.isContinuous())
-            qFatal("Stasm expects continuous matrix data.");
-        dst = src;
+    void project(const TemplateList &src, TemplateList &dst) const
+    {
+        foreach (const Template &t, src) {
+            Mat stasmSrc(t);
+            if (t.m().channels() == 3)
+                cvtColor(t, stasmSrc, CV_BGR2GRAY);
+            else if (t.m().channels() != 1)
+                qFatal("Stasm expects single channel matrices.");
 
-        int foundFace = 0;
-        int nLandmarks = stasm_NLANDMARKS;
-        float landmarks[2 * stasm_NLANDMARKS];
+            if (!stasmSrc.isContinuous())
+                qFatal("Stasm expects continuous matrix data.");
 
-        bool searchPinned = false;
+            int foundFace = 0;
+            int nLandmarks = stasm_NLANDMARKS;
+            float landmarks[2 * stasm_NLANDMARKS];
 
-        QPointF rightEye, leftEye;
-        /* Two use cases are accounted for:
-         * 1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
-         * 2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
-         * Currently, we only support normalization with a transformation such that the src file contains Affine_0 and Affine_1.  Checking for
-         * these keys prevents us from pinning eyes on a face that wasn't actually transformed (see AffineTransform).
-         * If both cases fail, we default to stasm_search_single. */
+            bool searchPinned = false;
 
-        if (!pinPoints.isEmpty() && src.file.contains("Affine_0") && src.file.contains("Affine_1")) {
-            rightEye = QPointF(pinPoints.at(0), pinPoints.at(1));
-            leftEye = QPointF(pinPoints.at(2), pinPoints.at(3));
-            searchPinned = true;
-        } else if (!pinLabels.isEmpty()) {
-            rightEye = src.file.get<QPointF>(pinLabels.at(0), QPointF());
-            leftEye = src.file.get<QPointF>(pinLabels.at(1), QPointF());
-            searchPinned = true;
-        }
-	
-        if (searchPinned) {
-            float pins[2 * stasm_NLANDMARKS];
+            QPointF rightEye, leftEye;
+            /* Two use cases are accounted for:
+             * 1. Pin eyes without normalization: in this case the string list should contain the KEYS for right then left eyes, respectively.
+             * 2. Pin eyes with normalization: in this case the string list should contain the COORDINATES of the right then left eyes, respectively.
+             * Currently, we only support normalization with a transformation such that the src file contains Affine_0 and Affine_1.  Checking for
+             * these keys prevents us from pinning eyes on a face that wasn't actually transformed (see AffineTransform).
+             * If both cases fail, we default to stasm_search_single. */
 
-            for (int i = 0; i < nLandmarks; i++) {
-                if      (i == 38) /* Stasm Right Eye */ { pins[2*i] = rightEye.x(); pins[2*i+1] = rightEye.y(); }
-                else if (i == 39) /* Stasm Left Eye  */ { pins[2*i] = leftEye.x();  pins[2*i+1] = leftEye.y(); }
-                else { pins[2*i] = 0; pins[2*i+1] = 0; }
+            if (!pinPoints.isEmpty() && t.file.contains("Affine_0") && t.file.contains("Affine_1")) {
+                rightEye = QPointF(pinPoints.at(0), pinPoints.at(1));
+                leftEye = QPointF(pinPoints.at(2), pinPoints.at(3));
+                searchPinned = true;
+            } else if (!pinLabels.isEmpty()) {
+                rightEye = t.file.get<QPointF>(pinLabels.at(0), QPointF());
+                leftEye = t.file.get<QPointF>(pinLabels.at(1), QPointF());
+                searchPinned = true;
             }
 
-            stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
+            if (searchPinned) {
+                float pins[2 * stasm_NLANDMARKS];
 
-            // The ASM in Stasm is guaranteed to converge in this case
-            foundFace = 1;
-        }
+                for (int i = 0; i < nLandmarks; i++) {
+                    if      (i == 38) /* Stasm Right Eye */ { pins[2*i] = rightEye.x(); pins[2*i+1] = rightEye.y(); }
+                    else if (i == 39) /* Stasm Left Eye  */ { pins[2*i] = leftEye.x();  pins[2*i+1] = leftEye.y(); }
+                    else { pins[2*i] = 0; pins[2*i+1] = 0; }
+                }
 
-        if (!foundFace) {
-            StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
-            stasm_search_single(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, NULL, NULL);
-            stasmCascadeResource.release(stasmCascade);
-        }
+                stasm_search_pinned(landmarks, pins, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, NULL);
 
-        if (stasm3Format) {
-            nLandmarks = 76;
-            stasm_convert_shape(landmarks, nLandmarks);
-        }
-
-        // For convenience, if these are the only points/rects we want to deal with as the algorithm progresses
-        if (clearLandmarks) {
-            dst.file.clearPoints();
-            dst.file.clearRects();
-        }
-
-        if (!foundFace) {
-            if (Globals->verbose) qWarning("No face found in %s.", qPrintable(src.file.fileName()));
-            dst.file.fte = true;
-        } else {
-            QList<QPointF> points;
-            for (int i = 0; i < nLandmarks; i++) {
-                QPointF point(landmarks[2 * i], landmarks[2 * i + 1]);
-                points.append(point);
+                // The ASM in Stasm is guaranteed to converge in this case
+                foundFace = 1;
+                Template u(t.file, t.m());
+                QList<QPointF> points = convertLandmarks(nLandmarks, landmarks);
+                u.file.set("StasmRightEye", points[38]);
+                u.file.set("StasmLeftEye", points[39]);
+                u.file.appendPoints(points);
+                dst.append(u);
             }
-            dst.file.set("StasmRightEye", points[38]);
-            dst.file.set("StasmLeftEye", points[39]);
-            dst.file.appendPoints(points);
+
+            if (!foundFace) {
+                StasmCascadeClassifier *stasmCascade = stasmCascadeResource.acquire();
+                foundFace = 1;
+                stasm::FaceDet detection;
+
+                QList<QRectF> rects = t.file.contains(inputVariable) ? QList<QRectF>() << t.file.get<QRectF>(inputVariable) : t.file.rects();
+                if (!rects.isEmpty()) detection.iface_ = 0;
+                for (int i=0; i<rects.size(); i++) {
+                    Rect rect = OpenCVUtils::toRect(rects[i]);
+                    stasm::DetPar detpar;
+                    detpar.x = rect.x + rect.width / 2.;
+                    detpar.y = rect.y + rect.height / 2.;
+                    detpar.width  = double(rect.width);
+                    detpar.height = double(rect.height);
+                    detpar.yaw = 0;
+                    detpar.eyaw = stasm::EYAW00;
+                    detection.detpars_.push_back(detpar);
+                }
+
+                while (foundFace) {
+                    stasm_search_auto(&foundFace, landmarks, reinterpret_cast<const char*>(stasmSrc.data), stasmSrc.cols, stasmSrc.rows, *stasmCascade, detection);
+                    if (foundFace) {
+                        Template u(t.file, t.m());
+                        QList<QPointF> points = convertLandmarks(nLandmarks, landmarks);
+                        u.file.set("StasmRightEye", points[38]);
+                        u.file.set("StasmLeftEye", points[39]);
+                        u.file.appendPoints(points);
+                        dst.append(u);
+                    }
+
+                    if (!Globals->enrollAll)
+                        break;
+                }
+                stasmCascadeResource.release(stasmCascade);
+            }
         }
+    }
+
+    // An unfortunate hack to preserve FaceRecognition binary compatibility
+    // from when StasmTransform was independent.
+    void load(QDataStream &stream)
+    {
+        int size;
+        stream >> size;
+    }
+
+    void store(QDataStream &stream) const
+    {
+        const int size = 1;
+        stream << size;
     }
 };
 

@@ -131,23 +131,16 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 
 //------------------------------------- FeatureEvaluator ---------------------------------------
 
-void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount, int channels)
+void FeatureEvaluator::init(Representation *_representation, int _maxSampleCount)
 {
     representation = _representation;
-
-    int dx, dy;
-    Size windowSize = representation->windowSize(&dx, &dy);
-    data.create((int)_maxSampleCount, (windowSize.width + dx) * (windowSize.height + dy), CV_32SC(channels));
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
 }
 
-void FeatureEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
+void FeatureEvaluator::setImage(const Template &src, uchar clsLabel, int idx)
 {
     cls.ptr<float>(idx)[0] = clsLabel;
-
-    Mat pp;
-    representation->preprocess(img, pp);
-    pp.reshape(0, 1).copyTo(data.row(idx));
+    data.append(representation->preprocess(src));
 }
 
 //----------------------------- CascadeBoostParams -------------------------------------------------
@@ -795,14 +788,17 @@ void CascadeBoostTrainData::precalculate()
 {
     int minNum = MIN( numPrecalcVal, numPrecalcIdx);
 
-    double proctime = -TIME( 0 );
+    QTime time;
+    time.start();
+
     parallel_for_( Range(numPrecalcVal, numPrecalcIdx),
                    FeatureIdxOnlyPrecalc(featureEvaluator, buf, sample_count, is_buf_16u!=0) );
     parallel_for_( Range(0, minNum),
                    FeatureValAndIdxPrecalc(featureEvaluator, buf, &valCache, sample_count, is_buf_16u!=0) );
     parallel_for_( Range(minNum, numPrecalcVal),
-                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );        
-    cout << "Precalculation time: " << (proctime + TIME( 0 )) << endl;
+                   FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count) );
+
+    cout << "Precalculation time (ms): " << time.elapsed() << endl;
 }
 
 //-------------------------------- CascadeBoostTree ----------------------------------------

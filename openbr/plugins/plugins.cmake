@@ -12,7 +12,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${BR_THIRDPARTY_PLUGINS_DIR})
 file(GLOB SUBFILES plugins/*)
 foreach(FILE ${SUBFILES})
   if(IS_DIRECTORY ${FILE})
-    set(BR_PLUGINS_DIR ${BR_PLUGINS_DIR} ${FILE})
+    # check to see if there is a cmake file for the folder, if there is, then that
+    # file should be used to build the contents of the directory
+    if (EXISTS ${FILE}/module.cmake)
+      message(STATUS "importing ${FILE}/module.cmake")
+      include(${FILE}/module.cmake)
+    else()
+      message(STATUS "adding ${FILE}")
+      set(BR_PLUGINS_DIR ${BR_PLUGINS_DIR} ${FILE})
+    endif()
   endif()
 endforeach()
 set(BR_PLUGINS_DIR ${BR_PLUGINS_DIR} plugins/) # Remove this when finished with reorg

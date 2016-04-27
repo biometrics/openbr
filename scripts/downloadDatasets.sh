@@ -51,7 +51,6 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
   rm *.tar
   ./writeCaltechPedestrianSigset.sh 0 5 train > ../data/CaltechPedestrians/train.xml
   ./writeCaltechPedestrianSigset.sh 6 10 test > ../data/CaltechPedestrians/test.xml
-  
   mkdir -p ../data/CaltechPedestrians/vid && mv set* $_
   if hash curl 2>/dev/null; then
     curl -C- -OL "$prefix/annotations.zip"
@@ -134,4 +133,3 @@ if [ ! -d ../data/lfpw/trainset ]; then
   cd ../../scripts
   rm lfpw.zip
 fi
-

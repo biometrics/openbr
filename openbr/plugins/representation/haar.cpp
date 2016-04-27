@@ -40,37 +40,51 @@ class HaarRepresentation : public Representation
     void init()
     {
         if (features.isEmpty()) {
-            int offset = winWidth + 1;
+            // Pre-determine the size of features to avoid reallocations
+            int numFeatures = 0;
+            for (int x = 0; x < winWidth; x++)
+                for (int y = 0; y < winHeight; y++)
+                    for (int dx = 1; dx <= winWidth; dx++)
+                        for (int dy = 1; dy <= winHeight; dy++)
+                            numFeatures += ((x+dx*2 <= winWidth) && (y+dy   <= winHeight))
+                                        +  ((x+dx   <= winWidth) && (y+dy*2 <= winHeight))
+                                        +  ((x+dx*3 <= winWidth) && (y+dy   <= winHeight))
+                                        +  ((x+dx   <= winWidth) && (y+dy*3 <= winHeight))
+                                        +  ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight));
+            features.reserve(numFeatures);
+
+            const int offset = winWidth + 1;
+            int index = 0;
             for (int x = 0; x < winWidth; x++) {
                 for (int y = 0; y < winHeight; y++) {
                     for (int dx = 1; dx <= winWidth; dx++) {
                         for (int dy = 1; dy <= winHeight; dy++) {
                             // haar_x2
                             if ((x+dx*2 <= winWidth) && (y+dy <= winHeight))
-                                features.append(Feature(offset,
+                                features[index++] = Feature(offset,
                                                         x,    y, dx*2, dy, -1,
-                                                        x+dx, y, dx  , dy, +2));
+                                                        x+dx, y, dx  , dy, +2);
                             // haar_y2
                             if ((x+dx <= winWidth) && (y+dy*2 <= winHeight))
-                                features.append(Feature(offset,
+                                features[index++] = Feature(offset,
                                                         x,    y, dx, dy*2, -1,
-                                                        x, y+dy, dx, dy,   +2));
+                                                        x, y+dy, dx, dy,   +2);
                             // haar_x3
                             if ((x+dx*3 <= winWidth) && (y+dy <= winHeight))
-                                features.append(Feature(offset,
+                                features[index++] = Feature(offset,
                                                         x,    y, dx*3, dy, -1,
-                                                        x+dx, y, dx  , dy, +3));
+                                                        x+dx, y, dx  , dy, +3);
                             // haar_y3
                             if ((x+dx <= winWidth) && (y+dy*3 <= winHeight))
-                                features.append(Feature(offset,
+                                features[index++] = Feature(offset,
                                                         x, y,    dx, dy*3, -1,
-                                                        x, y+dy, dx, dy,   +3));
+                                                        x, y+dy, dx, dy,   +3);
                             // x2_y2
                             if ((x+dx*2 <= winWidth) && (y+dy*2 <= winHeight))
-                                features.append(Feature(offset,
+                                features[index++] = Feature(offset,
                                                         x,    y,    dx*2, dy*2, -1,
                                                         x,    y,    dx,   dy,   +2,
-                                                        x+dx, y+dy, dx,   dy,   +2));
+                                                        x+dx, y+dy, dx,   dy,   +2);
 
 
                         }
@@ -80,23 +94,25 @@ class HaarRepresentation : public Representation
         }
     }
 
-    void preprocess(const Mat &src, Mat &dst) const
+    Template preprocess(const Template &src) const
     {
+        Template dst;
         integral(src, dst);
+        return dst;
     }
 
-    float evaluate(const Mat &image, int idx) const
+    float evaluate(const Template &src, int idx) const
     {
-        return (float)features[idx].calc(image);
+        return features[idx].calc(src.m());
     }
 
-    Mat evaluate(const Mat &image, const QList<int> &indices) const
+    Mat evaluate(const Template &src, const QList<int> &indices) const
     {
         int size = indices.empty() ? numFeatures() : indices.size();
 
         Mat result(1, size, CV_32FC1);
         for (int i = 0; i < size; i++)
-            result.at<float>(i) = evaluate(image, indices.empty() ? i : indices[i]);
+            result.at<float>(i) = evaluate(src, indices.empty() ? i : indices[i]);
         return result;
     }
 
@@ -124,24 +140,23 @@ class HaarRepresentation : public Representation
         float calc(const Mat &img) const;
 
         struct {
-            Rect r;
             float weight;
-        } rect[3];
-
-        struct {
             int p0, p1, p2, p3;
         } fastRect[3];
     };
 
-    QList<Feature> features;
+    QVector<Feature> features;
 };
 
 BR_REGISTER(Representation, HaarRepresentation)
 
 HaarRepresentation::Feature::Feature()
 {
-    rect[0].r = rect[1].r = rect[2].r = Rect(0,0,0,0);
-    rect[0].weight = rect[1].weight = rect[2].weight = 0;
+    fastRect[0].p0     = fastRect[1].p0     = fastRect[2].p0     = 0;
+    fastRect[0].p1     = fastRect[1].p1     = fastRect[2].p1     = 0;
+    fastRect[0].p2     = fastRect[1].p2     = fastRect[2].p2     = 0;
+    fastRect[0].p3     = fastRect[1].p3     = fastRect[2].p3     = 0;
+    fastRect[0].weight = fastRect[1].weight = fastRect[2].weight = 0;
 }
 
 HaarRepresentation::Feature::Feature(int offset,
@@ -149,38 +164,21 @@ HaarRepresentation::Feature::Feature(int offset,
             int x1, int y1, int w1, int h1, float wt1,
             int x2, int y2, int w2, int h2, float wt2)
 {
-    rect[0].r.x = x0;
-    rect[0].r.y = y0;
-    rect[0].r.width  = w0;
-    rect[0].r.height = h0;
-    rect[0].weight   = wt0;
-
-    rect[1].r.x = x1;
-    rect[1].r.y = y1;
-    rect[1].r.width  = w1;
-    rect[1].r.height = h1;
-    rect[1].weight   = wt1;
-
-    rect[2].r.x = x2;
-    rect[2].r.y = y2;
-    rect[2].r.width  = w2;
-    rect[2].r.height = h2;
-    rect[2].weight   = wt2;
-
-    for (int j = 0; j < 3; j++) {
-        if( rect[j].weight == 0.0F )
-            break;
-        CV_SUM_OFFSETS(fastRect[j].p0, fastRect[j].p1, fastRect[j].p2, fastRect[j].p3, rect[j].r, offset)
-    }
+    CV_SUM_OFFSETS(fastRect[0].p0, fastRect[0].p1, fastRect[0].p2, fastRect[0].p3, Rect(x0, y0, w0, h0), offset)
+    CV_SUM_OFFSETS(fastRect[1].p0, fastRect[1].p1, fastRect[1].p2, fastRect[1].p3, Rect(x1, y1, w1, h1), offset)
+    CV_SUM_OFFSETS(fastRect[2].p0, fastRect[2].p1, fastRect[2].p2, fastRect[2].p3, Rect(x2, y2, w2, h2), offset)
+    fastRect[0].weight = wt0;
+    fastRect[1].weight = wt1;
+    fastRect[2].weight = wt2;
 }
 
 inline float HaarRepresentation::Feature::calc(const Mat &img) const
 {
     const int* ptr = img.ptr<int>();
-    float ret = rect[0].weight * (ptr[fastRect[0].p0] - ptr[fastRect[0].p1] - ptr[fastRect[0].p2] + ptr[fastRect[0].p3]) +
-                rect[1].weight * (ptr[fastRect[1].p0] - ptr[fastRect[1].p1] - ptr[fastRect[1].p2] + ptr[fastRect[1].p3]);
-    if (rect[2].weight != 0.0f)
-        ret += rect[2].weight * (ptr[fastRect[2].p0] - ptr[fastRect[2].p1] - ptr[fastRect[2].p2] + ptr[fastRect[2].p3]);
+    float ret = fastRect[0].weight * (ptr[fastRect[0].p0] - ptr[fastRect[0].p1] - ptr[fastRect[0].p2] + ptr[fastRect[0].p3]) +
+                fastRect[1].weight * (ptr[fastRect[1].p0] - ptr[fastRect[1].p1] - ptr[fastRect[1].p2] + ptr[fastRect[1].p3]);
+    if (fastRect[2].weight != 0.0f)
+        ret += fastRect[2].weight * (ptr[fastRect[2].p0] - ptr[fastRect[2].p1] - ptr[fastRect[2].p2] + ptr[fastRect[2].p3]);
     return ret;
 }
 

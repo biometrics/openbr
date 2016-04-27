@@ -2,6 +2,7 @@
 #include <openbr/core/opencvutils.h>
 
 #include <caffe/caffe.hpp>
+#include <caffe/layers/memory_data_layer.hpp>
 
 using caffe::Caffe;
 using caffe::Net;
@@ -45,6 +46,7 @@ private:
 
         CaffeNet *net = new CaffeNet(model, caffe::TEST);
         net->CopyTrainedLayersFrom(weights.toStdString());
+        FLAGS_minloglevel = google::ERROR; // Disable Caffe's verbose output after loading the first model
         return net;
     }
 };
@@ -104,7 +106,7 @@ protected:
 
         int dimFeatures = output->count() / dataLayer->batch_size();
         for (int n = 0; n < dataLayer->batch_size(); n++)
-            dst += Mat(1, dimFeatures, CV_32FC1, output->mutable_cpu_data() + output->offset(n));
+            dst += Mat(1, dimFeatures, CV_32FC1, output->mutable_cpu_data() + output->offset(n)).clone();
 
         caffeResource.release(net);
     }
@@ -144,10 +146,16 @@ BR_REGISTER(Transform, CaffeFVTransform)
  * \br_property QString model path to prototxt model file
  * \br_property QString weights path to caffemodel file
  * \br_property int gpuDevice ID of GPU to use. gpuDevice < 0 runs on the CPU only.
+ * \br_property QString prefix Prefix of the classifier output.
+ * \br_property bool saveDist Save the full distribution.
  */
 class CaffeClassifierTransform : public CaffeBaseTransform
 {
     Q_OBJECT
+    Q_PROPERTY(QString prefix READ get_prefix WRITE set_prefix RESET reset_prefix STORED false)
+    Q_PROPERTY(bool saveDist READ get_saveDist WRITE set_saveDist RESET reset_saveDist STORED false)
+    BR_PROPERTY(QString, prefix, "")
+    BR_PROPERTY(bool, saveDist, false)
 
     void project(const Template &src, Template &dst) const
     {
@@ -157,21 +165,25 @@ class CaffeClassifierTransform : public CaffeBaseTransform
         dst = src;
 
         QList<int> labels; QList<float> confidences;
+        QList<QString> distributions;
 
         foreach (const Mat &m, caffeOutput) {
-            double maxVal; int maxLoc;
-            minMaxIdx(m, NULL, &maxVal, NULL, &maxLoc);
+            double maxVal; int maxLoc[2];
+            minMaxIdx(m, NULL, &maxVal, NULL, maxLoc);
 
-            labels.append(maxLoc);
+            labels.append(maxLoc[1]);
             confidences.append(maxVal);
+            if (saveDist) distributions.append(OpenCVUtils::matrixToString(m));
         }
 
         if (labels.size() == 1) {
-            dst.file.set("Label", labels[0]);
-            dst.file.set("Confidence", confidences[0]);
+            dst.file.set(prefix + "Label", labels[0]);
+            dst.file.set(prefix + "Confidence", confidences[0]);
+            if (saveDist) dst.file.set(prefix + "Distribution", distributions[0]);
         } else {
-            dst.file.setList<int>("Labels", labels);
-            dst.file.setList<float>("Confidences", confidences);
+            dst.file.setList<int>(prefix + "Labels", labels);
+            dst.file.setList<float>(prefix + "Confidences", confidences);
+            if (saveDist) dst.file.setList<QString>(prefix + "Distributions", distributions);
         }
     }
 };

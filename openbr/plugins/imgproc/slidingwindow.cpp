@@ -17,9 +17,9 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 
@@ -35,9 +35,12 @@ namespace br
  * \br_property int minSize The smallest sized object to detect in pixels
  * \br_property int maxSize The largest sized object to detect in pixels. A negative value will set maxSize == image size
  * \br_property float scaleFactor The factor to scale the image by during each resize.
- * \br_property int minNeighbors Parameter for non-maximum supression
- * \br_property float confidenceThreshold A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
+ * \br_property float minGroupingConfidence A threshold for positive detections. Positive detections returned by the classifier that have confidences below this threshold are considered negative detections.
  * \br_property float eps Parameter for non-maximum supression
+ * \br_property int minNeighbors Parameter for non-maximum supression
+ * \br_property bool group If false, non-maxima supression will not be performed
+ * \br_property int shrinkingFactor Step value for sliding window
+ * \br_property bool clone If false, window will not be cloned (i.e. the representation used by the classifier does not need continuous matrix data)
  */
 class SlidingWindowTransform : public MetaTransform
 {
@@ -48,19 +51,32 @@ class SlidingWindowTransform : public MetaTransform
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
     Q_PROPERTY(int maxSize READ get_maxSize WRITE set_maxSize RESET reset_maxSize STORED false)
     Q_PROPERTY(float scaleFactor READ get_scaleFactor WRITE set_scaleFactor RESET reset_scaleFactor STORED false)
-    Q_PROPERTY(float confidenceThreshold READ get_confidenceThreshold WRITE set_confidenceThreshold RESET reset_confidenceThreshold STORED false)
+    Q_PROPERTY(float minGroupingConfidence READ get_minGroupingConfidence WRITE set_minGroupingConfidence RESET reset_minGroupingConfidence STORED false)
     Q_PROPERTY(float eps READ get_eps WRITE set_eps RESET reset_eps STORED false)
-
+    Q_PROPERTY(float minNeighbors READ get_minNeighbors WRITE set_minNeighbors RESET reset_minNeighbors STORED false)
+    Q_PROPERTY(bool group READ get_group WRITE set_group RESET reset_group STORED false)
+    Q_PROPERTY(int shrinkingFactor READ get_shrinkingFactor WRITE set_shrinkingFactor RESET reset_shrinkingFactor STORED false)
+    Q_PROPERTY(bool clone READ get_clone WRITE set_clone RESET reset_clone STORED false)
+    Q_PROPERTY(float minConfidence READ get_minConfidence WRITE set_minConfidence RESET reset_minConfidence STORED false)
+    Q_PROPERTY(bool ROCMode READ get_ROCMode WRITE set_ROCMode RESET reset_ROCMode STORED false)
+    Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
     BR_PROPERTY(br::Classifier*, classifier, NULL)
     BR_PROPERTY(int, minSize, 20)
     BR_PROPERTY(int, maxSize, -1)
     BR_PROPERTY(float, scaleFactor, 1.2)
-    BR_PROPERTY(float, confidenceThreshold, 10)
+    BR_PROPERTY(float, minGroupingConfidence, -std::numeric_limits<float>::max())
     BR_PROPERTY(float, eps, 0.2)
+    BR_PROPERTY(int, minNeighbors, 3)
+    BR_PROPERTY(bool, group, true)
+    BR_PROPERTY(int, shrinkingFactor, 1)
+    BR_PROPERTY(bool, clone, true)
+    BR_PROPERTY(float, minConfidence, 0)
+    BR_PROPERTY(bool, ROCMode, false)
+    BR_PROPERTY(QString, outputVariable, "Face")
 
     void train(const TemplateList &data)
     {
-        classifier->train(data.data(), File::get<float>(data, "Label", -1));
+        classifier->train(data);
     }
 
     void project(const Template &src, Template &dst) const
@@ -74,9 +90,9 @@ class SlidingWindowTransform : public MetaTransform
     {
         foreach (const Template &t, src) {
             // As a special case, skip detection if the appropriate metadata already exists
-            if (t.file.contains("Face")) {
+            if (t.file.contains(outputVariable)) {
                 Template u = t;
-                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>("Face"));
+                u.file.setRects(QList<QRectF>() << t.file.get<QRectF>(outputVariable));
                 u.file.set("Confidence", t.file.get<float>("Confidence", 1));
                 dst.append(u);
                 continue;
@@ -91,76 +107,108 @@ class SlidingWindowTransform : public MetaTransform
                 continue;
             }
 
+            // SlidingWindow assumes that all matricies in a template represent
+            // different channels of the same image!
+            const Size imageSize = t.m().size();
             const int minSize = t.file.get<int>("MinSize", this->minSize);
-            Size minObjectSize(minSize, minSize);
-            Size maxObjectSize;
+            const int maxDetections = t.file.get<int>("MaxDetections", std::numeric_limits<int>::max());
+            const bool findMostConfident = (enrollAll && (maxDetections != 1)) ? false : true;
 
-            for (int i=0; i<t.size(); i++) {
-                Mat m;
-                OpenCVUtils::cvtUChar(t[i], m);
-                QList<Rect> rects;
-                QList<float> confidences;
+            QList<Rect> rects;
+            QList<float> confidences;
 
-                if (maxObjectSize.height == 0 || maxObjectSize.width == 0)
-                    maxObjectSize = m.size();
+            int dx, dy;
+            const Size classifierSize = classifier->windowSize(&dx, &dy);
 
-                Mat imageBuffer(m.rows + 1, m.cols + 1, CV_8U);
+            for (double factor = 1; ; factor *= scaleFactor) {
+                // TODO: This should support non-square sizes
+                // Compute the size of the window in which we will detect faces
+                const Size detectionSize(cvRound(minSize*factor),cvRound(minSize*factor));
 
-                for (double factor = 1; ; factor *= scaleFactor) {
-                    int dx, dy;
-                    Size originalWindowSize = classifier->windowSize(&dx, &dy);
+                // Stop if detection size is bigger than the image itself
+                if (detectionSize.width > imageSize.width || detectionSize.height > imageSize.height)
+                    break;
 
-                    Size windowSize(cvRound(originalWindowSize.width*factor), cvRound(originalWindowSize.height*factor) );
-                    Size scaledImageSize(cvRound(m.cols/factor ), cvRound(m.rows/factor));
-                    Size processingRectSize(scaledImageSize.width - originalWindowSize.width, scaledImageSize.height - originalWindowSize.height);
+                const float widthScale = (float)classifierSize.width/detectionSize.width;
+                const float heightScale = (float)classifierSize.height/detectionSize.height;
 
-                    if (processingRectSize.width <= 0 || processingRectSize.height <= 0)
-                        break;
-                    if (windowSize.width > maxObjectSize.width || windowSize.height > maxObjectSize.height)
-                        break;
-                    if (windowSize.width < minObjectSize.width || windowSize.height < minObjectSize.height)
-                        continue;
+                // Scale the image such that the detection size within the image corresponds to the respresentation size
+                const Size scaledImageSize(cvRound(imageSize.width*widthScale), cvRound(imageSize.height*heightScale));
 
-                    Mat scaledImage(scaledImageSize, CV_8U, imageBuffer.data);
-                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_LINEAR);
-                    Mat repImage = classifier->preprocess(scaledImage);
+                Template rep(t.file);
+                foreach (const Mat &m, t) {
+                    Mat scaledImage;
+                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_AREA);
+                    rep.append(scaledImage);
+                }
+                rep = classifier->preprocess(rep);
+		
+                // Pre-allocate the window to avoid constructing this every iteration
+                Template window(t.file);
+                for (int i=0; i<rep.size(); i++)
+                    window.append(Mat());
 
-                    int step = factor > 2. ? 1 : 2;
-                    for (int y = 0; y < processingRectSize.height; y += step) {
-                        for (int x = 0; x < processingRectSize.width; x += step) {
-                            Mat window = repImage(Rect(Point(x, y), Size(originalWindowSize.width + dx, originalWindowSize.height + dy))).clone();
-
-                            float confidence = 0;
-                            int result = classifier->classify(window, false, &confidence);
-
-                            if (result == 1) {
-                                rects.append(Rect(cvRound(x*factor), cvRound(y*factor), windowSize.width, windowSize.height));
-                                confidences.append(confidence);
-                            }
-
-                            // TODO: Add non ROC mode
-
-                            if (result == 0)
-                                x += step;
+                const int step = factor > 2.0 ? shrinkingFactor : shrinkingFactor*2;
+                for (int y = 0; y < scaledImageSize.height-classifierSize.height; y += step) {
+                    for (int x = 0; x < scaledImageSize.width-classifierSize.width; x += step) {
+                        for (int i=0; i<rep.size(); i++) {
+                            if (clone)
+                                window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy))).clone();
+                            else
+                                window[i] = rep[i](Rect(Point(x, y), Size(classifierSize.width+dx, classifierSize.height+dy)));
                         }
+
+                        float confidence = 0;
+                        int result = classifier->classify(window, false, &confidence);
+
+                        if (result == 1) {
+                            rects.append(Rect(cvRound(x/widthScale), cvRound(y/heightScale), detectionSize.width, detectionSize.height));
+                            confidences.append(confidence);
+                        } else
+                            x += step;
                     }
                 }
+            }
 
-                OpenCVUtils::group(rects, confidences, confidenceThreshold, eps);
+            if (group)
+                OpenCVUtils::group(rects, confidences, minGroupingConfidence, minNeighbors, eps);
 
-                if (!enrollAll && rects.empty()) {
-                    rects.append(Rect(0, 0, m.cols, m.rows));
-                    confidences.append(-std::numeric_limits<float>::max());
+            if (!ROCMode && findMostConfident && !rects.isEmpty()) {
+                Rect rect = rects.first();
+                float maxConfidence = confidences.first();
+                for (int i=0; i<rects.size(); i++)
+                    if (confidences[i] > maxConfidence) {
+                        rect = rects[i];
+                        maxConfidence = confidences[i];
+                    }
+                rects.clear();
+                confidences.clear();
+                rects.append(rect);
+                confidences.append(maxConfidence);
+            }
+
+            const float minConfidence = t.file.get<float>("MinConfidence", this->minConfidence);
+            QList<QRectF> rectsAboveMinConfidence;
+            QList<float> confidencesAboveMinConfidence;
+            for (int i=0; i<rects.size(); i++) {
+                if (ROCMode || confidences[i] >= minConfidence) {
+                    rectsAboveMinConfidence.append(OpenCVUtils::fromRect(rects[i]));
+                    confidencesAboveMinConfidence.append(confidences[i]);
                 }
+            }
 
-                for (int j=0; j<rects.size(); j++) {
-                    Template u(t.file, m);
-                    u.file.set("Confidence", confidences[j]);
-                    const QRectF rect = OpenCVUtils::fromRect(rects[j]);
-                    u.file.appendRect(rect);
-                    u.file.set("Face", rect);
-                    dst.append(u);
-                }
+            if (!enrollAll && rectsAboveMinConfidence.isEmpty()) {
+                rectsAboveMinConfidence.append(QRectF(0, 0, t.m().cols, t.m().rows));
+                confidencesAboveMinConfidence.append(-std::numeric_limits<float>::max());
+            }
+
+            for (int i=0; i<rectsAboveMinConfidence.size(); i++) {
+                Template u(t.file, t.m());
+                u.file.set("Confidence", confidencesAboveMinConfidence[i]);
+                const QRectF rect = rectsAboveMinConfidence[i];
+                u.file.set(outputVariable, rect);
+                u.file.appendRect(rect);
+                dst.append(u);
             }
         }
     }

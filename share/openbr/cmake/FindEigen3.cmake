@@ -1,4 +1,4 @@
-find_path(EIGEN3_DIR signature_of_eigen3_matrix_library ${PROJECT_SOURCE_DIR}/3rdparty/*)
+find_path(EIGEN3_DIR NAMES signature_of_eigen3_matrix_library PATHS ${PROJECT_SOURCE_DIR}/3rdparty/* NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 mark_as_advanced(EIGEN3_DIR)
 include_directories(${EIGEN3_DIR})
 set(EIGEN3_LICENSE ${EIGEN3_DIR}/COPYING.LGPL)

@@ -117,8 +117,6 @@ BR_EXPORT void br_train_n(int num_inputs, const char *inputs[], const char *mode
 
 BR_EXPORT const char *br_version();
 
-BR_EXPORT void br_slave_process(const char * baseKey);
-
 BR_EXPORT void br_likely(const char *input_type, const char *output_type, const char *output_source_file);
 
 // to avoid having to include unwanted headers

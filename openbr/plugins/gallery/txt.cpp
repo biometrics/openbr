@@ -61,7 +61,7 @@ class txtGallery : public FileGallery
 
             if (!line.isEmpty()){
                 int splitIndex = line.lastIndexOf(' ');
-                if (splitIndex == -1) templates.append(File(line));
+                if (splitIndex == -1) templates.append(File(line, QFileInfo(line).dir().dirName()));
                 else                  templates.append(File(line.mid(0, splitIndex), line.mid(splitIndex+1)));
                 templates.last().file.set("progress", this->position());
             }

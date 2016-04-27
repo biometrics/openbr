@@ -223,9 +223,6 @@ public:
                 check(parc == 1, "Incorrect parameter count for 'daemon'.");
                 daemon = true;
                 daemon_pipe = parv[0];
-            } else if (!strcmp(fun, "slave")) {
-                check(parc == 1, "Incorrect parameter count for 'slave'");
-                br_slave_process(parv[0]);
             } else if (!strcmp(fun, "exit")) {
                 check(parc == 0, "No parameters expected for 'exit'.");
                 daemon = false;
@@ -237,6 +234,9 @@ public:
             } else if (!strcmp(fun, "setHeader")) {
                 check(parc == 3, "Incorrect parameter count for 'setHeader'.");
                 br_set_header(parv[0], parv[1], parv[2]);
+            } else if (!strcmp(fun, "srand")) {
+                check(parc == 1, "Incorrect parameter count for 'srand'.");
+                srand(atoi(parv[1]));
             } else if (!strcmp(fun, "br")) {
                 printf("That's me!\n");
             } else if (parc <= 1) {
@@ -305,7 +305,8 @@ private:
                "-version\n"
                "-daemon\n"
                "-slave\n"
-               "-exit\n");
+               "-exit\n"
+               "-srand <int>\n");
     }
 };
 

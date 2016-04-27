@@ -316,20 +316,6 @@ const char *br_version()
     return version.data();
 }
 
-void br_slave_process(const char *baseName)
-{
-#ifndef BR_EMBEDDED
-    WorkerProcess *worker = new WorkerProcess;
-    worker->transform = Globals->algorithm;
-    worker->baseName = baseName;
-    worker->mainLoop();
-    delete worker;
-#else
-    (void) baseName;
-    qFatal("br_slave_process not supported in embedded builds!");
-#endif
-}
-
 br_template br_load_img(const char *data, int len)
 {
     std::vector<char> buf(data, data+len);

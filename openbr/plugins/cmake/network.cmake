@@ -1,4 +1,4 @@
-option(BR_WITH_QTNETWORK "Build with QtNetwork" ON)
+option(BR_WITH_QTNETWORK "Build with QtNetwork" OFF)
 if(${BR_WITH_QTNETWORK})
   find_package(Qt5Network)
   find_package(HttpParser)

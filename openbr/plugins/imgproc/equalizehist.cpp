@@ -18,6 +18,8 @@
 
 #include <openbr/plugins/openbr_internal.h>
 
+using namespace cv;
+
 namespace br
 {
 
@@ -32,7 +34,20 @@ class EqualizeHistTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        cv::equalizeHist(src, dst);
+        if (src.m().channels() == 1) {
+            equalizeHist(src, dst);
+        } else if (src.m().channels() == 3) {
+            // http://stackoverflow.com/questions/15007304/histogram-equalization-not-working-on-color-image-opencv
+            Mat ycrcb;
+            cvtColor(src, ycrcb, CV_BGR2YCrCb);
+            vector<Mat> channels;
+            split(ycrcb, channels);
+            equalizeHist(channels[0], channels[0]);
+            merge(channels, ycrcb);
+            cvtColor(ycrcb, dst, CV_YCrCb2BGR);
+        } else {
+            qFatal("Invalid channel count!");
+        }
     }
 };
 

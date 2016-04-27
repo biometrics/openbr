@@ -8,7 +8,7 @@ namespace br
  * \author Scott Klum \cite sklum
  * \brief Document Me!
  */
-class IfTransform : public Transform
+class IfTransform : public MetaTransform
 {
     Q_OBJECT
     Q_PROPERTY(br::Transform* transform READ get_transform WRITE set_transform RESET reset_transform)
@@ -48,11 +48,13 @@ class IfTransform : public Transform
 public:
     void train(const TemplateList &data)
     {
-        TemplateList passed;
-        for (int i=0; i<data.size(); i++)
-            if (compare(data[i].file.get<QString>(key)))
-                passed.append(data[i]);
-        transform->train(passed);
+        if (transform->trainable) {
+            TemplateList passed;
+            for (int i=0; i<data.size(); i++)
+                if (compare(data[i].file.get<QString>(key)))
+                    passed.append(data[i]);
+            transform->train(passed);
+        }
     }
 
     void project(const Template &src, Template &dst) const {
@@ -60,6 +62,19 @@ public:
             transform->project(src,dst);
         else
             dst = src;
+    }
+
+    void project(const TemplateList &src, TemplateList &dst) const {
+        TemplateList ifTrue, ifFalse;
+        foreach (const Template &t, src) {
+            if (compare(t.file.get<QString>(key)))
+                ifTrue.append(t);
+            else
+                ifFalse.append(t);
+        }
+
+        transform->project(ifTrue,dst);
+        dst.append(ifFalse);
     }
 
 };

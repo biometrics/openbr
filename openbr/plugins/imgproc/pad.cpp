@@ -1,28 +1,42 @@
+#include <opencv2/imgproc/imgproc.hpp>
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 
 namespace br
 {
 
+/*!
+ * \ingroup transforms
+ * \brief Pads an image.
+ * \author Scott Klum \cite sklum
+ */
 class PadTransform : public UntrainableTransform
 {
     Q_OBJECT
+    Q_ENUMS(Border)
+    Q_PROPERTY(Border border READ get_border WRITE set_border RESET reset_border STORED false)
+    Q_PROPERTY(float percent READ get_percent WRITE set_percent RESET reset_percent STORED false)
+    Q_PROPERTY(int value READ get_value WRITE set_value RESET reset_value STORED false)
 
-    Q_PROPERTY(int padSize READ get_padSize WRITE set_padSize RESET reset_padSize STORED false)
-    Q_PROPERTY(int padValue READ get_padValue WRITE set_padValue RESET reset_padValue STORED false)
-    BR_PROPERTY(int, padSize, 0)
-    BR_PROPERTY(int, padValue, 0)
+public:
+    /*!< */
+    enum Border { Replicate = BORDER_REPLICATE,
+                  Reflect = BORDER_REFLECT_101,
+                  Constant = BORDER_CONSTANT};
+
+private:
+    BR_PROPERTY(Border, border, Replicate)
+    BR_PROPERTY(float, percent, .1)
+    BR_PROPERTY(float, value, 0)
 
     void project(const Template &src, Template &dst) const
     {
-        dst.file = src.file;
-
-        foreach (const Mat &m, src) {
-            Mat padded = padValue * Mat::ones(m.rows + 2*padSize, m.cols + 2*padSize, m.type());
-            padded(Rect(padSize, padSize, padded.cols - padSize, padded.rows - padSize)) = m;
-            dst += padded;
-        }
+        int top, bottom, left, right;
+        top = percent*src.m().rows; bottom = percent*src.m().rows;
+        left = percent*src.m().cols; right = percent*src.m().cols;
+        OpenCVUtils::pad(src,dst,true,QList<int>() << top << bottom << left << right,true,true,border,value);
     }
 };
 

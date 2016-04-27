@@ -2,14 +2,7 @@
 #define _BOOST_H_
 
 #include "ml.h"
-#include <time.h>
 #include <openbr/openbr_plugin.h>
-
-#ifdef _WIN32
-#define TIME( arg ) (((double) clock()) / CLOCKS_PER_SEC)
-#else
-#define TIME( arg ) (time( arg ))
-#endif
 
 namespace br
 {
@@ -17,9 +10,9 @@ namespace br
 struct FeatureEvaluator
 {
     ~FeatureEvaluator() {}
-    void init(Representation *_representation, int _maxSampleCount, int channels);
-    void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    float operator()(int featureIdx, int sampleIdx) const { return representation->evaluate(data.row(sampleIdx), featureIdx); }
+    void init(Representation *_representation, int _maxSampleCount);
+    void setImage(const Template &src, uchar clsLabel, int idx);
+    float operator()(int featureIdx, int sampleIdx) const { return representation->evaluate(data[sampleIdx], featureIdx); }
 
     int getNumFeatures() const { return representation->numFeatures(); }
     int getMaxCatCount() const { return representation->maxCatCount(); }
@@ -27,7 +20,8 @@ struct FeatureEvaluator
     const cv::Mat& getCls() const { return cls; }
     float getCls(int si) const { return cls.at<float>(si, 0); }
 
-    cv::Mat data, cls;
+    cv::Mat cls;
+    TemplateList data;
     Representation *representation;
 };
 

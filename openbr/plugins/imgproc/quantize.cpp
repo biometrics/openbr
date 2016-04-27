@@ -30,8 +30,10 @@ namespace br
 class QuantizeTransform : public Transform
 {
     Q_OBJECT
+    Q_PROPERTY(float c READ get_c WRITE set_c RESET reset_c STORED false)
     Q_PROPERTY(float a READ get_a WRITE set_a RESET reset_a)
     Q_PROPERTY(float b READ get_b WRITE set_b RESET reset_b)
+    BR_PROPERTY(float, c, 1)
     BR_PROPERTY(float, a, 1)
     BR_PROPERTY(float, b, 0)
 
@@ -46,7 +48,7 @@ class QuantizeTransform : public Transform
 
     void project(const Template &src, Template &dst) const
     {
-        src.m().convertTo(dst, CV_8U, a, b);
+        src.m().convertTo(dst, CV_8U, a / c, b / c);
     }
 
     QByteArray likely(const QByteArray &indentation) const

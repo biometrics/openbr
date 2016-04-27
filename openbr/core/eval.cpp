@@ -19,10 +19,13 @@
 #include "openbr/core/common.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/evalutils.h"
 #include <QMapIterator>
 #include <cmath>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
+using namespace EvalUtils;
 
 namespace br
 {
@@ -752,285 +755,6 @@ void EvalClassification(const QString &predictedGallery, const QString &truthGal
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
-struct Detection
-{
-    QRectF boundingBox;
-    float confidence;
-    // The ignore flag is useful when certain faces in an image should be ignored
-    // and should not effect detection performance. Predicted detections that overlap
-    // with an ignored truth detection will not count as a true positive, false positive,
-    // true negative, or false negative, it will simply be ignored.
-    bool ignore;
-
-    Detection() {}
-    Detection(const QRectF &boundingBox_, float confidence_ = -1, bool ignore_ = false)
-        : boundingBox(boundingBox_), confidence(confidence_), ignore(ignore_) {}
-
-    float area() const { return boundingBox.width() * boundingBox.height(); }
-    float overlap(const Detection &other) const
-    {
-        const Detection intersection(boundingBox.intersected(other.boundingBox));
-        return intersection.area() / (area() + other.area() - intersection.area());
-    }
-};
-
-struct SortedDetection
-{
-    int truth_idx, predicted_idx;
-    float overlap;
-    SortedDetection() : truth_idx(-1), predicted_idx(-1), overlap(-1) {}
-    SortedDetection(int truth_idx_, int predicted_idx_, float overlap_)
-        : truth_idx(truth_idx_), predicted_idx(predicted_idx_), overlap(overlap_) {}
-    inline bool operator<(const SortedDetection &other) const { return overlap > other.overlap; }
-};
-
-struct Detections
-{
-    QList<Detection> predicted, truth;
-};
-
-struct ResolvedDetection
-{
-    float confidence, overlap;
-    ResolvedDetection() : confidence(-1), overlap(-1) {}
-    ResolvedDetection(float confidence_, float overlap_) : confidence(confidence_), overlap(overlap_) {}
-    inline bool operator<(const ResolvedDetection &other) const { return confidence > other.confidence; }
-};
-
-struct DetectionOperatingPoint
-{
-    float Recall, FalsePositiveRate, Precision;
-    DetectionOperatingPoint() : Recall(-1), FalsePositiveRate(-1), Precision(-1) {}
-    DetectionOperatingPoint(float TP, float FP, float totalPositives, float numImages)
-        : Recall(TP/totalPositives), FalsePositiveRate(FP/numImages), Precision(TP/(TP+FP)) {}
-};
-
-static QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete)
-{
-    QList<DetectionOperatingPoint> points;
-    float TP = 0, FP = 0, prevFP = -1;
-
-    for (int i=0; i<detections.size(); i++) {
-        const ResolvedDetection &detection = detections[i];
-        if (discrete) {
-            // A 50% overlap is considered a true positive
-            if (detection.overlap >= 0.5) TP++;
-            else                          FP++;
-        } else {
-            TP += detection.overlap;
-            FP += 1 - detection.overlap;
-        }
-        if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
-            if (FP > prevFP || (i == detections.size()-1)) {
-                if (prevFP / numImages < 0.1 && FP / numImages > 0.1 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.1", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                } else if (prevFP / numImages < 0.01 && FP / numImages > 0.01 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.01", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                }
-                points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections, numImages));
-                prevFP = FP;
-            }
-        }
-    }
-
-    const int keep = qMin(points.size(), Max_Points);
-    if (keep < 1) qFatal("Insufficient points.");
-
-    QStringList lines; lines.reserve(keep);
-    if (keep == 1) {
-        const DetectionOperatingPoint &point = points[0];
-        lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
-        lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
-    } else {
-        for (int i=0; i<keep; i++) {
-            const DetectionOperatingPoint &point = points[double(i) / double(keep-1) * double(points.size()-1)];
-            lines.append(QString("%1ROC, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.FalsePositiveRate), QString::number(point.Recall)));
-            lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
-        }
-    }
-    return lines;
-}
-
-struct DetectionKey : public QString
-{
-    enum Type {
-        Invalid,
-        Rect,
-        RectList,
-        XYWidthHeight
-    } type;
-
-    DetectionKey(const QString &key = "", Type type = Invalid)
-        : QString(key), type(type) {}
-};
-
-static DetectionKey getDetectKey(const FileList &files)
-{
-    if (files.empty())
-        return DetectionKey();
-
-    const File &f = files.first();
-    const QStringList localKeys = f.localKeys();
-
-    // first check for single detections
-    foreach (const QString &key, localKeys)
-        if (!f.get<QRectF>(key, QRectF()).isNull())
-            return DetectionKey(key, DetectionKey::Rect);
-
-    // and then multiple
-    if (!f.rects().empty())
-        return DetectionKey("Rects", DetectionKey::RectList);
-
-    // check for <Key>_X, <Key>_Y, <Key>_Width, <Key>_Height
-    foreach (const QString &localKey, localKeys) {
-        if (!localKey.endsWith("_X"))
-            continue;
-        const QString key = localKey.mid(0, localKey.size()-2);
-        if (localKeys.contains(key+"_Y") &&
-            localKeys.contains(key+"_Width") &&
-            localKeys.contains(key+"_Height"))
-            return DetectionKey(key, DetectionKey::XYWidthHeight);
-    }
-
-    return DetectionKey();
-}
-
-// return a list of detections independent of the detection key format
-static QList<Detection> getDetections(const DetectionKey &key, const File &f, bool isTruth)
-{
-    QList<Detection> dets;
-    if (key.type == DetectionKey::RectList) {
-        QList<QRectF> rects = f.rects();
-        QList<float> confidences = f.getList<float>("Confidences", QList<float>());
-        if (!isTruth && rects.size() != confidences.size())
-            qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
-        for (int i=0; i<rects.size(); i++) {
-            if (isTruth)
-                dets.append(Detection(rects[i]));
-            else
-                dets.append(Detection(rects[i], confidences[i]));
-        }
-    } else if (key.type == DetectionKey::Rect) {
-        dets.append(Detection(f.get<QRectF>(key), isTruth ? -1 : f.get<float>("Confidence", -1)));
-    } else if (key.type == DetectionKey::XYWidthHeight) {
-        const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
-        dets.append(Detection(rect, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false)));
-    }
-    return dets;
-}
-
-static QMap<QString, Detections> getDetections(const File &predictedGallery, const File &truthGallery)
-{
-    const FileList predicted = TemplateList::fromGallery(predictedGallery).files();
-    const FileList truth = TemplateList::fromGallery(truthGallery).files();
-
-    // Figure out which metadata field contains a bounding box
-    DetectionKey truthDetectKey = getDetectKey(truth);
-    if (truthDetectKey.isEmpty())
-        qFatal("No suitable ground truth metadata key found.");
-
-    DetectionKey predictedDetectKey = getDetectKey(predicted);
-    if (predictedDetectKey.isEmpty())
-        qFatal("No suitable predicted metadata key found.");
-
-    qDebug("Using metadata key: %s%s",
-           qPrintable(predictedDetectKey),
-           qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
-
-    QMap<QString, Detections> allDetections;
-    foreach (const File &f, truth)
-        allDetections[f.name].truth.append(getDetections(truthDetectKey, f, true));
-    foreach (const File &f, predicted)
-        if (allDetections.contains(f.name)) allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
-    return allDetections;
-}
-
-static inline int getNumberOfImages(const QMap<QString, Detections> detections)
-{   
-    return detections.keys().size();
-}
-
-static int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
-{
-    float dLeftTotal = 0.0, dRightTotal = 0.0, dTopTotal = 0.0, dBottomTotal = 0.0;
-    int count = 0, totalTrueDetections = 0;
-
-    foreach (Detections detections, all.values()) {
-        totalTrueDetections += detections.truth.size();
-        // Try to associate ground truth detections with predicted detections
-
-        QList<SortedDetection> sortedDetections; sortedDetections.reserve(detections.truth.size() * detections.predicted.size());
-        for (int t = 0; t < detections.truth.size(); t++) {
-            const Detection truth = detections.truth[t];
-            for (int p = 0; p < detections.predicted.size(); p++) {
-                Detection predicted = detections.predicted[p];
-
-                float predictedWidth = predicted.boundingBox.width();
-                float x, y, width, height;
-                x = predicted.boundingBox.x() + offsets.x()*predictedWidth;
-                y = predicted.boundingBox.y() + offsets.y()*predictedWidth;
-                width = predicted.boundingBox.width() - offsets.width()*predictedWidth;
-                height = predicted.boundingBox.height() - offsets.height()*predictedWidth;
-                Detection newPredicted(QRectF(x, y, width, height), 0.0);
-
-                const float overlap = truth.overlap(newPredicted);
-                if (overlap > 0)
-                    sortedDetections.append(SortedDetection(t, p, overlap));
-            }
-        }
-
-        std::sort(sortedDetections.begin(), sortedDetections.end());
-
-        QList<int> removedTruth;
-        QList<int> removedPredicted;
-
-        foreach (const SortedDetection &detection, sortedDetections) {
-            if (removedTruth.contains(detection.truth_idx) || removedPredicted.contains(detection.predicted_idx))
-                continue;
-
-            const Detection truth = detections.truth[detection.truth_idx];
-            const Detection predicted = detections.predicted[detection.predicted_idx];
-
-            if (!truth.ignore) resolved.append(ResolvedDetection(predicted.confidence, detection.overlap));
-
-            removedTruth.append(detection.truth_idx);
-            removedPredicted.append(detection.predicted_idx);
-
-            if (offsets.x() == 0 && detection.overlap > 0.3) {
-                count++;
-                float width = predicted.boundingBox.width();
-                dLeftTotal += (truth.boundingBox.left() - predicted.boundingBox.left()) / width;
-                dRightTotal += (truth.boundingBox.right() - predicted.boundingBox.right()) / width;
-                dTopTotal += (truth.boundingBox.top() - predicted.boundingBox.top()) / width;
-                dBottomTotal += (truth.boundingBox.bottom() - predicted.boundingBox.bottom()) / width;
-            }
-        }
-
-        for (int i = 0; i < detections.predicted.size(); i++)
-            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].confidence, 0));
-        for (int i = 0; i < detections.truth.size(); i++)
-            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(-std::numeric_limits<float>::max(), 0));
-    }
-
-    if (offsets.x() == 0) {
-        // Calculate average differences in each direction
-        float dRight = dRightTotal / count;
-        float dBottom = dBottomTotal / count;
-        float dX = dLeftTotal / count;
-        float dY = dTopTotal / count;
-        float dWidth = dX - dRight;
-        float dHeight = dY - dBottom;
-
-        offsets.setX(dX);
-        offsets.setY(dY);
-        offsets.setWidth(dWidth);
-        offsets.setHeight(dHeight);
-    }
-    return totalTrueDetections;
-}
-
 float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
@@ -1040,51 +764,13 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     // Remove any bounding boxes with a side smaller than minSize
     if (minSize > 0) {
         qDebug("Removing boxes smaller than %d\n", minSize);
-        QMap<QString, Detections> allFilteredDetections;
-        foreach (QString key, allDetections.keys()) {
-            Detections detections = allDetections[key];
-            Detections filteredDetections;
-            for (int i = 0; i < detections.predicted.size(); i++) {
-                QRectF box = detections.predicted[i].boundingBox;
-                if (min(box.width(), box.height()) > sqrt(0.5 * pow(minSize, 2))) {
-                    filteredDetections.predicted.append(detections.predicted[i]);
-                }
-            }
-            
-            for (int i = 0; i < detections.truth.size(); i++) {
-                QRectF box = detections.truth[i].boundingBox;
-                if (min(box.width(), box.height()) > minSize) {
-                    filteredDetections.truth.append(detections.truth[i]);
-                }
-            }
-            if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
-        }
-        allDetections = allFilteredDetections;
+        allDetections = filterDetections(allDetections,minSize);
     }
 
     // Remove any bounding boxes with no side smaller than maxSize
     if (maxSize > 0) {
         qDebug("Removing boxes larger than %d\n", maxSize);
-        QMap<QString, Detections> allFilteredDetections;
-        foreach (QString key, allDetections.keys()) {
-            Detections detections = allDetections[key];
-            Detections filteredDetections;
-            for (int i = 0; i < detections.predicted.size(); i++) {
-                QRectF box = detections.predicted[i].boundingBox;
-                if (min(box.width(), box.height()) < sqrt(0.5 * pow(maxSize, 2))) {
-                    filteredDetections.predicted.append(detections.predicted[i]);
-                }
-            }
-
-            for (int i = 0; i < detections.truth.size(); i++) {
-                QRectF box = detections.truth[i].boundingBox;
-                if (min(box.width(), box.height()) < maxSize) {
-                    filteredDetections.truth.append(detections.truth[i]);
-                }
-            }
-            if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
-        }
-        allDetections = allFilteredDetections;
+        allDetections = filterDetections(allDetections,maxSize,false);
     }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
@@ -1104,11 +790,27 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
         falseNegativeDetections.clear();
         totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
     }
+
+    if (Globals->verbose) {
+        qDebug("Total False negatives:");
+        const int numFalseNegatives = 50;
+        for (int i=0; i<numFalseNegatives; i++) {
+            Mat img = imread(qPrintable(Globals->path + "/" + falseNegativeDetections[i].filePath));
+            qDebug() << falseNegativeDetections[i];
+            const Scalar color(0,255,0);
+            rectangle(img, OpenCVUtils::toRect(falseNegativeDetections[i].boundingBox), color, 1);
+            QtUtils::touchDir(QDir("./falseNegs"));
+            imwrite(qPrintable(QString("./falseNegs/falseNeg%1.jpg").arg(QString::number(i))), img);
+        }
+    }
+
     std::sort(resolvedDetections.begin(), resolvedDetections.end());
     QStringList lines;
     lines.append("Plot, X, Y");
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), true));
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), false));
+    QList<DetectionOperatingPoint> points;
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), true, points));
+    points.clear();
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), false, points));
 
     float averageOverlap;
     { // Overlap Density
@@ -1196,7 +898,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     {
         QScopedPointer<Transform> t(Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL));
 
-        QString filePath = "landmarking_examples_truth/"+truth[sampleIndex].file.fileName();
+        QString filePath = "landmarking_examples_truth/sample.jpg";
         projectAndWrite(t.data(), truth[sampleIndex],filePath);
         lines.append("Sample,"+filePath+","+QString::number(truth[sampleIndex].file.points().size()));
     }
@@ -1204,26 +906,26 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     // Get best and worst performing examples
     QList< QPair<float,int> > exampleIndices = Common::Sort(imageErrors,true);
 
-    QScopedPointer<Transform> t(Transform::make("Open+Draw(rects=false)",NULL));
+    QScopedPointer<Transform> t(Transform::make("Open+CropFromLandmarks(paddingHorizontal=.3,paddingVertical=.3,shiftPoints=true)+Resize(128,method=Area)+Draw(rects=false,pointRadius=2)",NULL));
 
     for (int i=0; i<totalExamples; i++) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
-        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXT,"+filePath+":"+truth[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
 
         filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
-        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXP,"+filePath+":"+ predicted[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=exampleIndices.size()-1; i>exampleIndices.size()-totalExamples-1; i--) {
         QString filePath = "landmarking_examples_truth/"+truth[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), truth[exampleIndices[i].second],filePath);
-        lines.append("EXT,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXT,"+filePath+":"+truth[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
 
         filePath = "landmarking_examples_predicted/"+predicted[exampleIndices[i].second].file.fileName();
         projectAndWrite(t.data(), predicted[exampleIndices[i].second],filePath);
-        lines.append("EXP,"+filePath+","+QString::number(exampleIndices[i].first));
+        lines.append("EXP,"+filePath+":"+predicted[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
     }
 
     for (int i=0; i<pointErrors.size(); i++) {
