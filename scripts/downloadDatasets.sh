@@ -15,7 +15,7 @@ if [ ! -d ../data/ATT/img ]; then
   fi
 
   unzip att_faces.zip -d att_faces
-  mv att_faces ../data/ATT/img
+  mkdir -p ../data/ATT/img && mv att_faces $_
   rm ../data/ATT/img/README att_faces.zip
 fi
     
@@ -30,14 +30,12 @@ if [ ! -d ../data/BioID/img ]; then
   fi
 
   unzip BioID-FaceDatabase-V1.2.zip
-  mkdir ../data/BioID/img
-  mv *.pgm ../data/BioID/img
+  mkdir -p ../data/BioID/img && mv *.pgm $_
   rm *.eye description.txt BioID-FaceDatabase-V1.2.zip
 fi
 
 # Caltech Pedestrian
 if [ ! -d ../data/CaltechPedestrians/vid ]; then
-  mkdir ../data/CaltechPedestrians/vid
   echo "Downloading Caltech Pedestrians dataset..."
   prefix="http://www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/datasets/USA"
   for seq in {0..10}; do
@@ -53,7 +51,7 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
   rm *.tar
   ./writeCaltechPedestrianSigset.sh 0 5 train > ../data/CaltechPedestrians/train.xml
   ./writeCaltechPedestrianSigset.sh 6 10 test > ../data/CaltechPedestrians/test.xml
-  mv set* ../data/CaltechPedestrians/vid
+  mkdir -p ../data/CaltechPedestrians/vid && mv set* $_
   if hash curl 2>/dev/null; then
     curl -OL "$prefix/annotations.zip"
   else
@@ -61,7 +59,7 @@ if [ ! -d ../data/CaltechPedestrians/vid ]; then
   fi
   unzip annotations.zip
   rm annotations.zip
-  mv annotations ../data/CaltechPedestrians
+  mkdir -p ../data/CaltechPedestrians &&  mv annotations $_
 fi
 
 # INRIA person
@@ -73,7 +71,7 @@ if [ ! -d ../data/INRIAPerson/img ]; then
     wget http://pascal.inrialpes.fr/data/human/INRIAPerson.tar
   fi
   tar -xf INRIAPerson.tar
-  mkdir ../data/INRIAPerson/img ../data/INRIAPerson/sigset
+  mkdir -p ../data/INRIAPerson/img ../data/INRIAPerson/sigset
   ./writeINRIAPersonSigset.sh Train > ../data/INRIAPerson/sigset/train.xml
   ./writeINRIAPersonSigset.sh Test > ../data/INRIAPerson/sigset/test.xml
   ./writeINRIAPersonSigset.sh train_64x128_H96 > ../data/INRIAPerson/sigset/train_normalized.xml
@@ -85,15 +83,15 @@ fi
 # KTH
 if [ ! -d ../data/KTH/vid ]; then
   echo "Downloading KTH..."
-  mkdir ../data/KTH/vid
-  mkdir ../data/KTH/sigset
+  mkdir -p ../data/KTH/vid
+  mkdir -p ../data/KTH/sigset
   for vidclass in {'boxing','handclapping','handwaving','jogging','running','walking'}; do
     if hash curl 2>/dev/null; then
       curl -OL http://www.nada.kth.se/cvap/actions/${vidclass}.zip
     else
       wget http://www.nada.kth.se/cvap/actions/${vidclass}.zip
     fi
-    mkdir ../data/KTH/vid/${vidclass}
+    mkdir -p ../data/KTH/vid/${vidclass}
     unzip ${vidclass}.zip -d ../data/KTH/vid/${vidclass}
     rm ${vidclass}.zip
   done
@@ -113,11 +111,11 @@ if [ ! -d ../data/LFW/img ]; then
   fi
 
   tar -xf lfw.tgz
-  mv lfw ../data/LFW/img
+  mkdir -p ../data/LFW/img && mv lfw $_
   rm lfw.tgz
 fi
 
-./downloadMeds.sh
+./downloadMEDS.sh
 
 #LFPW
 if [ ! -d ../data/lfpw/trainset ]; then
