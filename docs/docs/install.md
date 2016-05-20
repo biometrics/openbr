@@ -172,7 +172,7 @@ A hacker's guide to building, editing, and running OpenBR.
 2. [Download and Install CMake 3.0.2](http://www.cmake.org/files/v3.0/cmake-3.0.2-win32-x86.exe)
     1. During installation setup select "Add CMake to PATH".
 
-3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download)
+3. [Download OpenCV 2.4.11](https://github.com/Itseez/opencv/archive/2.4.11.zip)
     1. Consider the free open source program [7-Zip](http://www.7-zip.org/) if you need a program to unarchive tarballs.
     2. Move the "opencv-2.4.11" folder to "C:\".
     3. Open "VS2013 x64 Cross Tools Command Prompt" (from the Start Menu, select "All Programs" -> "Microsoft Visual Studio 2013" -> "Visual Studio Tools" -> "VS2013 x64 Cross Tools Command Prompt") and enter:
