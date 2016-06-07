@@ -318,7 +318,7 @@ const char *br_version()
 
 void br_slave_process(const char *baseName)
 {
-#ifndef BR_EMBEDDED
+#ifdef BR_WITH_QTNETWORK
     WorkerProcess *worker = new WorkerProcess;
     worker->transform = Globals->algorithm;
     worker->baseName = baseName;
@@ -326,7 +326,7 @@ void br_slave_process(const char *baseName)
     delete worker;
 #else
     (void) baseName;
-    qFatal("br_slave_process not supported in embedded builds!");
+    qFatal("multiprocess support requires building with QtNetwork enabled (set BR_WITH_QTNETWORK in cmake).");
 #endif
 }
 
