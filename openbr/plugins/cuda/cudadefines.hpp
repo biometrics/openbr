@@ -48,3 +48,25 @@ using namespace std;
     cout << pthread_self() << ": Kernel Call Err(" << *errPtr << "): " << cudaGetErrorString(*errPtr) << endl; \
     throw 0; \
   }
+  
+#define CUBLAS_ERROR_CHECK(error) \
+  if (error != CUBLAS_STATUS_SUCCESS) { \
+    switch (error) { \
+      case CUBLAS_STATUS_NOT_INITIALIZED: \
+        cout << "CUBLAS_STATUS_NOT_INITIALIZED" << endl;; \
+      case CUBLAS_STATUS_ALLOC_FAILED: \
+        cout << "CUBLAS_STATUS_ALLOC_FAILED" << endl;; \
+      case CUBLAS_STATUS_INVALID_VALUE: \
+        cout << "CUBLAS_STATUS_INVALID_VALUE" << endl;; \
+      case CUBLAS_STATUS_ARCH_MISMATCH: \
+        cout << "CUBLAS_STATUS_ARCH_MISMATCH" << endl;; \
+      case CUBLAS_STATUS_MAPPING_ERROR: \
+        cout << "CUBLAS_STATUS_MAPPING_ERROR" << endl;; \
+      case CUBLAS_STATUS_EXECUTION_FAILED: \
+        cout << "CUBLAS_STATUS_EXECUTION_FAILED" << endl;; \
+      case CUBLAS_STATUS_INTERNAL_ERROR: \
+        cout << "CUBLAS_STATUS_INTERNAL_ERROR" << endl;; \
+      default: \
+        cout << "<unknown>" << endl; \
+    } \
+  }
