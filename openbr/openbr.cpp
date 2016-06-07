@@ -316,6 +316,20 @@ const char *br_version()
     return version.data();
 }
 
+void br_slave_process(const char *baseName)
+{
+#ifdef BR_WITH_QTNETWORK
+    WorkerProcess *worker = new WorkerProcess;
+    worker->transform = Globals->algorithm;
+    worker->baseName = baseName;
+    worker->mainLoop();
+    delete worker;
+#else
+    (void) baseName;
+    qFatal("multiprocess support requires building with QtNetwork enabled (set BR_WITH_QTNETWORK in cmake).");
+#endif
+}
+
 br_template br_load_img(const char *data, int len)
 {
     std::vector<char> buf(data, data+len);

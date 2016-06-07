@@ -7,6 +7,7 @@ if(${BR_WITH_QTNETWORK})
   if(${BR_INSTALL_SHARE})
     install(FILES ${HTTPPARSER_LICENSE} RENAME http-parser DESTINATION share/openbr/licenses)
   endif()
+  add_definitions(-DBR_WITH_QTNETWORK)
 else()
   set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/core/processwrapper.cpp
                                                  plugins/io/download.cpp
