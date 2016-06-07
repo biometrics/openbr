@@ -180,7 +180,7 @@ A hacker's guide to building, editing, and running OpenBR.
             $ cd C:\opencv-2.4.11
             $ mkdir build-msvc2013
             $ cd build-msvc2013
-            $ cmake -G "NMake Makefiles" -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
+            $ cmake -G "NMake Makefiles" -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DWITH_CUDA=OFF -DWITH_FFMPEG=OFF -DCMAKE_BUILD_TYPE=Debug ..
             $ nmake
             $ nmake install
             $ cmake -DCMAKE_BUILD_TYPE=Release ..
