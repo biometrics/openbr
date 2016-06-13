@@ -69,13 +69,12 @@ endif()
 
 # Build options
 option(BR_EMBEDDED "Limit software dependencies")
-if(${BR_EMBEDDED})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBR_EMBEDDED")
+if(BR_EMBEDDED)
+  add_definitions(-DBR_EMBEDDED)
 endif()
 
 # Find Qt
 set(QT_DEPENDENCIES Concurrent Core)
-option(BR_EMBEDDED "Limit software dependencies")
 if(NOT BR_EMBEDDED)
   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()
