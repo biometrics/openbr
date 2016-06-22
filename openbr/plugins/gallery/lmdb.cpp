@@ -15,6 +15,8 @@ using namespace br;
 class lmdbGallery : public Gallery
 {
     Q_OBJECT
+    Q_PROPERTY(bool remap READ get_remap WRITE set_remap RESET reset_remap STORED false)
+    BR_PROPERTY(bool, remap, true)
 
     TemplateList readBlock(bool *done)
     {
@@ -129,9 +131,10 @@ class lmdbGallery : public Gallery
                 QVariant base_label = t.file.value("Label");
                 QString label_str = base_label.toString();
 
-
-                if (!base->observedLabels.contains(label_str) )
-                    base->observedLabels.insert(label_str, base->observedLabels.size());
+                if (!base->observedLabels.contains(label_str)) {
+                    if (base->remap) base->observedLabels.insert(label_str, base->observedLabels.size());
+                    else             base->observedLabels.insert(label_str, label_str.toInt());
+                }
 
                 datum.set_label(base->observedLabels[label_str]);
 
