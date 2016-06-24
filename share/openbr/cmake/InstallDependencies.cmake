@@ -102,6 +102,9 @@ function(install_qt_platforms)
     else()
       install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqlinuxfb.so
               DESTINATION bin/platforms)
+      install_qt_library(XcbQpa)
+      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqxcb.so
+              DESTINATION bin/platforms)
     endif()
   endif()
 endfunction()
