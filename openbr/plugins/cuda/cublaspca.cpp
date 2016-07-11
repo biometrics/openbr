@@ -32,6 +32,7 @@ using namespace cv;
 
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <cusolverDn.h>
 #include "cudadefines.hpp"
 
 namespace br
@@ -58,7 +59,7 @@ protected:
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
 
-    Eigen::VectorXf mean, eVals;
+    Eigen::VectorXf mean;
     Eigen::MatrixXf eVecs;
 
     int originalRows;
@@ -94,41 +95,40 @@ private:
 
     void train(const TemplateList &cudaTrainingSet)
     {
-      // copy the data back from the graphics card so the training can be done on the CPU
-        const int instances = cudaTrainingSet.size();       // get the number of training set instances
-        QList<Template> trainingQlist;
-        for(int i=0; i<instances; i++) {
-          Template currentTemplate = cudaTrainingSet[i];
-          void* const* srcDataPtr = currentTemplate.m().ptr<void*>();
-          void* cudaMemPtr = srcDataPtr[0];
-          int rows = *((int*)srcDataPtr[1]);
-          int cols = *((int*)srcDataPtr[2]);
-          int type = *((int*)srcDataPtr[3]);
+      cublasStatus_t cublasStatus;
+      cudaError_t cudaError;
 
-          if (type != CV_32FC1) {
-            qFatal("Requires single channel 32-bit floating point matrices.");
-          }
+      // put all the data into a single matrix to perform PCA
+      const int instances = cudaTrainingSet.size();
+      const int instanceSize = *(int*)cudaTrainingSet.first().m().ptr<void*>()[1]
+                               * *(int*)cudaTrainingSet.first().m().ptr<void*>()[2];
 
-          // copy GPU mat data back to the CPU so we can do the training on the CPU
-          Mat mat = Mat(rows, cols, type);
-          cudaError_t err;
-          CUDA_SAFE_MEMCPY(mat.ptr<float>(), cudaMemPtr, rows*cols*sizeof(float), cudaMemcpyDeviceToHost, &err);
-          trainingQlist.append(Template(mat));
-        }
+      // get all the vectors from memory
+      Eigen::MatrixXf data(instanceSize, instances);
+      for (int i=0; i < instances; i++) {
+        float* currentCudaMatPtr = (float*)cudaTrainingSet[i].m().ptr<void*>()[0];
 
-        // assemble a TemplateList from the list of data
-        TemplateList trainingSet(trainingQlist);
+        cublasGetVector(
+          instanceSize,
+          sizeof(float),
+          currentCudaMatPtr,
+          1,
+          data.data()+i*instanceSize,
+          1
+        );
+      }
 
-        originalRows = trainingSet.first().m().rows;    // get number of rows of first image
-        int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
+      Eigen::MatrixXd dataDouble(instanceSize, instances);
+      for (int i=0; i < instanceSize*instances; i++) {
+        dataDouble.data()[i] = (double)data.data()[i];
+      }
 
-        // Map into 64-bit Eigen matrix - perform the column major conversion
-        Eigen::MatrixXd data(dimsIn, instances);        // create a mat
-        for (int i=0; i<instances; i++) {
-          data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
-        }
+      // XXX: remove me
+      Eigen::MatrixXd test(3,3);
+      test << 1,2,3,4,5,6,7,8,9;
+      trainCore(test);
 
-        trainCore(data);
+      // trainCore(dataDouble);
     }
 
     void project(const Template &src, Template &dst) const
@@ -164,8 +164,6 @@ private:
       cudaMemset(*dstGpuMatPtrPtr, 0, dstRows*sizeof(float));
 
       {
-        //cout << "Ax + y" << endl;
-        // subtract out the average
         float negativeOne = -1.0f;
         status = cublasSaxpy(
           cublasHandle,       // handle
@@ -180,8 +178,6 @@ private:
       }
 
       {
-        //cout << "Matrix-Vector multiplication" << endl;
-
         float one = 1.0f;
         float zero = 0.0f;
         status = cublasSgemv(
@@ -207,12 +203,12 @@ private:
 
     void store(QDataStream &stream) const
     {
-        stream << keep << drop << whiten << originalRows << mean << eVals << eVecs;
+        stream << keep << drop << whiten << originalRows << mean << eVecs;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
+        stream >> keep >> drop >> whiten >> originalRows >> mean >>  eVecs;
 
         //cout << "Starting load process" << endl;
 
@@ -248,72 +244,372 @@ private:
     }
 
 protected:
-    void trainCore(Eigen::MatrixXd data)
-    {
-        int dimsIn = data.rows();
-        int instances = data.cols();
-        const bool dominantEigenEstimation = (dimsIn > instances);
+    void trainCore(Eigen::MatrixXd data) {
+      cudaError_t cudaError;
 
-        Eigen::MatrixXd allEVals, allEVecs;
-        if (keep != 0) {
-            // Compute and remove mean
-            mean = Eigen::VectorXf(dimsIn);
-            for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
-            for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
+      // utility variables
+      const double one = 1.0;
+      const double negativeOne = -1.0;
+      const double zero = 0.0;
 
-            // Calculate covariance matrix
-            Eigen::MatrixXd cov;
-            if (dominantEigenEstimation) cov = data.transpose() * data / (instances-1.0);
-            else                         cov = data * data.transpose() / (instances-1.0);
+      static int numTimesThrough = 0;
+      numTimesThrough++;
 
-            // Compute eigendecomposition. Returns eigenvectors/eigenvalues in increasing order by eigenvalue.
-            Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eSolver(cov);
-            allEVals = eSolver.eigenvalues();
-            allEVecs = eSolver.eigenvectors();
-            if (dominantEigenEstimation) allEVecs = data * allEVecs;
-        } else {
-            // Null case
-            mean = Eigen::VectorXf::Zero(dimsIn);
-            allEVecs = Eigen::MatrixXd::Identity(dimsIn, dimsIn);
-            allEVals = Eigen::VectorXd::Ones(dimsIn);
+      int dimsIn = data.rows();       // the number of rows of the covariance matrix
+      int instances = data.cols();    // the number of columns of the covariance matrix
+      const bool dominantEigenEstimation = (dimsIn > instances);
+
+      // Compute and remove mean
+      //mean = Eigen::VectorXf(dimsIn);
+      //for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
+      //for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
+
+      // allocate and place data in GPU memory
+      double* cudaDataPtr;
+      CUDA_SAFE_MALLOC(&cudaDataPtr, data.rows()*data.cols()*sizeof(cudaDataPtr[0]), &cudaError);
+      cublasSetMatrix(
+        data.rows(),
+        data.cols(),
+        sizeof(cudaDataPtr[0]),
+        data.data(),
+        data.rows(),
+        cudaDataPtr,
+        data.rows()
+      );
+
+      // allocate space for the covariance matrix
+      double* cudaCovariancePtr;
+      int covRows = data.cols();
+      CUDA_SAFE_MALLOC(&cudaCovariancePtr, covRows*covRows*sizeof(cudaCovariancePtr[0]), &cudaError);
+
+      // compute the covariance matrix
+      // cov = data.transpose() * data / (instances-1.0);
+      {
+        double scaleFactor = 1.0/(instances-1.0);
+        cublasDgemm(
+          cublasHandle,
+          CUBLAS_OP_T,
+          CUBLAS_OP_N,
+          data.cols(),
+          data.cols(),
+          data.rows(),
+          &scaleFactor,
+          cudaDataPtr,
+          data.rows(),
+          cudaDataPtr,
+          data.rows(),
+          &zero,
+          cudaCovariancePtr,
+          covRows
+        );
+      }
+
+      // XXX: download the covariace matrix for debugging
+      Eigen::MatrixXd cov(covRows, covRows);
+      cublasGetMatrix(
+        covRows,
+        covRows,
+        sizeof(cov.data()[0]),
+        cudaCovariancePtr,
+        covRows,
+        cov.data(),
+        covRows
+      );
+
+      // initialize cuSolver for the next part
+      cusolverDnHandle_t cusolverHandle;
+      cusolverDnCreate(&cusolverHandle);
+
+      double* cudaEigenvaluesPtr;
+      {
+        double* cudaDiagonalPtr;
+        CUDA_SAFE_MALLOC(&cudaDiagonalPtr, covRows*sizeof(double), &cudaError);
+        double* cudaOffdiagonalPtr;
+        CUDA_SAFE_MALLOC(&cudaOffdiagonalPtr, covRows*sizeof(double), &cudaError);
+        double* cudaTauqPtr;
+        CUDA_SAFE_MALLOC(&cudaTauqPtr, covRows*sizeof(double), &cudaError);
+        double* cudaTaupPtr;
+        CUDA_SAFE_MALLOC(&cudaTaupPtr, covRows*sizeof(double), &cudaError);
+
+        // calculate lwork
+        int lwork;
+        cusolverDnSgebrd_bufferSize(
+          cusolverHandle,
+          covRows,
+          covRows,
+          &lwork
+        );
+        double* cudaWorkBufferPtr;
+        CUDA_SAFE_MALLOC(&cudaWorkBufferPtr, lwork, &cudaError);
+
+        int* cudaDevInfoPtr;
+        CUDA_SAFE_MALLOC(&cudaDevInfoPtr, sizeof(int), &cudaError);
+
+        // call the eigenvalue decomposer
+        cusolverDnDgebrd(
+          cusolverHandle,
+          covRows,
+          covRows,
+          cudaCovariancePtr,
+          covRows,
+          cudaDiagonalPtr,
+          cudaOffdiagonalPtr,
+          cudaTauqPtr,
+          cudaTaupPtr,
+          cudaWorkBufferPtr,
+          lwork,
+          cudaDevInfoPtr
+        );
+
+        // the eigenvalues are on the diagonal
+        cudaEigenvaluesPtr = cudaOffdiagonalPtr;
+
+        /*
+        // initialize the result buffers
+        double* cudaOffdiagonalPtr;
+        CUDA_SAFE_MALLOC(&cudaEigenvaluesPtr, covRows*sizeof(cudaEigenvaluesPtr[0]), &cudaError);
+        CUDA_SAFE_MALLOC(&cudaOffdiagonalPtr, covRows*sizeof(cudaOffdiagonalPtr[0]), &cudaError);
+
+        // initialize the tauq and taup buffers
+        double* cudaTauqPtr;
+        double* cudaTaupPtr;
+        CUDA_SAFE_MALLOC(&cudaTauqPtr, covRows*sizeof(cudaTauqPtr[0]), &cudaError);
+        CUDA_SAFE_MALLOC(&cudaTaupPtr, covRows*sizeof(cudaTaupPtr[0]), &cudaError);
+
+        // build the work buffer
+        double* cudaWorkPtr;
+        int workBufferSize;
+        cusolverDnSgesvd_bufferSize(cusolverHandle, covRows, covRows, &workBufferSize);
+        CUDA_SAFE_MALLOC(&cudaWorkPtr, workBufferSize, &cudaError);
+
+        int* cudaDevInfoPtr;
+        CUDA_SAFE_MALLOC(&cudaDevInfoPtr, sizeof(*cudaDevInfoPtr), &cudaError);
+
+        // now pull the eigenvalues out
+        cusolverStatus_t cusolverStatus;
+        cusolverStatus = cusolverDnDgebrd(
+          cusolverHandle,           // handle
+          covRows,                  // rows of Matrix A
+          covRows,                  // cols of Matrix A
+          cudaCovariancePtr,        // CUDA pointer to matrix A
+          covRows,                  // leading dimension of A
+          cudaEigenvaluesPtr,       // diagonal elements of bidiagonal matrix
+          cudaOffdiagonalPtr,       // off-diagonal elements of matrix
+          cudaTauqPtr,
+          cudaTaupPtr,
+          cudaWorkPtr,
+          workBufferSize,
+          cudaDevInfoPtr
+        );
+
+        // print out the devInfo
+        int devInfo;
+        cudaMemcpy(&devInfo, cudaDevInfoPtr, sizeof(devInfo), cudaMemcpyDeviceToHost);
+
+        // now we have the eigenvalues
+
+        // XXX: the off diagonal values
+        Eigen::VectorXd offDiagonal(covRows);
+        cublasGetVector(
+          covRows,
+          sizeof(offDiagonal.data()[0]),
+          cudaOffdiagonalPtr,
+          1,
+          offDiagonal.data(),
+          1
+        );
+
+        // clean up
+        CUDA_SAFE_FREE(cudaOffdiagonalPtr, &cudaError);
+        CUDA_SAFE_FREE(cudaTauqPtr, &cudaError);
+        CUDA_SAFE_FREE(cudaTaupPtr, &cudaError);
+        CUDA_SAFE_FREE(cudaWorkPtr, &cudaError);
+        CUDA_SAFE_FREE(cudaDevInfoPtr, &cudaError);
+        */
+      }
+
+      // copy the eigenvalues back to the CPU
+      Eigen::VectorXd allEVals(covRows);
+      cublasGetVector(
+        covRows,
+        sizeof(allEVals.data()[0]),
+        cudaEigenvaluesPtr,
+        1,
+        allEVals.data(),
+        1
+      );
+      CUDA_SAFE_FREE(cudaEigenvaluesPtr, &cudaError);
+
+      // now find the eigenvectors
+      Eigen::MatrixXd allEVecs(covRows, covRows);
+      double* cudaCoefficientMatrix;
+      CUDA_SAFE_MALLOC(&cudaCoefficientMatrix, covRows*covRows*sizeof(cudaCoefficientMatrix[0]), &cudaError);
+      for (int i=0; i < covRows; i++) {
+        // load cov into matrix
+        cublasSetMatrix(
+          covRows,
+          covRows,
+          sizeof(cov.data()[0]),
+          cov.data(),
+          covRows,
+          cudaCoefficientMatrix,
+          covRows
+        );
+
+        // subtract out the Eigenvalue from the center of the matrix
+        // first copy the eigenvalue into a single buffer
+        double* cudaEigenvalueSubtractBuffer;
+        CUDA_SAFE_MALLOC(&cudaEigenvalueSubtractBuffer, covRows*sizeof(cudaEigenvalueSubtractBuffer[0]), &cudaError);
+        for(int j = 0; j < covRows; j++) {
+          cublasSetVector(
+            1,
+            sizeof(cudaEigenvalueSubtractBuffer[0]),
+            &allEVals.data()[i],
+            1,
+            &cudaEigenvalueSubtractBuffer[j],
+            1
+          );
         }
 
-        if (keep <= 0) {
-            keep = dimsIn - drop;
-        } else if (keep < 1) {
-            // Keep eigenvectors that retain a certain energy percentage.
-            const double totalEnergy = allEVals.sum();
-            if (totalEnergy == 0) {
-                keep = 0;
-            } else {
-                double currentEnergy = 0;
-                int i=0;
-                while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
-                    currentEnergy += allEVals(allEVals.rows()-(i+1));
-                    i++;
-                }
-                keep = i - drop;
-            }
-        } else {
-            if (keep + drop > allEVals.rows()) {
-                qWarning("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
-                keep = allEVals.rows() - drop;
-            }
+        // perform the subtraction
+        cublasDaxpy(
+          cublasHandle,
+          covRows,
+          &negativeOne,
+          cudaEigenvalueSubtractBuffer,
+          1,
+          cudaCoefficientMatrix,
+          covRows+1                     // move across the diagonal
+        );
+
+        // perform the Cholesky factorization of the coefficient matrix
+        double* cudaWorkBufferPtr;
+        int lwork;
+        cusolverDnDpotrf_bufferSize(
+          cusolverHandle,
+          CUBLAS_FILL_MODE_UPPER,
+          covRows,
+          cudaCoefficientMatrix,
+          covRows,
+          &lwork
+        );
+        CUDA_SAFE_MALLOC(&cudaWorkBufferPtr, lwork, &cudaError);
+
+        int* cudaDevInfoPtr;
+        CUDA_SAFE_MALLOC(&cudaDevInfoPtr, sizeof(*cudaDevInfoPtr), &cudaError);
+
+        cusolverDnDpotrf(
+          cusolverHandle,
+          CUBLAS_FILL_MODE_UPPER,
+          covRows,
+          cudaCoefficientMatrix,
+          covRows,
+          cudaWorkBufferPtr,
+          lwork,
+          cudaDevInfoPtr
+        );
+        int devInfo;
+        CUDA_SAFE_MEMCPY(&devInfo, cudaDevInfoPtr, sizeof(devInfo), cudaMemcpyDeviceToHost, &cudaError);
+        cout << "DevInfo: " << devInfo << endl;
+
+
+        // XXX: remove after dbugging
+        Eigen::MatrixXd anotherMatrix(covRows, covRows);
+        cublasGetMatrix(
+          covRows,
+          covRows,
+          sizeof(anotherMatrix.data()[0]),
+          cudaCoefficientMatrix,
+          1,
+          anotherMatrix.data(),
+          1
+        );
+
+        // the first element of B is equal to the covariance matrix, the rest are zeroes
+        double* cudaBVector;
+        CUDA_SAFE_MALLOC(&cudaBVector, covRows*sizeof(cudaBVector[0]), &cudaError);
+        // load the top element to be the same as first of coefficient
+        // this results in the first variable being zero and assigning
+        // values for the rest of the matrix
+        cublasDcopy(
+          cublasHandle,
+          1,
+          cudaCoefficientMatrix,
+          1,
+          cudaBVector,
+          1
+        );
+        // load the rest 0's
+        for (int j = 1; j < covRows; j++) {
+          cublasSetVector(
+            1,
+            sizeof(cudaBVector[0]),
+            &zero,
+            1,
+            &cudaBVector[j],
+            1
+          );
         }
 
-        // Keep highest energy vectors
-        eVals = Eigen::VectorXf((int)keep, 1);
-        eVecs = Eigen::MatrixXf(allEVecs.rows(), (int)keep);
-        for (int i=0; i<keep; i++) {
-            int index = allEVals.rows()-(i+drop+1);
-            eVals(i) = allEVals(index);
-            eVecs.col(i) = allEVecs.col(index).cast<float>() / allEVecs.col(index).norm();
-            if (whiten) eVecs.col(i) /= sqrt(eVals(i));
-        }
+        // solve the system of linear equations
+        cusolverDnDpotrs(
+          cusolverHandle,
+          CUBLAS_FILL_MODE_LOWER,
+          covRows,
+          1,                        // we are solving a single system of equations
+          cudaCoefficientMatrix,
+          covRows,
+          cudaBVector,
+          covRows,
+          cudaDevInfoPtr
+        );
+        CUDA_SAFE_MEMCPY(&devInfo, cudaDevInfoPtr, sizeof(devInfo), cudaMemcpyDeviceToHost, &cudaError);
+        cout << "DevInfo: " << devInfo << endl;
 
-        // Debug output
-        if (Globals->verbose) qDebug() << "PCA Training:\n\tDimsIn =" << dimsIn << "\n\tKeep =" << keep;
+        // should have the solution
+        Eigen::VectorXd solutionVector(covRows);
+        cublasGetVector(
+          covRows,
+          sizeof(solutionVector.data()[0]),
+          solutionVector.data(),
+          1,
+          cudaBVector,
+          1
+        );
+
+        cout << "solution: [";
+        for (int i=0; i < covRows; i++) {
+          cout << solutionVector.data()[i] << ", ";
+        }
+        cout << "];" << endl;
+
+      }
+
+      // Keep eigenvectors that retain a certain energy percentage.
+      const float totalEnergy = allEVals.sum();
+      if (totalEnergy == 0) {
+          keep = 0;
+      } else {
+          float currentEnergy = 0;
+          int i=0;
+          while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
+              currentEnergy += allEVals(allEVals.rows()-(i+1));
+              i++;
+          }
+          keep = i - drop;
+      }
+
+      // Keep highest energy vectors
+      Eigen::VectorXf eVals = Eigen::VectorXf((int)keep, 1);
+      for (int i=0; i<keep; i++) {
+          int index = allEVals.rows()-(i+drop+1);
+          eVals(i) = allEVals(index);
+      }
+
+      cusolverDnDestroy(cusolverHandle);
+      cout << "DONE" << endl;
     }
+
 
     void writeEigenVectors(const Eigen::MatrixXd &allEVals, const Eigen::MatrixXd &allEVecs) const
     {
