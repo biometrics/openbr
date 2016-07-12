@@ -284,7 +284,7 @@ protected:
               double currentEnergy = 0;
               int i=0;
               while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
-                  currentEnergy += allEVals(allEVals.rows()-(i+1));
+                  currentEnergy += allEVals(i);
                   i++;
               }
               keep = i - drop;
