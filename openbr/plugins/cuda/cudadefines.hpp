@@ -53,33 +53,33 @@ using namespace std;
   }
 
 #define CUBLAS_ERROR_CHECK(error) { \
-  if (error != CUBLAS_STATUS_SUCCESS) { \
-    switch (error) { \
-      case CUBLAS_STATUS_NOT_INITIALIZED: \
-        cout << "CUBLAS_STATUS_NOT_INITIALIZED" << endl; \
-        break; \
-      case CUBLAS_STATUS_ALLOC_FAILED: \
-        cout << "CUBLAS_STATUS_ALLOC_FAILED" << endl; \
-        break; \
-      case CUBLAS_STATUS_INVALID_VALUE: \
-        cout << "CUBLAS_STATUS_INVALID_VALUE" << endl;; \
-        break; \
-      case CUBLAS_STATUS_ARCH_MISMATCH: \
-        cout << "CUBLAS_STATUS_ARCH_MISMATCH" << endl;; \
-        break; \
-      case CUBLAS_STATUS_MAPPING_ERROR: \
-        cout << "CUBLAS_STATUS_MAPPING_ERROR" << endl; \
-        break; \
-      case CUBLAS_STATUS_EXECUTION_FAILED: \
-        cout << "CUBLAS_STATUS_EXECUTION_FAILED" << endl; \
-        break; \
-      case CUBLAS_STATUS_INTERNAL_ERROR: \
-        cout << "CUBLAS_STATUS_INTERNAL_ERROR" << endl; \
-        break; \
-      default: \
-        cout << "<unknown>" << endl; \
-        break; \
-    } \
+  switch (error) { \
+    case CUBLAS_STATUS_SUCCESS: \
+      break; \
+    case CUBLAS_STATUS_NOT_INITIALIZED: \
+      cout << "CUBLAS_STATUS_NOT_INITIALIZED" << endl; \
+      break; \
+    case CUBLAS_STATUS_ALLOC_FAILED: \
+      cout << "CUBLAS_STATUS_ALLOC_FAILED" << endl; \
+      break; \
+    case CUBLAS_STATUS_INVALID_VALUE: \
+      cout << "CUBLAS_STATUS_INVALID_VALUE" << endl;; \
+      break; \
+    case CUBLAS_STATUS_ARCH_MISMATCH: \
+      cout << "CUBLAS_STATUS_ARCH_MISMATCH" << endl;; \
+      break; \
+    case CUBLAS_STATUS_MAPPING_ERROR: \
+      cout << "CUBLAS_STATUS_MAPPING_ERROR" << endl; \
+      break; \
+    case CUBLAS_STATUS_EXECUTION_FAILED: \
+      cout << "CUBLAS_STATUS_EXECUTION_FAILED" << endl; \
+      break; \
+    case CUBLAS_STATUS_INTERNAL_ERROR: \
+      cout << "CUBLAS_STATUS_INTERNAL_ERROR" << endl; \
+      break; \
+    default: \
+      cout << "<unknown>: " << error << endl; \
+      break; \
   } \
 }
 

@@ -241,9 +241,6 @@ protected:
     void trainCore(Eigen::MatrixXd data) {
       cudaError_t cudaError;
 
-      static int numTimesThrough = 0;
-      numTimesThrough++;
-
       int dimsIn = data.rows();       // the number of rows of the covariance matrix
       int instances = data.cols();    // the number of columns of the covariance matrix
       const bool dominantEigenEstimation = (dimsIn > instances);
@@ -319,7 +316,7 @@ protected:
       const bool dominantEigenEstimation = (dimsIn > instances);
 
       // Compute and remove mean
-      // TODO(colin): parallelize this operation
+      // TODO: parallelize this operation
       mean = Eigen::VectorXf(dimsIn);
       for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
       for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
@@ -384,20 +381,6 @@ protected:
           covRows
         );
       }
-
-      // XXX: download the covariace matrix for debugging
-      Eigen::MatrixXd cov(covRows, covRows);
-      cublasGetMatrix(
-        covRows,
-        covRows,
-        sizeof(cov.data()[0]),
-        cudaCovariancePtr,
-        covRows,
-        cov.data(),
-        covRows
-      );
-
-      // Covariance matrix is correct
 
       cusolverDnHandle_t cusolverHandle;
       cusolverStatus_t cusolverStatus;
