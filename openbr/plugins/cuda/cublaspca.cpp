@@ -253,7 +253,7 @@ protected:
       // allocate the eigenvectors
       if (dominantEigenEstimation) {
         allEVals = Eigen::MatrixXd(instances, 1);
-        allEVecs = Eigen::MatrixXd(instances, instances);
+        allEVecs = Eigen::MatrixXd(dimsIn, instances);
       } else {
         allEVals = Eigen::MatrixXd(dimsIn, 1);
         allEVecs = Eigen::MatrixXd(dimsIn, dimsIn);
@@ -261,7 +261,6 @@ protected:
 
       if (keep != 0) {
         performCovarianceSVD(data, allEVals, allEVecs);
-        if (dominantEigenEstimation) allEVecs = data * allEVecs;
       } else {
         // null case
         mean = Eigen::VectorXf::Zero(dimsIn);
@@ -449,11 +448,7 @@ protected:
       );
       CUSOLVER_ERROR_CHECK(cusolverStatus);
 
-      // get devInfo for status
-      cublasGetVector(1, sizeof(svdDevInfo), cudaSvdDevInfoPtr, 1, &svdDevInfo, 1);
-      cout << "SVD devInfo: " << svdDevInfo << endl;
-
-      // get the results
+      // get the eigenvalues and free memory
       cublasGetVector(
         covRows,
         sizeof(cudaSPtr[0]),
@@ -462,27 +457,68 @@ protected:
         allEVals.data(),
         1
       );
-      cublasGetMatrix(
-        covRows,
-        covRows,
-        sizeof(cudaUPtr[0]),
-        cudaUPtr,
-        covRows,
-        allEVecs.data(),
-        covRows
-      );
+      CUDA_SAFE_FREE(cudaSvdWork, &cudaError);
+      CUDA_SAFE_FREE(cudaSPtr, &cudaError);
+      CUDA_SAFE_FREE(cudaVTPtr, &cudaError);
+      CUDA_SAFE_FREE(cudaSvdDevInfoPtr, &cudaError);
+
+      // if this is a dominant eigen estimation, then perform matrix multiplication again
+      // if (dominantEigenEstimation) allEVecs = data * allEVecs;
+      if (dominantEigenEstimation) {
+        double* cudaMultedAllEVecs;
+        CUDA_SAFE_MALLOC(&cudaMultedAllEVecs, dimsIn*instances*sizeof(cudaMultedAllEVecs[0]), &cudaError);
+        const double one = 1.0;
+        const double zero = 0;
+
+        cublasDgemm(
+          cublasHandle,   // handle
+          CUBLAS_OP_N,    // transa
+          CUBLAS_OP_N,    // transb
+          dimsIn,         // m
+          instances,      // n
+          instances,      // k
+          &one,           // alpha
+          cudaDataPtr,    // A
+          dimsIn,         // lda
+          cudaUPtr,       // B
+          instances,      // ldb
+          &zero,          // beta
+          cudaMultedAllEVecs, // C
+          dimsIn          // ldc
+        );
+
+        // get the eigenvectors from the multiplied value
+        cublasGetMatrix(
+          dimsIn,
+          instances,
+          sizeof(cudaMultedAllEVecs[0]),
+          cudaMultedAllEVecs,
+          dimsIn,
+          allEVecs.data(),
+          dimsIn
+        );
+
+        // free the memory used for multiplication
+        CUDA_SAFE_FREE(cudaMultedAllEVecs, &cudaError);
+      } else {
+        // get the eigenvectors straight from the SVD
+        cublasGetMatrix(
+          covRows,
+          covRows,
+          sizeof(cudaUPtr[0]),
+          cudaUPtr,
+          covRows,
+          allEVecs.data(),
+          covRows
+        );
+      }
+
 
       // free all the memory
       CUDA_SAFE_FREE(cudaDataPtr, &cudaError);
       CUDA_SAFE_FREE(cudaCovariancePtr, &cudaError);
-      CUDA_SAFE_FREE(cudaSvdWork, &cudaError);
       CUDA_SAFE_FREE(cudaUPtr, &cudaError);
-      CUDA_SAFE_FREE(cudaSPtr, &cudaError);
-      CUDA_SAFE_FREE(cudaVTPtr, &cudaError);
-      CUDA_SAFE_FREE(cudaSvdDevInfoPtr, &cudaError);
       cusolverDnDestroy(cusolverHandle);
-
-      cout << "Success!" << endl;
     }
 };
 
