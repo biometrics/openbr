@@ -209,8 +209,12 @@ struct AlgorithmCore
         stages.append(enroll);
 
         QString outputDesc;
-        if (fileExclusion)
-            outputDesc = "FileExclusion(" + gallery.flat() + ")+";
+        QScopedPointer<Transform> exclusionBase;
+        if (fileExclusion) {
+            exclusionBase.reset(Transform::make("FileExclusion(" + gallery.flat() + ")", NULL));
+            stages.prepend(exclusionBase.data());
+        }
+
         if (!noOutput)
             outputDesc.append("GalleryOutput("+gallery.flat()+")+");
 
