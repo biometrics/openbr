@@ -35,6 +35,11 @@ using namespace cv;
 #include <cusolverDn.h>
 #include "cudadefines.hpp"
 
+namespace br { namespace cuda { namespace pca {
+  void castFloatToDouble(float* a, int inca, double* b, int incb, int numElems);
+  void castDoubleToFloat(double* a, int inca, float* b, int incb, int numElems);
+}}}
+
 namespace br
 {
 /*!
@@ -95,38 +100,34 @@ private:
     void train(const TemplateList &cudaTrainingSet)
     {
       cublasStatus_t cublasStatus;
+      cudaError_t cudaError;
 
       // put all the data into a single matrix to perform PCA
       const int instances = cudaTrainingSet.size();
-      const int instanceSize = *(int*)cudaTrainingSet.first().m().ptr<void*>()[1]
+      const int dimsIn = *(int*)cudaTrainingSet.first().m().ptr<void*>()[1]
                                * *(int*)cudaTrainingSet.first().m().ptr<void*>()[2];
 
-      // get all the vectors from memory
-      Eigen::MatrixXf data(instanceSize, instances);
+      // copy the data over
+      double* cudaDataPtr;
+      CUDA_SAFE_MALLOC(&cudaDataPtr, instances*dimsIn*sizeof(cudaDataPtr[0]), &cudaError);
       for (int i=0; i < instances; i++) {
-        float* currentCudaMatPtr = (float*)cudaTrainingSet[i].m().ptr<void*>()[0];
-
-        cublasGetVector(
-          instanceSize,
-          sizeof(float),
-          currentCudaMatPtr,
+        br::cuda::pca::castFloatToDouble(
+          (float*)(cudaTrainingSet[i].m().ptr<void*>()[0]),
           1,
-          data.data()+i*instanceSize,
-          1
+          cudaDataPtr+i*dimsIn,
+          1,
+          dimsIn
         );
       }
 
-      Eigen::MatrixXd dataDouble(instanceSize, instances);
-      for (int i=0; i < instanceSize*instances; i++) {
-        dataDouble.data()[i] = (double)data.data()[i];
-      }
+      trainCore(cudaDataPtr, dimsIn, instances);
 
-      trainCore(dataDouble);
+      CUDA_SAFE_FREE(cudaDataPtr, &cudaError);
     }
 
     void project(const Template &src, Template &dst) const
     {
-      //cout << "Starting projection" << endl;
+      cudaError_t cudaError;
 
       void* const* srcDataPtr = src.m().ptr<void*>();
       float* srcGpuMatPtr = (float*)srcDataPtr[0];
@@ -192,7 +193,7 @@ private:
 
       //cout << "Saving result" << endl;
       dst = dstMat;
-      cudaFree(srcGpuMatPtr);
+      CUDA_SAFE_FREE(srcGpuMatPtr, &cudaError);
     }
 
     void store(QDataStream &stream) const
@@ -238,11 +239,9 @@ private:
     }
 
 protected:
-    void trainCore(Eigen::MatrixXd data) {
+    void trainCore(double* cudaDataPtr, int dimsIn, int instances) {
       cudaError_t cudaError;
 
-      int dimsIn = data.rows();       // the number of rows of the covariance matrix
-      int instances = data.cols();    // the number of columns of the covariance matrix
       const bool dominantEigenEstimation = (dimsIn > instances);
 
       Eigen::MatrixXd allEVals, allEVecs;
@@ -257,7 +256,7 @@ protected:
       }
 
       if (keep != 0) {
-        performCovarianceSVD(data, allEVals, allEVecs);
+        performCovarianceSVD(cudaDataPtr, dimsIn, instances, allEVals, allEVecs);
       } else {
         // null case
         mean = Eigen::VectorXf::Zero(dimsIn);
@@ -308,31 +307,81 @@ protected:
 
     // computes the covariance matrix and then pulls the eigenvalues+eigenvectors
     // out of it using SVD of a symmetric matrix
-    void performCovarianceSVD(Eigen::MatrixXd& data, Eigen::MatrixXd& allEVals, Eigen::MatrixXd& allEVecs) {
+    void performCovarianceSVD(double* cudaDataPtr, int dimsIn, int instances, Eigen::MatrixXd& allEVals, Eigen::MatrixXd& allEVecs) {
       cudaError_t cudaError;
 
-      int dimsIn = data.rows();       // the number of rows of the covariance matrix
-      int instances = data.cols();    // the number of columns of the covariance matrix
       const bool dominantEigenEstimation = (dimsIn > instances);
 
-      // Compute and remove mean
-      // TODO: parallelize this operation
-      mean = Eigen::VectorXf(dimsIn);
-      for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
-      for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
+      // used for temporary storage
+      Eigen::VectorXd meanDouble(dimsIn);
 
-      // allocate and place data in GPU memory
-      double* cudaDataPtr;
-      CUDA_SAFE_MALLOC(&cudaDataPtr, data.rows()*data.cols()*sizeof(cudaDataPtr[0]), &cudaError);
-      cublasSetMatrix(
-        data.rows(),
-        data.cols(),
-        sizeof(cudaDataPtr[0]),
-        data.data(),
-        data.rows(),
-        cudaDataPtr,
-        data.rows()
+      // compute the mean
+      for (int i=0; i < dimsIn; i++) {
+        cublasDasum(
+          cublasHandle,
+          instances,
+          cudaDataPtr+i,
+          dimsIn,
+          meanDouble.data()+i
+        );
+      }
+
+      // put data back on GPU for further processing
+      double* cudaMeanDoublePtr;
+      CUDA_SAFE_MALLOC(&cudaMeanDoublePtr, dimsIn*sizeof(cudaMeanDoublePtr[0]), &cudaError);
+      cublasSetVector(
+        dimsIn,
+        sizeof(cudaMeanDoublePtr[0]),
+        meanDouble.data(),
+        1,
+        cudaMeanDoublePtr,
+        1
       );
+
+      // scale to calculate average
+      {
+        double scaleFactor = 1.0/(double)instances;
+        cublasDscal(
+          cublasHandle,
+          dimsIn,
+          &scaleFactor,
+          cudaMeanDoublePtr,
+          1
+        );
+      }
+
+      // subtract mean from data
+      for (int i=0; i < instances; i++) {
+        double negativeOne = -1.0;
+        cublasDaxpy(
+          cublasHandle,
+          dimsIn,
+          &negativeOne,
+          cudaMeanDoublePtr,
+          1,
+          cudaDataPtr+i*dimsIn,
+          1
+        );
+      }
+
+      // convert to float form and copy the data back
+      CUDA_SAFE_MALLOC(&cudaMeanPtr, dimsIn*sizeof(cudaMeanPtr[0]), &cudaError);
+      br::cuda::pca::castDoubleToFloat(cudaMeanDoublePtr, 1, cudaMeanPtr, 1, dimsIn);
+
+      // copy the data back
+      mean = Eigen::VectorXf(dimsIn);
+      cublasGetVector(
+        dimsIn,
+        sizeof(cudaMeanPtr[0]),
+        cudaMeanPtr,
+        1,
+        mean.data(),
+        1
+      );
+
+      // free up the memory
+      CUDA_SAFE_FREE(cudaMeanDoublePtr, &cudaError);
+      CUDA_SAFE_FREE(cudaMeanPtr, &cudaError);
 
       // allocate space for the covariance matrix
       double* cudaCovariancePtr;
@@ -348,14 +397,14 @@ protected:
           cublasHandle,
           CUBLAS_OP_T,
           CUBLAS_OP_N,
-          data.cols(),
-          data.cols(),
-          data.rows(),
+          instances,
+          instances,
+          dimsIn,
           &scaleFactor,
           cudaDataPtr,
-          data.rows(),
+          dimsIn,
           cudaDataPtr,
-          data.rows(),
+          dimsIn,
           &zero,
           cudaCovariancePtr,
           covRows
@@ -368,14 +417,14 @@ protected:
           cublasHandle,
           CUBLAS_OP_N,
           CUBLAS_OP_T,
-          data.rows(),
-          data.rows(),
-          data.cols(),
+          dimsIn,
+          dimsIn,
+          instances,
           &scaleFactor,
           cudaDataPtr,
-          data.rows(),
+          dimsIn,
           cudaDataPtr,
-          data.rows(),
+          dimsIn,
           &zero,
           cudaCovariancePtr,
           covRows
@@ -498,7 +547,6 @@ protected:
 
 
       // free all the memory
-      CUDA_SAFE_FREE(cudaDataPtr, &cudaError);
       CUDA_SAFE_FREE(cudaCovariancePtr, &cudaError);
       CUDA_SAFE_FREE(cudaUPtr, &cudaError);
       cusolverDnDestroy(cusolverHandle);
