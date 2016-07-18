@@ -19,6 +19,9 @@
 using namespace std;
 #include <pthread.h>
 
+#include <cublas_v2.h>
+
+
 #define CUDA_SAFE_FREE(cudaPtr, errPtr) \
   /*cout << pthread_self() << ": CUDA Free: " << cudaPtr << endl;*/ \
   *errPtr = cudaFree(cudaPtr); \
@@ -48,3 +51,53 @@ using namespace std;
     cout << pthread_self() << ": Kernel Call Err(" << *errPtr << "): " << cudaGetErrorString(*errPtr) << endl; \
     throw 0; \
   }
+
+#define CUBLAS_ERROR_CHECK(error) { \
+  switch (error) { \
+    case CUBLAS_STATUS_SUCCESS: \
+      break; \
+    case CUBLAS_STATUS_NOT_INITIALIZED: \
+      cout << "CUBLAS_STATUS_NOT_INITIALIZED" << endl; \
+      break; \
+    case CUBLAS_STATUS_ALLOC_FAILED: \
+      cout << "CUBLAS_STATUS_ALLOC_FAILED" << endl; \
+      break; \
+    case CUBLAS_STATUS_INVALID_VALUE: \
+      cout << "CUBLAS_STATUS_INVALID_VALUE" << endl;; \
+      break; \
+    case CUBLAS_STATUS_ARCH_MISMATCH: \
+      cout << "CUBLAS_STATUS_ARCH_MISMATCH" << endl;; \
+      break; \
+    case CUBLAS_STATUS_MAPPING_ERROR: \
+      cout << "CUBLAS_STATUS_MAPPING_ERROR" << endl; \
+      break; \
+    case CUBLAS_STATUS_EXECUTION_FAILED: \
+      cout << "CUBLAS_STATUS_EXECUTION_FAILED" << endl; \
+      break; \
+    case CUBLAS_STATUS_INTERNAL_ERROR: \
+      cout << "CUBLAS_STATUS_INTERNAL_ERROR" << endl; \
+      break; \
+    default: \
+      cout << "<unknown>: " << error << endl; \
+      break; \
+  } \
+}
+
+#define CUSOLVER_ERROR_CHECK(error) { \
+  switch(error) { \
+    case CUSOLVER_STATUS_SUCCESS: \
+      break; \
+    case CUSOLVER_STATUS_NOT_INITIALIZED: \
+      cout << "CUSOLVER_STATUS_NOT_INITIALIZED" << endl; \
+      break; \
+    case CUSOLVER_STATUS_ALLOC_FAILED: \
+      cout << "CUSOLVER_STATUS_ALLOC_FAILED" << endl; \
+      break; \
+    case CUSOLVER_STATUS_ARCH_MISMATCH: \
+      cout << "CUSOLVER_STATUS_ARCH_MISMATCH" << endl; \
+      break; \
+    default: \
+      cout << "<unknown>: " << error << endl; \
+      break; \
+  } \
+}
