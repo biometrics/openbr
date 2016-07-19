@@ -297,7 +297,7 @@ protected:
       for (int i=0; i<keep; i++) {
           int index = i+drop;
           eVals(i) = allEVals(index);
-          eVecs.col(i) = allEVecs.col(index).cast<float>() / allEVecs.col(index).norm();
+          eVecs.col(i) = allEVecs.col(index).cast<float>();
           if (whiten) eVecs.col(i) /= sqrt(eVals(i));
       }
 
@@ -519,6 +519,29 @@ protected:
           dimsIn          // ldc
         );
 
+        // normalize result then divide the column by the norm
+        for (int i=0; i < instances; i++) {
+          // compute the norm
+          double norm;
+          cublasDnrm2(
+            cublasHandle,
+            dimsIn,
+            cudaMultedAllEVecs+i*dimsIn,
+            1,
+            &norm
+          );
+
+          // now divide by it
+          norm = 1.0/norm;
+          cublasDscal(
+            cublasHandle,
+            dimsIn,
+            &norm,
+            cudaMultedAllEVecs+i*dimsIn,
+            1
+          );
+        }
+
         // get the eigenvectors from the multiplied value
         cublasGetMatrix(
           dimsIn,
@@ -533,6 +556,30 @@ protected:
         // free the memory used for multiplication
         CUDA_SAFE_FREE(cudaMultedAllEVecs, &cudaError);
       } else {
+        // normalize result then divide the column by the norm
+        for (int i=0; i < instances; i++) {
+          // compute the norm
+          double norm;
+          cublasDnrm2(
+            cublasHandle,
+            covRows,
+            cudaUPtr+i*covRows,
+            1,
+            &norm
+          );
+
+          // now divide by it
+          norm = 1.0/norm;
+          cublasDscal(
+            cublasHandle,
+            covRows,
+            &norm,
+            cudaUPtr+i*covRows,
+            1
+          );
+        }
+
+
         // get the eigenvectors straight from the SVD
         cublasGetMatrix(
           covRows,
