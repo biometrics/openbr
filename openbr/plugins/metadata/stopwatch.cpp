@@ -14,7 +14,13 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
 #include <openbr/plugins/openbr_internal.h>
+
+#include <iostream>
+using namespace std;
 
 namespace br
 {
@@ -33,7 +39,7 @@ class StopWatchTransform : public MetaTransform
 
     br::Transform *transform;
     mutable QMutex mutex;
-    mutable long miliseconds;
+    mutable long milliseconds;
     mutable long images;
     mutable long pixels;
 
@@ -46,7 +52,7 @@ public:
 private:
     void reset()
     {
-        miliseconds = 0;
+        milliseconds = 0;
         images = 0;
         pixels = 0;
     }
@@ -58,7 +64,19 @@ private:
 
     void train(const QList<TemplateList> &data)
     {
+        QTime watch;
+        watch.start();
+
         transform->train(data);
+
+        milliseconds += watch.elapsed();
+        images += data.size();
+
+        // compute the total number of pixels we processed
+        foreach(const TemplateList &list, data) {
+          const Mat& m = list.first().m();
+          pixels += m.rows*m.cols;
+        }
     }
 
     void project(const Template &src, Template &dst) const
@@ -68,7 +86,7 @@ private:
         transform->project(src, dst);
 
         QMutexLocker locker(&mutex);
-        miliseconds += watch.elapsed();
+        milliseconds += watch.elapsed();
         images++;
         foreach (const cv::Mat &m, src)
             pixels += (m.rows * m.cols);
@@ -81,15 +99,24 @@ private:
                "\tTemplates/s: %g\n"
                "\tPixels/s: %g\n",
                qPrintable(description),
-               miliseconds / 1000.0,
-               images * 1000.0 / miliseconds,
-               pixels * 1000.0 / miliseconds);
+               milliseconds / 1000.0,
+               images * 1000.0 / milliseconds,
+               pixels * 1000.0 / milliseconds);
         reset();
     }
 
     void store(QDataStream &stream) const
     {
         transform->store(stream);
+
+        qDebug("\nTraining Profile for \"%s\"\n"
+               "\tSeconds: %g\n"
+               "\tTemplates/s: %g\n"
+               "\tPixels/s: %g\n",
+               qPrintable(description),
+               milliseconds / 1000.0,
+               images * 1000.0 / milliseconds,
+               pixels * 1000.0 / milliseconds);
     }
 
     void load(QDataStream &stream)
