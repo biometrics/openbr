@@ -1617,7 +1617,7 @@ Transform *Transform::make(QString str, QObject *parent)
 
     if (transform->independent) {
         File independent(".Independent");
-        independent.set("transform", qVariantFromValue<void*>(transform));
+        independent.set("transform", QVariant::fromValue(transform));
         transform = Factory<Transform>::make(independent);
     }
 
