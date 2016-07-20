@@ -17,10 +17,9 @@
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
-#include <openbr/plugins/openbr_internal.h>
+#include <QAtomicInt>
 
-#include <iostream>
-using namespace std;
+#include <openbr/plugins/openbr_internal.h>
 
 namespace br
 {
@@ -38,10 +37,9 @@ class StopWatchTransform : public MetaTransform
     BR_PROPERTY(QString, description, "Identity")
 
     br::Transform *transform;
-    mutable QMutex mutex;
-    mutable long milliseconds;
-    mutable long images;
-    mutable long pixels;
+    mutable QAtomicInt milliseconds;
+    mutable QAtomicInt images;
+    mutable QAtomicInt pixels;
 
 public:
     StopWatchTransform()
@@ -52,9 +50,9 @@ public:
 private:
     void reset()
     {
-        milliseconds = 0;
-        images = 0;
-        pixels = 0;
+        milliseconds.fetchAndStoreOrdered(0);
+        images.fetchAndStoreOrdered(0);
+        pixels.fetchAndStoreOrdered(0);
     }
 
     void init()
@@ -69,13 +67,16 @@ private:
 
         transform->train(data);
 
-        milliseconds += watch.elapsed();
-        images += data.size();
+        milliseconds.fetchAndAddOrdered((int)watch.elapsed());
+        images.fetchAndAddOrdered(data.size());
 
         // compute the total number of pixels we processed
         foreach(const TemplateList &list, data) {
-          const Mat& m = list.first().m();
-          pixels += m.rows*m.cols;
+          foreach(const Template &t, list) {
+            foreach(const cv::Mat &m, t) {
+              pixels.fetchAndAddOrdered(m.rows*m.cols);
+            }
+          }
         }
     }
 
@@ -85,11 +86,11 @@ private:
         watch.start();
         transform->project(src, dst);
 
-        QMutexLocker locker(&mutex);
-        milliseconds += watch.elapsed();
-        images++;
-        foreach (const cv::Mat &m, src)
-            pixels += (m.rows * m.cols);
+        milliseconds.fetchAndAddOrdered(watch.elapsed());
+        images.fetchAndAddOrdered(1);
+        foreach (const cv::Mat &m, src) {
+            pixels.fetchAndAddOrdered(m.rows * m.cols);
+        }
     }
 
     void finalize(TemplateList &)
