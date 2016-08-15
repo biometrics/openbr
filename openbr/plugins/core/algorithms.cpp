@@ -31,13 +31,13 @@ class AlgorithmsInitializer : public Initializer
     void initialize() const
     {
         // Face
-        Globals->abbreviations.insert("FaceRecognition", "FaceRecognition_1_1");
+        Globals->abbreviations.insert("FaceRecognition", "FaceRecognition_1_2");
 
-        Globals->abbreviations.insert("FaceRecognition_1_1", "FR_Detect+(FR_Eyes+FR_Represent)/(FR_Eyebrows+FR_Represent)/(FR_Mouth+FR_Represent)/(FR_Nose+FR_Represent)/(FR_Face+FR_Represent+ScaleMat(2.0))+Cat+LDA(768)+Normalize(L2):Unit(Dist(L2))");
+        Globals->abbreviations.insert("FaceRecognition_1_2", "FR_Detect+(FR_Eyes+FR_Represent)/(FR_Eyebrows+FR_Represent)/(FR_Mouth+FR_Represent)/(FR_Nose+FR_Represent)/(FR_Face+FR_Represent+ScaleMat(2.0))+Cat+LDA(768)+Normalize(L2):Unit(Dist(L2))");
         Globals->abbreviations.insert("FR_Eyes", "(CropFromLandmarks([30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47],paddingVertical=.8,paddingHorizontal=.2)+Resize(24,48))");
         Globals->abbreviations.insert("FR_Eyebrows", "(CropFromLandmarks([16,17,18,19,20,21,22,23,24,25,26,27],paddingVertical=.8,paddingHorizontal=.2)+Resize(24,48))");
         Globals->abbreviations.insert("FR_Mouth", "(CropFromLandmarks([59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76])+Resize(24,48))");
-        Globals->abbreviations.insert("FR_Nose", "(CropFromLandmarks([16,17,18,19,20,21,22,23,24,25,26,27],padding=3)+Resize(36,36))");
+        Globals->abbreviations.insert("FR_Nose", "(CropFromLandmarks([48,49,50,51,52,53,54,55,56,57,58],paddingVertical=.8,paddingHorizontal=.2)+Resize(36,36))");
         Globals->abbreviations.insert("FR_Face", "(Crop(24,24,88,88)+Resize(44,44))");
         Globals->abbreviations.insert("FR_Detect", "(Open+Cvt(Gray)+Cascade+Stasm+Rename(StasmLeftEye,Affine_1,true)+Rename(StasmRightEye,Affine_0,true)+Affine(136,136,0.35,0.35,warpPoints=true))");
         Globals->abbreviations.insert("FR_Represent", "((DenseHOG/DenseLBP)+Cat+LDA(.98)+Normalize(L2))");
