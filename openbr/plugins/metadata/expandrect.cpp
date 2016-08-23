@@ -28,12 +28,12 @@ namespace br
 class ExpandRectTransform : public UntrainableTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
     Q_PROPERTY(float widthExpand READ get_widthExpand WRITE set_widthExpand RESET reset_widthExpand STORED false)
     Q_PROPERTY(float heightExpand READ get_heightExpand WRITE set_heightExpand RESET reset_heightExpand STORED false)
-    BR_PROPERTY(QString, propName, "")
+    Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
     BR_PROPERTY(float, widthExpand, .5)
     BR_PROPERTY(float, heightExpand, .5)
+    BR_PROPERTY(QString, propName, "")
 
     void project(const Template &src, Template &dst) const
     {
