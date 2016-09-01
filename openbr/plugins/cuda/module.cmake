@@ -28,6 +28,6 @@ if(BR_WITH_CUDA)
 
   # add the compiled source and libs into the build system
   set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC} ${CUDA_CPP_SRC} ${CUDA_CU_OBJ})
-  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${CUDA_LIBRARIES})
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${CUDA_LIBRARIES} "cublas" "cusolver")
 
 endif()

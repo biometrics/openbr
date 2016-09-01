@@ -30,11 +30,14 @@ using namespace cv;
 #include <openbr/core/eigenutils.h>
 #include <openbr/core/opencvutils.h>
 
-// definitions from the CUDA source file
+#include <cuda_runtime.h>
+#include <cublas_v2.h>
+#include <cusolverDn.h>
+#include "cudadefines.hpp"
+
 namespace br { namespace cuda { namespace pca {
-  void initializeWrapper(float* evPtr, int evRows, int evCols, float* meanPtr, int meanElems);
-  void trainWrapper(void* cudaSrc, float* dst, int rows, int cols);
-  void wrapper(void* src, void** dst, int imgRows, int imgCols);
+  void castFloatToDouble(float* a, int inca, double* b, int incb, int numElems);
+  void castDoubleToFloat(double* a, int inca, float* b, int incb, int numElems);
 }}}
 
 namespace br
@@ -61,13 +64,26 @@ protected:
     BR_PROPERTY(int, drop, 0)
     BR_PROPERTY(bool, whiten, false)
 
-    Eigen::VectorXf mean, eVals;
+    Eigen::VectorXf mean;
+    Eigen::VectorXf eVals;
     Eigen::MatrixXf eVecs;
 
-    int originalRows;
+    cublasHandle_t cublasHandle;
+    float* cudaMeanPtr;     // holds the "keep" long vector
+    float* cudaEvPtr;       // holds all the eigenvectors
 
 public:
-    CUDAPCATransform() : keep(0.95), drop(0), whiten(false) {}
+    CUDAPCATransform() : keep(0.95), drop(0), whiten(false) {
+      // try to initialize CUBLAS
+      cublasStatus_t status;
+      status = cublasCreate(&cublasHandle);
+      CUBLAS_ERROR_CHECK(status);
+    }
+
+    ~CUDAPCATransform() {
+      // tear down CUBLAS
+      cublasDestroy(cublasHandle);
+    }
 
 private:
     double residualReconstructionError(const Template &src) const
@@ -83,45 +99,38 @@ private:
 
     void train(const TemplateList &cudaTrainingSet)
     {
-      // copy the data back from the graphics card so the training can be done on the CPU
-        const int instances = cudaTrainingSet.size();       // get the number of training set instances
-        QList<Template> trainingQlist;
-        for(int i=0; i<instances; i++) {
-          Template currentTemplate = cudaTrainingSet[i];
-          void* const* srcDataPtr = currentTemplate.m().ptr<void*>();
-          void* cudaMemPtr = srcDataPtr[0];
-          int rows = *((int*)srcDataPtr[1]);
-          int cols = *((int*)srcDataPtr[2]);
-          int type = *((int*)srcDataPtr[3]);
+      cublasStatus_t cublasStatus;
+      cudaError_t cudaError;
 
-          if (type != CV_32FC1) {
-            qFatal("Requires single channel 32-bit floating point matrices.");
-          }
+      // put all the data into a single matrix to perform PCA
+      const int instances = cudaTrainingSet.size();
+      const int dimsIn = *(int*)cudaTrainingSet.first().m().ptr<void*>()[1]
+                               * *(int*)cudaTrainingSet.first().m().ptr<void*>()[2];
 
-          Mat mat = Mat(rows, cols, type);
-          br::cuda::pca::trainWrapper(cudaMemPtr, mat.ptr<float>(), rows, cols);
-          trainingQlist.append(Template(mat));
-        }
+      // copy the data over
+      double* cudaDataPtr;
+      CUDA_SAFE_MALLOC(&cudaDataPtr, instances*dimsIn*sizeof(cudaDataPtr[0]), &cudaError);
+      for (int i=0; i < instances; i++) {
+        br::cuda::pca::castFloatToDouble(
+          (float*)(cudaTrainingSet[i].m().ptr<void*>()[0]),
+          1,
+          cudaDataPtr+i*dimsIn,
+          1,
+          dimsIn
+        );
+      }
 
-        // assemble a TemplateList from the list of data
-        TemplateList trainingSet(trainingQlist);
+      trainCore(cudaDataPtr, dimsIn, instances);
 
-
-        originalRows = trainingSet.first().m().rows;    // get number of rows of first image
-        int dimsIn = trainingSet.first().m().rows * trainingSet.first().m().cols; // get the size of the first image
-
-        // Map into 64-bit Eigen matrix
-        Eigen::MatrixXd data(dimsIn, instances);        // create a mat
-        for (int i=0; i<instances; i++) {
-          data.col(i) = Eigen::Map<const Eigen::MatrixXf>(trainingSet[i].m().ptr<float>(), dimsIn, 1).cast<double>();
-        }
-
-        trainCore(data);
+      CUDA_SAFE_FREE(cudaDataPtr, &cudaError);
     }
 
     void project(const Template &src, Template &dst) const
     {
+      cudaError_t cudaError;
+
       void* const* srcDataPtr = src.m().ptr<void*>();
+      float* srcGpuMatPtr = (float*)srcDataPtr[0];
       int rows = *((int*)srcDataPtr[1]);
       int cols = *((int*)srcDataPtr[2]);
       int type = *((int*)srcDataPtr[3]);
@@ -131,137 +140,463 @@ private:
         throw 0;
       }
 
+      // save the destination rows
+      int dstRows = (int)keep;
+
       Mat dstMat = Mat(src.m().rows, src.m().cols, src.m().type());
       void** dstDataPtr = dstMat.ptr<void*>();
+      float** dstGpuMatPtrPtr = (float**)dstDataPtr;
       dstDataPtr[1] = srcDataPtr[1];  *((int*)dstDataPtr[1]) = 1;
-      dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = keep;
+      dstDataPtr[2] = srcDataPtr[2];  *((int*)dstDataPtr[2]) = dstRows;
       dstDataPtr[3] = srcDataPtr[3];
 
-      cuda::pca::wrapper(srcDataPtr[0], &dstDataPtr[0], rows, cols);
 
+      // allocate the memory and set to zero
+      //cout << "Allocating destination memory" << endl;
+      cublasStatus_t status;
+      cudaMalloc(dstGpuMatPtrPtr, dstRows*sizeof(float));
+      cudaMemset(*dstGpuMatPtrPtr, 0, dstRows*sizeof(float));
+
+      {
+        float negativeOne = -1.0f;
+        status = cublasSaxpy(
+          cublasHandle,       // handle
+          dstRows,            // vector length
+          &negativeOne,       // alpha (1)
+          cudaMeanPtr,        // mean
+          1,                  // stride
+          srcGpuMatPtr,       // y, the source
+          1                   // stride
+        );
+        CUBLAS_ERROR_CHECK(status);
+      }
+
+      {
+        float one = 1.0f;
+        float zero = 0.0f;
+        status = cublasSgemv(
+          cublasHandle,       // handle
+          CUBLAS_OP_T,        // normal vector multiplication
+          eVecs.rows(),       // # rows
+          eVecs.cols(),       // # cols
+          &one,               // alpha (1)
+          cudaEvPtr,          // pointer to the matrix
+          eVecs.rows(),       // leading dimension of matrix
+          srcGpuMatPtr,       // vector for multiplication
+          1,                  // stride (1)
+          &zero,              // beta (0)
+          *dstGpuMatPtrPtr,   // vector to store the result
+          1                   // stride (1)
+        );
+        CUBLAS_ERROR_CHECK(status);
+      }
+
+      //cout << "Saving result" << endl;
       dst = dstMat;
+      CUDA_SAFE_FREE(srcGpuMatPtr, &cudaError);
     }
 
     void store(QDataStream &stream) const
     {
-        stream << keep << drop << whiten << originalRows << mean << eVals << eVecs;
+        stream << keep << drop << whiten <<  mean << eVecs;
     }
 
     void load(QDataStream &stream)
     {
-        stream >> keep >> drop >> whiten >> originalRows >> mean >> eVals >> eVecs;
+        stream >> keep >> drop >> whiten >> mean >> eVecs;
 
-        // serialize the eigenvectors
-        float* evBuffer = new float[eVecs.rows() * eVecs.cols()];
-        for (int i=0; i < eVecs.rows(); i++) {
-          for (int j=0; j < eVecs.cols(); j++) {
-            evBuffer[i*eVecs.cols() + j] = eVecs(i, j);
-          }
-        }
+        //cout << "Starting load process" << endl;
 
-        // serialize the mean
-        float* meanBuffer = new float[mean.rows() * mean.cols()];
-        for (int i=0; i < mean.rows(); i++) {
-          for (int j=0; j < mean.cols(); j++) {
-            meanBuffer[i*mean.cols() + j] = mean(i, j);
-          }
-        }
+        cudaError_t cudaError;
+        cublasStatus_t cublasStatus;
+        CUDA_SAFE_MALLOC(&cudaMeanPtr, mean.rows()*mean.cols()*sizeof(float), &cudaError);
+        CUDA_SAFE_MALLOC(&cudaEvPtr, eVecs.rows()*eVecs.cols()*sizeof(float), &cudaError);
 
-        // call the wrapper function
-        cuda::pca::initializeWrapper(evBuffer, eVecs.rows(), eVecs.cols(), meanBuffer, mean.rows()*mean.cols());
+        //cout << "Setting vector" << endl;
+        // load the mean vector into GPU memory
+        cublasStatus = cublasSetVector(
+          mean.rows()*mean.cols(),
+          sizeof(float),
+          mean.data(),
+          1,
+          cudaMeanPtr,
+          1
+        );
+        CUBLAS_ERROR_CHECK(cublasStatus);
 
-        delete evBuffer;
-        delete meanBuffer;
+        //cout << "Setting the matrix" << endl;
+        // load the eigenvector matrix into GPU memory
+        cublasStatus = cublasSetMatrix(
+          eVecs.rows(),
+          eVecs.cols(),
+          sizeof(float),
+          eVecs.data(),
+          eVecs.rows(),
+          cudaEvPtr,
+          eVecs.rows()
+        );
+        CUBLAS_ERROR_CHECK(cublasStatus);
     }
 
 protected:
-    void trainCore(Eigen::MatrixXd data)
-    {
-        int dimsIn = data.rows();
-        int instances = data.cols();
-        const bool dominantEigenEstimation = (dimsIn > instances);
+    void trainCore(double* cudaDataPtr, int dimsIn, int instances) {
+      cudaError_t cudaError;
 
-        Eigen::MatrixXd allEVals, allEVecs;
-        if (keep != 0) {
-            // Compute and remove mean
-            mean = Eigen::VectorXf(dimsIn);
-            for (int i=0; i<dimsIn; i++) mean(i) = data.row(i).sum() / (float)instances;
-            for (int i=0; i<dimsIn; i++) data.row(i).array() -= mean(i);
+      const bool dominantEigenEstimation = (dimsIn > instances);
 
-            // Calculate covariance matrix
-            Eigen::MatrixXd cov;
-            if (dominantEigenEstimation) cov = data.transpose() * data / (instances-1.0);
-            else                         cov = data * data.transpose() / (instances-1.0);
+      Eigen::MatrixXd allEVals, allEVecs;
 
-            // Compute eigendecomposition. Returns eigenvectors/eigenvalues in increasing order by eigenvalue.
-            Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eSolver(cov);
-            allEVals = eSolver.eigenvalues();
-            allEVecs = eSolver.eigenvectors();
-            if (dominantEigenEstimation) allEVecs = data * allEVecs;
-        } else {
-            // Null case
-            mean = Eigen::VectorXf::Zero(dimsIn);
-            allEVecs = Eigen::MatrixXd::Identity(dimsIn, dimsIn);
-            allEVals = Eigen::VectorXd::Ones(dimsIn);
-        }
+      // allocate the eigenvectors
+      if (dominantEigenEstimation) {
+        allEVals = Eigen::MatrixXd(instances, 1);
+        allEVecs = Eigen::MatrixXd(dimsIn, instances);
+      } else {
+        allEVals = Eigen::MatrixXd(dimsIn, 1);
+        allEVecs = Eigen::MatrixXd(dimsIn, dimsIn);
+      }
 
-        if (keep <= 0) {
-            keep = dimsIn - drop;
-        } else if (keep < 1) {
-            // Keep eigenvectors that retain a certain energy percentage.
-            const double totalEnergy = allEVals.sum();
-            if (totalEnergy == 0) {
-                keep = 0;
-            } else {
-                double currentEnergy = 0;
-                int i=0;
-                while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
-                    currentEnergy += allEVals(allEVals.rows()-(i+1));
-                    i++;
-                }
-                keep = i - drop;
-            }
-        } else {
-            if (keep + drop > allEVals.rows()) {
-                qWarning("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
-                keep = allEVals.rows() - drop;
-            }
-        }
+      if (keep != 0) {
+        performCovarianceSVD(cudaDataPtr, dimsIn, instances, allEVals, allEVecs);
+      } else {
+        // null case
+        mean = Eigen::VectorXf::Zero(dimsIn);
+        allEVecs = Eigen::MatrixXd::Identity(dimsIn, dimsIn);
+        allEVals = Eigen::VectorXd::Ones(dimsIn);
+      }
 
-        // Keep highest energy vectors
-        eVals = Eigen::VectorXf((int)keep, 1);
-        eVecs = Eigen::MatrixXf(allEVecs.rows(), (int)keep);
-        for (int i=0; i<keep; i++) {
-            int index = allEVals.rows()-(i+drop+1);
-            eVals(i) = allEVals(index);
-            eVecs.col(i) = allEVecs.col(index).cast<float>() / allEVecs.col(index).norm();
-            if (whiten) eVecs.col(i) /= sqrt(eVals(i));
-        }
+      // *****************
+      // We have now found the eigenvalues and eigenvectors
+      // *****************
 
-        // Debug output
-        if (Globals->verbose) qDebug() << "PCA Training:\n\tDimsIn =" << dimsIn << "\n\tKeep =" << keep;
+      if (keep <= 0) {
+          keep = dimsIn - drop;
+      } else if (keep < 1) {
+          // Keep eigenvectors that retain a certain energy percentage.
+          const double totalEnergy = allEVals.sum();
+          if (totalEnergy == 0) {
+              keep = 0;
+          } else {
+              double currentEnergy = 0;
+              int i=0;
+              while ((currentEnergy / totalEnergy < keep) && (i < allEVals.rows())) {
+                  currentEnergy += allEVals(i);
+                  i++;
+              }
+              keep = i - drop;
+          }
+      } else {
+          if (keep + drop > allEVals.rows()) {
+              qWarning("Insufficient samples, needed at least %d but only got %d.", (int)keep + drop, (int)allEVals.rows());
+              keep = allEVals.rows() - drop;
+          }
+      }
+
+      // Keep highest energy vectors
+      eVals = Eigen::VectorXf((int)keep, 1);
+      eVecs = Eigen::MatrixXf(allEVecs.rows(), (int)keep);
+      for (int i=0; i<keep; i++) {
+          int index = i+drop;
+          eVals(i) = allEVals(index);
+          eVecs.col(i) = allEVecs.col(index).cast<float>();
+          if (whiten) eVecs.col(i) /= sqrt(eVals(i));
+      }
+
+      // Debug output
+      if (Globals->verbose) qDebug() << "PCA Training:\n\tDimsIn =" << dimsIn << "\n\tKeep =" << keep;
     }
 
-    void writeEigenVectors(const Eigen::MatrixXd &allEVals, const Eigen::MatrixXd &allEVecs) const
-    {
-        const int originalCols = mean.rows() / originalRows;
+    // computes the covariance matrix and then pulls the eigenvalues+eigenvectors
+    // out of it using SVD of a symmetric matrix
+    void performCovarianceSVD(double* cudaDataPtr, int dimsIn, int instances, Eigen::MatrixXd& allEVals, Eigen::MatrixXd& allEVecs) {
+      cudaError_t cudaError;
 
-        { // Write out mean image
-            cv::Mat out(originalRows, originalCols, CV_32FC1);
-            Eigen::Map<Eigen::MatrixXf> outMap(out.ptr<float>(), mean.rows(), 1);
-            outMap = mean.col(0);
-            // OpenCVUtils::saveImage(out, Globals->Debug+"/PCA/eigenVectors/mean.png");
+      const bool dominantEigenEstimation = (dimsIn > instances);
+
+      // used for temporary storage
+      Eigen::VectorXd meanDouble(dimsIn);
+
+      // compute the mean
+      for (int i=0; i < dimsIn; i++) {
+        cublasDasum(
+          cublasHandle,
+          instances,
+          cudaDataPtr+i,
+          dimsIn,
+          meanDouble.data()+i
+        );
+      }
+
+      // put data back on GPU for further processing
+      double* cudaMeanDoublePtr;
+      CUDA_SAFE_MALLOC(&cudaMeanDoublePtr, dimsIn*sizeof(cudaMeanDoublePtr[0]), &cudaError);
+      cublasSetVector(
+        dimsIn,
+        sizeof(cudaMeanDoublePtr[0]),
+        meanDouble.data(),
+        1,
+        cudaMeanDoublePtr,
+        1
+      );
+
+      // scale to calculate average
+      {
+        double scaleFactor = 1.0/(double)instances;
+        cublasDscal(
+          cublasHandle,
+          dimsIn,
+          &scaleFactor,
+          cudaMeanDoublePtr,
+          1
+        );
+      }
+
+      // subtract mean from data
+      for (int i=0; i < instances; i++) {
+        double negativeOne = -1.0;
+        cublasDaxpy(
+          cublasHandle,
+          dimsIn,
+          &negativeOne,
+          cudaMeanDoublePtr,
+          1,
+          cudaDataPtr+i*dimsIn,
+          1
+        );
+      }
+
+      // convert to float form and copy the data back
+      CUDA_SAFE_MALLOC(&cudaMeanPtr, dimsIn*sizeof(cudaMeanPtr[0]), &cudaError);
+      br::cuda::pca::castDoubleToFloat(cudaMeanDoublePtr, 1, cudaMeanPtr, 1, dimsIn);
+
+      // copy the data back
+      mean = Eigen::VectorXf(dimsIn);
+      cublasGetVector(
+        dimsIn,
+        sizeof(cudaMeanPtr[0]),
+        cudaMeanPtr,
+        1,
+        mean.data(),
+        1
+      );
+
+      // free up the memory
+      CUDA_SAFE_FREE(cudaMeanDoublePtr, &cudaError);
+      CUDA_SAFE_FREE(cudaMeanPtr, &cudaError);
+
+      // allocate space for the covariance matrix
+      double* cudaCovariancePtr;
+      int covRows = allEVals.rows();
+      CUDA_SAFE_MALLOC(&cudaCovariancePtr, covRows*covRows*sizeof(cudaCovariancePtr[0]), &cudaError);
+
+      // compute the covariance matrix
+      if (dominantEigenEstimation) {
+        // cov = data.transpose() * data / (instances-1.0);
+        const double scaleFactor = 1.0/(instances-1.0);
+        const double zero = 0.0;
+        cublasDgemm(
+          cublasHandle,
+          CUBLAS_OP_T,
+          CUBLAS_OP_N,
+          instances,
+          instances,
+          dimsIn,
+          &scaleFactor,
+          cudaDataPtr,
+          dimsIn,
+          cudaDataPtr,
+          dimsIn,
+          &zero,
+          cudaCovariancePtr,
+          covRows
+        );
+      } else {
+        // cov = data * data.transpose() / (instances-1.0);
+        const double scaleFactor = 1.0/(instances-1.0);
+        const double zero = 0.0;
+        cublasDgemm(
+          cublasHandle,
+          CUBLAS_OP_N,
+          CUBLAS_OP_T,
+          dimsIn,
+          dimsIn,
+          instances,
+          &scaleFactor,
+          cudaDataPtr,
+          dimsIn,
+          cudaDataPtr,
+          dimsIn,
+          &zero,
+          cudaCovariancePtr,
+          covRows
+        );
+      }
+
+      cusolverDnHandle_t cusolverHandle;
+      cusolverStatus_t cusolverStatus;
+      cusolverDnCreate(&cusolverHandle);
+
+      // allocate appropriate working space
+      int svdLWork;
+      cusolverDnDgesvd_bufferSize(
+        cusolverHandle,
+        covRows,
+        covRows,
+        &svdLWork
+      );
+      double* cudaSvdWork;
+      CUDA_SAFE_MALLOC(&cudaSvdWork, svdLWork*sizeof(cudaSvdWork[0]), &cudaError);
+
+      double* cudaUPtr;
+      CUDA_SAFE_MALLOC(&cudaUPtr, covRows*covRows*sizeof(cudaUPtr[0]), &cudaError);
+      double* cudaSPtr;
+      CUDA_SAFE_MALLOC(&cudaSPtr, covRows*sizeof(cudaSPtr[0]), &cudaError);
+      double* cudaVTPtr;
+      CUDA_SAFE_MALLOC(&cudaVTPtr, covRows*covRows*sizeof(cudaVTPtr[0]), &cudaError);
+
+      int* cudaSvdDevInfoPtr;
+      CUDA_SAFE_MALLOC(&cudaSvdDevInfoPtr, sizeof(*cudaSvdDevInfoPtr), &cudaError);
+      int svdDevInfo;
+
+      // perform SVD on an n x m matrix, in this case the matrix is the covariance
+      // matrix and is symmetric, meaning the SVD will calculate the eigenvalues
+      // and eigenvectors for us.
+      cusolverStatus = cusolverDnDgesvd(
+        cusolverHandle,
+        'A',                // all columns of unitary matrix
+        'A',                // all columns of array VT
+        covRows,            // m
+        covRows,            // n
+        cudaCovariancePtr,  // decomposing the covariance matrix
+        covRows,            // lda
+        cudaSPtr,           // holds S
+        cudaUPtr,           // holds U
+        covRows,            // ldu
+        cudaVTPtr,          // holds VT
+        covRows,            // ldvt
+        cudaSvdWork,        // work buffer ptr
+        svdLWork,           // length of the work buffer
+        NULL,               // rwork, not used for real data types
+        cudaSvdDevInfoPtr   // devInfo pointer
+      );
+      CUSOLVER_ERROR_CHECK(cusolverStatus);
+
+      // get the eigenvalues and free memory
+      cublasGetVector(
+        covRows,
+        sizeof(cudaSPtr[0]),
+        cudaSPtr,
+        1,
+        allEVals.data(),
+        1
+      );
+      CUDA_SAFE_FREE(cudaSvdWork, &cudaError);
+      CUDA_SAFE_FREE(cudaSPtr, &cudaError);
+      CUDA_SAFE_FREE(cudaVTPtr, &cudaError);
+      CUDA_SAFE_FREE(cudaSvdDevInfoPtr, &cudaError);
+
+      // if this is a dominant eigen estimation, then perform matrix multiplication again
+      // if (dominantEigenEstimation) allEVecs = data * allEVecs;
+      if (dominantEigenEstimation) {
+        double* cudaMultedAllEVecs;
+        CUDA_SAFE_MALLOC(&cudaMultedAllEVecs, dimsIn*instances*sizeof(cudaMultedAllEVecs[0]), &cudaError);
+        const double one = 1.0;
+        const double zero = 0;
+
+        cublasDgemm(
+          cublasHandle,   // handle
+          CUBLAS_OP_N,    // transa
+          CUBLAS_OP_N,    // transb
+          dimsIn,         // m
+          instances,      // n
+          instances,      // k
+          &one,           // alpha
+          cudaDataPtr,    // A
+          dimsIn,         // lda
+          cudaUPtr,       // B
+          instances,      // ldb
+          &zero,          // beta
+          cudaMultedAllEVecs, // C
+          dimsIn          // ldc
+        );
+
+        // normalize result then divide the column by the norm
+        for (int i=0; i < instances; i++) {
+          // compute the norm
+          double norm;
+          cublasDnrm2(
+            cublasHandle,
+            dimsIn,
+            cudaMultedAllEVecs+i*dimsIn,
+            1,
+            &norm
+          );
+
+          // now divide by it
+          norm = 1.0/norm;
+          cublasDscal(
+            cublasHandle,
+            dimsIn,
+            &norm,
+            cudaMultedAllEVecs+i*dimsIn,
+            1
+          );
         }
 
-        // Write out sample eigen vectors (16 highest, 8 lowest), filename = eigenvalue.
-        for (int k=0; k<(int)allEVals.size(); k++) {
-            if ((k < 8) || (k >= (int)allEVals.size()-16)) {
-                cv::Mat out(originalRows, originalCols, CV_64FC1);
-                Eigen::Map<Eigen::MatrixXd> outMap(out.ptr<double>(), mean.rows(), 1);
-                outMap = allEVecs.col(k);
-                // OpenCVUtils::saveImage(out, Globals->Debug+"/PCA/eigenVectors/"+QString::number(allEVals(k),'f',0)+".png");
-            }
+        // get the eigenvectors from the multiplied value
+        cublasGetMatrix(
+          dimsIn,
+          instances,
+          sizeof(cudaMultedAllEVecs[0]),
+          cudaMultedAllEVecs,
+          dimsIn,
+          allEVecs.data(),
+          dimsIn
+        );
+
+        // free the memory used for multiplication
+        CUDA_SAFE_FREE(cudaMultedAllEVecs, &cudaError);
+      } else {
+        // normalize result then divide the column by the norm
+        for (int i=0; i < instances; i++) {
+          // compute the norm
+          double norm;
+          cublasDnrm2(
+            cublasHandle,
+            covRows,
+            cudaUPtr+i*covRows,
+            1,
+            &norm
+          );
+
+          // now divide by it
+          norm = 1.0/norm;
+          cublasDscal(
+            cublasHandle,
+            covRows,
+            &norm,
+            cudaUPtr+i*covRows,
+            1
+          );
         }
+
+
+        // get the eigenvectors straight from the SVD
+        cublasGetMatrix(
+          covRows,
+          covRows,
+          sizeof(cudaUPtr[0]),
+          cudaUPtr,
+          covRows,
+          allEVecs.data(),
+          covRows
+        );
+      }
+
+
+      // free all the memory
+      CUDA_SAFE_FREE(cudaCovariancePtr, &cudaError);
+      CUDA_SAFE_FREE(cudaUPtr, &cudaError);
+      cusolverDnDestroy(cusolverHandle);
     }
 };
 

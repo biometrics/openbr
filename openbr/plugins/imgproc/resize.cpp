@@ -81,17 +81,23 @@ private:
             float inRatio = (float) src.m().rows / src.m().cols;
             float outRatio = (float) rows / columns;
             dst = Mat::zeros(rows, columns, src.m().type());
-            if (outRatio > inRatio) {
-                float heightAR = src.m().rows * inRatio / outRatio;
+            if (inRatio < outRatio) {
+                int columnOffset = (src.m().cols - (src.m().cols / outRatio * inRatio)) /2;
                 Mat buffer;
-                resize(src, buffer, Size(columns, heightAR), 0, 0, method);
-                buffer.copyTo(dst.m()(Rect(0, (rows - heightAR) / 2, columns, heightAR)));
+                src.m().copyTo(buffer);
+                //Rect (col_start, r_start, c_width, r_wdith)
+                buffer(Rect(columnOffset,0, src.m().cols - columnOffset*2,src.m().rows)).copyTo(buffer);
+                resize(buffer,dst.m(),Size(columns, rows), 0, 0, method);
+            } else if (inRatio > outRatio) {
+                int rowOffset = (src.m().rows - (src.m().rows * outRatio / inRatio)) /2;
+                Mat buffer;
+                src.m().copyTo(buffer);
+                buffer(Rect(0,rowOffset, src.m().cols,src.m().rows - rowOffset*2)).copyTo(buffer);
+                resize(buffer,dst.m(),Size(columns, rows), 0, 0, method);
             } else {
-                float widthAR = src.m().cols / inRatio * outRatio;
-                Mat buffer;
-                resize(src, buffer, Size(widthAR, rows), 0, 0, method);
-                buffer.copyTo(dst.m()(Rect((columns - widthAR) / 2, 0, widthAR, rows)));
+                resize(src.m(),dst.m(),Size(columns, rows), 0, 0, method);
             }
+
         }
     }
 };

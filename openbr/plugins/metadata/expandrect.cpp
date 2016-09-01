@@ -30,14 +30,22 @@ class ExpandRectTransform : public UntrainableTransform
     Q_OBJECT
     Q_PROPERTY(float widthExpand READ get_widthExpand WRITE set_widthExpand RESET reset_widthExpand STORED false)
     Q_PROPERTY(float heightExpand READ get_heightExpand WRITE set_heightExpand RESET reset_heightExpand STORED false)
+    Q_PROPERTY(QString propName READ get_propName WRITE set_propName RESET reset_propName STORED false)
     BR_PROPERTY(float, widthExpand, .5)
     BR_PROPERTY(float, heightExpand, .5)
+    BR_PROPERTY(QString, propName, "")
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
         dst.file.clearRects();
-        QList<QRectF> rects = src.file.rects();
+        QList<QRectF> rects;
+
+        if (!propName.isEmpty())
+            rects.append(src.file.get<QRectF>(propName));
+        else
+            rects = src.file.rects();
+
         for (int i=0;i < rects.size(); i++) {
             qreal widthGrowth = rects[i].width() * widthExpand;
             qreal heightGrowth = rects[i].height() * heightExpand;
@@ -47,8 +55,8 @@ class ExpandRectTransform : public UntrainableTransform
             dst.file.appendRect(QRectF(x, y,
                              std::min(src.m().cols - x - 1, rects[i].width() + widthGrowth),
                              std::min(src.m().rows - y - 1, rects[i].height() + heightGrowth)));
-
         }
+
     }
 };
 
