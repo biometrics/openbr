@@ -1,6 +1,7 @@
 #include "openbr/core/evalutils.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
+#include "openbr/core/common.h"
 
 #include <opencv2/highgui/highgui.hpp>
 
@@ -120,7 +121,7 @@ QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detect
 
 int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
 {
-    float dLeftTotal = 0.0, dRightTotal = 0.0, dTopTotal = 0.0, dBottomTotal = 0.0;
+    QList<float> dLeft, dRight, dTop, dBottom;
     int count = 0, totalTrueDetections = 0;
 
     foreach (Detections detections, all.values()) {
@@ -170,10 +171,10 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             if (offsets.x() == 0 && detection.overlap > 0.3) {
                 count++;
                 float width = predicted.boundingBox.width();
-                dLeftTotal += (truth.boundingBox.left() - predicted.boundingBox.left()) / width;
-                dRightTotal += (truth.boundingBox.right() - predicted.boundingBox.right()) / width;
-                dTopTotal += (truth.boundingBox.top() - predicted.boundingBox.top()) / width;
-                dBottomTotal += (truth.boundingBox.bottom() - predicted.boundingBox.bottom()) / width;
+                dLeft.append((truth.boundingBox.left() - predicted.boundingBox.left()) / width);
+                dRight.append((truth.boundingBox.right() - predicted.boundingBox.right()) / width);
+                dTop.append((truth.boundingBox.top() - predicted.boundingBox.top()) / width);
+                dBottom.append((truth.boundingBox.bottom() - predicted.boundingBox.bottom()) / width);
             }
         }
 
@@ -185,17 +186,26 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
 
     if (offsets.x() == 0) {
         // Calculate average differences in each direction
-        float dRight = dRightTotal / count;
-        float dBottom = dBottomTotal / count;
-        float dX = dLeftTotal / count;
-        float dY = dTopTotal / count;
-        float dWidth = dX - dRight;
-        float dHeight = dY - dBottom;
+        double dTopMean, dTopStdDev;
+        Common::MeanStdDev(dTop,&dTopMean,&dTopStdDev);
+        double dBottomMean, dBottomStdDev;
+        Common::MeanStdDev(dBottom,&dBottomMean,&dBottomStdDev);
+        double dLeftMean, dLeftStdDev;
+        Common::MeanStdDev(dLeft,&dLeftMean,&dLeftStdDev);
+        double dRightMean, dRightStdDev;
+        Common::MeanStdDev(dRight,&dRightMean,&dRightStdDev);
+        double dWidth = dLeftMean - dRightMean;
+        double dHeight = dTopMean - dBottomMean;
 
-        offsets.setX(dX);
-        offsets.setY(dY);
+        offsets.setX(dLeftMean);
+        offsets.setY(dTopMean);
         offsets.setWidth(dWidth);
         offsets.setHeight(dHeight);
+
+        qDebug("oLeft = %.3f", dLeftStdDev);
+        qDebug("oRight = %.3f", dRightStdDev);
+        qDebug("oTop = %.3f", dTopStdDev);
+        qDebug("oBottom = %.3f", dBottomStdDev);
     }
     return totalTrueDetections;
 }
@@ -305,4 +315,3 @@ QDebug operator<<(QDebug dbg, const ResolvedDetection &d)
 {
     return dbg.nospace() << "(FilePath: " << d.filePath << " Bounding Box: " << d.boundingBox << ", Overlap: " << d.overlap << ", Confidence: " << d.confidence << ")";
 }
-
