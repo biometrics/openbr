@@ -1304,6 +1304,9 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     // We seed with 0 instead of time(NULL) to have reproducible randomness
     srand(0);
 
+    // Disable OpenCV parallelism, we prefer to parallelize at the image level
+    setNumThreads(0);
+
     // Trigger registered initializers
     QList< QSharedPointer<Initializer> > initializers = Factory<Initializer>::makeAll();
     foreach (const QSharedPointer<Initializer> &initializer, initializers)
