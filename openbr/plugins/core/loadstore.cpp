@@ -30,14 +30,12 @@ class LoadStoreTransform : public MetaTransform
     Q_OBJECT
     Q_PROPERTY(QString transformString READ get_transformString WRITE set_transformString RESET reset_transformString STORED false)
     Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
+    Q_PROPERTY(Transform* transform READ get_transform WRITE set_transform RESET reset_transform STORED false)
     BR_PROPERTY(QString, transformString, "Identity")
     BR_PROPERTY(QString, fileName, QString())
+    BR_PROPERTY(Transform*, transform, NULL)
 
 public:
-    Transform *transform;
-
-    LoadStoreTransform() : transform(NULL) {}
-
     QString description(bool expanded = false) const
     {
         if (expanded) {
