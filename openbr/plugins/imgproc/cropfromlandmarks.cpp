@@ -54,8 +54,8 @@ class CropFromLandmarksTransform : public UntrainableTransform
         QRectF rect(minX - padW, minY - padH, (maxX - minX + 1) + padW * 2, (maxY - minY + 1) + padH * 2);
         if (rect.x() < 0) rect.setX(0);
         if (rect.y() < 0) rect.setY(0);
-        if (rect.x() + rect.width() > src.m().cols) rect.setWidth(src.m().cols - rect.x());
-        if (rect.y() + rect.width() > src.m().rows) rect.setHeight(src.m().rows - rect.y());
+        if (rect.x() + rect.width()  > src.m().cols) rect.setWidth (src.m().cols - rect.x());
+        if (rect.y() + rect.height() > src.m().rows) rect.setHeight(src.m().rows - rect.y());
 
         if (shiftPoints) {
             QList<QPointF> points = src.file.points();
