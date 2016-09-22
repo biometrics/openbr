@@ -14,7 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "openbr/plugins/openbr_internal.h"
 #include "openbr/core/qtutils.h"
 #include "openbr/core/opencvutils.h"
