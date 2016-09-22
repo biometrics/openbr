@@ -14,12 +14,10 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <opencv2/opencv.hpp>
-using namespace cv;
-
+#include <openbr/plugins/openbr_internal.h>
 #include <QAtomicInt>
 
-#include <openbr/plugins/openbr_internal.h>
+using namespace cv;
 
 namespace br
 {

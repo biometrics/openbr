@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QtConcurrentRun>
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 const int numLandmarks = 2;
 const double proportionality = 0.025;
