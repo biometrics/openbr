@@ -165,7 +165,7 @@ class CaffeClassifierTransform : public CaffeBaseTransform
         dst = src;
 
         QList<int> labels; QList<float> confidences;
-        QList<QString> distributions;
+        QList<QList<QVariant> > distributions;
 
         foreach (const Mat &m, caffeOutput) {
             double maxVal; int maxLoc[2];
@@ -173,17 +173,17 @@ class CaffeClassifierTransform : public CaffeBaseTransform
 
             labels.append(maxLoc[1]);
             confidences.append(maxVal);
-            if (saveDist) distributions.append(OpenCVUtils::matrixToString(m));
+            if (saveDist) distributions.append(OpenCVUtils::matrixToVector<QVariant>(m));
         }
 
         if (labels.size() == 1) {
             dst.file.set(prefix + "Label", labels[0]);
             dst.file.set(prefix + "Confidence", confidences[0]);
-            if (saveDist) dst.file.set(prefix + "Distribution", distributions[0]);
+            if (saveDist) dst.file.setList<QVariant>(prefix + "Distribution", distributions[0]);
         } else {
             dst.file.setList<int>(prefix + "Labels", labels);
             dst.file.setList<float>(prefix + "Confidences", confidences);
-            if (saveDist) dst.file.setList<QString>(prefix + "Distributions", distributions);
+            if (saveDist) dst.file.setList<QList<QVariant> >(prefix + "Distributions", distributions);
         }
     }
 };
