@@ -10,6 +10,8 @@
 namespace br
 {
 
+typedef QPair<QString,QStringList> FilesWithLabel;
+
 BR_EXPORT QStringList getFiles(QDir dir, bool recursive);
 BR_EXPORT QList<QPair<QString,QStringList> > getFilesWithLabels(QDir dir);
 BR_EXPORT QStringList getFiles(const QString &regexp);

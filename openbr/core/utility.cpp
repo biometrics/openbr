@@ -19,18 +19,18 @@ QStringList br::getFiles(QDir dir, bool recursive)
     return files;
 }
 
-QList<QPair<QString,QStringList> > br::getFilesWithLabels(QDir dir)
+QList<br::FilesWithLabel> br::getFilesWithLabels(QDir dir)
 {
     dir = QDir(dir.canonicalPath());
 
     QStringList files;
-    foreach (const QString &file, QtUtils::naturalSort(dir.entryList(QDir::Files)))
+    foreach (const QString &file, dir.entryList(QDir::Files))
         files.append(dir.absoluteFilePath(file));
 
-    QList<QPair<QString,QStringList> > filesWithLabels;
-    filesWithLabels.append(QPair<QString,QStringList>(dir.dirName(),files));
+    QList<br::FilesWithLabel> filesWithLabels;
+    filesWithLabels.append(br::FilesWithLabel(dir.dirName(),files));
 
-    foreach (const QString &folder, QtUtils::naturalSort(dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))) {
+    foreach (const QString &folder, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         QDir subdir(dir);
         bool success = subdir.cd(folder); if (!success) qFatal("cd failure.");
         filesWithLabels.append(getFilesWithLabels(subdir));
