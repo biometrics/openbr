@@ -20,6 +20,8 @@
 #include <openbr/core/qtutils.h>
 #include <openbr/core/utility.h>
 
+typedef QPair<QString,QStringList> FilesWithLabel;
+
 namespace br
 {
 
@@ -113,10 +115,11 @@ class EmptyGallery : public Gallery
 
     static TemplateList getTemplates(const QDir &dir)
     {
-        const QStringList files = getFiles(dir, true);
-        TemplateList templates; templates.reserve(files.size());
-        foreach (const QString &file, files)
-            templates.append(File(file, dir.dirName()));
+        const QList<FilesWithLabel> filesWithLabels = getFilesWithLabels(dir);
+        TemplateList templates; templates.reserve(filesWithLabels.size());
+        foreach (const FilesWithLabel &filesWithLabel, filesWithLabels)
+            foreach (const QString &file, filesWithLabel.second)
+                templates.append(File(file, filesWithLabel.first));
         return templates;
     }
 };
