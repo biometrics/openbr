@@ -113,10 +113,11 @@ class EmptyGallery : public Gallery
 
     static TemplateList getTemplates(const QDir &dir)
     {
-        const QStringList files = getFiles(dir, true);
-        TemplateList templates; templates.reserve(files.size());
-        foreach (const QString &file, files)
-            templates.append(File(file, dir.dirName()));
+        const QList<FilesWithLabel> filesWithLabels = getFilesWithLabels(dir);
+        TemplateList templates;
+        foreach (const FilesWithLabel &filesWithLabel, filesWithLabels)
+            foreach (const QString &file, filesWithLabel.second)
+                templates.append(File(file, filesWithLabel.first));
         return templates;
     }
 };
