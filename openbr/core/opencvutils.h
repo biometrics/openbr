@@ -105,6 +105,8 @@ namespace OpenCVUtils
     void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon, bool useMax=false, QList<int> *maxIndices=NULL);
     void pad(const br::Template &src, br::Template &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border=0, int value=0);
     void pad(const br::TemplateList &src, br::TemplateList &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border=0, int value=0);
+    QPointF rotatePoint(const QPointF &point, const cv::Mat &rotationMatrix);
+    QList<QPointF> rotatePoints(const QList<QPointF> &points, const cv::Mat &rotationMatrix);
     void rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat=true, bool rotatePoints=true, bool rotateRects=true, const QPointF &center = QPointF());
     void rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat=true, bool rotatePoint=true, bool rotateRects=true, const QPointF &center = QPointF());
     void flip(const br::Template &src, br::Template &dst, int axis, bool flipMat=true, bool flipPoints=true, bool flipRects=true);

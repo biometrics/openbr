@@ -579,55 +579,48 @@ void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool p
     }
 }
 
+QPointF OpenCVUtils::rotatePoint(const QPointF &point, const Mat &rotationMatrix)
+{
+    return QPointF(point.x() * rotationMatrix.at<double>(0,0) +
+                   point.y() * rotationMatrix.at<double>(0,1) +
+                   1         * rotationMatrix.at<double>(0,2),
+                   point.x() * rotationMatrix.at<double>(1,0) +
+                   point.y() * rotationMatrix.at<double>(1,1) +
+                   1         * rotationMatrix.at<double>(1,2));
+}
+
+QList<QPointF> OpenCVUtils::rotatePoints(const QList<QPointF> &points, const Mat &rotationMatrix)
+{
+    QList<QPointF> rotatedPoints;
+    foreach (const QPointF &point, points)
+        rotatedPoints.append(rotatePoint(point, rotationMatrix));
+    return rotatedPoints;
+}
+
 void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
 {
-    Point2f c = center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center);
-    Mat rotMatrix = getRotationMatrix2D(c,degrees,1.0);
+    const Mat rotMatrix = getRotationMatrix2D(center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center),
+                                              degrees, 1.0);
     if (rotateMat) {
         warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_AREA,BORDER_REPLICATE);
         dst.file = src.file;
-    } else
+    } else {
         dst = src;
-
-    if (rotatePoints) {
-        QList<QPointF> points = src.file.points();
-        QList<QPointF> rotatedPoints;
-        for (int i=0; i<points.size(); i++) {
-            rotatedPoints.append(QPointF(points.at(i).x()*rotMatrix.at<double>(0,0)+
-                                         points.at(i).y()*rotMatrix.at<double>(0,1)+
-                                         rotMatrix.at<double>(0,2),
-                                         points.at(i).x()*rotMatrix.at<double>(1,0)+
-                                         points.at(i).y()*rotMatrix.at<double>(1,1)+
-                                         rotMatrix.at<double>(1,2)));
-        }
-
-        dst.file.setPoints(rotatedPoints);
     }
 
+    if (rotatePoints)
+        dst.file.setPoints(OpenCVUtils::rotatePoints(src.file.points(), rotMatrix));
+
     if (rotateRects) {
-        QList<QRectF> rects = src.file.rects();
         QList<QRectF> rotatedRects;
-        for (int i=0; i<rects.size(); i++) {
-            QList<QPointF> corners;
-            corners << rects[i].topLeft() << rects[i].topRight() << rects[i].bottomLeft() << rects[i].bottomRight();
-
-            QList<QPointF> rotatedCorners;
-            foreach (const QPointF &corner, corners)
-                rotatedCorners.append(QPointF(corner.x() * rotMatrix.at<double>(0,0) +
-                                              corner.y() * rotMatrix.at<double>(0,1) +
-                                                           rotMatrix.at<double>(0,2),
-                                              corner.x() * rotMatrix.at<double>(1,0) +
-                                              corner.y() * rotMatrix.at<double>(1,1) +
-                                                           rotMatrix.at<double>(1,2)));
-
-            float top = Common::Min(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
-            float left = Common::Min(QList<float>() << rotatedCorners[0].x() << rotatedCorners[2].x() << rotatedCorners[1].x() << rotatedCorners[3].x());
-            float bottom = Common::Max(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
-            float right = Common::Max(QList<float>() << rotatedCorners[0].x() << rotatedCorners[2].x() << rotatedCorners[1].x() << rotatedCorners[3].x());
-
+        foreach (const QRectF &rect, src.file.rects()) {
+            const QList<QPointF> rotatedCorners = OpenCVUtils::rotatePoints(QList<QPointF>() << rect.topLeft() << rect.topRight() << rect.bottomLeft() << rect.bottomRight(), rotMatrix);
+            const float top    = Common::Min(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
+            const float left   = Common::Min(QList<float>() << rotatedCorners[0].x() << rotatedCorners[1].x() << rotatedCorners[2].x() << rotatedCorners[3].x());
+            const float bottom = Common::Max(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
+            const float right  = Common::Max(QList<float>() << rotatedCorners[0].x() << rotatedCorners[1].x() << rotatedCorners[2].x() << rotatedCorners[3].x());
             rotatedRects.append(QRectF(QPointF(left,top),QPointF(right,bottom)));
         }
-
         dst.file.setRects(rotatedRects);
     }
 }
