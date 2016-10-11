@@ -22,6 +22,7 @@
 
 #include "opencvutils.h"
 #include "qtutils.h"
+#include "common.h"
 
 #include <QTemporaryFile>
 
@@ -578,11 +579,12 @@ void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool p
     }
 }
 
-void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
 {
-    Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),degrees,1.0);
+    Point2f c = center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center);
+    Mat rotMatrix = getRotationMatrix2D(c,degrees,1.0);
     if (rotateMat) {
-        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_LINEAR,BORDER_REFLECT_101);
+        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_AREA,BORDER_REPLICATE);
         dst.file = src.file;
     } else
         dst = src;
@@ -618,10 +620,10 @@ void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degre
                                               corner.y() * rotMatrix.at<double>(1,1) +
                                                            rotMatrix.at<double>(1,2)));
 
-            float top = min(rotatedCorners[0].y(), rotatedCorners[1].y());
-            float left = min(rotatedCorners[0].x(), rotatedCorners[2].x());
-            float bottom = max(rotatedCorners[2].y(), rotatedCorners[3].y());
-            float right = max(rotatedCorners[1].x(), rotatedCorners[3].x());
+            float top = Common::Min(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
+            float left = Common::Min(QList<float>() << rotatedCorners[0].x() << rotatedCorners[2].x() << rotatedCorners[1].x() << rotatedCorners[3].x());
+            float bottom = Common::Max(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
+            float right = Common::Max(QList<float>() << rotatedCorners[0].x() << rotatedCorners[2].x() << rotatedCorners[1].x() << rotatedCorners[3].x());
 
             rotatedRects.append(QRectF(QPointF(left,top),QPointF(right,bottom)));
         }
@@ -630,11 +632,11 @@ void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degre
     }
 }
 
-void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects)
+void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;
-        rotate(src[i], t, degrees, rotateMat, rotatePoints, rotateRects);
+        rotate(src[i], t, degrees, rotateMat, rotatePoints, rotateRects, center);
         dst.append(t);
     }
 }
