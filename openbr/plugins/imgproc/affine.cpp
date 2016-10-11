@@ -118,20 +118,8 @@ private:
         Mat affineTransform = getAffineTransform(srcPoints, dstPoints);
         warpAffine(src, dst, affineTransform, Size(width, height), method, borderMode);
 
-        if (warpPoints) {
-            QList<QPointF> points = src.file.points();
-            QList<QPointF> rotatedPoints;
-            for (int i=0; i<points.size(); i++) {
-                rotatedPoints.append(QPointF(points.at(i).x()*affineTransform.at<double>(0,0)+
-                                             points.at(i).y()*affineTransform.at<double>(0,1)+
-                                             affineTransform.at<double>(0,2),
-                                             points.at(i).x()*affineTransform.at<double>(1,0)+
-                                             points.at(i).y()*affineTransform.at<double>(1,1)+
-                                             affineTransform.at<double>(1,2)));
-            }
-
-            dst.file.setPoints(rotatedPoints);
-        }
+        if (warpPoints)
+            dst.file.setPoints(OpenCVUtils::rotatePoints(src.file.points(), affineTransform));
 
         if (storeAffine) {
             QList<float> affineParams;

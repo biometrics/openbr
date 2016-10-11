@@ -14,8 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <openbr/plugins/openbr_internal.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/opencvutils.h>
 
 using namespace cv;
 
@@ -51,15 +52,8 @@ class GridTransform : public UntrainableTransform
                 landmarks.append(QPointF(x,y));
 
         if (angle > 0) {
-            Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2),angle,1.0);
-            for (int i=0; i<landmarks.size(); i++) {
-                landmarks.replace(i,QPointF(landmarks.at(i).x()*rotMatrix.at<double>(0,0)+
-                                            landmarks.at(i).y()*rotMatrix.at<double>(0,1)+
-                                            rotMatrix.at<double>(0,2),
-                                            landmarks.at(i).x()*rotMatrix.at<double>(1,0)+
-                                            landmarks.at(i).y()*rotMatrix.at<double>(1,1)+
-                                            rotMatrix.at<double>(1,2)));
-            }
+            const Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2), angle, 1.0);
+            landmarks = OpenCVUtils::rotatePoints(landmarks, rotMatrix);
         }
 
         dst = src;
