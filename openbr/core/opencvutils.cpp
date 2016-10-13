@@ -619,12 +619,11 @@ void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degre
     if (rotateRects) {
         QList<QRectF> rotatedRects;
         foreach (const QRectF &rect, src.file.rects()) {
-            const QList<QPointF> rotatedCorners = OpenCVUtils::rotatePoints(QList<QPointF>() << rect.topLeft() << rect.topRight() << rect.bottomLeft() << rect.bottomRight(), rotMatrix);
-            const float top    = Common::Min(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
-            const float left   = Common::Min(QList<float>() << rotatedCorners[0].x() << rotatedCorners[1].x() << rotatedCorners[2].x() << rotatedCorners[3].x());
-            const float bottom = Common::Max(QList<float>() << rotatedCorners[0].y() << rotatedCorners[1].y() << rotatedCorners[2].y() << rotatedCorners[3].y());
-            const float right  = Common::Max(QList<float>() << rotatedCorners[0].x() << rotatedCorners[1].x() << rotatedCorners[2].x() << rotatedCorners[3].x());
-            rotatedRects.append(QRectF(QPointF(left,top),QPointF(right,bottom)));
+            const QPointF center = OpenCVUtils::rotatePoint(rect.center(), rotMatrix);
+            rotatedRects.append(QRectF(center.x() - rect.width() / 2,
+                                       center.y() - rect.height() / 2,
+                                       rect.width(),
+                                       rect.height()));
         }
         dst.file.setRects(rotatedRects);
     }
