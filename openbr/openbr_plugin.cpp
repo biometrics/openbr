@@ -272,6 +272,17 @@ void File::appendRects(const QList<cv::Rect> &rects)
     appendRects(OpenCVUtils::fromRects(rects));
 }
 
+QList<RotatedRect> File::namedRotatedRects() const
+{
+    QList<RotatedRect> rects;
+    foreach (const QString &key, localMetadata().keys()) {
+        const QVariant &variant = m_metadata[key];
+        if (variant.canConvert<RotatedRect>())
+            rects.append(variant.value<RotatedRect>());
+    }
+    return rects;
+}
+
 /* File - private methods */
 void File::init(const QString &file)
 {
@@ -1276,6 +1287,7 @@ void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useG
     QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
 
     qRegisterMetaType<cv::Mat>();
+    qRegisterMetaType<cv::RotatedRect>();
     qRegisterMetaType<br::File>();
     qRegisterMetaType<br::FileList>();
     qRegisterMetaType<br::Template>();
