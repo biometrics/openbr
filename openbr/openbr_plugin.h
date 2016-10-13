@@ -212,6 +212,8 @@ struct BR_EXPORT File
     inline void setRects(const QList<QRectF> &rects) { clearRects(); appendRects(rects); }
     inline void setRects(const QList<cv::Rect> &rects) { clearRects(); appendRects(rects); }
 
+    QList<cv::RotatedRect> namedRotatedRects() const;
+
     bool fte;
 private:
     QVariantMap m_metadata;
@@ -944,6 +946,7 @@ BR_EXPORT Transform *pipeTransforms(QList<Transform *> &transforms);
 } // namespace br
 
 Q_DECLARE_METATYPE(cv::Mat)
+Q_DECLARE_METATYPE(cv::RotatedRect)
 Q_DECLARE_METATYPE(br::File)
 Q_DECLARE_METATYPE(br::FileList)
 Q_DECLARE_METATYPE(br::Template)

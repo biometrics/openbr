@@ -364,6 +364,11 @@ Rect OpenCVUtils::toRect(const QRectF &qRect)
     return Rect(qRect.x(), qRect.y(), qRect.width(), qRect.height());
 }
 
+RotatedRect OpenCVUtils::toRotatedRect(const QRectF &qRect, float angle)
+{
+    return RotatedRect(toPoint(qRect.center()), Size(qRect.width(), qRect.height()), angle);
+}
+
 QRectF OpenCVUtils::fromRect(const Rect &cvRect)
 {
     return QRectF(cvRect.x, cvRect.y, cvRect.width, cvRect.height);
