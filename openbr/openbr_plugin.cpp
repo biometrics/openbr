@@ -111,7 +111,11 @@ QList<File> File::split(const QString &separator) const
     QList<File> files;
     foreach (const QString &word, name.split(separator, QString::SkipEmptyParts)) {
         File file(word);
-        file.append(m_metadata);
+        // If file metadata is empty after this constructor, it means that this is the
+        // file corresponding to *this.m_metadata, so we append its metadata to get
+        // the correct functionality
+        if (file.m_metadata.isEmpty())
+            file.append(m_metadata);
         files.append(file);
     }
     return files;
@@ -764,7 +768,7 @@ QStringList Object::prunedArguments(bool expanded) const
         const char *name = metaObject()->property(i).name();
 
         QVariant defaultVal = shellObject->property(name);
-        
+
         if (defaultVal != property(name))
             arguments.append(name + QString("=") + argument(i, expanded));
     }
