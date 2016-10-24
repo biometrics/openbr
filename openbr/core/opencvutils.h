@@ -39,9 +39,9 @@ namespace OpenCVUtils
     // To image
     cv::Mat toMat(const QList<float> &src, int rows = -1);
     cv::Mat toMat(const QList< QList<float> > &srcs, int rows = -1);
-    cv::Mat toMat(const QList<int> &src, int rows = -1);
+    BR_EXPORT cv::Mat toMat(const QList<int> &src, int rows = -1);
 
-    cv::Mat toMat(const QList<cv::Mat> &src);      // Data organized one matrix per row
+    BR_EXPORT cv::Mat toMat(const QList<cv::Mat> &src);      // Data organized one matrix per row
     cv::Mat toMatByRow(const QList<cv::Mat> &src); // Data organized one row per row
 
     // From image
@@ -116,7 +116,7 @@ namespace OpenCVUtils
     int getFourcc();
 }
 
-QDebug operator<<(QDebug dbg, const cv::Mat &m);
+BR_EXPORT QDebug operator<<(QDebug dbg, const cv::Mat &m);
 QDebug operator<<(QDebug dbg, const cv::Point &p);
 QDebug operator<<(QDebug dbg, const cv::Rect &r);
 QDataStream &operator<<(QDataStream &stream, const cv::Mat &m);
