@@ -110,7 +110,7 @@ class CascadeClassifier : public Classifier
     Q_PROPERTY(float maxFAR READ get_maxFAR WRITE set_maxFAR RESET reset_maxFAR STORED false)
     Q_PROPERTY(bool requireAllStages READ get_requireAllStages WRITE set_requireAllStages RESET reset_requireAllStages STORED false)
     Q_PROPERTY(int maxStage READ get_maxStage WRITE set_maxStage RESET reset_maxStage STORED false)
-    Q_PROPERTY(QList<Classifier*> stages READ get_stages WRITE set_stages RESET reset_stages STORED false)
+    Q_PROPERTY(QList<br::Classifier*> stages READ get_stages WRITE set_stages RESET reset_stages STORED false)
 
     BR_PROPERTY(QString, stageDescription, "")
     BR_PROPERTY(int, numStages, 20)
@@ -119,7 +119,7 @@ class CascadeClassifier : public Classifier
     BR_PROPERTY(float, maxFAR, pow(0.5, numStages))
     BR_PROPERTY(bool, requireAllStages, false)
     BR_PROPERTY(int, maxStage, -1)
-    BR_PROPERTY(QList<Classifier*>, stages, QList<Classifier*>())
+    BR_PROPERTY(QList<br::Classifier*>, stages, QList<br::Classifier*>())
 
     TemplateList posImages, negImages;
     TemplateList posSamples, negSamples;

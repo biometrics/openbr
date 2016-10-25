@@ -107,10 +107,11 @@ class BoostedForestClassifier : public Classifier
     Q_PROPERTY(int maxDepth READ get_maxDepth WRITE set_maxDepth RESET reset_maxDepth STORED false)
     Q_PROPERTY(int maxWeakCount READ get_maxWeakCount WRITE set_maxWeakCount RESET reset_maxWeakCount STORED false)
     Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
-    Q_PROPERTY(QList<br::Node*> classifiers READ get_classifiers WRITE set_classifiers RESET reset_classifiers STORED false)
     Q_PROPERTY(float threshold READ get_threshold WRITE set_threshold RESET reset_threshold STORED false)
 
 public:
+    QList<Node*> classifiers;
+
     enum Type { Discrete = CvBoost::DISCRETE,
                 Real = CvBoost::REAL,
                 Logit = CvBoost::LOGIT,
@@ -123,7 +124,6 @@ private:
     BR_PROPERTY(int, maxDepth, 1)
     BR_PROPERTY(int, maxWeakCount, 100)
     BR_PROPERTY(Type, type, Gentle)
-    BR_PROPERTY(QList<br::Node*>, classifiers, QList<br::Node*>())
     BR_PROPERTY(float, threshold, 0)
 
     void train(const TemplateList &data)
@@ -220,6 +220,12 @@ private:
             storeRecursive(stream, classifier, representation->maxCatCount());
     }
 };
+
+QList<Node*> getClassifers(Classifier *classifier)
+{
+    BoostedForestClassifier *boostedForest = static_cast<BoostedForestClassifier*>(classifier);
+    return boostedForest->classifiers;
+}
 
 BR_REGISTER(Classifier, BoostedForestClassifier)
 
