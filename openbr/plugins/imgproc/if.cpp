@@ -51,14 +51,14 @@ public:
         if (transform->trainable) {
             TemplateList passed;
             for (int i=0; i<data.size(); i++)
-                if (compare(data[i].file.get<QString>(key)))
+                if (data[i].file.contains(key) && compare(data[i].file.get<QString>(key)))
                     passed.append(data[i]);
             transform->train(passed);
         }
     }
 
     void project(const Template &src, Template &dst) const {
-        if (compare(src.file.get<QString>(key)))
+        if (src.file.contains(key) && compare(src.file.get<QString>(key)))
             transform->project(src,dst);
         else
             dst = src;
@@ -67,7 +67,7 @@ public:
     void project(const TemplateList &src, TemplateList &dst) const {
         TemplateList ifTrue, ifFalse;
         foreach (const Template &t, src) {
-            if (compare(t.file.get<QString>(key)))
+            if (t.file.contains(key) && compare(t.file.get<QString>(key)))
                 ifTrue.append(t);
             else
                 ifFalse.append(t);
@@ -83,4 +83,3 @@ BR_REGISTER(Transform, IfTransform)
 } // namespace br
 
 #include "imgproc/if.moc"
-
