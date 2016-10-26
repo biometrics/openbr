@@ -1168,4 +1168,68 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
     qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
 }
 
+void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property){
+    if (gt_property.isEmpty())
+            gt_property = "LivenessGT";
+    if (distribution_property.isEmpty())
+            distribution_property = "LivenessDistribution";
+    int classOneTemplateCount = 0;
+    const TemplateList templateList(TemplateList::fromGallery(predictedXML));
+
+    QHash<QString, int> gtLabels;
+    QHash<QString, QList<float> > scores;
+     for (int i=0; i<templateList.size(); i++) {
+         QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
+         int gtLabel = templateList[i].file.get<int>(gt_property);
+         if (gtLabel == 1)
+             classOneTemplateCount++;
+         QList<float> templateScores = templateList[i].file.getList<float>(distribution_property);
+         gtLabels[templateKey] = gtLabel;
+         scores[templateKey] = templateScores;
+     }
+
+     const int numPoints = 200;
+     const float stepSize = 100.0/numPoints;
+     const int numTemplates = scores.size();
+     float thres = 0.0; //Between [0,100]
+     float thresNorm = 0.0; //Between [0,1]
+     int FA = 0, FR = 0;
+     float minDiff = 100;
+     float EER = 100;
+     float EERThres = 0;
+
+     for(int i = 0; i <= numPoints; i++){
+         FA = 0, FR = 0;
+         thresNorm = thres/100.0;
+            foreach(const QString &key, scores.keys()){
+                int gtLabel = gtLabels[key];
+                //> thresNorm = class 0 (spoof) : < thresNorm = class 1 (genuine)
+                if (scores[key][0] >= thresNorm && gtLabel == 0)
+                    continue;
+                else if (scores[key][0] < thresNorm && gtLabel == 1)
+                    continue;
+                else if (scores[key][0] >= thresNorm && gtLabel == 1)
+                    FR +=1;
+                else if (scores[key][0] < thresNorm && gtLabel == 0)
+                    FA +=1;
+            }
+            float FAR = FA / float(numTemplates - classOneTemplateCount);
+            float FRR = FR / float(classOneTemplateCount);
+
+            float diff = std::abs(FAR-FRR);
+            if (diff < minDiff){
+                minDiff = diff;
+                EER = (FAR+FRR)/2.0;
+                EERThres = thresNorm;
+            }
+         thres += stepSize;
+     }
+
+     qDebug() <<"Class 0 Templates:" << classOneTemplateCount  << "Class 1 Templates:"
+             << numTemplates - classOneTemplateCount << "Total Templates:" << numTemplates;
+     qDebug("EER: %.3f @ Threshold %.3f", EER*100, EERThres);
+
+}
+
+
 } // namespace br

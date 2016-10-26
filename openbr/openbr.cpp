@@ -150,6 +150,11 @@ void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv)
     EvalKNN(knnGraph, knnTruth, csv);
 }
 
+void br_eval_eer(const char *predicted_xml, const char *gt_property, const char *distribution_property )
+{
+    EvalEER(predicted_xml, gt_property, distribution_property);
+}
+
 void br_finalize()
 {
     Context::finalize();
