@@ -551,9 +551,10 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
 void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
 {
     // Padding is expected to be top, bottom, left, right
-    if (padMat)
+    if (padMat) {
         copyMakeBorder(src, dst, padding[0], padding[1], padding[2], padding[3], border, Scalar(value));
-    else
+        dst.file = src.file;
+    } else
         dst = src;
 
     if (padPoints) {
