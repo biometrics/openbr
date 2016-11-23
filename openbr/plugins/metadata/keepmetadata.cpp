@@ -28,13 +28,15 @@ class KeepMetadataTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
     Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    Q_PROPERTY(bool invert READ get_invert WRITE set_invert RESET reset_invert STORED false)
     BR_PROPERTY(QStringList, keys, QStringList())
+    BR_PROPERTY(bool, invert, false)
 
     void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
         foreach (const QString& localKey, dst.localKeys())
-            if (!keys.contains(localKey))
+            if ((!invert && !keys.contains(localKey)) || (invert && keys.contains(localKey)))
                 dst.remove(localKey);
     }
 };
