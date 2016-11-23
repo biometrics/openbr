@@ -464,11 +464,11 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     // 1048576 is the number of bytes in a megabyte
     numPrecalcVal = min( cvRound((double)_precalcValBufSize*1048576. / (sizeof(float)*sample_count)), var_count );
-    qDebug("MB required to cache all %d features: %d", var_count, (sizeof(float)*(uint64_t)sample_count*var_count)/1048576);
+    qDebug("MB required to cache all %d features: %llu", var_count, (sizeof(float)*(uint64_t)sample_count*var_count)/1048576);
     qDebug("Features cached: %.2f", float(numPrecalcVal)/var_count);
 
     numPrecalcIdx = min( cvRound((double)_precalcIdxBufSize*1048576. / ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*sample_count)), var_count );
-    qDebug("MB required to cache all %d sorted indices: %d", var_count, ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*(uint64_t)sample_count*var_count)/1048576);
+    qDebug("MB required to cache all %d sorted indices: %llu", var_count, ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*(uint64_t)sample_count*var_count)/1048576);
     qDebug("Indices cached: %.2f", float(numPrecalcIdx)/var_count);
 
     assert( numPrecalcIdx >= 0 && numPrecalcVal >= 0 );
