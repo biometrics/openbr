@@ -38,7 +38,7 @@ class rawFormat : public Format
         QtUtils::readFile(file, data);
 
         // The raw file format has no header information, so one must specify resolution
-        QSize size = size = QSize(file.get<int>("width"),file.get<int>("height"));
+        QSize size = QSize(file.get<int>("width"),file.get<int>("height"));
         Template t(file);
         QList<Mat> matrices;
         const int bytes = size.width()*size.height();
