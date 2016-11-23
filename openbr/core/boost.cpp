@@ -464,10 +464,12 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     // 1048576 is the number of bytes in a megabyte
     numPrecalcVal = min( cvRound((double)_precalcValBufSize*1048576. / (sizeof(float)*sample_count)), var_count );
-    qDebug("Features Cached: %f", float(numPrecalcVal)/var_count);
+    qDebug("MB required to cache all %d features: %d", var_count, (sizeof(float)*(uint64_t)sample_count*var_count)/1048576);
+    qDebug("Features cached: %.2f", float(numPrecalcVal)/var_count);
 
     numPrecalcIdx = min( cvRound((double)_precalcIdxBufSize*1048576. / ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*sample_count)), var_count );
-    qDebug("Indices Cached: %f", float(numPrecalcIdx)/var_count);
+    qDebug("MB required to cache all %d sorted indices: %d", var_count, ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*(uint64_t)sample_count*var_count)/1048576);
+    qDebug("Indices cached: %.2f", float(numPrecalcIdx)/var_count);
 
     assert( numPrecalcIdx >= 0 && numPrecalcVal >= 0 );
 
@@ -883,7 +885,7 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 
     complete_node_dir(node);
 
-    for (int i = nLeft = nRight = 0; i < nodeSampleCount; i++)
+    for (uint64_t i = nLeft = nRight = 0; i < nodeSampleCount; i++)
     {
         int d = dir[i];
         // initialize new indices for splitting ordered variables
@@ -912,7 +914,7 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 
         data->get_ord_var_data(node, vi, src_val_buf, src_sorted_idx_buf, &src_val, &src_sorted_idx, src_sample_idx_buf);
 
-        for(int i = 0; i < nodeSampleCount; i++)
+        for(uint64_t i = 0; i < nodeSampleCount; i++)
             tempBuf[i] = src_sorted_idx[i];
 
         if (data->is_buf_16u) {
@@ -933,7 +935,6 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
                     ldst++;
                 }
             }
-            CV_Assert( n1 == nodeSampleCount );
         }
         else
         {
@@ -958,7 +959,6 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
                     ldst++;
                 }
             }
-            CV_Assert( n1 == nodeSampleCount );
         }
     }
 
@@ -966,14 +966,14 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
     int *src_lbls_buf = tempBuf + nodeSampleCount;
     const int* src_lbls = data->get_cv_labels(node, src_lbls_buf);
 
-    for(int i = 0; i < nodeSampleCount; i++)
+    for(uint64_t i = 0; i < nodeSampleCount; i++)
         tempBuf[i] = src_lbls[i];
 
     if (data->is_buf_16u) {
         unsigned short *ldst = (unsigned short *)(buf->data.s + left->buf_idx*length_buf_row + (workVarCount-1)*sampleCount + left->offset);
         unsigned short *rdst = (unsigned short *)(buf->data.s + right->buf_idx*length_buf_row + (workVarCount-1)*sampleCount + right->offset);
 
-        for( int i = 0; i < nodeSampleCount; i++ ) {
+        for( uint64_t i = 0; i < nodeSampleCount; i++ ) {
             int idx = tempBuf[i];
             if (dir[i]) {
                 *rdst = (unsigned short)idx;
@@ -990,7 +990,7 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
         int *ldst = buf->data.i + left->buf_idx*length_buf_row + (workVarCount-1)*sampleCount + left->offset;
         int *rdst = buf->data.i + right->buf_idx*length_buf_row + (workVarCount-1)*sampleCount + right->offset;
 
-        for( int i = 0; i < nodeSampleCount; i++ )
+        for( uint64_t i = 0; i < nodeSampleCount; i++ )
         {
             int idx = tempBuf[i];
             if (dir[i])
@@ -1010,13 +1010,13 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
     int *sampleIdx_src_buf = tempBuf + nodeSampleCount;
     const int* sampleIdx_src = data->get_sample_indices(node, sampleIdx_src_buf);
 
-    for(int i = 0; i < nodeSampleCount; i++)
+    for(uint64_t i = 0; i < nodeSampleCount; i++)
         tempBuf[i] = sampleIdx_src[i];
 
     if (data->is_buf_16u) {
         unsigned short* ldst = (unsigned short*)(buf->data.s + left->buf_idx*length_buf_row + workVarCount*sampleCount + left->offset);
         unsigned short* rdst = (unsigned short*)(buf->data.s + right->buf_idx*length_buf_row + workVarCount*sampleCount + right->offset);
-        for (int i = 0; i < nodeSampleCount; i++) {
+        for (uint64_t i = 0; i < nodeSampleCount; i++) {
             unsigned short idx = (unsigned short)tempBuf[i];
             if (dir[i]) {
                 *rdst = idx;
@@ -1031,11 +1031,12 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
     {
         int* ldst = buf->data.i + left->buf_idx*length_buf_row + workVarCount*sampleCount + left->offset;
         int* rdst = buf->data.i + right->buf_idx*length_buf_row + workVarCount*sampleCount + right->offset;
-        for (int i = 0; i < nodeSampleCount; i++)
+        for (uint64_t i = 0; i < nodeSampleCount; i++)
         {
             int idx = tempBuf[i];
             if (dir[i])
             {
+
                 *rdst = idx;
                 rdst++;
             }
@@ -1061,7 +1062,8 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
 
 void CascadeBoost::train(const FeatureEvaluator* _featureEvaluator,
                          int _numSamples,
-                         int _precalcValBufSize, int _precalcIdxBufSize,
+                         int _precalcValBufSize,
+                         int _precalcIdxBufSize,
                          int _channels,
                          const CascadeBoostParams& _params)
 {
