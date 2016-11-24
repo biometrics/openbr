@@ -431,8 +431,8 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     int* idst = 0;
     unsigned short* udst = 0;
 
-    uint64 effective_buf_size = 0;
-    int effective_buf_height = 0, effective_buf_width = 0;
+    uint64_t effective_buf_size = 0;
+    uint64_t effective_buf_height = 0, effective_buf_width = 0;
 
     clear();
     shared = true;
@@ -464,12 +464,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     // 1048576 is the number of bytes in a megabyte
     numPrecalcVal = min( cvRound((double)_precalcValBufSize*1048576. / (sizeof(float)*sample_count)), var_count );
-    qDebug("MB required to cache all %d features: %llu", var_count, (sizeof(float)*(uint64_t)sample_count*var_count)/1048576);
-    qDebug("Features cached: %.2f", float(numPrecalcVal)/var_count);
-
     numPrecalcIdx = min( cvRound((double)_precalcIdxBufSize*1048576. / ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*sample_count)), var_count );
-    qDebug("MB required to cache all %d sorted indices: %llu", var_count, ((is_buf_16u ? sizeof(unsigned short) : sizeof (int))*(uint64_t)sample_count*var_count)/1048576);
-    qDebug("Indices cached: %.2f", float(numPrecalcIdx)/var_count);
 
     assert( numPrecalcIdx >= 0 && numPrecalcVal >= 0 );
 
@@ -505,7 +500,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     buf_size = -1; // the member buf_size is obsolete
 
-    effective_buf_size = (uint64)(work_var_count + 1)*(uint64)sample_count * buf_count; // this is the total size of "CvMat buf" to be allocated
+    effective_buf_size = (work_var_count + 1)*sample_count * buf_count; // this is the total size of "CvMat buf" to be allocated
 
     effective_buf_width = sample_count;
     effective_buf_height = work_var_count+1;
@@ -514,7 +509,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     else
         effective_buf_width *= buf_count;
 
-    if ((uint64)effective_buf_width * (uint64)effective_buf_height != effective_buf_size)
+    if (effective_buf_width * effective_buf_height != effective_buf_size)
     {
         CV_Error(CV_StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
     }
@@ -548,9 +543,9 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     // set sample labels
     if (is_buf_16u)
-        udst = (unsigned short*)(buf->data.s + (uint64)work_var_count*sample_count);
+        udst = (unsigned short*)(buf->data.s + (uint64_t)work_var_count*sample_count);
     else
-        idst = buf->data.i + (uint64)work_var_count*sample_count;
+        idst = buf->data.i + (uint64_t)work_var_count*sample_count;
 
     for (int si = 0; si < sample_count; si++)
     {
@@ -635,9 +630,9 @@ void CascadeBoostTrainData::get_ord_var_data( CvDTreeNode* n, int vi, float* ord
     // have we precalculated (presorted) the training samples by their feature response?
     if (vi < numPrecalcIdx) {
         if (!is_buf_16u)
-            *sortedIndices = buf->data.i + n->buf_idx*get_length_subbuf() + (uint64)vi*sample_count + n->offset;
+            *sortedIndices = buf->data.i + n->buf_idx*get_length_subbuf() + (uint64_t)vi*sample_count + n->offset;
         else {
-            const unsigned short* shortIndices = (const unsigned short*)(buf->data.s + n->buf_idx*get_length_subbuf() + (uint64)vi*sample_count + n->offset );
+            const unsigned short* shortIndices = (const unsigned short*)(buf->data.s + n->buf_idx*get_length_subbuf() + (uint64_t)vi*sample_count + n->offset );
             for (int i = 0; i < nodeSampleCount; i++)
                 sortedIndicesBuf[i] = shortIndices[i];
             *sortedIndices = sortedIndicesBuf;
@@ -746,16 +741,16 @@ struct IndexPrecalc : Precalc
         idst = buf->data.i;
     }
 
-    void setBuffer(int fi, int si) const
+    void setBuffer(uint64_t fi, uint64_t si) const
     {
-        if (isBufShort) *(udst + (uint64)fi*sampleCount + si) = (unsigned short)si;
-        else            *(idst + (uint64)fi*sampleCount + si) = si;
+        if (isBufShort) *(udst + fi*sampleCount + si) = (unsigned short)si;
+        else            *(idst + fi*sampleCount + si) = si;
     }
 
-    void sortBuffer(int fi, float *valCachePtr) const
+    void sortBuffer(uint64_t fi, float *valCachePtr) const
     {
-        if (isBufShort) icvSortUShAux(udst + (uint64)fi*sampleCount, sampleCount, valCachePtr);
-        else            icvSortIntAux(idst + (uint64)fi*sampleCount, sampleCount, valCachePtr);
+        if (isBufShort) icvSortUShAux(udst + fi*sampleCount, sampleCount, valCachePtr);
+        else            icvSortIntAux(idst + fi*sampleCount, sampleCount, valCachePtr);
     }
 
     virtual void operator()(const Range& range) const
@@ -1173,11 +1168,11 @@ void CascadeBoost::update_weights(CvBoostTree* tree)
         // set the labels to find (from within weak tree learning proc)
         // the particular sample weight, and where to store the response.
         if (data->is_buf_16u) {
-            unsigned short* labels = (unsigned short*)(buf->data.s + data->data_root->buf_idx*length_buf_row + data->data_root->offset + (uint64)(data->work_var_count-1)*data->sample_count);
+            unsigned short* labels = (unsigned short*)(buf->data.s + data->data_root->buf_idx*length_buf_row + data->data_root->offset + (uint64_t)(data->work_var_count-1)*data->sample_count);
             for (int i = 0; i < n; i++)
                 labels[i] = (unsigned short)i;
         } else {
-            int* labels = buf->data.i + data->data_root->buf_idx*length_buf_row + data->data_root->offset + (uint64)(data->work_var_count-1)*data->sample_count;
+            int* labels = buf->data.i + data->data_root->buf_idx*length_buf_row + data->data_root->offset + (uint64_t)(data->work_var_count-1)*data->sample_count;
             for( int i = 0; i < n; i++ )
                 labels[i] = i;
         }
