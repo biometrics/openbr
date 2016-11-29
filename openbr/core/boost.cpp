@@ -181,6 +181,11 @@ struct CascadeBoostTrainData : CvDTreeTrainData
 
     virtual CvDTreeNode* subsample_data(const CvMat* _subsample_idx);
 
+    inline uint64_t getLength() const
+    {
+        return ((uint64_t)work_var_count + 1) * sample_count;
+    }
+
     virtual const int* getBufferValues(CvDTreeNode* n, int* labelsBuf, uint64_t vi);
     virtual const int* get_class_labels(CvDTreeNode* n, int* labelsBuf);
     virtual const int* get_cv_labels(CvDTreeNode* n, int* labelsBuf);
@@ -254,7 +259,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
         int* sidx = isubsample_idx->data.i;
         // co - array of count/offset pairs (to handle duplicated values in _subsample_idx)
         int* co, cur_ofs = 0;
-        int workVarCount = get_work_var_count();
+        uint64_t workVarCount = get_work_var_count();
         int count = isubsample_idx->rows + isubsample_idx->cols - 1;
 
         root = new_node( 0, count, 1, 0 );
@@ -295,8 +300,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
 
             if (is_buf_16u)
             {
-                unsigned short* udst_idx = (unsigned short*)(buf->data.s + root->buf_idx*get_length_subbuf() +
-                    vi*sample_count + data_root->offset);
+                unsigned short* udst_idx = (unsigned short*)(buf->data.s + root->buf_idx*getLength() + (uint64_t)vi*sample_count + data_root->offset);
                 for( int i = 0; i < num_valid; i++ )
                 {
                     idx = src_idx[i];
@@ -308,8 +312,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
             }
             else
             {
-                int* idst_idx = buf->data.i + root->buf_idx*get_length_subbuf() +
-                    vi*sample_count + root->offset;
+                int* idst_idx = buf->data.i + root->buf_idx*getLength() + (uint64_t)vi*sample_count + root->offset;
                 for( int i = 0; i < num_valid; i++ )
                 {
                     idx = src_idx[i];
@@ -325,14 +328,13 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
         const int* src_lbls = get_cv_labels(data_root, (int*)(uchar*)inn_buf);
         if (is_buf_16u)
         {
-            unsigned short* udst = (unsigned short*)(buf->data.s + root->buf_idx*get_length_subbuf() +
-                (workVarCount-1)*sample_count + root->offset);
+            unsigned short* udst = (unsigned short*)(buf->data.s + root->buf_idx*getLength() + (workVarCount-1)*sample_count + root->offset);
             for( int i = 0; i < count; i++ )
                 udst[i] = (unsigned short)src_lbls[sidx[i]];
         }
         else
         {
-            int* idst = buf->data.i + root->buf_idx*get_length_subbuf() +
+            int* idst = buf->data.i + root->buf_idx*getLength() +
                 (workVarCount-1)*sample_count + root->offset;
             for( int i = 0; i < count; i++ )
                 idst[i] = src_lbls[sidx[i]];
@@ -342,15 +344,13 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
         const int* sample_idx_src = get_sample_indices(data_root, (int*)(uchar*)inn_buf);
         if (is_buf_16u)
         {
-            unsigned short* sample_idx_dst = (unsigned short*)(buf->data.s + root->buf_idx*get_length_subbuf() +
-                workVarCount*sample_count + root->offset);
+            unsigned short* sample_idx_dst = (unsigned short*)(buf->data.s + root->buf_idx*getLength() + workVarCount*sample_count + root->offset);
             for( int i = 0; i < count; i++ )
                 sample_idx_dst[i] = (unsigned short)sample_idx_src[sidx[i]];
         }
         else
         {
-            int* sample_idx_dst = buf->data.i + root->buf_idx*get_length_subbuf() +
-                workVarCount*sample_count + root->offset;
+            int* sample_idx_dst = buf->data.i + root->buf_idx*getLength() + workVarCount*sample_count + root->offset;
             for( int i = 0; i < count; i++ )
                 sample_idx_dst[i] = sample_idx_src[sidx[i]];
         }
@@ -500,7 +500,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 
     buf_size = -1; // the member buf_size is obsolete
 
-    effective_buf_size = (work_var_count + 1)*sample_count * buf_count; // this is the total size of "CvMat buf" to be allocated
+    effective_buf_size = getLength()*buf_count;
 
     effective_buf_width = sample_count;
     effective_buf_height = work_var_count+1;
@@ -598,9 +598,9 @@ const int* CascadeBoostTrainData::getBufferValues(CvDTreeNode* n, int* indicesBu
 {
     const int* cat_values = 0;
     if (!is_buf_16u)
-        cat_values = buf->data.i + n->buf_idx*get_length_subbuf() + vi*sample_count + n->offset;
+        cat_values = buf->data.i + n->buf_idx*getLength() + vi*sample_count + n->offset;
     else {
-        const unsigned short* short_values = (const unsigned short*)(buf->data.s + n->buf_idx*get_length_subbuf() + vi*sample_count + n->offset);
+        const unsigned short* short_values = (const unsigned short*)(buf->data.s + n->buf_idx*getLength() + vi*sample_count + n->offset);
         for (int i = 0; i < n->sample_count; i++)
             indicesBuf[i] = short_values[i];
         cat_values = indicesBuf;
@@ -630,9 +630,9 @@ void CascadeBoostTrainData::get_ord_var_data( CvDTreeNode* n, int vi, float* ord
     // have we precalculated (presorted) the training samples by their feature response?
     if (vi < numPrecalcIdx) {
         if (!is_buf_16u)
-            *sortedIndices = buf->data.i + n->buf_idx*get_length_subbuf() + (uint64_t)vi*sample_count + n->offset;
+            *sortedIndices = buf->data.i + n->buf_idx*getLength() + (uint64_t)vi*sample_count + n->offset;
         else {
-            const unsigned short* shortIndices = (const unsigned short*)(buf->data.s + n->buf_idx*get_length_subbuf() + (uint64_t)vi*sample_count + n->offset );
+            const unsigned short* shortIndices = (const unsigned short*)(buf->data.s + n->buf_idx*getLength() + (uint64_t)vi*sample_count + n->offset );
             for (int i = 0; i < nodeSampleCount; i++)
                 sortedIndicesBuf[i] = shortIndices[i];
             *sortedIndices = sortedIndicesBuf;
@@ -874,7 +874,7 @@ void CascadeBoostTree::split_node_data( CvDTreeNode* node )
     int* newIdx = data->split_buf->data.i;
     int newBufIdx = data->get_child_buf_idx( node );
     CvMat* buf = data->buf;
-    size_t length_buf_row = data->get_length_subbuf();
+    size_t length_buf_row = ((CascadeBoostTrainData*)data)->getLength();
     cv::AutoBuffer<uchar> inn_buf(nodeSampleCount*(3*sizeof(int)+sizeof(float)));
     int* tempBuf = (int*)(uchar*)inn_buf;
 
@@ -1143,7 +1143,7 @@ void CascadeBoost::update_weights(CvBoostTree* tree)
     }
 
     CvMat* buf = data->buf;
-    size_t length_buf_row = data->get_length_subbuf();
+    uint64_t length_buf_row = ((CascadeBoostTrainData*)data)->getLength();
     if( !tree ) // before training the first tree, initialize weights and other parameters
     {
         int* classLabelsBuf = (int*)cur_inn_buf_pos; cur_inn_buf_pos = (uchar*)(classLabelsBuf + n);
