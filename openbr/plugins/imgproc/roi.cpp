@@ -36,7 +36,7 @@ class ROITransform : public UntrainableTransform
     Q_PROPERTY(bool copyOnCrop READ get_copyOnCrop WRITE set_copyOnCrop RESET reset_copyOnCrop STORED false)
     Q_PROPERTY(int shiftPoints READ get_shiftPoints WRITE set_shiftPoints RESET reset_shiftPoints STORED false)
     BR_PROPERTY(QString, propName, "")
-    BR_PROPERTY(bool, copyOnCrop, false)
+    BR_PROPERTY(bool, copyOnCrop, true)
     BR_PROPERTY(int, shiftPoints, -1)
 
     void project(const Template &src, Template &dst) const

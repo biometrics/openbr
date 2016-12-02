@@ -2,7 +2,7 @@
 #include <openbr/core/opencvutils.h>
 
 #include <caffe/caffe.hpp>
-#include <caffe/layers/memory_data_layer.hpp>
+//#include <caffe/layers/memory_data_layer.hpp>
 
 using caffe::Caffe;
 using caffe::Net;

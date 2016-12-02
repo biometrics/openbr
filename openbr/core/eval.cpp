@@ -1179,6 +1179,8 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     QHash<QString, int> gtLabels;
     QHash<QString, QList<float> > scores;
      for (int i=0; i<templateList.size(); i++) {
+	 if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
+             continue;
          QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
          int gtLabel = templateList[i].file.get<int>(gt_property);
          if (gtLabel == 1)
@@ -1225,10 +1227,9 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
          thres += stepSize;
      }
 
-     qDebug() <<"Class 0 Templates:" << classOneTemplateCount  << "Class 1 Templates:"
-             << numTemplates - classOneTemplateCount << "Total Templates:" << numTemplates;
+     qDebug() <<"Class 0 Templates:" << numTemplates - classOneTemplateCount << "Class 1 Templates:"
+             << classOneTemplateCount << "Total Templates:" << numTemplates;
      qDebug("EER: %.3f @ Threshold %.3f", EER*100, EERThres);
-
 }
 
 
