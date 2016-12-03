@@ -72,7 +72,7 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 
         if( idx_selected == 0 )
             CV_ERROR( CV_StsOutOfRange, "No components/input_variables is selected!" );
-    } else if (type == CV_32SC(channels)) {
+    } else if (type == CV_32SC1) {
         // idx_arr is array of integer indices of selected components
         if( idx_total > data_arr_size )
             CV_ERROR( CV_StsOutOfRange,
@@ -94,10 +94,10 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
                                            "(it should be 8uC1, 8sC1 or 32sC1)" );
     }
 
-    CV_CALL( idx = cvCreateMat( 1, idx_selected, CV_32SC(channels) ));
+    CV_CALL( idx = cvCreateMat( 1, idx_selected, CV_32SC1 ));
     dsti = idx->data.i;
 
-    if( type < CV_32SC(channels) )
+    if( type < CV_32SC1 )
     {
         for( i = 0; i < idx_total; i++ )
             if( srcb[i*step] )
@@ -263,7 +263,7 @@ CvDTreeNode* CascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx 
 
         root = new_node( 0, count, 1, 0 );
 
-        CV_Assert( (subsample_co = cvCreateMat( 1, sample_count*2, CV_32SC(channels) )) != 0);
+        CV_Assert( (subsample_co = cvCreateMat( 1, sample_count*2, CV_32SC1 )) != 0);
         cvZero( subsample_co );
         co = subsample_co->data.i;
         for( int i = 0; i < count; i++ )
@@ -356,7 +356,7 @@ CascadeBoostTrainData::CascadeBoostTrainData(const FeatureEvaluator* _featureEva
 
 void CascadeBoostTrainData::initVarType()
 {
-    var_type = cvCreateMat( 1, var_count + 2, CV_32SC(channels) );
+    var_type = cvCreateMat( 1, var_count + 2, CV_32SC1 );
     if ( featureEvaluator->getMaxCatCount() > 0 )
     {
         numPrecalcIdx = 0;
@@ -433,7 +433,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     assert( numPrecalcIdx >= 0 && numPrecalcVal >= 0 );
 
     valCache.create( numPrecalcVal, sample_count, CV_32FC1 );
-    var_type = cvCreateMat( 1, var_count + 2, CV_32SC(channels) );
+    var_type = cvCreateMat( 1, var_count + 2, CV_32SC1 );
 
     if ( featureEvaluator->getMaxCatCount() > 0 )
     {
@@ -476,9 +476,9 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     if (effective_buf_width * effective_buf_height != effective_buf_size)
         CV_Error(CV_StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
 
-    buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_32SC(channels) );
+    buf = cvCreateMat( effective_buf_height, effective_buf_width, CV_32SC1 );
 
-    cat_count = cvCreateMat( 1, cat_var_count + 1, CV_32SC(channels) );
+    cat_count = cvCreateMat( 1, cat_var_count + 1, CV_32SC1 );
 
     // precalculate valCache and set indices in buf
     precalculate();
@@ -525,9 +525,9 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     priors = cvCreateMat( 1, get_num_classes(), CV_64F );
     cvSet(priors, cvScalar(1));
     priors_mult = cvCloneMat( priors );
-    counts = cvCreateMat( 1, get_num_classes(), CV_32SC(channels) );
+    counts = cvCreateMat( 1, get_num_classes(), CV_32SC1 );
     direction = cvCreateMat( 1, sample_count, CV_8UC(channels) );
-    split_buf = cvCreateMat( 1, sample_count, CV_32SC(channels) );//TODO: make a pointer
+    split_buf = cvCreateMat( 1, sample_count, CV_32SC1 );//TODO: make a pointer
 }
 
 void CascadeBoostTrainData::free_train_data()
