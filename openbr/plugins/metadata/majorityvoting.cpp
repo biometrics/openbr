@@ -58,7 +58,7 @@ class MajorityVotingTransform : public UntrainableMetadataTransform
         }
         QVector<int> classCount(numClasses, 0);
         for (int c = 0; c < scores.size(); c+= numClasses){
-            if(numClasses == 2 and thresh != -1){
+            if ((numClasses == 2) && (thresh != -1)){
                 if (scores[c] > thresh)
                     classCount[0]++;
                 else
