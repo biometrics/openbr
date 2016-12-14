@@ -42,7 +42,6 @@ class MajorityVotingTransform : public UntrainableMetadataTransform
     BR_PROPERTY(QString, outputKey, "MajorityVoting")
     BR_PROPERTY(float, thresh, -1)  
 
-
     void projectMetadata(const File &src, File &dst) const
     {
         dst = src;
@@ -57,48 +56,44 @@ class MajorityVotingTransform : public UntrainableMetadataTransform
                 return;
             }
         }
-        int classCount[numClasses]; //= {0};
-        for (int i = 0; i < numClasses; i++){
-          classCount[i] = 0;
-        }
+        QVector<int> classCount(numClasses, 0);
         for (int c = 0; c < scores.size(); c+= numClasses){
-	    if(numClasses == 2 and thresh != -1){
-		if (scores[c] > thresh)
-			classCount[0]++;
-		else
-			classCount[1]++;
-	    } else {
-            	int highestScoringClass = 0;
-            	float highestScore = scores[c];
-            	for (int b = 1; b < numClasses; b++){
+            if(numClasses == 2 and thresh != -1){
+                if (scores[c] > thresh)
+                    classCount[0]++;
+                else
+                    classCount[1]++;
+            } else {
+                int highestScoringClass = 0;
+                float highestScore = scores[c];
+                for (int b = 1; b < numClasses; b++){
                     if (scores[c+b] >  highestScore){
-                    	highestScore = scores[c+b];
-                    	highestScoringClass = b;
+                        highestScore = scores[c+b];
+                        highestScoringClass = b;
                     }
-            	}
-            	classCount[highestScoringClass]++;
-	    }
+                }
+                classCount[highestScoringClass]++;
+            }
         }
-        int largestIndex = getIndexOfLargestElement(classCount,numClasses);
+        int largestIndex = getIndexOfLargestElement(classCount);
 
-	QList<int> output = QList<int>();
-	for(int i=0; i <numClasses; i++){
-	    if(i == largestIndex) output.append(1);
-	    else output.append(0);
-	}
+        QList<int> output = QList<int>();
+        for(int i=0; i <numClasses; i++){
+            if(i == largestIndex) output.append(1);
+            else output.append(0);
+        }
         dst.setList(outputKey,output);
     }
 
-    int getIndexOfLargestElement(int arr[], int numClasses) const {
+    int getIndexOfLargestElement(const QVector<int> &arr) const {
         int largestIndex = 0;
-        for (int i = largestIndex; i < numClasses; i++) {
+        for (int i = largestIndex; i < arr.size(); i++) {
             if (arr[largestIndex] <= arr[i]) {
                 largestIndex = i;
             }
         }
         return largestIndex;
     }
-
 };
 
 BR_REGISTER(Transform, MajorityVotingTransform)
