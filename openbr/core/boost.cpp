@@ -526,7 +526,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     cvSet(priors, cvScalar(1));
     priors_mult = cvCloneMat( priors );
     counts = cvCreateMat( 1, get_num_classes(), CV_32SC1 );
-    direction = cvCreateMat( 1, sample_count, CV_8UC(channels) );
+    direction = cvCreateMat( 1, sample_count, CV_8UC1 );
     split_buf = cvCreateMat( 1, sample_count, CV_32SC1 );//TODO: make a pointer
 }
 
