@@ -96,6 +96,8 @@ class vecGallery : public FileGallery
             templates.append(t);
         }
 
+        delete[] vec;
+        
         return templates;
     }
 
@@ -113,4 +115,3 @@ BR_REGISTER(Gallery, vecGallery)
 } // namespace br
 
 #include "gallery/vec.moc"
-
