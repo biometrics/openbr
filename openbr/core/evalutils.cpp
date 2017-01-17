@@ -102,7 +102,7 @@ QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detect
         for (int i = 0; i < detections.predicted.size(); i++) {
             const QRectF box = detections.predicted[i].boundingBox;
             const qreal minBoxDim = min(box.width(), box.height());
-            const double t = sqrt(0.5 * pow(threshold, 2));
+            const double t = sqrt(0.5 * threshold * threshold);
             if (useMin ? minBoxDim > t : minBoxDim < t)
                 filteredDetections.predicted.append(detections.predicted[i]);
         }
