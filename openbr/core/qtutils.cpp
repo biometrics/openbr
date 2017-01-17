@@ -356,6 +356,11 @@ QStringList naturalSort(const QStringList &strings)
 
 bool runRScript(const QString &file)
 {
+// iOS doesn't support QProcess
+#ifdef QT_NO_PROCESS
+    (void) file;
+    return false;
+#else // !QT_NO_PROCESS
     QProcess RScript;
     RScript.start("Rscript", QStringList() << file);
     RScript.waitForFinished(-1);
@@ -364,14 +369,21 @@ bool runRScript(const QString &file)
                         "See online documentation of 'br_plot' for required R packages.  "
                         "Otherwise, try running Rscript on %s to get the exact error.", qPrintable(file));
     return result;
+#endif // QT_NO_PROCESS
 }
 
 bool runDot(const QString &file)
 {
+// iOS doesn't support QProcess
+#ifdef QT_NO_PROCESS
+    (void) file;
+    return false;
+#else // !QT_NO_PROCESS
     QProcess dot;
     dot.start("dot -Tpdf -O " + file);
     dot.waitForFinished(-1);
     return ((dot.exitCode() == 0) && (dot.error() == QProcess::UnknownError));
+#endif // QT_NO_PROCESS
 }
 
 void showFile(const QString &file)
