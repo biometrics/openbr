@@ -64,7 +64,7 @@ class ExpandTransform : public UntrainableMetaTransform
     virtual void project(const Template &src, Template &dst) const
     {
         dst = src;
-        qDebug("Called Expand project(Template,Template), nothing will happen");
+        //qDebug("Called Expand project(Template,Template), nothing will happen");
     }
 };
 
