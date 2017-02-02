@@ -1173,12 +1173,12 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
             gt_property = "LivenessGT";
     if (distribution_property.isEmpty())
             distribution_property = "LivenessDistribution";
-    int classOneTemplateCount = 0;
+    double classOneTemplateCount = 0;
     const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
     QHash<QString, int> gtLabels;
     QHash<QString, QList<float> > scores;
-     for (int i=0; i<templateList.size(); i++) {
+     for (double i=0; i<templateList.size(); i++) {
 	 if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
              continue;
          QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
@@ -1192,10 +1192,10 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
 
      const int numPoints = 200;
      const float stepSize = 100.0/numPoints;
-     const int numTemplates = scores.size();
+     const double numTemplates = scores.size();
      float thres = 0.0; //Between [0,100]
      float thresNorm = 0.0; //Between [0,1]
-     int FA = 0, FR = 0;
+     double FA = 0, FR = 0;
      float minDiff = 100;
      float EER = 100;
      float EERThres = 0;
@@ -1215,7 +1215,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
                 else if (scores[key][0] < thresNorm && gtLabel == 0)
                     FA +=1;
             }
-            float FAR = FA / float(numTemplates - classOneTemplateCount);
+            float FAR = FA / float(abs(numTemplates - classOneTemplateCount));
             float FRR = FR / float(classOneTemplateCount);
 
             float diff = std::abs(FAR-FRR);
@@ -1227,7 +1227,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
          thres += stepSize;
      }
 
-     qDebug() <<"Class 0 Templates:" << numTemplates - classOneTemplateCount << "Class 1 Templates:"
+     qDebug() <<"Class 0 Templates:" << abs(numTemplates - classOneTemplateCount) << "Class 1 Templates:"
              << classOneTemplateCount << "Total Templates:" << numTemplates;
      qDebug("EER: %.3f @ Threshold %.3f", EER*100, EERThres);
 }
