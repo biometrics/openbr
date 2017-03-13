@@ -188,6 +188,7 @@ class CaffeClassifierTransform : public CaffeBaseTransform
     }
 };
 
+BR_REGISTER(Transform, CaffeBaseTransform)
 BR_REGISTER(Transform, CaffeClassifierTransform)
 
 } // namespace br
