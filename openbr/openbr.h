@@ -134,6 +134,9 @@ typedef void* br_matrix_output;
 
 BR_EXPORT br_template br_load_img(const char *data, int len);
 
+/// Load a raw OpenCV image directly.
+BR_EXPORT br_template br_load_raw_img(void *data, int width, int height, int cvType);
+
 BR_EXPORT unsigned char* br_unload_img(br_template tmpl);
 
 BR_EXPORT br_template_list br_template_list_from_buffer(const char *buf, int len);

@@ -343,6 +343,13 @@ br_template br_load_img(const char *data, int len)
     return (br_template)tmpl;
 }
 
+br_template br_load_raw_img(void *data, int width, int height, int cvType)
+{
+    cv::Mat img{height, width, cvType, data};
+    Template *tmpl = new Template(img);
+    return (br_template)tmpl;
+}
+
 unsigned char *br_unload_img(br_template tmpl)
 {
     Template *t = reinterpret_cast<Template*>(tmpl);
