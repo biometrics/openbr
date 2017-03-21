@@ -345,7 +345,7 @@ br_template br_load_img(const char *data, int len)
 
 br_template br_load_raw_img(void *data, int width, int height, int cvType)
 {
-    cv::Mat img{height, width, cvType, data};
+    cv::Mat img(height, width, cvType, data);
     Template *tmpl = new Template(img);
     return (br_template)tmpl;
 }
