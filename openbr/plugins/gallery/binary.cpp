@@ -261,7 +261,7 @@ BR_REGISTER(Gallery, urlGallery)
  * \brief Newline-separated JSON objects.
  * \author Josh Klontz \cite jklontz
  */
-class jsonGallery : public BinaryGallery
+class jsonObjectGallery : public BinaryGallery
 {
     Q_OBJECT
 
@@ -289,7 +289,7 @@ class jsonGallery : public BinaryGallery
     }
 };
 
-BR_REGISTER(Gallery, jsonGallery)
+BR_REGISTER(Gallery, jsonObjectGallery)
 
 } // namespace br
 
