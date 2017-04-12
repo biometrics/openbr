@@ -31,7 +31,9 @@ class jsonGallery : public FileGallery
 {
     Q_OBJECT
     Q_PROPERTY(QString label READ get_label WRITE set_label RESET reset_label STORED false)
+    Q_PROPERTY(QString filePath READ get_filePath WRITE set_filePath RESET reset_filePath STORED false)
     BR_PROPERTY(QString, label, "PersonID")
+    BR_PROPERTY(QString, filePath, "Path")
 
     TemplateList readBlock(bool *done)
     {
@@ -53,6 +55,8 @@ class jsonGallery : public FileGallery
             File file(value.toObject().toVariantMap());
             if (!label.isEmpty() && file.contains(label))
                 file.set("Label", file.get<QString>(label));
+            if (!filePath.isEmpty() && file.contains(filePath))
+                file.name = file.get<QString>(filePath);
             result.append(file);
         }
 
