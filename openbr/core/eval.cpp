@@ -271,7 +271,9 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                 }
                 genuines.append(comparison.score);
                 if (firstGenuineReturns[comparison.query] < 1)
-                    firstGenuineReturns[comparison.query] = abs(firstGenuineReturns[comparison.query]) + 1;
+                    firstGenuineReturns[comparison.query] = (comparison.score == -std::numeric_limits<float>::max())
+                                                          ? std::numeric_limits<int>::max()
+                                                          : abs(firstGenuineReturns[comparison.query]) + 1;
                 if ((comparison.score != -std::numeric_limits<float>::max()) &&
                     (comparison.score < minGenuineScore))
                     minGenuineScore = comparison.score;
@@ -1215,7 +1217,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
                 else if (scores[key][0] < thresNorm && gtLabel == 0)
                     FA +=1;
             }
-            float FAR = FA / float(abs(numTemplates - classOneTemplateCount));
+            float FAR = FA / fabs(numTemplates - classOneTemplateCount);
             float FRR = FR / float(classOneTemplateCount);
 
             float diff = std::abs(FAR-FRR);
@@ -1227,7 +1229,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
          thres += stepSize;
      }
 
-     qDebug() <<"Class 0 Templates:" << abs(numTemplates - classOneTemplateCount) << "Class 1 Templates:"
+     qDebug() <<"Class 0 Templates:" << fabs(numTemplates - classOneTemplateCount) << "Class 1 Templates:"
              << classOneTemplateCount << "Total Templates:" << numTemplates;
      qDebug("EER: %.3f @ Threshold %.3f", EER*100, EERThres);
 }
