@@ -855,11 +855,20 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     QList<float> normalizedLengths;
     for (int i=0; i<predicted.size(); i++) {
         const QString &predictedName = predictedNames[i];
-        const int truthIndex = truthNames.indexOf(predictedName);
+        int truthIndex;
+        if ((i < truthNames.size()) && (truthNames[i] == predictedNames[i]))
+            truthIndex = i;
+        else
+            truthIndex = truthNames.indexOf(predictedName);
         if (truthIndex == -1) qFatal("Could not identify ground truth for file: %s", qPrintable(predictedName));
+
         const QList<QPointF> predictedPoints = predicted[i].file.points();
         const QList<QPointF> truthPoints = truth[truthIndex].file.points();
-        if (predictedPoints.size() != truthPoints.size() || truthPoints.contains(QPointF(-1,-1))) {
+        if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
+        if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
+        const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
+
+        if (predictedPoints.size() != truthPoints.size() || truthPoints.contains(QPointF(-1,-1)) || qIsNaN(normalizedLength)) {
             predicted.removeAt(i);
             predictedNames.removeAt(i);
             truth.removeAt(i);
@@ -872,21 +881,21 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
             pointErrors.append(QList<float>());
 
         // Want to know error for every image.
-
-        if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
-        if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
-        const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
         normalizedLengths.append(normalizedLength);
         float totalError = 0;
+        int totalCount = 0;
         for (int j=0; j<predictedPoints.size(); j++) {
-            float error = QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength;
-            totalError += error;
-            pointErrors[j].append(error);
+            const float error = QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength;
+            if (!qIsNaN(error)) {
+                totalError += error;
+                pointErrors[j].append(error);
+                totalCount++;
+            }
         }
-        imageErrors.append(totalError/predictedPoints.size());
+        imageErrors.append(totalError/totalCount);
     }
 
-    qDebug() << "Skipped" << skipped << "files due to point size mismatch.";
+    qDebug() << "Skipped" << skipped << "files due to point size mismatch or NaN normalized length.";
 
     QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
 
@@ -931,9 +940,9 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     }
 
     for (int i=0; i<pointErrors.size(); i++) {
-        std::sort(pointErrors[i].begin(), pointErrors[i].end());
-        averagePointErrors.append(Common::Mean(pointErrors[i]));
-        const QList<float> &pointError = pointErrors[i];
+        QList<float> &pointError = pointErrors[i];
+        std::sort(pointError.begin(), pointError.end());
+        averagePointErrors.append(Common::Mean(pointError));
         const int keep = qMin(Max_Points, pointError.size());
         for (int j=0; j<keep; j++)
             lines.append(QString("Box,%1,%2").arg(QString::number(i), QString::number(pointError[j*(pointError.size()-1)/(keep-1)])));
