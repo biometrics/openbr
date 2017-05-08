@@ -863,12 +863,20 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         if (truthIndex == -1) qFatal("Could not identify ground truth for file: %s", qPrintable(predictedName));
 
         const QList<QPointF> predictedPoints = predicted[i].file.points();
-        const QList<QPointF> truthPoints = truth[truthIndex].file.points();
+        QList<QPointF> truthPoints = truth[truthIndex].file.points();
+
+        // Standardize how we represent unlabeled points here
+        const QPointF find(-1,-1);
+        const QPointF replace(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
+        for (int j=0; j<truthPoints.size(); j++)
+            if (truthPoints[j] == find)
+                truthPoints[j] = replace;
+
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
         if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
 
-        if (predictedPoints.size() != truthPoints.size() || truthPoints.contains(QPointF(-1,-1)) || qIsNaN(normalizedLength)) {
+        if (predictedPoints.size() != truthPoints.size() || qIsNaN(normalizedLength)) {
             predicted.removeAt(i);
             predictedNames.removeAt(i);
             truth.removeAt(i);
