@@ -866,10 +866,11 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         QList<QPointF> truthPoints = truth[truthIndex].file.points();
 
         // Standardize how we represent unlabeled points here
-        const QPointF find(-1,-1);
+        const QPointF findNegOne(-1,-1);
+        const QPointF findZero(0,0);
         const QPointF replace(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
         for (int j=0; j<truthPoints.size(); j++)
-            if (truthPoints[j] == find)
+            if ((truthPoints[j] == findNegOne) || (truthPoints[j] == findZero))
                 truthPoints[j] = replace;
 
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
