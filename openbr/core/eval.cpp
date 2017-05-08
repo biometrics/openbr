@@ -916,7 +916,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
     // Example
     {
-        QScopedPointer<Transform> t(Transform::make("Open+Draw(verbose,rects=false,location=false)",NULL));
+        QScopedPointer<Transform> t(Transform::make("Open+Draw(verbose,rects=false,named=false,location=false)",NULL));
 
         QString filePath = "landmarking_examples_truth/sample.jpg";
         projectAndWrite(t.data(), truth[sampleIndex],filePath);
