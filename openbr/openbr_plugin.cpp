@@ -161,6 +161,8 @@ QVariant File::parse(const QString &value)
     if (ok) return point;
     const QRectF rect = QtUtils::toRect(value, &ok);
     if (ok) return rect;
+    const cv::RotatedRect rotatedRect = OpenCVUtils::rotateRectFromString(value, &ok);
+    if (ok) return QVariant::fromValue(rotatedRect);
     const int i = value.toInt(&ok);
     if (ok) return i;
     const float f = value.toFloat(&ok);

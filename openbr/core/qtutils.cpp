@@ -410,7 +410,11 @@ QString toString(const QVariant &variant)
                                             QString::number(rect.y()),
                                             QString::number(rect.width()),
                                             QString::number(rect.height()));
-    } else if (variant.canConvert<cv::Mat>()) return OpenCVUtils::matrixToString(variant.value<cv::Mat>());
+    } else if (variant.canConvert<cv::Mat>()) {
+        return OpenCVUtils::matrixToString(variant.value<cv::Mat>());
+    } else if (variant.canConvert<cv::RotatedRect>()) {
+        return OpenCVUtils::rotatedRectToString(variant.value<cv::RotatedRect>());
+    }
 
     return QString();
 }

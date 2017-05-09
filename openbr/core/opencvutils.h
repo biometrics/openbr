@@ -101,6 +101,8 @@ namespace OpenCVUtils
     bool overlaps(const QList<cv::Rect> &posRects, const cv::Rect &negRect, double overlap);
     float overlap(const cv::Rect &rect1, const cv::Rect &rect2);
     float overlap(const QRectF &rect1, const QRectF &rect2);
+    QString rotatedRectToString(const cv::RotatedRect &rotatedRect);
+    cv::RotatedRect rotateRectFromString(const QString &string, bool *ok);
 
     // Misc
     void group(QList<cv::Rect> &rects, QList<float> &confidences, float confidenceThreshold, int minNeighbors, float epsilon, bool useMax=false, QList<int> *maxIndices=NULL);
