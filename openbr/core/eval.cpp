@@ -941,7 +941,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
             // from the final implementation.
 
             // Update the error magnitude for reporting MAE
-            // m = QtUtils::euclideanLength(error);
+             m = QtUtils::euclideanLength(error);
 
             // We don't need to update orientation because we don't use it
             // again, but we do so anyway in the interest of pedantic
