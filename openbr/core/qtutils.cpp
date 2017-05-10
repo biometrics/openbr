@@ -462,6 +462,11 @@ float euclideanLength(const QPointF &point)
     return sqrt(pow(point.x(), 2) + pow(point.y(), 2));
 }
 
+float orientation(const QPointF &pointA, const QPointF &pointB)
+{
+    return atan2(pointB.y() - pointA.y(), pointB.x() - pointA.x());
+}
+
 float overlap(const QRectF &r, const QRectF &s) {
     QRectF intersection = r & s;
 

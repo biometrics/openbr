@@ -850,7 +850,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     QStringList truthNames = File::get<QString>(truth, "name");
 
     int skipped = 0;
-    QList< QList<float> > pointErrors;
+    QList< QList<float> > pointErrorMagnitudes, pointErrorOrientations;
     QList<float> imageErrors;
     QList<float> normalizedLengths;
     for (int i=0; i<predicted.size(); i++) {
@@ -876,6 +876,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         if (normalizationIndexA >= truthPoints.size()) qFatal("Normalization index A is out of range.");
         if (normalizationIndexB >= truthPoints.size()) qFatal("Normalization index B is out of range.");
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
+        const float normalizedOrientation = QtUtils::orientation(truthPoints[normalizationIndexB], truthPoints[normalizationIndexA]);
 
         if (predictedPoints.size() != truthPoints.size() || qIsNaN(normalizedLength)) {
             predicted.removeAt(i);
@@ -886,8 +887,10 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
             continue;
         }
 
-        while (pointErrors.size() < predictedPoints.size())
-            pointErrors.append(QList<float>());
+        while (pointErrorMagnitudes.size() < predictedPoints.size()) {
+            pointErrorMagnitudes.append(QList<float>());
+            pointErrorOrientations.append(QList<float>());
+        }
 
         // Want to know error for every image.
         normalizedLengths.append(normalizedLength);
@@ -897,7 +900,8 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
             const float error = QtUtils::euclideanLength(predictedPoints[j] - truthPoints[j])/normalizedLength;
             if (!qIsNaN(error)) {
                 totalError += error;
-                pointErrors[j].append(error);
+                pointErrorMagnitudes[j].append(error);
+                pointErrorOrientations[j].append(QtUtils::orientation(predictedPoints[j], truthPoints[j]) - normalizedOrientation);
                 totalCount++;
             }
         }
@@ -906,7 +910,47 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
     qDebug() << "Skipped" << skipped << "files due to point size mismatch or NaN normalized length.";
 
-    QList<float> averagePointErrors; averagePointErrors.reserve(pointErrors.size());
+    // Adjust the point error to not penalize for systematic biases...
+    // ... by first calculating the average bias for each point
+    QList<QPointF> averagePointBiases;
+    for (int i=0; i<pointErrorMagnitudes.size(); i++) {
+        const QList<float> &magnitudes   = pointErrorMagnitudes[i];
+        const QList<float> &orientations = pointErrorOrientations[i];
+        QPointF cumulativePointBias;
+        for (int j=0; j<magnitudes.size(); j++) {
+            const float m = magnitudes[j];
+            const float o = orientations[j];
+            cumulativePointBias += QPointF(m*cos(o), m*sin(o));
+        }
+        averagePointBiases.append(cumulativePointBias / magnitudes.size());
+    }
+
+    // ... and then subtracting the average bias from each individual error.
+    for (int i=0; i<pointErrorMagnitudes.size(); i++) {
+        QList<float> &magnitudes   = pointErrorMagnitudes[i];
+        QList<float> &orientations = pointErrorOrientations[i];
+        const QPointF &bias = averagePointBiases[i];
+        for (int j=0; j<magnitudes.size(); j++) {
+            float &m = magnitudes[j];
+            float &o = orientations[j];
+            QPointF error(m*cos(o), m*sin(o));
+            error -= bias;
+            // At this point if we added up all the `error` vectors for a
+            // landmark they would sum to zero. Josh confirmed this when
+            // implementing the bias normalization correction, but removed it
+            // from the final implementation.
+
+            // Update the error magnitude for reporting MAE
+            // m = QtUtils::euclideanLength(error);
+
+            // We don't need to update orientation because we don't use it
+            // again, but we do so anyway in the interest of pedantic
+            // correctness.
+            o = QtUtils::orientation(QPointF(0.f,0.f), error);
+        }
+    }
+
+    QList<float> averagePointErrors; averagePointErrors.reserve(pointErrorMagnitudes.size());
 
     QStringList lines;
     lines.append("Plot,X,Y");
@@ -948,8 +992,8 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         lines.append("EXP,"+filePath+":"+predicted[exampleIndices[i].second].file.name+","+QString::number(exampleIndices[i].first));
     }
 
-    for (int i=0; i<pointErrors.size(); i++) {
-        QList<float> &pointError = pointErrors[i];
+    for (int i=0; i<pointErrorMagnitudes.size(); i++) {
+        QList<float> &pointError = pointErrorMagnitudes[i];
         std::sort(pointError.begin(), pointError.end());
         averagePointErrors.append(Common::Mean(pointError));
         const int keep = qMin(Max_Points, pointError.size());

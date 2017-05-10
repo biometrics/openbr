@@ -90,6 +90,7 @@ namespace QtUtils
 
     /**** Point Utilities ****/
     float euclideanLength(const QPointF &point);
+    float orientation(const QPointF &pointA, const QPointF &pointB);
 
     /**** Rect Utilities ****/
     float overlap(const QRectF &r, const QRectF &s);
