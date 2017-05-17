@@ -302,18 +302,14 @@ void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
 
 void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
 {
-    // Copy local file contents from stream
+    // Copy file contents from stream
     QByteArray data;
     stream >> data;
 
-    // Create local file
-    QTemporaryFile tempFile(QDir::tempPath()+"/model");
-    tempFile.open();
-    tempFile.write(data);
-    tempFile.close();
-
-    // Load MLP from local file
-    model.load(qPrintable(tempFile.fileName()));
+    // This code for reading a file from memory inspired by CvStatModel::load implementation
+    CvFileStorage *fs = cvOpenFileStorage(data.data(), 0, CV_STORAGE_READ | CV_STORAGE_MEMORY);
+    model.read(fs, (CvFileNode*) cvGetSeqElem(cvGetRootFileNode(fs)->data.seq, 0));
+    cvReleaseFileStorage(&fs);
 }
 
 void OpenCVUtils::loadModel(cv::Algorithm &model, QDataStream &stream)
