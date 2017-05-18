@@ -878,7 +878,14 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         const float normalizedLength = QtUtils::euclideanLength(truthPoints[normalizationIndexB] - truthPoints[normalizationIndexA]);
         const float normalizedOrientation = QtUtils::orientation(truthPoints[normalizationIndexB], truthPoints[normalizationIndexA]);
 
-        if (predictedPoints.size() != truthPoints.size() || qIsNaN(normalizedLength)) {
+        if (// If the landmarks don't match up
+            (predictedPoints.size() != truthPoints.size())
+            // Or the landmarks used for normalization are missing
+            || qIsNaN(normalizedLength)
+            // Or the ground truth seems to be for another object in the image
+            || (QtUtils::euclideanLength(predictedPoints[normalizationIndexA] - truthPoints[normalizationIndexA]) / normalizedLength >= 0.5)
+            || (QtUtils::euclideanLength(predictedPoints[normalizationIndexB] - truthPoints[normalizationIndexB]) / normalizedLength >= 0.5)
+           ) {
             predicted.removeAt(i);
             predictedNames.removeAt(i);
             truth.removeAt(i);
@@ -908,7 +915,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
         imageErrors.append(totalError/totalCount);
     }
 
-    qDebug() << "Skipped" << skipped << "files due to point size mismatch or NaN normalized length.";
+    qDebug("Files skipped: %d", skipped);
 
     // Adjust the point error to not penalize for systematic biases...
     // ... by first calculating the average bias for each point
@@ -1008,7 +1015,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
     QtUtils::writeFile(csv, lines);
 
-    qDebug("Average Error for all Points: %.3f", averagePointError);
+    qDebug("Mean Average Error: %.4f", averagePointError);
 
     return averagePointError;
 }
