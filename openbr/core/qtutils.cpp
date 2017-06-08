@@ -544,7 +544,7 @@ void BlockCompression::close()
 
         quint32 bsize=  compressedBlock.size();
         blockWriter << bsize;
-        blockWriter.writeRawData(compressedBlock.data(), compressedBlock.size());
+        blockWriter.writeRawData(compressedBlock.constData(), compressedBlock.size());
     }
     // close the underlying device.
     basis->close();
@@ -641,7 +641,7 @@ qint64 BlockCompression::writeData(const char *data, qint64 remaining)
                 quint32 block_size = compressedBlock.size();
                 blockWriter << block_size;
 
-                int write_count = blockWriter.writeRawData(compressedBlock.data(), block_size);
+                int write_count = blockWriter.writeRawData(compressedBlock.constData(), block_size);
                 if (write_count != int(block_size))
                     qFatal("Didn't write enough data");
             }

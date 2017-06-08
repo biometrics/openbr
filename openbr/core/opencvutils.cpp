@@ -307,7 +307,7 @@ void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
     stream >> data;
 
     // This code for reading a file from memory inspired by CvStatModel::load implementation
-    CvFileStorage *fs = cvOpenFileStorage(data.data(), 0, CV_STORAGE_READ | CV_STORAGE_MEMORY);
+    CvFileStorage *fs = cvOpenFileStorage(data.constData(), 0, CV_STORAGE_READ | CV_STORAGE_MEMORY);
     model.read(fs, (CvFileNode*) cvGetSeqElem(cvGetRootFileNode(fs)->data.seq, 0));
     cvReleaseFileStorage(&fs);
 }

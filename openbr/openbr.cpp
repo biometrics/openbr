@@ -31,14 +31,13 @@ using namespace br;
 
 static int partialCopy(const QString &string, char *buffer, int buffer_length)
 {
-
-    QByteArray byteArray = string.toLocal8Bit();
+    const QByteArray byteArray = string.toLocal8Bit();
 
     int copyLength = std::min(buffer_length-1, byteArray.size());
     if (copyLength < 0)
         return byteArray.size() + 1;
 
-    memcpy(buffer, byteArray.data(), copyLength);
+    memcpy(buffer, byteArray.constData(), copyLength);
     buffer[copyLength] = '\0';
 
     return byteArray.size() + 1;
@@ -46,11 +45,8 @@ static int partialCopy(const QString &string, char *buffer, int buffer_length)
 
 const char *br_about()
 {
-    static QMutex aboutLock;
-    QMutexLocker lock(&aboutLock);
-    static QByteArray about = Context::about().toLocal8Bit();
-
-    return about.data();
+    static const QByteArray about = Context::about().toLocal8Bit();
+    return about.constData();
 }
 
 void br_cat(int num_input_galleries, const char *input_galleries[], const char *output_gallery)
@@ -270,10 +266,8 @@ int br_scratch_path(char *buffer, int buffer_length)
 
 const char *br_sdk_path()
 {
-    static QMutex sdkLock;
-    QMutexLocker lock(&sdkLock);
-    static QByteArray sdkPath = QDir(Globals->sdkPath).absolutePath().toLocal8Bit();
-    return sdkPath.data();
+    static const QByteArray sdkPath = QDir(Globals->sdkPath).absolutePath().toLocal8Bit();
+    return sdkPath.constData();
 }
 
 void br_get_header(const char *matrix, const char **target_gallery, const char **query_gallery)
@@ -283,8 +277,8 @@ void br_get_header(const char *matrix, const char **target_gallery, const char *
     BEE::readMatrixHeader(matrix, &targetGalleryString, &queryGalleryString);
     targetGalleryData = targetGalleryString.toLatin1();
     queryGalleryData = queryGalleryString.toLatin1();
-    *target_gallery = targetGalleryData.data();
-    *query_gallery = queryGalleryData.data();
+    *target_gallery = targetGalleryData.constData();
+    *query_gallery = queryGalleryData.constData();
 }
 
 void br_set_header(const char *matrix, const char *target_gallery, const char *query_gallery)
@@ -315,9 +309,7 @@ void br_train_n(int num_inputs, const char *inputs[], const char *model)
 
 const char *br_version()
 {
-    static QMutex versionLock;
-    QMutexLocker lock(&versionLock);
-    static QByteArray version = Context::version().toLocal8Bit();
+    static const QByteArray version = Context::version().toLocal8Bit();
     return version.data();
 }
 

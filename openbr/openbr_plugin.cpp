@@ -461,7 +461,7 @@ br_utemplate Template::toUniversalTemplate(const Template &t)
     const uint32_t personID    = findAndRemove<uint32_t>(map, "PersonID"   , std::numeric_limits<uint32_t>::max());
     const QByteArray metadata = QJsonDocument(QJsonObject::fromVariantMap(map)).toJson();
     const Mat &m = t;
-    return br_new_utemplate(algorithmID, frame, x, y, width, height, confidence, personID, metadata.data(), (const char*) m.data, m.rows * m.cols * m.elemSize());
+    return br_new_utemplate(algorithmID, frame, x, y, width, height, confidence, personID, metadata.constData(), (const char*) m.data, m.rows * m.cols * m.elemSize());
 }
 
 Template Template::fromUniversalTemplate(br_const_utemplate ut)

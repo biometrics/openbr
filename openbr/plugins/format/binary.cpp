@@ -43,8 +43,8 @@ class binaryFormat : public Format
         if (raw) {
             return Template(file, Mat(1, data.size(), CV_8UC1, data.data()).clone());
         } else {
-            return Template(file, Mat(((quint32*)data.data())[0],
-                                      ((quint32*)data.data())[1],
+            return Template(file, Mat(((quint32*)data.constData())[0],
+                                      ((quint32*)data.constData())[1],
                                       CV_32FC1,
                                       data.data()+8).clone());
         }

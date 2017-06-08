@@ -273,7 +273,7 @@ class jsonObjectGallery : public BinaryGallery
             return Template();
         File file = QJsonDocument::fromJson(line, &error).object().toVariantMap();
         if (error.error != QJsonParseError::NoError) {
-            qWarning("Couldn't parse: %s\n", line.data());
+            qWarning("Couldn't parse: %s\n", line.constData());
             qFatal("%s\n", qPrintable(error.errorString()));
         }
         return file;

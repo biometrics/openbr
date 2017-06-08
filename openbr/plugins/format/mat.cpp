@@ -114,8 +114,8 @@ class matFormat : public Format
                     Element subelement(matrix);
                     if (subelement.type == 5) { // Dimensions array
                         if (subelement.bytes == 8) {
-                            rows = ((qint32*)subelement.data.data())[0];
-                            columns = ((qint32*)subelement.data.data())[1];
+                            rows = ((qint32*)subelement.data.constData())[0];
+                            columns = ((qint32*)subelement.data.constData())[1];
                         } else {
                             qWarning("matFormat::read can only handle 2D arrays.");
                         }
@@ -147,8 +147,8 @@ class matFormat : public Format
         { // Header
             QByteArray header = "MATLAB 5.0 MAT-file; Made with OpenBR | www.openbiometrics.org\n";
             QByteArray buffer(116-header.size(), 0);
-            stream.writeRawData(header.data(), header.size());
-            stream.writeRawData(buffer.data(), buffer.size());
+            stream.writeRawData(header.constData(), header.size());
+            stream.writeRawData(buffer.constData(), buffer.size());
             quint64 subsystem = 0;
             quint16 version = 0x0100;
             const char *endianness = "IM";
@@ -199,8 +199,8 @@ class matFormat : public Format
                 QByteArray buffer((8 - bytes%8)%8, 0);
                 substream.writeRawData((const char*)&type, 4);
                 substream.writeRawData((const char*)&bytes, 4);
-                substream.writeRawData(name.data(), name.size());
-                substream.writeRawData(buffer.data(), buffer.size());
+                substream.writeRawData(name.constData(), name.size());
+                substream.writeRawData(buffer.constData(), buffer.size());
             }
 
             { // Real part
@@ -222,7 +222,7 @@ class matFormat : public Format
                 substream.writeRawData((const char*)&type, 4);
                 substream.writeRawData((const char*)&bytes, 4);
                 substream.writeRawData((const char*)transposed.data, bytes);
-                substream.writeRawData(buffer.data(), buffer.size());
+                substream.writeRawData(buffer.constData(), buffer.size());
             }
 
             { // Matrix
@@ -230,7 +230,7 @@ class matFormat : public Format
                 quint32 bytes = subdata.size();
                 stream.writeRawData((const char*)&type, 4);
                 stream.writeRawData((const char*)&bytes, 4);
-                stream.writeRawData(subdata.data(), subdata.size());
+                stream.writeRawData(subdata.constData(), subdata.size());
             }
         }
 
