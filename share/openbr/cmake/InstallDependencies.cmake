@@ -125,9 +125,12 @@ function(install_qt_platforms)
 
       install(FILES ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqlinuxfb.so
               DESTINATION bin/platforms)
-      install_qt_library(XcbQpa)
-      install(FILES ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqxcb.so
-              DESTINATION bin/platforms)
+
+      if(EXISTS ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqxcb.so)
+        install_qt_library(XcbQpa)
+        install(FILES ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqxcb.so
+                DESTINATION bin/platforms)
+      endif()
     endif()
   endif()
 endfunction()
