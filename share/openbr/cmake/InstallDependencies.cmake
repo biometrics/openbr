@@ -45,7 +45,7 @@ function(install_qt_library lib)
     elseif(CMAKE_HOST_APPLE)
       install(DIRECTORY ${_qt5Core_install_prefix}/lib/Qt${lib}.framework DESTINATION lib)
     else()
-      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" AND NOT ANDROID AND NOT IOS)
         set(QT_MULTIARCH "aarch64-linux-gnu/")
       else()
         set(QT_MULTIARCH "")
@@ -68,7 +68,13 @@ endfunction()
 # Qt Plugins
 function(install_qt_imageformats)
   if(${BR_INSTALL_DEPENDENCIES})
-    set(IMAGE_FORMATS_DIR "${_qt5Core_install_prefix}/plugins/imageformats")
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" AND NOT ANDROID AND NOT IOS)
+      set(QT_MULTIARCH "/lib/aarch64-linux-gnu/qt5")
+    else()
+      set(QT_MULTIARCH "")
+    endif()
+
+    set(IMAGE_FORMATS_DIR "${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/imageformats")
     if(ANDROID)
       set(INSTALL_DEPENDENCIES_PREFIX "lib")
       set(INSTALL_DEPENDENCIES_EXTENSION ".so")
@@ -82,15 +88,20 @@ function(install_qt_imageformats)
       set(INSTALL_DEPENDENCIES_PREFIX "lib")
       set(INSTALL_DEPENDENCIES_EXTENSION ".so")
     endif()
+
     install(FILES ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qgif${INSTALL_DEPENDENCIES_EXTENSION}
                   ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qico${INSTALL_DEPENDENCIES_EXTENSION}
                   ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qjpeg${INSTALL_DEPENDENCIES_EXTENSION}
-                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qmng${INSTALL_DEPENDENCIES_EXTENSION}
                   ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qsvg${INSTALL_DEPENDENCIES_EXTENSION}
-                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtga${INSTALL_DEPENDENCIES_EXTENSION}
-                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtiff${INSTALL_DEPENDENCIES_EXTENSION}
-                  ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qwbmp${INSTALL_DEPENDENCIES_EXTENSION}
             DESTINATION bin/imageformats)
+
+    if(QT_MULTIARCH STREQUAL "")
+      install(FILES ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qmng${INSTALL_DEPENDENCIES_EXTENSION}
+                    ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtga${INSTALL_DEPENDENCIES_EXTENSION}
+                    ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qtiff${INSTALL_DEPENDENCIES_EXTENSION}
+                    ${IMAGE_FORMATS_DIR}/${INSTALL_DEPENDENCIES_PREFIX}qwbmp${INSTALL_DEPENDENCIES_EXTENSION}
+              DESTINATION bin/imageformats)
+    endif()
   endif()
 endfunction()
 
@@ -106,10 +117,16 @@ function(install_qt_platforms)
       install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqcocoa.dylib
               DESTINATION bin/platforms)
     else()
-      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqlinuxfb.so
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" AND NOT ANDROID AND NOT IOS)
+        set(QT_MULTIARCH "/lib/aarch64-linux-gnu/qt5")
+      else()
+        set(QT_MULTIARCH "")
+      endif()
+
+      install(FILES ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqlinuxfb.so
               DESTINATION bin/platforms)
       install_qt_library(XcbQpa)
-      install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqxcb.so
+      install(FILES ${_qt5Core_install_prefix}${QT_MULTIARCH}/plugins/platforms/libqxcb.so
               DESTINATION bin/platforms)
     endif()
   endif()
@@ -133,7 +150,13 @@ function(install_qt_misc)
     install(FILES ${_qt5Core_install_prefix}/jar/QtAndroid-bundled.jar
             DESTINATION java)
   elseif(UNIX AND NOT APPLE)
-    file(GLOB icudlls ${_qt5Core_install_prefix}/lib/libicu*.so*)
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" AND NOT ANDROID AND NOT IOS)
+      set(QT_MULTIARCH "aarch64-linux-gnu/")
+    else()
+      set(QT_MULTIARCH "")
+    endif()
+
+    file(GLOB icudlls ${_qt5Core_install_prefix}/lib/${QT_MULTIARCH}libicu*.so*)
     install(FILES ${icudlls} DESTINATION lib)
   endif()
 endfunction()
