@@ -430,7 +430,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 200;
-    const int Report_Retrieval = 5;
+    const QList<int> Report_Retrieval_List = QList<int>() << 1 << 5 << 10 << 20 << 50 << 100;
     for (int i=1; i<=Max_Retrieval; i++) {
         const float retrievalRate = getCMC(firstGenuineReturns, i);
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
@@ -438,15 +438,16 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     QtUtils::writeFile(csv, lines);
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
-    qDebug("TAR @ FAR = 0.01:    %.3f",getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
-    qDebug("TAR @ FAR = 0.001:   %.3f",getOperatingPointGivenFAR(operatingPoints, 0.001).TAR);
-    qDebug("TAR @ FAR = 0.0001:  %.3f",getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR);
-    qDebug("TAR @ FAR = 0.00001: %.3f",getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR);
-
-    qDebug("FNIR @ FPIR = 0.1:   %.3f", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.1).TAR);
-    qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.01).TAR);
-
-    qDebug("\nRetrieval Rate @ Rank = %d: %.3f", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
+    printf("TAR @ FAR = 0.01:    %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
+    printf("TAR @ FAR = 0.001:   %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.001).TAR);
+    printf("TAR @ FAR = 0.0001:  %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR);
+    printf("TAR @ FAR = 0.00001: %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR);
+    printf("\n");
+    printf("FNIR @ FPIR = 0.1:   %.3f\n", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.1).TAR);
+    printf("FNIR @ FPIR = 0.01:  %.3f\n", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.01).TAR);
+    printf("\n");
+    foreach (const int Report_Retrieval, Report_Retrieval_List)
+        printf("Retrieval Rate @ Rank = %d: %.3f\n", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
 
     return result;
 }
