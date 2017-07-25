@@ -2,6 +2,10 @@ if(UNIX)
   find_package(Threads REQUIRED)
 endif()
 
+if(BR_DISABLE_ALGORITHMS)
+  add_definitions(-DBR_DISABLE_ALGORITHMS)
+endif()
+
 add_executable(br br.cpp ${BR_RESOURCES})
 target_link_libraries(br openbr ${CMAKE_THREAD_LIBS_INIT})
 qt5_use_modules(br ${QT_DEPENDENCIES})

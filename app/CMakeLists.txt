@@ -1,8 +1,8 @@
 # Build the command line interface
+add_subdirectory(br)
+
 if(NOT BR_PACKAGE_THIRDPARTY)
   if(NOT BR_EMBEDDED)
-    add_subdirectory(br)
-
     # Build examples/tests
     add_subdirectory(examples)
 
