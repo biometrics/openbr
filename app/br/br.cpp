@@ -90,7 +90,6 @@ public:
             argv = &argv[parc+1];
 
             // Core Tasks
-#ifndef BR_DISABLE_ALGORITHMS
             if (!strcmp(fun, "train")) {
                 check(parc >= 1, "Insufficient parameter count for 'train'.");
                 br_train_n(parc == 1 ? 1 : parc-1, parv, parc == 1 ? "" : parv[parc-1]);
@@ -101,9 +100,7 @@ public:
             } else if (!strcmp(fun, "compare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'compare'.");
                 br_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
-            } else
-#endif // !BR_DISABLE_ALGORITHMS
-            if (!strcmp(fun, "eval")) {
+            } else if (!strcmp(fun, "eval")) {
                 check((parc >= 1) && (parc <= 4), "Incorrect parameter count for 'eval'.");
                 if (parc == 1) {
                     br_eval(parv[0], "", "", 0);
@@ -195,9 +192,7 @@ public:
             } else if (!strcmp(fun, "plotKNN")) {
                 check(parc >=2, "Incorrect parameter count for 'plotKNN'.");
                 br_plot_knn(parc-1, parv, parv[parc-1], true);
-            }
-#ifndef BR_DISABLE_ALGORITHMS
-            else if (!strcmp(fun, "project")) {
+            } else if (!strcmp(fun, "project")) {
                 check(parc == 2, "Insufficient parameter count for 'project'.");
                 br_project(parv[0], parv[1]);
             } else if (!strcmp(fun, "deduplicate")) {
@@ -207,7 +202,6 @@ public:
                 check(parc == 3, "Incorrect parameter count for 'likely'.");
                 br_likely(parv[0], parv[1], parv[2]);
             }
-#endif // !BR_DISABLE_ALGORITHMS
 
             // Miscellaneous
             else if (!strcmp(fun, "help")) {
@@ -277,11 +271,9 @@ private:
         printf("<arg> = Input; {arg} = Output; [arg] = Optional; (arg0|...|argN) = Choice\n"
                "\n"
                "==== Core Commands ====\n"
-#ifndef BR_DISABLE_ALGORITHMS
                "-train <gallery> ... <gallery> [{model}]\n"
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
-#endif // !BR_DISABLE_ALGORITHMS
                "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
                "-plot <csv> ... <csv> {destination}\n"
                "\n"
@@ -306,11 +298,9 @@ private:
                "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-plotKNN <file> ... <file> {destination}\n"
-#ifndef BR_DISABLE_ALGORITHMS
                "-project <input_gallery> {output_gallery}\n"
                "-deduplicate <input_gallery> <output_gallery> <threshold>\n"
                "-likely <input_type> <output_type> <output_likely_source>\n"
-#endif // !BR_DISABLE_ALGORITHMS
                "-getHeader <matrix>\n"
                "-setHeader {<matrix>} <target_gallery> <query_gallery>\n"
                "-<key> <value>\n"
