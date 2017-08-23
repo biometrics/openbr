@@ -108,7 +108,7 @@ public:
         for (int i=0; i<src.size(); i++) {
             input_buffer[i].append(src[i]);
 
-            if (Globals->parallelism > 1) temp.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
+            if ((Globals->parallelism > 1) && (src.size() > 1)) temp.append(QtConcurrent::run(_projectList, transform, &input_buffer[i], &output_buffer[i]));
             else _projectList(transform, &input_buffer[i], &output_buffer[i]);
         }
         // We add the futures in reverse order, since in Qt 5.1 at least the
