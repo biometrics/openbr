@@ -391,7 +391,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                          QString::number(tar, 'f', 2),
                          QString::number(getOperatingPointGivenTAR(operatingPoints, tar).FAR, 'f', 3))));
 
-    //Write CMC Table (CT)
+    // Write CMC Table (CT)
     lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
     lines.append(qPrintable(QString("CT,5,%1").arg(QString::number(getCMC(firstGenuineReturns, 5), 'f', 3))));
     lines.append(qPrintable(QString("CT,10,%1").arg(QString::number(getCMC(firstGenuineReturns, 10), 'f', 3))));
@@ -438,13 +438,15 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     QtUtils::writeFile(csv, lines);
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
-    printf("TAR @ FAR = 0.01:    %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
-    printf("TAR @ FAR = 0.001:   %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.001).TAR);
-    printf("TAR @ FAR = 0.0001:  %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR);
-    printf("TAR @ FAR = 0.00001: %.3f\n", getOperatingPointGivenFAR(operatingPoints, 0.00001).TAR);
+    foreach (float FAR, QList<float>() << 0.01 << 0.001 << 0.0001 << 0.00001) {
+        const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+        printf("TAR & Similarity @ FAR = %.0e: %.3f %.3f\n", FAR, op.TAR, op.score);
+    }
     printf("\n");
-    printf("FNIR @ FPIR = 0.1:   %.3f\n", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.1).TAR);
-    printf("FNIR @ FPIR = 0.01:  %.3f\n", 1-getOperatingPointGivenFAR(searchOperatingPoints, 0.01).TAR);
+    foreach (float FPIR, QList<float>() << 0.1 << 0.01) {
+        const OperatingPoint op = getOperatingPointGivenFAR(searchOperatingPoints, FPIR);
+        printf("FNIR @ FPIR = %.0e: %.3f\n", FPIR, 1-op.TAR);
+    }
     printf("\n");
     foreach (const int Report_Retrieval, Report_Retrieval_List)
         printf("Retrieval Rate @ Rank = %d: %.3f\n", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
