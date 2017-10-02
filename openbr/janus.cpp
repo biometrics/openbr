@@ -94,10 +94,10 @@ janus_error janus_detect(const janus_image image, janus_attributes *attributes_a
 janus_error janus_augment(const janus_image image, janus_attributes *attributes, janus_template template_)
 {
     Template t;
-    if (isnan(attributes->face_x) ||
-        isnan(attributes->face_y) ||
-        isnan(attributes->face_width) ||
-        isnan(attributes->face_height))
+    if (std::isnan(attributes->face_x) ||
+        std::isnan(attributes->face_y) ||
+        std::isnan(attributes->face_width) ||
+        std::isnan(attributes->face_height))
         return JANUS_MISSING_ATTRIBUTES;
 
     QRectF rect(attributes->face_x,
@@ -117,10 +117,10 @@ janus_error janus_augment(const janus_image image, janus_attributes *attributes,
 
     input = input(cv::Rect(rect.x(), rect.y(), rect.width(), rect.height())).clone();
     t.append(input);
-    if (!isnan(attributes->right_eye_x) &&
-        !isnan(attributes->right_eye_y) &&
-        !isnan(attributes->left_eye_x) &&
-        !isnan(attributes->left_eye_y)) {
+    if (!std::isnan(attributes->right_eye_x) &&
+        !std::isnan(attributes->right_eye_y) &&
+        !std::isnan(attributes->left_eye_x) &&
+        !std::isnan(attributes->left_eye_y)) {
         t.file.set("Affine_0", QPointF(attributes->right_eye_x - rect.x(), attributes->right_eye_y - rect.y()));
         t.file.set("Affine_1", QPointF(attributes->left_eye_x - rect.x(), attributes->left_eye_y - rect.y()));
         t.file.set("First_Eye", t.file.get<QPointF>("Affine_0"));
