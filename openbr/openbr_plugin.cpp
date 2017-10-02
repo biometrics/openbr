@@ -1426,7 +1426,15 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
           case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
           default:            txt = QString("Fatal: %1\n"   ).arg(msg); break;
         }
-        txt += "  SDK Path: "  + Globals->sdkPath + "\n  File: " + QString(context.file) + "\n  Function: " + QString(context.function) + "\n  Line: " + QString::number(context.line) + "\n";
+
+        if (Globals->sdkPath != ":")
+            txt += "  SDK Path: "  + Globals->sdkPath + "\n";
+        if (!QString(context.file).isEmpty())
+            txt += "  File: " + QString(context.file) + "\n";
+        if (!QString(context.function).isEmpty())
+            txt += "  Function: " + QString(context.function) + "\n";
+        if (context.line != 0)
+            txt += "  Line: " + QString::number(context.line) + "\n";
     }
 
     std::cerr << txt.toStdString();
