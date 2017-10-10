@@ -1421,6 +1421,10 @@ void br::Context::messageHandler(QtMsgType type, const QMessageLogContext &conte
         if (Globals->quiet) return;
         txt = QString("%1\n").arg(msg);
     } else {
+        // Ignore QSslSocket warnings, too much noise and not enough signal
+        if ((type == QtWarningMsg) && msg.contains("QSslSocket"))
+            return;
+
         switch (type) {
           case QtWarningMsg:  txt = QString("Warning: %1\n" ).arg(msg); break;
           case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
