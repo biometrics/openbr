@@ -132,7 +132,8 @@ struct AlgorithmCore
         compressedWrite.open(QFile::WriteOnly);
 
         // Serialize algorithm to stream
-        transform->serialize(out);
+        if (transform)
+            transform->serialize(out);
 
         qint32 mode = None;
         if (!distance.isNull())
