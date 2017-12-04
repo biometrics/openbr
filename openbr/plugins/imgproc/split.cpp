@@ -53,13 +53,20 @@ class SplitRowsTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int step READ get_step WRITE set_step RESET reset_step STORED false)
+    Q_PROPERTY(bool cols READ get_cols WRITE set_cols RESET reset_cols STORED false)
     BR_PROPERTY(int, step, 1)
+    BR_PROPERTY(bool, cols, false)
 
     void project(const Template &src, Template &dst) const
     {
         const Mat &m = src;
-        for (int i=0; i<m.rows; i += step)
-            dst += m.rowRange(i, i + step);
+        if (cols) {
+            for (int i=0; i<m.cols; i += step)
+                dst += m.colRange(i, i + step);
+        } else {
+            for (int i=0; i<m.rows; i += step)
+                dst += m.rowRange(i, i + step);
+        }
     }
 };
 
