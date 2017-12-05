@@ -22,6 +22,23 @@
 namespace br
 {
 
+struct RankResult
+{
+    int rank;
+    float score;
+    File probe, target;
+
+    bool operator<(const RankResult &other) const
+    {
+        return this->rank < other.rank;
+    }
+
+    QString toLine(const QChar &separator) const
+    {
+        return probe.fileName() + separator + QString::number(rank) + separator + QString::number(score) + separator+ target.fileName();
+    }
+};
+
 /*!
  * \ingroup outputs
  * \brief Outputs highest ranked matches with scores.
@@ -40,6 +57,8 @@ class rankOutput : public MatrixOutput
         QList<float> scores;
         QStringList lines;
 
+        QList<RankResult> results;
+
         for (int i=0; i<queryFiles.size(); i++) {
             typedef QPair<float,int> Pair;
             int rank = 1;
@@ -48,9 +67,12 @@ class rankOutput : public MatrixOutput
                 if (Globals->crossValidate > 0 ? (targetFiles[pair.second].get<int>("Partition",-1) == -1 || targetFiles[pair.second].get<int>("Partition",-1) == queryFiles[i].get<int>("Partition",-1)) : true) {
                     if (QString(targetFiles[pair.second]) != QString(queryFiles[i])) {
                         if (targetFiles[pair.second].get<QString>("Label") == queryFiles[i].get<QString>("Label")) {
-                            ranks.append(rank);
-                            positions.append(pair.second);
-                            scores.append(pair.first);
+                            RankResult result;
+                            result.rank = rank;
+                            result.score = pair.first;
+                            result.probe = queryFiles[i];
+                            result.target = targetFiles[pair.second];
+                            results.append(result);
                             break;
                         }
                         rank++;
@@ -59,10 +81,10 @@ class rankOutput : public MatrixOutput
             }
         }
 
-        typedef QPair<int,int> RankPair;
-        foreach (const RankPair &pair, Common::Sort(ranks, false))
-            // pair.first == rank retrieved, pair.second == original position
-            lines.append(queryFiles[pair.second].name + " " + QString::number(pair.first) + " " + QString::number(scores[pair.second]) + " " + targetFiles[positions[pair.second]].name);
+        std::sort(results.begin(), results.end(), std::less<RankResult>());
+
+        foreach (const RankResult &result, results)
+            lines.append(result.toLine('\t'));
 
 
         QtUtils::writeFile(file, lines);
