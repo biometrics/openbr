@@ -32,12 +32,12 @@ namespace br
 class MajorityVotingTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QList<QString> keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     Q_PROPERTY(int numClasses READ get_numClasses WRITE set_numClasses RESET reset_numClasses STORED false)
     Q_PROPERTY(QString outputKey READ get_outputKey WRITE set_outputKey RESET reset_outputKey STORED false)
     Q_PROPERTY(float thresh READ get_thresh WRITE set_thresh RESET reset_thresh STORED false)
 
-    BR_PROPERTY(QList<QString>, keys, QList<QString>())
+    BR_PROPERTY(QStringList, keys, QStringList())
     BR_PROPERTY(int, numClasses, 2)
     BR_PROPERTY(QString, outputKey, "MajorityVoting")
     BR_PROPERTY(float, thresh, -1)  

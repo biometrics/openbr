@@ -33,12 +33,12 @@ namespace br
 class ScoreLevelFusionTransform : public UntrainableMetadataTransform
 {
     Q_OBJECT
-    Q_PROPERTY(QList<QString> keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     Q_PROPERTY(int numClasses READ get_numClasses WRITE set_numClasses RESET reset_numClasses STORED false)
     Q_PROPERTY(QString outputKey READ get_outputKey WRITE set_outputKey RESET reset_outputKey STORED false)
     Q_PROPERTY(bool listOfList READ get_listOfList WRITE set_listOfList RESET reset_listOfList STORED false)
 
-    BR_PROPERTY(QList<QString>, keys, QList<QString>())
+    BR_PROPERTY(QStringList, keys, QStringList())
     BR_PROPERTY(int, numClasses, 2)
     BR_PROPERTY(QString, outputKey, "ScoreLevelFusion")
     BR_PROPERTY(bool, listOfList, false)
