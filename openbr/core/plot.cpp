@@ -91,7 +91,10 @@ struct RPlot
         if (!success) qFatal("Failed to open %s for writing.", qPrintable(file.fileName()));
 
         // Copy plot_utils.R into output script with source()
-        file.write(qPrintable(QString("source(\"%1\")\n\n").arg(Globals->sdkPath + "/share/openbr/plotting/plot_utils.R")));
+        QString plotUtilsPath = Globals->sdkPath + "/openbr/share/openbr/plotting/plot_utils.R"; // Handle case when OpenBR is a submodule
+        if (!QFileInfo(plotUtilsPath).exists())
+            plotUtilsPath = Globals->sdkPath + "/share/openbr/plotting/plot_utils.R";
+        file.write(qPrintable(QString("source(\"%1\")\n\n").arg(plotUtilsPath)));
         file.write("# Read CSVs\n"
                    "data <- NULL\n");
 
