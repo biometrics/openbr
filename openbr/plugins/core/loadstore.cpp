@@ -173,17 +173,27 @@ class LoadStoreDistance : public Distance
     Q_OBJECT
     Q_PROPERTY(QString distanceString READ get_distanceString WRITE set_distanceString RESET reset_distanceString STORED false)
     Q_PROPERTY(QString fileName READ get_fileName WRITE set_fileName RESET reset_fileName STORED false)
+    Q_PROPERTY(br::Distance *distance READ get_distance WRITE set_distance RESET reset_distance STORED false)
     BR_PROPERTY(QString, distanceString, QString())
     BR_PROPERTY(QString, fileName, QString())
+    BR_PROPERTY(br::Distance*, distance, NULL)
 
-    QSharedPointer<Distance> distance;
+public:
+    ~LoadStoreDistance()
+    {
+        delete distance;
+        distance = NULL;
+    }
 
 private:
     void init()
     {
+        delete distance;
+        distance = NULL;
+
         const QString resolvedFileName = getFileName();
         if (resolvedFileName.isEmpty()) {
-            distance.reset(Distance::make(distanceString));
+            distance = Distance::make(distanceString);
             return;
         }
 
@@ -195,7 +205,7 @@ private:
         QDataStream stream(&file);
         stream >> distanceString;
 
-        distance.reset(Distance::make(distanceString));
+        distance = Distance::make(distanceString);
         distance->load(stream);
     }
 
