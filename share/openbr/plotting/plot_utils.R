@@ -80,7 +80,7 @@ plotLandmarkTables <- function(tableData=NULL) {
     print(title("Landmarking Error Rates"))
 }
 
-plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="line") {
+plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") {
     textSize <- if("textSize" %in% names(options)) as.numeric(options$textSize) else 12
     p <- qplot(X, if(flipY) 1-Y else Y, data=lineData, main=options$title, geom=geometry, size=if("size" %in% names(options)) I(as.numeric(options$size)) else I(.5), colour=if(majorSize > 1) factor(eval(parse(text=majorHeader))) else NULL, linetype=if(minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab=options$xTitle, ylab=options$yTitle) + theme_minimal()
     if (smooth && deparse(substitute(lineData)) != "CMC" && confidence != 0) p <- p + geom_errorbar(data=lineData[seq(1, NROW(lineData), by = 29),], aes(x=X, ymin=if(flipY) (1-lower) else lower, ymax=if(flipY) (1-upper) else upper), width=0.1, alpha=I(1/2))
