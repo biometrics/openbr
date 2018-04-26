@@ -199,6 +199,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.0001,1)]")));
     optMap.insert("ietOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
     optMap.insert("cmcOptions", File(QString("[xTitle=Rank,yTitle=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=(1,5,10,50,100),xBreaks=(1,5,10,50,100)]")));
+    optMap.insert("farOptions", File(QString("[xTitle=Score,yTitle=False Accept Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0000001,1)]")));
+    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0001,1)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
@@ -235,7 +237,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     p.file.write(qPrintable(QString(plot).arg("CMC", toRList(optMap["cmcOptions"]), "FALSE")));
     p.file.write("plot <- plotSD(sdData=SD)\nplot\n");
     p.file.write("plot <- plotBC(bcData=BC)\nplot\n");
-    p.file.write("plot <- plotERR(errData=ERR)\nplot\n");
+    p.file.write(qPrintable(QString(plot).arg("FAR", toRList(optMap["farOptions"]), "FALSE")));
+    p.file.write(qPrintable(QString(plot).arg("FRR", toRList(optMap["frrOptions"]), "FALSE")));
     p.file.write("plotEERSamples(imData=IM, gmData=GM)\n\n");
 
     return p.finalize(show);

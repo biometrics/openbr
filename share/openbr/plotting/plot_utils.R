@@ -140,22 +140,6 @@ plotBC <- function(bcData=NULL) {
     return(p)
 }
 
-plotERR <- function(errData=NULL) {
-    p <- qplot(X, Y, data=errData, geom="line", linetype=Error, colour=if(flip && (majorSize > 1)) factor(eval(parse(text=majorHeader))) else if (minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab="Score", ylab="Error Rate") + theme_minimal()
-
-    if (flip && (majorSize > 1)) p <- p + getScale("colour", majorHeader, majorSize) + labs(colour=majorHeader)
-    else if (minorSize > 1)      p <- p + getScale("colour", minorHeader, minorSize) + labs(colour=minorHeader)
-
-    p <- p + scale_y_log10(labels=percent) + annotation_logticks(sides="l")
-    if (flip && (minorSize > 1)) {
-        p <- p + facet_wrap(as.formula(paste("~", minorHeader)), scales="free_x")
-    } else if (majorSize > 1) {
-        p <- p + facet_wrap(as.formula(paste("~", majorHeader)), scales="free_x")
-    }
-    p <- p + theme(aspect.ratio=1)
-    return(p)
-}
-
 plotOverlap <- function(overlapData=NULL) {
     p <- qplot(X, data=overlapData, geom="histogram", position="identity", xlab="Overlap", ylab="Frequency")
     p <- p + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
@@ -179,8 +163,8 @@ formatData <- function(type="eval") {
         GM <<- data[grep("GM",data$Plot),-c(1)]
         DET <<- data[grep("DET",data$Plot),-c(1)]
         IET <<- data[grep("IET",data$Plot),-c(1)]
-        FAR <- data[grep("FAR",data$Plot),-c(1)]
-        FRR <- data[grep("FRR",data$Plot),-c(1)]
+        FAR <<- data[grep("FAR",data$Plot),-c(1)]
+        FRR <<- data[grep("FRR",data$Plot),-c(1)]
         SD <<- data[grep("SD",data$Plot),-c(1)]
         TF <<- data[grep("TF",data$Plot),-c(1)]
         FT <<- data[grep("FT",data$Plot),-c(1)]
@@ -188,9 +172,6 @@ formatData <- function(type="eval") {
         BC <<- data[grep("BC",data$Plot),-c(1)]
         TS <<- data[grep("TS",data$Plot),-c(1)]
         CMC <<- data[grep("CMC",data$Plot),-c(1)]
-        FAR$Error <- "FAR"
-        FRR$Error <- "FRR"
-        ERR <<- rbind(FAR, FRR)
     
         # Format data
         Metadata$Y<-factor(Metadata$Y, levels=c("Genuine", "Impostor", "Ignored", "Gallery", "Probe"))
@@ -198,7 +179,8 @@ formatData <- function(type="eval") {
         GM$Y <<- as.character(GM$Y)
         DET$Y <<- as.numeric(as.character(DET$Y))
         IET$Y <<- as.numeric(as.character(IET$Y))
-        ERR$Y <<- as.numeric(as.character(ERR$Y))
+        FAR$Y <<- as.numeric(as.character(FAR$Y))
+        FRR$Y <<- as.numeric(as.character(FRR$Y))
         SD$Y <<- as.factor(unique(as.character(SD$Y)))
         TF$Y <<- as.numeric(as.character(TF$Y))
         FT$Y <<- as.numeric(as.character(FT$Y))
