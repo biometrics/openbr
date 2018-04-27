@@ -139,6 +139,7 @@ struct RPlot
         // Set variables in R
         file.write(qPrintable(QString("\nconfidence <- %1\n").arg(destination.get<float>("confidence", 95) / 100.0)));
         file.write(qPrintable(QString("ncol <- %1\n").arg(destination.get<int>("ncol", major.size > 1 ? major.size : (minor.header.isEmpty() ? major.size : minor.size)))));
+        file.write(qPrintable(QString("seq <- %1\n").arg(destination.get<bool>("seq", false) ? "TRUE": "FALSE")));
         file.write(qPrintable(QString("basename <- \"%1\"\n").arg(basename)));
         file.write(qPrintable(QString("smooth <- %1\n").arg((major.smooth || minor.smooth) && (destination.get<float>("confidence", 95) / 100.0) != 0 ? "TRUE" : "FALSE")));
         file.write(qPrintable(QString("csv <- %1\n").arg(destination.getBool("csv") ? "TRUE" : "FALSE")));
