@@ -172,8 +172,8 @@ public:
                 check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'evalKNN'.");
                 br_eval_knn(parv[0], parv[1], parc > 2 ? parv[2] : "");
             } else if (!strcmp(fun, "evalEER")) {
-                check(parc >=1 && parc <=3 , "Incorrect parameter count for 'evalEER'.");
-                br_eval_eer(parv[0], parc > 1 ? parv[1] : "", parc > 2 ? parv[2] : "");
+                check(parc >=1 && parc <=4 , "Incorrect parameter count for 'evalEER'.");
+                br_eval_eer(parv[0], parc > 1 ? parv[1] : "", parc > 2 ? parv[2] : "", parc > 3 ? parv[3] : "");
             } else if (!strcmp(fun, "pairwiseCompare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");

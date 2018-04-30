@@ -1242,69 +1242,97 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
     qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
 }
 
-void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property){
+void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &pdf) {
     if (gt_property.isEmpty())
-            gt_property = "LivenessGT";
+        gt_property = "LivenessGT";
     if (distribution_property.isEmpty())
-            distribution_property = "LivenessDistribution";
-    double classOneTemplateCount = 0;
+        distribution_property = "LivenessClassScores";
+    int classOneTemplateCount = 0;
     const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
     QHash<QString, int> gtLabels;
     QHash<QString, QList<float> > scores;
-     for (double i=0; i<templateList.size(); i++) {
-	 if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
-             continue;
-         QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
-         int gtLabel = templateList[i].file.get<int>(gt_property);
-         if (gtLabel == 1)
-             classOneTemplateCount++;
-         QList<float> templateScores = templateList[i].file.getList<float>(distribution_property);
-         gtLabels[templateKey] = gtLabel;
-         scores[templateKey] = templateScores;
-     }
+    for (int i=0; i<templateList.size(); i++) {
+        if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
+            continue;
+        QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
+        const int gtLabel = templateList[i].file.get<int>(gt_property);
+        if (gtLabel == 1)
+            classOneTemplateCount++;
+        const QList<float> templateScores = templateList[i].file.getList<float>(distribution_property);
+        gtLabels[templateKey] = gtLabel;
+        scores[templateKey] = templateScores;
+    }
 
-     const int numPoints = 200;
-     const float stepSize = 100.0/numPoints;
-     const double numTemplates = scores.size();
-     float thres = 0.0; //Between [0,100]
-     float thresNorm = 0.0; //Between [0,1]
-     double FA = 0, FR = 0;
-     float minDiff = 100;
-     float EER = 100;
-     float EERThres = 0;
+    const int numPoints  = 200;
+    const float stepSize = 100.0/numPoints;
+    const int numTemplates = scores.size();
+    float thres     = 0.0; //Between [0,100]
+    float thresNorm = 0.0; //Between [0,1]
+    float minDiff = 100, EER = 100, EERThres = 0;
+    QList<OperatingPoint> operatingPoints;
 
-     for(int i = 0; i <= numPoints; i++){
-         FA = 0, FR = 0;
-         thresNorm = thres/100.0;
-            foreach(const QString &key, scores.keys()){
-                int gtLabel = gtLabels[key];
-                //> thresNorm = class 0 (spoof) : < thresNorm = class 1 (genuine)
-                if (scores[key][0] >= thresNorm && gtLabel == 0)
-                    continue;
-                else if (scores[key][0] < thresNorm && gtLabel == 1)
-                    continue;
-                else if (scores[key][0] >= thresNorm && gtLabel == 1)
-                    FR +=1;
-                else if (scores[key][0] < thresNorm && gtLabel == 0)
-                    FA +=1;
-            }
-            float FAR = FA / fabs(numTemplates - classOneTemplateCount);
-            float FRR = FR / float(classOneTemplateCount);
+    for(int i = 0; i <= numPoints; i++) {
+        int FA = 0, FR = 0;
+        thresNorm = thres/100.0;
+        foreach(const QString &key, scores.keys()) {
+            int gtLabel = gtLabels[key];
+            //> thresNorm = class 0 (spoof) : < thresNorm = class 1 (genuine)
+            if (scores[key][0] >= thresNorm && gtLabel == 0)
+                continue;
+            else if (scores[key][0] < thresNorm && gtLabel == 1)
+                continue;
+            else if (scores[key][0] >= thresNorm && gtLabel == 1)
+                FR +=1;
+            else if (scores[key][0] < thresNorm && gtLabel == 0)
+                FA +=1;
+        }
+        const float FAR = FA / float(numTemplates - classOneTemplateCount);
+        const float FRR = FR / float(classOneTemplateCount);
+        operatingPoints.append(OperatingPoint(thresNorm, FAR, 1-FRR));
 
-            float diff = std::abs(FAR-FRR);
-            if (diff < minDiff){
-                minDiff = diff;
-                EER = (FAR+FRR)/2.0;
-                EERThres = thresNorm;
-            }
-         thres += stepSize;
-     }
+        const float diff = std::abs(FAR-FRR);
+        if (diff < minDiff) {
+            minDiff = diff;
+            EER = (FAR+FRR)/2.0;
+            EERThres = thresNorm;
+        }
+        thres += stepSize;
+    }
 
-     qDebug() <<"Class 0 Templates:" << fabs(numTemplates - classOneTemplateCount) << "Class 1 Templates:"
-             << classOneTemplateCount << "Total Templates:" << numTemplates;
-     qDebug("EER: %.3f @ Threshold %.3f", EER*100, EERThres);
+    printf("Class 0 Templates: %d\tClass 1 Templates: %d\tTotal Templates: %d\n",
+           numTemplates-classOneTemplateCount, classOneTemplateCount, numTemplates);
+    foreach (float FAR, QList<float>() << 0.1 << 0.01 << 0.001 << 0.0001) {
+        const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+        printf("TAR & Score @ FAR = %.0e: %.3f %.3f\n", FAR, op.TAR, op.score);
+    }
+    printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThres);
+
+    // Optionally write ROC curve
+    if (!pdf.isEmpty()) {
+        QStringList farValues, tarValues;
+        float expFAR  = std::max(ceil(log10(numTemplates - classOneTemplateCount)), 1.0);
+        float FARstep = expFAR / (float)(Max_Points - 1);
+        for (int i=0; i<Max_Points; i++) {
+            float FAR = pow(10, -expFAR + i*FARstep);
+            OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+            farValues.append(QString::number(FAR));
+            tarValues.append(QString::number(op.TAR));
+        }
+
+        QStringList rSource;
+        rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
+                << "FAR <- c(" + farValues.join(",") + ")"
+                << "TAR <- c(" + tarValues.join(",") + ")"
+                << "data <- data.frame(FAR, TAR)"
+                << "" << "# Construct Plot" << "pdf(\"" + pdf + "\")"
+                << "print(qplot(FAR, TAR, data=data, geom=\"line\") + scale_x_log10() + theme_minimal())"
+                << "dev.off()";
+
+        QString rFile = "EvalEER.R";
+        QtUtils::writeFile(rFile, rSource);
+        QtUtils::runRScript(rFile);
+    }
 }
-
 
 } // namespace br

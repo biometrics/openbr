@@ -66,7 +66,7 @@ BR_EXPORT void br_eval_regression(const char *predicted_gallery, const char *tru
 
 BR_EXPORT void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv = "");
 
-BR_EXPORT void br_eval_eer(const char *predicted_xml, const char *gt_property = "", const char *distribution_property = "");
+BR_EXPORT void br_eval_eer(const char *predicted_xml, const char *gt_property = "", const char *distribution_property = "", const char *pdf = "");
 
 BR_EXPORT void br_finalize();
 
