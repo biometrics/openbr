@@ -24,7 +24,9 @@ class IfTransform : public MetaTransform
     {
         bool result, ok1 = true, ok2 = true;
 
-        if (comparison == "e")
+	if (comparison == "empty")
+	    result = metadata.isEmpty();
+        else if (comparison == "e")
             result = metadata == value;
         else if (comparison == "ne")
             result = metadata != value;
