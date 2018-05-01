@@ -84,7 +84,7 @@ plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") 
     textSize <- if("textSize" %in% names(options)) as.numeric(options$textSize) else 12
     p <- qplot(X, if(flipY) 1-Y else Y, data=lineData, main=options$title, geom=geometry, size=if("size" %in% names(options)) I(as.numeric(options$size)) else I(.5), colour=if(majorSize > 1) factor(eval(parse(text=majorHeader))) else NULL, linetype=if(minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab=options$xTitle, ylab=options$yTitle) + theme_minimal()
     if (smooth && deparse(substitute(lineData)) != "CMC" && confidence != 0) p <- p + geom_errorbar(data=lineData[seq(1, NROW(lineData), by = 29),], aes(x=X, ymin=if(flipY) (1-lower) else lower, ymax=if(flipY) (1-upper) else upper), width=0.1, alpha=I(1/2))
-    if (majorSize > 1) p <- p + getScale("colour", majorHeader, majorSize, seq)
+    if (majorSize > 1) p <- p + getScale("colour", majorHeader, majorSize)
     if (minorSize > 1) p <- p + scale_linetype_discrete(minorHeader)
 
     # Set log/continuous scales, breaks and labels
@@ -133,7 +133,7 @@ plotBC <- function(bcData=NULL) {
     factor <- if (majorSmooth) minorHeader else majorHeader
     plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
     p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
-    if (majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize, seq)
+    if (majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
     if (minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
     p <- p + scale_y_continuous(labels=percent) + theme(legend.position="none", axis.text.x=element_text(angle=-90, hjust=0))
     if (!smooth) p <- p + geom_text(data=bcData, aes(label=Y, y=0.05))
