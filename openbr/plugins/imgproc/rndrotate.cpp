@@ -37,7 +37,7 @@ class RndRotateTransform : public UntrainableTransform
     Q_PROPERTY(bool rotatePoints READ get_rotatePoints WRITE set_rotatePoints RESET reset_rotatePoints STORED false)
     Q_PROPERTY(bool rotateRects READ get_rotateRects WRITE set_rotateRects RESET reset_rotateRects STORED false)
     Q_PROPERTY(int centerIndex READ get_centerIndex WRITE set_centerIndex RESET reset_centerIndex STORED false)
-    Q_PROPERTY(int useRect READ get_useRect WRITE set_useRect RESET reset_useRect STORED false)   
+    Q_PROPERTY(bool useRect READ get_useRect WRITE set_useRect RESET reset_useRect STORED false)   
     BR_PROPERTY(QList<int>, range, QList<int>() << -15 << 15)
     BR_PROPERTY(bool, rotateMat, true)
     BR_PROPERTY(bool, rotatePoints, true)
