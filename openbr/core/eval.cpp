@@ -1304,7 +1304,8 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
            numTemplates-classOneTemplateCount, classOneTemplateCount, numTemplates);
     foreach (float FAR, QList<float>() << 0.1 << 0.01 << 0.001 << 0.0001) {
         const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
-        printf("TAR & Score @ FAR = %.0e: %.3f %.3f\n", FAR, op.TAR, op.score);
+        printf("TAR = %.3f @ FAR = %.0e | Threshold= %.3f\n", op.TAR, FAR, op.score);
+
     }
     printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThres);
 
