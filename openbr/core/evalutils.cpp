@@ -214,7 +214,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
 {
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
 
-    const int detectionsToKeep = 50;
+    int detectionsToKeep = 50;
     QList<ResolvedDetection> topFalsePositives, bottomTruePositives;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
@@ -281,6 +281,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         if (Globals->verbose) {
             QtUtils::touchDir(QDir("./falsePos"));
             qDebug("Highest Scoring False Positives:");
+	    detectionsToKeep = std::min(detectionsToKeep,topFalsePositives.size());
             for (int i=0; i<detectionsToKeep; i++) {
                 Mat img = imread(qPrintable(Globals->path + "/" + topFalsePositives[i].filePath));
                 qDebug() << topFalsePositives[i];

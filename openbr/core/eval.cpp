@@ -798,7 +798,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 
     if (Globals->verbose) {
         qDebug("Total False negatives:");
-        const int numFalseNegatives = 50;
+        const int numFalseNegatives = std::min(50, falseNegativeDetections.size());
         for (int i=0; i<numFalseNegatives; i++) {
             Mat img = imread(qPrintable(Globals->path + "/" + falseNegativeDetections[i].filePath));
             qDebug() << falseNegativeDetections[i];
