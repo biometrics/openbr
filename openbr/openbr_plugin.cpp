@@ -1118,6 +1118,11 @@ void Object::setProperty(const QString &name, QVariant value)
         if      (value.isNull())   value = true;
         else if (value == "false") value = false;
         else if (value == "true")  value = true;
+    } else if (type == "cv::Mat") {
+        if (value.toString().isEmpty())
+            value.setValue(cv::Mat());
+        else
+            qFatal("QString to cv::Mat not implemented!");
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
