@@ -160,7 +160,7 @@ float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsi
         QScopedPointer<Format> format(Factory<Format>::make(simmat));
         scores = format->read();
     }
-
+    
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
@@ -197,12 +197,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     float result = -1;
 
     // Make comparisons
-    QVector<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
+    std::vector<Comparison> comparisons; comparisons.reserve(simmat.rows*simmat.cols);
 
     // Flags rows as being mated or non-mated searches
     // Positive value: mated search, negative value: non-mated search
     // Value of 0: ignored search
-    QVector<int> genuineSearches(simmat.rows, 0);
+    std::vector<int> genuineSearches(simmat.rows, 0);
 
     int totalGenuineSearches = 0, totalImpostorSearches = 0;
     int genuineCount = 0, impostorCount = 0, numNaNs = 0;
@@ -213,7 +213,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
             if (mask_val == BEE::DontCare) continue;
             if (simmat_val != simmat_val) { numNaNs++; continue; }
             Comparison comparison(simmat_val, j, i, mask_val == BEE::Match);
-            comparisons.append(comparison);
+            comparisons.push_back(comparison);
             if (comparison.genuine) {
                 if (genuineSearches[comparison.query] != 1) {
                     genuineSearches[comparison.query] = 1;
@@ -243,15 +243,15 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     QList<OperatingPoint> operatingPoints;
     QList<OperatingPoint> searchOperatingPoints;
-    QList<float> genuines; genuines.reserve(sqrt((float)comparisons.size()));
-    QList<float> impostors; impostors.reserve(comparisons.size());
+    std::vector<float> genuines; genuines.reserve(sqrt((float)comparisons.size()));
+    std::vector<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
     int falsePositives = 0, previousFalsePositives = 0;
     int truePositives = 0, previousTruePositives = 0;
     int falseSearches = 0, previousFalseSearches = 0;
     int trueSearches = 0, previousTrueSearches = 0;
-    int index = 0;
+    size_t index = 0;
     int EERIndex = 0;
     float minGenuineScore = std::numeric_limits<float>::max();
     float minImpostorScore = std::numeric_limits<float>::max();
@@ -269,7 +269,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                     // True positive identification
                     trueSearches++;
                 }
-                genuines.append(comparison.score);
+                genuines.push_back(comparison.score);
                 if (firstGenuineReturns[comparison.query] < 1)
                     firstGenuineReturns[comparison.query] = (comparison.score == -std::numeric_limits<float>::max())
                                                           ? std::numeric_limits<int>::max()
@@ -284,7 +284,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                     // False positive identification
                     falseSearches++;
                 }
-                impostors.append(comparison.score);
+                impostors.push_back(comparison.score);
                 if (firstGenuineReturns[comparison.query] < 1)
                     firstGenuineReturns[comparison.query]--;
                 if ((comparison.score != -std::numeric_limits<float>::max()) &&
@@ -343,7 +343,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
             }
         }
         count = 0;
-        for (int i = EERIndex+1; i < comparisons.size(); i++) {
+        for (size_t i = EERIndex+1; i < comparisons.size(); i++) {
             if (comparisons[i].genuine) {
                 lines.append("GM,"+QString::number(comparisons[i].score)+","+targetFiles[comparisons[i].target].get<QString>("Label")+":"
                     +filePath+"/"+targetFiles[comparisons[i].target].name+":"+queryFiles[comparisons[i].query].get<QString>("Label")+":"+filePath+"/"+queryFiles[comparisons[i].query].name);
@@ -411,7 +411,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write SD & KDE
-    int points = qMin(qMin(Max_Points, genuines.size()), impostors.size());
+    int points = qMin(qMin((size_t)Max_Points, genuines.size()), impostors.size());
     QList<double> sampledGenuineScores; sampledGenuineScores.reserve(points);
     QList<double> sampledImpostorScores; sampledImpostorScores.reserve(points);
 
