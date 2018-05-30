@@ -1251,7 +1251,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
     QHash<QString, int> gtLabels;
-    QHash<QString, QList<float> > scores;
+    QHash<QString, float > scores;
     for (int i=0; i<templateList.size(); i++) {
         if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
             continue;
@@ -1259,7 +1259,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         const int gtLabel = templateList[i].file.get<int>(gt_property);
         if (gtLabel == 1)
             classOneTemplateCount++;
-        const QList<float> templateScores = templateList[i].file.getList<float>(distribution_property);
+        const float templateScores = templateList[i].file.get<float>(distribution_property);
         gtLabels[templateKey] = gtLabel;
         scores[templateKey] = templateScores;
     }
@@ -1278,13 +1278,13 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         foreach(const QString &key, scores.keys()) {
             int gtLabel = gtLabels[key];
             //> thresNorm = class 0 (spoof) : < thresNorm = class 1 (genuine)
-            if (scores[key][0] >= thresNorm && gtLabel == 0)
+            if (scores[key] >= thresNorm && gtLabel == 0)
                 continue;
-            else if (scores[key][0] < thresNorm && gtLabel == 1)
+            else if (scores[key] < thresNorm && gtLabel == 1)
                 continue;
-            else if (scores[key][0] >= thresNorm && gtLabel == 1)
+            else if (scores[key] >= thresNorm && gtLabel == 1)
                 FR +=1;
-            else if (scores[key][0] < thresNorm && gtLabel == 0)
+            else if (scores[key] < thresNorm && gtLabel == 0)
                 FA +=1;
         }
         const float FAR = FA / float(numTemplates - classOneTemplateCount);
