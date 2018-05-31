@@ -204,7 +204,7 @@ BR_REGISTER(Gallery, galGallery)
  * \brief A contiguous array of br_universal_template.
  * \author Josh Klontz \cite jklontz
  */
-class tGallery : public BinaryGallery
+class utGallery : public BinaryGallery
 {
     Q_OBJECT
 
@@ -224,7 +224,7 @@ class tGallery : public BinaryGallery
     }
 };
 
-BR_REGISTER(Gallery, tGallery)
+BR_REGISTER(Gallery, utGallery)
 
 /*!
  * \ingroup galleries
