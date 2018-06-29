@@ -3,7 +3,9 @@
 
 #include <openbr/openbr_plugin.h>
 
-struct Detection
+namespace EvalUtils
+{
+    struct Detection
 {
     QRectF boundingBox;
     QString filePath;
@@ -39,11 +41,21 @@ struct SortedDetection
 struct ResolvedDetection
 {
     QString filePath;
-    QRectF boundingBox;
+    QRectF boundingBox, groundTruthBoundingBox;
     float confidence, overlap;
-    ResolvedDetection() : confidence(-1), overlap(-1) {}
-    ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence_, float overlap_) :
-        filePath(filePath), boundingBox(boundingBox), confidence(confidence_), overlap(overlap_) {}
+    ResolvedDetection() :
+    confidence(-1),
+        overlap(-1)
+        {}
+
+ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence_, float overlap_, const QRectF &groundTruthBoundingBox) :
+    filePath(filePath),
+        boundingBox(boundingBox),
+        groundTruthBoundingBox(groundTruthBoundingBox),
+        confidence(confidence_),
+        overlap(overlap_)
+        {}
+
     inline bool operator<(const ResolvedDetection &other) const { return confidence > other.confidence; }
 };
 
@@ -73,8 +85,6 @@ struct DetectionOperatingPoint
         : Recall(TP/totalPositives), FalsePositiveRate(FP/numImages), Precision(TP/(TP+FP)), Confidence(confidence) {}
 };
 
-namespace EvalUtils
-{
     // Detection
     DetectionKey getDetectKey(const br::FileList &files);
     QList<Detection> getDetections(const DetectionKey &key, const br::File &f, bool isTruth);
@@ -88,6 +98,6 @@ namespace EvalUtils
     }
 }
 
-QDebug operator<<(QDebug dbg, const ResolvedDetection &d);
+QDebug operator<<(QDebug dbg, const EvalUtils::ResolvedDetection &d);
 
 #endif // EVALUTILS_EVALUTILS_H
