@@ -47,7 +47,7 @@ class NormalizePointsToRectTransform : public UntrainableTransform
                 if (points[i].y() > maxY) maxY = points[i].y();
             }
 
-            const QRectF boundingRect(QPoint(minX,minY),QPoint(maxX,maxY));
+            const QRectF boundingRect(QPointF(minX,minY),QPointF(maxX,maxY));
             normalizedPoints = normalizePoints(points,boundingRect);
         } else if (index < 0) {
             qreal width = src.m().cols;
