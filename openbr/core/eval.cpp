@@ -1300,14 +1300,24 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         thres += stepSize;
     }
 
+    printf("\n==========================================================\n");
     printf("Class 0 Templates: %d\tClass 1 Templates: %d\tTotal Templates: %d\n",
            numTemplates-classOneTemplateCount, classOneTemplateCount, numTemplates);
-    foreach (float FAR, QList<float>() << 0.1 << 0.01 << 0.001 << 0.0001) {
+    printf("----------------------------------------------------------\n");
+    foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001) {
         const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
-        printf("TAR = %.3f @ FAR = %.0e | Threshold= %.3f\n", op.TAR, FAR, op.score);
+        printf("TAR = %.3f @ FAR = %.4f | Threshold= %.3f\n", op.TAR, FAR, op.score);
 
     }
+    printf("----------------------------------------------------------\n");
+    foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98) {
+        const OperatingPoint op = getOperatingPointGivenTAR(operatingPoints, TAR);
+        printf("FAR = %.3f @ TAR = %.4f | Threshold= %.3f\n", op.FAR, TAR, op.score);
+
+    }
+    printf("----------------------------------------------------------\n");
     printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThres);
+    printf("==========================================================\n\n");
 
     // Optionally write ROC curve
     if (!pdf.isEmpty()) {
