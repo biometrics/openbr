@@ -42,6 +42,10 @@ set_target_properties(openbr PROPERTIES
 target_link_libraries(openbr PRIVATE ${BR_THIRDPARTY_LIBS})
 add_cppcheck(openbr)
 
+if(BR_WITH_DLIB)
+  add_dependencies(openbr dlib)
+endif()
+
 # Janus implementation
 if(BR_WITH_JANUS)
   set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")

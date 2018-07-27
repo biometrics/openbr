@@ -34,10 +34,9 @@ class FlipTransform : public UntrainableTransform
     Q_PROPERTY(bool flipRects READ get_flipRects WRITE set_flipRects RESET reset_flipRects STORED false)
 
 public:
-    /*!< */
-    enum Axis { X = 0,
-                Y = 1,
-                Both = -1 };
+    enum Axis { X = OpenCVUtils::X,
+                Y = OpenCVUtils::Y,
+                Both = OpenCVUtils::Both };
 
 private:
     BR_PROPERTY(Axis, axis, Y)
@@ -46,7 +45,7 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        OpenCVUtils::flip(src,dst,axis,true,flipPoints,flipRects);
+        OpenCVUtils::flip(src, dst, static_cast<OpenCVUtils::Axis>(axis), true, flipPoints, flipRects);
     }
 };
 

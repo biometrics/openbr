@@ -582,11 +582,11 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
     }
 }
 
-void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, const QMarginsF &padding, bool padPoints, bool padRects, int border, int value)
 {
     // Padding is expected to be top, bottom, left, right
     if (padMat) {
-        copyMakeBorder(src, dst, padding[0], padding[1], padding[2], padding[3], border, Scalar(value));
+        copyMakeBorder(src, dst, padding.top(), padding.bottom(), padding.left(), padding.right(), border, Scalar(value));
         dst.file = src.file;
     } else
         dst = src;
@@ -595,7 +595,7 @@ void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, c
         QList<QPointF> points = src.file.points();
         QList<QPointF> paddedPoints;
         for (int i=0; i<points.size(); i++)
-            paddedPoints.append(points[i] += QPointF(padding[2],padding[0]));
+            paddedPoints.append(points[i] += QPointF(padding.left(),padding.top()));
         dst.file.setPoints(paddedPoints);
     }
 
@@ -603,14 +603,12 @@ void OpenCVUtils::pad(const br::Template &src, br::Template &dst, bool padMat, c
         QList<QRectF> rects = src.file.rects();
         QList<QRectF> paddedRects;
         for (int i=0; i<rects.size(); i++)
-            paddedRects.append(rects[i].translated(QPointF(padding[2],padding[0])));
+            paddedRects.append(rects[i].translated(QPointF(padding.left(),padding.top())));
         dst.file.setRects(paddedRects);
     }
-
-
 }
 
-void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool padMat, const QList<int> &padding, bool padPoints, bool padRects, int border, int value)
+void OpenCVUtils::pad(const br::TemplateList &src, br::TemplateList &dst, bool padMat, const QMarginsF &padding, bool padPoints, bool padRects, int border, int value)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;
@@ -637,31 +635,38 @@ QList<QPointF> OpenCVUtils::rotatePoints(const QList<QPointF> &points, const Mat
     return rotatedPoints;
 }
 
+QRectF OpenCVUtils::rotateRect(const QRectF &rect, const Mat &rotationMatrix)
+{
+    const QPointF center = OpenCVUtils::rotatePoint(rect.center(), rotationMatrix);
+    return QRectF(center.x() - rect.width() / 2,
+                  center.y() - rect.height() / 2,
+                  rect.width(),
+                  rect.height());
+}
+
+QList<QRectF> OpenCVUtils::rotateRects(const QList<QRectF> &rects, const Mat &rotationMatrix)
+{
+    QList<QRectF> rotatedRects;
+    foreach (const QRectF &rect, rects)
+        rotatedRects.append(rotateRect(rect, rotationMatrix));
+    return rotatedRects;
+}
+
 void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
 {
-    const Mat rotMatrix = getRotationMatrix2D(center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center),
-                                              degrees, 1.0);
+    const Mat rotMatrix = getRotationMatrix2D(center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center), degrees, 1.0);
+
     if (rotateMat) {
         warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_AREA,BORDER_REPLICATE);
         dst.file = src.file;
-    } else {
+    } else
         dst = src;
-    }
 
     if (rotatePoints)
         dst.file.setPoints(OpenCVUtils::rotatePoints(src.file.points(), rotMatrix));
 
-    if (rotateRects) {
-        QList<QRectF> rotatedRects;
-        foreach (const QRectF &rect, src.file.rects()) {
-            const QPointF center = OpenCVUtils::rotatePoint(rect.center(), rotMatrix);
-            rotatedRects.append(QRectF(center.x() - rect.width() / 2,
-                                       center.y() - rect.height() / 2,
-                                       rect.width(),
-                                       rect.height()));
-        }
-        dst.file.setRects(rotatedRects);
-    }
+    if (rotateRects)
+        dst.file.setRects(OpenCVUtils::rotateRects(src.file.rects(), rotMatrix));
 }
 
 void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
@@ -673,7 +678,36 @@ void OpenCVUtils::rotate(const br::TemplateList &src, br::TemplateList &dst, flo
     }
 }
 
-void OpenCVUtils::flip(const br::Template &src, br::Template &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
+QRectF OpenCVUtils::flipRect(const cv::Mat &mat, const QRectF &rect, Axis axis)
+{
+    QRectF flippedRect;
+    if (axis == X)
+        flippedRect = QRectF(rect.x(),
+                             mat.rows-rect.bottom(),
+                             rect.width(),
+                             rect.height());
+    else if (axis == Y)
+        flippedRect = QRectF(mat.cols-rect.right(),
+                             rect.y(),
+                             rect.width(),
+                             rect.height());
+    else
+        flippedRect = QRectF(mat.cols-rect.right(),
+                             mat.rows-rect.bottom(),
+                             rect.width(),
+                             rect.height());
+    return flippedRect;
+}
+
+QList<QRectF> OpenCVUtils::flipRects(const cv::Mat &mat, const QList<QRectF> &rects, Axis axis)
+{
+    QList<QRectF> flippedRects;
+    foreach(const QRectF &rect, rects)
+        flippedRects.append(flipRect(mat, rect, axis));
+    return flippedRects;
+}
+
+void OpenCVUtils::flip(const br::Template &src, br::Template &dst, Axis axis, bool flipMat, bool flipPoints, bool flipRects)
 {
     if (flipMat) {
         cv::flip(src, dst, axis);
@@ -686,43 +720,22 @@ void OpenCVUtils::flip(const br::Template &src, br::Template &dst, int axis, boo
         foreach(const QPointF &point, src.file.points()) {
             // Check for missing data using the QPointF(-1,-1) convention
             if (point != QPointF(-1,-1)) {
-                if (axis == 0) {
+                if (axis == X)
                     flippedPoints.append(QPointF(point.x(),src.m().rows-point.y()));
-                } else if (axis == 1) {
+                else if (axis == Y)
                     flippedPoints.append(QPointF(src.m().cols-point.x(),point.y()));
-                } else {
+                else
                     flippedPoints.append(QPointF(src.m().cols-point.x(),src.m().rows-point.y()));
-                }
             }
         }
         dst.file.setPoints(flippedPoints);
     }
 
-    if (flipRects) {
-        QList<QRectF> flippedRects;
-        foreach(const QRectF &rect, src.file.rects()) {
-            if (axis == 0) {
-                flippedRects.append(QRectF(rect.x(),
-                                           src.m().rows-rect.bottom(),
-                                           rect.width(),
-                                           rect.height()));
-            } else if (axis == 1) {
-                flippedRects.append(QRectF(src.m().cols-rect.right(),
-                                           rect.y(),
-                                           rect.width(),
-                                           rect.height()));
-            } else {
-                flippedRects.append(QRectF(src.m().cols-rect.right(),
-                                           src.m().rows-rect.bottom(),
-                                           rect.width(),
-                                           rect.height()));
-            }
-        }
-        dst.file.setRects(flippedRects);
-    }
+    if (flipRects)
+        dst.file.setRects(OpenCVUtils::flipRects(src, src.file.rects(), axis));
 }
 
-void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, int axis, bool flipMat, bool flipPoints, bool flipRects)
+void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, Axis axis, bool flipMat, bool flipPoints, bool flipRects)
 {
     for (int i=0; i<src.size(); i++) {
         br::Template t;

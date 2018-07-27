@@ -74,6 +74,8 @@ public:
                 EPS_SVR = CvSVM::EPS_SVR,
                 NU_SVR = CvSVM::NU_SVR};
 
+    SVM svm;
+
 private:
     BR_PROPERTY(Kernel, kernel, Linear)
     BR_PROPERTY(Type, type, C_SVC)
@@ -86,7 +88,6 @@ private:
     BR_PROPERTY(int, folds, 5)
     BR_PROPERTY(bool, balanceFolds, false)
 
-    SVM svm;
     QHash<QString, int> labelMap;
     QHash<int, QVariant> reverseLookup;
 
@@ -184,6 +185,12 @@ private:
 };
 
 BR_REGISTER(Transform, SVMTransform)
+
+// Hack to expose the underlying SVM as it is difficult to expose this data structure through the Qt property system
+BR_EXPORT const cv::SVM *GetSVM(const br::Transform *t)
+{
+    return &reinterpret_cast<const SVMTransform&>(*t).svm;
+}
 
 } // namespace br
 

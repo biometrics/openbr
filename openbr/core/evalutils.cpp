@@ -8,6 +8,7 @@
 using namespace std;
 using namespace br;
 using namespace cv;
+using namespace EvalUtils;
 
 static const int Max_Points = 500; // Maximum number of points to render on plots
 
@@ -163,7 +164,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             const Detection predicted = detections.predicted[detection.predicted_idx];
 
             if (!truth.ignore)
-                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap));
+                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap, truth.boundingBox));
 
             removedTruth.append(detection.truth_idx);
             removedPredicted.append(detection.predicted_idx);
@@ -179,9 +180,9 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
         }
 
         for (int i = 0; i < detections.predicted.size(); i++)
-            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0));
+            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0, QRectF()));
         for (int i = 0; i < detections.truth.size(); i++)
-            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0));
+            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0, QRectF()));
     }
 
     if (offsets.x() == 0) {
@@ -286,7 +287,8 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                 Mat img = imread(qPrintable(Globals->path + "/" + topFalsePositives[i].filePath));
                 qDebug() << topFalsePositives[i];
                 const Scalar color(0,255,0);
-                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].boundingBox), color, 1);
+                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].boundingBox), Scalar(0,0,255), 1);
+                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].groundTruthBoundingBox), Scalar(0,255,0), 1);
                 imwrite(qPrintable(QString("./falsePos/falsePos%1.jpg").arg(QString::number(i))), img);
             }
             qDebug("Lowest Scoring True Positives:");
