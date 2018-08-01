@@ -38,6 +38,8 @@ class IfTransform : public MetaTransform
             result = metadata.toFloat(&ok1) <= value.toFloat(&ok2);
         else if (comparison == "ge")
             result = metadata.toFloat(&ok1) >= value.toFloat(&ok2);
+        else if (comparison == "c") // contains
+            result = metadata.contains(value);
         else
             qFatal("Unrecognized comparison string.");
 
