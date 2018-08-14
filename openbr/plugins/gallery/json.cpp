@@ -45,7 +45,7 @@ class jsonGallery : public FileGallery
         QJsonParseError jsonParseError;
         const QJsonDocument jsonDocument = QJsonDocument::fromJson(f.readAll(), &jsonParseError);
         if (jsonParseError.error != QJsonParseError::NoError)
-            qFatal("%s", qPrintable(jsonParseError.error));
+            qFatal("%s", qPrintable(jsonParseError.errorString()));
 
         if (!jsonDocument.isArray())
             qFatal("Expected JSON document to be an array!");
