@@ -540,7 +540,7 @@ public:
     int timeRemaining() const;
 
     static bool checkSDKPath(const QString &sdkPath);
-    static void initialize(int &argc, char *argv[], QString sdkPath = "", bool useGui = true);
+    static void initialize(int &argc, char **argv, QString sdkPath = "", bool useGui = true);
     static void finalize();
     static QString about();
     static QString version();

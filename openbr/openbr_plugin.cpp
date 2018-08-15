@@ -1236,7 +1236,7 @@ bool br::Context::checkSDKPath(const QString &sdkPath)
 // Since we can't ensure that it gets deleted last, we never delete it.
 static QCoreApplication *application = NULL;
 
-void br::Context::initialize(int &argc, char *argv[], QString sdkPath, bool useGui)
+void br::Context::initialize(int &argc, char **argv, QString sdkPath, bool useGui)
 {
     QString sep;
 #ifndef _WIN32
