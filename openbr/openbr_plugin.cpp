@@ -249,7 +249,7 @@ QList<QRectF> File::rects() const
 {
     QList<QRectF> rects;
     foreach (const QVariant &rect, m_metadata["Rects"].toList())
-        rects.append(rect.toRect());
+        rects.append(rect.toRectF());
     return rects;
 }
 
