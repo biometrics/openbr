@@ -433,6 +433,15 @@ QString toString(const QVariantList &variantList)
 
 QString toString(const QMap<QString,QVariant> &variantMap)
 {
+    QStringList variants = toStringList(variantMap);
+
+    if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
+
+    return QString();
+}
+
+QStringList toStringList(const QMap<QString,QVariant> &variantMap)
+{
     QStringList variants;
 
     QMapIterator<QString, QVariant> i(variantMap);
@@ -441,9 +450,7 @@ QString toString(const QMap<QString,QVariant> &variantMap)
         variants.append(i.key() + "=" + toString(i.value()));
     }
 
-    if (!variants.isEmpty()) return "[" + variants.join(", ") + "]";
-
-    return QString();
+    return variants;
 }
 
 QString toTime(int s)

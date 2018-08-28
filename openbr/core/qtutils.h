@@ -32,6 +32,8 @@
 #include <string>
 #include <vector>
 
+#include <openbr/openbr_export.h>
+
 namespace QtUtils
 {
     /**** File Utilities ****/
@@ -63,8 +65,8 @@ namespace QtUtils
     QString shortTextHash(QString string);
     QStringList parse(QString args, char split = ',', bool *ok = NULL);
     void checkArgsSize(const QString &name, const QStringList &args, int min, int max);
-    QPointF toPoint(const QString &string, bool *ok = NULL);
-    QRectF toRect(const QString &string, bool *ok = NULL);
+    BR_EXPORT QPointF toPoint(const QString &string, bool *ok = NULL);
+    BR_EXPORT QRectF toRect(const QString &string, bool *ok = NULL);
     QStringList naturalSort(const QStringList &strings);
     QString toTime(int s);
 
@@ -74,9 +76,10 @@ namespace QtUtils
     void showFile(const QString &file);
 
     /**** Variant Utilities ****/
-    QString toString(const QVariant &variant);
+    BR_EXPORT QString toString(const QVariant &variant);
     QString toString(const QVariantList &variantList);
-    QString toString(const QVariantMap &QVariantMap);
+    BR_EXPORT QString toString(const QVariantMap &QVariantMap);
+    BR_EXPORT QStringList toStringList(const QVariantMap &QVariantMap);
 
     template <typename T>
     QVariantList toVariantList(const QList<T> &list)
