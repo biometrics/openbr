@@ -102,7 +102,7 @@ namespace OpenCVUtils
     float overlap(const cv::Rect &rect1, const cv::Rect &rect2);
     float overlap(const QRectF &rect1, const QRectF &rect2);
     QString rotatedRectToString(const cv::RotatedRect &rotatedRect);
-    cv::RotatedRect rotateRectFromString(const QString &string, bool *ok);
+    BR_EXPORT cv::RotatedRect rotateRectFromString(const QString &string, bool *ok);
 
     enum Axis { X = 0, Y = 1, Both = -1 };
 
