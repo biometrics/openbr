@@ -33,8 +33,6 @@ namespace br
 class csvGallery : public FileGallery
 {
     Q_OBJECT
-    Q_PROPERTY(int fileIndex READ get_fileIndex WRITE set_fileIndex RESET reset_fileIndex)
-    BR_PROPERTY(int, fileIndex, 0)
 
     FileList files;
     QStringList headers;
@@ -42,42 +40,30 @@ class csvGallery : public FileGallery
     ~csvGallery()
     {
         f.close();
-
         if (files.isEmpty()) return;
 
-        QMap<QString,QVariant> samples;
+        QSet<QString> samples;
         foreach (const File &file, files)
             foreach (const QString &key, file.localKeys())
-                if (!samples.contains(key))
-                    samples.insert(key, file.value(key));
-
-        // Don't create columns in the CSV for these special fields
-        samples.remove("Points");
-        samples.remove("Rects");
+                samples.insert(key);
 
         QStringList lines;
         lines.reserve(files.size()+1);
 
-        QMap<QString, int> columnCounts;
-
-        { // Make header
-            QStringList words;
-            words.append("File");
-            foreach (const QString &key, samples.keys()) {
-                int count = 0;
-                words.append(getCSVElement(key, samples[key], true, count));
-                columnCounts.insert(key, count);
-            }
-            lines.append(words.join(","));
-        }
+        // Make header
+        QStringList keys = samples.values();
+        keys.sort();
+        lines.append(QStringList(QStringList("File") + keys).join(","));
 
         // Make table
         foreach (const File &file, files) {
             QStringList words;
             words.append(file.name);
-            foreach (const QString &key, samples.keys()) {
-                int count = columnCounts[key];
-                words.append(getCSVElement(key, file.value(key), false, count));
+            foreach (const QString &key, keys) {
+                QString value = QtUtils::toString(file.value(key));
+                if (value.contains(","))
+                    value = '"' + value + '"';
+                words.append(value);
             }
             lines.append(words.join(","));
         }
@@ -94,32 +80,28 @@ class csvGallery : public FileGallery
             *done = true;
             return templates;
         }
-        QRegExp regexp("\\s*,\\s*");
 
-        if (f.pos() == 0)
-        {
-            // read a line
+        if (f.pos() == 0) {
+            // read header
             QByteArray lineBytes = f.readLine();
             QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+            QRegExp regexp("\\s*,\\s*");
             headers = line.split(regexp);
         }
 
-        for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++){
-            QByteArray lineBytes = f.readLine();
-            QString line = QString::fromLocal8Bit(lineBytes).trimmed();
+        for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++) {
+            const QVariantList values = parseLine(f.readLine());
+            if (values.size() != headers.size()) continue;
 
-            QStringList words = line.split(regexp);
-            if (words.size() != headers.size()) continue;
-            File fi;
-            for (int j=0; j<words.size(); j++) {
-                if (j == 0) fi.name = words[j];
-                else        fi.set(headers[j], words[j]);
+            File in;
+            for (int j=0; j<values.size(); j++) {
+                if (j == 0) in.name = values[j].toString();
+                else        in.set(headers[j], values[j].toString());
             }
-            templates.append(fi);
-            templates.last().file.set("progress", f.pos());
+            in.set("progress", f.pos());
+            templates.append(in);
         }
         *done = f.atEnd();
-
         return templates;
     }
 
@@ -128,51 +110,27 @@ class csvGallery : public FileGallery
         files.append(t.file);
     }
 
-    static QString getCSVElement(const QString &key, const QVariant &value, bool header, int & columnCount)
+    static QVariantList parseLine(const QByteArray bytes)
     {
-        if (header)
-            columnCount = 1;
-
-        if (value.canConvert<QString>()) {
-            if (header) return key;
-            else {
-                if (columnCount != 1)
-                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
-                return value.value<QString>();
-            }
-        } else if (value.canConvert<QPointF>()) {
-            const QPointF point = value.value<QPointF>();
-            if (header) {
-                columnCount = 2;
-                return key+"_X,"+key+"_Y";
-            }
-            else {
-                if (columnCount != 2)
-                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
-
-                return QString::number(point.x())+","+QString::number(point.y());
-            }
-        } else if (value.canConvert<QRectF>()) {
-            const QRectF rect = value.value<QRectF>();
-            if (header) {
-                columnCount = 4;
-                return key+"_X,"+key+"_Y,"+key+"_Width,"+key+"_Height";
-            }
-            else {
-                if (columnCount != 4)
-                    qFatal("Inconsistent datatype for key %s, csv file cannot be generated", qPrintable(key));
-
-                return QString::number(rect.x())+","+QString::number(rect.y())+","+QString::number(rect.width())+","+QString::number(rect.height());
-            }
-        } else {
-            if (header) return key;
-            else {
-                QString output = QString::number(std::numeric_limits<float>::quiet_NaN());
-                for (int i = 1; i < columnCount; i++)
-                    output += "," + QString::number(std::numeric_limits<float>::quiet_NaN());
-                return output;
-            }
+        bool inQuote(false);
+        QVariantList values;
+        QString value = QString();
+        const QString line = QString::fromLocal8Bit(bytes).trimmed();
+        for (int i=0; i<line.size(); i++) {
+            const QChar c = line[i];
+            if (c == '"') {
+                inQuote = !inQuote;
+                continue;
+            } else if (c == ',' && !inQuote) {
+                values.append(QVariant(value));
+                value = QString();
+            } else
+                value.append(c);
         }
+        if (!value.isEmpty())
+            values.append(QVariant(value));
+
+        return values;
     }
 };
 
