@@ -15,10 +15,12 @@ class IfTransform : public MetaTransform
     Q_PROPERTY(QString key READ get_key WRITE set_key RESET reset_key)
     Q_PROPERTY(QString value READ get_value WRITE set_value RESET reset_value)
     Q_PROPERTY(QString comparison READ get_comparison WRITE set_comparison RESET reset_comparison)
+    Q_PROPERTY(bool projectOnEmpty READ get_projectOnEmpty WRITE set_projectOnEmpty RESET reset_projectOnEmpty)
     BR_PROPERTY(br::Transform*, transform, NULL)
     BR_PROPERTY(QString, key, "Label")
     BR_PROPERTY(QString, value, "1")
     BR_PROPERTY(QString, comparison, "e")
+    BR_PROPERTY(bool, projectOnEmpty, false)
 
     bool compare(const QString &metadata) const
     {
@@ -55,15 +57,15 @@ public:
         if (transform->trainable) {
             TemplateList passed;
             for (int i=0; i<data.size(); i++)
-                if (data[i].file.contains(key) && compare(data[i].file.get<QString>(key)))
+                if ((data[i].file.contains(key) || projectOnEmpty) && compare(data[i].file.get<QString>(key, QString())))
                     passed.append(data[i]);
             transform->train(passed);
         }
     }
 
     void project(const Template &src, Template &dst) const {
-        if (src.file.contains(key) && compare(src.file.get<QString>(key)))
-            transform->project(src,dst);
+        if ((src.file.contains(key) || projectOnEmpty) && compare(src.file.get<QString>(key, QString())))
+            transform->project(src, dst);
         else
             dst = src;
     }
@@ -71,13 +73,13 @@ public:
     void project(const TemplateList &src, TemplateList &dst) const {
         TemplateList ifTrue, ifFalse;
         foreach (const Template &t, src) {
-            if (t.file.contains(key) && compare(t.file.get<QString>(key)))
+            if ((t.file.contains(key) || projectOnEmpty) && compare(t.file.get<QString>(key, QString())))
                 ifTrue.append(t);
             else
                 ifFalse.append(t);
         }
 
-        transform->project(ifTrue,dst);
+        transform->project(ifTrue, dst);
         dst.append(ifFalse);
     }
 
