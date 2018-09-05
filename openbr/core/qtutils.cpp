@@ -27,6 +27,7 @@
 #include <QRegularExpression>
 #include <QStack>
 #include <QUrl>
+#include <QJsonArray>
 #include <openbr/openbr_plugin.h>
 
 #include "alphanum.hpp"
@@ -451,6 +452,78 @@ QStringList toStringList(const QMap<QString,QVariant> &variantMap)
     }
 
     return variants;
+}
+
+QJsonValue fromVariant(const QVariant &variant)
+{
+    // Convert any formats that can be natively stored as JSON
+    if (variant.canConvert<bool>() || variant.canConvert<double>() || variant.canConvert<QString>())
+        return QJsonValue::fromVariant(variant);
+
+    // If array, recurse
+    if (variant.canConvert<QVariantList>()) {
+        QJsonArray jsonArray;
+        foreach (const QVariant &v, variant.toList())
+            jsonArray.append(fromVariant(v));
+        return QJsonValue(jsonArray);
+    }
+
+    return QJsonValue(QtUtils::toString(variant));
+}
+
+QJsonObject fromVariantMap(const QVariantMap &variantMap)
+{
+    QJsonObject jsonObject;
+    QMap<QString, QVariant>::const_iterator i;
+    for (i = variantMap.begin(); i != variantMap.end(); i++)
+        jsonObject.insert(i.key(), fromVariant(i.value()));
+    return jsonObject;
+}
+
+QVariant fromJsonValue(const QJsonValue &value)
+{
+    QVariant variant;
+    QJsonValue::Type t = value.type();
+    if (t == QJsonValue::Null)
+        return QVariant();
+    else if (t == QJsonValue::Bool || t == QJsonValue::Double)
+        return value.toVariant();
+    else if (t == QJsonValue::String)
+        return QtUtils::fromString(value.toString());
+    else if (t == QJsonValue::Array) {
+        const QJsonArray array = value.toArray();
+        QVariantList variantList;
+        foreach (const QJsonValue &arrayValue, array)
+            variantList.append(fromJsonValue(arrayValue));
+        return variantList;
+    } else if (t == QJsonValue::Object)
+        return fromJsonObject(value.toObject());
+    else // QJsonValue::Undefined
+        return QVariant();
+}
+
+QVariantMap fromJsonObject(const QJsonObject &object)
+{
+    QVariantMap variantMap;
+    foreach (const QString &key, object.keys())
+        variantMap.insert(key, fromJsonValue(object.value(key)));
+    return variantMap;
+}
+
+QVariant fromString(const QString &value)
+{
+    bool ok = false;
+    const QPointF point = QtUtils::toPoint(value, &ok);
+    if (ok) return point;
+    const QRectF rect = QtUtils::toRect(value, &ok);
+    if (ok) return rect;
+    const cv::RotatedRect rotatedRect = OpenCVUtils::rotateRectFromString(value, &ok);
+    if (ok) return QVariant::fromValue(rotatedRect);
+    const int i = value.toInt(&ok);
+    if (ok) return i;
+    const float f = value.toFloat(&ok);
+    if (ok) return f;
+    return value;
 }
 
 QString toTime(int s)

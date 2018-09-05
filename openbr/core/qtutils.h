@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <QThreadPool>
+#include <QJsonObject>
 #include <string>
 #include <vector>
 
@@ -80,6 +81,11 @@ namespace QtUtils
     QString toString(const QVariantList &variantList);
     BR_EXPORT QString toString(const QVariantMap &QVariantMap);
     BR_EXPORT QStringList toStringList(const QVariantMap &QVariantMap);
+    BR_EXPORT QVariant fromString(const QString &value);
+    BR_EXPORT QJsonValue fromVariant(const QVariant &variant);
+    BR_EXPORT QJsonObject fromVariantMap(const QVariantMap &variantMap);
+    BR_EXPORT QVariant fromJsonValue(const QJsonValue &value);
+    BR_EXPORT QVariantMap fromJsonObject(const QJsonObject &object);
 
     template <typename T>
     QVariantList toVariantList(const QList<T> &list)
