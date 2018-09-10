@@ -547,10 +547,15 @@ float orientation(const QPointF &pointA, const QPointF &pointB)
     return atan2(pointB.y() - pointA.y(), pointB.x() - pointA.x());
 }
 
-float overlap(const QRectF &r, const QRectF &s) {
-    QRectF intersection = r & s;
+float area(const QRectF &r)
+{
+    return r.width() * r.height();
+}
 
-    return (intersection.width()*intersection.height())/(r.width()*r.height());
+float overlap(const QRectF &r, const QRectF &s) {
+    const QRectF intersected = r.intersected(s);
+    const float areaIntersected = area(intersected);
+    return areaIntersected / (area(r) + area(s) - areaIntersected);
 }
 
 

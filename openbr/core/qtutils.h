@@ -102,8 +102,8 @@ namespace QtUtils
     float orientation(const QPointF &pointA, const QPointF &pointB);
 
     /**** Rect Utilities ****/
+    float area(const QRectF &r);
     float overlap(const QRectF &r, const QRectF &s);
-
     
     class BlockCompression : public QIODevice
     {

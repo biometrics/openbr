@@ -768,13 +768,15 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
 
     // Remove any bounding boxes with a side smaller than minSize
     if (minSize > 0) {
-        qDebug("Removing boxes smaller than %d\n", minSize);
+        if (Globals->verbose)
+            qDebug("Removing boxes smaller than %d\n", minSize);
         allDetections = filterDetections(allDetections,minSize);
     }
 
     // Remove any bounding boxes with no side smaller than maxSize
     if (maxSize > 0) {
-        qDebug("Removing boxes larger than %d\n", maxSize);
+        if (Globals->verbose)
+            qDebug("Removing boxes larger than %d\n", maxSize);
         allDetections = filterDetections(allDetections,maxSize,false);
     }
 
@@ -787,10 +789,12 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     // Redo association of ground truth to predictions with boundingBoxes
     // resized based on the average differences on each side.
     if (normalize) {
-        qDebug("dX = %.3f", normalizations.x());
-        qDebug("dY = %.3f", normalizations.y());
-        qDebug("dWidth = %.3f", normalizations.width());
-        qDebug("dHeight = %.3f", normalizations.height());
+        if (Globals->verbose) {
+            qDebug("dX = %.3f", normalizations.x());
+            qDebug("dY = %.3f", normalizations.y());
+            qDebug("dWidth = %.3f", normalizations.width());
+            qDebug("dHeight = %.3f", normalizations.height());
+        }
         resolvedDetections.clear();
         falseNegativeDetections.clear();
         totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
@@ -833,7 +837,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     lines.append(QString("AverageOverlap,%1,").arg(QString::number(averageOverlap)));
 
     QtUtils::writeFile(csv, lines);
-    qDebug("Average Overlap = %.3f", averageOverlap);
+    qDebug("Average Overlap = %.4f\n", averageOverlap);
     return averageOverlap;
 }
 

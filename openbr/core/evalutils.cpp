@@ -63,7 +63,7 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
         dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1)));
     } else if (key.type == DetectionKey::XYWidthHeight) {
         const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
-        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false)));
+        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), f.get<QString>("Pose", "Frontal")));
     }
     return dets;
 }
@@ -82,9 +82,11 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
     if (predictedDetectKey.isEmpty())
         qFatal("No suitable predicted metadata key found.");
 
-    qDebug("Using metadata key: %s%s",
-           qPrintable(predictedDetectKey),
-           qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
+    if (Globals->verbose) {
+        qDebug("Using metadata key: %s%s",
+               qPrintable(predictedDetectKey),
+               qPrintable(predictedDetectKey == truthDetectKey ? QString() : "/"+truthDetectKey));
+    }
 
     QMap<QString, Detections> allDetections;
     foreach (const File &f, truth)
@@ -164,7 +166,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             const Detection predicted = detections.predicted[detection.predicted_idx];
 
             if (!truth.ignore)
-                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap, truth.boundingBox));
+                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap, truth.boundingBox, truth.pose == predicted.pose));
 
             removedTruth.append(detection.truth_idx);
             removedPredicted.append(detection.predicted_idx);
@@ -179,10 +181,13 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             }
         }
 
+        // False positive
         for (int i = 0; i < detections.predicted.size(); i++)
-            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0, QRectF()));
+            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0, QRectF(), false));
+
+        // False negative
         for (int i = 0; i < detections.truth.size(); i++)
-            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0, QRectF()));
+            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0, QRectF(), false));
     }
 
     if (offsets.x() == 0) {
@@ -203,10 +208,12 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
         offsets.setWidth(dWidth);
         offsets.setHeight(dHeight);
 
-        qDebug("oLeft = %.3f", dLeftStdDev);
-        qDebug("oRight = %.3f", dRightStdDev);
-        qDebug("oTop = %.3f", dTopStdDev);
-        qDebug("oBottom = %.3f", dBottomStdDev);
+        if (Globals->verbose) {
+            qDebug("oLeft = %.3f", dLeftStdDev);
+            qDebug("oRight = %.3f", dRightStdDev);
+            qDebug("oTop = %.3f", dTopStdDev);
+            qDebug("oBottom = %.3f", dBottomStdDev);
+        }
     }
     return totalTrueDetections;
 }
@@ -215,13 +222,30 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
 {
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
 
+    QList<float> FARsToOutput;
+    FARsToOutput << 1 << .5 << .2 << .1 << .02 << .01 << .001;
+
+    QDebug debug = qDebug();
+    debug.noquote();
+
+    if (discrete) {
+        debug << endl << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+        debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
+        debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+    }
+
+    int poseMatch = 0;
     int detectionsToKeep = 50;
     QList<ResolvedDetection> topFalsePositives, bottomTruePositives;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
             // A 50% overlap is considered a true positive
-            if (detection.overlap >= 0.5) TP++;
+            if (detection.overlap >= 0.5) {
+                TP++;
+                if (detection.poseMatch)
+                    poseMatch++;
+            }
             else                          FP++;
         } else {
             TP += detection.overlap;
@@ -229,34 +253,16 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
             if (FP > prevFP || (i == detections.size()-1)) {
-                if (prevFP / numImages < 1 && FP / numImages >= 1 && discrete) {
-                    qDebug("TAR @ FAR => %f : 1", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-                } else if (prevFP / numImages < 0.5 && FP / numImages >= 0.5 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.5", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-                } else if (prevFP / numImages < 0.2 && FP / numImages >= 0.2 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.2", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-                } else if (prevFP / numImages < 0.1 && FP / numImages >= 0.1 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.1", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-                } else if (prevFP / numImages < 0.02 && FP / numImages >= 0.02 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.02", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-               } else if (prevFP / numImages < 0.01 && FP / numImages >= 0.01 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.01", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
-                } else if (prevFP / numImages < 0.001 && FP / numImages >= 0.001 && discrete) {
-                    qDebug("TAR @ FAR => %f : 0.001", TP / totalTrueDetections);
-                    qDebug("Confidence: %f", detection.confidence);
-                    qDebug("TP vs. FP: %f to %f", TP, FP);
+                if (discrete) {
+                    foreach (float FAR, FARsToOutput)
+                        if (prevFP / numImages < FAR && FP / numImages >= FAR) {
+                            debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
+                            debug << QString("|") << QString::number(TP / totalTrueDetections, 'f', 4).leftJustified(10, ' ');
+                            debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
+                            debug << QString("|") << QString::number(poseMatch / TP, 'f', 4).leftJustified(10, ' ');
+                            debug << QString("|") << endl;
+                            break;
+                        }
                 }
 
                 if (detection.overlap < 0.5 && topFalsePositives.size() < detectionsToKeep)
@@ -276,8 +282,11 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     }
 
     if (discrete) {
-        qDebug("Total TP vs. FP: %f to %f", TP, FP);
-        qDebug("Overall Recall (TP vs. possible TP): %f (%f vs. %d)", TP / totalTrueDetections, TP, totalTrueDetections);
+        debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+
+        debug << endl << QString("Total TP vs. FP:").leftJustified(25, ' ') << QString("%1 vs. %2").arg(QString::number((int)TP)).arg(QString::number((int)FP)) << endl;
+        debug << QString("Total TP vs. possible TP:") << QString("%1 vs. %2").arg(QString::number((int)TP)).arg(QString::number(totalTrueDetections)) << endl;
+        debug << QString("Pose matches:").leftJustified(25, ' ') << QString::number(poseMatch);
 
         if (Globals->verbose) {
             QtUtils::touchDir(QDir("./falsePos"));

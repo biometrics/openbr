@@ -2,6 +2,7 @@
 #define EVALUTILS_EVALUTILS_H
 
 #include <openbr/openbr_plugin.h>
+#include <openbr/core/qtutils.h>
 
 namespace EvalUtils
 {
@@ -15,16 +16,20 @@ namespace EvalUtils
     // with an ignored truth detection will not count as a true positive, false positive,
     // true negative, or false negative, it will simply be ignored.
     bool ignore;
+    QString pose;
 
     Detection() {}
-    Detection(const QRectF &boundingBox_, const QString &filePath = QString(), float confidence_ = -1, bool ignore_ = false)
-        : boundingBox(boundingBox_), filePath(filePath), confidence(confidence_), ignore(ignore_) {}
+    Detection(const QRectF &boundingBox, const QString &filePath = QString(), float confidence = -1, bool ignore = false, const QString &pose = "Frontal") : 
+        boundingBox(boundingBox),
+        filePath(filePath),
+        confidence(confidence), 
+        ignore(ignore),
+        pose(pose)
+    {}
 
-    float area() const { return boundingBox.width() * boundingBox.height(); }
     float overlap(const Detection &other) const
     {
-        const Detection intersection(boundingBox.intersected(other.boundingBox));
-        return intersection.area() / (area() + other.area() - intersection.area());
+        return QtUtils::overlap(boundingBox, other.boundingBox);
     }
 };
 
@@ -43,18 +48,20 @@ struct ResolvedDetection
     QString filePath;
     QRectF boundingBox, groundTruthBoundingBox;
     float confidence, overlap;
+    bool poseMatch;
     ResolvedDetection() :
     confidence(-1),
         overlap(-1)
         {}
 
-ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence_, float overlap_, const QRectF &groundTruthBoundingBox) :
+ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence, float overlap, const QRectF &groundTruthBoundingBox, bool poseMatch) :
     filePath(filePath),
-        boundingBox(boundingBox),
-        groundTruthBoundingBox(groundTruthBoundingBox),
-        confidence(confidence_),
-        overlap(overlap_)
-        {}
+    boundingBox(boundingBox),
+    groundTruthBoundingBox(groundTruthBoundingBox),
+    confidence(confidence),
+    overlap(overlap),
+    poseMatch(poseMatch)
+    {}
 
     inline bool operator<(const ResolvedDetection &other) const { return confidence > other.confidence; }
 };
