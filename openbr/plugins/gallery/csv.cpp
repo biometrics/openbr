@@ -33,6 +33,8 @@ namespace br
 class csvGallery : public FileGallery
 {
     Q_OBJECT
+    Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
+    BR_PROPERTY(bool, inPlace, false)
 
     FileList files;
     QStringList headers;
@@ -51,22 +53,13 @@ class csvGallery : public FileGallery
         lines.reserve(files.size()+1);
 
         // Make header
-        QStringList keys = samples.values();
-        keys.sort();
-        lines.append(QStringList(QStringList("File") + keys).join(","));
+        headers = samples.values();
+        headers.sort();
+        lines.append(QStringList(QStringList("File") + headers).join(","));
 
         // Make table
-        foreach (const File &file, files) {
-            QStringList words;
-            words.append(file.name);
-            foreach (const QString &key, keys) {
-                QString value = QtUtils::toString(file.value(key));
-                if (value.contains(","))
-                    value = '"' + value + '"';
-                words.append(value);
-            }
-            lines.append(words.join(","));
-        }
+        foreach (const File &file, files)
+            lines.append(lineFromFile(file));
 
         QtUtils::writeFile(file, lines);
     }
@@ -107,7 +100,32 @@ class csvGallery : public FileGallery
 
     void write(const Template &t)
     {
-        files.append(t.file);
+        if (inPlace) {
+            writeOpen();
+            if (headers.isEmpty()) {
+                foreach (const QString &key, t.file.localKeys())
+                    headers.append(key);
+
+                headers.sort();
+                const QString header = QString(QStringList(QStringList("File") + headers).join(",") + "\n");
+                f.write(header.toLocal8Bit());
+            }
+            f.write(QString(lineFromFile(t.file) + "\n").toLocal8Bit());
+        } else
+            files.append(t.file);
+    }
+
+    QString lineFromFile(const br::File file)
+    {
+        QStringList words;
+        words.append(file.name);
+        foreach (const QString &key, headers) {
+            QString value = QtUtils::toString(file.value(key));
+            if (value.contains(","))
+                value = '"' + value + '"';
+            words.append(value);
+        }
+        return words.join(",");
     }
 
     static QVariantList parseLine(const QByteArray bytes)
