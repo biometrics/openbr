@@ -66,8 +66,8 @@ namespace QtUtils
     QString shortTextHash(QString string);
     QStringList parse(QString args, char split = ',', bool *ok = NULL);
     void checkArgsSize(const QString &name, const QStringList &args, int min, int max);
-    BR_EXPORT QPointF toPoint(const QString &string, bool *ok = NULL);
-    BR_EXPORT QRectF toRect(const QString &string, bool *ok = NULL);
+    BR_EXPORT_ALWAYS QPointF toPoint(const QString &string, bool *ok = NULL);
+    BR_EXPORT_ALWAYS QRectF toRect(const QString &string, bool *ok = NULL);
     QStringList naturalSort(const QStringList &strings);
     QString toTime(int s);
 

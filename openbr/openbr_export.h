@@ -35,4 +35,18 @@
 #  endif
 #endif
 
+#if defined BR_LIBRARY
+#  if defined _WIN32 || defined __CYGWIN__
+#    define BR_EXPORT_ALWAYS __declspec(dllexport)
+#  else
+#    define BR_EXPORT_ALWAYS __attribute__((visibility("default")))
+#  endif
+#else
+#  if defined _WIN32 || defined __CYGWIN__
+#    define BR_EXPORT_ALWAYS __declspec(dllimport)
+#  else
+#    define BR_EXPORT_ALWAYS
+#  endif
+#endif
+
 #endif // OPENBR_EXPORT_H
