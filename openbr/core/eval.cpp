@@ -400,8 +400,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     lines.append(qPrintable(QString("CT,100,%1").arg(QString::number(getCMC(firstGenuineReturns, 100), 'f', 3))));
 
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.0001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
 
     // Attempt to read template size from enrolled gallery and write to output CSV
     size_t maxSize(0);
