@@ -78,9 +78,9 @@ set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Concurrent Core)
 if(NOT BR_EMBEDDED)
   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()
-foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
-  find_package(Qt5${QT_DEPENDENCY})
-endforeach()
+
+find_package(Qt5 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
+
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 if(IOS)
   list(APPEND BR_THIRDPARTY_LIBS "${_qt5Core_install_prefix}/lib/libqtpcre.a")
