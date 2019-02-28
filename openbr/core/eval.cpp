@@ -892,6 +892,8 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
             // Or the ground truth seems to be for another object in the image
             || (QtUtils::euclideanLength(predictedPoints[normalizationIndexA] - truthPoints[normalizationIndexA]) / normalizedLength >= 0.5)
             || (QtUtils::euclideanLength(predictedPoints[normalizationIndexB] - truthPoints[normalizationIndexB]) / normalizedLength >= 0.5)
+            // Or the predicted image FTE'd
+            || predicted[i].file.fte || predicted[i].file.getBool("FTE")
            ) {
             predicted.removeAt(i);
             predictedNames.removeAt(i);
