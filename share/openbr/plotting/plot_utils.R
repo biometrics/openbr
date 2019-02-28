@@ -313,7 +313,7 @@ plotEERSamples <- function(imData=NULL, gmData=NULL) {
 
 plotLandmarkSamples <- function(displaySample=NULL, expData=NULL, extData=NULL) {
     print(plotImage(displaySample[[1]], "Sample Landmarks", sprintf("Total Landmarks: %s", displaySample[[1]]$value)))
-    column <- if(majorSize > 1) majorHeader else "File"
+    column <- if(majorSize > 1) majorHeader else minorHeader
     if (nrow(EXT) != 0 && nrow(EXP)) {
         for (j in 1:length(algs)) {
             truthSample <- readImageData(EXT[EXT[,column] == algs[[j]],])
