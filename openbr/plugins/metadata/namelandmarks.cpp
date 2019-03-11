@@ -36,17 +36,19 @@ class NameLandmarksTransform : public UntrainableMetadataTransform
 
     void projectMetadata(const File &src, File &dst) const
     {
-        if (indices.size() != names.size()) qFatal("Index/name size mismatch");
+        const bool makeList = indices.size() != names.size();
 
         dst = src;
 
         if (point) {
             QList<QPointF> points = src.points();
 
-            for (int i=0; i<indices.size(); i++) {
-                if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
-                else qFatal("Index out of range.");
-            }
+            if (makeList)
+		dst.setList(names.first(),points);
+            else
+		for (int i=0; i<indices.size(); i++)
+		    if (indices[i] < points.size()) dst.set(names[i], points[indices[i]]);
+		    else qFatal("Index out of range.");
         } else {
             QList<QRectF> rects = src.rects();
 
