@@ -213,22 +213,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     }
 
     // optional plot metadata and accuracy tables
-    if (destination.getBool("metadata", true)) {
-        p.file.write("\n# Write metadata table\n");
-        p.file.write(qPrintable(QString("plotMetadata(metadata=Metadata, title=\"%1 - %2\")\n").arg(PRODUCT_NAME, PRODUCT_VERSION)));
-
-        if (!destination.getBool("csv")) p.file.write("plot.new()\n");
-        QString table = "plotTable(tableData=%1, name=%2, labels=%3)\n";
-        p.file.write(qPrintable(table.arg("TF", "\"Table of True Accept Rates at various False Accept Rates\"",
-                          "c(\"FAR = 1e-06\", \"FAR = 1e-05\", \"FAR = 1e-04\", \"FAR = 1e-03\", \"FAR = 1e-02\", \"FAR = 1e-01\")")));
-        p.file.write(qPrintable(table.arg("FT", "\"Table  of False Accept Rates at various True Accept Rates\"",
-                          "c(\"TAR = 0.40\", \"TAR = 0.50\", \"TAR = 0.65\", \"TAR = 0.75\", \"TAR = 0.85\", \"TAR = 0.95\")")));
-        p.file.write(qPrintable(table.arg("CT", "\"Table of retrieval rate at various ranks\"",
-                          "c(\"Rank 1\", \"Rank 5\", \"Rank 10\", \"Rank 20\", \"Rank 50\", \"Rank 100\")")));
-        p.file.write(qPrintable(table.arg("TS", "\"Template Size by Algorithm\"",
-                          "c(\"Template Size (bytes):\")")));
-        p.file.write("\n");
-    }
+    if (destination.getBool("metadata", true))
+        p.file.write("plotTAR(tableData=TF)\n");
 
     // Write plots
     QString plot = "plot <- plotLine(lineData=%1, options=list(%2), flipY=%3)\nplot\n";

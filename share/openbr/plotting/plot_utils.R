@@ -62,6 +62,19 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
     }
 }
 
+plotTAR <- function(tableData=NULL) {
+    if (nrow(tableData) == 0) return()
+    major <- majorHeader
+    minor <- if(minorHeader == "") majorHeader else minorHeader
+    tableData <- tableData[grep(1e-4,tableData$X),]
+    mat <- matrix(tableData$Y, nrow=length(tableData[,major][!duplicated(tableData[,major])]), ncol=length(tableData[,minor][!duplicated(tableData[,minor])]), byrow=FALSE)
+    colnames(mat) <- tableData[,minor][!duplicated(tableData[,minor])]
+    rownames(mat) <- tableData[,major][!duplicated(tableData[,major])]
+    table <- as.table(mat)
+    print(textplot(table))
+    print(title("True Accept Rate at FAR=1e-4"))
+}
+
 plotLandmarkTables <- function(tableData=NULL) {
     if (majorSize > 1) {
         var <- majorHeader
