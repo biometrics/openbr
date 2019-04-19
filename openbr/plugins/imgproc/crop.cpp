@@ -33,18 +33,14 @@ class CropTransform : public UntrainableTransform
     Q_PROPERTY(int y READ get_y WRITE set_y RESET reset_y STORED false)
     Q_PROPERTY(int width READ get_width WRITE set_width RESET reset_width STORED false)
     Q_PROPERTY(int height READ get_height WRITE set_height RESET reset_height STORED false)
-    Q_PROPERTY(bool copyOnCrop READ get_copyOnCrop WRITE set_copyOnCrop RESET reset_copyOnCrop STORED false)
     BR_PROPERTY(int, x, 0)
     BR_PROPERTY(int, y, 0)
     BR_PROPERTY(int, width, 0)
     BR_PROPERTY(int, height, 0)
-    BR_PROPERTY(bool, copyOnCrop, false)
 
     void project(const Template &src, Template &dst) const
     {
-        dst = Mat(src, Rect(x, y, width < 1 ? src.m().cols-x-abs(width) : width, height < 1 ? src.m().rows-y-abs(height) : height));
-        if (copyOnCrop)
-            dst = dst.clone();
+        dst = Mat(src, Rect(x, y, width < 1 ? src.m().cols-x-abs(width) : width, height < 1 ? src.m().rows-y-abs(height) : height)).clone();
     }
 };
 
