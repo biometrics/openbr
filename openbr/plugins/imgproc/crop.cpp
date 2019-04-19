@@ -40,7 +40,7 @@ class CropTransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        dst = Mat(src, Rect(x, y, width < 1 ? src.m().cols-x-abs(width) : width, height < 1 ? src.m().rows-y-abs(height) : height));
+        dst = Mat(src, Rect(x, y, width < 1 ? src.m().cols-x-abs(width) : width, height < 1 ? src.m().rows-y-abs(height) : height)).clone();
     }
 };
 
