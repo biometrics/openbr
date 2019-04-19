@@ -44,8 +44,7 @@ class CropTransform : public UntrainableTransform
     {
         dst = Mat(src, Rect(x, y, width < 1 ? src.m().cols-x-abs(width) : width, height < 1 ? src.m().rows-y-abs(height) : height));
         if (copyOnCrop)
-            for (int i = 0; i < dst.size(); i++)
-                dst = dst.clone();
+            dst = dst.clone();
     }
 };
 
