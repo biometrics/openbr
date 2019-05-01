@@ -93,10 +93,10 @@ public:
 	header.indices.append(i);
 	
 	// Look for other subheaders with the same key
-	for (int j=i; j<headers.size(); j++)
+	for (int j=i+1; j<headers.size(); j++)
 	  if (headers[j].contains("_")) {
 	    const QStringList subKeys = headers[j].split("_");
-	    if (subKeys.first() == header.key) {
+	    if (subKeys.first() == header.key && !header.subKeys.contains(subKeys.last()) /* Check for ill-formed csvs */) {
 	      header.indices.append(j);
 	      header.subKeys.append(subKeys.last());
 	    }
@@ -159,10 +159,7 @@ class csvGallery : public FileGallery
 
   void setValuesFromHeaders(File &f, const CSVHeaderList &headers, const QVariantList &values)
   {
-    qDebug() << headers.keys();
-    
     foreach (const CSVHeader &header, headers) {
-      qDebug() << header.key;
       if (header.indices.size() == 1)
 	f.set(header.key, values[header.indices.first()]);
       else if (header.indices.size() == 2) // QPointF
@@ -198,7 +195,7 @@ class csvGallery : public FileGallery
   	    *done = true;
  	    QMap<QString, File> combinedFiles;
 	  
-  	    for (qint64 i = 0; i < !f.atEnd(); i++) {
+  	    while (!f.atEnd()) {
                const QVariantList values = parseLine(f.readLine());
 	       const QString name = values.first().toString();
 	       File &in = combinedFiles[name];
@@ -206,7 +203,6 @@ class csvGallery : public FileGallery
 	       setValuesFromHeaders(in, headers, values.mid(1));
 	    }
 
-	    qDebug() << combinedFiles.values();
 	    foreach (const File &in, combinedFiles.values())
 	      templates.append(in);
 	} else {
