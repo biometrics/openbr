@@ -22,12 +22,12 @@ class IfTransform : public MetaTransform
     BR_PROPERTY(QString, comparison, "e")
     BR_PROPERTY(bool, projectOnEmpty, false)
 
-    bool compare(const QString &metadata) const
+    bool compare(const QVariant &metadata) const
     {
         bool result, ok1 = true, ok2 = true;
 
-	if (comparison == "empty")
-	    result = metadata.isEmpty();
+        if (comparison == "empty")
+	    result = metadata.isNull() || (metadata.canConvert<QString>() && metadata.toString().isEmpty());
         else if (comparison == "e")
             result = metadata == value;
         else if (comparison == "ne")
@@ -41,7 +41,7 @@ class IfTransform : public MetaTransform
         else if (comparison == "ge")
             result = metadata.toFloat(&ok1) >= value.toFloat(&ok2);
         else if (comparison == "c") // contains
-            result = metadata.contains(value);
+            result = metadata.toString().contains(value);
         else
             qFatal("Unrecognized comparison string.");
 
@@ -57,14 +57,14 @@ public:
         if (transform->trainable) {
             TemplateList passed;
             for (int i=0; i<data.size(); i++)
-                if ((data[i].file.contains(key) || projectOnEmpty) && compare(data[i].file.get<QString>(key, QString())))
+                if ((data[i].file.contains(key) || projectOnEmpty) && compare(data[i].file.value(key)))
                     passed.append(data[i]);
             transform->train(passed);
         }
     }
 
     void project(const Template &src, Template &dst) const {
-        if ((src.file.contains(key) || projectOnEmpty) && compare(src.file.get<QString>(key, QString())))
+        if ((src.file.contains(key) || projectOnEmpty) && compare(src.file.value(key)))
             transform->project(src, dst);
         else
             dst = src;
@@ -73,7 +73,7 @@ public:
     void project(const TemplateList &src, TemplateList &dst) const {
         TemplateList ifTrue, ifFalse;
         foreach (const Template &t, src) {
-            if ((t.file.contains(key) || projectOnEmpty) && compare(t.file.get<QString>(key, QString())))
+            if ((t.file.contains(key) || projectOnEmpty) && compare(t.file.value(key)))
                 ifTrue.append(t);
             else
                 ifFalse.append(t);
