@@ -157,21 +157,31 @@ class csvGallery : public FileGallery
         QtUtils::writeFile(file, lines);
     }
 
-  void setValuesFromHeaders(File &f, const CSVHeaderList &headers, const QVariantList &values)
-  {
-    foreach (const CSVHeader &header, headers) {
-      if (header.indices.size() == 1)
-	f.set(header.key, values[header.indices.first()]);
-      else if (header.indices.size() == 2) // QPointF
-	f.appendPoint(QPointF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
-			      values[header.indices[header.subKeys.indexOf("Y")]].toFloat()));
-      else if (header.indices.size() == 4) // QRectF
-	f.appendRect(QRectF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
-			    values[header.indices[header.subKeys.indexOf("Y")]].toFloat(),
-			    values[header.indices[header.subKeys.indexOf("Width")]].toFloat(),
-			    values[header.indices[header.subKeys.indexOf("Height")]].toFloat()));
+    void setValuesFromHeaders(File &f, const CSVHeaderList &headers, const QVariantList &values)
+    {
+        foreach (const CSVHeader &header, headers) {
+            if (header.indices.size() == 1) {
+                if (header.key == "Rects")
+                    foreach(const QVariant &rect, values[header.indices.first()].toList())
+                        f.appendRect(rect.toRectF());
+                else if (header.key == "Points")
+                    foreach(const QVariant &point, values[header.indices.first()].toList())
+                        f.appendPoint(point.toPointF());
+                else {
+                    const QVariant value = values[header.indices.first()];
+                    if (!value.canConvert<QString>() || !value.toString().isEmpty())
+                        f.set(header.key, values[header.indices.first()]);
+                }
+            } else if (header.indices.size() == 2) // QPointF
+                f.appendPoint(QPointF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
+                                      values[header.indices[header.subKeys.indexOf("Y")]].toFloat()));
+            else if (header.indices.size() == 4) // QRectF
+                f.appendRect(QRectF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
+                                    values[header.indices[header.subKeys.indexOf("Y")]].toFloat(),
+                                    values[header.indices[header.subKeys.indexOf("Width")]].toFloat(),
+                                    values[header.indices[header.subKeys.indexOf("Height")]].toFloat()));
+        }
     }
-  }
   
     TemplateList readBlock(bool *done)
     {
@@ -196,7 +206,10 @@ class csvGallery : public FileGallery
  	    QMap<QString, File> combinedFiles;
 	  
   	    while (!f.atEnd()) {
-               const QVariantList values = parseLine(f.readLine());
+                QVariantList values;
+                foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
+                    values.append(QtUtils::fromString(value));
+
 	       const QString name = values.first().toString();
 	       File &in = combinedFiles[name];
 	       in.name = name;
@@ -207,7 +220,9 @@ class csvGallery : public FileGallery
 	      templates.append(in);
 	} else {
   	    for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++) {
-               const QVariantList values = parseLine(f.readLine());
+                QVariantList values;
+                foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
+                    values.append(QtUtils::fromString(value));
 
                File in;
 	       in.name = values.first().toString();
@@ -249,29 +264,6 @@ class csvGallery : public FileGallery
             words.append(value);
         }
         return words.join(",");
-    }
-
-    static QVariantList parseLine(const QByteArray bytes)
-    {
-        bool inQuote(false);
-        QVariantList values;
-        QString value = QString();
-        const QString line = QString::fromLocal8Bit(bytes).trimmed();
-        for (int i=0; i<line.size(); i++) {
-            const QChar c = line[i];
-            if (c == '"') {
-                inQuote = !inQuote;
-                continue;
-            } else if (c == ',' && !inQuote) {
-                values.append(QVariant(value));
-                value = QString();
-            } else
-                value.append(c);
-        }
-        if (!value.isEmpty())
-            values.append(QVariant(value));
-
-        return values;
     }
 };
 
