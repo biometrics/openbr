@@ -36,7 +36,7 @@ private:
         int top, bottom, left, right;
         top = percent*src.m().rows; bottom = percent*src.m().rows;
         left = percent*src.m().cols; right = percent*src.m().cols;
-        OpenCVUtils::pad(src, dst, true, QMargins(top,bottom,left,right), true, true, border, value);
+        OpenCVUtils::pad(src, dst, true, QMargins(left, top, right, bottom), true, true, border, value);
     }
 };
 

@@ -582,11 +582,9 @@ void CascadeBoostTrainData::get_ord_var_data( CvDTreeNode* n, int vi, float* ord
 
         // For this feature, have we precalculated all of the feature responses?
         if (vi < numPrecalcVal) {
-            for (int i = 0; i < nodeSampleCount; i++) {
-                int idx = (*sortedIndices)[i];
-                idx = sampleIndices[idx];
-                ordValuesBuf[i] = valCache.at<float>(vi, idx);
-            }
+            float *p = valCache.ptr<float>(vi);
+            for (int i = 0; i < nodeSampleCount; i++)
+                ordValuesBuf[i] = p[sampleIndices[(*sortedIndices)[i]]];
         } else {
             for (int i = 0; i < nodeSampleCount; i++) {
                 int idx = (*sortedIndices)[i];
@@ -762,7 +760,7 @@ void CascadeBoostTrainData::precalculate()
     parallel_for_(Range(minPrecalc, numPrecalcVal),
                   FeaturePrecalc(featureEvaluator, &valCache, sample_count));
 
-    cout << "Precalculation time (ms): " << time.elapsed() << endl;
+    cout << "Precalculation time (min): " << time.elapsed()/1000/60. <<  endl;
 }
 
 //-------------------------------- CascadeBoostTree ----------------------------------------
