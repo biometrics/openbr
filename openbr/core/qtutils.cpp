@@ -172,12 +172,20 @@ QString find(const QString &file, const QString &alt)
     return "";
 }
 
-bool toBool(const QString &string)
+bool toBool(const QString &string, bool *ok)
 {
-    bool ok;
-    bool result = (string.toFloat(&ok) != 0.f);
-    if (ok) return result;
-    else    return (string != "FALSE") && (string != "false") && (string != "F") && (string != "f");
+    bool floatOk;
+    bool result = (string.toFloat(&floatOk) != 0.f);
+    if (floatOk) {
+        if (ok) *ok = true;
+        return result;
+    } else {
+        if (ok) *ok = (string.compare("false", Qt::CaseInsensitive) == 0 ||
+                       string.compare("true", Qt::CaseInsensitive)  == 0 ||
+                       string.compare("f", Qt::CaseInsensitive)     == 0 ||
+                       string.compare("t", Qt::CaseInsensitive)     == 0);
+        return (string.compare("false", Qt::CaseInsensitive) != 0 && string.compare("f", Qt::CaseInsensitive) != 0);
+    }
 }
 
 int toInt(const QString &string)
@@ -533,6 +541,8 @@ QVariant fromString(const QString &value)
     if (ok) return i;
     const float f = value.toFloat(&ok);
     if (ok) return f;
+    const bool b = QtUtils::toBool(value, &ok);
+    if (ok) return b;
     return value;
 }
 

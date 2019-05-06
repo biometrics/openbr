@@ -56,7 +56,7 @@ namespace QtUtils
     QString getAbsolutePath(const QString &filename);
 
     /**** String Utilities ****/
-    bool toBool(const QString &string);
+    bool toBool(const QString &string, bool *ok = NULL);
     int toInt(const QString &string);
     float toFloat(const QString &string);
     QList<float> toFloats(const QStringList &strings);

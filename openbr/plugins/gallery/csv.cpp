@@ -172,14 +172,19 @@ class csvGallery : public FileGallery
                     if (!value.canConvert<QString>() || !value.toString().isEmpty())
                         f.set(header.key, values[header.indices.first()]);
                 }
-            } else if (header.indices.size() == 2) // QPointF
-                f.appendPoint(QPointF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
-                                      values[header.indices[header.subKeys.indexOf("Y")]].toFloat()));
-            else if (header.indices.size() == 4) // QRectF
-                f.appendRect(QRectF(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
-                                    values[header.indices[header.subKeys.indexOf("Y")]].toFloat(),
-                                    values[header.indices[header.subKeys.indexOf("Width")]].toFloat(),
-                                    values[header.indices[header.subKeys.indexOf("Height")]].toFloat()));
+            } else if (header.indices.size() == 2) { // QPointF
+                const QPointF point(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
+                                    values[header.indices[header.subKeys.indexOf("Y")]].toFloat());
+                f.set(header.key, point);
+                f.appendPoint(point);
+            } else if (header.indices.size() == 4) { // QRectF
+                const QRectF rect(values[header.indices[header.subKeys.indexOf("X")]].toFloat(),
+                                  values[header.indices[header.subKeys.indexOf("Y")]].toFloat(),
+                                  values[header.indices[header.subKeys.indexOf("Width")]].toFloat(),
+                                  values[header.indices[header.subKeys.indexOf("Height")]].toFloat());
+                f.set(header.key, rect);
+                f.appendRect(rect);
+            }
         }
     }
   
