@@ -60,7 +60,7 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
                 dets.append(Detection(rects[i], filePath, confidences[i]));
         }
     } else if (key.type == DetectionKey::Rect) {
-        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1)));
+        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), f.get<QString>("Pose", "Frontal")));
     } else if (key.type == DetectionKey::XYWidthHeight) {
         const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
         dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), f.get<QString>("Pose", "Frontal")));
