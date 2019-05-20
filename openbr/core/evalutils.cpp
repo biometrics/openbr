@@ -46,6 +46,10 @@ DetectionKey EvalUtils::getDetectKey(const FileList &files)
 // return a list of detections independent of the detection key format
 QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f, bool isTruth)
 {
+    QString pose = f.get<QString>("Pose");
+    if (pose.contains("Angle"))
+        pose = "Frontal";
+
     const QString filePath = f.path() + "/" + f.fileName();
     QList<Detection> dets;
     if (key.type == DetectionKey::RectList) {
@@ -60,10 +64,10 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
                 dets.append(Detection(rects[i], filePath, confidences[i]));
         }
     } else if (key.type == DetectionKey::Rect) {
-        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1)));
+        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose));
     } else if (key.type == DetectionKey::XYWidthHeight) {
         const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
-        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), f.get<QString>("Pose", "Frontal")));
+        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose));
     }
     return dets;
 }
@@ -228,13 +232,11 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     QDebug debug = qDebug();
     debug.noquote();
 
-    if (discrete) {
-        debug << endl << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-        debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
-        debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-    }
+    debug << endl << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+    debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
+    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
 
-    int poseMatch = 0;
+    float poseMatch = 0;
     int detectionsToKeep = 50;
     QList<ResolvedDetection> topFalsePositives, bottomTruePositives;
     for (int i=0; i<detections.size(); i++) {
@@ -246,24 +248,25 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                 if (detection.poseMatch)
                     poseMatch++;
             }
-            else                          FP++;
+            else
+                FP++;
         } else {
             TP += detection.overlap;
+            if (detection.poseMatch)
+                poseMatch += detection.overlap;
             FP += 1 - detection.overlap;
         }
         if ((i == detections.size()-1) || (detection.confidence > detections[i+1].confidence)) {
             if (FP > prevFP || (i == detections.size()-1)) {
-                if (discrete) {
-                    foreach (float FAR, FARsToOutput)
-                        if (prevFP / numImages < FAR && FP / numImages >= FAR) {
-                            debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
-                            debug << QString("|") << QString::number(TP / totalTrueDetections, 'f', 4).leftJustified(10, ' ');
-                            debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
-                            debug << QString("|") << QString::number(poseMatch / TP, 'f', 4).leftJustified(10, ' ');
-                            debug << QString("|") << endl;
-                            break;
-                        }
-                }
+                foreach (float FAR, FARsToOutput)
+                    if (prevFP / numImages < FAR && FP / numImages >= FAR) {
+                        debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(TP / totalTrueDetections, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(poseMatch / TP, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << endl;
+                        break;
+                    }
 
                 if (detection.overlap < 0.5 && topFalsePositives.size() < detectionsToKeep)
                     topFalsePositives.append(detection);
@@ -281,29 +284,29 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
     }
 
+    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+
     if (discrete) {
-        debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-
-        debug << endl << QString("Total TP vs. FP:").leftJustified(25, ' ') << QString("%1 vs. %2").arg(QString::number((int)TP)).arg(QString::number((int)FP)) << endl;
-        debug << QString("Total TP vs. possible TP:") << QString("%1 vs. %2").arg(QString::number((int)TP)).arg(QString::number(totalTrueDetections)) << endl;
-        debug << QString("Pose matches:").leftJustified(25, ' ') << QString::number(poseMatch);
-
         if (Globals->verbose) {
             QtUtils::touchDir(QDir("./falsePos"));
             qDebug("Highest Scoring False Positives:");
 	    detectionsToKeep = std::min(detectionsToKeep,topFalsePositives.size());
             for (int i=0; i<detectionsToKeep; i++) {
                 Mat img = imread(qPrintable(Globals->path + "/" + topFalsePositives[i].filePath));
-                qDebug() << topFalsePositives[i];
-                const Scalar color(0,255,0);
-                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].boundingBox), Scalar(0,0,255), 1);
-                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].groundTruthBoundingBox), Scalar(0,255,0), 1);
+                const Rect falseRect = OpenCVUtils::toRect(topFalsePositives[i].boundingBox);
+                rectangle(img, falseRect, Scalar(0, 0, 255), 1);
+                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].groundTruthBoundingBox), Scalar(0, 255, 0), 1);
+                putText(img, qPrintable("Overlap:"+QString::number(topFalsePositives[i].overlap)), falseRect.tl(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1);
                 imwrite(qPrintable(QString("./falsePos/falsePos%1.jpg").arg(QString::number(i))), img);
             }
             qDebug("Lowest Scoring True Positives:");
             qDebug() << bottomTruePositives;
         }
     }
+
+    debug << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision)) << endl;
+    debug << QString("Maximum %1 Recall:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Recall)) << endl;
+    debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision))) << endl;
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");
