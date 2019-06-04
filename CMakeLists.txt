@@ -95,6 +95,9 @@ if(IOS)
 else()
   set(OPENCV_DEPENDENCIES opencv_core opencv_highgui opencv_imgproc opencv_ml)
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OPENCV_DEPENDENCIES})
+  if(APPLE)
+    list(APPEND BR_THIRDPARTY_LIBS "-framework Accelerate")
+  endif()
 endif()
 
 # Find Alphanum
