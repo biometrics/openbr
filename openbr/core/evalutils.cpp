@@ -263,7 +263,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                         debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(TP / totalTrueDetections, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
-                        debug << QString("|") << QString::number(poseMatch / TP, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(TP ? poseMatch / TP : 0., 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << endl;
                         break;
                     }
