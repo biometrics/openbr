@@ -156,30 +156,12 @@ QVariant File::value(const QString &key) const
 
 QVariant File::parse(const QString &value)
 {
-    bool ok = false;
-    const QPointF point = QtUtils::toPoint(value, &ok);
-    if (ok) return point;
-    const QRectF rect = QtUtils::toRect(value, &ok);
-    if (ok) return rect;
-    const cv::RotatedRect rotatedRect = OpenCVUtils::rotateRectFromString(value, &ok);
-    if (ok) return QVariant::fromValue(rotatedRect);
-    const int i = value.toInt(&ok);
-    if (ok) return i;
-    const float f = value.toFloat(&ok);
-    if (ok) return f;
-    return value;
+    return QtUtils::fromString(value);
 }
 
 void File::set(const QString &key, const QString &value)
 {
-    if (value.startsWith('[') && value.endsWith(']')) {
-        QVariantList variants;
-        foreach (const QString &value, QtUtils::parse(value.mid(1, value.size()-2)))
-            variants.append(parse(value));
-        set(key, variants);
-    } else {
-        set(key, QVariant(parse(value)));
-    }
+    set(key, QtUtils::fromString(value));
 }
 
 bool File::getBool(const QString &key, bool defaultValue) const

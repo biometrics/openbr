@@ -172,12 +172,20 @@ QString find(const QString &file, const QString &alt)
     return "";
 }
 
-bool toBool(const QString &string)
+bool toBool(const QString &string, bool *ok)
 {
-    bool ok;
-    bool result = (string.toFloat(&ok) != 0.f);
-    if (ok) return result;
-    else    return (string != "FALSE") && (string != "false") && (string != "F") && (string != "f");
+    bool floatOk;
+    bool result = (string.toFloat(&floatOk) != 0.f);
+    if (floatOk) {
+        if (ok) *ok = true;
+        return result;
+    } else {
+        if (ok) *ok = (string.compare("false", Qt::CaseInsensitive) == 0 ||
+                       string.compare("true", Qt::CaseInsensitive)  == 0 ||
+                       string.compare("f", Qt::CaseInsensitive)     == 0 ||
+                       string.compare("t", Qt::CaseInsensitive)     == 0);
+        return (string.compare("false", Qt::CaseInsensitive) != 0 && string.compare("f", Qt::CaseInsensitive) != 0);
+    }
 }
 
 int toInt(const QString &string)
@@ -245,10 +253,10 @@ QStringList parse(QString args, char split, bool *ok)
     QStack<QChar> subexpressions;
     for (int i=0; i<args.size(); i++) {
         if (inQuote) {
-            if (args[i] == '\'')
+            if (args[i] == '\'' || args[i] == '\"')
                 inQuote = false;
         } else {
-            if (args[i] == '\'') {
+            if (args[i] == '\'' || args[i] == '\"') {
                 inQuote = true;
             } else if ((args[i] == '(') || (args[i] == '[') || (args[i] == '<') || (args[i] == '{')) {
                 subexpressions.push(args[i]);
@@ -277,7 +285,10 @@ QStringList parse(QString args, char split, bool *ok)
                     return words;
                 }
             } else if (subexpressions.isEmpty() && (args[i] == split)) {
-                words.append(args.mid(start, i-start).trimmed());
+                QString word = args.mid(start, i-start).trimmed();
+                if (word.contains('\'') || word.contains('\"'))
+                    word = word.mid(1, word.size()-2);
+                words.append(word);
                 start = i+1;
             }
         }
@@ -512,6 +523,13 @@ QVariantMap fromJsonObject(const QJsonObject &object)
 
 QVariant fromString(const QString &value)
 {
+    if (value.startsWith('[') && value.endsWith(']')) {
+        QVariantList variants;
+        foreach (const QString &value, QtUtils::parse(value.mid(1, value.size()-2)))
+            variants.append(fromString(value));
+        return variants;
+    }
+
     bool ok = false;
     const QPointF point = QtUtils::toPoint(value, &ok);
     if (ok) return point;
@@ -523,6 +541,8 @@ QVariant fromString(const QString &value)
     if (ok) return i;
     const float f = value.toFloat(&ok);
     if (ok) return f;
+    const bool b = QtUtils::toBool(value, &ok);
+    if (ok) return b;
     return value;
 }
 
