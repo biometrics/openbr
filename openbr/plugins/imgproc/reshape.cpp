@@ -28,11 +28,13 @@ class ReshapeTransform : public UntrainableTransform
 {
     Q_OBJECT
     Q_PROPERTY(int rows READ get_rows WRITE set_rows RESET reset_rows STORED false)
+    Q_PROPERTY(int channels READ get_channels WRITE set_channels RESET reset_channels STORED false)
     BR_PROPERTY(int, rows, 1)
+    BR_PROPERTY(int, channels, -1)
 
     void project(const Template &src, Template &dst) const
     {
-        dst = src.m().reshape(src.m().channels(), rows);
+        dst = src.m().reshape(channels == -1 ? src.m().channels() : channels, rows);
     }
 };
 
