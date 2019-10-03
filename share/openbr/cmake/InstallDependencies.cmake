@@ -169,7 +169,7 @@ function(install_qt_misc)
     install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin/platforms)
   elseif(ANDROID)
     install(FILES ${__libstl} DESTINATION lib)
-    install(FILES ${_qt5Core_install_prefix}/jar/QtAndroid-bundled.jar
+    install(FILES ${_qt5Core_install_prefix}/jar/QtAndroid.jar
             DESTINATION java)
   elseif(UNIX AND NOT APPLE)
     set(Qt5_LIB_DIR "${Qt5_DIR}/../..")
