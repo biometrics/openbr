@@ -180,9 +180,6 @@ class lmdbGallery : public Gallery
             lock.unlock();
 
             aThread.waitForFinished();
-
-            if (data.size() > 10000)
-                QThread::msleep(1);
         }
     }
     
