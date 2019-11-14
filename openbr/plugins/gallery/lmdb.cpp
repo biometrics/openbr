@@ -17,6 +17,8 @@ class lmdbGallery : public Gallery
     Q_OBJECT
     Q_PROPERTY(bool remap READ get_remap WRITE set_remap RESET reset_remap STORED false)
     BR_PROPERTY(bool, remap, true)
+    Q_PROPERTY(int cacheLimit READ get_cacheLimit WRITE set_cacheLimit RESET reset_cacheLimit STORED false)
+    BR_PROPERTY(int, cacheLimit, 10000)
 
     TemplateList readBlock(bool *done)
     {
@@ -169,6 +171,9 @@ class lmdbGallery : public Gallery
         QMutexLocker lock(&dataLock);
         data.append(t);
         dataWait.wakeAll();
+
+        if (cacheLimit != -1 && data.size() > cacheLimit)
+            QThread::msleep(1);
     }
 
     ~lmdbGallery()
