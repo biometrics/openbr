@@ -41,12 +41,14 @@ class ROITransform : public UntrainableTransform
 
     void project(const Template &src, Template &dst) const
     {
-        if (!propName.isEmpty()) {
+        if ((propName == "Rects") || !src.file.rects().empty()) {
+            foreach (const QRectF &rect, src.file.rects())
+                dst += src.m()(OpenCVUtils::toRect(rect));
+        } else if (!propName.isEmpty()) {
             QRectF rect = src.file.get<QRectF>(propName);
             dst += src.m()(OpenCVUtils::toRect(rect));
         } else if (!src.file.rects().empty()) {
-            foreach (const QRectF &rect, src.file.rects())
-                dst += src.m()(OpenCVUtils::toRect(rect));
+
         } else if (src.file.contains(QStringList() << "X" << "Y" << "Width" << "Height")) {
             dst += src.m()(Rect(src.file.get<int>("X"),
                                 src.file.get<int>("Y"),

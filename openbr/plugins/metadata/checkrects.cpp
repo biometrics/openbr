@@ -39,15 +39,15 @@ class CheckRectsTransform : public UntrainableTransform
         dst.file.clearRects();
         QList<QRectF> rects = src.file.rects();
 
-        if (fixRects){
-            for (int i=0; i<rects.size(); i++) {
-                QRectF r = rects[i];
-                if (r.left() < 0)                   r.moveLeft(0);
-                if (r.right() > src.m().cols-1)     r.moveRight(src.m().cols-1);
-                if (r.top() < 0)                    r.moveTop(0);
-                if (r.bottom() > src.m().rows-1)    r.moveBottom(src.m().rows-1);
-                dst.file.appendRect(r);
-            }
+        if (fixRects) {
+            foreach (QRectF r, rects)
+                if ((r.height() <= src.m().rows) && (r.width() <= src.m().cols)) /* can't fix rects that don't fit the image */ {
+                    if (r.left() < 0)                   r.moveLeft(0);
+                    if (r.right() > src.m().cols-1)     r.moveRight(src.m().cols-1);
+                    if (r.top() < 0)                    r.moveTop(0);
+                    if (r.bottom() > src.m().rows-1)    r.moveBottom(src.m().rows-1);
+                    dst.file.appendRect(r);
+                }
         } else {
             foreach (QRectF r, rects){
                 if ((r.left() < 0) || (r.right() > src.m().cols-1) || (r.top() < 0) || (r.bottom() > src.m().rows-1)){

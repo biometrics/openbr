@@ -61,7 +61,7 @@ class JustTransform : public UntrainableMetaTransform
         foreach (const QString &key, keys)
             if (key == "_Points") {
                 dst.file.setPoints(tmp.file.points());
-            } else {
+            } else if (tmp.file.contains(key)) {
                 dst.file.set(key, tmp.file.value(key));
             }
     }
