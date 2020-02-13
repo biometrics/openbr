@@ -38,7 +38,10 @@ class RenameTransform : public UntrainableMetadataTransform
     {
         dst = src;
         if (dst.localKeys().contains(find)) {
-            dst.set(replace, dst.value(find));
+            if (replace == "_Points")
+                dst.setPoints(dst.getList<QPointF>(find));
+            else
+                dst.set(replace, dst.value(find));
             if (!keepOldKey)
                dst.remove(find);
         }
