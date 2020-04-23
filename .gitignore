@@ -4,6 +4,7 @@
 3rdparty/cvmatio
 3rdparty/dlib*
 3rdparty/libav*
+3rdparty/ffmpeg*
 data/*/img
 data/*/vid
 data/PCSO/*
