@@ -261,7 +261,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                 foreach (float FAR, FARsToOutput)
                     if (prevFP / numImages < FAR && FP / numImages >= FAR) {
                         debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
-                        debug << QString("|") << QString::number(TP / totalTrueDetections, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(totalTrueDetections ? TP / totalTrueDetections : 0, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(TP ? poseMatch / TP : 0., 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << endl;
@@ -306,7 +306,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
 
     debug << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision)) << endl;
     debug << QString("Maximum %1 Recall:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Recall)) << endl;
-    debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision))) << endl;
+    debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number((points.last().Recall + points.last().Precision) ? 2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision) : 0)) << endl;
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");

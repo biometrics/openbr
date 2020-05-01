@@ -89,7 +89,7 @@ struct DetectionOperatingPoint
     float Recall, FalsePositiveRate, Precision, Confidence;
     DetectionOperatingPoint() : Recall(-1), FalsePositiveRate(-1), Precision(-1) {}
     DetectionOperatingPoint(float TP, float FP, float totalPositives, float numImages, float confidence)
-        : Recall(TP/totalPositives), FalsePositiveRate(FP/numImages), Precision(TP/(TP+FP)), Confidence(confidence) {}
+        : Recall(totalPositives ? TP/totalPositives : 0), FalsePositiveRate(FP/numImages), Precision(TP/(TP+FP)), Confidence(confidence) {}
 };
 
     // Detection
