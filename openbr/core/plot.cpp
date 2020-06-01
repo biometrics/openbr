@@ -213,8 +213,10 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     }
 
     // optional plot metadata and accuracy tables
-    if (destination.getBool("metadata", true))
+    if (destination.getBool("metadata", true)) {
         p.file.write("plotTAR(tableData=TF)\n");
+        p.file.write("plotTAR(tableData=TF,operatingPoint=1e-6)\n");
+    }
 
     // Write plots
     QString plot = "plot <- plotLine(lineData=%1, options=list(%2), flipY=%3)\nplot\n";
