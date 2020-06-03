@@ -145,7 +145,7 @@ function(install_qt_styles)
     if(CMAKE_HOST_WIN32)
       # Nothing to do
     elseif(CMAKE_HOST_APPLE)
-      install(FILES ${SQL_STYLES_DIRDIR}/libqmacstyle.dylib DESTINATION bin/styles)
+      install(FILES ${STYLES_DIR}/libqmacstyle.dylib DESTINATION bin/styles)
     else()
       # Nothing to do
     endif()
