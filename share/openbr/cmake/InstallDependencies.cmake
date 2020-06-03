@@ -135,6 +135,23 @@ function(install_qt_sql)
   endif()
 endfunction()
 
+function(install_qt_styles)
+  if(${BR_INSTALL_DEPENDENCIES})
+    set(Qt5_PLUGIN_DIR "${Qt5_DIR}/../../qt5/plugins")
+    if (NOT EXISTS ${Qt5_PLUGIN_DIR})
+      set(Qt5_PLUGIN_DIR "${Qt5_DIR}/../../../plugins")
+    endif()
+    set(STYLES_DIR "${Qt5_PLUGIN_DIR}/styles")
+    if(CMAKE_HOST_WIN32)
+      # Nothing to do
+    elseif(CMAKE_HOST_APPLE)
+      install(FILES ${STYLES_DIR}/libqmacstyle.dylib DESTINATION bin/styles)
+    else()
+      # Nothing to do
+    endif()
+  endif()
+endfunction()
+
 function(install_qt_platforms)
   if(${BR_INSTALL_DEPENDENCIES})
     if(ANDROID)
