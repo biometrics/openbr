@@ -35,7 +35,7 @@ Let's make this example a little bit more exciting and relevant to OpenBR's biom
 
     $ br -gui -algorithm "Cvt(Gray)+Cascade(FrontalFace)+Draw(lineThickness=3)+Show(false)" -enroll 0.webcam
 
-You're webcam should be open again but this time a bounding-box should have appeared around your face! We added two new [Transform](api_docs/cpp_api/transform/transform.md)s to our string: [Cascade](plugin_docs/metadata.md#cascadetransform) and [Draw](plugin_docs/gui.md#drawtransform). Let's walk through this [Transform](api_docs/cpp_api/transform/transform.md) by [Transform](api_docs/cpp_api/transform/transform.md) and see how it works:
+Your webcam should be open again but this time a bounding-box should have appeared around your face! We added two new [Transform](api_docs/cpp_api/transform/transform.md)s to our string: [Cascade](plugin_docs/metadata.md#cascadetransform) and [Draw](plugin_docs/gui.md#drawtransform). Let's walk through this [Transform](api_docs/cpp_api/transform/transform.md) by [Transform](api_docs/cpp_api/transform/transform.md) and see how it works:
 
 1. [Cvt(Gray)](plugin_docs/imgproc.md#cvttransform): Convert the image from BGR to grayscale. Grayscale is required for [Cascade](plugin_docs/metadata.md#cascadetransform) to work properly.
 2. [Cascade(FrontalFace)](plugin_docs/metadata.md#cascadetransform): This is a wrapper on the OpenCV [Cascade Classification](http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html) framework. It detects frontal faces using the `FrontalFace` model.
