@@ -52,7 +52,7 @@ class GridTransform : public UntrainableTransform
                 landmarks.append(QPointF(x,y));
 
         if (angle > 0) {
-            const Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().rows/2,src.m().cols/2), angle, 1.0);
+            const Mat rotMatrix = getRotationMatrix2D(Point2f(src.m().cols / 2, src.m().rows / 2), angle, 1.0);
             landmarks = OpenCVUtils::rotatePoints(landmarks, rotMatrix);
         }
 

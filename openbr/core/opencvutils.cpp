@@ -654,10 +654,10 @@ QList<QRectF> OpenCVUtils::rotateRects(const QList<QRectF> &rects, const Mat &ro
 
 void OpenCVUtils::rotate(const br::Template &src, br::Template &dst, float degrees, bool rotateMat, bool rotatePoints, bool rotateRects, const QPointF &center)
 {
-    const Mat rotMatrix = getRotationMatrix2D(center.isNull() ? Point2f(src.m().rows/2,src.m().cols/2) : toPoint(center), degrees, 1.0);
+    const Mat rotMatrix = getRotationMatrix2D(center.isNull() ? Point2f(src.m().cols / 2, src.m().rows / 2) : toPoint(center), degrees, 1.0);
 
     if (rotateMat) {
-        warpAffine(src,dst,rotMatrix,Size(src.m().cols,src.m().rows),INTER_AREA,BORDER_REPLICATE);
+        warpAffine(src, dst, rotMatrix, Size(src.m().cols, src.m().rows), INTER_AREA, BORDER_REPLICATE);
         dst.file = src.file;
     } else
         dst = src;
