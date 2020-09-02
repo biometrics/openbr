@@ -117,7 +117,7 @@ plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") 
         if ("yLimits" %in% names(options)) p <- p + coord_cartesian(ylim=eval(parse(text=options$yLimits)))
     }
     p <- p + theme(legend.title = element_text(size = textSize), legend.text = element_text(size = textSize), plot.title = element_text(size = textSize), axis.text = element_text(size = textSize), axis.title.x = element_text(size = textSize), axis.title.y = element_text(size = textSize), legend.position=if("legendPosition" %in% names(options)) eval(parse(text=options$legendPosition)) else "bottom", legend.background = element_rect(fill = 'white'), panel.grid.major = element_line(colour = "gray"), panel.grid.minor = element_line(colour = "gray", linetype = "dashed"))
-    p <- p + guides(col=guide_legend(ncol=ncol))
+    p <- p + guides(colour=guide_legend(ncol=ncol)) + guides(linetype=guide_legend(ncol=ncol))
     return(p)
 }
 
