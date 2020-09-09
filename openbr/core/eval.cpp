@@ -760,29 +760,29 @@ void EvalClassification(const QString &predictedGallery, const QString &truthGal
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize, float relativeMinSize)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
     QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
 
     // Remove any bounding boxes with a side smaller than minSize
-    if (minSize > 0) {
+    if (minSize > 0 || relativeMinSize > 0) {
         if (Globals->verbose)
             qDebug("Removing boxes smaller than %d\n", minSize);
-        allDetections = filterDetections(allDetections,minSize);
+        allDetections = filterDetections(allDetections, minSize, true, relativeMinSize);
     }
 
     // Remove any bounding boxes with no side smaller than maxSize
     if (maxSize > 0) {
         if (Globals->verbose)
             qDebug("Removing boxes larger than %d\n", maxSize);
-        allDetections = filterDetections(allDetections,maxSize,false);
+        allDetections = filterDetections(allDetections, maxSize, false);
     }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;
     QRectF normalizations(0, 0, 0, 0);
-    
+
     // Associate predictions to ground truth
     int totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
 

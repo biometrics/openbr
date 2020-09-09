@@ -93,31 +93,35 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
     }
 
     QMap<QString, Detections> allDetections;
-    foreach (const File &f, truth)
+    foreach (const File &f, truth) {
         allDetections[f.name].truth.append(getDetections(truthDetectKey, f, true));
+        const cv::Mat image = cv::imread(qPrintable(br::Globals->path + QDir::separator() + f.name));
+        allDetections[f.name].imageSize = QSize(image.cols, image.rows);
+    }
     foreach (const File &f, predicted)
-        if (allDetections.contains(f.name)) allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
+        if (allDetections.contains(f.name))
+            allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
     return allDetections;
 }
 
-QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detections> &allDetections, int threshold, bool useMin)
+QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detections> &allDetections, int threshold, bool useMin, float relativeThreshold)
 {
     QMap<QString, Detections> allFilteredDetections;
     foreach (QString key, allDetections.keys()) {
         Detections detections = allDetections[key];
+        const int adaptiveThreshold = qMax((int)(qMax(detections.imageSize.width(), detections.imageSize.height()) * relativeThreshold + 0.5f), threshold);
         Detections filteredDetections;
         for (int i = 0; i < detections.predicted.size(); i++) {
             const QRectF box = detections.predicted[i].boundingBox;
-            const qreal minBoxDim = max(box.width(), box.height());
-            const double t = sqrt(0.5 * threshold * threshold);
-            if (useMin ? minBoxDim > t : minBoxDim < t)
+            const qreal maxBoxDim = max(box.width(), box.height());
+            const double t = sqrt(0.5 * adaptiveThreshold * adaptiveThreshold);
+            if (useMin ? maxBoxDim > t : maxBoxDim < t)
                 filteredDetections.predicted.append(detections.predicted[i]);
         }
-
         for (int i = 0; i < detections.truth.size(); i++) {
             const QRectF box = detections.truth[i].boundingBox;
-            const qreal minBoxDim = max(box.width(), box.height());
-            if (useMin ? minBoxDim < threshold : minBoxDim > threshold)
+            const qreal maxBoxDim = max(box.width(), box.height());
+            if (useMin ? maxBoxDim < threshold : maxBoxDim > threshold)
                 detections.truth[i].ignore = true;
             filteredDetections.truth.append(detections.truth[i]);
         }
