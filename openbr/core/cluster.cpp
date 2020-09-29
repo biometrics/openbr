@@ -458,25 +458,20 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
 {
     if (truth_property.isEmpty())
         truth_property = "Label";
-    if (!cluster_csv && cluster_property.isEmpty()) {
-        cluster_property = "ClusterID";
-    }
+    if (cluster_property.isEmpty())
+        cluster_property = cluster_csv ? "ClusterID" : "Label";
+
     qDebug("Evaluating %s against %s", qPrintable(clusters), qPrintable(truth_gallery));
 
-    TemplateList tList = TemplateList::fromGallery(truth_gallery);
-    QList<int> labels = tList.indexProperty(truth_property);
+    const QList<QString> labels = TemplateList::fromGallery(truth_gallery).files().get<QString>(truth_property);
 
-    QHash<int, int> labelToIndex;
+    QHash<QString, int> labelToIndex;
     int nClusters = 0;
-    for (int i=0; i<labels.size(); i++) {
-        const float &label = labels[i];
+    foreach (const QString &label, labels)
         if (!labelToIndex.contains(label))
             labelToIndex[label] = nClusters++;
-    }
 
-    Clusters truthClusters; truthClusters.reserve(nClusters);
-    for (int i=0; i<nClusters; i++)
-        truthClusters.append(QList<int>());
+    Clusters truthClusters(nClusters);
 
     QVector<int> truthIndices(labels.size());
     for (int i=0; i<labels.size(); i++) {
@@ -489,17 +484,11 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
         testClusters = ReadClusters(clusters);
     } else {
         // get Clusters from gallery
-        const TemplateList tl(TemplateList::fromGallery(clusters));
-        QHash<int,Cluster > clust_id_map;
-        for (int i=0; i<tl.size(); i++) {
-            const Template &t = tl.at(i);
-            int c = t.file.get<int>(cluster_property);
-            if (!clust_id_map.contains(c)) {
-                clust_id_map.insert(c, Cluster());
-            }
-            clust_id_map[c].append(i);
-        }
-        testClusters = Clusters::fromList(clust_id_map.values());
+        const QList<QString> testLabels = TemplateList::fromGallery(clusters).files().get<QString>(cluster_property);
+        QHash<QString, Cluster> clusters;
+        for (int i=0; i<testLabels.size(); i++)
+            clusters[testLabels[i]].append(i);
+        testClusters = Clusters::fromList(clusters.values());
     }
 
     QVector<int> testIndices(labels.size());
@@ -517,6 +506,7 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
     float wII = wallaceMetric(testClusters, truthIndices);
     float jaccard = jaccardIndex(testIndices, truthIndices);
     float purity = purityMetric(testClusters, truthIndices);
+    qDebug("Test Clusters: %d  Truth Clusters: %d", testClusters.size(), truthClusters.size());
     qDebug("Purity: %f  Recall: %f  Precision: %f  F-score: %f  Jaccard index: %f", purity, wI, wII, sqrt(wI*wII), jaccard);
 }
 

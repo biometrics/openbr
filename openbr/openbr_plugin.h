@@ -256,6 +256,15 @@ struct BR_EXPORT FileList : public QList<File>
     QList<int> crossValidationPartitions() const;
     int failures() const;
 
+    template <typename T>
+    QList<T> get(const QString &key) const
+    {
+        QList<T> result;
+        foreach (const File &f, *this)
+            result.append(f.get<T>(key));
+        return result;
+    }
+
     static FileList fromGallery(const File &gallery, bool cache = false);
 };
 
