@@ -464,7 +464,6 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
     qDebug("Evaluating %s against %s", qPrintable(clusters), qPrintable(truth_gallery));
 
     const QList<QString> labels = TemplateList::fromGallery(truth_gallery).files().get<QString>(truth_property);
-
     QHash<QString, int> labelToIndex;
     int nClusters = 0;
     foreach (const QString &label, labels)
@@ -491,10 +490,10 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
         testClusters = Clusters::fromList(clusters.values());
     }
 
-    QVector<int> testIndices(labels.size());
+    QVector<int> testIndicies(labels.size());
     for (int i=0; i<testClusters.size(); i++)
         for (int j=0; j<testClusters[i].size(); j++)
-            testIndices[testClusters[i][j]] = i;
+            testIndicies[testClusters[i][j]] = i;
 
     // At this point the following 4 things are defined:
     // truthClusters - list of clusters of template_ids based on subject_ids
@@ -502,10 +501,11 @@ void br::EvalClustering(const QString &clusters, const QString &truth_gallery, Q
     // testClusters - list of clusters of template_ids based on csv input
     // testIndices - template_id to cluster_id based on testClusters
 
-    float wI = wallaceMetric(truthClusters, testIndices);
+    float wI = wallaceMetric(truthClusters, testIndicies);
     float wII = wallaceMetric(testClusters, truthIndices);
-    float jaccard = jaccardIndex(testIndices, truthIndices);
+    float jaccard = testIndicies.size() < 100000 ? jaccardIndex(testIndicies, truthIndices) : -1.f; // Too expensive to compute for large clustering sets
     float purity = purityMetric(testClusters, truthIndices);
+
     qDebug("Test Clusters: %d  Truth Clusters: %d", testClusters.size(), truthClusters.size());
     qDebug("Purity: %f  Recall: %f  Precision: %f  F-score: %f  Jaccard index: %f", purity, wI, wII, sqrt(wI*wII), jaccard);
 }
