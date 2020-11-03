@@ -231,14 +231,13 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
 
     QList<float> FARsToOutput;
-    FARsToOutput << 1 << .5 << .2 << .1 << .02 << .01 << .001;
+    FARsToOutput << 1 << .2 << .1 << .02 << .02 << .01 << .002 << .001;
 
     QDebug debug = qDebug();
     debug.noquote();
 
-    debug << endl << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-    debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
-    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+    debug << QString("|") << QString("FDR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
+    debug << QString("|")+QString("-").repeated(12)+QString("|")+QString("-").repeated(12)+QString("|")+QString("-").repeated(12)+QString("|")+QString("-").repeated(12)+QString("|") << endl;
 
     float poseMatch = 0;
     int detectionsToKeep = 50;
@@ -288,8 +287,6 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
     }
 
-    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-
     if (discrete) {
         if (Globals->verbose) {
             QtUtils::touchDir(QDir("./falsePos"));
@@ -308,7 +305,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
     }
 
-    debug << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision)) << endl;
+    debug << endl << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision)) << endl;
     debug << QString("Maximum %1 Recall:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Recall)) << endl;
     debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number((points.last().Recall + points.last().Precision) ? 2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision) : 0)) << endl;
 
