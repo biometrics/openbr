@@ -68,7 +68,7 @@ private:
                 }
             }
         }
-        if (dst.file.fte)
+        if (dst.file.fte && Globals->verbose)
             qWarning("Error opening %s", qPrintable(src.file.flat()));
     }
 };
