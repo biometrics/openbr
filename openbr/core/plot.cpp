@@ -290,6 +290,8 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
     QString plot = "plot <- plotLine(lineData=%1, options=list(%2), flipY=%3, geometry=%4)\nplot\n";
     foreach (const QString &type, QStringList() << "Discrete" << "Continuous") {
         optMap["rocOptions"].set("title", type);
+        if (type == "Continuous")
+            optMap["rocOptions"].set("xLimits", QString("(.005,1)"));
         p.file.write(qPrintable(QString(plot).arg(type + "ROC", toRList(optMap["rocOptions"]), "FALSE", "\"" + plotType + "\"")));
     }
 
