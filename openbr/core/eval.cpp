@@ -58,52 +58,43 @@ struct OperatingPoint
         : score(_score), FAR(_FAR), TAR(_TAR) {}
 };
 
-static OperatingPoint getOperatingPointGivenFAR(const QList<OperatingPoint> &operatingPoints, float FAR)
+static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPoints, const QString key, const float value)
 {
-    int index = 0;
-    while (operatingPoints[index].FAR < FAR) {
-        index++;
-        if (index == operatingPoints.size())
-            return OperatingPoint(operatingPoints.last().score, FAR, operatingPoints.last().TAR);
+    int index        = key == "Score" ? operatingPoints.size()-1 : 0;
+    const int break_ = key == "Score" ? 0 : operatingPoints.size();
+    while ((key == "Score" ? operatingPoints[index].score :
+            key == "FAR"   ? operatingPoints[index].FAR   :
+                             operatingPoints[index].TAR) < value) {
+        index = index + (key == "Score" ? -1 : 1);
+        if (index == break_) {
+            if (key == "Score")
+                return OperatingPoint(value, operatingPoints.first().FAR, operatingPoints.first().TAR);
+            else if (key == "FAR")
+                return OperatingPoint(operatingPoints.last().score, value, operatingPoints.last().TAR);
+            return OperatingPoint(operatingPoints.last().score, operatingPoints.last().FAR, value);
+        }
     }
 
-    const float FAR1 = (index == 0 ? 0 : operatingPoints[index-1].FAR);
-    const float TAR1 = (index == 0 ? 0 : operatingPoints[index-1].TAR);
+    const float FAR1   = (index == 0 ? 0 : operatingPoints[index-1].FAR);
+    const float TAR1   = (index == 0 ? 0 : operatingPoints[index-1].TAR);
     const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index-1].score);
-    const float FAR2 = operatingPoints[index].FAR;
-    const float TAR2 = operatingPoints[index].TAR;
+    const float FAR2   = operatingPoints[index].FAR;
+    const float TAR2   = operatingPoints[index].TAR;
     const float score2 = operatingPoints[index].score;
-    const float mTAR = (TAR2 - TAR1) / (FAR2 - FAR1);
-    const float bTAR = TAR1 - mTAR*FAR1;
-    const float mScore = (score2 - score1) / (FAR2 - FAR1);
-    const float bScore = score1 - mScore*FAR1;
-    return OperatingPoint(mScore * FAR + bScore, FAR, mTAR * FAR + bTAR);
-}
 
-static OperatingPoint getOperatingPointGivenTAR(const QList<OperatingPoint> &operatingPoints, float TAR)
-{
-    int index = 0;
-    while (operatingPoints[index].TAR < TAR) {
-      index++;
-      if (index == operatingPoints.size())
-            return OperatingPoint(operatingPoints.last().score, operatingPoints.last().FAR, TAR);
-    }
-
-    const float FAR1 = (index == 0 ? 0 : operatingPoints[index-1].FAR);
-    const float TAR1 = (index == 0 ? 0 : operatingPoints[index-1].TAR);
-    const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index-1].score);
-    const float FAR2 = operatingPoints[index].FAR;
-    const float TAR2 = operatingPoints[index].TAR;
-    const float score2 = operatingPoints[index].score;
-    const float mTAR = (TAR2 - TAR1) / (FAR2 - FAR1);
-    const float bTAR = TAR1 - mTAR*FAR1;
+    const float mFAR   = (FAR2 - FAR1) / (score2 - score1);
+    const float bFAR   = FAR1 - mFAR*score1;
+    const float mTAR   = (TAR2 - TAR1) / (key == "Score" ? (score2 - score1) : (FAR2 - FAR1));
+    const float bTAR   = TAR1 - mTAR*(key == "Score" ? score1 : FAR1);
     const float mScore = (score2 - score1) / (FAR2 - FAR1);
     const float bScore = score1 - mScore*FAR1;
 
-    const float FAR = (TAR - bTAR) / mTAR;
-    return OperatingPoint(mScore * FAR + bScore, FAR, TAR);
+    if (key == "Score")
+        return OperatingPoint(value, mFAR*value + bFAR, mTAR*value + bTAR);
+    else if (key == "FAR")
+        return OperatingPoint(mScore * value + bScore, value, mTAR * value + bTAR);
+    return OperatingPoint(mScore * ((value - bTAR) / mTAR) + bScore, (value - bTAR) / mTAR, value);
 }
-
 
 static float getCMC(const QVector<int> &firstGenuineReturns, int rank, size_t possibleReturns = 0)
 {
@@ -361,14 +352,15 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     float FRRstep = expFRR / (float)(Max_Points - 1);
     float FPIRstep = expFPIR / (float)(Max_Points - 1);
 
+    getOperatingPoint(operatingPoints, "Score", 0.5);
     for (int i=0; i<Max_Points; i++) {
         float FAR = pow(10, -expFAR + i*FARstep);
         float FRR = pow(10, -expFRR + i*FRRstep);
         float FPIR = pow(10, -expFPIR + i*FPIRstep);
 
-        OperatingPoint operatingPointFAR = getOperatingPointGivenFAR(operatingPoints, FAR);
-        OperatingPoint operatingPointTAR = getOperatingPointGivenTAR(operatingPoints, 1-FRR);
-        OperatingPoint searchOperatingPoint = getOperatingPointGivenFAR(searchOperatingPoints, FPIR);
+        OperatingPoint operatingPointFAR = getOperatingPoint(operatingPoints, "FAR", FAR);
+        OperatingPoint operatingPointTAR = getOperatingPoint(operatingPoints, "TAR", 1-FRR);
+        OperatingPoint searchOperatingPoint = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
         lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
                                               QString::number(1-operatingPointFAR.TAR)));
         lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
@@ -380,16 +372,28 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write TAR@FAR Table (TF)
-    foreach (float far, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
+    foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
       lines.append(qPrintable(QString("TF,%1,%2").arg(
-						      QString::number(far, 'f'),
-						      QString::number(getOperatingPointGivenFAR(operatingPoints, far).TAR, 'f', 3))));
+						      QString::number(FAR, 'f'),
+						      QString::number(getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 3))));
 
     // Write FAR@TAR Table (FT)
-    foreach (float tar, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
+    foreach (float TAR, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
       lines.append(qPrintable(QString("FT,%1,%2").arg(
-                         QString::number(tar, 'f', 2),
-                         QString::number(getOperatingPointGivenTAR(operatingPoints, tar).FAR, 'f', 3))));
+                         QString::number(TAR, 'f', 2),
+                         QString::number(getOperatingPoint(operatingPoints, "TAR", TAR).FAR, 'f', 3))));
+
+    // Write FAR@Score Table (FARS) and TAR@Score table (TARS)
+    foreach(const float score, QList<float>() << 0.05 << 0.1 << 0.15 << 0.2 << 0.25 << 0.3 << 0.35 << 0.4 << 0.45 << 0.5
+                                              << 0.55 << 0.6 << 0.65 << 0.7 << 0.75 << 0.8 << 0.85 << 0.9 << 0.95) {
+        const OperatingPoint op = getOperatingPoint(operatingPoints, "Score", score);
+        lines.append(qPrintable(QString("FARS,%1,%2").arg(
+                                QString::number(score, 'f', 2),
+                                QString::number(op.FAR))));
+        lines.append(qPrintable(QString("TARS,%1,%2").arg(
+                                QString::number(score, 'f', 2),
+                                QString::number(op.TAR))));
+    }
 
     // Write CMC Table (CT)
     lines.append(qPrintable(QString("CT,1,%1").arg(QString::number(getCMC(firstGenuineReturns, 1), 'f', 3))));
@@ -400,8 +404,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     lines.append(qPrintable(QString("CT,100,%1").arg(QString::number(getCMC(firstGenuineReturns, 100), 'f', 3))));
 
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.0001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.0001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.0001,%1").arg(QString::number(getOperatingPoint(operatingPoints, "FAR", 0.0001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, "FAR", 0.001).TAR, 'f', 3))));
 
     // Attempt to read template size from enrolled gallery and write to output CSV
     size_t maxSize(0);
@@ -439,12 +443,12 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     QtUtils::writeFile(csv, lines);
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
     foreach (float FAR, QList<float>() << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
-        const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+        const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR & Similarity @ FAR = %.0e: %.3f %.3f\n", FAR, op.TAR, op.score);
     }
     printf("\n");
     foreach (float FPIR, QList<float>() << 0.1 << 0.01) {
-        const OperatingPoint op = getOperatingPointGivenFAR(searchOperatingPoints, FPIR);
+        const OperatingPoint op = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
         printf("FNIR @ FPIR = %.0e: %.3f\n", FPIR, 1-op.TAR);
     }
     printf("\n");
@@ -672,8 +676,8 @@ float InplaceEval(const QString &simmat, const QString &target, const QString &q
 
     float result;
     // Write FAR/TAR Bar Chart (BC)
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPointGivenFAR(operatingPoints, 0.001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPointGivenFAR(operatingPoints, 0.01).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPoint(operatingPoints, "FAR", 0.001).TAR, 'f', 3))));
+    lines.append(qPrintable(QString("BC,0.01,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, "FAR", 0.01).TAR, 'f', 3))));
 
     qDebug("TAR @ FAR = 0.01: %.3f", result);
     QtUtils::writeFile(csv, lines);
@@ -1244,8 +1248,8 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
                                      QString::number(operatingPoint.score) + "\n"));
     }
 
-    qDebug("FNIR @ FPIR = 0.1:   %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.1).TAR);
-    qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPointGivenFAR(operatingPoints, 0.01).TAR);
+    qDebug("FNIR @ FPIR = 0.1:   %.3f", 1-getOperatingPoint(operatingPoints, "FAR", 0.1).TAR);
+    qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPoint(operatingPoints, "FAR", 0.01).TAR);
 }
 
 void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &pdf) {
@@ -1311,13 +1315,13 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
            numTemplates-classOneTemplateCount, classOneTemplateCount, numTemplates);
     printf("----------------------------------------------------------\n");
     foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001) {
-        const OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+        const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR = %.3f @ FAR = %.4f | Threshold= %.3f\n", op.TAR, FAR, op.score);
 
     }
     printf("----------------------------------------------------------\n");
     foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98) {
-        const OperatingPoint op = getOperatingPointGivenTAR(operatingPoints, TAR);
+        const OperatingPoint op = getOperatingPoint(operatingPoints, "TAR", TAR);
         printf("FAR = %.3f @ TAR = %.4f | Threshold= %.3f\n", op.FAR, TAR, op.score);
 
     }
@@ -1332,7 +1336,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         float FARstep = expFAR / (float)(Max_Points - 1);
         for (int i=0; i<Max_Points; i++) {
             float FAR = pow(10, -expFAR + i*FARstep);
-            OperatingPoint op = getOperatingPointGivenFAR(operatingPoints, FAR);
+            OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
             farValues.append(QString::number(FAR));
             tarValues.append(QString::number(op.TAR));
         }
