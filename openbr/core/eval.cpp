@@ -75,18 +75,22 @@ static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPo
         }
     }
 
-    const float FAR1   = (index == 0 ? 0 : operatingPoints[index-1].FAR);
-    const float TAR1   = (index == 0 ? 0 : operatingPoints[index-1].TAR);
-    const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index-1].score);
+    const int index2 = (key == "Score" ? std::min(index+1, operatingPoints.size()-1) : index-1);
+    const float FAR1   = (index == 0 ? 0 : operatingPoints[index2].FAR);
+    const float TAR1   = (index == 0 ? 0 : operatingPoints[index2].TAR);
+    const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index2].score);
     const float FAR2   = operatingPoints[index].FAR;
     const float TAR2   = operatingPoints[index].TAR;
     const float score2 = operatingPoints[index].score;
 
-    const float mFAR   = (FAR2 - FAR1) / (score2 - score1);
+    const float denFAR = (FAR1 == FAR2 ? std::numeric_limits<float>::max() : (FAR2 - FAR1));
+    const float denScore = (score1 == score2 ? std::numeric_limits<float>::max() : (score2 - score1));
+
+    const float mFAR   = (FAR2 - FAR1) / denScore;
     const float bFAR   = FAR1 - mFAR*score1;
-    const float mTAR   = (TAR2 - TAR1) / (key == "Score" ? (score2 - score1) : (FAR2 - FAR1));
+    const float mTAR   = (TAR2 - TAR1) / (key == "Score" ? denScore : denFAR);
     const float bTAR   = TAR1 - mTAR*(key == "Score" ? score1 : FAR1);
-    const float mScore = (score2 - score1) / (FAR2 - FAR1);
+    const float mScore = (score2 - score1) / denFAR;
     const float bScore = score1 - mScore*FAR1;
 
     if (key == "Score")
@@ -352,7 +356,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     float FRRstep = expFRR / (float)(Max_Points - 1);
     float FPIRstep = expFPIR / (float)(Max_Points - 1);
 
-    getOperatingPoint(operatingPoints, "Score", 0.5);
     for (int i=0; i<Max_Points; i++) {
         float FAR = pow(10, -expFAR + i*FARstep);
         float FRR = pow(10, -expFRR + i*FRRstep);
