@@ -97,6 +97,8 @@ BR_EXPORT bool br_plot_metadata(int num_files, const char *files[], const char *
 
 BR_EXPORT bool br_plot_knn(int num_files, const char *files[], const char *destination, bool show = false);
 
+BR_EXPORT bool br_plot_eer(int num_files, const char *files[], const char *destination, bool show = false);
+
 BR_EXPORT float br_progress();
 
 BR_EXPORT void br_read_pipe(const char *pipe, int *argc, char ***argv);

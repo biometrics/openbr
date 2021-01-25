@@ -192,6 +192,9 @@ public:
             } else if (!strcmp(fun, "plotKNN")) {
                 check(parc >=2, "Incorrect parameter count for 'plotKNN'.");
                 br_plot_knn(parc-1, parv, parv[parc-1], true);
+            } else if (!strcmp(fun, "plotEER")) {
+                check(parc >= 2, "Incorrect parameter count for 'plotEER'.");
+                br_plot_eer(parc-1, parv, parv[parc-1], true);
             } else if (!strcmp(fun, "project")) {
                 check(parc == 2, "Insufficient parameter count for 'project'.");
                 br_project(parv[0], parv[1]);
@@ -298,6 +301,7 @@ private:
                "-plotLandmarking <file> ... <file> {destination}\n"
                "-plotMetadata <file> ... <file> <columns>\n"
                "-plotKNN <file> ... <file> {destination}\n"
+               "-plotEER <file> ... <file> {destination}\n"
                "-project <input_gallery> {output_gallery}\n"
                "-deduplicate <input_gallery> <output_gallery> <threshold>\n"
                "-likely <input_type> <output_type> <output_likely_source>\n"
