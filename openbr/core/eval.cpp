@@ -377,8 +377,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     // Write TAR@FAR Table (TF)
     foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
       lines.append(qPrintable(QString("TF,%1,%2").arg(
-						      QString::number(FAR, 'f'),
-						      QString::number(getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 3))));
+                              QString::number(FAR, 'f'),
+                              QString::number(getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 3))));
 
     // Write FAR@TAR Table (FT)
     foreach (float TAR, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
@@ -1255,7 +1255,7 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
     qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPoint(operatingPoints, "FAR", 0.01).TAR);
 }
 
-void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &pdf) {
+void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &csv) {
     if (gt_property.isEmpty())
         gt_property = "LivenessGT";
     if (distribution_property.isEmpty())
@@ -1263,59 +1263,79 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     int classOneTemplateCount = 0;
     const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
-    QHash<QString, int> gtLabels;
-    QHash<QString, float > scores;
+    QList<QPair<float, int>> scores;
+    QList<float> classZeroScores, classOneScores;
     for (int i=0; i<templateList.size(); i++) {
         if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
             continue;
-        QString templateKey = templateList[i].file.path() + templateList[i].file.baseName();
+
         const int gtLabel = templateList[i].file.get<int>(gt_property);
-        if (gtLabel == 1)
+        const float templateScore = templateList[i].file.get<float>(distribution_property);
+        scores.append(qMakePair(templateScore, gtLabel));
+
+        if (gtLabel == 1) {
             classOneTemplateCount++;
-        const float templateScores = templateList[i].file.get<float>(distribution_property);
-        gtLabels[templateKey] = gtLabel;
-        scores[templateKey] = templateScores;
+            classOneScores.append(templateScore);
+        } else {
+            classZeroScores.append(templateScore);
+        }
     }
 
-    const int numPoints  = 200;
-    const float stepSize = 100.0/numPoints;
-    const int numTemplates = scores.size();
-    float thres     = 0.0; //Between [0,100]
-    float thresNorm = 0.0; //Between [0,1]
-    float minDiff = 100, EER = 100, EERThres = 0;
+    std::sort(scores.begin(), scores.end());
+
     QList<OperatingPoint> operatingPoints;
 
-    for(int i = 0; i <= numPoints; i++) {
-        int FA = 0, FR = 0;
-        thresNorm = thres/100.0;
-        foreach(const QString &key, scores.keys()) {
-            int gtLabel = gtLabels[key];
-            //> thresNorm = class 0 (spoof) : < thresNorm = class 1 (genuine)
-            if (scores[key] >= thresNorm && gtLabel == 0)
-                continue;
-            else if (scores[key] < thresNorm && gtLabel == 1)
-                continue;
-            else if (scores[key] >= thresNorm && gtLabel == 1)
-                FR +=1;
-            else if (scores[key] < thresNorm && gtLabel == 0)
-                FA +=1;
-        }
-        const float FAR = FA / float(numTemplates - classOneTemplateCount);
-        const float FRR = FR / float(classOneTemplateCount);
-        operatingPoints.append(OperatingPoint(thresNorm, FAR, 1-FRR));
+    const int classZeroTemplateCount = scores.size() - classOneTemplateCount;
+    int falsePositives = 0, previousFalsePositives = 0;
+    int truePositives = 0, previousTruePositives = 0;
+    size_t index = 0;
+    float minDiff = 100, EER = 100, EERThres = 0;
+    float minClassOneScore = std::numeric_limits<float>::max();
+    float minClassZeroScore = std::numeric_limits<float>::max();
 
-        const float diff = std::abs(FAR-FRR);
-        if (diff < minDiff) {
-            minDiff = diff;
-            EER = (FAR+FRR)/2.0;
-            EERThres = thresNorm;
+    while (index < scores.size()) {
+        float thresh = scores[index].first;
+        // Compute genuine and imposter statistics at a threshold
+        while ((index < scores.size()) &&
+               (scores[index].first == thresh)) {
+            if (scores[index].second) {
+                truePositives++;
+                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassOneScore) 
+                    minClassOneScore = scores[index].first;
+            } else {
+                falsePositives++;
+                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassZeroScore) 
+                    minClassZeroScore = scores[index].first;
+            }
+            index++;
         }
-        thres += stepSize;
+        
+        if ((falsePositives > previousFalsePositives) &&
+             (truePositives > previousTruePositives)) {
+            const float FAR = float(falsePositives) / classZeroTemplateCount;
+            const float TAR = float(truePositives) / classOneTemplateCount;
+            const float FRR = 1 - TAR;
+            operatingPoints.append(OperatingPoint(thresh, FAR, TAR));
+
+            const float diff = std::abs(FAR-FRR);
+            if (diff < minDiff) {
+                minDiff = diff;
+                EER = (FAR+FRR)/2.0;
+                EERThres = thresh;
+            }
+
+            previousFalsePositives = falsePositives;
+            previousTruePositives = truePositives;
+        }
     }
+
+    if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
+    if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
+    if (operatingPoints.size() > 2)  operatingPoints.takeLast(); // Remove point (1,1)
 
     printf("\n==========================================================\n");
     printf("Class 0 Templates: %d\tClass 1 Templates: %d\tTotal Templates: %d\n",
-           numTemplates-classOneTemplateCount, classOneTemplateCount, numTemplates);
+           classZeroTemplateCount, classOneTemplateCount, classZeroTemplateCount + classOneTemplateCount);
     printf("----------------------------------------------------------\n");
     foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
@@ -1333,29 +1353,76 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     printf("==========================================================\n\n");
 
     // Optionally write ROC curve
-    if (!pdf.isEmpty()) {
-        QStringList farValues, tarValues;
-        float expFAR  = std::max(ceil(log10(numTemplates - classOneTemplateCount)), 1.0);
+    if (!csv.isEmpty()) {
+    QStringList lines;
+        lines.append("Plot,X,Y");
+        lines.append("Metadata,"+QString::number(classZeroTemplateCount+classOneTemplateCount)+",Total Templates");
+        lines.append("Metadata,"+QString::number(classZeroTemplateCount)+",Class 0 Template Count");
+        lines.append("Metadata,"+QString::number(classOneTemplateCount)+",Class 1 Template Count");
+
+        // Write Detection Error Tradeoff (DET), PRE, REC
+        float expFAR = std::max(ceil(log10(classZeroTemplateCount)), 1.0);
+        float expFRR = std::max(ceil(log10(classOneTemplateCount)), 1.0);
+
         float FARstep = expFAR / (float)(Max_Points - 1);
+        float FRRstep = expFRR / (float)(Max_Points - 1);
+
         for (int i=0; i<Max_Points; i++) {
             float FAR = pow(10, -expFAR + i*FARstep);
-            OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
-            farValues.append(QString::number(FAR));
-            tarValues.append(QString::number(op.TAR));
+            float FRR = pow(10, -expFRR + i*FRRstep);
+
+            OperatingPoint operatingPointFAR = getOperatingPoint(operatingPoints, "FAR", FAR);
+            OperatingPoint operatingPointTAR = getOperatingPoint(operatingPoints, "TAR", 1-FRR);
+            lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
+                                                  QString::number(1-operatingPointFAR.TAR)));
+            lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
+                                                  QString::number(FAR)));
+            lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
+                                                  QString::number(FRR)));
+        }
+    
+        // Write TAR@FAR Table (TF)
+        foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001)
+            lines.append(qPrintable(QString("TF,%1,%2").arg(
+                                    QString::number(FAR, 'f'),
+                                    QString::number(getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 3))));
+
+        // Write FAR@TAR Table (FT)
+        foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98)
+            lines.append(qPrintable(QString("FT,%1,%2").arg(
+                                        QString::number(TAR, 'f', 2),
+                                        QString::number(getOperatingPoint(operatingPoints, "TAR", TAR).FAR, 'f', 3))));
+
+        // Write FAR@Score Table (SF) and TAR@Score table (ST)
+        foreach(const float score, QList<float>() << 0.05 << 0.1 << 0.15 << 0.2 << 0.25 << 0.3 << 0.35 << 0.4 << 0.45 << 0.5
+                                                  << 0.55 << 0.6 << 0.65 << 0.7 << 0.75 << 0.8 << 0.85 << 0.9 << 0.95) {
+            const OperatingPoint op = getOperatingPoint(operatingPoints, "Score", score);
+            lines.append(qPrintable(QString("SF,%1,%2").arg(
+                                        QString::number(score, 'f', 2),
+                                        QString::number(op.FAR))));
+            lines.append(qPrintable(QString("ST,%1,%2").arg(
+                                        QString::number(score, 'f', 2),
+                                        QString::number(op.TAR))));
         }
 
-        QStringList rSource;
-        rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
-                << "FAR <- c(" + farValues.join(",") + ")"
-                << "TAR <- c(" + tarValues.join(",") + ")"
-                << "data <- data.frame(FAR, TAR)"
-                << "" << "# Construct Plot" << "pdf(\"" + pdf + "\")"
-                << "print(qplot(FAR, TAR, data=data, geom=\"line\") + scale_x_log10() + theme_minimal())"
-                << "dev.off()";
+        // Write FAR/TAR Bar Chart (BC)
+        lines.append(qPrintable(QString("BC,0.0001,%1").arg(QString::number(getOperatingPoint(operatingPoints, "FAR", 0.0001).TAR, 'f', 3))));
+        lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(getOperatingPoint(operatingPoints, "FAR", 0.001).TAR, 'f', 3))));
 
-        QString rFile = "EvalEER.R";
-        QtUtils::writeFile(rFile, rSource);
-        QtUtils::runRScript(rFile);
+        // Write SD & KDE
+        int points = qMin(qMin(Max_Points, classZeroScores.size()), classOneScores.size());
+        if (points > 1) {
+            for (int i=0; i<points; i++) {
+                float classZeroScore = classZeroScores[double(i) / double(points-1) * double(classZeroScores.size()-1)];
+                float classOneScore = classOneScores[double(i) / double(points-1) * double(classOneScores.size()-1)];
+                if (classZeroScore == -std::numeric_limits<float>::max()) classZeroScore = minClassZeroScore;
+                if (classOneScore == -std::numeric_limits<float>::max()) classOneScore = minClassOneScore;
+                lines.append(QString("SD,%1,Genuine").arg(QString::number(classOneScore)));
+                lines.append(QString("SD,%1,Impostor").arg(QString::number(classZeroScore)));
+            }
+        }
+
+        QtUtils::writeFile(csv, lines);
     }
 }
 

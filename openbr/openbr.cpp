@@ -227,6 +227,11 @@ bool br_plot_knn(int num_files, const char *files[], const char *destination, bo
     return PlotKNN(QtUtils::toStringList(num_files, files), destination, show);
 }
 
+bool br_plot_eer(int num_files, const char *files[], const char *destination, bool show)
+{
+    return PlotEER(QtUtils::toStringList(num_files, files), destination, show);
+}
+
 float br_progress()
 {
     return Globals->progress();
