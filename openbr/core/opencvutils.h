@@ -52,10 +52,8 @@ namespace OpenCVUtils
     QStringList matrixToStringList(const cv::Mat &m);
 
     // Model storage
-    void storeModel(const CvStatModel &model, QDataStream &stream);
-    void storeModel(const cv::Algorithm &model, QDataStream &stream);
-    void loadModel(CvStatModel &model, QDataStream &stream);
-    void loadModel(cv::Algorithm &model, QDataStream &stream);
+    void storeModel(const cv::Ptr<cv::Algorithm> &model, QDataStream &stream);
+    void loadModel(cv::Ptr<cv::Algorithm> model, QDataStream &stream);
 
     template <typename T>
     T getElement(const cv::Mat &m, int r, int c)

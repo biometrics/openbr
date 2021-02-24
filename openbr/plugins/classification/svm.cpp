@@ -63,18 +63,20 @@ class SVMTransform : public Transform
     Q_PROPERTY(bool balanceFolds READ get_balanceFolds WRITE set_balanceFolds RESET reset_balanceFolds STORED false)
 
 public:
-    enum Kernel { Linear = CvSVM::LINEAR,
-                  Poly = CvSVM::POLY,
-                  RBF = CvSVM::RBF,
-                  Sigmoid = CvSVM::SIGMOID };
+    enum Kernel { Linear = ml::SVM::LINEAR,
+                  Poly = ml::SVM::POLY,
+                  RBF = ml::SVM::RBF,
+                  Sigmoid = ml::SVM::SIGMOID,
+                  Chi2 = ml::SVM::CHI2,
+                  Inter = ml::SVM::INTER };
 
-    enum Type { C_SVC = CvSVM::C_SVC,
-                NU_SVC = CvSVM::NU_SVC,
-                ONE_CLASS = CvSVM::ONE_CLASS,
-                EPS_SVR = CvSVM::EPS_SVR,
-                NU_SVR = CvSVM::NU_SVR};
+    enum Type { C_SVC = ml::SVM::C_SVC,
+                NU_SVC = ml::SVM::NU_SVC,
+                ONE_CLASS = ml::SVM::ONE_CLASS,
+                EPS_SVR = ml::SVM::EPS_SVR,
+                NU_SVR = ml::SVM::NU_SVR};
 
-    SVM svm;
+    Ptr<ml::SVM> svm;
 
 private:
     BR_PROPERTY(Kernel, kernel, Linear)
@@ -90,6 +92,14 @@ private:
 
     QHash<QString, int> labelMap;
     QHash<int, QVariant> reverseLookup;
+
+    void init()
+    {
+        svm = ml::SVM::create();
+
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
+    }
 
     void train(const TemplateList &_data)
     {
@@ -110,35 +120,33 @@ private:
         if (data.type() != CV_32FC1)
             qFatal("Expected single channel floating point training data.");
 
-        CvSVMParams params;
-        params.kernel_type = kernel;
-        params.svm_type = type;
-        params.p = 0.1;
-        params.nu = 0.5;
-        params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, termCriteria, FLT_EPSILON);
+        svm->setKernel(kernel);
+        svm->setType(type);
+        svm->setP(0.1);
+        svm->setNu(0.5);
+        svm->setTermCriteria(TermCriteria(TermCriteria::COUNT + TermCriteria::EPS, termCriteria, FLT_EPSILON));
 
         if ((C == -1) || ((gamma == -1) && (kernel == RBF))) {
             try {
-                svm.train_auto(data, lab, Mat(), Mat(), params, folds,
-                               CvSVM::get_default_grid(CvSVM::C),
-                               CvSVM::get_default_grid(CvSVM::GAMMA),
-                               CvSVM::get_default_grid(CvSVM::P),
-                               CvSVM::get_default_grid(CvSVM::NU),
-                               CvSVM::get_default_grid(CvSVM::COEF),
-                               CvSVM::get_default_grid(CvSVM::DEGREE),
+                svm->trainAuto(data, ml::ROW_SAMPLE, lab, folds,
+                               ml::SVM::getDefaultGridPtr(ml::SVM::C),
+                               ml::SVM::getDefaultGridPtr(ml::SVM::GAMMA),
+                               ml::SVM::getDefaultGridPtr(ml::SVM::P),
+                               ml::SVM::getDefaultGridPtr(ml::SVM::NU),
+                               ml::SVM::getDefaultGridPtr(ml::SVM::COEF),
+                               ml::SVM::getDefaultGridPtr(ml::SVM::DEGREE),
                                balanceFolds);
             } catch (...) {
                 qWarning("Some classes do not contain sufficient examples or are not discriminative enough for accurate SVM classification.");
-                svm.train(data, lab, Mat(), Mat(), params);
+                svm->train(data, ml::ROW_SAMPLE, lab);
             }
         } else {
-            params.C = C;
-            params.gamma = gamma;
-            svm.train(data, lab, Mat(), Mat(), params);
+            svm->setC(C);
+            svm->setGamma(gamma);
+            svm->train(data, ml::ROW_SAMPLE, lab);
         }
 
-        CvSVMParams p = svm.get_params();
-        qDebug("SVM C = %f  Gamma = %f  Support Vectors = %d", p.C, p.gamma, svm.get_support_vector_count());
+        qDebug("SVM C = %f  Gamma = %f  Support Vectors = %d", svm->getC(), svm->getGamma(), svm->getSupportVectors().rows);
     }
 
     void project(const Template &src, Template &dst) const
@@ -147,7 +155,9 @@ private:
             qFatal("Decision function for multiclass classification not implemented.");
 
         dst = src;
-        float prediction = svm.predict(src.m().reshape(1, 1), returnDFVal);
+
+        cv::Mat output;
+        float prediction = svm->predict(src.m().reshape(1, 1), output, returnDFVal ? ml::StatModel::RAW_OUTPUT : 0);
         if (returnDFVal) {
             dst.m() = Mat(1, 1, CV_32F);
             dst.m().at<float>(0, 0) = prediction;
@@ -156,6 +166,7 @@ private:
             if (type != EPS_SVR && type != NU_SVR)
                 prediction = prediction > 0 ? 0 : 1;
         }
+
         if (type == EPS_SVR || type == NU_SVR) {
             dst.file.set(outputVariable, prediction);
             dst.m() = Mat(1, 1, CV_32F);
@@ -175,19 +186,13 @@ private:
     {
         OpenCVUtils::loadModel(svm, stream);
         stream >> labelMap >> reverseLookup;
-    }
-
-    void init()
-    {
-        if (outputVariable.isEmpty())
-            outputVariable = inputVariable;
-    }
+    } 
 };
 
 BR_REGISTER(Transform, SVMTransform)
 
 // Hack to expose the underlying SVM as it is difficult to expose this data structure through the Qt property system
-BR_EXPORT const cv::SVM *GetSVM(const br::Transform *t)
+BR_EXPORT const cv::Ptr<cv::ml::SVM> *GetSVM(const br::Transform *t)
 {
     return &reinterpret_cast<const SVMTransform&>(*t).svm;
 }

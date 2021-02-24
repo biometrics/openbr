@@ -44,9 +44,9 @@ class WatershedSegmentationTransform : public UntrainableTransform
         // and modifies its source image
         if (mod.depth() != CV_8U) OpenCVUtils::cvtUChar(mod, mod);
         if (mod.channels() != 1) OpenCVUtils::cvtGray(mod, mod);
-        vector<vector<Point> > contours;
-        vector<Vec4i> hierarchy;
-        findContours(mod, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+        std::vector<std::vector<Point> > contours;
+        std::vector<Vec4i> hierarchy;
+        findContours(mod, contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 
         // draw the contour delineations as 1,2,3... for input to watershed
         Mat markers = Mat::zeros(mod.size(), CV_32S);
@@ -57,7 +57,7 @@ class WatershedSegmentationTransform : public UntrainableTransform
 
         Mat orig = src.m();
         // watershed requires a 3-channel 8-bit image
-        if (orig.channels() == 1) cvtColor(orig, orig, CV_GRAY2BGR);
+        if (orig.channels() == 1) cvtColor(orig, orig, COLOR_GRAY2BGR);
         watershed(orig, markers);
         dst.file.set("SegmentsMask", QVariant::fromValue(markers));
         dst.file.set("NumSegments", compCount);

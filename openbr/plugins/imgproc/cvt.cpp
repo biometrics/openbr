@@ -36,16 +36,16 @@ class CvtTransform : public UntrainableTransform
     Q_PROPERTY(int channel READ get_channel WRITE set_channel RESET reset_channel STORED false)
 
 public:
-    enum ColorSpace { Gray = CV_BGR2GRAY,
-                      RGBGray = CV_RGB2GRAY,
-                      HLS = CV_BGR2HLS,
-                      HSV = CV_BGR2HSV,
-                      Lab = CV_BGR2Lab,
-                      Luv = CV_BGR2Luv,
-                      RGB = CV_BGR2RGB,
-                      XYZ = CV_BGR2XYZ,
-                      YCrCb = CV_BGR2YCrCb,
-                      Color = CV_GRAY2BGR };
+    enum ColorSpace { Gray = COLOR_BGR2GRAY,
+                      RGBGray = COLOR_RGB2GRAY,
+                      HLS = COLOR_BGR2HLS,
+                      HSV = COLOR_BGR2HSV,
+                      Lab = COLOR_BGR2Lab,
+                      Luv = COLOR_BGR2Luv,
+                      RGB = COLOR_BGR2RGB,
+                      XYZ = COLOR_BGR2XYZ,
+                      YCrCb = COLOR_BGR2YCrCb,
+                      Color = COLOR_GRAY2BGR };
 
 private:
     BR_PROPERTY(ColorSpace, colorSpace, Gray)

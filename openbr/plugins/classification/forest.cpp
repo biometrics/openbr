@@ -43,6 +43,14 @@ class ForestTransform : public Transform
 {
     Q_OBJECT
 
+    void init()
+    {
+        forest = ml::RTrees::create();
+
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
+    }
+
     void train(const TemplateList &data)
     {
         trainForest(data);
@@ -76,13 +84,7 @@ class ForestTransform : public Transform
     void store(QDataStream &stream) const
     {
         OpenCVUtils::storeModel(forest,stream);
-    }
-
-    void init()
-    {
-        if (outputVariable.isEmpty())
-            outputVariable = inputVariable;
-    }
+    } 
 
 protected:
     Q_ENUMS(TerminationCriteria)
@@ -99,9 +101,9 @@ protected:
     Q_PROPERTY(TerminationCriteria termCrit READ get_termCrit WRITE set_termCrit RESET reset_termCrit STORED false)
 
 public:
-    enum TerminationCriteria { Iter = CV_TERMCRIT_ITER,
-                EPS = CV_TERMCRIT_EPS,
-                Both = CV_TERMCRIT_EPS | CV_TERMCRIT_ITER};
+    enum TerminationCriteria { Iter = TermCriteria::ITER,
+                EPS = TermCriteria::EPS,
+                Both = TermCriteria::EPS | TermCriteria::ITER};
 
 protected:
     BR_PROPERTY(bool, classification, true)
@@ -116,7 +118,7 @@ protected:
     BR_PROPERTY(bool, weight, false)
     BR_PROPERTY(TerminationCriteria, termCrit, Iter)
 
-    CvRTrees forest;
+    Ptr<ml::RTrees> forest;
 
     void trainForest(const TemplateList &data)
     {
@@ -124,38 +126,38 @@ protected:
         Mat labels = OpenCVUtils::toMat(File::get<float>(data, inputVariable));
 
         Mat types = Mat(samples.cols + 1, 1, CV_8U);
-        types.setTo(Scalar(CV_VAR_NUMERICAL));
+        types.setTo(Scalar(ml::VAR_NUMERICAL));
 
         if (classification) {
-            types.at<char>(samples.cols, 0) = CV_VAR_CATEGORICAL;
+            types.at<char>(samples.cols, 0) = ml::VAR_CATEGORICAL;
         } else {
-            types.at<char>(samples.cols, 0) = CV_VAR_NUMERICAL;
+            types.at<char>(samples.cols, 0) = ml::VAR_NUMERICAL;
         }
+
+        forest->setMaxDepth(maxDepth);
+        forest->setMinSampleCount(data.size() * splitPercentage);
+        forest->setRegressionAccuracy(0);
+        forest->setUseSurrogates(false);
+        forest->setMaxCategories(2);
+        forest->setCalculateVarImportance(false);
+        forest->setActiveVarCount(0);
+        forest->setTermCriteria(TermCriteria(termCrit, 1000, forestAccuracy));
 
         bool usePrior = classification && weight;
-        float priors[2];
         if (usePrior) {
             int nonZero = countNonZero(labels);
-            priors[0] = 1;
-            priors[1] = (float)(samples.rows-nonZero)/nonZero;
+
+            cv::Mat priors(1, 2, CV_32FC1);
+            priors.at<float>(0, 0) = 1;
+            priors.at<float>(0, 1) = (float)(samples.rows-nonZero)/nonZero;
+            
+            forest->setPriors(priors);
         }
 
-        int minSamplesForSplit = data.size()*splitPercentage;
-        forest.train( samples, CV_ROW_SAMPLE, labels, Mat(), Mat(), types, Mat(),
-                    CvRTParams(maxDepth,
-                               minSamplesForSplit,
-                               0,
-                               false,
-                               2,
-                               usePrior ? priors : 0,
-                               false,
-                               0,
-                               maxTrees,
-                               forestAccuracy,
-                               termCrit));
+        forest->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, labels, noArray(), noArray(), noArray(), types));
 
         if (Globals->verbose) {
-            qDebug() << "Number of trees:" << forest.get_tree_count();
+            qDebug() << "Number of trees:" << forest->getRoots().size();
 
             if (classification) {
                 QTime timer;
@@ -163,8 +165,8 @@ protected:
                 int correctClassification = 0;
                 float regressionError = 0;
                 for (int i=0; i<samples.rows; i++) {
-                    float prediction = forest.predict_prob(samples.row(i));
-                    int label = forest.predict(samples.row(i));
+                    float prediction = forest->predict(samples.row(i), noArray(), ml::StatModel::RAW_OUTPUT);
+                    float label      = forest->predict(samples.row(i);
                     if (label == labels.at<float>(i,0)) {
                         correctClassification++;
                     }
@@ -182,100 +184,6 @@ protected:
 };
 
 BR_REGISTER(Transform, ForestTransform)
-
-/*!
- * \ingroup transforms
- * \brief Wraps OpenCV's random trees framework to induce features
- * \author Scott Klum \cite sklum
- * \br_link https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf
- * \br_property bool useRegressionValue SCOTT FILL ME IN.
- */
-class ForestInductionTransform : public ForestTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(bool useRegressionValue READ get_useRegressionValue WRITE set_useRegressionValue RESET reset_useRegressionValue STORED false)
-    BR_PROPERTY(bool, useRegressionValue, false)
-
-    int totalSize;
-    QList< QList<const CvDTreeNode*> > nodes;
-
-    void fillNodes()
-    {
-        for (int i=0; i<forest.get_tree_count(); i++) {
-            nodes.append(QList<const CvDTreeNode*>());
-            const CvDTreeNode* node = forest.get_tree(i)->get_root();
-
-            // traverse the tree and save all the nodes in depth-first order
-            for(;;)
-            {
-                CvDTreeNode* parent;
-                for(;;)
-                {
-                    if( !node->left )
-                        break;
-                    node = node->left;
-                }
-
-                nodes.last().append(node);
-
-                for( parent = node->parent; parent && parent->right == node;
-                    node = parent, parent = parent->parent )
-                    ;
-
-                if( !parent )
-                    break;
-
-                node = parent->right;
-            }
-
-            totalSize += nodes.last().size();
-        }
-    }
-
-    void train(const TemplateList &data)
-    {
-        trainForest(data);
-        if (!useRegressionValue) fillNodes();
-    }
-
-    void project(const Template &src, Template &dst) const
-    {
-        dst = src;
-
-        Mat responses;
-
-        if (useRegressionValue) {
-            responses = Mat::zeros(forest.get_tree_count(),1,CV_32F);
-            for (int i=0; i<forest.get_tree_count(); i++) {
-                responses.at<float>(i,0) = forest.get_tree(i)->predict(src.m().reshape(1,1))->value;
-            }
-        } else {
-            responses = Mat::zeros(totalSize,1,CV_32F);
-            int offset = 0;
-            for (int i=0; i<nodes.size(); i++) {
-                int index = nodes[i].indexOf(forest.get_tree(i)->predict(src.m().reshape(1,1)));
-                responses.at<float>(offset+index,0) = 1;
-                offset += nodes[i].size();
-            }
-        }
-
-        dst.m() = responses;
-    }
-
-    void load(QDataStream &stream)
-    {
-        OpenCVUtils::loadModel(forest,stream);
-        if (!useRegressionValue) fillNodes();
-
-    }
-
-    void store(QDataStream &stream) const
-    {
-        OpenCVUtils::storeModel(forest,stream);
-    }
-};
-
-BR_REGISTER(Transform, ForestInductionTransform)
 
 } // namespace br
 

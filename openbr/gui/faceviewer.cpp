@@ -43,9 +43,9 @@ static QImage toQImage(const Mat &mat)
 
     // Convert to 3 channels
     Mat mat8uc3;
-    if      (mat8u.channels() == 4) cvtColor(mat8u, mat8uc3, CV_BGRA2RGB);
-    else if (mat8u.channels() == 3) cvtColor(mat8u, mat8uc3, CV_BGR2RGB);
-    else if (mat8u.channels() == 1) cvtColor(mat8u, mat8uc3, CV_GRAY2RGB);
+    if      (mat8u.channels() == 4) cvtColor(mat8u, mat8uc3, COLOR_BGRA2RGB);
+    else if (mat8u.channels() == 3) cvtColor(mat8u, mat8uc3, COLOR_BGR2RGB);
+    else if (mat8u.channels() == 1) cvtColor(mat8u, mat8uc3, COLOR_GRAY2RGB);
 
     return QImage(mat8uc3.data, mat8uc3.cols, mat8uc3.rows, 3*mat8uc3.cols, QImage::Format_RGB888).copy();
 }

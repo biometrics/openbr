@@ -17,6 +17,8 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+#include <opencv2/imgproc.hpp>
+
 using namespace cv;
 
 namespace br
@@ -57,7 +59,6 @@ class DrawPropertiesPointTransform : public UntrainableTransform
 
         Point2f cvPoint = OpenCVUtils::toPoint(targetPoint);
 
-
         const Scalar textColor(255, 255, 0);
 
         std::string outString = "";
@@ -74,7 +75,7 @@ class DrawPropertiesPointTransform : public UntrainableTransform
         if (outString.empty())
             return;
 
-        putText(dst, outString, cvPoint, FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1);
+        putText(dst.m(), outString, cvPoint, FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1);
     }
 
 };

@@ -51,7 +51,7 @@ static void PossiblyEnterDebugger(void)
 // This gets called during OpenCV error handling e.g. if a CV_Assert fails.
 // Save the error info in our global string err_g.
 
-static int CV_CDECL CvErrorCallbackForStasm(
+static int CvErrorCallbackForStasm(
     int         code,      // translated to a string e.g. "Assertion failed"
     const char* ,          // unused here
     const char* err_msg,   // e.g. the contents of the line where assert failed
@@ -70,12 +70,11 @@ static int CV_CDECL CvErrorCallbackForStasm(
     else
     {
         char temp[SBIG]; // temporary string needed because err_msg may be err_g
-        const char* errmsg = cvErrorStr(code);
         if (file_name && file_name[0])
-            sprintf(temp, "%s(%d) : %s : %s",
-                    BaseExt(file_name), line, errmsg, err_msg);
+            sprintf(temp, "%s(%d) : %d : %s",
+                    BaseExt(file_name), line, code, err_msg);
         else
-            sprintf(temp, "OpenCV %s : %s", errmsg, err_msg);
+            sprintf(temp, "OpenCV %d : %s", code, err_msg);
 
         STRCPY(err_g, temp);
     }

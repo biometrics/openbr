@@ -45,7 +45,6 @@ class AdaBoostTransform : public Transform
     Q_ENUMS(SplitCriteria)
 
     Q_PROPERTY(Type type READ get_type WRITE set_type RESET reset_type STORED false)
-    Q_PROPERTY(SplitCriteria splitCriteria READ get_splitCriteria WRITE set_splitCriteria RESET reset_splitCriteria STORED false)
     Q_PROPERTY(int weakCount READ get_weakCount WRITE set_weakCount RESET reset_weakCount STORED false)
     Q_PROPERTY(float trimRate READ get_trimRate WRITE set_trimRate RESET reset_trimRate STORED false)
     Q_PROPERTY(int folds READ get_folds WRITE set_folds RESET reset_folds STORED false)
@@ -56,19 +55,13 @@ class AdaBoostTransform : public Transform
     Q_PROPERTY(QString outputVariable READ get_outputVariable WRITE set_outputVariable RESET reset_outputVariable STORED false)
 
 public:
-    enum Type { Discrete = CvBoost::DISCRETE,
-                Real = CvBoost::REAL,
-                Logit = CvBoost::LOGIT,
-                Gentle = CvBoost::GENTLE};
-
-    enum SplitCriteria { Default = CvBoost::DEFAULT,
-                         Gini = CvBoost::GINI,
-                         Misclass = CvBoost::MISCLASS,
-                         Sqerr = CvBoost::SQERR};
+    enum Type { Discrete = ml::Boost::DISCRETE,
+                Real = ml::Boost::REAL,
+                Logit = ml::Boost::LOGIT,
+                Gentle = ml::Boost::GENTLE};
 
 private:
     BR_PROPERTY(Type, type, Real)
-    BR_PROPERTY(SplitCriteria, splitCriteria, Default)
     BR_PROPERTY(int, weakCount, 100)
     BR_PROPERTY(float, trimRate, .95)
     BR_PROPERTY(int, folds, 0)
@@ -78,7 +71,15 @@ private:
     BR_PROPERTY(QString, inputVariable, "Label")
     BR_PROPERTY(QString, outputVariable, "")
 
-    CvBoost boost;
+    Ptr<ml::Boost> boost;
+
+    void init()
+    {
+        boost = ml::Boost::create();
+
+        if (outputVariable.isEmpty())
+            outputVariable = inputVariable;
+    }
 
     void train(const TemplateList &data)
     {
@@ -86,19 +87,16 @@ private:
         Mat labels = OpenCVUtils::toMat(File::get<float>(data, inputVariable));
 
         Mat types = Mat(samples.cols + 1, 1, CV_8U);
-        types.setTo(Scalar(CV_VAR_NUMERICAL));
-        types.at<char>(samples.cols, 0) = CV_VAR_CATEGORICAL;
+        types.setTo(Scalar(ml::VAR_NUMERICAL));
+        types.at<char>(samples.cols, 0) = ml::VAR_CATEGORICAL;
 
-        CvBoostParams params;
-        params.boost_type = type;
-        params.split_criteria = splitCriteria;
-        params.weak_count = weakCount;
-        params.weight_trim_rate = trimRate;
-        params.cv_folds = folds;
-        params.max_depth = maxDepth;
+        boost->setBoostType(type);
+        boost->setWeakCount(weakCount);
+        boost->setWeightTrimRate(trimRate);
+        boost->setCVFolds(folds);
+        boost->setMaxDepth(maxDepth);
 
-        boost.train( samples, CV_ROW_SAMPLE, labels, Mat(), Mat(), types, Mat(),
-                    params);
+        boost->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, labels, noArray(), noArray(), types, noArray()));
     }
 
     void project(const Template &src, Template &dst) const
@@ -106,9 +104,9 @@ private:
         dst = src;
         float response;
         if (returnConfidence) {
-            response = boost.predict(src.m().reshape(1,1),Mat(),Range::all(),false,true)/weakCount;
+            response = boost->predict(src.m().reshape(1,1), noArray(), ml::StatModel::RAW_OUTPUT) / weakCount;
         } else {
-            response = boost.predict(src.m().reshape(1,1));
+            response = boost->predict(src.m().reshape(1,1));
         }
 
         if (overwriteMat) {
@@ -127,13 +125,6 @@ private:
     void store(QDataStream &stream) const
     {
         OpenCVUtils::storeModel(boost,stream);
-    }
-
-
-    void init()
-    {
-        if (outputVariable.isEmpty())
-            outputVariable = inputVariable;
     }
 };
 

@@ -193,7 +193,7 @@ class ebtsFormat : public Format
         if (!frontalIdxs.isEmpty()) {
             // We use the first type 10 record to get the frontal
             QByteArray frontal = records[frontalIdxs.first()].fields.value(999).first();
-            m = imdecode(Mat(3, frontal.size(), CV_8UC3, frontal.data()), CV_LOAD_IMAGE_COLOR);
+            m = imdecode(Mat(3, frontal.size(), CV_8UC3, frontal.data()), IMREAD_COLOR);
             if (!m.data) qWarning("ebtsFormat::read failed to decode image data.");
             t.m() = m;
         } else qWarning("ebtsFormat::cannot find image data within file.");

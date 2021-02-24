@@ -17,6 +17,8 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+#include <opencv2/imgproc.hpp>
+
 using namespace cv;
 
 namespace br
@@ -62,14 +64,14 @@ class DrawTransform : public UntrainableTransform
             const QList<Point2f> pointsList = (named) ? OpenCVUtils::toPoints(src.file.points()+src.file.namedPoints()) : OpenCVUtils::toPoints(src.file.points());
             for (int i=0; i<pointsList.size(); i++) {
                 const Point2f &point = pointsList[i];
-                circle(dst, point, pointRadius, color, -1);
+                circle(dst.m(), point, pointRadius, color, -1);
                 QString label = (location) ? QString("%1,(%2,%3)").arg(QString::number(i),QString::number(point.x),QString::number(point.y)) : QString("%1").arg(QString::number(i));
-                if (verbose) putText(dst, label.toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
+                if (verbose) putText(dst.m(), label.toStdString(), point, FONT_HERSHEY_SIMPLEX, 0.5, verboseColor, 1);
             }
         }
         if (rects) {
             foreach (const Rect &rect, OpenCVUtils::toRects((named) ? src.file.namedRects() + src.file.rects() : src.file.rects()))
-                rectangle(dst, rect, color, lineThickness);
+                rectangle(dst.m(), rect, color, lineThickness);
         }
         if (rotatedRects) {
             foreach (const RotatedRect &rotatedRect, src.file.namedRotatedRects()) {
@@ -78,7 +80,7 @@ class DrawTransform : public UntrainableTransform
                 std::vector<Point> points;
                 for (int i=0; i<4; i++)
                     points.push_back(pts[i]);
-                polylines(dst, points, true, color, lineThickness);
+                polylines(dst.m(), points, true, color, lineThickness);
             }
         }
     }

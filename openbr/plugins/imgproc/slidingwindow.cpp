@@ -138,7 +138,7 @@ class SlidingWindowTransform : public MetaTransform
                 Template rep(t.file);
                 foreach (const Mat &m, t) {
                     Mat scaledImage;
-                    resize(m, scaledImage, scaledImageSize, 0, 0, CV_INTER_AREA);
+                    resize(m, scaledImage, scaledImageSize, 0, 0, INTER_AREA);
                     rep.append(scaledImage);
                 }
                 rep = classifier->preprocess(rep);

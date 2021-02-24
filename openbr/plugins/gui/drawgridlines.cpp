@@ -14,9 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <opencv2/highgui/highgui.hpp>
-
 #include <openbr/plugins/openbr_internal.h>
+
+#include <opencv2/imgproc.hpp>
 
 using namespace cv;
 
@@ -49,9 +49,9 @@ class DrawGridLinesTransform : public UntrainableTransform
         float columnStep = 1.f * m.cols / (columns+1);
         int thickness = qMin(m.rows, m.cols) / 256;
         for (float row = rowStep/2; row < m.rows; row += rowStep)
-            line(m, Point(0, row), Point(m.cols, row), Scalar(r, g, b), thickness, CV_AA);
+            line(m, Point(0, row), Point(m.cols, row), Scalar(r, g, b), thickness, LINE_AA);
         for (float column = columnStep/2; column < m.cols; column += columnStep)
-            line(m, Point(column, 0), Point(column, m.rows), Scalar(r, g, b), thickness, CV_AA);
+            line(m, Point(column, 0), Point(column, m.rows), Scalar(r, g, b), thickness, LINE_AA);
         dst = m;
     }
 };

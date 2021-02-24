@@ -39,7 +39,7 @@
 #include <QTime>
 #include <QVariant>
 #include <QVector>
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <openbr/openbr.h>
 #include <openbr/universal_template.h>
 #include <assert.h>

@@ -22,6 +22,8 @@
 #include "openbr/core/evalutils.h"
 #include <QMapIterator>
 #include <cmath>
+
+#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;

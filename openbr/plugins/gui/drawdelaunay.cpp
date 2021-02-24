@@ -17,6 +17,8 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+#include <opencv2/imgproc.hpp>
+
 using namespace cv;
 
 namespace br
@@ -40,9 +42,9 @@ class DrawDelaunayTransform : public UntrainableTransform
 
             // Clone the matrix do draw on it
             for (int i = 0; i < validTriangles.size(); i+=3) {
-                line(dst, validTriangles[i], validTriangles[i+1], Scalar(0,0,0), 1);
-                line(dst, validTriangles[i+1], validTriangles[i+2], Scalar(0,0,0), 1);
-                line(dst, validTriangles[i+2], validTriangles[i], Scalar(0,0,0), 1);
+                line(dst.m(), validTriangles[i], validTriangles[i+1], Scalar(0,0,0), 1);
+                line(dst.m(), validTriangles[i+1], validTriangles[i+2], Scalar(0,0,0), 1);
+                line(dst.m(), validTriangles[i+2], validTriangles[i], Scalar(0,0,0), 1);
             }
         } else qWarning("Template does not contain Delaunay triangulation.");
     }

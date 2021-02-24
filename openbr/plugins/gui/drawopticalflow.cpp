@@ -17,6 +17,8 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 
+#include <opencv2/imgproc.hpp>
+
 using namespace cv;
 
 namespace br
@@ -44,7 +46,7 @@ class DrawOpticalFlow : public UntrainableTransform
         foreach (const Point2f &pt, OpenCVUtils::toPoints(dst.file.points())) {
             Point2f dxy = flow.at<Point2f>(pt.y, pt.x);
             Point2f newPt(pt.x+dxy.x, pt.y+dxy.y);
-            line(dst, pt, newPt, color);
+            line(dst.m(), pt, newPt, color);
         }
     }
 };
