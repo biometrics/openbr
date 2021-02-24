@@ -185,6 +185,100 @@ protected:
 
 BR_REGISTER(Transform, ForestTransform)
 
+/*!
+ * \ingroup transforms
+ * \brief Wraps OpenCV's random trees framework to induce features
+ * \author Scott Klum \cite sklum
+ * \br_link https://lirias.kuleuven.be/bitstream/123456789/316661/1/icdm11-camready.pdf
+ * \br_property bool useRegressionValue SCOTT FILL ME IN.
+ */
+class ForestInductionTransform : public ForestTransform
+{
+    Q_OBJECT
+    Q_PROPERTY(bool useRegressionValue READ get_useRegressionValue WRITE set_useRegressionValue RESET reset_useRegressionValue STORED false)
+    BR_PROPERTY(bool, useRegressionValue, false)
+
+    int totalSize;
+    QList< QList<const CvDTreeNode*> > nodes;
+
+    void fillNodes()
+    {
+        for (int i=0; i<forest.get_tree_count(); i++) {
+            nodes.append(QList<const CvDTreeNode*>());
+            const CvDTreeNode* node = forest.get_tree(i)->get_root();
+
+            // traverse the tree and save all the nodes in depth-first order
+            for(;;)
+            {
+                CvDTreeNode* parent;
+                for(;;)
+                {
+                    if( !node->left )
+                        break;
+                    node = node->left;
+                }
+
+                nodes.last().append(node);
+
+                for( parent = node->parent; parent && parent->right == node;
+                    node = parent, parent = parent->parent )
+                    ;
+
+                if( !parent )
+                    break;
+
+                node = parent->right;
+            }
+
+            totalSize += nodes.last().size();
+        }
+    }
+
+    void train(const TemplateList &data)
+    {
+        trainForest(data);
+        if (!useRegressionValue) fillNodes();
+    }
+
+    void project(const Template &src, Template &dst) const
+    {
+        dst = src;
+
+        Mat responses;
+
+        if (useRegressionValue) {
+            responses = Mat::zeros(forest.get_tree_count(),1,CV_32F);
+            for (int i=0; i<forest.get_tree_count(); i++) {
+                responses.at<float>(i,0) = forest.get_tree(i)->predict(src.m().reshape(1,1))->value;
+            }
+        } else {
+            responses = Mat::zeros(totalSize,1,CV_32F);
+            int offset = 0;
+            for (int i=0; i<nodes.size(); i++) {
+                int index = nodes[i].indexOf(forest.get_tree(i)->predict(src.m().reshape(1,1)));
+                responses.at<float>(offset+index,0) = 1;
+                offset += nodes[i].size();
+            }
+        }
+
+        dst.m() = responses;
+    }
+
+    void load(QDataStream &stream)
+    {
+        OpenCVUtils::loadModel(forest,stream);
+        if (!useRegressionValue) fillNodes();
+
+    }
+
+    void store(QDataStream &stream) const
+    {
+        OpenCVUtils::storeModel(forest,stream);
+    }
+};
+
+BR_REGISTER(Transform, ForestInductionTransform)
+
 } // namespace br
 
 #include "classification/forest.moc"
