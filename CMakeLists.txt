@@ -101,6 +101,19 @@ else()
   endif()
 endif()
 
+# Build OpenCV 2 compatability library
+set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC}
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_types.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_base64.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_xml.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_yml.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_json.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_boost.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_tree.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_inner_functions.cpp)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat)
+
 # Find Alphanum
 find_package(Alphanum REQUIRED)
 
