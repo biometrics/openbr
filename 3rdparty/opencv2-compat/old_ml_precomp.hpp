@@ -375,8 +375,8 @@ namespace cv
         virtual ~DTreeBestSplitFinder() {}
         virtual void operator()(const BlockedRange& range);
         void join( DTreeBestSplitFinder& rhs );
-        Ptr<CvDTreeSplit> bestSplit;
-        Ptr<CvDTreeSplit> split;
+        CvDTreeSplit* bestSplit;
+        CvDTreeSplit* split;
         int splitSize;
         CvDTree* tree;
         CvDTreeNode* node;

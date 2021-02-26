@@ -1896,12 +1896,12 @@ DTreeBestSplitFinder::DTreeBestSplitFinder( CvDTree* _tree, CvDTreeNode* _node)
     node = _node;
     splitSize = tree->get_data()->split_heap->elem_size;
 
-    bestSplit.reset((CvDTreeSplit*)fastMalloc(splitSize));
-    memset(bestSplit.get(), 0, splitSize);
+    bestSplit = (CvDTreeSplit*)fastMalloc(splitSize);
+    memset(bestSplit, 0, splitSize);
     bestSplit->quality = -1;
     bestSplit->condensed_idx = INT_MIN;
-    split.reset((CvDTreeSplit*)fastMalloc(splitSize));
-    memset(split.get(), 0, splitSize);
+    split = (CvDTreeSplit*)fastMalloc(splitSize);
+    memset(split, 0, splitSize);
     //haveSplit = false;
 }
 
@@ -1947,14 +1947,14 @@ void DTreeBestSplitFinder::operator()(const BlockedRange& range)
         }
 
         if( res && bestSplit->quality < split->quality )
-                memcpy( bestSplit.get(), split.get(), splitSize );
+                memcpy( bestSplit, split, splitSize );
     }
 }
 
 void DTreeBestSplitFinder::join( DTreeBestSplitFinder& rhs )
 {
     if( bestSplit->quality < rhs.bestSplit->quality )
-        memcpy( bestSplit.get(), rhs.bestSplit.get(), splitSize );
+        memcpy( bestSplit, rhs.bestSplit, splitSize );
 }
 }
 

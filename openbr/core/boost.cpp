@@ -538,7 +538,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 void CascadeBoostTrainData::free_train_data()
 {
     CvDTreeTrainData::free_train_data();
-    cvReleaseMat(&_resp);
+    //cvReleaseMat(&_resp);
     valCache.release();
 }
 
