@@ -184,7 +184,18 @@ private:
 
     void load(QDataStream &stream)
     {
-        OpenCVUtils::loadModel(svm, stream);
+        // Copy local file contents from stream
+        QByteArray data;
+        stream >> data;
+
+        // Create local file
+        QTemporaryFile tempFile(QDir::tempPath()+"/model");
+        tempFile.open();
+        tempFile.write(data);
+        tempFile.close();
+
+        // Load model from local file
+        svm = cv::Algorithm::load<ml::SVM>(tempFile.fileName().toStdString());
         stream >> labelMap >> reverseLookup;
     } 
 };
@@ -192,9 +203,9 @@ private:
 BR_REGISTER(Transform, SVMTransform)
 
 // Hack to expose the underlying SVM as it is difficult to expose this data structure through the Qt property system
-BR_EXPORT const cv::Ptr<cv::ml::SVM> *GetSVM(const br::Transform *t)
+BR_EXPORT const cv::Ptr<cv::ml::SVM> GetSVM(const br::Transform *t)
 {
-    return &reinterpret_cast<const SVMTransform&>(*t).svm;
+    return reinterpret_cast<const SVMTransform&>(*t).svm;
 }
 
 } // namespace br
