@@ -759,7 +759,7 @@ QDataStream &operator>>(QDataStream &stream, Mat &m)
 
 QDebug operator<<(QDebug dbg, const Mat &m)
 {
-    dbg.nospace() << OpenCVUtils::matrixToString(m);
+    dbg.nospace().noquote() << OpenCVUtils::matrixToString(m);
     return dbg.space();
 }
 
