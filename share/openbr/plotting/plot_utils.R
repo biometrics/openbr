@@ -212,7 +212,7 @@ formatData <- function(type="eval") {
     } else if (type == "landmarking") {
         # Split data into individual plots
         Box <<- data[grep("Box",data$Plot),-c(1)]
-        Box$X <<- factor(Box$X, levels = Box$X, ordered = TRUE)
+        Box$X <<- factor(Box$X, levels = unique(Box$X), ordered = TRUE)
         Sample <<- data[grep("Sample",data$Plot),-c(1)]
         Sample$X <<- as.character(Sample$X)
         displaySample <<- readImageData(Sample)
