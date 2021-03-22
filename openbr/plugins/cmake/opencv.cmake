@@ -4,6 +4,7 @@ if(${BR_WITH_OPENCV_FEATURES2D})
   set(OPENCV_DEPENDENCIES ${OPENCV_DEPENDENCIES} opencv_features2d)
 else()
   set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/distance/keypointmatcher.cpp
+                                                 plugins/imgproc/sift.cpp
                                                  plugins/imgproc/keypointdescriptor.cpp
                                                  plugins/metadata/keypointdetector.cpp)
 endif()
