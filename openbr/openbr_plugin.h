@@ -39,7 +39,7 @@
 #include <QTime>
 #include <QVariant>
 #include <QVector>
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <openbr/openbr.h>
 #include <openbr/universal_template.h>
 #include <assert.h>
@@ -278,6 +278,7 @@ struct Template : public QList<cv::Mat>
     inline operator cv::Mat&() { return m(); }
     inline operator cv::_InputArray() const { return m(); }
     inline operator cv::_OutputArray() { return m(); }
+    inline operator cv::_InputOutputArray() { return m(); }
     inline bool isNull() const { return isEmpty() || !m().data; }
     inline void merge(const Template &other) { append(other); file.append(other.file); }
 

@@ -38,7 +38,7 @@ class LargestConvexAreaTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         std::vector< std::vector<Point> > contours;
-        findContours(src.m().clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+        findContours(src.m().clone(), contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
         double maxArea = 0;
         foreach (const std::vector<Point> &contour, contours) {
             std::vector<Point> hull;

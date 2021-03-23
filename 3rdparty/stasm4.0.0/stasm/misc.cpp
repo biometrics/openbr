@@ -493,13 +493,13 @@ const MAT AlignmentMat(
                                0,        0,       1 );  //  0  0  1
 }
 
-static CvScalar ToCvColor(unsigned color)
+static cv::Scalar ToCvColor(unsigned color)
 {
-    CvScalar cvcolor;
-    cvcolor.val[0] = (color         & 0xff);
-    cvcolor.val[1] = ((color >> 8)  & 0xff);
-    cvcolor.val[2] = ((color >> 16) & 0xff);
-    cvcolor.val[3] = 0;
+    cv::Scalar cvcolor;
+    cvcolor[0] = (color         & 0xff);
+    cvcolor[1] = ((color >> 8)  & 0xff);
+    cvcolor[2] = ((color >> 16) & 0xff);
+    cvcolor[3] = 0;
     return cvcolor;
 }
 
@@ -513,7 +513,7 @@ void DrawShape(             // draw a shape on an image
     const double width = ShapeWidth(shape);
     if (linewidth <= 0)
         linewidth = width > 700? 3: width > 300? 2: 1;
-    CvScalar cvcolor(ToCvColor(color));
+    cv::Scalar cvcolor(ToCvColor(color));
     int i = 0, j=0;
     do  // use do and not for loop because some points may be unused
     {
@@ -574,7 +574,7 @@ void ImgPrintf(         // printf on image
     int thickness = MAX(1, cvRound(img.rows > 1000? 2 * fontsize: fontsize));
 
     putText(img, s, cv::Point(cvRound(x), cvRound(y)),
-            CV_FONT_HERSHEY_SIMPLEX, fontsize, ToCvColor(color), thickness);
+            cv::FONT_HERSHEY_SIMPLEX, fontsize, ToCvColor(color), thickness);
 }
 
 static byte RgbToGray( // CIE conversion to gray using integer arithmetic
@@ -719,7 +719,7 @@ vec_Rect Detect(                            // detect faces or facial features
     // for the rest of Stasm (Feb 2013).
 
     cascade->detectMultiScale(roi, feats, scale_factor, min_neighbors, flags,
-                              cvSize(minwidth_pixels, minwidth_pixels));
+                              cv::Size(minwidth_pixels, minwidth_pixels));
 
     if (!feats.empty() && searchrect1.width)
         DiscountSearchRegion(feats, searchrect1);

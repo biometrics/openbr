@@ -43,8 +43,8 @@ private:
     void project(const Template &src, Template &dst) const
     {
         Mat dx, dy, magnitude, angle;
-        Sobel(src, dx, CV_32F, 1, 0, CV_SCHARR);
-        Sobel(src, dy, CV_32F, 0, 1, CV_SCHARR);
+        Sobel(src, dx, CV_32F, 1, 0, FILTER_SCHARR);
+        Sobel(src, dy, CV_32F, 0, 1, FILTER_SCHARR);
         cartToPolar(dx, dy, magnitude, angle, true);
         std::vector<Mat> mv;
         if ((channel == Magnitude) || (channel == MagnitudeAndAngle)) {

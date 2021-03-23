@@ -14,7 +14,7 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/features2d.hpp>
 
 #include <openbr/plugins/openbr_internal.h>
 
@@ -47,13 +47,13 @@ class SIFTDescriptorTransform : public UntrainableTransform
     BR_PROPERTY(double, edgeThreshold, 10)
     BR_PROPERTY(double, sigma, 1.6)
 
-    SIFT sift;
+    Ptr<SIFT> sift;
 
     void init()
     {
         if (sizes.empty())
             sizes.append(size);
-        sift = SIFT(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+        sift = SIFT::create(nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
     }
 
     void project(const Template &src, Template &dst) const
@@ -64,7 +64,7 @@ class SIFTDescriptorTransform : public UntrainableTransform
                 keyPoints.push_back(KeyPoint(val.x(), val.y(), r));
 
         Mat m;
-        sift(src, Mat(), keyPoints, m, true);
+        sift->detectAndCompute(src.m(), Mat(), keyPoints, m, true);
         m.setTo(0, m<0); // SIFT returns large negative values when it goes off the edge of the image.
         dst += m;
     }

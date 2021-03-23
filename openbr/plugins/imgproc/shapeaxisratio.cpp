@@ -2,8 +2,6 @@
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/eigenutils.h"
 
-#include <opencv2/contrib/contrib.hpp>
-
 #include <Eigen/Dense>
 
 using namespace Eigen;

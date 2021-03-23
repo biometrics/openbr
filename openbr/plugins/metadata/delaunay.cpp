@@ -71,7 +71,7 @@ class DelaunayTransform : public UntrainableTransform
             subdiv.insert(OpenCVUtils::toPoint(points[i]));
         }
 
-        vector<Vec6f> triangleList;
+        std::vector<Vec6f> triangleList;
         subdiv.getTriangleList(triangleList);
 
         QList<QPointF> validTriangles;

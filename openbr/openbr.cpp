@@ -335,7 +335,7 @@ void br_slave_process(const char *baseName)
 br_template br_load_img(const char *data, int len)
 {
     std::vector<char> buf(data, data+len);
-    cv::Mat img = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
+    cv::Mat img = cv::imdecode(cv::Mat(buf), cv::IMREAD_COLOR);
     Template *tmpl = new Template(img);
     return (br_template)tmpl;
 }

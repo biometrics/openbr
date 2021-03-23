@@ -50,9 +50,11 @@ class MLPTransform : public MetaTransform
 
 public:
 
-    enum Kernel { Identity = CvANN_MLP::IDENTITY,
-                  Sigmoid = CvANN_MLP::SIGMOID_SYM,
-                  Gaussian = CvANN_MLP::GAUSSIAN};
+    enum Kernel { Identity = ml::ANN_MLP::IDENTITY,
+                  Sigmoid = ml::ANN_MLP::SIGMOID_SYM,
+                  Gaussian = ml::ANN_MLP::GAUSSIAN,
+                  ReLU = ml::ANN_MLP::RELU,
+                  LeakyReLU = ml::ANN_MLP::LEAKYRELU};
 
 private:
     BR_PROPERTY(Kernel, kernel, Sigmoid)
@@ -62,7 +64,7 @@ private:
     BR_PROPERTY(QStringList, outputVariables, QStringList())
     BR_PROPERTY(QList<int>, neuronsPerLayer, QList<int>() << 1 << 1)
 
-    CvANN_MLP mlp;
+    Ptr<ml::ANN_MLP> mlp;
 
     void init()
     {
@@ -73,7 +75,9 @@ private:
         for (int i=0; i<neuronsPerLayer.size(); i++)
             layers.row(i) = Scalar(neuronsPerLayer.at(i));
 
-        mlp.create(layers,kernel, alpha, beta);
+        mlp = ml::ANN_MLP::create();
+        mlp->setLayerSizes(layers);
+        mlp->setActivationFunction(kernel, alpha, beta);
     }
 
     void train(const TemplateList &data)
@@ -88,10 +92,10 @@ private:
         for (int i=0; i<inputVariables.size(); i++)
             labels.col(i) += OpenCVUtils::toMat(File::get<float>(data, inputVariables.at(i)));
 
-        mlp.train(_data,labels,Mat());
+        mlp->train(_data, ml::ROW_SAMPLE, labels);
 
         if (Globals->verbose)
-            for (int i=0; i<neuronsPerLayer.size(); i++) qDebug() << *mlp.get_weights(i);
+            for (int i=0; i<neuronsPerLayer.size(); i++) qDebug() << mlp->getWeights(i);
     }
 
     void project(const Template &src, Template &dst) const
@@ -100,7 +104,7 @@ private:
 
         // See above for response dimensionality
         Mat response(outputVariables.size(), 1, CV_32FC1);
-        mlp.predict(src.m().reshape(1,1),response);
+        mlp->predict(src.m().reshape(1,1), response);
 
         // Apparently mlp.predict reshapes the response matrix?
         for (int i=0; i<outputVariables.size(); i++) dst.file.set(outputVariables.at(i),response.at<float>(0,i));

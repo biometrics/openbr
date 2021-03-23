@@ -3,6 +3,7 @@
 #include "openbr/core/opencvutils.h"
 #include "openbr/core/common.h"
 
+#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace std;

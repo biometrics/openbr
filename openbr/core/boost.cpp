@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include "boost.h"
-#include "cxmisc.h"
+#include "cv_misc.h"
 
 using namespace std;
 using namespace br;
@@ -38,9 +38,9 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
 {
     CvMat* idx = 0;
 
-    CV_FUNCNAME( "cvPreprocessIndexArray" );
+    __CV_BEGIN__
 
-    __BEGIN__;
+    CV_FUNCNAME( "cvPreprocessIndexArray" );
 
     int i, idx_total, idx_selected = 0, step, type, prev = INT_MIN, is_sorted = 1;
     uchar* srcb = 0;
@@ -122,10 +122,10 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
         }
     }
 
-    __END__;
-
     if( cvGetErrStatus() < 0 )
         cvReleaseMat( &idx );
+
+    __CV_END__
 
     return idx;
 }
@@ -171,6 +171,7 @@ struct CascadeBoostTrainData : CvDTreeTrainData
     CascadeBoostTrainData(const FeatureEvaluator* _featureEvaluator,
                           int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize, int _channels,
                           const CvDTreeParams& _params = CvDTreeParams());
+
     virtual void setData(const FeatureEvaluator* _featureEvaluator,
                          int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                          const CvDTreeParams& _params=CvDTreeParams());
@@ -199,7 +200,7 @@ struct CascadeBoostTrainData : CvDTreeTrainData
     const FeatureEvaluator* featureEvaluator;
 
     cv::Mat valCache; // precalculated feature values (CV_32FC1)
-    CvMat _resp; // for casting
+    CvMat* _resp; // for casting
 
     int numPrecalcVal, numPrecalcIdx, channels;
 };
@@ -414,8 +415,12 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
     featureEvaluator = _featureEvaluator;
 
     max_c_count = MAX( 2, featureEvaluator->getMaxCatCount() );
-    _resp = featureEvaluator->getCls();
-    responses = &_resp;
+
+    cv::Mat cls = featureEvaluator->getCls();
+    _resp = cvCreateMatHeader(cls.rows, cls.cols, cls.type());
+    cvSetData(_resp, cls.data, cls.cols * cls.elemSize());
+    //_resp = featureEvaluator->getCls();
+    responses = _resp;
     // TODO: check responses: elements must be 0 or 1
 
     if( _precalcValBufSize < 0 || _precalcIdxBufSize < 0)
@@ -533,6 +538,7 @@ void CascadeBoostTrainData::setData( const FeatureEvaluator* _featureEvaluator,
 void CascadeBoostTrainData::free_train_data()
 {
     CvDTreeTrainData::free_train_data();
+    //cvReleaseMat(&_resp);
     valCache.release();
 }
 

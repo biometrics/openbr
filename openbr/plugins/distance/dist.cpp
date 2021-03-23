@@ -60,15 +60,15 @@ private:
         float result = std::numeric_limits<float>::max();
         switch (metric) {
           case Correlation:
-            return compareHist(a, b, CV_COMP_CORREL);
+            return compareHist(a, b, HISTCMP_CORREL);
           case ChiSquared:
-            result = compareHist(a, b, CV_COMP_CHISQR);
+            result = compareHist(a, b, HISTCMP_CHISQR);
             break;
           case Intersection:
-            result = compareHist(a, b, CV_COMP_INTERSECT);
+            result = compareHist(a, b, HISTCMP_INTERSECT);
             break;
           case Bhattacharyya:
-            result = compareHist(a, b, CV_COMP_BHATTACHARYYA);
+            result = compareHist(a, b, HISTCMP_BHATTACHARYYA);
             break;
           case INF:
             result = norm(a, b, NORM_INF);

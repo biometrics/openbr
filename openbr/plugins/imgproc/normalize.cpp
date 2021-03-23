@@ -68,7 +68,7 @@ private:
     void project(const Template &src, Template &dst) const
     {
         if (!ByRow) {
-            normalize(src, dst, alpha, beta, normType, CV_32F);
+            normalize(src.m(), dst.m(), alpha, beta, normType, CV_32F);
             if (squareRoot)
                 signedSquareRoot(dst);
         }

@@ -104,7 +104,7 @@ class StasmTransform : public UntrainableMetaTransform
         foreach (const Template &t, src) {
             Mat stasmSrc(t);
             if (t.m().channels() == 3)
-                cvtColor(t, stasmSrc, CV_BGR2GRAY);
+                cvtColor(t, stasmSrc, COLOR_BGR2GRAY);
             else if (t.m().channels() != 1)
                 qFatal("Stasm expects single channel matrices.");
 

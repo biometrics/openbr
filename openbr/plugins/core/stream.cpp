@@ -22,7 +22,6 @@
 #include <QMap>
 #include <QQueue>
 #include <QtConcurrent>
-#include <opencv/highgui.h>
 #include <opencv2/highgui/highgui.hpp>
 
 #include <openbr/plugins/openbr_internal.h>

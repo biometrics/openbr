@@ -87,18 +87,32 @@ if(IOS)
 endif()
 
 # Find OpenCV
-find_package(OpenCV 2.4.5 REQUIRED)
+find_package(OpenCV 4.0.0 REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 if(IOS)
-  file(GLOB OPENCV_IOS_LIBS "${OpenCV_DIR}/../../lib/*.a")
+  file(GLOB OPENCV_IOS_LIBS "${OpenCV_DIR}/../../*.a")
   list(APPEND BR_THIRDPARTY_LIBS ${OPENCV_IOS_LIBS})
   list(APPEND BR_THIRDPARTY_LIBS "-framework Foundation -framework UIKit -framework Security -framework MobileCoreServices -lc++")
 else()
-  set(OPENCV_DEPENDENCIES opencv_core opencv_highgui opencv_imgproc opencv_ml)
+  set(OPENCV_DEPENDENCIES opencv_core opencv_dnn opencv_features2d opencv_highgui opencv_imgcodecs opencv_imgproc opencv_ml opencv_videoio)
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OPENCV_DEPENDENCIES})
   if(APPLE)
     list(APPEND BR_THIRDPARTY_LIBS "-framework Accelerate")
   endif()
 endif()
+
+# Build OpenCV 2 compatability library
+set(BR_THIRDPARTY_SRC ${BR_THIRDPARTY_SRC}
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_types.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_base64.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_xml.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_yml.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/cv_persistence_json.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_boost.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_tree.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat/old_ml_inner_functions.cpp)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/opencv2-compat)
 
 # Find Alphanum
 find_package(Alphanum REQUIRED)

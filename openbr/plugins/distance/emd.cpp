@@ -20,9 +20,9 @@ class EMDDistance : public UntrainableDistance
     Q_PROPERTY(Metric metric READ get_metric WRITE set_metric RESET reset_metric STORED false)
 
 public:
-    enum Metric { L1 = CV_DIST_L1,
-                  L2 = CV_DIST_L2,
-                  C = CV_DIST_C };
+    enum Metric { L1 = DIST_L1,
+                  L2 = DIST_L2,
+                  C = DIST_C };
 
 private:
     BR_PROPERTY(Metric, metric, L2)

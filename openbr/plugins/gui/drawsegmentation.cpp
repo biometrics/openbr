@@ -14,9 +14,9 @@
  * limitations under the License.                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <opencv2/imgproc/imgproc.hpp>
-
 #include <openbr/plugins/openbr_internal.h>
+
+#include <opencv2/imgproc.hpp>
 
 using namespace std;
 using namespace cv;
@@ -55,7 +55,7 @@ class DrawSegmentation : public UntrainableTransform
             } else { // draw lines where there's a color change
                 vector<vector<Point> > contours;
                 Scalar color(0,255,0);
-                findContours(mask, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+                findContours(mask, contours, RETR_LIST, CHAIN_APPROX_NONE);
                 drawContours(drawn, contours, -1, color);
             }
         }

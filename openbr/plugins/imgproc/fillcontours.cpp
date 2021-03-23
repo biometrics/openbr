@@ -38,10 +38,10 @@ class FillContoursTransform : public UntrainableTransform
     Q_PROPERTY(int minSize READ get_minSize WRITE set_minSize RESET reset_minSize STORED false)
 
 public:
-    enum Approximation { None = CV_CHAIN_APPROX_NONE,
-                  Simple = CV_CHAIN_APPROX_SIMPLE,
-                  L1 = CV_CHAIN_APPROX_TC89_L1,
-                  KCOS = CV_CHAIN_APPROX_TC89_KCOS };
+    enum Approximation { None = CHAIN_APPROX_NONE,
+                  Simple = CHAIN_APPROX_SIMPLE,
+                  L1 = CHAIN_APPROX_TC89_L1,
+                  KCOS = CHAIN_APPROX_TC89_KCOS };
 
 private:
     BR_PROPERTY(Approximation, approximation, None)
@@ -52,11 +52,11 @@ private:
     {
         dst.m() = Mat::zeros(src.m().rows,src.m().cols,src.m().type());
 
-        vector<vector<Point> > contours;
-        vector<Vec4i> hierarchy;
+        std::vector<std::vector<Point> > contours;
+        std::vector<Vec4i> hierarchy;
 
         /// Find contours
-        findContours(src.m(), contours, hierarchy, CV_RETR_TREE, approximation);
+        findContours(src.m(), contours, hierarchy, RETR_TREE, approximation);
 
         if (epsilon > 0)
             for(size_t i=0; i<contours.size(); i++)
@@ -64,7 +64,7 @@ private:
 
         for(size_t i=0; i<contours.size(); i++)
             if (contours[i].size() > (size_t)minSize)
-                drawContours(dst, contours, i, Scalar(255,255,255), CV_FILLED);
+                drawContours(dst.m(), contours, i, Scalar(255,255,255), FILLED);
     }
 };
 

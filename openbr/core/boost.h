@@ -1,7 +1,7 @@
 #ifndef _BOOST_H_
 #define _BOOST_H_
 
-#include "ml.h"
+#include "cv_boost.h"
 #include <openbr/openbr_plugin.h>
 
 namespace br

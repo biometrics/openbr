@@ -36,7 +36,7 @@ class SkinMaskTransform : public UntrainableTransform
     void project(const Template &src, Template &dst) const
     {
         Mat m;
-        cvtColor(src, m, CV_BGR2YCrCb);
+        cvtColor(src, m, COLOR_BGR2YCrCb);
         std::vector<Mat> mv;
         split(m, mv);
         Mat mask = Mat(m.rows, m.cols, CV_8UC1);

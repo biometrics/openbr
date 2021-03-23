@@ -31,16 +31,16 @@ using namespace std;
 
 int OpenCVUtils::getFourcc()
 {
-    int fourcc = CV_FOURCC('x','2','6','4');
+    int fourcc = cv::VideoWriter::fourcc('x','2','6','4');
     QVariant recovered_variant = br::Globals->property("fourcc");
 
     if (!recovered_variant.isNull()) {
         QString recovered_string = recovered_variant.toString();
         if (recovered_string.length() == 4) {
-            fourcc = CV_FOURCC(recovered_string[0].toLatin1(),
-                               recovered_string[1].toLatin1(),
-                               recovered_string[2].toLatin1(),
-                               recovered_string[3].toLatin1());
+            fourcc = cv::VideoWriter::fourcc(recovered_string[0].toLatin1(),
+                                             recovered_string[1].toLatin1(),
+                                             recovered_string[2].toLatin1(),
+                                             recovered_string[3].toLatin1());
         }
         else if (recovered_string.compare("-1")) fourcc = -1;
     }
@@ -264,24 +264,7 @@ QStringList OpenCVUtils::matrixToStringList(const Mat &m)
     return results;
 }
 
-void OpenCVUtils::storeModel(const CvStatModel &model, QDataStream &stream)
-{
-    // Create local file
-    QTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.close();
-
-    // Save MLP to local file
-    model.save(qPrintable(tempFile.fileName()));
-
-    // Copy local file contents to stream
-    tempFile.open();
-    QByteArray data = tempFile.readAll();
-    tempFile.close();
-    stream << data;
-}
-
-void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
+void OpenCVUtils::storeModel(const cv::Ptr<cv::Algorithm> &model, QDataStream &stream)
 {
     // Create local file
     QTemporaryFile tempFile;
@@ -290,7 +273,7 @@ void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
 
     // Save MLP to local file
     cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::WRITE);
-    model.write(fs);
+    model->write(fs);
     fs.release();
 
     // Copy local file contents to stream
@@ -300,19 +283,7 @@ void OpenCVUtils::storeModel(const cv::Algorithm &model, QDataStream &stream)
     stream << data;
 }
 
-void OpenCVUtils::loadModel(CvStatModel &model, QDataStream &stream)
-{
-    // Copy file contents from stream
-    QByteArray data;
-    stream >> data;
-
-    // This code for reading a file from memory inspired by CvStatModel::load implementation
-    CvFileStorage *fs = cvOpenFileStorage(data.constData(), 0, CV_STORAGE_READ | CV_STORAGE_MEMORY);
-    model.read(fs, (CvFileNode*) cvGetSeqElem(cvGetRootFileNode(fs)->data.seq, 0));
-    cvReleaseFileStorage(&fs);
-}
-
-void OpenCVUtils::loadModel(cv::Algorithm &model, QDataStream &stream)
+void OpenCVUtils::loadModel(cv::Ptr<cv::Algorithm> model, QDataStream &stream)
 {
     // Copy local file contents from stream
     QByteArray data;
@@ -326,7 +297,7 @@ void OpenCVUtils::loadModel(cv::Algorithm &model, QDataStream &stream)
 
     // Load MLP from local file
     cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::READ);
-    model.read(fs[""]);
+    model->read(fs[""]);
 }
 
 Point2f OpenCVUtils::toPoint(const QPointF &qPoint)
@@ -788,7 +759,7 @@ QDataStream &operator>>(QDataStream &stream, Mat &m)
 
 QDebug operator<<(QDebug dbg, const Mat &m)
 {
-    dbg.nospace() << OpenCVUtils::matrixToString(m);
+    dbg.nospace().noquote() << OpenCVUtils::matrixToString(m);
     return dbg.space();
 }
 

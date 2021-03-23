@@ -110,7 +110,7 @@ static inline void calcOffset(int &p0, int &p1, int &p2, int &p3, Rect rect, int
 
 MBLBPRepresentation::Feature::Feature( int offset, int x, int y, int _blockWidth, int _blockHeight )
 {
-    Rect tr = rect = cvRect(x, y, _blockWidth, _blockHeight);
+    Rect tr = rect = Rect(x, y, _blockWidth, _blockHeight);
     calcOffset(p[0], p[1], p[4], p[5], tr, offset);
     tr.x += 2*rect.width;
     calcOffset(p[2], p[3], p[6], p[7], tr, offset);
