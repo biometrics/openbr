@@ -769,7 +769,7 @@ void EvalClassification(const QString &predictedGallery, const QString &truthGal
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize, float relativeMinSize)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize, float relativeMinSize, const QString &label)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
@@ -787,6 +787,15 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
         if (Globals->verbose)
             qDebug("Removing boxes larger than %d\n", maxSize);
         allDetections = filterDetections(allDetections, maxSize, false);
+    }
+
+    // Optionally, keep only detections with a specific label
+    if (!label.isEmpty()) {
+        if (Globals->verbose)
+            qDebug("Removing detections without label %s\n", qPrintable(label));
+        allDetections = filterLabels(allDetections, label);
+        if (allDetections.isEmpty())
+            qFatal("No detections left after filtering on label. Check your filter");
     }
 
     QList<ResolvedDetection> resolvedDetections, falseNegativeDetections;

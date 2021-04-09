@@ -7,7 +7,8 @@
 
 namespace EvalUtils
 {
-    struct Detection
+    
+struct Detection
 {
     QRectF boundingBox;
     QString filePath;
@@ -18,14 +19,17 @@ namespace EvalUtils
     // true negative, or false negative, it will simply be ignored.
     bool ignore;
     QString pose;
+    // The label field can be used to distinguish between different object classes
+    QString label;
 
     Detection() {}
-    Detection(const QRectF &boundingBox, const QString &filePath = QString(), float confidence = -1, bool ignore = false, const QString &pose = "Frontal") :
+    Detection(const QRectF &boundingBox, const QString &filePath = QString(), float confidence = -1, bool ignore = false, const QString &pose = "Frontal", const QString &label = "") :
         boundingBox(boundingBox),
         filePath(filePath),
         confidence(confidence),
         ignore(ignore),
-        pose(pose)
+        pose(pose),
+        label(label)
     {}
 
     float overlap(const Detection &other) const
@@ -50,18 +54,20 @@ struct ResolvedDetection
     QRectF boundingBox, groundTruthBoundingBox;
     float confidence, overlap;
     bool poseMatch;
+    QString label;
     ResolvedDetection() :
     confidence(-1),
         overlap(-1)
         {}
 
-ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence, float overlap, const QRectF &groundTruthBoundingBox, bool poseMatch) :
+ResolvedDetection(const QString &filePath, const QRectF &boundingBox, float confidence, float overlap, const QRectF &groundTruthBoundingBox, bool poseMatch, const QString &label) :
     filePath(filePath),
     boundingBox(boundingBox),
     groundTruthBoundingBox(groundTruthBoundingBox),
     confidence(confidence),
     overlap(overlap),
-    poseMatch(poseMatch)
+    poseMatch(poseMatch),
+    label(label)
     {}
 
     inline bool operator<(const ResolvedDetection &other) const { return confidence > other.confidence; }
@@ -99,6 +105,7 @@ struct DetectionOperatingPoint
     QList<Detection> getDetections(const DetectionKey &key, const br::File &f, bool isTruth);
     QMap<QString, Detections> getDetections(const br::File &predictedGallery, const br::File &truthGallery);
     QMap<QString, Detections> filterDetections(const QMap<QString, Detections> &allDetections, int threshold, bool useMin = true, float relativeThreshold = 0);
+    QMap<QString, Detections> filterLabels(const QMap<QString, Detections> &allDetections, const QString &label);
     int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets);
     QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points);
     inline int getNumberOfImages(const QMap<QString, Detections> detections)
