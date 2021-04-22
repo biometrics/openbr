@@ -27,12 +27,12 @@ Remember to when you are installing please choose version above 5.14, which can 
 5.	Make sure the MSVC2019 and OpenCV 4.x is installed, and we can build the OpenBR now. 
 Use the following code in the Command Prompt.
 
-    cd C:\openbr
-    mkdir build-msvc2019
-    cd build-msvc2019
-    cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv/build/install;F:Qt/Qt5/5.15.2/msvc2019_64" -     DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
-    nmake
-    nmake install
+    	cd C:\openbr
+    	mkdir build-msvc2019
+    	cd build-msvc2019
+    	cmake -G "CodeBlocks - NMake Makefiles" -DCMAKE_PREFIX_PATH="C:/opencv/build/install;F:Qt/Qt5/5.15.2/msvc2019_64" -     DCMAKE_INSTALL_PREFIX="./install" -DBR_INSTALL_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Release ..
+    	nmake
+    	nmake install
     
 6.	Hack OpenBR
     1.	Open the “Qt Creator” in the Qt files.
