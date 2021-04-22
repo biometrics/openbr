@@ -14,7 +14,7 @@ NOTICE: Please install the latest version of CMake and Make sure OpenCV 4.x and 
             git submodule init
             git submodule update
             
-            Then the file name “openbr” can be found in the c disk. If the file cannot be download, please use the first method.
+ 	Then the file name “openbr” can be found in the c disk. If the file cannot be download, please use the first method.
             
             
 3.	Check the openbr file. After download, please check the integrity of file, especially the file named “janus” in the “openbr/openbr/janus”. If this file is an empty file, please download from the following link and replace it. 
