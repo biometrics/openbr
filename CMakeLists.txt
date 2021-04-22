@@ -2,6 +2,7 @@ project(openbr)
 cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
+
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
 set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
 set(CMAKE_AUTOMOC ON)
@@ -24,19 +25,6 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CMAKE_MODULE_PATH "${BR_SHARE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(PACKAGE_YEAR 2013)
 
-if(${CMAKE_VERSION} VERSION_EQUAL 2.8.11)
-  cmake_policy(SET CMP0020 OLD)
-endif()
-if(${CMAKE_VERSION} VERSION_GREATER 2.8.11)
-  cmake_policy(SET CMP0020 OLD)
-endif()
-
-if(${CMAKE_VERSION} VERSION_EQUAL 2.8.12)
-  cmake_policy(SET CMP0022 OLD)
-endif()
-if(${CMAKE_VERSION} VERSION_GREATER 2.8.12)
-  cmake_policy(SET CMP0022 OLD)
-endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER 3)
   cmake_policy(SET CMP0043 NEW)
