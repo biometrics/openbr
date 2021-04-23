@@ -4,11 +4,11 @@ NOTICE: Please install the latest version of CMake and Make sure OpenCV 4.x and 
 
 1.	Identify the latest stable release tag such as “v1.10”. 
 2.	Download all OpenBR source code and switch to the latest release tag. There are two method to do that:
-        (1)	Download from: https://github.com/biometrics/openbr directly. Choose “Download zip” and decompress it in the disk C               with file named “openbr”.
+        (1)	Download from: https://github.com/lanqiming/openbr directly. Choose “Download zip” and decompress it in the disk C               with file named “openbr”.
         (2)	Download the “Git Bash” and run the scripts below:      
         
             cd c:/
-            git clone https://github.com/biometrics/openbr.git
+            git clone https://github.com/lanqiming/openbr.git
             cd openbr
             git checkout v1.1.0
             git submodule init
