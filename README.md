@@ -24,7 +24,9 @@ https://github.com/lanqiming/INVSC-janus
 https://download.qt.io/official_releases/online_installers/
 Remember to when you are installing please choose version above 5.14, which can support VS2019.
 
-5.	Make sure the MSVC2019 and OpenCV 4.x is installed, and we can build the OpenBR now. 
+5.	Before install openbr, please check the "CMakeList.txt" in the file "openbr/openbr". Please check the code in the 42 line. If it is not  "target_link_libraries(openbr ${BR_THIRDPARTY_LIBS})", please change it to that. 
+
+6.	Make sure the MSVC2019 and OpenCV 4.x is installed, and we can build the OpenBR now. 
 Use the following code in the Command Prompt.
 
     	cd C:\openbr
@@ -34,7 +36,7 @@ Use the following code in the Command Prompt.
     	nmake
     	nmake install
     
-6.	Hack OpenBR
+7.	Hack OpenBR
     1.	Open the “Qt Creator” in the Qt files.
     2.	From the Qt Creator "Tools" menu select "Options..."
     3.	Under "Kits" select "Desktop Qt MSVC2019 64bit"
