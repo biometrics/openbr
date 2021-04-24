@@ -2,7 +2,7 @@ project(openbr)
 cmake_minimum_required(VERSION 2.8.9)
 
 # Global settings
-
+set (CMAKE_PREFIX_PATH "F:Qt\\Qt5\\5.15.2\\msvc2019_64\\lib\\cmake\\Qt5\\")
 set(BR_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/share/openbr")
 set(BR_SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
 set(CMAKE_AUTOMOC ON)
