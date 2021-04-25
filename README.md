@@ -8,7 +8,7 @@ NOTICE: Please install the latest version of CMake and Make sure OpenCV 4.x and 
 	1. Consider the free open source program 7-Zip if you need a program to unarchive tarballs.
 	2. Move the "opencv" folder to "C:\".
 	
-	iii.Open "VS2013 x64 Cross Tools Command Prompt" and enter.
+	iii.Open "VS2013 x64 Cross Tools Command Prompt" and enter. (you can also find this script in the "turn-key scripts" file named "install opencv")
 	
 		cd C:\opencv\sources  (where the "CMakeList.txt" is)
 		mkdir build-msvc2019
@@ -52,7 +52,7 @@ Remember to when you are installing please choose version above 5.14, which can 
 		set (CMAKE_PREFIX_PATH "F:Qt\\Qt5\\5.15.2\\msvc2019_64\\lib\\cmake\\Qt5\\")
 
 9.	Make sure the MSVC2019 and OpenCV 4.x is installed, and we can build the OpenBR now. 
-Use the following code in the Command Prompt.(you can also find thid script in the "turn-key scripts" file)      
+Use the following code in the Command Prompt.(you can also find this script in the "turn-key scripts" file named "install openbr")      
 
     	cd C:\openbr
     	mkdir build-msvc2019
