@@ -7,7 +7,7 @@ NOTICE: Please install the latest version of CMake and Make sure OpenCV 4.x and 
 2. Downalod OpenCv 4.x
 	1. Consider the free open source program 7-Zip if you need a program to unarchive tarballs.
 	2. Move the "opencv" folder to "C:\".
-	3.Open "VS2013 x64 Cross Tools Command Prompt" and enter:
+	3.Open "VS2013 x64 Cross Tools Command Prompt" and enter.
 	
 		cd C:\opencv\sources  (where the "CMakeList.txt" is)
 		mkdir build-msvc2019
