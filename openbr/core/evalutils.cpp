@@ -47,28 +47,34 @@ DetectionKey EvalUtils::getDetectKey(const FileList &files)
 // return a list of detections independent of the detection key format
 QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f, bool isTruth)
 {
-    QString pose = f.get<QString>("Pose");
+    QString pose = f.get<QString>("Pose", "Frontal");
     if (pose.contains("Angle"))
         pose = "Frontal";
+
+    QString label = f.get<QString>("Label", "");
 
     const QString filePath = f.path() + "/" + f.fileName();
     QList<Detection> dets;
     if (key.type == DetectionKey::RectList) {
         QList<QRectF> rects = f.rects();
         QList<float> confidences = f.getList<float>("Confidences", QList<float>());
+        QList<QString> labels = f.getList<QString>("Labels", QList<QString>());
         if (!isTruth && rects.size() != confidences.size())
             qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
+        if (!labels.empty() && rects.size() != labels.size())
+            qFatal("Some of your rects have labels but not all, it's all or nothing I'm afraid");
+
         for (int i=0; i<rects.size(); i++) {
             if (isTruth)
-                dets.append(Detection(rects[i], filePath));
+                dets.append(Detection(rects[i], filePath, -1, false, "Frontal", labels.empty() ? "" : labels[i]));
             else
-                dets.append(Detection(rects[i], filePath, confidences[i]));
+                dets.append(Detection(rects[i], filePath, confidences[i], false, "Frontal", labels.empty() ? "" : labels[i]));
         }
     } else if (key.type == DetectionKey::Rect) {
-        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose));
+        dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose, label));
     } else if (key.type == DetectionKey::XYWidthHeight) {
         const QRectF rect(f.get<float>(key+"_X"), f.get<float>(key+"_Y"), f.get<float>(key+"_Width"), f.get<float>(key+"_Height"));
-        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose));
+        dets.append(Detection(rect, filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose, label));
     }
     return dets;
 }
@@ -128,6 +134,27 @@ QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detect
         }
         if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
     }
+    
+    return allFilteredDetections;
+}
+
+QMap<QString, Detections> EvalUtils::filterLabels(const QMap<QString, Detections> &allDetections, const QString &label)
+{
+    QMap<QString, Detections> allFilteredDetections;
+    foreach (QString key, allDetections.keys()) {
+        Detections detections = allDetections[key];
+        Detections filteredDetections;
+        for (int i = 0; i < detections.predicted.size(); i++) {
+            if (detections.predicted[i].label == label)
+                filteredDetections.predicted.append(detections.predicted[i]);
+        }
+        for (int i = 0; i < detections.truth.size(); i++) {
+            if (detections.truth[i].label == label)
+                filteredDetections.truth.append(detections.truth[i]);
+        }
+        if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
+    }
+
     return allFilteredDetections;
 }
 
@@ -146,6 +173,10 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             const Detection truth = detections.truth[t];
             for (int p = 0; p < detections.predicted.size(); p++) {
                 Detection predicted = detections.predicted[p];
+
+                // Only boxes of the same class can overlap
+                if (predicted.label != truth.label)
+                    continue;
 
                 float predictedWidth = predicted.boundingBox.width();
                 float x, y, width, height;
@@ -175,7 +206,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             const Detection predicted = detections.predicted[detection.predicted_idx];
 
             if (!truth.ignore)
-                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap, truth.boundingBox, truth.pose == predicted.pose));
+                resolved.append(ResolvedDetection(predicted.filePath, predicted.boundingBox, predicted.confidence, detection.overlap, truth.boundingBox, truth.pose == predicted.pose, truth.label));
 
             removedTruth.append(detection.truth_idx);
             removedPredicted.append(detection.predicted_idx);
@@ -192,11 +223,11 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
 
         // False positive
         for (int i = 0; i < detections.predicted.size(); i++)
-            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0, QRectF(), false));
+            if (!removedPredicted.contains(i)) resolved.append(ResolvedDetection(detections.predicted[i].filePath, detections.predicted[i].boundingBox, detections.predicted[i].confidence, 0, QRectF(), false, detections.predicted[i].label));
 
         // False negative
         for (int i = 0; i < detections.truth.size(); i++)
-            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0, QRectF(), false));
+            if (!removedTruth.contains(i) && !detections.truth[i].ignore) falseNegative.append(ResolvedDetection(detections.truth[i].filePath, detections.truth[i].boundingBox, -std::numeric_limits<float>::max(), 0, QRectF(), false, detections.truth[i].label));
     }
 
     if (offsets.x() == 0) {
