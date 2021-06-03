@@ -992,6 +992,28 @@ Load an image from a string buffer. This is an easy way to pass an image in memo
 
 ---
 
+## br_load_raw_img
+
+Load an image of defined format from a string buffer. This is an easy way to pass an image in memory from another programming language to openbr.
+
+* **function definition:**
+
+        br_template br_load_raw_img(void *data, int width, int height, int cvType)
+
+* **parameters:**
+
+    Parameter | Type | Description
+    --- | --- | ---
+    data | void * | The image buffer.
+    width | int | Width in pixel of the image.
+    height | int | Height in pixel of the image.
+    cvType | int | cv::Mat::type. e.g. CV_8UC3.
+
+* **output:** ([br_template](typedefs.md#br_template) Returns a [br_template](typedefs.md#br_template) loaded with the provided image
+* **see:** [br_unload_img](#br_unload_img)
+
+---
+
 ## br_unload_img
 
 Unload an image to a string buffer. This is an easy way to pass an image from openbr to another programming language.
