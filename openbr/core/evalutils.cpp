@@ -51,14 +51,14 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
     if (pose.contains("Angle"))
         pose = "Frontal";
 
-    QString label = f.get<QString>("Label", "");
+    QString label = f.get<QString>("ObjectType", "").toLower();
 
     const QString filePath = f.path() + "/" + f.fileName();
     QList<Detection> dets;
     if (key.type == DetectionKey::RectList) {
         QList<QRectF> rects = f.rects();
         QList<float> confidences = f.getList<float>("Confidences", QList<float>());
-        QList<QString> labels = f.getList<QString>("Labels", QList<QString>());
+        QList<QString> labels = f.getList<QString>("ObjectTypes", QList<QString>());
         if (!isTruth && rects.size() != confidences.size())
             qFatal("You don't have enough confidence. I mean, your detections don't all have confidence measures.");
         if (!labels.empty() && rects.size() != labels.size())
@@ -263,7 +263,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
 
     QList<float> FARsToOutput;
-    FARsToOutput << 1 << .5 << .2 << .1 << .02 << .01 << .001;
+    FARsToOutput << 10 << 1 << .5 << .2 << .1 << .02 << .01 << .001;
 
     QDebug debug = qDebug();
     debug.noquote();
