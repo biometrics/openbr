@@ -62,7 +62,7 @@ plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
     }
 }
 
-plotTAR <- function(tableData=NULL, operatingPoint=1e-4) {
+plotFRR <- function(tableData=NULL, operatingPoint=1e-4) {
     if (nrow(tableData) == 0) return()
     major <- majorHeader
     minor <- if(minorHeader == "") majorHeader else minorHeader
@@ -72,7 +72,7 @@ plotTAR <- function(tableData=NULL, operatingPoint=1e-4) {
     rownames(mat) <- tableData[,major][!duplicated(tableData[,major])]
     table <- as.table(mat)
     print(textplot(table))
-    print(title(paste("True Accept Rate at FAR=", toString(operatingPoint))))
+    print(title(paste("False Reject Rate at FAR=", toString(operatingPoint))))
 }
 
 plotLandmarkTables <- function(tableData=NULL) {
@@ -179,7 +179,7 @@ formatData <- function(type="eval") {
         FAR <<- data[grep("FAR",data$Plot),-c(1)]
         FRR <<- data[grep("FRR",data$Plot),-c(1)]
         SD <<- data[grep("SD",data$Plot),-c(1)]
-        TF <<- data[grep("TF",data$Plot),-c(1)]
+        FF <<- data[grep("FF",data$Plot),-c(1)]
         FT <<- data[grep("FT",data$Plot),-c(1)]
         CT <<- data[grep("CT",data$Plot),-c(1)]
         BC <<- data[grep("BC",data$Plot),-c(1)]
@@ -195,7 +195,7 @@ formatData <- function(type="eval") {
         FAR$Y <<- as.numeric(as.character(FAR$Y))
         FRR$Y <<- as.numeric(as.character(FRR$Y))
         SD$Y <<- as.factor(unique(as.character(SD$Y)))
-        TF$Y <<- as.numeric(as.character(TF$Y))
+        FF$Y <<- as.numeric(as.character(FF$Y))
         FT$Y <<- as.numeric(as.character(FT$Y))
         CT$Y <<- as.numeric(as.character(CT$Y))
         BC$Y <<- as.numeric(as.character(BC$Y))

@@ -376,11 +376,11 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                                               QString::number(1-searchOperatingPoint.TAR)));
     }
 
-    // Write TAR@FAR Table (TF)
+    // Write FRR@FAR Table (FF)
     foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
-      lines.append(qPrintable(QString("TF,%1,%2").arg(
+      lines.append(qPrintable(QString("FF,%1,%2").arg(
                               QString::number(FAR, 'f'),
-                              QString::number(getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 3))));
+                              QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
 
     // Write FAR@TAR Table (FT)
     foreach (float TAR, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
