@@ -180,13 +180,13 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     RPlot p(files, destination);
     p.file.write("\nformatData()\n\n");
-    p.file.write(qPrintable(QString("algs <- %1\n").arg((p.major.size > 1 && p.minor.size > 1) && !(p.major.smooth || p.minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(p.major.header, p.minor.header)
-                                                                                                                                      : QString("TF$%1").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header)))));
+    p.file.write(qPrintable(QString("algs <- %1\n").arg((p.major.size > 1 && p.minor.size > 1) && !(p.major.smooth || p.minor.smooth) ? QString("paste(FF$%1, FF$%2, sep=\"_\")").arg(p.major.header, p.minor.header)
+                                                                                                                                      : QString("FF$%1").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header)))));
     p.file.write("algs <- algs[!duplicated(algs)]\n");
 
     if (p.major.smooth || p.minor.smooth) {
         QString groupvar = p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header);
-        foreach(const QString &data, QStringList() << "DET" << "IET" << "CMC" << "TF" << "FT" << "CT") {
+        foreach(const QString &data, QStringList() << "DET" << "IET" << "CMC" << "FF" << "FT" << "CT") {
             p.file.write(qPrintable(QString("%1 <- summarySE(%1, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"), conf.interval=confidence)"
                                             "\n").arg(data, groupvar)));
         }
@@ -214,8 +214,8 @@ bool Plot(const QStringList &files, const File &destination, bool show)
 
     // optional plot metadata and accuracy tables
     if (destination.getBool("metadata", true)) {
-        p.file.write("plotTAR(tableData=TF)\n");
-        p.file.write("plotTAR(tableData=TF,operatingPoint=1e-6)\n");
+        p.file.write("plotFRR(tableData=FF)\n");
+        p.file.write("plotFRR(tableData=FF,operatingPoint=1e-6)\n");
     }
 
     // Write plots
@@ -375,12 +375,12 @@ bool PlotEER(const QStringList &files, const File &destination, bool show)
 
     RPlot p(files, destination);
     p.file.write("\nformatData()\n\n");
-    p.file.write(qPrintable(QString("algs <- %1\n").arg((p.major.size > 1 && p.minor.size > 1) && !(p.major.smooth || p.minor.smooth) ? QString("paste(TF$%1, TF$%2, sep=\"_\")").arg(p.major.header, p.minor.header)
-                                                                                                                                      : QString("TF$%1").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header)))));
+    p.file.write(qPrintable(QString("algs <- %1\n").arg((p.major.size > 1 && p.minor.size > 1) && !(p.major.smooth || p.minor.smooth) ? QString("paste(FF$%1, FF$%2, sep=\"_\")").arg(p.major.header, p.minor.header)
+                                                                                                                                      : QString("FF$%1").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header)))));
     p.file.write("algs <- algs[!duplicated(algs)]\n");
     if (p.major.smooth || p.minor.smooth) {
         QString groupvar = p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header);
-        foreach(const QString &data, QStringList() << "DET" << "TF" << "FT") {
+        foreach(const QString &data, QStringList() << "DET" << "FF" << "FT") {
             p.file.write(qPrintable(QString("%1 <- summarySE(%1, measurevar=\"Y\", groupvars=c(\"%2\", \"X\"), conf.interval=confidence)"
                                             "\n").arg(data, groupvar)));
         }
