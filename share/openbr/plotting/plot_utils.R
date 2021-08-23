@@ -71,7 +71,9 @@ plotFRR <- function(tableData=NULL, operatingPoint=1e-4) {
     colnames(mat) <- tableData[,minor][!duplicated(tableData[,minor])]
     rownames(mat) <- tableData[,major][!duplicated(tableData[,major])]
     table <- as.table(mat)
+    options(scipen = 999)
     print(textplot(table))
+    options(scipen = 0)
     print(title(paste("False Reject Rate at FAR=", toString(operatingPoint))))
 }
 
