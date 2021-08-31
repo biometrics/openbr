@@ -27,12 +27,3 @@ else()
                                                  plugins/metadata/cascade.cpp
                                                  plugins/metadata/hogpersondetector.cpp)
 endif()
-
-option(BR_WITH_OPENCV_PHOTO "Build with OpenCV photo plugins." ON)
-if(${BR_WITH_OPENCV_PHOTO})
-  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} opencv_photo)
-  set(OPENCV_DEPENDENCIES ${OPENCV_DEPENDENCIES} opencv_photo)
-else()
-  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/imgproc/denoising.cpp
-                                                 plugins/imgproc/inpaint.cpp)
-endif()
