@@ -9,17 +9,6 @@ set(SRC openbr.cpp
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
-# Janus API
-option(BR_WITH_JANUS "Build IARPA Janus related applications." ON)
-if(BR_WITH_JANUS)
-  include_directories(janus/include)
-  install(DIRECTORY janus/include DESTINATION .)
-  set(BR_JANUS janus.cpp
-               janus_io.cpp
-               janus/src/opencv_io/opencv_io.cpp)
-  add_definitions(-DJANUS_LIBRARY)
-endif()
-
 # Optional GUI module
 if(NOT BR_EMBEDDED)
   aux_source_directory(gui BR_GUI)
@@ -44,16 +33,6 @@ add_cppcheck(openbr)
 
 if(BR_WITH_DLIB)
   add_dependencies(openbr dlib)
-endif()
-
-# Janus implementation
-if(BR_WITH_JANUS)
-  set(JANUS_BUILD_PP5_WRAPPER ${BR_WITH_PP5} CACHE BOOL "Build Janus implementation using PittPatt 5")
-  set(JANUS_BUILD_DOCS ${BR_BUILD_DOCUMENTATION} CACHE BOOL "Build Janus HTML Doxygen documentation")
-  mark_as_advanced(JANUS_BUILD_PP5_WRAPPER)
-  mark_as_advanced(JANUS_BUILD_DOCS)
-  set(JANUS_IMPLEMENTATION openbr)
-  add_subdirectory(janus)
 endif()
 
 # Install
