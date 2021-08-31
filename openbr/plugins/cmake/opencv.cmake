@@ -1,14 +1,3 @@
-option(BR_WITH_OPENCV_FEATURES2D "Build with OpenCV features2d plugins." ON)
-if(${BR_WITH_OPENCV_FEATURES2D})
-  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} opencv_features2d)
-  set(OPENCV_DEPENDENCIES ${OPENCV_DEPENDENCIES} opencv_features2d)
-else()
-  set(BR_EXCLUDED_PLUGINS ${BR_EXCLUDED_PLUGINS} plugins/distance/keypointmatcher.cpp
-                                                 plugins/imgproc/sift.cpp
-                                                 plugins/imgproc/keypointdescriptor.cpp
-                                                 plugins/metadata/keypointdetector.cpp)
-endif()
-
 option(BR_WITH_OPENCV_FLANN "Build with OpenCV flann plugins." ON)
 if(${BR_WITH_OPENCV_FLANN})
   set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} opencv_flann)
