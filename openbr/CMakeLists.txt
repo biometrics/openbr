@@ -4,8 +4,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Collect source files
 set(SRC openbr.cpp
-        openbr_plugin.cpp
-        universal_template.cpp)
+        openbr_plugin.cpp)
 aux_source_directory(core BR_CORE)
 include(plugins/plugins.cmake)
 
