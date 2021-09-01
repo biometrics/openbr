@@ -201,33 +201,6 @@ BR_REGISTER(Gallery, galGallery)
 
 /*!
  * \ingroup galleries
- * \brief A contiguous array of br_universal_template.
- * \author Josh Klontz \cite jklontz
- */
-class utGallery : public BinaryGallery
-{
-    Q_OBJECT
-
-    Template readTemplate()
-    {
-        const br_const_utemplate ut = Template::readUniversalTemplate(gallery);
-        const Template t = Template::fromUniversalTemplate(ut);
-        Template::freeUniversalTemplate(ut);
-        return t;
-    }
-
-    void writeTemplate(const Template &t)
-    {
-        const br_utemplate ut = Template::toUniversalTemplate(t);
-        gallery.write((const char*) ut, sizeof(br_universal_template) + ut->mdSize + ut->fvSize);
-        Template::freeUniversalTemplate(ut);
-    }
-};
-
-BR_REGISTER(Gallery, utGallery)
-
-/*!
- * \ingroup galleries
  * \brief Newline-separated URLs.
  * \author Josh Klontz \cite jklontz
  */
