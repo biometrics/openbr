@@ -25,7 +25,6 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
-#include <openbr/universal_template.h>
 
 namespace br
 {
