@@ -449,7 +449,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
     foreach (float FAR, QList<float>() << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
-        printf("TAR & Similarity @ FAR = %.0e: %.3f %.3f\n", FAR, op.TAR, op.score);
+        printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
     }
     printf("\n");
     foreach (float FPIR, QList<float>() << 0.1 << 0.01) {
