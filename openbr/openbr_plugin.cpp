@@ -1149,7 +1149,8 @@ void br::Context::initialize(int &argc, char **argv, QString sdkPath, bool useGu
     } else {
         if (!checkSDKPath(sdkPath)) {
             qWarning("Unable to locate SDK from %s.", qPrintable(sdkPath));
-            return;
+            if (sdkPath != ":")
+                return;
         }
     }
 
