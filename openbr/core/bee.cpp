@@ -150,7 +150,7 @@ Mat readMatrix(const File &matrix, QString *targetSigset, QString *querySigset)
     const int rows = words[1].toInt();
     const int cols = words[2].toInt();
     const bool isMask = words[0][1] == 'B';
-    const int typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
+    const size_t typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
 
     // Get matrix data
     Mat m;
@@ -159,7 +159,7 @@ Mat readMatrix(const File &matrix, QString *targetSigset, QString *querySigset)
     else
         m.create(rows, cols, OpenCVType<BEE::SimmatValue,1>::make());
 
-    const qint64 bytesPerRow = m.cols * typeSize;
+    const size_t bytesPerRow = (size_t)m.cols * typeSize;
     for (int i=0; i<m.rows; i++) {
         Mat aRow = m.row(i);
         qint64 bytesRead = file.read((char *)aRow.data, bytesPerRow);
@@ -184,7 +184,7 @@ void writeMatrix(const Mat &m, const QString &fileName, const QString &targetSig
     else if (m.type() != OpenCVType<BEE::SimmatValue,1>::make())
         qFatal("Invalid matrix type, .mtx files can only contain single channel float or uchar matrices.");
 
-    const int elemSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
+    const size_t elemSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
     const QString matrixType = isMask ? "B" : "F";
 
     char buff[4];
@@ -208,7 +208,7 @@ void writeMatrix(const Mat &m, const QString &fileName, const QString &targetSig
     memcpy(&buff, &endian, 4);
     file.write(buff, 4);
     file.write("\n");
-    file.write((const char*)m.data, (qint64)m.rows*m.cols*elemSize);
+    file.write((const char*)m.data, (size_t)m.rows*m.cols*elemSize);
     file.close();
 }
 
