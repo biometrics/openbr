@@ -208,7 +208,7 @@ void writeMatrix(const Mat &m, const QString &fileName, const QString &targetSig
     memcpy(&buff, &endian, 4);
     file.write(buff, 4);
     file.write("\n");
-    file.write((const char*)m.data, m.rows*m.cols*elemSize);
+    file.write((const char*)m.data, (qint64)m.rows*m.cols*elemSize);
     file.close();
 }
 
