@@ -127,32 +127,11 @@ class csvGallery : public FileGallery
     Q_PROPERTY(bool combineFiles READ get_combineFiles WRITE set_combineFiles RESET reset_combineFiles STORED false)
     BR_PROPERTY(bool, combineFiles, false)
 
-    FileList files;
     CSVHeaderList headers;
 
     ~csvGallery()
     {
         f.close();
-        if (files.isEmpty()) return;
-
-        QSet<QString> samples;
-        foreach (const File &file, files)
-            foreach (const QString &key, file.localKeys())
-                samples.insert(key);
-
-        QStringList lines;
-        lines.reserve(files.size()+1);
-
-        // Make header
-        headers = CSVHeaderList(samples.values());
-        headers.sort();
-        lines.append(QStringList(QStringList("File") + headers.keys()).join(","));
-
-        // Make table
-        foreach (const File &file, files)
-            lines.append(lineFromFile(file));
-
-        QtUtils::writeFile(file, lines);
     }
 
     void setValuesFromHeaders(File &f, const CSVHeaderList &headers, const QVariantList &values)
