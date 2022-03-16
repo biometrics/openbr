@@ -23,94 +23,94 @@ namespace br
 
 struct CSVHeader
 {
-  QList<int> indices;
+    QList<int> indices;
 
-  CSVHeader()
-  {}
+    CSVHeader()
+    {}
 
-  CSVHeader(const QString &key)
+    CSVHeader(const QString &key)
     : key(key)
-  {}
-  
-  QString key;
-  QStringList subKeys;  
+    {}
+
+    QString key;
+    QStringList subKeys;
 };
-  
+
 class CSVHeaderList : public QList<CSVHeader>
 {
 public:
-  CSVHeaderList()
-  {}
+    CSVHeaderList()
+    {}
 
-  CSVHeaderList(const QList<CSVHeader> &headers)
-  {
-    foreach (const CSVHeader &header, headers)
-      append(header);
-  }
+    CSVHeaderList(const QList<CSVHeader> &headers)
+    {
+        foreach (const CSVHeader &header, headers)
+            append(header);
+    }
 
-  CSVHeaderList(const QStringList &keys)
-  {
-    foreach (const QString &key, keys)
-      append(CSVHeader(key));
-  }
-  
-  void sort()
-  {
-    typedef QPair<QString, int> IndexPair;
-    QList<IndexPair> sortedKeys = Common::Sort(keys());
+    CSVHeaderList(const QStringList &keys)
+    {
+        foreach (const QString &key, keys)
+            append(CSVHeader(key));
+    }
 
-    CSVHeaderList sortedList;
-    foreach (const IndexPair sortedKey, sortedKeys)
-      sortedList.append((*this)[sortedKey.second]);
-    *this = sortedList;
-  }
+    void sort()
+    {
+        typedef QPair<QString, int> IndexPair;
+        QList<IndexPair> sortedKeys = Common::Sort(keys());
 
-  QStringList keys() const
-  {
-    QStringList keys;
-    for (int i=0; i<this->size(); i++)
-      keys.append((*this)[i].key);
-    return keys;
-  }
+        CSVHeaderList sortedList;
+        foreach (const IndexPair sortedKey, sortedKeys)
+            sortedList.append((*this)[sortedKey.second]);
+        *this = sortedList;
+    }
+
+    QStringList keys() const
+    {
+        QStringList keys;
+        for (int i=0; i<this->size(); i++)
+            keys.append((*this)[i].key);
+        return keys;
+    }
 
     static CSVHeaderList fromHeaders(const QStringList &headers)
-  {
-    CSVHeaderList csvHeaders;
-    QStringList processedKeys;
-    
-    for (int i=0; i<headers.size(); i++) {
-      CSVHeader header;
-      if (headers[i].contains("_")) {
-	const QStringList subKeys = headers[i].split("_");
-	header.key = subKeys.first();
-	
-	if (processedKeys.contains(header.key))
-	  continue;
-	else
-	  processedKeys.append(header.key);
-	
-	header.subKeys.append(subKeys.last());
-	header.indices.append(i);
-	
-	// Look for other subheaders with the same key
-	for (int j=i+1; j<headers.size(); j++)
-	  if (headers[j].contains("_")) {
-	    const QStringList subKeys = headers[j].split("_");
-	    if (subKeys.first() == header.key && !header.subKeys.contains(subKeys.last()) /* Check for ill-formed csvs */) {
-	      header.indices.append(j);
-	      header.subKeys.append(subKeys.last());
-	    }
-	  }
-      } else {
-	header.key = headers[i];
-	header.indices.append(i);
-      }
-      csvHeaders.append(header);
+    {
+        CSVHeaderList csvHeaders;
+        QStringList processedKeys;
+
+        for (int i=0; i<headers.size(); i++) {
+            CSVHeader header;
+            if (headers[i].contains("_")) {
+	            const QStringList subKeys = headers[i].split("_");
+	            header.key = subKeys.first();
+
+	            if (processedKeys.contains(header.key))
+	                continue;
+	            else
+	                processedKeys.append(header.key);
+
+	            header.subKeys.append(subKeys.last());
+	            header.indices.append(i);
+
+	            // Look for other subheaders with the same key
+	            for (int j=i+1; j<headers.size(); j++)
+	                if (headers[j].contains("_")) {
+	                    const QStringList subKeys = headers[j].split("_");
+	                    if (subKeys.first() == header.key && !header.subKeys.contains(subKeys.last()) /* Check for ill-formed csvs */) {
+	                        header.indices.append(j);
+	                        header.subKeys.append(subKeys.last());
+	                    }
+	                }
+            } else {
+	            header.key = headers[i];
+	            header.indices.append(i);
+            }
+            csvHeaders.append(header);
+        }
+        return csvHeaders;
     }
-    return csvHeaders;
-  }
 };
-  
+
 /*!
  * \ingroup galleries
  * \brief Treats each line as a file.
@@ -131,7 +131,7 @@ class csvGallery : public FileGallery
 
     FileList files;
     CSVHeaderList headers;
-  
+
     ~csvGallery()
     {
         f.close();
@@ -187,7 +187,7 @@ class csvGallery : public FileGallery
             }
         }
     }
-  
+
     TemplateList readBlock(bool *done)
     {
         readOpen();
@@ -206,38 +206,37 @@ class csvGallery : public FileGallery
             headers = CSVHeaderList::fromHeaders(line.split(regexp).mid(1));
         }
 
-	if (combineFiles) {
-  	    *done = true;
- 	    QMap<QString, File> combinedFiles;
-	  
-  	    while (!f.atEnd()) {
+        if (combineFiles) {
+            *done = true;
+            QMap<QString, File> combinedFiles;
+
+            while (!f.atEnd()) {
                 QVariantList values;
                 foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
                     values.append(QtUtils::fromString(value));
 
-	       const QString name = values.first().toString();
-	       File &in = combinedFiles[name];
-	       in.name = name;
-	       setValuesFromHeaders(in, headers, values.mid(1));
-	    }
+            const QString name = values.first().toString();
+            File &in = combinedFiles[name];
+            in.name = name;
+            setValuesFromHeaders(in, headers, values.mid(1));
+            }
 
-	    foreach (const File &in, combinedFiles.values())
-	      templates.append(in);
-	} else {
-  	    for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++) {
+            foreach (const File &in, combinedFiles.values())
+                templates.append(in);
+        } else {
+            for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++) {
                 QVariantList values;
                 foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
                     values.append(QtUtils::fromString(value));
 
-               File in;
-	       in.name = values.first().toString();
-	       setValuesFromHeaders(in, headers, values.mid(1));
-	       in.set("progress", f.pos());
-	       templates.append(in);
-	    }
-	    *done = f.atEnd();
+                File in;
+                in.name = values.first().toString();
+                setValuesFromHeaders(in, headers, values.mid(1));
+                in.set("progress", f.pos());
+                templates.append(in);
+            }
+	        *done = f.atEnd();
         }
-       
         return templates;
     }
 
@@ -247,7 +246,7 @@ class csvGallery : public FileGallery
             writeOpen();
             if (headers.isEmpty()) {
                 foreach (const QString &key, t.file.localKeys())
-		  headers.append(CSVHeader(key));
+		        headers.append(CSVHeader(key));
 
                 headers.sort();
                 const QString header = QString(QStringList(QStringList("File") + headers.keys()).join(",") + "\n");
