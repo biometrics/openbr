@@ -203,8 +203,12 @@ class csvGallery : public FileGallery
         } else {
             for (qint64 i = 0; i < this->readBlockSize && !f.atEnd(); i++) {
                 QVariantList values;
-                foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
-                    values.append(QtUtils::fromString(value));
+                foreach (const QString &value, QtUtils::parse(f.readLine(), ',')) {
+                    QString s = value;
+                    if (s.startsWith("\""))
+                        s.replace("\"", "");
+                    values.append(QtUtils::fromString(s));
+                }
 
                 File in;
                 in.name = values.first().toString();
