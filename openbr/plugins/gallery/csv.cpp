@@ -81,29 +81,29 @@ public:
         for (int i=0; i<headers.size(); i++) {
             CSVHeader header;
             if (headers[i].contains("_")) {
-	            const QStringList subKeys = headers[i].split("_");
-	            header.key = subKeys.first();
+                const QStringList subKeys = headers[i].split("_");
+                header.key = subKeys.first();
 
-	            if (processedKeys.contains(header.key))
-	                continue;
-	            else
-	                processedKeys.append(header.key);
+                if (processedKeys.contains(header.key))
+                    continue;
+                else
+                    processedKeys.append(header.key);
 
-	            header.subKeys.append(subKeys.last());
-	            header.indices.append(i);
+                header.subKeys.append(subKeys.last());
+                header.indices.append(i);
 
-	            // Look for other subheaders with the same key
-	            for (int j=i+1; j<headers.size(); j++)
-	                if (headers[j].contains("_")) {
-	                    const QStringList subKeys = headers[j].split("_");
-	                    if (subKeys.first() == header.key && !header.subKeys.contains(subKeys.last()) /* Check for ill-formed csvs */) {
-	                        header.indices.append(j);
-	                        header.subKeys.append(subKeys.last());
-	                    }
-	                }
+                // Look for other subheaders with the same key
+                for (int j=i+1; j<headers.size(); j++)
+                    if (headers[j].contains("_")) {
+                        const QStringList subKeys = headers[j].split("_");
+                        if (subKeys.first() == header.key && !header.subKeys.contains(subKeys.last()) /* Check for ill-formed csvs */) {
+                            header.indices.append(j);
+                            header.subKeys.append(subKeys.last());
+                        }
+                    }
             } else {
-	            header.key = headers[i];
-	            header.indices.append(i);
+                header.key = headers[i];
+                header.indices.append(i);
             }
             csvHeaders.append(header);
         }
@@ -124,8 +124,6 @@ public:
 class csvGallery : public FileGallery
 {
     Q_OBJECT
-    Q_PROPERTY(bool inPlace READ get_inPlace WRITE set_inPlace RESET reset_inPlace STORED false)
-    BR_PROPERTY(bool, inPlace, false)
     Q_PROPERTY(bool combineFiles READ get_combineFiles WRITE set_combineFiles RESET reset_combineFiles STORED false)
     BR_PROPERTY(bool, combineFiles, false)
 
@@ -215,10 +213,10 @@ class csvGallery : public FileGallery
                 foreach (const QString &value, QtUtils::parse(f.readLine(), ','))
                     values.append(QtUtils::fromString(value));
 
-            const QString name = values.first().toString();
-            File &in = combinedFiles[name];
-            in.name = name;
-            setValuesFromHeaders(in, headers, values.mid(1));
+                const QString name = values.first().toString();
+                File &in = combinedFiles[name];
+                in.name = name;
+                setValuesFromHeaders(in, headers, values.mid(1));
             }
 
             foreach (const File &in, combinedFiles.values())
@@ -235,26 +233,23 @@ class csvGallery : public FileGallery
                 in.set("progress", f.pos());
                 templates.append(in);
             }
-	        *done = f.atEnd();
+            *done = f.atEnd();
         }
         return templates;
     }
 
     void write(const Template &t)
     {
-        if (inPlace) {
-            writeOpen();
-            if (headers.isEmpty()) {
-                foreach (const QString &key, t.file.localKeys())
-		        headers.append(CSVHeader(key));
+        writeOpen();
+        if (headers.isEmpty()) {
+            foreach (const QString &key, t.file.localKeys())
+            headers.append(CSVHeader(key));
 
-                headers.sort();
-                const QString header = QString(QStringList(QStringList("File") + headers.keys()).join(",") + "\n");
-                f.write(header.toLocal8Bit());
-            }
-            f.write(QString(lineFromFile(t.file) + "\n").toLocal8Bit());
-        } else
-            files.append(t.file);
+            headers.sort();
+            const QString header = QString(QStringList(QStringList("File") + headers.keys()).join(",") + "\n");
+            f.write(header.toLocal8Bit());
+        }
+        f.write(QString(lineFromFile(t.file) + "\n").toLocal8Bit());
     }
 
     QString lineFromFile(const br::File file)
