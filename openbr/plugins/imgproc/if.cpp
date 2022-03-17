@@ -1,4 +1,5 @@
 #include <openbr/plugins/openbr_internal.h>
+#include <openbr/core/qtutils.h>
 
 namespace br
 {
@@ -27,7 +28,7 @@ class IfTransform : public MetaTransform
         bool result, ok1 = true, ok2 = true;
 
         if (comparison == "empty")
-	    result = metadata.isNull() || (metadata.canConvert<QString>() && metadata.toString().isEmpty());
+            result = metadata.isNull() || (metadata.canConvert<QString>() && metadata.toString().isEmpty());
         else if (comparison == "e")
             result = metadata == value;
         else if (comparison == "ne")
@@ -42,7 +43,12 @@ class IfTransform : public MetaTransform
             result = metadata.toFloat(&ok1) >= value.toFloat(&ok2);
         else if (comparison == "c") // contains
             result = metadata.toString().contains(value);
-        else
+        else if (comparison == "inList") {
+            QString value_ = value;
+            value_.replace("[", "").replace("]", "");
+            const QStringList values = value_.split(",");
+            result = values.contains(metadata.toString());
+        } else
             qFatal("Unrecognized comparison string.");
 
         if (!(ok1 && ok2))
