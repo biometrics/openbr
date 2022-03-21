@@ -4,32 +4,45 @@ A hacker's guide to building, editing, and running OpenBR.
 
 # Linux
 
-1. Install GCC 4.9.2
+1. Install GCC 4.9.2 or later
 
         $ sudo apt-get update
         $ sudo apt-get install build-essential
+   
+   For openSUSE Linux, bellow the commands:
 
-2. Install CMake 3.0.2
+        $ sudo zypper refresh
+        $ sudo zypper install patterns-devel-C-C++-devel_C_C++
+
+2. Install CMake 3.0.2 or later
 
         $ sudo apt-get install cmake cmake-curses-gui
 
-3. [Download OpenCV 2.4.11](http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.11/opencv-2.4.11.zip/download), **note** [Build OpenCV with video support](https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu)
+   For openSUSE Linux, bellow the commands:
+
+        $ sudo zypper install cmake-gui
+
+3. [Download OpenCV](https://github.com/opencv/opencv/releases), **note** [Build OpenCV with video support](https://github.com/biometrics/openbr/wiki/Build-OpenCV-with-Video-Support-on-Ubuntu)
 
         $ cd ~/Downloads
-        $ unzip opencv-2.4.11.zip
-        $ cd opencv-2.4.11
+        $ unzip opencv-4.5.3.zip
+        $ cd opencv-4.5.3
         $ mkdir build
         $ cd build
         $ cmake -DCMAKE_BUILD_TYPE=Release ..
         $ make -j4
         $ sudo make install
         $ cd ../..
-        $ rm -rf opencv-2.4.11*
+        $ rm -rf opencv-4.5.3*
 
 
 4. Install Qt 5.4.1
 
         $ sudo apt-get install qt5-default libqt5svg5-dev qtcreator
+
+   For openSUSE Linux, bellow the commands:
+
+        $ sudo zypper install patterns-kde-devel_qt5
 
 5. Create a [GitHub](https://github.com/) account, follow their instructions for [setting up Git](https://help.github.com/articles/set-up-git).
 
