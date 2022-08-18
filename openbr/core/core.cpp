@@ -199,14 +199,6 @@ struct AlgorithmCore
         }
 
         bool multiProcess = Globals->file.getBool("multiProcess", false);
-        bool fileExclusion = false;
-
-        // In append mode, we will exclude any templates with filenames already present in the output gallery
-        if (gallery.contains("append") && gallery.exists() ) {
-            FileList::fromGallery(gallery,true);
-            fileExclusion = true;
-        }
-
         Transform *enroll = simplifiedTransform.data();
 
         if (multiProcess)
@@ -216,12 +208,6 @@ struct AlgorithmCore
         stages.append(enroll);
 
         QString outputDesc;
-        QScopedPointer<Transform> exclusionBase;
-        if (fileExclusion) {
-            exclusionBase.reset(Transform::make("FileExclusion(" + gallery.flat() + ")", NULL));
-            stages.prepend(exclusionBase.data());
-        }
-
         if (!noOutput)
             outputDesc.append("GalleryOutput("+gallery.flat()+")+");
 
@@ -479,7 +465,7 @@ struct AlgorithmCore
         else if (!(QStringList() << "gal" << "mem" << "template" << "t").contains(rowGallery.suffix()))
             needEnrollRows = true;
 
-        // At this point, we have decided how we will structure the comparison (either in transpose mode, or not), 
+        // At this point, we have decided how we will structure the comparison (either in transpose mode, or not),
         // and have the column gallery enrolled, and have decided whether or not we need to enroll the row gallery.
         // From this point, we will build a single algorithm that (optionally) does enrollment, then does comparisons
         // and output, optionally using ProcessWrapper to do the enrollment and comparison in separate processes.
@@ -512,7 +498,7 @@ struct AlgorithmCore
         QScopedPointer<Transform> compareRegion(compareRegionBase);
 
         // At this point, compareRegion is a transform, which optionally does enrollment, then compares the row
-        // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a 
+        // set against the column set. If in multi-process mode, the enrollment and comparison are wrapped in a
         // ProcessWrapper transform, and will be transparently run in multiple processes.
 
         // We also need to add Output and progress counting to the algorithm we are building, so we will assign them to
@@ -536,7 +522,7 @@ struct AlgorithmCore
         // and pass the transforms it reads through the base algorithm.
         QScopedPointer<Transform> streamWrapper(br::wrapTransform(pipeline, "Stream(readMode=StreamGallery, endPoint="+outputRegionDesc+"+DiscardTemplates)"));
 
-        // We set up a template containing the rowGallery we want to compare. 
+        // We set up a template containing the rowGallery we want to compare.
         TemplateList rowGalleryTemplate;
         rowGalleryTemplate.append(Template(rowGallery));
         TemplateList outputGallery;
