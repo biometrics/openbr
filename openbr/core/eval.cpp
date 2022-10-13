@@ -769,7 +769,7 @@ void EvalClassification(const QString &predictedGallery, const QString &truthGal
     qDebug("Overall Accuracy = %f", (float)tpc / (float)(tpc + fnc));
 }
 
-float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize, float relativeMinSize, const QString &label)
+float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv, bool normalize, int minSize, int maxSize, float relativeMinSize, const QString &label, const float truePositiveThreshold)
 {
     qDebug("Evaluating detection of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
     // Organized by file, QMap used to preserve order
@@ -819,15 +819,14 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     }
 
     if (Globals->verbose) {
-        qDebug("Total False negatives:");
-        const int numFalseNegatives = std::min(50, falseNegativeDetections.size());
-        for (int i=0; i<numFalseNegatives; i++) {
+        qDebug() << "Total False Negatives: " << falseNegativeDetections.size();
+        for (int i=0; i<falseNegativeDetections.size(); i++) {
             Mat img = imread(qPrintable(Globals->path + "/" + falseNegativeDetections[i].filePath));
             qDebug() << falseNegativeDetections[i];
             const Scalar color(0,255,0);
             rectangle(img, OpenCVUtils::toRect(falseNegativeDetections[i].boundingBox), color, 1);
             QtUtils::touchDir(QDir("./falseNegs"));
-            imwrite(qPrintable(QString("./falseNegs/falseNeg%1.jpg").arg(QString::number(i))), img);
+            imwrite(qPrintable(QString("./falseNegs/%1_%2.jpg").arg(falseNegativeDetections[i].filePath.split("/").last(), QString::number(i))), img);
         }
     }
 
@@ -835,9 +834,9 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     QStringList lines;
     lines.append("Plot, X, Y");
     QList<DetectionOperatingPoint> points;
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), true, points));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), true, points, truePositiveThreshold));
     points.clear();
-    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), false, points));
+    lines.append(computeDetectionResults(resolvedDetections, totalTrueDetections, getNumberOfImages(allDetections), false, points, truePositiveThreshold));
 
     float averageOverlap;
     { // Overlap Density
@@ -1311,16 +1310,16 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
                (scores[index].first == thresh)) {
             if (scores[index].second) {
                 truePositives++;
-                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassOneScore) 
+                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassOneScore)
                     minClassOneScore = scores[index].first;
             } else {
                 falsePositives++;
-                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassZeroScore) 
+                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassZeroScore)
                     minClassZeroScore = scores[index].first;
             }
             index++;
         }
-        
+
         if ((falsePositives > previousFalsePositives) &&
              (truePositives > previousTruePositives)) {
             const float FAR = float(falsePositives) / classZeroTemplateCount;
@@ -1391,7 +1390,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
             lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
                                                   QString::number(FRR)));
         }
-    
+
         // Write TAR@FAR Table (TF)
         foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001)
             lines.append(qPrintable(QString("TF,%1,%2").arg(

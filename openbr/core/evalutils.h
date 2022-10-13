@@ -7,7 +7,7 @@
 
 namespace EvalUtils
 {
-    
+
 struct Detection
 {
     QRectF boundingBox;
@@ -107,7 +107,7 @@ struct DetectionOperatingPoint
     QMap<QString, Detections> filterDetections(const QMap<QString, Detections> &allDetections, int threshold, bool useMin = true, float relativeThreshold = 0);
     QMap<QString, Detections> filterLabels(const QMap<QString, Detections> &allDetections, const QString &label);
     int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets);
-    QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points);
+    QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points, const float truePositiveThreshold);
     inline int getNumberOfImages(const QMap<QString, Detections> detections)
     {
         return detections.keys().size();

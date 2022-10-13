@@ -64,12 +64,9 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
         if (!labels.empty() && rects.size() != labels.size())
             qFatal("Some of your rects have labels but not all, it's all or nothing I'm afraid");
 
-        for (int i=0; i<rects.size(); i++) {
-            if (isTruth)
-                dets.append(Detection(rects[i], filePath, -1, false, "Frontal", labels.empty() ? "" : labels[i]));
-            else
-                dets.append(Detection(rects[i], filePath, confidences[i], false, "Frontal", labels.empty() ? "" : labels[i]));
-        }
+        for (int i=0; i<rects.size(); i++)
+            dets.append(Detection(rects[i], filePath, isTruth ? -1 : confidences[i], false, "Frontal", labels.empty() ? "" : labels[i]));
+
     } else if (key.type == DetectionKey::Rect) {
         dets.append(Detection(f.get<QRectF>(key), filePath, isTruth ? -1 : f.get<float>("Confidence", -1), f.get<bool>("Ignore", false), pose, label));
     } else if (key.type == DetectionKey::XYWidthHeight) {
@@ -134,7 +131,7 @@ QMap<QString, Detections> EvalUtils::filterDetections(const QMap<QString, Detect
         }
         if (!filteredDetections.truth.empty()) allFilteredDetections[key] = filteredDetections;
     }
-    
+
     return allFilteredDetections;
 }
 
@@ -161,7 +158,7 @@ QMap<QString, Detections> EvalUtils::filterLabels(const QMap<QString, Detections
 int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
 {
     QList<float> dLeft, dRight, dTop, dBottom;
-    int count = 0, totalTrueDetections = 0;
+    int totalTrueDetections = 0;
 
     foreach (Detections detections, all.values()) {
         for (int i=0; i<detections.truth.size(); i++)
@@ -184,7 +181,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
                 y = predicted.boundingBox.y() + offsets.y()*predictedWidth;
                 width = predicted.boundingBox.width() - offsets.width()*predictedWidth;
                 height = predicted.boundingBox.height() - offsets.height()*predictedWidth;
-                Detection newPredicted(QRectF(x, y, width, height), predicted.filePath, 0.0);
+                Detection newPredicted(QRectF(x, y, width, height), predicted.filePath, predicted.confidence);
 
                 const float overlap = truth.overlap(newPredicted);
 
@@ -212,7 +209,6 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
             removedPredicted.append(detection.predicted_idx);
 
             if (offsets.x() == 0 && detection.overlap > 0.3) {
-                count++;
                 float width = predicted.boundingBox.width();
                 dLeft.append((truth.boundingBox.left() - predicted.boundingBox.left()) / width);
                 dRight.append((truth.boundingBox.right() - predicted.boundingBox.right()) / width);
@@ -247,23 +243,14 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
         offsets.setY(dTopMean);
         offsets.setWidth(dWidth);
         offsets.setHeight(dHeight);
-
-        if (Globals->verbose) {
-            qDebug("oLeft = %.3f", dLeftStdDev);
-            qDebug("oRight = %.3f", dRightStdDev);
-            qDebug("oTop = %.3f", dTopStdDev);
-            qDebug("oBottom = %.3f", dBottomStdDev);
-        }
     }
     return totalTrueDetections;
 }
 
-QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points)
+QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points, const float truePositiveThreshold)
 {
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
-
-    QList<float> FARsToOutput;
-    FARsToOutput << 10 << 1 << .5 << .2 << .1 << .02 << .01 << .001;
+    QList<float> FARsToOutput = QList<float>() << 10 << 1 << .5 << .2 << .1 << .02 << .01 << .001;
 
     QDebug debug = qDebug();
     debug.noquote();
@@ -273,13 +260,12 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
 
     float poseMatch = 0;
-    int detectionsToKeep = 50;
-    QList<ResolvedDetection> topFalsePositives, bottomTruePositives;
+    QList<ResolvedDetection> falsePositives, bottomTruePositives;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
-            // A 50% overlap is considered a true positive
-            if (detection.overlap >= 0.5) {
+            // A 50% overlap is generally considered a true positive
+            if (detection.overlap >= truePositiveThreshold) {
                 TP++;
                 if (detection.poseMatch)
                     poseMatch++;
@@ -304,8 +290,8 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                         break;
                     }
 
-                if (detection.overlap < 0.5 && topFalsePositives.size() < detectionsToKeep)
-                    topFalsePositives.append(detection);
+                if (detection.overlap < truePositiveThreshold)
+                    falsePositives.append(detection);
 
                 points.append(DetectionOperatingPoint(TP, FP, totalTrueDetections, numImages, detection.confidence));
                 prevFP = FP;
@@ -313,7 +299,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
 
             if (TP > prevTP) {
                 bottomTruePositives.append(detection);
-                if (bottomTruePositives.size() > detectionsToKeep)
+                if (bottomTruePositives.size() > 50)
                     bottomTruePositives.removeFirst();
                 prevTP = TP;
             }
@@ -325,15 +311,15 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     if (discrete) {
         if (Globals->verbose) {
             QtUtils::touchDir(QDir("./falsePos"));
-            qDebug("Highest Scoring False Positives:");
-	    detectionsToKeep = std::min(detectionsToKeep,topFalsePositives.size());
-            for (int i=0; i<detectionsToKeep; i++) {
-                Mat img = imread(qPrintable(Globals->path + "/" + topFalsePositives[i].filePath));
-                const Rect falseRect = OpenCVUtils::toRect(topFalsePositives[i].boundingBox);
+            qDebug() << "Total False Positives: " << falsePositives.size();
+            for (int i=0; i<falsePositives.size(); i++) {
+                Mat img = imread(qPrintable(Globals->path + "/" + falsePositives[i].filePath));
+                const Rect falseRect = OpenCVUtils::toRect(falsePositives[i].boundingBox);
                 rectangle(img, falseRect, Scalar(0, 0, 255), 1);
-                rectangle(img, OpenCVUtils::toRect(topFalsePositives[i].groundTruthBoundingBox), Scalar(0, 255, 0), 1);
-                putText(img, qPrintable("Overlap:"+QString::number(topFalsePositives[i].overlap)), falseRect.tl(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1);
-                imwrite(qPrintable(QString("./falsePos/falsePos%1.jpg").arg(QString::number(i))), img);
+                rectangle(img, OpenCVUtils::toRect(falsePositives[i].groundTruthBoundingBox), Scalar(0, 255, 0), 1);
+                putText(img, qPrintable("Overlap:"+QString::number(falsePositives[i].overlap)), falseRect.tl(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1);
+                imwrite(qPrintable(QString("./falsePos/%1_%2.jpg").arg(falsePositives[i].filePath.split("/").last(), QString::number(i))), img);
+                qDebug() << falsePositives[i];
             }
             qDebug("Lowest Scoring True Positives:");
             qDebug() << bottomTruePositives;
