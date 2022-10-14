@@ -26,8 +26,8 @@ namespace br
  * \ingroup transforms
  * \brief Crops the rectangular regions of interest.
  * \author Josh Klontz \cite jklontz
- * \br_property QString propName Optional property name for a rectangle in metadata. If no propName is given the transform will use rects stored in the file.rects field or build a rectangle using "X", "Y", "Width", and "Height" fields if they exist.
- * \br_property bool copyOnCrop If true make a clone of each crop before appending the crop to dst. This guarantees that the crops will be continuous in memory, which is an occasionally useful property. Default is false.
+ * \br_property QString propName Optional property name for a rectangle in metadata. If no propName is given the transform will use rects stored in the file.rects field.
+ * \br_property bool copyOnCrop If true make a clone of each crop before appending the crop to dst. This guarantees that the crops will be continuous in memory, which is an occasionally useful property. Default is true.
  */
 class ROITransform : public UntrainableTransform
 {
@@ -39,26 +39,43 @@ class ROITransform : public UntrainableTransform
     BR_PROPERTY(bool, copyOnCrop, true)
     BR_PROPERTY(int, shiftPoints, -1)
 
+    QRectF clipRect(const int img_width, const int img_height, const QRectF original) const
+    {
+        QRectF clipped;
+        clipped.setX(max(0, (int)original.x()));
+        clipped.setY(max(0, (int)original.y()));
+
+        int width  = original.width()  + (original.x() < 0 ? original.x() : 0);
+        int height = original.height() + (original.y() < 0 ? original.y() : 0);
+        if (clipped.x() + width > img_width)
+            width  -= ((clipped.x() + width)  - (img_width));
+        if (clipped.y() + height > img_height)
+            height -= ((clipped.y() + height) - (img_height));
+        clipped.setWidth(width);
+        clipped.setHeight(height);
+
+        return clipped;
+    }
+
     void project(const Template &src, Template &dst) const
     {
-        if ((propName == "Rects") || !src.file.rects().empty()) {
-            foreach (const QRectF &rect, src.file.rects())
-                dst += src.m()(OpenCVUtils::toRect(rect));
-        } else if (!propName.isEmpty()) {
-            QRectF rect = src.file.get<QRectF>(propName);
-            dst += src.m()(OpenCVUtils::toRect(rect));
-        } else if (!src.file.rects().empty()) {
+        QList<QRectF> rects;
 
-        } else if (src.file.contains(QStringList() << "X" << "Y" << "Width" << "Height")) {
-            dst += src.m()(Rect(src.file.get<int>("X"),
-                                src.file.get<int>("Y"),
-                                src.file.get<int>("Width"),
-                                src.file.get<int>("Height")));
+        // check this first because the user specifically asked for this rect
+        if (!propName.isEmpty()) {
+            rects.append(clipRect(src.m().cols, src.m().rows, src.file.get<QRectF>(propName)));
+        } else if ((propName == "Rects") || !src.file.rects().empty()) {
+            foreach (const QRectF &rect, src.file.rects())
+                rects.append(clipRect(src.m().cols, src.m().rows, rect));
         } else {
             dst = src;
             if (Globals->verbose)
                 qWarning("No rects present in file.");
+            return;
         }
+
+        foreach (const QRectF &rect, rects)
+            dst += src.m()(OpenCVUtils::toRect(rect));
 
         if (shiftPoints != -1) {
             // Shift the points to the rect with the index provided
