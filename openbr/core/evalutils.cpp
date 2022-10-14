@@ -84,7 +84,8 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
     // Figure out which metadata field contains a bounding box
     DetectionKey truthDetectKey = getDetectKey(truth);
     if (truthDetectKey.isEmpty())
-        qFatal("No suitable ground truth metadata key found.");
+        if (Globals->verbose)
+            qDebug("Attempting to use image dimensions as ground truth!");
 
     DetectionKey predictedDetectKey = getDetectKey(predicted);
     if (predictedDetectKey.isEmpty())
@@ -98,8 +99,12 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
 
     QMap<QString, Detections> allDetections;
     foreach (const File &f, truth) {
-        allDetections[f.name].truth.append(getDetections(truthDetectKey, f, true));
         const cv::Mat image = cv::imread(qPrintable(br::Globals->path + QDir::separator() + f.name));
+        if (truthDetectKey.isEmpty())
+            allDetections[f.name].truth.append(Detection(QRectF(0, 0, image.cols, image.rows), f.path() + "/" + f.fileName()));
+        else
+            allDetections[f.name].truth.append(getDetections(truthDetectKey, f, true));
+
         allDetections[f.name].imageSize = QSize(image.cols, image.rows);
     }
     foreach (const File &f, predicted)
