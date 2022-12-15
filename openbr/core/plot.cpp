@@ -90,15 +90,15 @@ struct RPlot
         bool success = file.open(QFile::WriteOnly);
         if (!success) qFatal("Failed to open %s for writing.", qPrintable(file.fileName()));
 
-        // Copy plot_utils.R into output script with source()
-        QString plotUtilsPath = Globals->sdkPath + "/openbr/share/openbr/plotting/plot_utils.R"; // Handle case when OpenBR is a submodule
-        if (!QFileInfo(plotUtilsPath).exists())
-            plotUtilsPath = Globals->sdkPath + "/share/openbr/plotting/plot_utils.R";
-        file.write(qPrintable(QString("source(\"%1\")\n\n").arg(plotUtilsPath)));
-        file.write("# Read CSVs\n"
-                   "data <- NULL\n");
+        // Copy plot_utils.R into output script
+        QFile plot_utils(":/plotting/plot_utils.R");
+        plot_utils.open(QIODevice::ReadOnly | QFile::Text);
+        QTextStream in(&plot_utils);
+        file.write(qPrintable(in.readAll()));
 
         // Read files and retrieve pivots
+        file.write("# Read CSVs\n"
+                   "data <- NULL\n");
         pivotHeaders = getPivots(files.first(), true);
         pivotItems = QVector< QSet<QString> >(pivotHeaders.size());
         foreach (const QString &fileName, files) {
@@ -109,7 +109,7 @@ struct RPlot
                 pivots.push_back(QFileInfo(fileName).completeBaseName());
                 pivotHeaders.clear();
                 pivotHeaders.push_back("File");
-            } 
+            }
             file.write(qPrintable(QString("tmp <- read.csv(\"%1\")\n").arg(fileName).replace("\\", "\\\\")));
             for (int i=0; i<pivots.size(); i++) {
                 pivotItems[i].insert(pivots[i]);
