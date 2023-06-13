@@ -85,8 +85,8 @@ static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPo
     const float TAR2   = operatingPoints[index].TAR;
     const float score2 = operatingPoints[index].score;
 
-    const float denFAR = (FAR1 == FAR2 ? std::numeric_limits<float>::max() : (FAR2 - FAR1));
-    const float denScore = (score1 == score2 ? std::numeric_limits<float>::max() : (score2 - score1));
+    const float denFAR = (FAR1 == FAR2 ? 1e-10 : (FAR2 - FAR1));
+    const float denScore = (score1 == score2 ? 1e-10 : (score2 - score1));
 
     const float mFAR   = (FAR2 - FAR1) / denScore;
     const float bFAR   = FAR1 - mFAR*score1;
@@ -1048,7 +1048,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
 void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating regression of %s against %s", qPrintable(predictedGallery), qPrintable(truthGallery));
+    qDebug("Evaluating regression of (%s,%s) against (%s,%s)", qPrintable(predictedGallery), qPrintable(predictedProperty), qPrintable(truthGallery), qPrintable(truthProperty));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Regressor";
