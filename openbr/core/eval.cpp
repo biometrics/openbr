@@ -1267,14 +1267,19 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
 
 void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &csv) {
     if (gt_property.isEmpty())
-        gt_property = "LivenessGT";
+        gt_property = "Label";
     if (distribution_property.isEmpty())
-        distribution_property = "LivenessClassScores";
+        distribution_property = "Fusion";
     int classOneTemplateCount = 0;
+    int classZeroTemplateCount = 0;
     const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
     QList<QPair<float, int>> scores;
     QList<float> classZeroScores, classOneScores;
+    float minClassOneScore = std::numeric_limits<float>::max();
+    float maxClassOneScore = 0;
+    float minClassZeroScore = std::numeric_limits<float>::max();
+    float maxClassZeroScore = 0;
     for (int i=0; i<templateList.size(); i++) {
         if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
             continue;
@@ -1286,8 +1291,13 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         if (gtLabel == 1) {
             classOneTemplateCount++;
             classOneScores.append(templateScore);
+            if (minClassOneScore > templateScore) minClassOneScore = templateScore;
+            if (maxClassOneScore < templateScore) maxClassOneScore = templateScore;
         } else {
+            classZeroTemplateCount++;
             classZeroScores.append(templateScore);
+            if (minClassZeroScore > templateScore) minClassZeroScore = templateScore;
+            if (maxClassZeroScore < templateScore) maxClassZeroScore = templateScore;
         }
     }
 
@@ -1295,53 +1305,39 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
 
     QList<OperatingPoint> operatingPoints;
 
-    const int classZeroTemplateCount = scores.size() - classOneTemplateCount;
-    int falsePositives = 0, previousFalsePositives = 0;
-    int truePositives = 0, previousTruePositives = 0;
+    int falsePositives = 0;
+    int truePositives = 0;
     size_t index = 0;
     float minDiff = 100, EER = 100, EERThres = 0;
-    float minClassOneScore = std::numeric_limits<float>::max();
-    float minClassZeroScore = std::numeric_limits<float>::max();
+    float threshold = 0;
 
     while (index < scores.size()) {
-        float thresh = scores[index].first;
+        threshold = threshold + 0.001;
         // Compute genuine and imposter statistics at a threshold
-        while ((index < scores.size()) &&
-               (scores[index].first == thresh)) {
+        while ((index < scores.size()) && (scores[index].first < threshold)) {
             if (scores[index].second) {
                 truePositives++;
-                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassOneScore)
-                    minClassOneScore = scores[index].first;
             } else {
                 falsePositives++;
-                if (scores[index].first != -std::numeric_limits<float>::max() && scores[index].first < minClassZeroScore)
-                    minClassZeroScore = scores[index].first;
             }
             index++;
         }
 
-        if ((falsePositives > previousFalsePositives) &&
-             (truePositives > previousTruePositives)) {
-            const float FAR = float(falsePositives) / classZeroTemplateCount;
-            const float TAR = float(truePositives) / classOneTemplateCount;
-            const float FRR = 1 - TAR;
-            operatingPoints.append(OperatingPoint(thresh, FAR, TAR));
+        const float FAR = float(falsePositives) / classZeroTemplateCount;
+        const float TAR = float(truePositives) / classOneTemplateCount;
+        const float FRR = 1 - TAR;
+        operatingPoints.append(OperatingPoint(threshold, FAR, TAR));
 
-            const float diff = std::abs(FAR-FRR);
-            if (diff < minDiff) {
-                minDiff = diff;
-                EER = (FAR+FRR)/2.0;
-                EERThres = thresh;
-            }
-
-            previousFalsePositives = falsePositives;
-            previousTruePositives = truePositives;
+        const float diff = std::abs(FAR-FRR);
+        if (diff < minDiff) {
+            minDiff = diff;
+            EER = (FAR+FRR)/2.0;
+            EERThres = threshold;
         }
     }
 
-    if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
-    if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
-    if (operatingPoints.size() > 2)  operatingPoints.takeLast(); // Remove point (1,1)
+    operatingPoints.append(OperatingPoint(MAX(maxClassOneScore,maxClassZeroScore),1,1));
+    operatingPoints.prepend(OperatingPoint(MIN(minClassOneScore,minClassZeroScore),0,0));
 
     printf("\n==========================================================\n");
     printf("Class 0 Templates: %d\tClass 1 Templates: %d\tTotal Templates: %d\n",
@@ -1349,22 +1345,52 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     printf("----------------------------------------------------------\n");
     foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
-        printf("TAR = %.3f @ FAR = %.4f | Threshold= %.3f\n", op.TAR, FAR, op.score);
+        if (op.score < MAX(minClassOneScore, minClassZeroScore) || op.score > MIN(maxClassOneScore, maxClassZeroScore))
+            printf("TAR =  N/A  @ FAR = %.4f | Threshold= %.3f\n", FAR, MAX(op.score, minClassZeroScore));
+        else
+            printf("TAR = %.3f @ FAR = %.4f | Threshold= %.3f\n", op.TAR, FAR, op.score);
 
     }
     printf("----------------------------------------------------------\n");
-    foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98) {
+    foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98 << 0.99) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "TAR", TAR);
-        printf("FAR = %.3f @ TAR = %.4f | Threshold= %.3f\n", op.FAR, TAR, op.score);
+        if (op.score < MAX(minClassOneScore, minClassZeroScore) || op.score > MIN(maxClassOneScore, maxClassZeroScore))
+            printf("FAR =  N/A  @ TAR = %.4f | Threshold= %.3f\n", TAR, op.score);
+        else
+            printf("FAR = %.3f @ TAR = %.4f | Threshold= %.3f\n", op.FAR, TAR, op.score);
 
     }
     printf("----------------------------------------------------------\n");
     printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThres);
     printf("==========================================================\n\n");
 
+    QString thresh, form, frr, far;
+    int opindex = 0;
+    OperatingPoint op = operatingPoints.first();
+    foreach (float score, QList<float>() << 0.05 << 0.1 << 0.15 << 0.2 << 0.25 << 0.3 << 0.35 << 0.4 << 0.45 << 0.5
+                                               << 0.55 << 0.6 << 0.65 << 0.7 << 0.75 << 0.8 << 0.85 << 0.9 << 0.95) {
+        while (opindex < operatingPoints.size() && operatingPoints[opindex].score < score) {
+            op.TAR = operatingPoints[opindex].TAR;
+            op.FAR = operatingPoints[opindex].FAR;
+            opindex++;
+        }
+        thresh.append(QString("|  %1  ").arg(QString::number(score, 'f', 3)));
+        form.append(QString("|  :---:  "));
+        frr.append(score > maxClassOneScore ? QString("|         ") : QString("|  %1  ").arg(QString::number(std::abs(1.0 - op.TAR), 'f', 3)));
+        far.append(score < minClassZeroScore ? QString("|         ") : QString("|  %1  ").arg(QString::number(std::abs(op.FAR), 'f', 3)));
+    }
+
+    printf("\nClass 0 Templates: %d, Class 1 Templates: %d\nClass 0 Range: [%.3f,%.3f], Class 1 Range: [%.3f,%.3f]\n\n",
+        classZeroTemplateCount, classOneTemplateCount, minClassZeroScore, maxClassZeroScore, minClassOneScore, maxClassOneScore);
+    printf("| Threshold %s|\n", qPrintable(thresh));
+    printf("|   :---:   %s|\n", qPrintable(form));
+    printf("|  Genuine  %s|\n", qPrintable(frr));
+    printf("|   Spoof   %s|\n", qPrintable(far));
+    printf("\n\n");
+
     // Optionally write ROC curve
     if (!csv.isEmpty()) {
-    QStringList lines;
+        QStringList lines;
         lines.append("Plot,X,Y");
         lines.append("Metadata,"+QString::number(classZeroTemplateCount+classOneTemplateCount)+",Total Templates");
         lines.append("Metadata,"+QString::number(classZeroTemplateCount)+",Class 0 Template Count");
