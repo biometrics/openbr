@@ -79,8 +79,8 @@ public:
     Ptr<ml::SVM> svm;
 
 private:
-    BR_PROPERTY(Kernel, kernel, Linear)
-    BR_PROPERTY(Type, type, C_SVC)
+    BR_PROPERTY(Kernel, kernel, RBF)
+    BR_PROPERTY(Type, type, NU_SVR)
     BR_PROPERTY(float, C, -1)
     BR_PROPERTY(float, gamma, -1)
     BR_PROPERTY(QString, inputVariable, "Label")
@@ -158,6 +158,8 @@ private:
 
         cv::Mat output;
         float prediction = svm->predict(src.m().reshape(1, 1), output, returnDFVal ? ml::StatModel::RAW_OUTPUT : 0);
+        prediction = output.at<float>(0, 0);
+
         if (returnDFVal) {
             dst.m() = Mat(1, 1, CV_32F);
             dst.m().at<float>(0, 0) = prediction;
@@ -178,8 +180,23 @@ private:
 
     void store(QDataStream &stream) const
     {
-        OpenCVUtils::storeModel(svm, stream);
-        stream << labelMap << reverseLookup;
+        // Create local file
+        QTemporaryFile tempFile;
+        tempFile.open();
+        tempFile.close();
+
+        // Save MLP to local file
+        cv::FileStorage fs(tempFile.fileName().toStdString(), cv::FileStorage::WRITE);
+        fs.startWriteStruct(svm->getDefaultName(), cv::FileNode::MAP);
+        svm->write(fs);
+        fs.release();
+
+        // Copy local file contents to stream
+        tempFile.open();
+        QByteArray data = tempFile.readAll();
+        tempFile.close();
+
+        stream << data << labelMap << reverseLookup;
     }
 
     void load(QDataStream &stream)
