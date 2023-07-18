@@ -10,11 +10,7 @@ library("grid")
 # Code to format FAR values
 far_names <- list('0.0001'="FAR = 0.01%", '0.001'="FAR = 0.1%", '0.01'="FAR = 1%")
 far_labeller <- function(variable,value) {
-    if (as.character(value) %in% names(far_names)) {
-        return(far_names[as.character(value)])
-    } else {
-        return(as.character(value))
-    }
+    return(as.character(value))
 }
 
 getScale <- function(mode, title, vals) {
@@ -124,7 +120,7 @@ plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") 
 }
 
 plotSD <- function(sdData=NULL) {
-    p <- qplot(X, data=sdData, geom="histogram", fill=Y, position="identity", alpha=I(1/2), xlab="Score", ylab="Frequency")
+    p <- qplot(X, data=sdData, geom="histogram", fill=Y, alpha=I(1/2), xlab="Score", ylab="Frequency")
     p <- p + scale_fill_manual("Ground Truth", values=c("blue", "red")) + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
     if (majorSize > 1) {
         if (minorSize > 1) {
@@ -146,7 +142,7 @@ plotSD <- function(sdData=NULL) {
 
 plotBC <- function(bcData=NULL) {
     factor <- if (majorSmooth) minorHeader else majorHeader
-    plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
+    plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", weight=Y", sep="")
     p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
     if (majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
     if (minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
@@ -156,7 +152,7 @@ plotBC <- function(bcData=NULL) {
 }
 
 plotOverlap <- function(overlapData=NULL) {
-    p <- qplot(X, data=overlapData, geom="histogram", position="identity", xlab="Overlap", ylab="Frequency")
+    p <- qplot(X, data=overlapData, geom="histogram", xlab="Overlap", ylab="Frequency")
     p <- p + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
     if (majorSize > 1) {
         if (minorSize > 1) {
