@@ -197,11 +197,11 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
     optMap.insert("rocOptions", File(QString("[xTitle=False Accept Rate,yTitle=True Accept Rate,xLog=true,yLog=false,xLimits=(.0000001,.1)]")));
-    optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.0001,1)]")));
+    optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.00001,1)]")));
     optMap.insert("ietOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
     optMap.insert("cmcOptions", File(QString("[xTitle=Rank,yTitle=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=(1,5,10,50,100),xBreaks=(1,5,10,50,100)]")));
     optMap.insert("farOptions", File(QString("[xTitle=Score,yTitle=False Accept Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0000001,1)]")));
-    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0001,1)]")));
+    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.00001,1)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
@@ -393,7 +393,7 @@ bool PlotEER(const QStringList &files, const File &destination, bool show)
     optMap.insert("rocOptions", File(QString("[xTitle=False Accept Rate,yTitle=True Accept Rate,xLog=true,yLog=false,xLimits=(.0000001,.1)]")));
     optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.0001,1)]")));
     optMap.insert("farOptions", File(QString("[xTitle=Score,yTitle=False Accept Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0000001,1)]")));
-    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0001,1)]")));
+    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.00001,1)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
