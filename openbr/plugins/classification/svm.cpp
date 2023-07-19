@@ -79,8 +79,8 @@ public:
     Ptr<ml::SVM> svm;
 
 private:
-    BR_PROPERTY(Kernel, kernel, RBF)
-    BR_PROPERTY(Type, type, NU_SVR)
+    BR_PROPERTY(Kernel, kernel, Linear)
+    BR_PROPERTY(Type, type, C_SVC)
     BR_PROPERTY(float, C, -1)
     BR_PROPERTY(float, gamma, -1)
     BR_PROPERTY(QString, inputVariable, "Label")
