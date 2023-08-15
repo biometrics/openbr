@@ -83,7 +83,10 @@ find_package(Qt5 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
 
 set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
 if(IOS)
-  list(APPEND BR_THIRDPARTY_LIBS "${_qt5Core_install_prefix}/lib/libqtpcre2.a")
+  set(QT_PCRE2_LIB "${_qt5Core_install_prefix}/lib/libqtpcre2.a")
+  if(EXISTS ${QT_PCRE2_LIB})
+    list(APPEND BR_THIRDPARTY_LIBS "${QT_PCRE2_LIB}")
+  endif()
 endif()
 
 # Find OpenCV
