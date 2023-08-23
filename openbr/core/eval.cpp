@@ -802,7 +802,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     QRectF normalizations(0, 0, 0, 0);
 
     // Associate predictions to ground truth
-    int totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+    int totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations, truePositiveThreshold);
 
     // Redo association of ground truth to predictions with boundingBoxes
     // resized based on the average differences on each side.
@@ -815,7 +815,7 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
         }
         resolvedDetections.clear();
         falseNegativeDetections.clear();
-        totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations);
+        totalTrueDetections = associateGroundTruthDetections(resolvedDetections, falseNegativeDetections, allDetections, normalizations, truePositiveThreshold);
     }
 
     if (Globals->verbose) {

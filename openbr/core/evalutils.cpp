@@ -160,7 +160,7 @@ QMap<QString, Detections> EvalUtils::filterLabels(const QMap<QString, Detections
     return allFilteredDetections;
 }
 
-int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets)
+int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets, float truePositiveThreshold)
 {
     QList<float> dLeft, dRight, dTop, dBottom;
     int totalTrueDetections = 0;
@@ -191,7 +191,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
                 const float overlap = truth.overlap(newPredicted);
 
                 if (overlap > 0)
-                    sortedDetections.append(SortedDetection(t, p, overlap));
+                    sortedDetections.append(SortedDetection(t, p, overlap, predicted.confidence, truePositiveThreshold));
             }
         }
 
