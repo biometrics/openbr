@@ -266,6 +266,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
 
     float poseMatch = 0;
     QList<ResolvedDetection> falsePositives, bottomTruePositives;
+    QList<QPair<float, float>> ffValues;
     for (int i=0; i<detections.size(); i++) {
         const ResolvedDetection &detection = detections[i];
         if (discrete) {
@@ -287,8 +288,11 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
             if (FP > prevFP || (i == detections.size()-1)) {
                 foreach (float FAR, FARsToOutput)
                     if (prevFP / numImages < FAR && FP / numImages >= FAR) {
+                        const float TAR = totalTrueDetections ? TP / totalTrueDetections : 0;
+                        ffValues.append(qMakePair(FAR, TAR));
+
                         debug << QString("|") << QString::number(FAR, 'f', 4).leftJustified(10, ' ');
-                        debug << QString("|") << QString::number(totalTrueDetections ? TP / totalTrueDetections : 0, 'f', 4).leftJustified(10, ' ');
+                        debug << QString("|") << QString::number(TAR, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(TP ? poseMatch / TP : 0., 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << endl;
@@ -350,6 +354,14 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
             lines.append(QString("%1PR, %2, %3").arg(discrete ? "Discrete" : "Continuous", QString::number(point.Recall), QString::number(point.Precision)));
         }
     }
+
+    // Write TAR@FAR Table (FF)
+    for (const QPair<float, float> &p : ffValues)
+        lines.append(qPrintable(QString("%1FF,%2,%3").arg(
+                        discrete ? "Discrete" : "Continuous",
+                        QString::number(p.first, 'f', 6),
+                        QString::number(p.second, 'f', 6))));
+
     return lines;
 }
 
