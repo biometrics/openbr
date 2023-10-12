@@ -51,7 +51,12 @@ QList<Detection> EvalUtils::getDetections(const DetectionKey &key, const File &f
     if (pose.contains("Angle"))
         pose = "Frontal";
 
-    QString label = f.get<QString>("ObjectType", "").toLower();
+    QString label = "";
+    if (f.contains("ObjectType")) {
+        label = f.get<QString>("ObjectType").toLower();
+    } else if (f.contains("Label")) {
+        label = f.get<QString>("Label").toLower();
+    }
 
     const QString filePath = f.path() + "/" + f.fileName();
     QList<Detection> dets;
@@ -110,6 +115,7 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
     foreach (const File &f, predicted)
         if (allDetections.contains(f.name))
             allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
+
     return allDetections;
 }
 
