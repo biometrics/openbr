@@ -32,7 +32,7 @@ using namespace EvalUtils;
 namespace br
 {
 
-static const int Max_Points = 500; // Maximum number of points to render on plots
+static const int Max_Points = 1000; // Maximum number of points to render on plots
 
 struct Comparison
 {
@@ -62,19 +62,29 @@ struct OperatingPoint
 
 static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPoints, const QString key, const float value)
 {
-    int index        = key == "Score" ? operatingPoints.size()-1 : 0;
-    const int break_ = key == "Score" ? 0 : operatingPoints.size();
+    bool invert      = (key == "Score") && (operatingPoints.first().score > operatingPoints.last().score);
+    int index        = invert ? operatingPoints.size()-1 : 0;
+    const int break_ = invert ? 0 : operatingPoints.size();
     while ((key == "Score" ? operatingPoints[index].score :
             key == "FAR"   ? operatingPoints[index].FAR   :
                              operatingPoints[index].TAR) < value) {
-        index = index + (key == "Score" ? -1 : 1);
+        index = index + (invert ? -1 : 1);
         if (index == break_) {
             if (key == "Score")
-                return OperatingPoint(value, operatingPoints.first().FAR, operatingPoints.first().TAR);
+                return OperatingPoint(value, (invert ? operatingPoints.first() : operatingPoints.last()).FAR, (invert ? operatingPoints.first() : operatingPoints.last()).TAR);
             else if (key == "FAR")
                 return OperatingPoint(operatingPoints.last().score, value, operatingPoints.last().TAR);
             return OperatingPoint(operatingPoints.last().score, operatingPoints.last().FAR, value);
         }
+    }
+
+    if (
+        (key == "Score" && operatingPoints[index].score == value)
+        || (key == "FAR" && operatingPoints[index].FAR == value)
+        || (key == "TAR" && operatingPoints[index].TAR == value)
+        ) {
+        // If the OperatingPoint is explicitly found
+        return operatingPoints[index];
     }
 
     const int index2 = (key == "Score" ? std::min(index+1, operatingPoints.size()-1) : index-1);
@@ -1397,24 +1407,20 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         lines.append("Metadata,"+QString::number(classOneTemplateCount)+",Class 1 Template Count");
 
         // Write Detection Error Tradeoff (DET), PRE, REC
-        float expFAR = std::max(ceil(log10(classZeroTemplateCount)), 1.0);
-        float expFRR = std::max(ceil(log10(classOneTemplateCount)), 1.0);
-
-        float FARstep = expFAR / (float)(Max_Points - 1);
-        float FRRstep = expFRR / (float)(Max_Points - 1);
-
-        for (int i=0; i<Max_Points; i++) {
-            float FAR = pow(10, -expFAR + i*FARstep);
-            float FRR = pow(10, -expFRR + i*FRRstep);
-
-            OperatingPoint operatingPointFAR = getOperatingPoint(operatingPoints, "FAR", FAR);
-            OperatingPoint operatingPointTAR = getOperatingPoint(operatingPoints, "TAR", 1-FRR);
-            lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
-                                                  QString::number(1-operatingPointFAR.TAR)));
-            lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
-                                                  QString::number(FAR)));
-            lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
-                                                  QString::number(FRR)));
+        float prevFAR = operatingPoints.first().FAR;
+        float prevTAR = -1;
+        for (int i=0; i<operatingPoints.size(); i++) {
+            OperatingPoint operatingPoint = operatingPoints[i];
+            if (operatingPoint.FAR == prevFAR || operatingPoint.TAR == prevTAR)
+                continue; // Skip until we have the next point
+            prevFAR = operatingPoint.FAR;
+            prevTAR = operatingPoint.TAR;
+            lines.append(QString("DET,%1,%2").arg(QString::number(operatingPoint.FAR),
+                                                  QString::number(1-operatingPoint.TAR)));
+            lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPoint.score),
+                                                  QString::number(operatingPoint.FAR)));
+            lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPoint.score),
+                                                  QString::number(1-operatingPoint.TAR)));
         }
 
         // Write TAR@FAR Table (TF)
