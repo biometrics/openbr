@@ -491,13 +491,8 @@ void openAndReadMatrixHeader(QFile &file, size_t &rows, size_t &cols, size_t &by
 // Helper struct for statistics accumulation
 struct Counter
 {
-    float truePositive, falsePositive, falseNegative;
-    Counter()
-    {
-        truePositive = 0;
-        falsePositive = 0;
-        falseNegative = 0;
-    }
+    double truePositive, falsePositive, falseNegative;
+    Counter() : truePositive(0), falsePositive(0), falseNegative(0) {}
 };
 
 float InplaceEval(const QString &simmat, const QString &mask, const QString &csv)
@@ -595,6 +590,8 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                     sampleNextGenuine = 0;
                     lines.append(QString("SD,%1,Genuine").arg(QString::number(thresholds[i])));
                     genuinesSampled++;
+                    if (genuinesSampled >= sdPoints)
+                        break;
                 }
             }
         }
@@ -606,6 +603,8 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                     sampleNextImpostor = 0;
                     lines.append(QString("SD,%1,Impostor").arg(QString::number(thresholds[i])));
                     impostorsSampled++;
+                    if (impostorsSampled >= sdPoints)
+                        break;
                 }
             }
         }
