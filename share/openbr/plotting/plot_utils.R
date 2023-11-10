@@ -83,7 +83,7 @@ plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") 
 }
 
 plotSD <- function(sdData=NULL) {
-    if(nrow(sdData) == 0) return()
+    if (nrow(sdData) == 0) return()
     p <- qplot(X, data=sdData, geom="histogram", fill=Y, alpha=I(1/2), xlab="Score", ylab="Frequency")
     p <- p + scale_fill_manual("Ground Truth", values=c("blue", "red")) + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
     if (majorSize > 1) {

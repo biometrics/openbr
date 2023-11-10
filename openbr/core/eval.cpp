@@ -378,15 +378,15 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     // Write FRR@FAR Table (FF)
     foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
-      lines.append(qPrintable(QString("FF,%1,%2").arg(
-                              QString::number(FAR, 'f'),
-                              QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
+        lines.append(qPrintable(QString("FF,%1,%2").arg(
+                                QString::number(FAR, 'f'),
+                                QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
 
     // Write FAR@TAR Table (FT)
     foreach (float TAR, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
-      lines.append(qPrintable(QString("FT,%1,%2").arg(
-                         QString::number(TAR, 'f', 2),
-                         QString::number(getOperatingPoint(operatingPoints, "TAR", TAR).FAR, 'f', 3))));
+        lines.append(qPrintable(QString("FT,%1,%2").arg(
+                                QString::number(TAR, 'f', 2),
+                                QString::number(getOperatingPoint(operatingPoints, "TAR", TAR).FAR, 'f', 3))));
 
     // Write FAR@Score Table (SF) and TAR@Score table (ST)
     foreach(const float score, QList<float>() << 0.05 << 0.1 << 0.15 << 0.2 << 0.25 << 0.3 << 0.35 << 0.4 << 0.45 << 0.5
