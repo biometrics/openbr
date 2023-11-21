@@ -469,7 +469,7 @@ void assertEval(const QString &simmat, const QString &mask, float accuracy)
     }
 }
 
-void openAndReadMatrixHeader(QFile &file, size_t &rows, size_t &cols, size_t &bytesPerRow)
+void openAndReadMatrixHeader(QFile &file, size_t &rows, size_t &cols)
 {
     bool success = file.open(QFile::ReadOnly);
     if (!success) qFatal("Unable to open %s for reading.", qPrintable(file.fileName()));
@@ -483,9 +483,6 @@ void openAndReadMatrixHeader(QFile &file, size_t &rows, size_t &cols, size_t &by
     const QStringList words = QString(file.readLine()).split(" ");
     rows = words[1].toLong();
     cols = words[2].toLong();
-    const bool isMask = words[0][1] == 'B';
-    const size_t typeSize = isMask ? sizeof(BEE::MaskValue) : sizeof(BEE::SimmatValue);
-    bytesPerRow = cols*typeSize;
 }
 
 // Helper struct for statistics accumulation
@@ -498,31 +495,39 @@ struct Counter
 float InplaceEval(const QString &simmat, const QString &mask, const QString &csv)
 {
     QFile simmatFile(simmat), maskFile(mask);
-    size_t simmatRows, simmatCols, maskRows, maskCols, simmatBytesPerRow, maskBytesPerRow;;
-    openAndReadMatrixHeader(simmatFile, simmatRows, simmatCols, simmatBytesPerRow);
-    openAndReadMatrixHeader(maskFile, maskRows, maskCols, maskBytesPerRow);
+    size_t simmatRows, simmatCols, maskRows, maskCols;
+    openAndReadMatrixHeader(simmatFile, simmatRows, simmatCols);
+    openAndReadMatrixHeader(maskFile, maskRows, maskCols);
 
     if ((simmatRows != maskRows) || (simmatCols != maskCols))
         qFatal("Simmat and Mask size mismatch!");
 
+    // DET stats
     size_t genuineCount(0), impostorCount(0);
     QHash<float, Counter> stats;
+
+    // IET stats
+    size_t genuineSearchCount(0), impostorSearchCount(0);
+    QHash<float, Counter> ietStats;
+
+    // CMC stats
+    QVector<int> firstGenuineReturns(simmatRows, 0);
 
     Mat simmatRow, maskRow;
     simmatRow.create(1, simmatCols, CV_32FC1);
     maskRow.create(1, maskCols, CV_8UC1);
-    QVector<int> firstGenuineReturns(simmatRows, 0);
     for (size_t i=0; i<simmatRows; i++) {
-        qint64 bytesRead = simmatFile.read((char*)simmatRow.data, simmatBytesPerRow);
-        if (bytesRead != simmatBytesPerRow)
-            qFatal("Didn't read complete row!");
+        qint64 bytesRead = simmatFile.read((char*)simmatRow.data, simmatCols * sizeof(BEE::SimmatValue));
+        if (bytesRead != simmatCols * sizeof(BEE::SimmatValue))
+            qFatal("Didn't read complete matrix row!");
 
-        bytesRead = maskFile.read((char*)maskRow.data, maskBytesPerRow);
-        if (bytesRead != maskBytesPerRow)
-            qFatal("Didn't read complete row!");
+        bytesRead = maskFile.read((char*)maskRow.data, maskCols * sizeof(BEE::MaskValue));
+        if (bytesRead != maskCols * sizeof(BEE::MaskValue))
+            qFatal("Didn't read complete mask row!");
 
-        bool hasGenuine(false);
+        // DET
         int impostorsAboveGenuine(0);
+        bool hasGenuine(false), hasImpostor(false);
         float highestImpostor(-std::numeric_limits<float>::max()), highestGenuine(-std::numeric_limits<float>::max());
         for (size_t j=0; j<simmatCols; j++) {
             const BEE::SimmatValue sim_val = simmatRow.at<BEE::SimmatValue>(0, j);
@@ -539,6 +544,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                 if (sim_val > highestGenuine)
                     highestGenuine = sim_val;
             } else {
+                hasImpostor = true;
                 impostorCount++;
                 stats[sim_val].falsePositive++;
                 if (sim_val >= highestGenuine)
@@ -547,7 +553,18 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                     highestImpostor = sim_val;
             }
         }
+
+        // CMC
         firstGenuineReturns[i] = hasGenuine ? impostorsAboveGenuine + 1 : -impostorsAboveGenuine;
+
+        // IET
+        if (hasGenuine) { // true search
+            genuineSearchCount++;
+            ietStats[highestGenuine].truePositive++;
+        } else if (hasImpostor) { // false search
+            impostorSearchCount++;
+            ietStats[highestImpostor].falsePositive++;
+        }
     }
 
     // Write Metadata table
@@ -565,6 +582,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
     size_t impostorRate = impostorCount / sdPoints;
     size_t genuinesSampled(0), sampleNextGenuine(0), impostorsSampled(0), sampleNextImpostor(0);
 
+    // DET and SD sampling
     size_t fps(0), tps(0);
     QList<float> thresholds = stats.keys();
     std::sort(thresholds.begin(), thresholds.end());
@@ -582,7 +600,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
         lines.append(QString("FRR,%1,%2").arg(QString::number(thresholds[i]),
                                               QString::number(1-(double(tps)/genuineCount))));
 
-        // Score distribution sampling
+        // Genuine score sampling
         if ((genuinesSampled < sdPoints) && (counter.truePositive > 0)) {
             for (int sample=0; sample<counter.truePositive; sample++) {
                 sampleNextGenuine++;
@@ -596,6 +614,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             }
         }
 
+        // Impostor score sampling
         if ((impostorsSampled < sdPoints) && (counter.falsePositive > 0)) {
             for (int sample=0; sample<counter.falsePositive; sample++) {
                 sampleNextImpostor++;
@@ -609,6 +628,27 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             }
         }
     }
+    if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
+    if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
+
+    // IET
+    QList<OperatingPoint> searchOperatingPoints;
+    if (genuineSearchCount > 0 && impostorSearchCount > 0) {
+        fps = 0; tps = 0;
+        QList<float> thresholds = ietStats.keys();
+        std::sort(thresholds.begin(), thresholds.end());
+        std::reverse(thresholds.begin(), thresholds.end());
+        for (int i=0; i<thresholds.size(); i++) {
+            const Counter counter = ietStats[thresholds[i]];
+            fps += counter.falsePositive;
+            tps += counter.truePositive;
+            searchOperatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorSearchCount, double(tps)/genuineSearchCount));
+            lines.append(QString("IET,%1,%2").arg(QString::number(double(fps)/impostorSearchCount),
+                                                  QString::number(1-(double(tps)/genuineSearchCount))));
+        }
+    }
+    if (searchOperatingPoints.size() == 0) searchOperatingPoints.append(OperatingPoint(1, 1, 1));
+    if (searchOperatingPoints.size() == 1) searchOperatingPoints.prepend(OperatingPoint(0, 0, 0));
 
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 200;
@@ -652,7 +692,11 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
     }
-
+    printf("\n");
+    foreach (float FPIR, QList<float>() << 0.1 << 0.01) {
+        const OperatingPoint op = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
+        printf("FNIR @ FPIR = %.0e: %.3f\n", FPIR, 1-op.TAR);
+    }
     printf("\n");
     foreach (const int Report_Retrieval, QList<int>() << 1 << 5 << 10 << 20 << 50 << 100)
         printf("Retrieval Rate @ Rank = %d: %.3f\n", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
