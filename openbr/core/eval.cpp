@@ -583,7 +583,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
     size_t genuinesSampled(0), sampleNextGenuine(0), impostorsSampled(0), sampleNextImpostor(0);
 
     // DET and SD sampling
-    size_t fps(0), tps(0);
+    size_t fps(0), previous_fps(0), tps(0), previous_tps(0);
     QList<float> thresholds = stats.keys();
     std::sort(thresholds.begin(), thresholds.end());
     std::reverse(thresholds.begin(), thresholds.end());
@@ -592,13 +592,11 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
         const Counter counter = stats[thresholds[i]];
         fps += counter.falsePositive;
         tps += counter.truePositive;
-        operatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorCount, double(tps)/genuineCount));
-        lines.append(QString("DET,%1,%2").arg(QString::number(double(fps)/impostorCount),
-                                              QString::number(1-(double(tps)/genuineCount))));
-        lines.append(QString("FAR,%1,%2").arg(QString::number(thresholds[i]),
-                                              QString::number(double(fps)/impostorCount)));
-        lines.append(QString("FRR,%1,%2").arg(QString::number(thresholds[i]),
-                                              QString::number(1-(double(tps)/genuineCount))));
+        if ((fps > previous_fps) && tps > previous_tps) {
+            operatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorCount, double(tps)/genuineCount));
+            previous_fps = fps;
+            previous_tps = tps;
+        }
 
         // Genuine score sampling
         if ((genuinesSampled < sdPoints) && (counter.truePositive > 0)) {
@@ -630,6 +628,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
     }
     if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
     if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
+    if (operatingPoints.size() > 2)  operatingPoints.takeLast(); // Remove point (1,1)
 
     // IET
     QList<OperatingPoint> searchOperatingPoints;
@@ -643,12 +642,39 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             fps += counter.falsePositive;
             tps += counter.truePositive;
             searchOperatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorSearchCount, double(tps)/genuineSearchCount));
-            lines.append(QString("IET,%1,%2").arg(QString::number(double(fps)/impostorSearchCount),
-                                                  QString::number(1-(double(tps)/genuineSearchCount))));
         }
     }
     if (searchOperatingPoints.size() == 0) searchOperatingPoints.append(OperatingPoint(1, 1, 1));
     if (searchOperatingPoints.size() == 1) searchOperatingPoints.prepend(OperatingPoint(0, 0, 0));
+    if (searchOperatingPoints.size() > 2)  searchOperatingPoints.takeLast(); // Remove point (1,1)
+
+
+    // Write Detection Error Tradeoff (DET), PRE, REC, Identification Error Tradeoff (IET)
+    float expFAR = std::max(ceil(log10(impostorCount)), 1.0);
+    float expFRR = std::max(ceil(log10(genuineCount)), 1.0);
+    float expFPIR = std::max(ceil(log10(impostorSearchCount)), 1.0);
+
+    float FARstep = expFAR / (float)(Max_Points - 1);
+    float FRRstep = expFRR / (float)(Max_Points - 1);
+    float FPIRstep = expFPIR / (float)(Max_Points - 1);
+
+    for (int i=0; i<Max_Points; i++) {
+        float FAR = pow(10, -expFAR + i*FARstep);
+        float FRR = pow(10, -expFRR + i*FRRstep);
+        float FPIR = pow(10, -expFPIR + i*FPIRstep);
+
+        OperatingPoint operatingPointFAR = getOperatingPoint(operatingPoints, "FAR", FAR);
+        OperatingPoint operatingPointTAR = getOperatingPoint(operatingPoints, "TAR", 1-FRR);
+        OperatingPoint searchOperatingPoint = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
+        lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
+                                              QString::number(1-operatingPointFAR.TAR)));
+        lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
+                                              QString::number(FAR)));
+        lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
+                                              QString::number(FRR)));
+        lines.append(QString("IET,%1,%2").arg(QString::number(searchOperatingPoint.FAR),
+                                              QString::number(1-searchOperatingPoint.TAR)));
+    }
 
     // Write Cumulative Match Characteristic (CMC) curve
     const int Max_Retrieval = 200;
