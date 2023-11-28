@@ -503,7 +503,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
         qFatal("Simmat and Mask size mismatch!");
 
     // DET stats
-    size_t genuineCount(0), impostorCount(0);
+    size_t genuineCount(0), impostorCount(0), numNaNs(0);
     QHash<float, Counter> stats;
 
     // IET stats
@@ -533,6 +533,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             const BEE::SimmatValue sim_val = simmatRow.at<BEE::SimmatValue>(0, j);
             const BEE::MaskValue mask_val = maskRow.at<BEE::MaskValue>(0, j);
             if (mask_val == BEE::DontCare) continue;
+            if (sim_val != sim_val) { numNaNs++; continue; }
 
             const bool genuine = (mask_val == BEE::Match);
             if (genuine) {
@@ -566,6 +567,10 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             ietStats[highestImpostor].falsePositive++;
         }
     }
+
+    if (numNaNs > 0) qWarning("Encountered %ld NaN scores!", numNaNs);
+    if (genuineCount == 0) qFatal("No genuine scores!");
+    if (impostorCount == 0) qFatal("No impostor scores!");
 
     // Write Metadata table
     QStringList lines;
