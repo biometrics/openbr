@@ -201,8 +201,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     // Value of 0: ignored search
     std::vector<int> genuineSearches(simmat.rows, 0);
 
-    int totalGenuineSearches = 0, totalImpostorSearches = 0;
-    int genuineCount = 0, impostorCount = 0, numNaNs = 0;
+    size_t totalGenuineSearches = 0, totalImpostorSearches = 0;
+    size_t genuineCount = 0, impostorCount = 0, numNaNs = 0;
     for (int i=0; i<simmat.rows; i++) {
         for (int j=0; j<simmat.cols; j++) {
             const BEE::MaskValue mask_val = mask.at<BEE::MaskValue>(i,j);
@@ -231,7 +231,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     foreach (int i, genuineSearches)
         if (i<0) totalImpostorSearches++;
 
-    if (numNaNs > 0) qWarning("Encountered %d NaN scores!", numNaNs);
+    if (numNaNs > 0) qWarning("Encountered %ld NaN scores!", numNaNs);
     if (genuineCount == 0) qFatal("No genuine scores!");
     if (impostorCount == 0) qFatal("No impostor scores!");
 
@@ -244,10 +244,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     std::vector<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
-    int falsePositives = 0, previousFalsePositives = 0;
-    int truePositives = 0, previousTruePositives = 0;
-    int falseSearches = 0, previousFalseSearches = 0;
-    int trueSearches = 0, previousTrueSearches = 0;
+    size_t falsePositives = 0, previousFalsePositives = 0;
+    size_t truePositives = 0, previousTruePositives = 0;
+    size_t falseSearches = 0, previousFalseSearches = 0;
+    size_t trueSearches = 0, previousTrueSearches = 0;
     size_t index = 0;
     int EERIndex = 0;
     float minGenuineScore = std::numeric_limits<float>::max();
