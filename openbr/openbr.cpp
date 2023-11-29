@@ -111,9 +111,9 @@ void br_assert_eval(const char *simmat, const char *mask, const float accuracy)
     assertEval(simmat, mask, accuracy);
 }
 
-float br_inplace_eval(const char *simmat, const char *target, const char *query, const char *csv)
+float br_inplace_eval(const char *simmat, const char *mask, const char *csv)
 {
-    return InplaceEval(simmat, target, query, csv);
+    return InplaceEval(simmat, mask, csv);
 }
 
 void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)

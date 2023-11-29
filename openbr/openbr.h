@@ -52,7 +52,7 @@ BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = 
 
 BR_EXPORT void br_assert_eval(const char *simmat, const char *mask, const float accuracy);
 
-BR_EXPORT float br_inplace_eval(const char * simmat, const char *target, const char *query, const char *csv = "");
+BR_EXPORT float br_inplace_eval(const char * simmat, const char *mask, const char *csv);
 
 BR_EXPORT void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "");
 
