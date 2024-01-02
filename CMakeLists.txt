@@ -92,9 +92,10 @@ endif()
 # Find OpenCV
 find_package(OpenCV 4.0.0 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
 if(IOS)
-  file(GLOB OPENCV_IOS_LIBS "${OpenCV_DIR}/../../*.a")
-  list(APPEND BR_THIRDPARTY_LIBS ${OPENCV_IOS_LIBS})
+  set(OPENCV_DEPENDENCIES opencv_core opencv_dnn opencv_features2d opencv_highgui opencv_imgcodecs opencv_imgproc opencv_ml)
+  set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${OPENCV_DEPENDENCIES})
   list(APPEND BR_THIRDPARTY_LIBS "-framework Foundation -framework UIKit -framework Security -framework MobileCoreServices -lc++")
 else()
   set(OPENCV_DEPENDENCIES opencv_core opencv_dnn opencv_features2d opencv_highgui opencv_imgcodecs opencv_imgproc opencv_ml opencv_videoio)

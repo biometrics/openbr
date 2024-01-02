@@ -178,8 +178,8 @@ public:
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "inplaceEval")) {
-                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
-                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
+                check(parc == 3, "Incorrect parameter count for 'inplaceEval'.");
+                br_inplace_eval(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "plotDetection")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
                 br_plot_detection(parc-1, parv, parv[parc-1], true);
@@ -295,7 +295,7 @@ private:
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-evalKNN <knn_graph> <knn_truth> [{csv}]\n"
                "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
-               "-inplaceEval <simmat> <target> <query> [{csv}]\n"
+               "-inplaceEval <simmat> <mask> {csv}\n"
                "-assertEval <simmat> <mask> <accuracy>\n"
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotLandmarking <file> ... <file> {destination}\n"
