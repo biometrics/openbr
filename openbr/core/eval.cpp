@@ -1335,13 +1335,17 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         if (gtLabel == 1) {
             classOneTemplateCount++;
             classOneScores.append(templateScore);
-            if (minClassOneScore > templateScore) minClassOneScore = templateScore;
-            if (maxClassOneScore < templateScore) maxClassOneScore = templateScore;
+            if (minClassOneScore > templateScore)
+                minClassOneScore = templateScore;
+            if (maxClassOneScore < templateScore)
+                maxClassOneScore = templateScore;
         } else {
             classZeroTemplateCount++;
             classZeroScores.append(templateScore);
-            if (minClassZeroScore > templateScore) minClassZeroScore = templateScore;
-            if (maxClassZeroScore < templateScore) maxClassZeroScore = templateScore;
+            if (minClassZeroScore > templateScore)
+                minClassZeroScore = templateScore;
+            if (maxClassZeroScore < templateScore)
+                maxClassZeroScore = templateScore;
         }
     }
 
@@ -1389,17 +1393,21 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     printf("----------------------------------------------------------\n");
     foreach (float FAR, QList<float>() << 0.2 << 0.1 << 0.05 << 0.01 << 0.001 << 0.0001) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
-        if (op.score < MAX(minClassOneScore, minClassZeroScore) || op.score > MIN(maxClassOneScore, maxClassZeroScore))
-            printf("TAR =  N/A  @ FAR = %.4f | Threshold= %.3f\n", FAR, MAX(op.score, minClassZeroScore));
+        if (op.score < minClassOneScore)
+            printf("TAR =   0   @ FAR = %.4f | Threshold= %.3f\n", FAR, MIN(op.score, minClassOneScore));
+        else if (op.score >= maxClassOneScore)
+            printf("TAR =   1   @ FAR = %.4f | Threshold= %.3f\n", FAR, op.score);
         else
             printf("TAR = %.3f @ FAR = %.4f | Threshold= %.3f\n", op.TAR, FAR, op.score);
 
     }
     printf("----------------------------------------------------------\n");
-    foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98 << 0.99) {
+    foreach (float TAR, QList<float>() << 0.8 << 0.85 << 0.9 << 0.95 << 0.98 << 0.99 << 0.999) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "TAR", TAR);
-        if (op.score < MAX(minClassOneScore, minClassZeroScore) || op.score > MIN(maxClassOneScore, maxClassZeroScore))
-            printf("FAR =  N/A  @ TAR = %.4f | Threshold= %.3f\n", TAR, op.score);
+        if (op.score < minClassZeroScore)
+            printf("FAR =   0   @ TAR = %.4f | Threshold= %.3f\n", TAR, MIN(op.score, minClassZeroScore));
+        else if (op.score >= maxClassZeroScore)
+            printf("FAR =   0   @ TAR = %.4f | Threshold= %.3f\n", TAR, op.score);
         else
             printf("FAR = %.3f @ TAR = %.4f | Threshold= %.3f\n", op.FAR, TAR, op.score);
 
@@ -1418,18 +1426,18 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
             op.FAR = operatingPoints[opindex].FAR;
             opindex++;
         }
-        thresh.append(QString("|  %1  ").arg(QString::number(score, 'f', 3)));
-        form.append(QString("|  :---:  "));
-        frr.append(score > maxClassOneScore ? QString("|         ") : QString("|  %1  ").arg(QString::number(std::abs(1.0 - op.TAR), 'f', 3)));
-        far.append(score < minClassZeroScore ? QString("|         ") : QString("|  %1  ").arg(QString::number(std::abs(op.FAR), 'f', 3)));
+        thresh.append(QString("| %1 ").arg(QString::number(score, 'f', 3)));
+        form.append(QString("| :---: "));
+        frr.append(score > maxClassOneScore ? QString("|       ") : QString("| %1 ").arg(QString::number(std::abs(1.0 - op.TAR), 'f', 3)));
+        far.append(score < minClassZeroScore ? QString("|       ") : QString("| %1 ").arg(QString::number(std::abs(op.FAR), 'f', 3)));
     }
 
     printf("\nClass 0 Templates: %d, Class 1 Templates: %d\nClass 0 Range: [%.3f,%.3f], Class 1 Range: [%.3f,%.3f]\n\n",
         classZeroTemplateCount, classOneTemplateCount, minClassZeroScore, maxClassZeroScore, minClassOneScore, maxClassOneScore);
-    printf("| Threshold %s|\n", qPrintable(thresh));
-    printf("|   :---:   %s|\n", qPrintable(form));
-    printf("|  Genuine  %s|\n", qPrintable(frr));
-    printf("|   Spoof   %s|\n", qPrintable(far));
+    printf("|   Threshold    %s|\n", qPrintable(thresh));
+    printf("|     :---:      %s|\n", qPrintable(form));
+    printf("|  Genuine (FRR) %s|\n", qPrintable(frr));
+    printf("|   Spoof  (FAR) %s|\n", qPrintable(far));
     printf("\n\n");
 
     // Optionally write ROC curve
