@@ -1094,10 +1094,21 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 // See Pearson calculation as utilized by python numpy.
 struct CorrelationCounter
 {
+    int length;
     double sumX, sumY, sumXX, sumYY, sumXY;
-    CorrelationCounter() : sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
+    CorrelationCounter() : length(0), sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
 
-    double correlation_coefficient(int length)
+    void add_sample(double pred, double gt)
+    {
+        length += 1;
+        sumX += pred;
+        sumY += gt;
+        sumXX += pred * pred;
+        sumYY += gt * gt;
+        sumXY += pred * gt;
+    }
+
+    double correlation_coefficient()
     {
         double numer = (length * sumXY) - (sumX * sumY);
         double denomX = (length * sumXX) - (sumX * sumX);
@@ -1142,11 +1153,7 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
             truthValues.append(QString::number(gt));
             predictedValues.append(QString::number(pred));
 
-            cc.sumX += pred;
-            cc.sumY += gt;
-            cc.sumXX += pred * pred;
-            cc.sumYY += gt * gt;
-            cc.sumXY += pred * gt;
+            cc.add_sample(pred, gt);
         }
     }
 
@@ -1169,7 +1176,7 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
     qDebug("Total Samples = %i", predicted.size());
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
     qDebug("MAE = %f", maeError/predicted.size());
-    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient(predicted.size()));
+    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
 }
 
 void readKNN(size_t &probeCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
