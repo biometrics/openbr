@@ -1090,17 +1090,19 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     return averagePointError;
 }
 
-// Helper struct for computing correlation coefficient between two sets of values.
+// Helper class for computing correlation coefficient between two sets of values.
 // See Pearson calculation as utilized by python numpy.
-struct CorrelationCounter
+class CorrelationCounter
 {
-    int length;
+private:
+    int num_samples;
     double sumX, sumY, sumXX, sumYY, sumXY;
-    CorrelationCounter() : length(0), sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
+public:
+    CorrelationCounter() : num_samples(0), sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
 
     void add_sample(double pred, double gt)
     {
-        length += 1;
+        num_samples += 1;
         sumX += pred;
         sumY += gt;
         sumXX += pred * pred;
@@ -1110,9 +1112,9 @@ struct CorrelationCounter
 
     double correlation_coefficient()
     {
-        double numer = (length * sumXY) - (sumX * sumY);
-        double denomX = (length * sumXX) - (sumX * sumX);
-        double denomY = (length * sumYY) - (sumY * sumY);
+        double numer = (num_samples * sumXY) - (sumX * sumY);
+        double denomX = (num_samples * sumXX) - (sumX * sumX);
+        double denomY = (num_samples * sumYY) - (sumY * sumY);
         return numer / sqrt(denomX * denomY);
     }
 };
