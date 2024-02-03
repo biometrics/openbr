@@ -1090,9 +1090,38 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
     return averagePointError;
 }
 
+// Helper class for computing correlation coefficient between two sets of values.
+// See Pearson calculation as utilized by python numpy.
+class CorrelationCounter
+{
+private:
+    int num_samples;
+    double sumX, sumY, sumXX, sumYY, sumXY;
+public:
+    CorrelationCounter() : num_samples(0), sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
+
+    void add_sample(double pred, double gt)
+    {
+        num_samples += 1;
+        sumX += pred;
+        sumY += gt;
+        sumXX += pred * pred;
+        sumYY += gt * gt;
+        sumXY += pred * gt;
+    }
+
+    double correlation_coefficient()
+    {
+        double numer = (num_samples * sumXY) - (sumX * sumY);
+        double denomX = (num_samples * sumXX) - (sumX * sumX);
+        double denomY = (num_samples * sumYY) - (sumY * sumY);
+        return numer / sqrt(denomX * denomY);
+    }
+};
+
 void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
 {
-    qDebug("Evaluating regression of (%s,%s) against (%s,%s)", qPrintable(predictedGallery), qPrintable(predictedProperty), qPrintable(truthGallery), qPrintable(truthProperty));
+    qDebug("Evaluating regression of (%s,%s) against ground truth (%s,%s)", qPrintable(predictedGallery), qPrintable(predictedProperty), qPrintable(truthGallery), qPrintable(truthProperty));
 
     if (predictedProperty.isEmpty())
         predictedProperty = "Regressor";
@@ -1110,18 +1139,23 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
 
     float rmsError = 0;
     float maeError = 0;
+    CorrelationCounter cc;
     QStringList truthValues, predictedValues;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
 
         if (predicted[i].file.contains(predictedProperty) && truth[i].file.contains(truthProperty)) {
-            float difference = predicted[i].file.get<float>(predictedProperty) - truth[i].file.get<float>(truthProperty);
+            float pred = predicted[i].file.get<float>(predictedProperty);
+            float gt = truth[i].file.get<float>(truthProperty);
+            float difference = pred - gt;
 
             rmsError += pow(difference, 2.f);
             maeError += fabsf(difference);
-            truthValues.append(QString::number(truth[i].file.get<float>(truthProperty)));
-            predictedValues.append(QString::number(predicted[i].file.get<float>(predictedProperty)));
+            truthValues.append(QString::number(gt));
+            predictedValues.append(QString::number(pred));
+
+            cc.add_sample(pred, gt);
         }
     }
 
@@ -1141,8 +1175,10 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
     bool success = QtUtils::runRScript(rFile);
     if (success) QtUtils::showFile("EvalRegression.pdf");
 
+    qDebug("Total Samples = %i", predicted.size());
     qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
     qDebug("MAE = %f", maeError/predicted.size());
+    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
 }
 
 void readKNN(size_t &probeCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
