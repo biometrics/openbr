@@ -166,8 +166,8 @@ public:
                 check((parc >= 2) && (parc <= 7), "Incorrect parameter count for 'evalLandmarking'.");
                 br_eval_landmarking(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 1,  parc >= 6 ? atoi(parv[5]) : 0, parc >= 7 ? atoi(parv[6]) : 5);
             } else if (!strcmp(fun, "evalRegression")) {
-                check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
-                br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
+                check(parc >= 2 && parc <= 5, "Incorrect parameter count for 'evalRegression'.");
+                br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "", parc >= 5 ? parv[4] : "true");
             } else if (!strcmp(fun, "evalKNN")) {
                 check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'evalKNN'.");
                 br_eval_knn(parv[0], parv[1], parc > 2 ? parv[2] : "");

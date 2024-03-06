@@ -397,7 +397,7 @@ Evaluates regression accuracy to disk.
 
 * **function definition:**
 
-        void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "")
+        void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property = "", const char *truth_property = "", const char *generate_plots)
 
 * **parameters:**
 

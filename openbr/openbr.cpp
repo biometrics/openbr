@@ -136,9 +136,9 @@ float br_eval_landmarking(const char *predicted_gallery, const char *truth_galle
     return EvalLandmarking(predicted_gallery, truth_gallery, csv, normalization_index_a, normalization_index_b, sample_index, total_examples);
 }
 
-void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
+void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property, const char *generate_plots)
 {
-    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
+    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property, strcmp(generate_plots, "true") == 0);
 }
 
 void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv)
