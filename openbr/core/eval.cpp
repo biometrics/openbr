@@ -1103,25 +1103,19 @@ private:
     float gtMinValue = FLT_MAX, gtMaxValue = FLT_MIN, predMinValue = FLT_MAX, predMaxValue = FLT_MIN;
 
     // Hold a list of the scores
-    float *gts, *preds;
+    QList<float> gts, preds;
 public:
-    CorrelationCounter(int num_samples) {
-        this->num_samples = num_samples;
-        gts = (float*) malloc(num_samples*sizeof(float));
-        preds = (float*) malloc(num_samples*sizeof(float));
+    CorrelationCounter() {
+        gts = QList<float>();
+        preds = QList<float>();
     }
 
-    ~CorrelationCounter() {
-        printf("\nDestructor\n");
-        free(gts);
-        free(preds);
-        printf("\nEnd Destructor\n");
-    }
-
-    void add_sample(int index, double pred, double gt)
+    void add_sample(double pred, double gt)
     {
-        gts[index] = gt;
-        preds[index] = pred;
+        num_samples++;
+
+        gts << gt;
+        preds << pred;
 
         sumX += pred;
         sumY += gt;
@@ -1224,7 +1218,7 @@ public:
 
 void EvalRegression(const TemplateList predicted, const TemplateList truth, QString predictedProperty, QString truthProperty, bool generatePlot) {
     float rms = 0.f, mae = 0.f;
-    CorrelationCounter *cc = new CorrelationCounter(predicted.size());
+    CorrelationCounter *cc = new CorrelationCounter();
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
@@ -1234,7 +1228,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
             float gt = truth[i].file.get<float>(truthProperty);
             rms += pow(pred - gt, 2.f) / predicted.size();
             mae += fabsf(pred - gt) / predicted.size();
-            cc->add_sample(i, pred, gt);
+            cc->add_sample(pred, gt);
         }
     }
 
