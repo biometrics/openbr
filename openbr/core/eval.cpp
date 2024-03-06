@@ -1218,7 +1218,20 @@ public:
             else
                 printf("  %.2f  |", total);
         }
-        printf("\n\n");
+        printf("\n|  Total |");
+        for (int j = 0; j < histSize; j++) {
+            float total = 0;
+            for (int i = 0; i < histSize; i++) {
+                total += hist[i*histSize+j] * (100.f / num_samples);
+            }
+            if (total == 0)
+                printf("        |");
+            else if (total >= 10.f)
+                printf(" %.2f  |", total);
+            else
+                printf("  %.2f  |", total);
+        }
+        printf(" 100.0  |\n\n");
 
         delete [] hist;
     }
