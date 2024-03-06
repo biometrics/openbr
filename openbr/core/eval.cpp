@@ -1102,9 +1102,6 @@ private:
     // Variables to compute the 2D histogram correlation
     float gtMinValue = FLT_MAX, gtMaxValue = FLT_MIN, predMinValue = FLT_MAX, predMaxValue = FLT_MIN;
 
-    // Variables to compute the RMS and MAE errors
-    float rms = 0.f, mae = 0.f;
-
     // Hold a list of the scores
     float *gts, *preds;
 public:
@@ -1125,10 +1122,6 @@ public:
     {
         gts[index] = gt;
         preds[index] = pred;
-
-        float difference = pred - gt;
-        rms += pow(difference, 2.f) / num_samples;
-        mae += fabsf(difference) / num_samples;
 
         sumX += pred;
         sumY += gt;
@@ -1160,14 +1153,6 @@ public:
 
     int getNumSamples() {
         return num_samples;
-    }
-
-    float getRMS() {
-        return sqrt(rms);
-    }
-
-    float getMAE() {
-        return mae;
     }
 
     double correlation_coefficient()
@@ -1238,7 +1223,7 @@ public:
 };
 
 void EvalRegression(const TemplateList predicted, const TemplateList truth, QString predictedProperty, QString truthProperty, bool generatePlot) {
-
+    float rms = 0.f, mae = 0.f;
     CorrelationCounter *cc = new CorrelationCounter(predicted.size());
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
@@ -1247,6 +1232,8 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
         if (predicted[i].file.contains(predictedProperty) && truth[i].file.contains(truthProperty)) {
             float pred = predicted[i].file.get<float>(predictedProperty);
             float gt = truth[i].file.get<float>(truthProperty);
+            rms += pow(pred - gt, 2.f) / predicted.size();
+            mae += fabsf(pred - gt) / predicted.size();
             cc->add_sample(i, pred, gt);
         }
     }
@@ -1270,8 +1257,8 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
     }
 
     qDebug("Total Samples = %i", cc->getNumSamples());
-    qDebug("RMS Error = %f", cc->getRMS());
-    qDebug("MAE = %f", cc->getMAE());
+    qDebug("RMS Error = %f", sqrt(rms));
+    qDebug("MAE = %f", mae);
     qDebug("Correlation (Pearson) = %f", cc->correlation_coefficient());
     cc->print_hist();
 }
