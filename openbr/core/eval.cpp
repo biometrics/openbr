@@ -1222,7 +1222,7 @@ public:
 void EvalRegression(const TemplateList predicted, const TemplateList truth, QString predictedProperty, QString truthProperty, bool generatePlot) {
     float rms = 0.f, mae = 0.f;
     CorrelationCounter cc;
-    HistogramTable *ht = new HistogramTable();
+    HistogramTable ht;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
             qFatal("Input order mismatch.");
@@ -1233,15 +1233,15 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
             rms += pow(pred - gt, 2.f) / predicted.size();
             mae += fabsf(pred - gt) / predicted.size();
             cc.add_sample(pred, gt);
-            ht->add_sample(pred, gt);
+            ht.add_sample(pred, gt);
         }
     }
 
     if (generatePlot) {
         QStringList rSource;
         rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
-                << "Actual <- c(" + ht->getGTValues(",") + ")"
-                << "Predicted <- c(" + ht->getPredValues(",") + ")"
+                << "Actual <- c(" + ht.getGTValues(",") + ")"
+                << "Predicted <- c(" + ht.getPredValues(",") + ")"
                 << "data <- data.frame(Actual, Predicted)"
                 << "" << "# Construct Plot" << "pdf(\"EvalRegression.pdf\")"
                 << "print(qplot(Actual, Predicted, data=data, geom=\"jitter\", alpha=I(2/3)) + geom_abline(intercept=0, slope=1, color=\"forestgreen\", size=I(1)) + geom_smooth(size=I(1), color=\"mediumblue\") + theme_bw())"
@@ -1259,7 +1259,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
     qDebug("RMS Error = %f", sqrt(rms));
     qDebug("MAE = %f", mae);
     qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
-    ht->print_hist();
+    ht.print_hist();
 }
 
 void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty, bool generatePlot)
