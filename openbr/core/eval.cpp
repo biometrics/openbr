@@ -1092,7 +1092,7 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
 // Helper class for computing correlation coefficient between two sets of values.
 // See Pearson calculation as utilized by python numpy.
-class CorrelationCounter
+struct CorrelationCounter
 {
 private:
     // Variables to compute the correlation
@@ -1165,7 +1165,7 @@ public:
     {
         int num_samples = gts.size();
         int histSize = 20;
-        unsigned int* hist = new unsigned int[histSize*histSize];
+        QVector<int> hist = QVector<int>(histSize*histSize, 0);
         for (int i = 0; i < histSize * histSize; i++)
             hist[i] = 0;
 
@@ -1216,14 +1216,12 @@ public:
                 printf("  %.2f  |", total);
         }
         printf(" 100.0  |\n\n");
-
-        delete [] hist;
     }
 };
 
 void EvalRegression(const TemplateList predicted, const TemplateList truth, QString predictedProperty, QString truthProperty, bool generatePlot) {
     float rms = 0.f, mae = 0.f;
-    CorrelationCounter *cc = new CorrelationCounter();
+    CorrelationCounter cc;
     HistogramTable *ht = new HistogramTable();
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.name != truth[i].file.name)
@@ -1234,7 +1232,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
             float gt = truth[i].file.get<float>(truthProperty);
             rms += pow(pred - gt, 2.f) / predicted.size();
             mae += fabsf(pred - gt) / predicted.size();
-            cc->add_sample(pred, gt);
+            cc.add_sample(pred, gt);
             ht->add_sample(pred, gt);
         }
     }
@@ -1260,7 +1258,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
     qDebug("Total Samples = %i", predicted.size());
     qDebug("RMS Error = %f", sqrt(rms));
     qDebug("MAE = %f", mae);
-    qDebug("Correlation (Pearson) = %f", cc->correlation_coefficient());
+    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
     ht->print_hist();
 }
 
