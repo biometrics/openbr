@@ -1092,17 +1092,17 @@ float EvalLandmarking(const QString &predictedGallery, const QString &truthGalle
 
 // Helper class for computing correlation coefficient between two sets of values.
 // See Pearson calculation as utilized by python numpy.
-class CorrelationCounter
+struct CorrelationCounter
 {
 private:
-    int num_samples;
-    double sumX, sumY, sumXX, sumYY, sumXY;
+    // Variables to compute the correlation
+    int num_samples = 0;
+    double sumX = 0.f, sumY = 0.f, sumXX = 0.f, sumYY = 0.f, sumXY = 0.f;
 public:
-    CorrelationCounter() : num_samples(0), sumX(0.0), sumY(0.0), sumXX(0.0), sumYY(0.0), sumXY(0.0) {}
-
     void add_sample(double pred, double gt)
     {
-        num_samples += 1;
+        num_samples++;
+
         sumX += pred;
         sumY += gt;
         sumXX += pred * pred;
@@ -1119,7 +1119,150 @@ public:
     }
 };
 
-void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty)
+// Helper class for computing a 2d histogram (heatmap) between two sets of values.
+class HistogramTable
+{
+private:
+    // Variables to compute the 2D histogram correlation
+    float gtMinValue = FLT_MAX, gtMaxValue = FLT_MIN, predMinValue = FLT_MAX, predMaxValue = FLT_MIN;
+
+    // Hold a list of the scores
+    QList<float> gts, preds;
+public:
+    HistogramTable() {
+        gts = QList<float>();
+        preds = QList<float>();
+    }
+
+    void add_sample(double pred, double gt)
+    {
+        gts << gt;
+        preds << pred;
+
+        if (gt < gtMinValue) gtMinValue = gt;
+        if (gt > gtMaxValue) gtMaxValue = gt;
+        if (pred < predMinValue) predMinValue = pred;
+        if (pred > predMaxValue) predMaxValue = pred;
+    }
+
+    QString getGTValues(QString separator) {
+        QString values = "";
+        for (int i = 0; i < gts.size() - 1; i++)
+            values.append(QString("%1%2").arg(QString::number(gts[i])).arg(separator));
+        values.append(QString("%1").arg(gts[gts.size()-1]));
+        return values;
+    }
+
+    QString getPredValues(QString separator) {
+        QString values = "";
+        for (int i = 0; i < preds.size() - 1; i++)
+            values.append(QString("%1%2").arg(QString::number(preds[i])).arg(separator));
+        values.append(QString("%1").arg(preds[preds.size()-1]));
+        return values;
+    }
+
+    void print_hist()
+    {
+        int num_samples = gts.size();
+        int histSize = 20;
+        QVector<int> hist = QVector<int>(histSize*histSize, 0);
+        for (int i = 0; i < histSize * histSize; i++)
+            hist[i] = 0;
+
+        printf("\nHistogram Table (PRED = Y-axis in [%.3f,%.3f], GT = X-axis in [%.3f,%.3f])\n| Y // X |", predMinValue, predMaxValue, gtMinValue, gtMaxValue);
+        for (int i = 0; i < num_samples; i++) {
+            int predBin = MIN(histSize-1, MAX(0, ((int)(histSize*(preds[i]-predMinValue)/(predMaxValue-predMinValue)))));
+            int gtBin = MIN(histSize-1, MAX(0, ((int)(histSize*(gts[i]-gtMinValue)/(gtMaxValue-gtMinValue)))));
+            hist[histSize * predBin + gtBin] += 1;
+        }
+
+        for (int i = 0; i < histSize; i++)
+            printf("  %.2f  |", (i / (float) histSize));
+        printf("  Total |\n| :----: |");
+        for (int i = 0; i < histSize; i++)
+            printf(" :----: |");
+        printf(" :----: |");
+        for (int i = 0; i < histSize; i++) {
+            printf("\n|  %.2f  |", (i / (float) histSize));
+            float total = 0.f;
+            for (int j = 0; j < histSize; j++) {
+                float value = hist[i*histSize+j] * (100.f / num_samples);
+                total += value;
+                if (value == 0)
+                    printf("        |");
+                else if (value >= 10.f)
+                    printf(" %.2f  |", value);
+                else
+                    printf("  %.2f  |", value);
+            }
+            if (total == 0)
+                printf("        |");
+            else if (total >= 10.f)
+                printf(" %.2f  |", total);
+            else
+                printf("  %.2f  |", total);
+        }
+        printf("\n|  Total |");
+        for (int j = 0; j < histSize; j++) {
+            float total = 0;
+            for (int i = 0; i < histSize; i++) {
+                total += hist[i*histSize+j] * (100.f / num_samples);
+            }
+            if (total == 0)
+                printf("        |");
+            else if (total >= 10.f)
+                printf(" %.2f  |", total);
+            else
+                printf("  %.2f  |", total);
+        }
+        printf(" 100.0  |\n\n");
+    }
+};
+
+void EvalRegression(const TemplateList predicted, const TemplateList truth, QString predictedProperty, QString truthProperty, bool generatePlot) {
+    float rms = 0.f, mae = 0.f;
+    CorrelationCounter cc;
+    HistogramTable ht;
+    for (int i=0; i<predicted.size(); i++) {
+        if (predicted[i].file.name != truth[i].file.name)
+            qFatal("Input order mismatch.");
+
+        if (predicted[i].file.contains(predictedProperty) && truth[i].file.contains(truthProperty)) {
+            float pred = predicted[i].file.get<float>(predictedProperty);
+            float gt = truth[i].file.get<float>(truthProperty);
+            rms += pow(pred - gt, 2.f) / predicted.size();
+            mae += fabsf(pred - gt) / predicted.size();
+            cc.add_sample(pred, gt);
+            ht.add_sample(pred, gt);
+        }
+    }
+
+    if (generatePlot) {
+        QStringList rSource;
+        rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
+                << "Actual <- c(" + ht.getGTValues(",") + ")"
+                << "Predicted <- c(" + ht.getPredValues(",") + ")"
+                << "data <- data.frame(Actual, Predicted)"
+                << "" << "# Construct Plot" << "pdf(\"EvalRegression.pdf\")"
+                << "print(qplot(Actual, Predicted, data=data, geom=\"jitter\", alpha=I(2/3)) + geom_abline(intercept=0, slope=1, color=\"forestgreen\", size=I(1)) + geom_smooth(size=I(1), color=\"mediumblue\") + theme_bw())"
+                << "print(qplot(Actual, Predicted-Actual, data=data, geom=\"jitter\", alpha=I(2/3)) + geom_abline(intercept=0, slope=0, color=\"forestgreen\", size=I(1)) + geom_smooth(size=I(1), color=\"mediumblue\") + theme_bw())"
+                << "dev.off()";
+
+
+        QString rFile = "EvalRegression.R";
+        QtUtils::writeFile(rFile, rSource);
+        bool success = QtUtils::runRScript(rFile);
+        if (success) QtUtils::showFile("EvalRegression.pdf");
+    }
+
+    qDebug("Total Samples = %i", predicted.size());
+    qDebug("RMS Error = %f", sqrt(rms));
+    qDebug("MAE = %f", mae);
+    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
+    ht.print_hist();
+}
+
+void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty, QString truthProperty, bool generatePlot)
 {
     qDebug("Evaluating regression of (%s,%s) against ground truth (%s,%s)", qPrintable(predictedGallery), qPrintable(predictedProperty), qPrintable(truthGallery), qPrintable(truthProperty));
 
@@ -1134,51 +1277,13 @@ void EvalRegression(const QString &predictedGallery, const QString &truthGallery
         predictedProperty = "Regressand";
 
     const TemplateList predicted(TemplateList::fromGallery(predictedGallery));
-    const TemplateList truth(TemplateList::fromGallery(truthGallery));
-    if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
-
-    float rmsError = 0;
-    float maeError = 0;
-    CorrelationCounter cc;
-    QStringList truthValues, predictedValues;
-    for (int i=0; i<predicted.size(); i++) {
-        if (predicted[i].file.name != truth[i].file.name)
-            qFatal("Input order mismatch.");
-
-        if (predicted[i].file.contains(predictedProperty) && truth[i].file.contains(truthProperty)) {
-            float pred = predicted[i].file.get<float>(predictedProperty);
-            float gt = truth[i].file.get<float>(truthProperty);
-            float difference = pred - gt;
-
-            rmsError += pow(difference, 2.f);
-            maeError += fabsf(difference);
-            truthValues.append(QString::number(gt));
-            predictedValues.append(QString::number(pred));
-
-            cc.add_sample(pred, gt);
-        }
+    if (predictedGallery == truthGallery) {
+        EvalRegression(predicted, predicted, predictedProperty, truthProperty, generatePlot);
+    } else {
+        const TemplateList truth = TemplateList::fromGallery(truthGallery);
+        if (predicted.size() != truth.size()) qFatal("Input size mismatch.");
+        EvalRegression(predicted, truth, predictedProperty, truthProperty, generatePlot);
     }
-
-    QStringList rSource;
-    rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
-            << "Actual <- c(" + truthValues.join(",") + ")"
-            << "Predicted <- c(" + predictedValues.join(",") + ")"
-            << "data <- data.frame(Actual, Predicted)"
-            << "" << "# Construct Plot" << "pdf(\"EvalRegression.pdf\")"
-            << "print(qplot(Actual, Predicted, data=data, geom=\"jitter\", alpha=I(2/3)) + geom_abline(intercept=0, slope=1, color=\"forestgreen\", size=I(1)) + geom_smooth(size=I(1), color=\"mediumblue\") + theme_bw())"
-            << "print(qplot(Actual, Predicted-Actual, data=data, geom=\"jitter\", alpha=I(2/3)) + geom_abline(intercept=0, slope=0, color=\"forestgreen\", size=I(1)) + geom_smooth(size=I(1), color=\"mediumblue\") + theme_bw())"
-            << "dev.off()";
-
-
-    QString rFile = "EvalRegression.R";
-    QtUtils::writeFile(rFile, rSource);
-    bool success = QtUtils::runRScript(rFile);
-    if (success) QtUtils::showFile("EvalRegression.pdf");
-
-    qDebug("Total Samples = %i", predicted.size());
-    qDebug("RMS Error = %f", sqrt(rmsError/predicted.size()));
-    qDebug("MAE = %f", maeError/predicted.size());
-    qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
 }
 
 void readKNN(size_t &probeCount, size_t &k, QVector<Candidate> &neighbors, const QString &fileName)
