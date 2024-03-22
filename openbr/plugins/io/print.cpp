@@ -30,13 +30,15 @@ class PrintTransform : public UntrainableMetaTransform
     Q_OBJECT
     Q_PROPERTY(bool error READ get_error WRITE set_error RESET reset_error)
     Q_PROPERTY(bool data READ get_data WRITE set_data RESET reset_data)
+    Q_PROPERTY(QStringList keys READ get_keys WRITE set_keys RESET reset_keys STORED false)
     BR_PROPERTY(bool, error, true)
     BR_PROPERTY(bool, data, false)
+    BR_PROPERTY(QStringList, keys, QStringList())
 
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        const QString nameString = src.file.flat();
+        const QString nameString = keys.size() > 0 ? src.file.flat(keys) : src.file.flat();
         const QString dataString = data ? OpenCVUtils::matrixToString(src)+"\n" : QString();
         QStringList matricies;
         foreach (const cv::Mat &m, src)
