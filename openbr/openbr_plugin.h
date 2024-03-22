@@ -63,6 +63,7 @@ struct BR_EXPORT File
     File(const QVariantMap &metadata) : fte(false), m_metadata(metadata) {}
     inline operator QString() const { return name; }
     QString flat() const;
+    QString flat(QStringList keys) const;
     QString hash() const;
 
     inline QStringList localKeys() const { return m_metadata.keys(); }
