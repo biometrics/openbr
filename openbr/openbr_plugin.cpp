@@ -61,8 +61,16 @@ static const QMetaObject *getInterface(const QObject *obj)
 // () for lists in which argument order matters (e.g. First_Eye(100.0,100.0)).
 QString File::flat() const
 {
-    QStringList values;
     QStringList keys = this->localKeys(); qSort(keys);
+    return this->flat(keys);
+}
+
+// Note that the convention for displaying metadata is as follows:
+// [] for lists in which argument order does not matter (e.g. [FTO=false, Index=0]),
+// () for lists in which argument order matters (e.g. First_Eye(100.0,100.0)).
+QString File::flat(QStringList keys) const
+{
+    QStringList values;
     foreach (const QString &key, keys) {
         const QVariant value = this->value(key);
         if (value.isNull()) values.append(key);
