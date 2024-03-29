@@ -57,7 +57,7 @@ class WriteTransform : public TimeVaryingTransform
             numImages[dir] = ++value;
             OpenCVUtils::saveImage(dst.m(), path);
         } else {
-            QString path = preserveFilename ? QString("%1/%2.%3").arg(outputDirectory, src.file.baseName().split('.')[0], imgExtension)
+            QString path = preserveFilename ? QString("%1/%2/%3.%4").arg(outputDirectory, src.file.path(), src.file.baseName().split('.')[0], imgExtension)
                                             : QString("%1/image%2%3.%4").arg(outputDirectory).arg(cnt++, padding, 10, QChar('0')).arg(underscore.isEmpty() ? "" : "_" + underscore).arg(imgExtension);
             if ((QDir::currentPath() + "/" + path) == src.file.name)
                 qFatal("Attempted to overwrite image!");
