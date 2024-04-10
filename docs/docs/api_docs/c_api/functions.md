@@ -407,6 +407,51 @@ Evaluates regression accuracy to disk.
     truth_gallery | const char * | The ground truth [Gallery](../cpp_api/gallery/gallery.md)
     predicted_property | const char * | (Optional) Which metadata key to use from **predicted_gallery**.
     truth_property | const char * | (Optional) Which metadata key to use from **truth_gallery**.
+    generate_plots | const char * | (Optional) Set to `"true"` to generate the R plots.
+
+* **output:** (void)
+
+---
+
+## br_eval_eer
+
+Evaluates equal error rate and supporting metrics to disk.
+
+* **function definition:**
+
+        void br_eval_eer(const char *gallery, const char *gt = "", const char *score = "", const char *csv = "")
+
+* **parameters:**
+
+    Parameter | Type | Description
+    --- | --- | ---
+    gallery | const char * | The [Gallery](../cpp_api/gallery/gallery.md) containing metadata fields for **gt** and **score**.
+    gt | const char * | (Optional) Which metadata key to use from **gallery** for the ground truth label.
+    score | const char * | (Optional) Which metadata key to use from **gallery** for the predicted score.
+    csv | const char * | (Optional) Write the output summary to disk at this file path.
+
+* **output:** (void)
+
+---
+
+## br_eval_errordiscard
+
+Evaluates the Error vs Discard Characteristic to disk.
+
+* **function definition:**
+
+        void br_eval_errordiscard(const char *func, const char *gallery, const char *gt, const char *score, const char *quality, const char *invert)
+
+* **parameters:**
+
+    Parameter | Type | Description
+    --- | --- | ---
+    func | const char * | The evaluation function to use internally for evaluating the Error vs Discard Characteristic.
+    gallery | const char * | The [Gallery](../cpp_api/gallery/gallery.md) containing metadata fields for **gt**, **score**, and **quality**.
+    gt | const char * | Which metadata key to use from **gallery** for the ground truth label.
+    score | const char * | Which metadata key to use from **gallery** for the predicted score.
+    quality | const char * | Which metadata key to use from **gallery** for the quality score.
+    invert | const char * | Should the **quality** be inverted (set to `"true"`)? This function assumes a higher **quality** score means better quality.
 
 * **output:** (void)
 

@@ -220,9 +220,29 @@ Evaluates regression accuracy to disk
 
 * **arguments:**
 
-        -evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>
+        -evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name> <generate_plots>
 
 * **wraps:** [br_eval_regression](c_api/functions.md#br_eval_regression)
+
+### -evalEER {: #evaleer }
+
+Evaluates equal error rate and supporting metrics to disk
+
+* **arguments:**
+
+        -evalEER <gallery> <ground_truth> <score> <output_csv>
+
+* **wraps:** [br_eval_eer](c_api/functions.md#br_eval_eer)
+
+### -evalErrorDiscard {: #evalerrordiscard }
+
+Evaluates the Error vs Discard Characteristic to disk
+
+* **arguments:**
+
+        -evalErrorDiscard <eval_function> <gallery> <ground_truth> <score> <quality_score> <invert>
+
+* **wraps:** [br_eval_errordiscard](c_api/functions.md#br_eval_errordiscard)
 
 ### -assertEval {: #asserteval }
 

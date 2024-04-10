@@ -1450,14 +1450,15 @@ void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &cs
     qDebug("FNIR @ FPIR = 0.01:  %.3f", 1-getOperatingPoint(operatingPoints, "FAR", 0.01).TAR);
 }
 
-void EvalEER(const QString &predictedXML, QString gt_property, QString distribution_property, const QString &csv) {
-    if (gt_property.isEmpty())
-        gt_property = "Label";
-    if (distribution_property.isEmpty())
-        distribution_property = "Fusion";
+struct EERSummary
+{
+    float eer = 0.f, eer_thresh = 0.f;
+    int classOneTemplates = 0, classZeroTemplates = 0;
+};
+
+EERSummary EvalEER(const TemplateList templateList, QString gt, QString score, const QString &csv, bool return_eer_early = false) {
     int classOneTemplateCount = 0;
     int classZeroTemplateCount = 0;
-    const TemplateList templateList(TemplateList::fromGallery(predictedXML));
 
     QList<QPair<float, int>> scores;
     QList<float> classZeroScores, classOneScores;
@@ -1466,11 +1467,11 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     float minClassZeroScore = std::numeric_limits<float>::max();
     float maxClassZeroScore = 0;
     for (int i=0; i<templateList.size(); i++) {
-        if (!templateList[i].file.contains(distribution_property) || !templateList[i].file.contains(gt_property))
+        if (!templateList[i].file.contains(score) || !templateList[i].file.contains(gt))
             continue;
 
-        const int gtLabel = templateList[i].file.get<int>(gt_property);
-        const float templateScore = templateList[i].file.get<float>(distribution_property);
+        const int gtLabel = templateList[i].file.get<int>(gt);
+        const float templateScore = templateList[i].file.get<float>(score);
         scores.append(qMakePair(templateScore, gtLabel));
 
         if (gtLabel == 1) {
@@ -1497,7 +1498,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
     int falsePositives = 0;
     int truePositives = 0;
     size_t index = 0;
-    float minDiff = 100, EER = 100, EERThres = 0;
+    float minDiff = 100, EER = 100, EERThresh = 0;
     float threshold = 0;
 
     while (index < scores.size()) {
@@ -1521,9 +1522,12 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
         if (diff < minDiff) {
             minDiff = diff;
             EER = (FAR+FRR)/2.0;
-            EERThres = threshold;
+            EERThresh = threshold;
         }
     }
+    EERSummary summary = { EER, EERThresh, classOneTemplateCount, classZeroTemplateCount };
+    if (return_eer_early)
+        return summary;
 
     operatingPoints.append(OperatingPoint(MAX(maxClassOneScore,maxClassZeroScore),1,1));
     operatingPoints.prepend(OperatingPoint(MIN(minClassOneScore,minClassZeroScore),0,0));
@@ -1554,7 +1558,7 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
 
     }
     printf("----------------------------------------------------------\n");
-    printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThres);
+    printf("EER: %.3f @ Threshold %.3f\n", EER*100, EERThresh);
     printf("==========================================================\n\n");
 
     QString thresh, form, frr, far;
@@ -1649,6 +1653,61 @@ void EvalEER(const QString &predictedXML, QString gt_property, QString distribut
 
         QtUtils::writeFile(csv, lines);
     }
+
+    return summary;
+}
+
+void EvalEER(const QString &gallery, QString gt, QString score, const QString &csv) {
+    if (gt.isEmpty())
+        gt = "Label";
+    if (score.isEmpty())
+        score = "Fusion";
+    const TemplateList templateList(TemplateList::fromGallery(gallery));
+    EvalEER(templateList, gt, score, csv, false);
+}
+
+
+void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QString score, const QString quality, bool invert) {
+    printf("\nEvaluating quality metric `%s` on gallery `%s` using gt `%s` for score `%s` with evaluation function `%s`\n", qPrintable(quality), qPrintable(gallery), qPrintable(gt), qPrintable(score), qPrintable(func));
+    TemplateList predicted(TemplateList::fromGallery(gallery));
+
+    QList<float> qualities;
+    float threshMin = FLT_MAX, threshMax = FLT_MIN;
+    int startingGenuineCount = 0;
+    for (int i=0; i<predicted.size(); i++) {
+        if (predicted[i].file.contains(gt) && predicted[i].file.contains(score) && predicted[i].file.contains(quality)) {
+            float qualityValue = predicted[i].file.get<float>(quality);
+            qualities << qualityValue;
+            if (func == "evalEER") {
+                if (predicted[i].file.get<float>(gt) == 1)
+                    startingGenuineCount++;
+                else
+                    continue; // For evalEER, we only care about filtering by quality for genuine samples
+            }
+
+            if (qualityValue < threshMin) threshMin = qualityValue;
+            if (qualityValue > threshMax) threshMax = qualityValue;
+        } else {
+            printf("\nSample at index %d does not contain all required metadata!\n", i);
+        }
+    }
+
+    for (float thresh = threshMin; thresh < threshMax; thresh += (threshMax - threshMin) / 20) {
+        if (func == "evalEER") {
+            printf("\nPerforming evalEER using a quality threshold of %.2f -> ", invert ? (threshMax - thresh) : thresh);
+            for (int i = 0; i < qualities.size(); i++)
+                if (predicted[i].file.get<float>(gt) == 1 && (invert ? qualities[i] > threshMax - thresh : qualities[i] < thresh)) {
+                    // Remove genuine samples that are below the threshold
+                    qualities.removeAt(i);
+                    predicted.removeAt(i);
+                }
+            EERSummary summary = EvalEER(predicted, gt, score, "", true);
+            int removed = startingGenuineCount - summary.classOneTemplates;
+            if (summary.eer_thresh == 0.f) printf("none");
+            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount));
+        }
+    }
+    printf("\n\n");
 }
 
 } // namespace br

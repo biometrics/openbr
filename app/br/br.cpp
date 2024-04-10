@@ -172,8 +172,11 @@ public:
                 check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'evalKNN'.");
                 br_eval_knn(parv[0], parv[1], parc > 2 ? parv[2] : "");
             } else if (!strcmp(fun, "evalEER")) {
-                check(parc >=1 && parc <=4 , "Incorrect parameter count for 'evalEER'.");
+                check(parc >=1 && parc <=4 , "Incorrect parameter count for 'evalEER': <gallery> <gt> <score> <output_csv>.");
                 br_eval_eer(parv[0], parc > 1 ? parv[1] : "", parc > 2 ? parv[2] : "", parc > 3 ? parv[3] : "");
+            } else if (!strcmp(fun, "evalErrorDiscard")) {
+                check(parc == 6, "Incorrect parameter count for 'evalErrorDiscard': `<func> <gallery> <gt> <score> <quality> <invert>`.");
+                br_eval_errordiscard(parv[0], parv[1], parv[2], parv[3], parv[4], parv[5]);
             } else if (!strcmp(fun, "pairwiseCompare")) {
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
@@ -293,6 +296,8 @@ private:
                "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}] [{relativeMinSize}] [{label_filter}] [{true_positive_threshold}]\n"
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
+               "-evalEER <gallery> <gt> <score> <output_csv>\n"
+               "-evalErrorDiscard <eval_function> <gallery> <gt> <score> <quality_score> <invert>\n"
                "-evalKNN <knn_graph> <knn_truth> [{csv}]\n"
                "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
                "-inplaceEval <simmat> <mask> {csv}\n"

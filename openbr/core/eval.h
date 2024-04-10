@@ -34,7 +34,9 @@ namespace br
     float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1, int sampleIndex = 0, int totalExamples = 5); // Return average error
     void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "", bool generatePlots = true);
     void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &csv = "");
-    void EvalEER(const QString &predictedXML, const QString gt_property = "", const QString distribution_property = "", const QString &csv = "");
+    void EvalEER(const QString &gallery, const QString gt = "", const QString score = "", const QString &csv = "");
+    void EvalErrorDiscard(const QString func, const QString &gallery, const QString gt, const QString score, const QString quality, bool invert);
+
     struct Candidate
     {
         size_t index;

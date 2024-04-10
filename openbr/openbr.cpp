@@ -146,9 +146,14 @@ void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv)
     EvalKNN(knnGraph, knnTruth, csv);
 }
 
-void br_eval_eer(const char *predicted_xml, const char *gt_property, const char *distribution_property, const char *pdf)
+void br_eval_eer(const char *gallery, const char *gt, const char *score, const char *csv)
 {
-    EvalEER(predicted_xml, gt_property, distribution_property, pdf);
+    EvalEER(gallery, gt, score, csv);
+}
+
+void br_eval_errordiscard(const char *func, const char *gallery, const char *gt, const char *score, const char *quality, const char *invert)
+{
+    EvalErrorDiscard(func, gallery, gt, score, quality, strcmp(invert, "true") == 0);
 }
 
 void br_finalize()
