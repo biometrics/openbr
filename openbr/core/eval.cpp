@@ -1666,7 +1666,6 @@ void EvalEER(const QString &gallery, QString gt, QString score, const QString &c
     EvalEER(templateList, gt, score, csv, false);
 }
 
-
 void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QString score, const QString quality, bool invert) {
     printf("\nEvaluating quality metric `%s` on gallery `%s` using gt `%s` for score `%s` with evaluation function `%s`\n", qPrintable(quality), qPrintable(gallery), qPrintable(gt), qPrintable(score), qPrintable(func));
     TemplateList predicted(TemplateList::fromGallery(gallery));
@@ -1691,20 +1690,24 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             printf("\nSample at index %d does not contain all required metadata!\n", i);
         }
     }
+    printf("Minimum Quality: %.3f\nMaximum Quality: %.3f\n", threshMin, threshMax);
 
-    for (float thresh = threshMin; thresh < threshMax; thresh += (threshMax - threshMin) / 20) {
+    int num_bins = 20;
+    for (int bin = 0; bin < num_bins; bin++) {
+        float thresh = invert ? (threshMax - bin * (threshMax - threshMin) / num_bins) : (threshMin + bin * (threshMax - threshMin) / num_bins);
         if (func == "evalEER") {
-            printf("\nPerforming evalEER using a quality threshold of %.2f -> ", invert ? (threshMax - thresh) : thresh);
-            for (int i = 0; i < qualities.size(); i++)
-                if (predicted[i].file.get<float>(gt) == 1 && (invert ? qualities[i] > threshMax - thresh : qualities[i] < thresh)) {
-                    // Remove genuine samples that are below the threshold
-                    qualities.removeAt(i);
-                    predicted.removeAt(i);
+            printf("\nPerforming evalEER using a quality threshold of %.3f -> ", thresh);
+            for (int i = 0; i < qualities.size(); i++) {
+                if ((invert ? qualities[i] > thresh : qualities[i] < thresh)) {
+                    // Set any samples below the threshold to perfectly predicted spoofs (rejected samples)
+                    predicted[i].file.set(gt, 0.f);
+                    predicted[i].file.set(score, 1.f);
                 }
+            }
             EERSummary summary = EvalEER(predicted, gt, score, "", true);
             int removed = startingGenuineCount - summary.classOneTemplates;
             if (summary.eer_thresh == 0.f) printf("none");
-            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples remaining)", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount), summary.classOneTemplates, summary.classZeroTemplates);
+            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount), summary.classOneTemplates, summary.classZeroTemplates);
         }
     }
     printf("\n\n");
