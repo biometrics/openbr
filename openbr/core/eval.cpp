@@ -1704,7 +1704,7 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             EERSummary summary = EvalEER(predicted, gt, score, "", true);
             int removed = startingGenuineCount - summary.classOneTemplates;
             if (summary.eer_thresh == 0.f) printf("none");
-            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount));
+            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples remaining)", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount), summary.classOneTemplates, summary.classZeroTemplates);
         }
     }
     printf("\n\n");
