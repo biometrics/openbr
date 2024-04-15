@@ -108,8 +108,7 @@ QMap<QString, Detections> EvalUtils::getDetections(const File &predictedGallery,
         allDetections[f.name].imageSize = QSize(image.cols, image.rows);
     }
     foreach (const File &f, predicted)
-        if (allDetections.contains(f.name))
-            allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
+        allDetections[f.name].predicted.append(getDetections(predictedDetectKey, f, false));
     return allDetections;
 }
 

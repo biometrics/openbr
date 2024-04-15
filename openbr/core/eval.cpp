@@ -809,6 +809,25 @@ float EvalDetection(const QString &predictedGallery, const QString &truthGallery
     // Organized by file, QMap used to preserve order
     QMap<QString, Detections> allDetections = getDetections(predictedGallery, truthGallery);
 
+    // Ensure there is at least some overlap between truth and pred, otherwise we expect a path issue
+    int truthOnly = 0, predOnly = 0, bothTruthAndPred = 0;
+    foreach (QString key, allDetections.keys()) {
+        if (allDetections[key].truth.isEmpty())
+            predOnly += 1;
+        else if (allDetections[key].predicted.isEmpty())
+            truthOnly += 1;
+        else
+            bothTruthAndPred += 1;
+    }
+
+    if (bothTruthAndPred == 0)
+        qFatal("No files have both truth and predicted detections. Check your file paths and try again");
+
+    qDebug() << "File count -> Total:" << allDetections.size();
+    qDebug() << "  Truth only:" << truthOnly;
+    qDebug() << "  Predicted only:" << predOnly;
+    qDebug() << "  Both:" << bothTruthAndPred;
+
     // Remove any bounding boxes with a side smaller than minSize
     if (minSize > 0 || relativeMinSize > 0) {
         if (Globals->verbose)
