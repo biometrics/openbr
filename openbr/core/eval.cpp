@@ -1692,11 +1692,12 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
     }
     printf("Minimum Quality: %.3f\nMaximum Quality: %.3f\n", threshMin, threshMax);
 
-    int num_bins = 20;
+    QList<QString> errors;
+    QList<QString> discards;
+    int num_bins = 100;
     for (int bin = 0; bin < num_bins; bin++) {
         float thresh = invert ? (threshMax - bin * (threshMax - threshMin) / num_bins) : (threshMin + bin * (threshMax - threshMin) / num_bins);
         if (func == "evalEER") {
-            printf("\nPerforming evalEER using a quality threshold of %.3f -> ", thresh);
             for (int i = 0; i < qualities.size(); i++) {
                 if ((invert ? qualities[i] > thresh : qualities[i] < thresh)) {
                     // Set any samples below the threshold to perfectly predicted spoofs (rejected samples)
@@ -1706,11 +1707,43 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             }
             EERSummary summary = EvalEER(predicted, gt, score, "", true);
             int removed = startingGenuineCount - summary.classOneTemplates;
-            if (summary.eer_thresh == 0.f) printf("none");
-            else printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)", 100 * summary.eer, summary.eer_thresh, removed, (removed * 100.f / startingGenuineCount), summary.classOneTemplates, summary.classZeroTemplates);
+            errors << QString("%1").arg(QString::number(summary.eer));
+            discards << QString("%1").arg(QString::number(removed * 100.f / startingGenuineCount));
+            if (bin % 5 == 0) {
+                printf("\nPerformed evalEER using a quality threshold of %.3f -> ", thresh);
+                if (summary.eer_thresh == 0.f)
+                    printf("none");
+                else
+                    printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)",
+                        100 * summary.eer,
+                        summary.eer_thresh,
+                        removed,
+                        removed * 100.f / startingGenuineCount,
+                        summary.classOneTemplates,
+                        summary.classZeroTemplates);
+            }
         }
     }
     printf("\n\n");
+
+    bool generatePlot = true;
+    if (generatePlot) {
+        QStringList rSource;
+        rSource << "# Load libraries" << "library(ggplot2)" << "" << "# Set Data"
+                << "Discard <- c(" + discards.join(",") + ")"
+                << "Error <- c(" + errors.join(",") + ")"
+                << "data <- data.frame(Discard, Error)"
+                << "" << "# Construct Plot" << "pdf(\"EvalErrorDiscard.pdf\")"
+                << "print(qplot(Discard, Error, data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,100)))"
+                << "print(qplot(Discard, Error/" << errors[0] << ", data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,100)))"
+                << "dev.off()";
+
+
+        QString rFile = "EvalErrorDiscard.R";
+        QtUtils::writeFile(rFile, rSource);
+        bool success = QtUtils::runRScript(rFile);
+        if (success) QtUtils::showFile("EvalErrorDiscard.pdf");
+    }
 }
 
 } // namespace br
