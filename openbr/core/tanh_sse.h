@@ -62,7 +62,7 @@ float
 fast_tanh(const float x)
 {
   const     float s = x*x;
-  register  float d;
+            float d;
 
   if      (x < -_TANH_RANGE)
     return -_TANH_CLAMP;
@@ -88,7 +88,7 @@ fast_tanh_sse(const v4sf x)
 
   /* check each value in the vector */
   #ifdef _TANH_CLAMP_INDIVIDUAL
-    register short i;
+    short i;
     union
     {
       v4sf    v;
