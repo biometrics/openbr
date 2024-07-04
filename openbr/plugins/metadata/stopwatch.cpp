@@ -60,7 +60,7 @@ private:
 
     void train(const QList<TemplateList> &data)
     {
-        QTime watch;
+        QElapsedTimer watch;
         watch.start();
 
         transform->train(data);
@@ -80,7 +80,7 @@ private:
 
     void project(const Template &src, Template &dst) const
     {
-        QTime watch;
+        QElapsedTimer watch;
         watch.start();
         transform->project(src, dst);
 
