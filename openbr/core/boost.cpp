@@ -751,7 +751,7 @@ void CascadeBoostTrainData::precalculate()
 
     qDebug() << "Starting precalculation...";
 
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     // Compute features and sort training samples for feature indices we are not going to cache
