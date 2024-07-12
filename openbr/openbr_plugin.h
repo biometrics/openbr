@@ -36,6 +36,7 @@
 #include <QString>
 #include <QStringList>
 #include <QThread>
+#include <QTime>
 #include <QElapsedTimer>
 #include <QVariant>
 #include <QVector>
