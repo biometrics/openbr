@@ -60,6 +60,11 @@ struct OperatingPoint
         : score(_score), FAR(_FAR), TAR(_TAR) {}
 };
 
+/*
+ * Find the operating point where the key equals the provided value.
+ * If no such explicit point exists, we perform interpolation between the two nearest points.
+ * We make the assumption that scores are monotonically increasing or decreasing, hence no two points can have the same score.
+ */
 static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPoints, const QString key, const float value)
 {
     bool invert      = (key == "Score") && (operatingPoints.first().score > operatingPoints.last().score);
@@ -105,11 +110,17 @@ static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPo
     const float mScore = (score2 - score1) / denFAR;
     const float bScore = score1 - mScore*FAR1;
 
+    OperatingPoint op;
     if (key == "Score")
-        return OperatingPoint(value, mFAR*value + bFAR, mTAR*value + bTAR);
+        op = OperatingPoint(value, mFAR*value + bFAR, mTAR*value + bTAR);
     else if (key == "FAR")
-        return OperatingPoint(mScore * value + bScore, value, mTAR * value + bTAR);
-    return OperatingPoint(mScore * ((value - bTAR) / mTAR) + bScore, (value - bTAR) / mTAR, value);
+        op = OperatingPoint(mScore * value + bScore, value, mTAR * value + bTAR);
+    else
+        op = OperatingPoint(mScore * ((value - bTAR) / mTAR) + bScore, (value - bTAR) / mTAR, value);
+    op.score = MIN(score2, MAX(score1, op.score)); // Ensure the interpolation is between the two points
+    op.FAR = MIN(FAR2, MAX(FAR1, op.FAR)); // Ensure the interpolation is between the two points
+    op.TAR = MIN(TAR2, MAX(TAR1, op.TAR)); // Ensure the interpolation is between the two points
+    return op;
 }
 
 static float getCMC(const QVector<int> &firstGenuineReturns, int rank, size_t possibleReturns = 0)
@@ -1491,6 +1502,8 @@ EERSummary EvalEER(const TemplateList templateList, QString gt, QString score, c
 
         const int gtLabel = templateList[i].file.get<int>(gt);
         const float templateScore = templateList[i].file.get<float>(score);
+        if (gtLabel < 0)
+            continue;
         scores.append(qMakePair(templateScore, gtLabel));
 
         if (gtLabel == 1) {
@@ -1692,14 +1705,16 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
     QList<float> qualities;
     float threshMin = FLT_MAX, threshMax = FLT_MIN;
     int startingGenuineCount = 0;
+    CorrelationCounter cc;
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.contains(gt) && predicted[i].file.contains(score) && predicted[i].file.contains(quality)) {
             float qualityValue = predicted[i].file.get<float>(quality);
             qualities << qualityValue;
             if (func == "evalEER") {
-                if (predicted[i].file.get<float>(gt) == 1)
+                if (predicted[i].file.get<float>(gt) == 1) {
                     startingGenuineCount++;
-                else
+                    cc.add_sample(predicted[i].file.get<float>(score), qualityValue);
+                } else
                     continue; // For evalEER, we only care about filtering by quality for genuine samples
             }
 
@@ -1710,6 +1725,7 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
         }
     }
     printf("Minimum Quality: %.3f\nMaximum Quality: %.3f\n", threshMin, threshMax);
+    printf("Correlation: %.3f\n", cc.correlation_coefficient());
 
     QList<QString> errors;
     QList<QString> discards;
@@ -1719,9 +1735,8 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
         if (func == "evalEER") {
             for (int i = 0; i < qualities.size(); i++) {
                 if ((invert ? qualities[i] > thresh : qualities[i] < thresh)) {
-                    // Set any samples below the threshold to perfectly predicted spoofs (rejected samples)
-                    predicted[i].file.set(gt, 0.f);
-                    predicted[i].file.set(score, 1.f);
+                    if (predicted[i].file.get<float>(gt) == 1)
+                        predicted[i].file.set(gt, -1.f); // Remove any genuine samples worse than the quality
                 }
             }
             EERSummary summary = EvalEER(predicted, gt, score, "", true);
