@@ -1709,9 +1709,9 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
     for (int i=0; i<predicted.size(); i++) {
         if (predicted[i].file.contains(gt) && predicted[i].file.contains(score) && predicted[i].file.contains(quality)) {
             float qualityValue = predicted[i].file.get<float>(quality);
-            qualities << qualityValue;
             if (func == "evalEER") {
                 if (predicted[i].file.get<float>(gt) == 1) {
+                    qualities << qualityValue;
                     startingGenuineCount++;
                     cc.add_sample(predicted[i].file.get<float>(score), qualityValue);
                 } else
@@ -1724,17 +1724,18 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             printf("\nSample at index %d does not contain all required metadata!\n", i);
         }
     }
+    std::sort(qualities.begin(), qualities.end()); // We need sorted qualities to fetch at % thresholds later
     printf("Minimum Quality: %.3f\nMaximum Quality: %.3f\n", threshMin, threshMax);
     printf("Correlation: %.3f\n", cc.correlation_coefficient());
 
     QList<QString> errors;
     QList<QString> discards;
-    int num_bins = 100;
-    for (int bin = 0; bin < num_bins; bin++) {
-        float thresh = invert ? (threshMax - bin * (threshMax - threshMin) / num_bins) : (threshMin + bin * (threshMax - threshMin) / num_bins);
+    foreach (float bin, QList<float>() << 0 << 0.1 << 0.5 << 1 << 5 << 10 << 15 << 20 ) {
+        int thresh_index = MIN(qualities.size() - 1, MAX(0, (int)(bin * qualities.size() / 100.f)));
+        float thresh = qualities[invert ? qualities.size() - 1 - thresh_index : thresh_index];
         if (func == "evalEER") {
-            for (int i = 0; i < qualities.size(); i++) {
-                if ((invert ? qualities[i] > thresh : qualities[i] < thresh)) {
+            for (int i = 0; i < predicted.size(); i++) {
+                if ((invert ? predicted[i].file.get<float>(quality) > thresh : predicted[i].file.get<float>(quality) < thresh)) {
                     if (predicted[i].file.get<float>(gt) == 1)
                         predicted[i].file.set(gt, -1.f); // Remove any genuine samples worse than the quality
                 }
@@ -1743,19 +1744,18 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             int removed = startingGenuineCount - summary.classOneTemplates;
             errors << QString("%1").arg(QString::number(summary.eer));
             discards << QString("%1").arg(QString::number(removed * 100.f / startingGenuineCount));
-            if (bin % 5 == 0) {
-                printf("\nPerformed evalEER using a quality threshold of %.3f -> ", thresh);
-                if (summary.eer_thresh == 0.f)
-                    printf("none");
-                else
-                    printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)",
-                        100 * summary.eer,
-                        summary.eer_thresh,
-                        removed,
-                        removed * 100.f / startingGenuineCount,
-                        summary.classOneTemplates,
-                        summary.classZeroTemplates);
-            }
+            //if (bin % 5 == 0) {
+            printf("\nPerformed evalEER using a quality threshold of %.3f -> ", thresh);
+            if (summary.eer_thresh == 0.f)
+                printf("none");
+            else
+                printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)",
+                    100 * summary.eer,
+                    summary.eer_thresh,
+                    removed,
+                    removed * 100.f / startingGenuineCount,
+                    summary.classOneTemplates,
+                    summary.classZeroTemplates);
         }
     }
     printf("\n\n");
@@ -1768,8 +1768,8 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
                 << "Error <- c(" + errors.join(",") + ")"
                 << "data <- data.frame(Discard, Error)"
                 << "" << "# Construct Plot" << "pdf(\"EvalErrorDiscard.pdf\")"
-                << "print(qplot(Discard, Error, data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,100)))"
-                << "print(qplot(Discard, Error/" << errors[0] << ", data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,100)))"
+                << "print(qplot(Discard, Error, data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,25)))"
+                << "print(qplot(Discard, Error/" << errors[0] << ", data=data) + scale_x_log10() + coord_cartesian(xlim=c(.1,25)))"
                 << "dev.off()";
 
 
