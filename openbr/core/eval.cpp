@@ -1726,10 +1726,17 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
     }
     std::sort(qualities.begin(), qualities.end()); // We need sorted qualities to fetch at % thresholds later
     printf("Minimum Quality: %.3f\nMaximum Quality: %.3f\n", threshMin, threshMax);
-    printf("Correlation: %.3f\n", cc.correlation_coefficient());
+    printf("Correlation: %.3f\n\n", cc.correlation_coefficient());
 
     QList<QString> errors;
     QList<QString> discards;
+
+    // Print out the table header
+    if (func == "evalEER") {
+        printf("| Quality Thresh |  EER  | EER Thresh | # Genuine Removed |  %% Genuine Removed |\n");
+        printf("|      :---:     | :---: |    :---:   |       :---:       |        :---:       |\n");
+    }
+
     foreach (float bin, QList<float>() << 0 << 0.1 << 0.5 << 1 << 5 << 10 << 15 << 20 ) {
         int thresh_index = MIN(qualities.size() - 1, MAX(0, (int)(bin * qualities.size() / 100.f)));
         float thresh = qualities[invert ? qualities.size() - 1 - thresh_index : thresh_index];
@@ -1744,18 +1751,7 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             int removed = startingGenuineCount - summary.classOneTemplates;
             errors << QString("%1").arg(QString::number(summary.eer));
             discards << QString("%1").arg(QString::number(removed * 100.f / startingGenuineCount));
-            //if (bin % 5 == 0) {
-            printf("\nPerformed evalEER using a quality threshold of %.3f -> ", thresh);
-            if (summary.eer_thresh == 0.f)
-                printf("none");
-            else
-                printf("%.2f EER @ %.2f by removing %d (%.2f %%) genuine samples (%d total genuine samples and %d total spoof samples)",
-                    100 * summary.eer,
-                    summary.eer_thresh,
-                    removed,
-                    removed * 100.f / startingGenuineCount,
-                    summary.classOneTemplates,
-                    summary.classZeroTemplates);
+            printf("| %*.3f | %*.2f | %*.2f | %*d | %*.2f |\n", 14, thresh, 5, 100 * summary.eer, 10, summary.eer_thresh, 17, removed, 18, removed * 100.f / startingGenuineCount);
         }
     }
     printf("\n\n");
