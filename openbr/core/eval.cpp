@@ -1484,6 +1484,8 @@ struct EERSummary
 {
     float eer = 0.f, eer_thresh = 0.f;
     int classOneTemplates = 0, classZeroTemplates = 0;
+    OperatingPoint faratfrr1 = OperatingPoint(0.f, 0.f, 0.f), faratfrr5 = OperatingPoint(0.f, 0.f, 0.f);
+    OperatingPoint frratfar1 = OperatingPoint(0.f, 0.f, 0.f), frratfar5 = OperatingPoint(0.f, 0.f, 0.f);
 };
 
 EERSummary EvalEER(const TemplateList templateList, QString gt, QString score, const QString &csv, bool return_eer_early = false) {
@@ -1557,12 +1559,17 @@ EERSummary EvalEER(const TemplateList templateList, QString gt, QString score, c
             EERThresh = threshold;
         }
     }
-    EERSummary summary = { EER, EERThresh, classOneTemplateCount, classZeroTemplateCount };
-    if (return_eer_early)
-        return summary;
 
     operatingPoints.append(OperatingPoint(MAX(maxClassOneScore,maxClassZeroScore),1,1));
     operatingPoints.prepend(OperatingPoint(MIN(minClassOneScore,minClassZeroScore),0,0));
+
+    EERSummary summary = {
+        EER, EERThresh, classOneTemplateCount, classZeroTemplateCount,
+        getOperatingPoint(operatingPoints, "TAR", 0.99), getOperatingPoint(operatingPoints, "TAR", 0.95),
+        getOperatingPoint(operatingPoints, "FAR", 0.01), getOperatingPoint(operatingPoints, "FAR", 0.05)
+    };
+    if (return_eer_early)
+        return summary;
 
     printf("\n==========================================================\n");
     printf("Class 0 Templates: %d\tClass 1 Templates: %d\tTotal Templates: %d\n",
@@ -1699,7 +1706,8 @@ void EvalEER(const QString &gallery, QString gt, QString score, const QString &c
 }
 
 void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QString score, const QString quality, bool invert) {
-    printf("\nEvaluating quality metric `%s` on gallery `%s` using gt `%s` for score `%s` with evaluation function `%s`\n", qPrintable(quality), qPrintable(gallery), qPrintable(gt), qPrintable(score), qPrintable(func));
+    printf("\nEvaluating quality metric `%s` on gallery `%s` using gt `%s` for score `%s` with evaluation function `%s`\n",
+        qPrintable(quality), qPrintable(gallery), qPrintable(gt), qPrintable(score), qPrintable(func));
     TemplateList predicted(TemplateList::fromGallery(gallery));
 
     QList<float> qualities;
@@ -1733,8 +1741,8 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
 
     // Print out the table header
     if (func == "evalEER") {
-        printf("| Quality Thresh |  EER  | EER Thresh | # Genuine Removed |  %% Genuine Removed |\n");
-        printf("|      :---:     | :---: |    :---:   |       :---:       |        :---:       |\n");
+        printf("| Quality Thresh |  EER  | EER Thresh | FAR @ FRR=1%% | FAR @ FRR=5%% | FRR @ FAR=1%% | FRR @ FAR=5%% | # Genuine Removed |  %% Genuine Removed |\n");
+        printf("|      :---:     | :---: |    :---:   |     :---:    |     :---:    |     :---:    |     :---:    |       :---:       |        :---:       |\n");
     }
 
     foreach (float bin, QList<float>() << 0 << 0.1 << 0.5 << 1 << 5 << 10 << 15 << 20 ) {
@@ -1751,7 +1759,11 @@ void EvalErrorDiscard(const QString func, const QString &gallery, QString gt, QS
             int removed = startingGenuineCount - summary.classOneTemplates;
             errors << QString("%1").arg(QString::number(summary.eer));
             discards << QString("%1").arg(QString::number(removed * 100.f / startingGenuineCount));
-            printf("| %*.3f | %*.2f | %*.2f | %*d | %*.2f |\n", 14, thresh, 5, 100 * summary.eer, 10, summary.eer_thresh, 17, removed, 18, removed * 100.f / startingGenuineCount);
+            printf("| %*.3f | %*.2f | %*.2f | %*.1f | %*.1f | %*.1f | %*.1f | %*d | %*.2f |\n",
+                14, thresh, 5, 100 * summary.eer, 10, summary.eer_thresh,
+                12, 100 * summary.faratfrr1.FAR, 12, 100 * summary.faratfrr5.FAR,
+                12, 100 * (1 - summary.frratfar1.TAR), 12, 100 * (1 - summary.frratfar5.TAR),
+                17, removed, 18, removed * 100.f / startingGenuineCount);
         }
     }
     printf("\n\n");
