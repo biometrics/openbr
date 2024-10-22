@@ -285,6 +285,10 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
                     (comparison.score < minGenuineScore))
                     minGenuineScore = comparison.score;
             } else {
+                // Define an operating point at FAR=0
+                if ((falsePositives == 0) && (truePositives > 0))
+                    operatingPoints.append(OperatingPoint(comparisons[index-1].score, 0, float(truePositives)/genuineCount));
+
                 falsePositives++;
                 if (genuineSearches[comparison.query] == -1) {
                     genuineSearches[comparison.query]--;
