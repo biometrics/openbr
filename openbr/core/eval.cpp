@@ -301,8 +301,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
             index++;
         }
 
-        if ((falsePositives > previousFalsePositives) &&
-             (truePositives > previousTruePositives)) {
+        if (truePositives > previousTruePositives) {
             operatingPoints.append(OperatingPoint(thresh, float(falsePositives)/impostorCount, float(truePositives)/genuineCount));
 
             if (EERIndex == 0) {
