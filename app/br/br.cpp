@@ -123,10 +123,18 @@ public:
                 } else {
                     br_eval(parv[0], parv[1], parv[2], atoi(parv[3]));
                 }
+            } else if (!strcmp(fun, "evalfused")) {
+                check((parc ==6 || (parc == 8)), "Incorrect parameter count for 'evalfused'.");
+                if (parc == 6) {
+                    br_eval_fused(parv[0], parv[1], parv[2], parv[3], 0, atof(parv[4]), atof(parv[5]));
+                } else {
+                    br_eval_fused2(parv[0], parv[1], parv[2], parv[3], parv[4], 0, atof(parv[5]), atof(parv[6]), atof(parv[7]));
+                }
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
                 br_plot(parc-1, parv, parv[parc-1], true);
             }
+
 
             // Secondary Tasks
             else if (!strcmp(fun, "fuse")) {
@@ -278,6 +286,7 @@ private:
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
                "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
+               "-evalfused <simmat> <simmat2> [<mask>] [{csv}] [{matches}]\n"
                "-plot <csv> ... <csv> {destination}\n"
                "\n"
                "==== Other Commands ====\n"

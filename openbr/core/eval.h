@@ -24,10 +24,13 @@
 namespace br
 {
     float Evaluate(const QString &simmat, const QString &mask = "", const File &csv = "", unsigned int matches = 0); // Returns TAR @ FAR = 0.001
+    float EvaluateFused(const QString &simmat, const QString &simmat2, const QString &mask = "", const File &csv = "", unsigned int matches = 0, float w1=0.7, float w2=0.3); // Returns TAR @ FAR = 0.001
+    float EvaluateFused2(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask = "", const File &csv = "", unsigned int matches = 0, float w1=0.35, float w2=0.35, float w3=0.3); // Returns TAR @ FAR = 0.001
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv = "", int parition = 0);
-    float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const File &csv = "", const QString &target = "", const QString &query = "", unsigned int matches = 0);
+    float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const File &csv = "", const QString &target = "", const QString &query = "", unsigned int matches = 0, const QString &target2 = "", const QString &target3 = "");
     void assertEval(const QString &simmat, const QString &mask, float accuracy); // Check to see if -eval achieves a given TAR @ FAR = 0.001
     float InplaceEval(const QString &simmat, const QString &mask, const QString &csv);
+    float InplaceEvalFused(const QString &simmat, const QString &simmat22, const QString &mask, const QString &csv, const float w1, const float w2);
 
     void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
     float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", bool normalize = false, int minSize = 0, int maxSize = 0, float relativeMinSize = 0, const QString &label = "", const float true_positive_threshold = 0.5f); // Return average overlap
