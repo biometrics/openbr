@@ -135,7 +135,6 @@ public:
                 br_plot(parc-1, parv, parv[parc-1], true);
             }
 
-
             // Secondary Tasks
             else if (!strcmp(fun, "fuse")) {
                 check(parc >= 4, "Insufficient parameter count for 'fuse'.");
