@@ -286,7 +286,7 @@ private:
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
                "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
-               "-evalfused <simmat> <simmat2> [<mask>] [{csv}] [{matches}]\n"
+               "-evalfused <simmat> <simmat2> [<simmat3>] [<mask>] [{csv}] <w1> <w2> [<w3>] <lowerBound> <upperBound>\n"
                "-plot <csv> ... <csv> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
