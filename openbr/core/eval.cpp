@@ -188,7 +188,7 @@ float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsi
     return Evaluate(scores, truth, csv, target, query, matches);
 }
 
-float Evaluate(const QString &simmat, const QString &simmat2, const QString &mask, const File &csv, unsigned int matches, float w1, float w2)
+float Evaluate(const QString &simmat, const QString &simmat2, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float lowerBound, float upperBound)
 {
     qDebug("Evaluating %s %s%s%s",
            qPrintable(simmat),
@@ -215,20 +215,6 @@ float Evaluate(const QString &simmat, const QString &simmat2, const QString &mas
         scores2 = format->read();
     }
 
-    scores = scores*w1 + scores2*w2;
-
-    // float lowerBound = 0;
-    // float upperBound = 1;
-
-    // for (int i = 0; i < scores.rows; i++) {
-    //     for (int j = 0; j < scores.cols; j++) {
-    //         if (scores.at<uchar>(i, j) >= lowerBound && scores.at<uchar>(i, j) <= upperBound) {
-    //             scores.at<uchar>(i, j) = w1*scores.at<uchar>(i, j) + w2*scores2.at<uchar>(i, j);
-    //         }
-    //     }
-    // }
-
-
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
@@ -246,10 +232,33 @@ float Evaluate(const QString &simmat, const QString &simmat2, const QString &mas
         truth = format->read();
     }
 
+    float count_total = 0;
+    float count_fused = 0;
+    for (int i = 0; i < scores.rows; i++) {
+        for (int j = 0; j < scores.cols; j++) {
+            const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
+            const BEE::SimmatValue simmat_val = scores.at<BEE::SimmatValue>(i,j);
+            const BEE::SimmatValue simmat_val2 = scores2.at<BEE::SimmatValue>(i,j);
+            
+            if (mask_val == BEE::DontCare) continue;
+            if (simmat_val != simmat_val) continue;
+
+            if (simmat_val >= lowerBound && simmat_val <= upperBound) {
+                scores.at<BEE::SimmatValue>(i,j) = w1*simmat_val + w2*simmat_val2;
+                count_fused += 1;
+            }
+            count_total += 1;
+        }
+    }
+    qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
+           count_fused/count_total*100,
+           lowerBound,
+           upperBound);
+
     return Evaluate(scores, truth, csv, target, query, matches, target2, "");
 }
 
-float Evaluate(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float w3)
+float Evaluate(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float w3, float lowerBound, float upperBound)
 {
     qDebug("Evaluating %s %s%s%s%s",
            qPrintable(simmat),
@@ -286,8 +295,6 @@ float Evaluate(const QString &simmat, const QString &simmat2, const QString &sim
         scores3 = format->read();
     }
 
-    scores = scores*w1 + scores2*w2 + scores3*w3;
-
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
@@ -304,6 +311,30 @@ float Evaluate(const QString &simmat, const QString &simmat2, const QString &sim
         QScopedPointer<Format> format(Factory<Format>::make(maskFile));
         truth = format->read();
     }
+
+    float count_total = 0;
+    float count_fused = 0;
+    for (int i = 0; i < scores.rows; i++) {
+        for (int j = 0; j < scores.cols; j++) {
+            const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
+            const BEE::SimmatValue simmat_val = scores.at<BEE::SimmatValue>(i,j);
+            const BEE::SimmatValue simmat_val2 = scores2.at<BEE::SimmatValue>(i,j);
+            const BEE::SimmatValue simmat_val3 = scores3.at<BEE::SimmatValue>(i,j);
+            
+            if (mask_val == BEE::DontCare) continue;
+            if (simmat_val != simmat_val) continue;
+
+            if (simmat_val >= lowerBound && simmat_val <= upperBound) {
+                scores.at<BEE::SimmatValue>(i,j) = w1*simmat_val + w2*simmat_val2 + w3*simmat_val3;
+                count_fused += 1;
+            }
+            count_total += 1;
+        }
+    }
+    qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
+           count_fused/count_total*100,
+           lowerBound,
+           upperBound);
 
     return Evaluate(scores, truth, csv, target, query, matches, target2, target3);
 }
@@ -675,256 +706,6 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
         float highestImpostor(-std::numeric_limits<float>::max()), highestGenuine(-std::numeric_limits<float>::max());
         for (size_t j=0; j<simmatCols; j++) {
             const BEE::SimmatValue sim_val = simmatRow.at<BEE::SimmatValue>(0, j);
-            const BEE::MaskValue mask_val = maskRow.at<BEE::MaskValue>(0, j);
-            if (mask_val == BEE::DontCare) continue;
-            if (sim_val != sim_val) { numNaNs++; continue; }
-
-            const bool genuine = (mask_val == BEE::Match);
-            if (genuine) {
-                hasGenuine = true;
-                genuineCount++;
-                stats[sim_val].truePositive++;
-                if (sim_val > highestImpostor)
-                    impostorsAboveGenuine = 0;
-                if (sim_val > highestGenuine)
-                    highestGenuine = sim_val;
-            } else {
-                hasImpostor = true;
-                impostorCount++;
-                stats[sim_val].falsePositive++;
-                if (sim_val >= highestGenuine)
-                    impostorsAboveGenuine++;
-                if (sim_val > highestImpostor)
-                    highestImpostor = sim_val;
-            }
-        }
-
-        // CMC
-        firstGenuineReturns[i] = hasGenuine ? impostorsAboveGenuine + 1 : -impostorsAboveGenuine;
-
-        // IET
-        if (hasGenuine) { // true search
-            genuineSearchCount++;
-            ietStats[highestGenuine].truePositive++;
-        } else if (hasImpostor) { // false search
-            impostorSearchCount++;
-            ietStats[highestImpostor].falsePositive++;
-        }
-    }
-
-    if (numNaNs > 0) qWarning("Encountered %ld NaN scores!", numNaNs);
-    if (genuineCount == 0) qFatal("No genuine scores!");
-    if (impostorCount == 0) qFatal("No impostor scores!");
-
-    // Write Metadata table
-    QStringList lines;
-    lines.append("Plot,X,Y");
-    lines.append("Metadata,"+QString::number(simmatCols)+",Gallery");
-    lines.append("Metadata,"+QString::number(simmatRows)+",Probe");
-    lines.append("Metadata,"+QString::number(genuineCount)+",Genuine");
-    lines.append("Metadata,"+QString::number(impostorCount)+",Impostor");
-    lines.append("Metadata,"+QString::number(simmatCols*simmatRows-(genuineCount+impostorCount))+",Ignored");
-
-    // SD points
-    size_t sdPoints = qMin(qMin((size_t)Max_Points, genuineCount), impostorCount);
-    size_t genuineRate = genuineCount / sdPoints;
-    size_t impostorRate = impostorCount / sdPoints;
-    size_t genuinesSampled(0), sampleNextGenuine(0), impostorsSampled(0), sampleNextImpostor(0);
-
-    // DET and SD sampling
-    size_t fps(0), previous_fps(0), tps(0), previous_tps(0);
-    QList<float> thresholds = stats.keys();
-    std::sort(thresholds.begin(), thresholds.end());
-    std::reverse(thresholds.begin(), thresholds.end());
-    QList<OperatingPoint> operatingPoints;
-    for (int i=0; i<thresholds.size(); i++) {
-        const Counter counter = stats[thresholds[i]];
-        fps += counter.falsePositive;
-        tps += counter.truePositive;
-        if ((fps > previous_fps) && tps > previous_tps) {
-            operatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorCount, double(tps)/genuineCount));
-            previous_fps = fps;
-            previous_tps = tps;
-        }
-
-        // Genuine score sampling
-        if ((genuinesSampled < sdPoints) && (counter.truePositive > 0)) {
-            for (int sample=0; sample<counter.truePositive; sample++) {
-                sampleNextGenuine++;
-                if (sampleNextGenuine == genuineRate) {
-                    sampleNextGenuine = 0;
-                    lines.append(QString("SD,%1,Genuine").arg(QString::number(thresholds[i])));
-                    genuinesSampled++;
-                    if (genuinesSampled >= sdPoints)
-                        break;
-                }
-            }
-        }
-
-        // Impostor score sampling
-        if ((impostorsSampled < sdPoints) && (counter.falsePositive > 0)) {
-            for (int sample=0; sample<counter.falsePositive; sample++) {
-                sampleNextImpostor++;
-                if (sampleNextImpostor == impostorRate) {
-                    sampleNextImpostor = 0;
-                    lines.append(QString("SD,%1,Impostor").arg(QString::number(thresholds[i])));
-                    impostorsSampled++;
-                    if (impostorsSampled >= sdPoints)
-                        break;
-                }
-            }
-        }
-    }
-    if (operatingPoints.size() == 0) operatingPoints.append(OperatingPoint(1, 1, 1));
-    if (operatingPoints.size() == 1) operatingPoints.prepend(OperatingPoint(0, 0, 0));
-    if (operatingPoints.size() > 2)  operatingPoints.takeLast(); // Remove point (1,1)
-
-    // IET
-    QList<OperatingPoint> searchOperatingPoints;
-    if (genuineSearchCount > 0 && impostorSearchCount > 0) {
-        fps = 0; tps = 0;
-        QList<float> thresholds = ietStats.keys();
-        std::sort(thresholds.begin(), thresholds.end());
-        std::reverse(thresholds.begin(), thresholds.end());
-        for (int i=0; i<thresholds.size(); i++) {
-            const Counter counter = ietStats[thresholds[i]];
-            fps += counter.falsePositive;
-            tps += counter.truePositive;
-            searchOperatingPoints.append(OperatingPoint(thresholds[i], double(fps)/impostorSearchCount, double(tps)/genuineSearchCount));
-        }
-    }
-    if (searchOperatingPoints.size() == 0) searchOperatingPoints.append(OperatingPoint(1, 1, 1));
-    if (searchOperatingPoints.size() == 1) searchOperatingPoints.prepend(OperatingPoint(0, 0, 0));
-    if (searchOperatingPoints.size() > 2)  searchOperatingPoints.takeLast(); // Remove point (1,1)
-
-
-    // Write Detection Error Tradeoff (DET), PRE, REC, Identification Error Tradeoff (IET)
-    float expFAR = std::max(ceil(log10(impostorCount)), 1.0);
-    float expFRR = std::max(ceil(log10(genuineCount)), 1.0);
-    float expFPIR = std::max(ceil(log10(impostorSearchCount)), 1.0);
-
-    float FARstep = expFAR / (float)(Max_Points - 1);
-    float FRRstep = expFRR / (float)(Max_Points - 1);
-    float FPIRstep = expFPIR / (float)(Max_Points - 1);
-
-    for (int i=0; i<Max_Points; i++) {
-        float FAR = pow(10, -expFAR + i*FARstep);
-        float FRR = pow(10, -expFRR + i*FRRstep);
-        float FPIR = pow(10, -expFPIR + i*FPIRstep);
-
-        OperatingPoint operatingPointFAR = getOperatingPoint(operatingPoints, "FAR", FAR);
-        OperatingPoint operatingPointTAR = getOperatingPoint(operatingPoints, "TAR", 1-FRR);
-        OperatingPoint searchOperatingPoint = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
-        lines.append(QString("DET,%1,%2").arg(QString::number(FAR),
-                                              QString::number(1-operatingPointFAR.TAR)));
-        lines.append(QString("FAR,%1,%2").arg(QString::number(operatingPointFAR.score),
-                                              QString::number(FAR)));
-        lines.append(QString("FRR,%1,%2").arg(QString::number(operatingPointTAR.score),
-                                              QString::number(FRR)));
-        lines.append(QString("IET,%1,%2").arg(QString::number(searchOperatingPoint.FAR),
-                                              QString::number(1-searchOperatingPoint.TAR)));
-    }
-
-    // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 200;
-    for (int i=1; i<=Max_Retrieval; i++) {
-        const float retrievalRate = getCMC(firstGenuineReturns, i);
-        lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
-    }
-
-    // Write FRR@FAR Table (FF)
-    foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
-      lines.append(qPrintable(QString("FF,%1,%2").arg(
-                              QString::number(FAR, 'f'),
-                              QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
-
-    // Write FAR@TAR Table (FT)
-    foreach (float TAR, QList<float>() << 0.4 << 0.5 << 0.65 << 0.75 << 0.85 << 0.95)
-      lines.append(qPrintable(QString("FT,%1,%2").arg(
-                         QString::number(TAR, 'f', 2),
-                         QString::number(getOperatingPoint(operatingPoints, "TAR", TAR).FAR, 'f', 3))));
-
-    // Write FAR@Score Table (SF) and TAR@Score table (ST)
-    foreach(const float score, QList<float>() << 0.05 << 0.1 << 0.15 << 0.2 << 0.25 << 0.3 << 0.35 << 0.4 << 0.45 << 0.5
-                                              << 0.55 << 0.6 << 0.65 << 0.7 << 0.75 << 0.8 << 0.85 << 0.9 << 0.95) {
-        const OperatingPoint op = getOperatingPoint(operatingPoints, "Score", score);
-        lines.append(qPrintable(QString("SF,%1,%2").arg(
-                                QString::number(score, 'f', 2),
-                                QString::number(op.FAR))));
-        lines.append(qPrintable(QString("ST,%1,%2").arg(
-                                QString::number(score, 'f', 2),
-                                QString::number(op.TAR))));
-    }
-
-    // Write FAR/TAR Bar Chart (BC)
-    float result = 0;
-    lines.append(qPrintable(QString("BC,0.0001,%1").arg(QString::number(getOperatingPoint(operatingPoints, "FAR", 0.0001).TAR, 'f', 3))));
-    lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, "FAR", 0.001).TAR, 'f', 3))));
-
-    QtUtils::writeFile(csv, lines);
-
-    foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
-        const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
-        printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
-    }
-    printf("\n");
-    foreach (float FPIR, QList<float>() << 0.1 << 0.01) {
-        const OperatingPoint op = getOperatingPoint(searchOperatingPoints, "FAR", FPIR);
-        printf("FNIR @ FPIR = %.0e: %.3f\n", FPIR, 1-op.TAR);
-    }
-    printf("\n");
-    foreach (const int Report_Retrieval, QList<int>() << 1 << 5 << 10 << 20 << 50 << 100)
-        printf("Retrieval Rate @ Rank = %d: %.3f\n", Report_Retrieval, getCMC(firstGenuineReturns, Report_Retrieval));
-
-    return result;
-}
-
-float InplaceEvalFused(const QString &simmat, const QString &simmat2, const QString &mask, const QString &csv, const float w1, const float w2)
-{
-    QFile simmatFile(simmat), simmatFile2(simmat2), maskFile(mask);
-    size_t simmatRows, simmatCols, simmatRows2, simmatCols2, maskRows, maskCols;
-    openAndReadMatrixHeader(simmatFile, simmatRows, simmatCols);
-    openAndReadMatrixHeader(simmatFile2, simmatRows2, simmatCols2);
-    openAndReadMatrixHeader(maskFile, maskRows, maskCols);
-
-    if ((simmatRows != maskRows) || (simmatCols != maskCols) || (simmatRows2 != maskRows) || (simmatCols2 != maskCols))
-        qFatal("Simmat and Mask size mismatch!");
-
-    // DET stats
-    size_t genuineCount(0), impostorCount(0), numNaNs(0);
-    QHash<float, Counter> stats;
-
-    // IET stats
-    size_t genuineSearchCount(0), impostorSearchCount(0);
-    QHash<float, Counter> ietStats;
-
-    // CMC stats
-    QVector<int> firstGenuineReturns(simmatRows, 0);
-
-    Mat simmatRow, simmatRow2, maskRow;
-    simmatRow.create(1, simmatCols, CV_32FC1);
-    simmatRow2.create(1, simmatCols, CV_32FC1);
-    maskRow.create(1, maskCols, CV_8UC1);
-    for (size_t i=0; i<simmatRows; i++) {
-        qint64 bytesRead = simmatFile.read((char*)simmatRow.data, simmatCols * sizeof(BEE::SimmatValue));
-        qint64 bytesRead2 = simmatFile2.read((char*)simmatRow2.data, simmatCols * sizeof(BEE::SimmatValue));
-        if (bytesRead != simmatCols * sizeof(BEE::SimmatValue))
-            qFatal("Didn't read complete matrix row!");
-        if (bytesRead2 != simmatCols * sizeof(BEE::SimmatValue))
-            qFatal("Didn't read complete matrix row!");
-
-        bytesRead = maskFile.read((char*)maskRow.data, maskCols * sizeof(BEE::MaskValue));
-        if (bytesRead != maskCols * sizeof(BEE::MaskValue))
-            qFatal("Didn't read complete mask row!");
-
-        // DET
-        int impostorsAboveGenuine(0);
-        bool hasGenuine(false), hasImpostor(false);
-        float highestImpostor(-std::numeric_limits<float>::max()), highestGenuine(-std::numeric_limits<float>::max());
-        for (size_t j=0; j<simmatCols; j++) {
-            const BEE::SimmatValue sim_val1 = simmatRow.at<BEE::SimmatValue>(0, j);
-            const BEE::SimmatValue sim_val2 = simmatRow2.at<BEE::SimmatValue>(0, j);
-            const BEE::SimmatValue sim_val = sim_val1*w1 + sim_val2*w2;
             const BEE::MaskValue mask_val = maskRow.at<BEE::MaskValue>(0, j);
             if (mask_val == BEE::DontCare) continue;
             if (sim_val != sim_val) { numNaNs++; continue; }

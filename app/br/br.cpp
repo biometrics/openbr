@@ -124,11 +124,11 @@ public:
                     br_eval(parv[0], parv[1], parv[2], atoi(parv[3]));
                 }
             } else if (!strcmp(fun, "evalfused")) {
-                check((parc ==6 || (parc == 8)), "Incorrect parameter count for 'evalfused'.");
-                if (parc == 6) {
-                    br_eval_fused(parv[0], parv[1], "", parv[2], parv[3], 0, atof(parv[4]), atof(parv[5]), 0);
+                check((parc == 8 || (parc == 10)), "Incorrect parameter count for 'evalfused'.");
+                if (parc == 8) {
+                    br_eval_fused(parv[0], parv[1], "", parv[2], parv[3], 0, atof(parv[4]), atof(parv[5]), 0, atof(parv[6]), atof(parv[7]));
                 } else {
-                    br_eval_fused(parv[0], parv[1], parv[2], parv[3], parv[4], 0, atof(parv[5]), atof(parv[6]), atof(parv[7]));
+                    br_eval_fused(parv[0], parv[1], parv[2], parv[3], parv[4], 0, atof(parv[5]), atof(parv[6]), atof(parv[7]), atof(parv[8]), atof(parv[9]));
                 }
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");

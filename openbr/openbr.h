@@ -49,7 +49,7 @@ BR_EXPORT void br_enroll_n(int num_inputs, const char *inputs[], const char *gal
 BR_EXPORT void br_project(const char *input, const char *output);
 
 BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "", int matches = 0);
-BR_EXPORT float br_eval_fused(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv = "", int matches = 0, float w1 = 0.7, float w2 = 0.3, float w3 = 0.3);
+BR_EXPORT float br_eval_fused(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv = "", int matches = 0, float w1 = 0.7, float w2 = 0.3, float w3 = 0.3, float lowerBound = -1e6, float upperBound = 1e6);
 
 BR_EXPORT void br_assert_eval(const char *simmat, const char *mask, const float accuracy);
 
