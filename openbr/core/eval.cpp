@@ -148,7 +148,7 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QString(), QString(), 0);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QStringList(), QString(), 0);
 }
 
 float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsigned int matches)
@@ -185,66 +185,76 @@ float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsi
         truth = format->read();
     }
 
-    return Evaluate(scores, truth, csv, target, query, matches);
+    return Evaluate(scores, truth, csv, {target}, query, matches);
 }
 
-float Evaluate(const QString &simmat, const QString &simmat2, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float lowerBound, float upperBound)
+float Evaluate(const QStringList &simmats, const QString &mask, const File &csv, unsigned int matches, const QVector<float> &weights, float lowerBound, float upperBound)
 {
-    qDebug("Evaluating %s %s%s%s",
-           qPrintable(simmat),
-           qPrintable(simmat2),
+    if (simmats.size() <= 0) {
+        throw std::invalid_argument("Must supply at least one simmat.");
+    }
+
+    if (!weights.isEmpty() && weights.size() != simmats.size()) {
+        throw std::invalid_argument("The size of weights must match the number of simmats.");
+    }
+
+    int n_simmats = simmats.size();
+    qDebug("Evaluating %d simmats%s%s", 
+           n_simmats,
            mask.isEmpty() ? "" : qPrintable(" with " + mask),
            csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
 
-    // Read similarity matrix
-    QString target, query;
-    Mat scores;
-    if (simmat.endsWith(".mtx")) {
-        scores = BEE::readMatrix(simmat, &target, &query);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat));
-        scores = format->read();
+    QVector<Mat> scores(n_simmats);
+    QStringList targets;
+    for (int i = 0; i < n_simmats; ++i) {
+        targets.append("");
     }
-    
-    QString target2, query2;
-    Mat scores2;
-    if (simmat2.endsWith(".mtx")) {
-        scores2 = BEE::readMatrix(simmat2, &target2, &query2);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat2));
-        scores2 = format->read();
+    QString query;
+
+    for (int i = 0; i < n_simmats; i++) {
+        if (simmats[i].endsWith(".mtx")) {
+            Mat score_mat = BEE::readMatrix(simmats[i], &targets[i], &query);
+            scores[i] = score_mat;
+        } else {
+            QScopedPointer<Format> format(Factory<Format>::make(simmats[i]));
+            Mat score_mat = format->read();
+            scores[i] = score_mat;
+        }
     }
 
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
         // Use the galleries specified in the similarity matrix
-        if (target.isEmpty()) qFatal("Unspecified target gallery.");
+        if (targets[0].isEmpty()) qFatal("Unspecified target gallery.");
         if (query.isEmpty()) qFatal("Unspecified query gallery.");
 
-        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
+        truth = constructMatchingMask(scores[0], TemplateList::fromGallery(targets[0]).files(),
                                               TemplateList::fromGallery(query).files());
     } else {
         File maskFile(mask);
-        maskFile.set("rows", scores.rows);
-        maskFile.set("columns", scores.cols);
+        maskFile.set("rows", scores[0].rows);
+        maskFile.set("columns", scores[0].cols);
         QScopedPointer<Format> format(Factory<Format>::make(maskFile));
         truth = format->read();
     }
 
     float count_total = 0;
     float count_fused = 0;
-    for (int i = 0; i < scores.rows; i++) {
-        for (int j = 0; j < scores.cols; j++) {
+    for (int i = 0; i < scores[0].rows; i++) {
+        for (int j = 0; j < scores[0].cols; j++) {
             const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
-            const BEE::SimmatValue simmat_val = scores.at<BEE::SimmatValue>(i,j);
-            const BEE::SimmatValue simmat_val2 = scores2.at<BEE::SimmatValue>(i,j);
-            
             if (mask_val == BEE::DontCare) continue;
+            
+            BEE::SimmatValue simmat_val = scores[0].at<BEE::SimmatValue>(i,j);
             if (simmat_val != simmat_val) continue;
 
             if (simmat_val >= lowerBound && simmat_val <= upperBound) {
-                scores.at<BEE::SimmatValue>(i,j) = w1*simmat_val + w2*simmat_val2;
+                simmat_val *= weights[0];
+                for (int k = 1; k < n_simmats; k++) {
+                    simmat_val += weights[k]*scores[k].at<BEE::SimmatValue>(i,j);
+                }           
+                scores[0].at<BEE::SimmatValue>(i,j) = simmat_val;
                 count_fused += 1;
             }
             count_total += 1;
@@ -255,93 +265,12 @@ float Evaluate(const QString &simmat, const QString &simmat2, const QString &mas
            lowerBound,
            upperBound);
 
-    return Evaluate(scores, truth, csv, target, query, matches, target2, "");
+    return Evaluate(scores[0], truth, csv, targets, query, matches);
 }
 
-float Evaluate(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float w3, float lowerBound, float upperBound)
+float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStringList &targets, const QString &query, unsigned int matches)
 {
-    qDebug("Evaluating %s %s%s%s%s",
-           qPrintable(simmat),
-           qPrintable(simmat2),
-           qPrintable(simmat3),
-           mask.isEmpty() ? "" : qPrintable(" with " + mask),
-           csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
-
-    // Read similarity matrix
-    QString target, query;
-    Mat scores;
-    if (simmat.endsWith(".mtx")) {
-        scores = BEE::readMatrix(simmat, &target, &query);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat));
-        scores = format->read();
-    }
-    
-    QString target2, query2;
-    Mat scores2;
-    if (simmat2.endsWith(".mtx")) {
-        scores2 = BEE::readMatrix(simmat2, &target2, &query2);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat2));
-        scores2 = format->read();
-    }
-
-    QString target3, query3;
-    Mat scores3;
-    if (simmat3.endsWith(".mtx")) {
-        scores3 = BEE::readMatrix(simmat3, &target3, &query3);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat3));
-        scores3 = format->read();
-    }
-
-    // Read mask matrix
-    Mat truth;
-    if (mask.isEmpty()) {
-        // Use the galleries specified in the similarity matrix
-        if (target.isEmpty()) qFatal("Unspecified target gallery.");
-        if (query.isEmpty()) qFatal("Unspecified query gallery.");
-
-        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
-                                              TemplateList::fromGallery(query).files());
-    } else {
-        File maskFile(mask);
-        maskFile.set("rows", scores.rows);
-        maskFile.set("columns", scores.cols);
-        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
-        truth = format->read();
-    }
-
-    float count_total = 0;
-    float count_fused = 0;
-    for (int i = 0; i < scores.rows; i++) {
-        for (int j = 0; j < scores.cols; j++) {
-            const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
-            const BEE::SimmatValue simmat_val = scores.at<BEE::SimmatValue>(i,j);
-            const BEE::SimmatValue simmat_val2 = scores2.at<BEE::SimmatValue>(i,j);
-            const BEE::SimmatValue simmat_val3 = scores3.at<BEE::SimmatValue>(i,j);
-            
-            if (mask_val == BEE::DontCare) continue;
-            if (simmat_val != simmat_val) continue;
-
-            if (simmat_val >= lowerBound && simmat_val <= upperBound) {
-                scores.at<BEE::SimmatValue>(i,j) = w1*simmat_val + w2*simmat_val2 + w3*simmat_val3;
-                count_fused += 1;
-            }
-            count_total += 1;
-        }
-    }
-    qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
-           count_fused/count_total*100,
-           lowerBound,
-           upperBound);
-
-    return Evaluate(scores, truth, csv, target, query, matches, target2, target3);
-}
-
-float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QString &target, const QString &query, unsigned int matches, const QString &target2, const QString &target3)
-{
-    if (target.isEmpty() || query.isEmpty()) matches = 0;
+    if (targets[0].isEmpty() || query.isEmpty()) matches = 0;
     if (simmat.size() != mask.size())
         qFatal("Similarity matrix (%ix%i) differs in size from mask matrix (%ix%i).",
                simmat.rows, simmat.cols, mask.rows, mask.cols);
@@ -489,7 +418,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     QString filePath = Globals->path;
     if (matches != 0 && EERIndex != 0) {
-        const FileList targetFiles = TemplateList::fromGallery(target).files();
+        const FileList targetFiles = TemplateList::fromGallery(targets[0]).files();
         const FileList queryFiles = TemplateList::fromGallery(query).files();
         unsigned int count = 0;
         for (int i = EERIndex-1; i >= 0; i--) {
@@ -574,24 +503,15 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     // Attempt to read template size from enrolled gallery and write to output CSV
     size_t maxSize(0);
-    size_t maxSize2(0);
-    size_t maxSize3(0);
+    // size_t maxSize2(0);
+    // size_t maxSize3(0);
 
-    if (target.endsWith(".gal") && QFileInfo(target).exists() && target2.endsWith(".gal") && QFileInfo(target2).exists() && target3.endsWith(".gal") && QFileInfo(target3).exists()) {
-        foreach (const Template &t, TemplateList::fromGallery(target)) maxSize = max(maxSize, t.bytes());
-        foreach (const Template &t, TemplateList::fromGallery(target2)) maxSize2 = max(maxSize2, t.bytes());
-        foreach (const Template &t, TemplateList::fromGallery(target3)) maxSize3 = max(maxSize3, t.bytes());
-        maxSize = maxSize+maxSize2+maxSize3;
-        lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
-    } else if (target.endsWith(".gal") && QFileInfo(target).exists() && target2.endsWith(".gal") && QFileInfo(target2).exists()) {
-        foreach (const Template &t, TemplateList::fromGallery(target)) maxSize = max(maxSize, t.bytes());
-        foreach (const Template &t, TemplateList::fromGallery(target2)) maxSize2 = max(maxSize2, t.bytes());
-        maxSize = maxSize+maxSize2;
-        lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
-    } else if (target.endsWith(".gal") && QFileInfo(target).exists()) {
-        foreach (const Template &t, TemplateList::fromGallery(target)) maxSize = max(maxSize, t.bytes());
-        lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
+    for (int i=0; i<targets.size(); i++) {
+        if (targets[i].endsWith(".gal") && QFileInfo(targets[i]).exists()) {
+            foreach (const Template &t, TemplateList::fromGallery(targets[i])) maxSize = max(maxSize, t.bytes());
+        }
     }
+    lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
 
     // Write SD
     int points = qMin(qMin((size_t)Max_Points, genuines.size()), impostors.size());

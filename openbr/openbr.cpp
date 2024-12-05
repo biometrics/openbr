@@ -106,12 +106,9 @@ float br_eval(const char *simmat, const char *mask, const char *csv, int matches
     return Evaluate(simmat, mask, csv, matches);
 }
 
-float br_eval_fused(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv, int matches, float w1, float w2, float w3, float lowerBound, float upperBound)
+float br_eval_fused(const QStringList &simmats, const char *mask, const char *csv, int matches, const QVector<float> &weights, float lowerBound, float upperBound)
 {
-    if (NULL == *simmat3) {
-        return Evaluate(simmat, simmat2, mask, csv, matches, w1, w2, lowerBound, upperBound);
-    }
-    return Evaluate(simmat, simmat2, simmat3, mask, csv, matches, w1, w2, w3, lowerBound, upperBound);
+    return Evaluate(simmats, mask, csv, matches, weights, lowerBound, upperBound);
 }
 
 void br_assert_eval(const char *simmat, const char *mask, const float accuracy)
