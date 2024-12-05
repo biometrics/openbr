@@ -109,10 +109,8 @@ float br_eval(const char *simmat, const char *mask, const char *csv, int matches
 float br_eval_fused(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv, int matches, float w1, float w2, float w3, float lowerBound, float upperBound)
 {
     if (NULL == *simmat3) {
-        printf("fusing 2 simmats...");
         return Evaluate(simmat, simmat2, mask, csv, matches, w1, w2, lowerBound, upperBound);
     }
-    printf("fusing 3 simmats...");
     return Evaluate(simmat, simmat2, simmat3, mask, csv, matches, w1, w2, w3, lowerBound, upperBound);
 }
 
