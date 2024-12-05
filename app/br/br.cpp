@@ -146,7 +146,7 @@ public:
                 if (parc == 4) {
                     const QStringList simmatList = QString(parv[0]).split(",");
                     const QVector<float> weights = convertStringToFloatVector(parv[3]);
-                    br_eval_fused(simmatList, parv[1], parv[2], 0, weights, 1e-6, 1e6);
+                    br_eval_fused(simmatList, parv[1], parv[2], 0, weights, -1e6, 1e6);
                 } else {
                     const QStringList simmatList = QString(parv[0]).split(",");
                     const QVector<float> weights = convertStringToFloatVector(parv[3]);

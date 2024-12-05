@@ -502,16 +502,16 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     lines.append(qPrintable(QString("BC,0.001,%1").arg(QString::number(result = getOperatingPoint(operatingPoints, "FAR", 0.001).TAR, 'f', 3))));
 
     // Attempt to read template size from enrolled gallery and write to output CSV
-    size_t maxSize(0);
-    // size_t maxSize2(0);
-    // size_t maxSize3(0);
+    size_t maxSizeTotal(0);
 
     for (int i=0; i<targets.size(); i++) {
         if (targets[i].endsWith(".gal") && QFileInfo(targets[i]).exists()) {
+            size_t maxSize(0);
             foreach (const Template &t, TemplateList::fromGallery(targets[i])) maxSize = max(maxSize, t.bytes());
+            maxSizeTotal += maxSize;
         }
     }
-    lines.append(QString("TS,,%1").arg(QString::number(maxSize)));
+    lines.append(QString("TS,,%1").arg(QString::number(maxSizeTotal)));
 
     // Write SD
     int points = qMin(qMin((size_t)Max_Points, genuines.size()), impostors.size());
@@ -535,7 +535,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     QtUtils::writeFile(csv, lines);
-    if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
+    if (maxSizeTotal > 0) qDebug("Template Size: %i bytes", (int)maxSizeTotal);
     foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
