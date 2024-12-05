@@ -106,14 +106,12 @@ float br_eval(const char *simmat, const char *mask, const char *csv, int matches
     return Evaluate(simmat, mask, csv, matches);
 }
 
-float br_eval_fused(const char *simmat, const char *simmat2, const char *mask, const char *csv, int matches, float w1, float w2)
+float br_eval_fused(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv, int matches, float w1, float w2, float w3)
 {
-    return EvaluateFused(simmat, simmat2, mask, csv, matches, w1, w2);
-}
-
-float br_eval_fused2(const char *simmat, const char *simmat2, const char *simmat3, const char *mask, const char *csv, int matches, float w1, float w2, float w3)
-{
-    return EvaluateFused2(simmat, simmat2, simmat3, mask, csv, matches, w1, w2, w3);
+    if (NULL == *simmat3) {
+        return Evaluate(simmat, simmat2, mask, csv, matches, w1, w2);
+    }
+    return Evaluate(simmat, simmat2, simmat3, mask, csv, matches, w1, w2, w3);
 }
 
 void br_assert_eval(const char *simmat, const char *mask, const float accuracy)

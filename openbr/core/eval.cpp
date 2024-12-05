@@ -188,7 +188,7 @@ float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsi
     return Evaluate(scores, truth, csv, target, query, matches);
 }
 
-float EvaluateFused(const QString &simmat, const QString &simmat2, const QString &mask, const File &csv, unsigned int matches, float w1, float w2)
+float Evaluate(const QString &simmat, const QString &simmat2, const QString &mask, const File &csv, unsigned int matches, float w1, float w2)
 {
     qDebug("Evaluating %s %s%s%s",
            qPrintable(simmat),
@@ -217,6 +217,18 @@ float EvaluateFused(const QString &simmat, const QString &simmat2, const QString
 
     scores = scores*w1 + scores2*w2;
 
+    // float lowerBound = 0;
+    // float upperBound = 1;
+
+    // for (int i = 0; i < scores.rows; i++) {
+    //     for (int j = 0; j < scores.cols; j++) {
+    //         if (scores.at<uchar>(i, j) >= lowerBound && scores.at<uchar>(i, j) <= upperBound) {
+    //             scores.at<uchar>(i, j) = w1*scores.at<uchar>(i, j) + w2*scores2.at<uchar>(i, j);
+    //         }
+    //     }
+    // }
+
+
     // Read mask matrix
     Mat truth;
     if (mask.isEmpty()) {
@@ -237,7 +249,7 @@ float EvaluateFused(const QString &simmat, const QString &simmat2, const QString
     return Evaluate(scores, truth, csv, target, query, matches, target2, "");
 }
 
-float EvaluateFused2(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float w3)
+float Evaluate(const QString &simmat, const QString &simmat2, const QString &simmat3, const QString &mask, const File &csv, unsigned int matches, float w1, float w2, float w3)
 {
     qDebug("Evaluating %s %s%s%s%s",
            qPrintable(simmat),
