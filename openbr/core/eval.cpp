@@ -210,8 +210,8 @@ float Evaluate(const QStringList &simmats, const QString &mask, const File &csv,
     }
 
     if (n_simmats > 1) {
-        float count_total = 0;
-        float count_fused = 0;
+        double count_total = 0;
+        double count_fused = 0;
         for (int i = 0; i < scores[0].rows; i++) {
             for (int j = 0; j < scores[0].cols; j++) {
                 const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
@@ -222,16 +222,15 @@ float Evaluate(const QStringList &simmats, const QString &mask, const File &csv,
 
                 if (simmat_val >= lowerBound && simmat_val <= upperBound) {
                     simmat_val *= weights[0];
-                    for (int k = 1; k < n_simmats; k++) {
-                        simmat_val += weights[k]*scores[k].at<BEE::SimmatValue>(i,j);
-                    }           
+                    for (int k = 1; k < n_simmats; k++)
+                        simmat_val += weights[k]*scores[k].at<BEE::SimmatValue>(i,j);     
                     scores[0].at<BEE::SimmatValue>(i,j) = simmat_val;
-                    count_fused += 1;
+                    count_fused++;
                 }
-                count_total += 1;
+                count_total++;
             }
-        }
-        qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
+        }  
+        qDebug("fused %lf percent of comparisons w/ scores falling between [%f, %f]",
             count_fused/count_total*100,
             lowerBound,
             upperBound);
