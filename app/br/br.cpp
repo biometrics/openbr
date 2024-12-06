@@ -50,6 +50,24 @@
  * \endcode
  */
 
+ QVector<float> convertStringToFloatVector(const QString& str) {
+    QVector<float> result;
+    QStringList values = str.split(",");
+
+    for (const QString& value : values) {
+        bool ok;
+        float num = value.toFloat(&ok);
+        if (ok) {
+            result.append(num);
+        } else {
+            // Handle conversion error, e.g., by throwing an exception or returning an empty vector
+            qDebug() << "Error converting string to float:" << value;
+        }
+    }
+
+    return result;
+}
+
 class FakeMain : public QRunnable
 {
     int argc;
@@ -122,6 +140,17 @@ public:
                     }
                 } else {
                     br_eval(parv[0], parv[1], parv[2], atoi(parv[3]));
+                }
+            } else if (!strcmp(fun, "evalfused")) {
+                check((parc == 4 || (parc == 6)), "Incorrect parameter count for 'evalfused'.");
+                if (parc == 4) {
+                    const QStringList simmatList = QString(parv[0]).split(",");
+                    const QVector<float> weights = convertStringToFloatVector(parv[3]);
+                    br_eval_fused(simmatList, parv[1], parv[2], 0, weights, -1e6, 1e6);
+                } else {
+                    const QStringList simmatList = QString(parv[0]).split(",");
+                    const QVector<float> weights = convertStringToFloatVector(parv[3]);
+                    br_eval_fused(simmatList, parv[1], parv[2], 0, weights, atof(parv[4]), atof(parv[5]));
                 }
             } else if (!strcmp(fun, "plot")) {
                 check(parc >= 2, "Incorrect parameter count for 'plot'.");
@@ -278,6 +307,7 @@ private:
                "-enroll <input_gallery> ... <input_gallery> {output_gallery}\n"
                "-compare <target_gallery> <query_gallery> [{output}]\n"
                "-eval <simmat> [<mask>] [{csv}] [{matches}]\n"
+               "-evalfused <simmat> <simmat2> [<simmat3>] [<mask>] [{csv}] <w1> <w2> [<w3>] <lowerBound> <upperBound>\n"
                "-plot <csv> ... <csv> {destination}\n"
                "\n"
                "==== Other Commands ====\n"
