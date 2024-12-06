@@ -151,43 +151,6 @@ float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &qu
     return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QStringList(), QString(), 0);
 }
 
-float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsigned int matches)
-{
-    qDebug("Evaluating %s%s%s",
-           qPrintable(simmat),
-           mask.isEmpty() ? "" : qPrintable(" with " + mask),
-           csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
-
-    // Read similarity matrix
-    QString target, query;
-    Mat scores;
-    if (simmat.endsWith(".mtx")) {
-        scores = BEE::readMatrix(simmat, &target, &query);
-    } else {
-        QScopedPointer<Format> format(Factory<Format>::make(simmat));
-        scores = format->read();
-    }
-
-    // Read mask matrix
-    Mat truth;
-    if (mask.isEmpty()) {
-        // Use the galleries specified in the similarity matrix
-        if (target.isEmpty()) qFatal("Unspecified target gallery.");
-        if (query.isEmpty()) qFatal("Unspecified query gallery.");
-
-        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
-                                              TemplateList::fromGallery(query).files());
-    } else {
-        File maskFile(mask);
-        maskFile.set("rows", scores.rows);
-        maskFile.set("columns", scores.cols);
-        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
-        truth = format->read();
-    }
-
-    return Evaluate(scores, truth, csv, {target}, query, matches);
-}
-
 float Evaluate(const QStringList &simmats, const QString &mask, const File &csv, unsigned int matches, const QVector<float> &weights, float lowerBound, float upperBound)
 {
     if (simmats.size() <= 0) {
@@ -199,10 +162,17 @@ float Evaluate(const QStringList &simmats, const QString &mask, const File &csv,
     }
 
     int n_simmats = simmats.size();
-    qDebug("Evaluating %d simmats%s%s", 
-           n_simmats,
+    if (n_simmats == 1) {
+        qDebug("Evaluating %s%s%s",
+           qPrintable(simmats[0]),
            mask.isEmpty() ? "" : qPrintable(" with " + mask),
            csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
+    } else {
+        qDebug("Evaluating %d simmats%s%s", 
+            n_simmats,
+            mask.isEmpty() ? "" : qPrintable(" with " + mask),
+            csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
+    }
 
     QVector<Mat> scores(n_simmats);
     QStringList targets;
@@ -239,31 +209,33 @@ float Evaluate(const QStringList &simmats, const QString &mask, const File &csv,
         truth = format->read();
     }
 
-    float count_total = 0;
-    float count_fused = 0;
-    for (int i = 0; i < scores[0].rows; i++) {
-        for (int j = 0; j < scores[0].cols; j++) {
-            const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
-            if (mask_val == BEE::DontCare) continue;
-            
-            BEE::SimmatValue simmat_val = scores[0].at<BEE::SimmatValue>(i,j);
-            if (simmat_val != simmat_val) continue;
+    if (n_simmats > 1) {
+        float count_total = 0;
+        float count_fused = 0;
+        for (int i = 0; i < scores[0].rows; i++) {
+            for (int j = 0; j < scores[0].cols; j++) {
+                const BEE::MaskValue mask_val = truth.at<BEE::MaskValue>(i,j);
+                if (mask_val == BEE::DontCare) continue;
+                
+                BEE::SimmatValue simmat_val = scores[0].at<BEE::SimmatValue>(i,j);
+                if (simmat_val != simmat_val) continue;
 
-            if (simmat_val >= lowerBound && simmat_val <= upperBound) {
-                simmat_val *= weights[0];
-                for (int k = 1; k < n_simmats; k++) {
-                    simmat_val += weights[k]*scores[k].at<BEE::SimmatValue>(i,j);
-                }           
-                scores[0].at<BEE::SimmatValue>(i,j) = simmat_val;
-                count_fused += 1;
+                if (simmat_val >= lowerBound && simmat_val <= upperBound) {
+                    simmat_val *= weights[0];
+                    for (int k = 1; k < n_simmats; k++) {
+                        simmat_val += weights[k]*scores[k].at<BEE::SimmatValue>(i,j);
+                    }           
+                    scores[0].at<BEE::SimmatValue>(i,j) = simmat_val;
+                    count_fused += 1;
+                }
+                count_total += 1;
             }
-            count_total += 1;
         }
+        qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
+            count_fused/count_total*100,
+            lowerBound,
+            upperBound);
     }
-    qDebug("fused %f percent of comparisons w/ scores falling between [%f, %f]",
-           count_fused/count_total*100,
-           lowerBound,
-           upperBound);
 
     return Evaluate(scores[0], truth, csv, targets, query, matches);
 }
@@ -554,7 +526,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
 void assertEval(const QString &simmat, const QString &mask, float accuracy)
 {
-    float result = Evaluate(simmat, mask, "", 0);
+    float result = Evaluate({simmat}, mask, "", 0, QVector<float>(), -1e6, 1e6);
     // Round result to nearest thousandth for comparison against input accuracy.  Input is expected to be from previous
     // results of br -eval.
     result = floor(result*1000+0.5)/1000;

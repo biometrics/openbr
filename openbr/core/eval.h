@@ -75,7 +75,6 @@
 
 namespace br
 {
-    float Evaluate(const QString &simmat, const QString &mask = "", const File &csv = "", unsigned int matches = 0); // Returns TAR @ FAR = 0.001
     float Evaluate(const QStringList &simmats, const QString &mask = "", const File &csv = "", unsigned int matches = 0, const QVector<float> &weights = QVector<float>(), float lowerBound = -1e6, float upperBound = 1e6); // Returns TAR @ FAR = 0.001
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv = "", int parition = 0);
     float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const File &csv = "", const QStringList &targets = QStringList(), const QString &query = "", unsigned int matches = 0);
