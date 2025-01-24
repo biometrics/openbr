@@ -154,7 +154,7 @@ endif() # NOT GCOV_PATH
 # Check supported compiler (Clang and GNU)
 get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 foreach(LANG ${LANGUAGES})
-    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" STREQUAL "")
+    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" STREQUAL "" AND NOT "${CMAKE_${LANG}_COMPILER_ID}" STREQUAL "NVIDIA")
         if("${CMAKE_${LANG}_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
             if("${CMAKE_${LANG}_COMPILER_VERSION}" VERSION_LESS 3)
                 message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
