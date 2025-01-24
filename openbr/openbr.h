@@ -18,11 +18,12 @@
 #define OPENBR_H
 
 #include <openbr/openbr_export.h>
+#include <QStringList>
+#include <QVector>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 BR_EXPORT const char *br_about();
 
@@ -49,6 +50,8 @@ BR_EXPORT void br_enroll_n(int num_inputs, const char *inputs[], const char *gal
 BR_EXPORT void br_project(const char *input, const char *output);
 
 BR_EXPORT float br_eval(const char *simmat, const char *mask, const char *csv = "", int matches = 0);
+
+BR_EXPORT float br_eval_fused(const QStringList &simmats, const char *mask, const char *csv = "", int matches = 0, const QVector<float> &weights = {}, float lowerBound = -1e6, float upperBound = 1e6);
 
 BR_EXPORT void br_assert_eval(const char *simmat, const char *mask, const float accuracy);
 
