@@ -151,17 +151,18 @@ if(NOT GCOV_PATH)
     message(FATAL_ERROR "gcov not found! Aborting...")
 endif() # NOT GCOV_PATH
 
-# Check supported compiler (Clang, GNU and Flang)
+# Check supported compiler (Clang and GNU)
 get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 foreach(LANG ${LANGUAGES})
-  if("${CMAKE_${LANG}_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
-    if("${CMAKE_${LANG}_COMPILER_VERSION}" VERSION_LESS 3)
-      message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
+    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" STREQUAL "")
+        if("${CMAKE_${LANG}_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
+            if("${CMAKE_${LANG}_COMPILER_VERSION}" VERSION_LESS 3)
+                message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
+            endif()
+        elseif(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU")
+            message(FATAL_ERROR "Compiler is not GNU! Aborting...")
+        endif()
     endif()
-  elseif(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU"
-         AND NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "(LLVM)?[Ff]lang")
-    message(FATAL_ERROR "Compiler is not GNU or Flang! Aborting...")
-  endif()
 endforeach()
 
 set(COVERAGE_COMPILER_FLAGS "-O1 -g --coverage"
