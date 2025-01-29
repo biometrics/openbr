@@ -40,7 +40,7 @@ endif()
 
 qt5_use_modules(stasm ${QT_DEPENDENCIES})
 set(SOURCE ${SOURCE} PARENT_SCOPE)
-target_link_libraries(stasm ${OpenCV_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
+target_link_libraries(stasm ${OpenCV_LIBS} Qt6::Core)
 
 install(FILES ${HEADERS} DESTINATION include)
 install(TARGETS stasm LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)

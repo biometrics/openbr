@@ -79,9 +79,9 @@ if(NOT BR_EMBEDDED)
   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()
 
-find_package(Qt5 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
+find_package(Qt6 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
 
-set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
+set(BR_THIRDPARTY_LIBS ${BR_THIRDPARTY_LIBS} Qt6::Core)
 if(IOS)
   set(QT_PCRE2_LIB "${_qt5Core_install_prefix}/lib/libqtpcre2.a")
   if(EXISTS ${QT_PCRE2_LIB})
