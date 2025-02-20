@@ -11,17 +11,17 @@ include(plugins/plugins.cmake)
 # Optional GUI module
 if(NOT BR_EMBEDDED)
   aux_source_directory(gui BR_GUI)
-  qt6_add_resources(BR_ICONS ../share/openbr/icons.qrc)
+  qt_add_resources(BR_ICONS ../share/openbr/icons.qrc)
   file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/gui/*.h)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
 # Plotting library
-qt6_add_resources(BR_PLOTTING ../share/openbr/plotting.qrc)
+qt_add_resources(BR_PLOTTING ../share/openbr/plotting.qrc)
 
 # Compile third party resources
 if(BR_THIRDPARTY_RESOURCES)
-  qt6_add_resources(THIRDPARTY_RESOURCES ${BR_THIRDPARTY_RESOURCES})
+  qt_add_resources(THIRDPARTY_RESOURCES ${BR_THIRDPARTY_RESOURCES})
 endif()
 
 add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_PLOTTING} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
