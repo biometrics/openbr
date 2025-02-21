@@ -24,7 +24,7 @@
 #include "core/plot.h"
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 
 using namespace br;
