@@ -26,7 +26,10 @@ endif()
 
 add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_PLOTTING} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
 
-target_link_libraries(openbr ${QT_DEPENDENCIES})
+foreach(QT_DEPENDENCY IN LISTS QT_DEPENDENCIES)
+    target_link_libraries(openbr "Qt6::${QT_DEPENDENCY}")
+endforeach()
+
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY
                              VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
