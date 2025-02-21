@@ -33,7 +33,7 @@ static int partialCopy(const QString &string, char *buffer, int buffer_length)
 {
     const QByteArray byteArray = string.toLocal8Bit();
 
-    int copyLength = std::min(buffer_length-1, byteArray.size());
+    int copyLength = std::min(buffer_length-1, (int)byteArray.size());
     if (copyLength < 0)
         return byteArray.size() + 1;
 
