@@ -74,7 +74,7 @@ if(BR_EMBEDDED)
 endif()
 
 # Find Qt
-set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Concurrent Core)
+set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Concurrent Core Core5Compat)
 if(NOT BR_EMBEDDED)
   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
 endif()

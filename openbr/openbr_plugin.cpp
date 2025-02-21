@@ -61,7 +61,8 @@ static const QMetaObject *getInterface(const QObject *obj)
 // () for lists in which argument order matters (e.g. First_Eye(100.0,100.0)).
 QString File::flat() const
 {
-    QStringList keys = this->localKeys(); qSort(keys);
+    QStringList keys = this->localKeys();
+    keys.sort();
     return this->flat(keys);
 }
 
