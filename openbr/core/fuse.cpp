@@ -122,7 +122,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
                 min(fused, matrices[i], fused);
         } else if (fusion.startsWith("Sum")) {
             QList<float> weights;
-            QStringList words = fusion.right(fusion.size()-3).split(":", QString::SkipEmptyParts);
+            QStringList words = fusion.right(fusion.size()-3).split(":", Qt::SkipEmptyParts);
             if (words.size() == 0) {
                 for (int k=0; k<matrices.size(); k++)
                     weights.append(1);

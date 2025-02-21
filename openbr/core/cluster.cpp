@@ -233,9 +233,9 @@ Neighborhood br::loadkNN(const QString &infile)
             continue;
         }
 
-        QStringList list = line.trimmed().split(",", QString::SkipEmptyParts);
+        QStringList list = line.trimmed().split(",", Qt::SkipEmptyParts);
         foreach (const QString &item, list) {
-            QStringList parts = item.trimmed().split(":", QString::SkipEmptyParts);
+            QStringList parts = item.trimmed().split(":", Qt::SkipEmptyParts);
             bool intOK = true;
             bool floatOK = true;
             int idx = parts[0].toInt(&intOK);
@@ -531,7 +531,7 @@ br::Clusters br::ReadClusters(const QString &csv)
 
     foreach (const QString &line, lines) {
         Cluster cluster;
-        QStringList ids = line.trimmed().split(",", QString::SkipEmptyParts);
+        QStringList ids = line.trimmed().split(",", Qt::SkipEmptyParts);
         foreach (const QString &id, ids) {
             bool ok;
             cluster.append(id.toInt(&ok));
