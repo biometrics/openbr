@@ -80,7 +80,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
 
 void br::Fuse(const QStringList &inputSimmats, const QString &normalization, const QString &fusion, const QString &outputSimmat)
 {
-    qDebug("Fusing %d to %s", inputSimmats.size(), qPrintable(outputSimmat));
+    qDebug("Fusing %lld to %s", inputSimmats.size(), qPrintable(outputSimmat));
 
     QString target, query, previousTarget, previousQuery;
     QList<Mat> originalMatrices;

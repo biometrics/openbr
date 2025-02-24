@@ -259,9 +259,10 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
     QDebug debug = qDebug();
     debug.noquote();
 
-    debug << endl << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
-    debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|") << endl;
-    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+    debug << QString();
+    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+");
+    debug << QString("|") << QString("FAR").leftJustified(10, ' ') << QString("|") << QString("TAR").leftJustified(10, ' ') << QString("|") << QString("Confidence").leftJustified(10, ' ') << QString("|") << QString("Pose Match").leftJustified(10, ' ') << QString("|");
+    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+");
 
     float poseMatch = 0;
     QList<ResolvedDetection> falsePositives, bottomTruePositives;
@@ -290,7 +291,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
                         debug << QString("|") << QString::number(totalTrueDetections ? TP / totalTrueDetections : 0, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(detection.confidence, 'f', 4).leftJustified(10, ' ');
                         debug << QString("|") << QString::number(TP ? poseMatch / TP : 0., 'f', 4).leftJustified(10, ' ');
-                        debug << QString("|") << endl;
+                        debug << QString("|");
                         break;
                     }
 
@@ -310,7 +311,7 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
     }
 
-    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+") << endl;
+    debug << QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+")+QString("-").repeated(12)+QString("+");
 
     if (discrete) {
         if (Globals->verbose) {
@@ -330,9 +331,9 @@ QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &d
         }
     }
 
-    debug << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision)) << endl;
-    debug << QString("Maximum %1 Recall:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Recall)) << endl;
-    debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number((points.last().Recall + points.last().Precision) ? 2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision) : 0)) << endl;
+    debug << QString("Minimum %1 Precision:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Precision));
+    debug << QString("Maximum %1 Recall:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number(points.last().Recall));
+    debug << QString("%1 F1 Score:").arg(discrete ? "Discrete" : "Continuous").leftJustified(32, ' ') << QString("%1").arg(QString::number((points.last().Recall + points.last().Precision) ? 2 * (points.last().Recall * points.last().Precision) / (points.last().Recall + points.last().Precision) : 0));
 
     const int keep = qMin(points.size(), Max_Points);
     if (keep < 1) qFatal("Insufficient points.");
