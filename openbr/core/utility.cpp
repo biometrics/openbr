@@ -1,5 +1,6 @@
 #include <openbr/core/qtutils.h>
 #include "utility.h"
+#include <QRegExp>
 
 QStringList br::getFiles(QDir dir, bool recursive)
 {
