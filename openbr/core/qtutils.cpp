@@ -239,8 +239,8 @@ QStringList toStringList(int num_strings, const char *strings[])
 
 QString shortTextHash(QString string)
 {
-    string.remove(QRegExp("[{}<>&]"));
-    return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegExp("[^a-zA-Z1-9]")).left(6);
+    string.remove(QRegularExpression("[{}<>&]"));
+    return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegularExpression("[^a-zA-Z1-9]")).left(6);
 }
 
 QStringList parse(QString args, char split, bool *ok)
@@ -303,8 +303,8 @@ void checkArgsSize(const QString &name, const QStringList &args, int min, int ma
 {
     if (max == -1) max = std::numeric_limits<int>::max();
     if (max == 0) max = min;
-    if (args.size() < min) qFatal("%s expects at least %d arguments, got %d", qPrintable(name), min, args.size());
-    if (args.size() > max) qFatal("%s expects no more than %d arguments, got %d", qPrintable(name), max, args.size());
+    if (args.size() < min) qFatal("%s expects at least %d arguments, got %lld", qPrintable(name), min, args.size());
+    if (args.size() > max) qFatal("%s expects no more than %d arguments, got %lld", qPrintable(name), max, args.size());
 }
 
 QPointF toPoint(const QString &string, bool *ok)
