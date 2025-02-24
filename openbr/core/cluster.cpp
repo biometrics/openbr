@@ -446,7 +446,7 @@ float purityMetric(const br::Clusters &clusters, const QVector<int> &truthIdx)
         int max = 0;
 
         QList<int> tempTruthVal = QList<int>();
-        foreach(int clustID, truthVals.toSet()) {
+        foreach(int clustID, truthVals) {
             if (!tempTruthVal.contains(clustID)) {
                 int cnt = truthVals.count(clustID);
                 if (cnt > max) {
@@ -560,7 +560,7 @@ void br::WriteClusters(const Clusters &clusters, const QString &csv)
     foreach (Cluster cluster, clusters) {
         if (cluster.empty()) continue;
 
-        qSort(cluster);
+        std::sort(cluster.begin(), cluster.end());
         QStringList ids;
         foreach (int id, cluster)
             ids.append(QString::number(id));
