@@ -131,7 +131,7 @@ Neighborhood br::knnFromSimmat(const QList<cv::Mat> &simmats, int k)
         for (int j=0; j<allNeighbors.size(); j++) {
             Neighbors &val = allNeighbors[j];
             const int cutoff = k; // Number of neighbors to keep
-            int keep = std::min(cutoff, val.size());
+            int keep = std::min(cutoff, static_cast<int>(val.size()));
             std::partial_sort(val.begin(), val.begin()+keep, val.end(), compareNeighbors);
             neighborhood.append((Neighbors)val.mid(0, keep));
         }
@@ -223,11 +223,9 @@ Neighborhood br::loadkNN(const QString &infile)
     file.close();
     int min_idx = INT_MAX;
     int max_idx = -1;
-    int count = 0;
 
     foreach (const QString &line, lines) {
         Neighbors neighbors;
-        count++;
         if (line.trimmed().isEmpty()) {
             neighborhood.append(neighbors);
             continue;
@@ -332,7 +330,12 @@ Clusters br::ClusterGraph(Neighborhood neighborhood, float aggressiveness, const
 
         // Construct new clusters
         QHash<int, int> clusterIDLUT;
-        QList<int> allClusterIDs = QSet<int>::fromList(nextClusterIDs.toList()).values();
+        QList<int> allClusterIDs;
+        foreach(auto id, nextClusterIDs) {
+            if (!allClusterIDs.contains(id))
+                allClusterIDs.append(id);
+        }
+
         for (int i=0; i<neighborhood.size(); i++)
             clusterIDLUT[i] = allClusterIDs.indexOf(nextClusterIDs[i]);
 
@@ -441,10 +444,16 @@ float purityMetric(const br::Clusters &clusters, const QVector<int> &truthIdx)
             truthVals.append(truthIdx[templateID]);
         }
         int max = 0;
+
+        QList<int> tempTruthVal = QList<int>();
         foreach(int clustID, truthVals.toSet()) {
-            int cnt = truthVals.count(clustID);
-            if (cnt > max) {
-                max = cnt;
+            if (!tempTruthVal.contains(clustID)) {
+                int cnt = truthVals.count(clustID);
+                if (cnt > max) {
+                    max = cnt;
+                }
+
+                tempTruthVal.append(clustID);
             }
         }
         correct += max;
