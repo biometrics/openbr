@@ -1627,7 +1627,7 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
         const TemplateList &queries(stepTarget ? query : TemplateList(query.mid(i, stepSize)));
         const int targetOffset = stepTarget ? i : 0;
         const int queryOffset = stepTarget ? 0 : i;
-        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&Distance::compareBlock, this, targets, queries, output, targetOffset, queryOffset));
         else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
     futures.waitForFinished();
