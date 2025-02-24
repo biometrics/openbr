@@ -74,7 +74,7 @@ struct AlgorithmCore
                 if (data[i].file.get<bool>("allPartitions",false))
                     data.removeAt(i);
 
-        qDebug("%d Training Files", data.size());
+        qDebug("%lld Training Files", data.size());
 
         Globals->startTime.start();
 
@@ -348,7 +348,7 @@ struct AlgorithmCore
         foreach (const QString &s, tail)
             toRemove.append(s.split(',').at(1));
 
-        QSet<QString> duplicates = QSet<QString>::fromList(toRemove);
+        QSet<QString> duplicates = QSet<QString>(toRemove.begin(), toRemove.end());
 
         QStringList fileNames = inputFiles.names();
 
@@ -358,7 +358,7 @@ struct AlgorithmCore
 
         std::sort(indices.begin(),indices.end(),std::greater<float>());
 
-        qDebug("\n%d duplicates removed.", indices.size());
+        qDebug("\n%lld duplicates removed.", indices.size());
 
         for (int i=0; i<indices.size(); i++)
             inputFiles.removeAt(indices[i]);
@@ -707,7 +707,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
         if ((targetFiles.size() != m.cols || queryFiles.size() != m.rows)
             && (m.cols != 1 || targetFiles.size() != m.rows || queryFiles.size() != m.rows))
-            qFatal("Similarity matrix (%d, %d) and header (%d, %d) size mismatch.", m.rows, m.cols, queryFiles.size(), targetFiles.size());
+            qFatal("Similarity matrix (%d, %d) and header (%lld, %lld) size mismatch.", m.rows, m.cols, queryFiles.size(), targetFiles.size());
 
         QSharedPointer<Output> o(Factory<Output>::make(outputFile));
         o->initialize(targetFiles, queryFiles);
@@ -730,7 +730,7 @@ void br::Convert(const File &fileType, const File &inputFile, const File &output
 
 void br::Cat(const QStringList &inputGalleries, const QString &outputGallery)
 {
-    qDebug("Concatenating %d galleries to %s", inputGalleries.size(), qPrintable(outputGallery));
+    qDebug("Concatenating %lld galleries to %s", inputGalleries.size(), qPrintable(outputGallery));
     foreach (const QString &inputGallery, inputGalleries)
         if (inputGallery == outputGallery)
             qFatal("outputGallery must not be in inputGalleries.");
