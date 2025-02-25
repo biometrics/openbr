@@ -75,8 +75,8 @@ class mtxOutput : public Output
         this->rowBlock = rowBlock;
         this->columnBlock = columnBlock;
 
-        int matrixRows  = std::min(queryFiles.size()-rowBlock*this->blockRows, blockRows);
-        int matrixCols  = std::min(targetFiles.size()-columnBlock*this->blockCols, blockCols);
+        int matrixRows  = std::min(static_cast<int>(queryFiles.size())-rowBlock*this->blockRows, blockRows);
+        int matrixCols  = std::min(static_cast<int>(targetFiles.size())-columnBlock*this->blockCols, blockCols);
 
         blockScores = cv::Mat(matrixRows, matrixCols, CV_32FC1);
     }
