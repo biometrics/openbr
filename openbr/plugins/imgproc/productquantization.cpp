@@ -232,7 +232,7 @@ private:
 
         QFutureSynchronizer<void> futures;
         for (int i=0; i<lut.rows; i++) {
-            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &ProductQuantizationTransform::_train, subdata[i], labels, &subluts[i], &centers[i]));
+            if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&ProductQuantizationTransform::_train, this, subdata[i], labels, &subluts[i], &centers[i]));
             else                                                                                               _train (subdata[i], labels, &subluts[i], &centers[i]);
         }
         futures.waitForFinished();

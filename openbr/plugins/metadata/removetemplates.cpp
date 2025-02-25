@@ -17,7 +17,7 @@
 #include <QRegularExpression>
 
 #include <openbr/plugins/openbr_internal.h>
-
+#include <QRegExp>
 namespace br
 {
 

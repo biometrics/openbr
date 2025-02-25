@@ -19,6 +19,7 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
+#include <QRegExp>
 
 using namespace cv;
 
@@ -45,7 +46,7 @@ class csvFormat : public Format
         QList< QList<float> > valsList;
         foreach (const QString &line, lines) {
             QList<float> vals;
-            foreach (const QString &word, line.split(QRegExp(" *, *"), Qt::SkipEmptyParts)) {
+            foreach (const QString &word, line.split(QRegularExpression(" *, *"), Qt::SkipEmptyParts)) {
                 bool ok;
                 const float val = word.toFloat(&ok);
                 vals.append(val);
