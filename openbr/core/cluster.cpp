@@ -444,16 +444,10 @@ float purityMetric(const br::Clusters &clusters, const QVector<int> &truthIdx)
             truthVals.append(truthIdx[templateID]);
         }
         int max = 0;
-
-        QList<int> tempTruthVal = QList<int>();
-        foreach(int clustID, truthVals) {
-            if (!tempTruthVal.contains(clustID)) {
-                int cnt = truthVals.count(clustID);
-                if (cnt > max) {
-                    max = cnt;
-                }
-
-                tempTruthVal.append(clustID);
+        foreach(int clustID, QSet<int>(truthVals.cbegin(), truthVals.cend())) {
+            int cnt = truthVals.count(clustID);
+            if (cnt > max) {
+                max = cnt;
             }
         }
         correct += max;
