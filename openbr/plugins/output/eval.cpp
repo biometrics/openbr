@@ -50,7 +50,7 @@ class evalOutput : public MatrixOutput
             } else {
                 QFutureSynchronizer<float> futures;
                 for (int i=0; i<Globals->crossValidate; i++)
-                    futures.addFuture(QtConcurrent::run(Evaluate, data, targetFiles, queryFiles, csv.arg(QString::number(i)), i));
+                    futures.addFuture(QtConcurrent::run(qOverload<const cv::Mat &, const FileList &, const FileList &, const File &, int>(Evaluate), data, targetFiles, queryFiles, csv.arg(QString::number(i)), i));
                 futures.waitForFinished();
 
                 QList<float> TARs;

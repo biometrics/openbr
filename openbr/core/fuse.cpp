@@ -80,7 +80,7 @@ static void normalizeMatrix(Mat &matrix, const Mat &mask, const QString &method)
 
 void br::Fuse(const QStringList &inputSimmats, const QString &normalization, const QString &fusion, const QString &outputSimmat)
 {
-    qDebug("Fusing %d to %s", inputSimmats.size(), qPrintable(outputSimmat));
+    qDebug("Fusing %lld to %s", inputSimmats.size(), qPrintable(outputSimmat));
 
     QString target, query, previousTarget, previousQuery;
     QList<Mat> originalMatrices;
@@ -122,7 +122,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
                 min(fused, matrices[i], fused);
         } else if (fusion.startsWith("Sum")) {
             QList<float> weights;
-            QStringList words = fusion.right(fusion.size()-3).split(":", QString::SkipEmptyParts);
+            QStringList words = fusion.right(fusion.size()-3).split(":", Qt::SkipEmptyParts);
             if (words.size() == 0) {
                 for (int k=0; k<matrices.size(); k++)
                     weights.append(1);

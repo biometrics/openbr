@@ -15,9 +15,9 @@ else()
   add_executable(Example WIN32 ${SRC})
 endif()
 
-qt5_use_modules(Example ${QT_DEPENDENCIES})
+target_link_libraries(Example ${QT_DEPENDENCIES})
 
-target_link_libraries(Example openbr ${Qt5Core_QTMAIN_LIBRARIES})
+target_link_libraries(Example openbr Qt6::Core)
 
 install(TARGETS Example RUNTIME DESTINATION bin BUNDLE DESTINATION .)
 
