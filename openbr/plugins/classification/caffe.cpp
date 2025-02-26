@@ -97,7 +97,7 @@ protected:
         MemoryDataLayer<float> *dataLayer = static_cast<MemoryDataLayer<float> *>(net->layers()[0].get());
 
         if (src.size() != dataLayer->batch_size())
-            qFatal("src should have %d (batch size) mats. It has %d mats.", dataLayer->batch_size(), src.size());
+            qFatal("src should have %d (batch size) mats. It has %lld mats.", dataLayer->batch_size(), src.size());
 
         dataLayer->AddMatVector(src.toVector().toStdVector(), std::vector<int>(src.size(), 0));
 

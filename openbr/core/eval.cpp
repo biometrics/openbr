@@ -254,7 +254,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     std::vector<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
-    size_t falsePositives = 0, previousFalsePositives = 0;
+    size_t falsePositives = 0;
     size_t truePositives = 0, previousTruePositives = 0;
     size_t falseSearches = 0, previousFalseSearches = 0;
     size_t trueSearches = 0, previousTrueSearches = 0;
@@ -307,7 +307,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
             if (EERIndex == 0) {
                 if (floor(float(falsePositives)/impostorCount*100+0.5)/100 == floor((1-float(truePositives)/genuineCount)*100+0.5)/100) EERIndex = index-1;
             }
-            previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
         }
 

@@ -330,12 +330,7 @@ Clusters br::ClusterGraph(Neighborhood neighborhood, float aggressiveness, const
 
         // Construct new clusters
         QHash<int, int> clusterIDLUT;
-        QList<int> allClusterIDs;
-        foreach(auto id, nextClusterIDs) {
-            if (!allClusterIDs.contains(id))
-                allClusterIDs.append(id);
-        }
-
+        QList<int> allClusterIDs = QSet<int>(nextClusterIDs.cbegin(), nextClusterIDs.cend()).values();
         for (int i=0; i<neighborhood.size(); i++)
             clusterIDLUT[i] = allClusterIDs.indexOf(nextClusterIDs[i]);
 
@@ -379,7 +374,7 @@ Clusters br::ClusterGraph(const QString & knnName, float aggressiveness, const Q
 // Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
 br::Clusters br::ClusterSimmat(const QList<cv::Mat> &simmats, float aggressiveness, const QString &csv)
 {
-    qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
+    qDebug("Clustering %lld simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
 
     // Read in gallery parts, keeping top neighbors of each template
     Neighborhood neighborhood = knnFromSimmat(simmats);
