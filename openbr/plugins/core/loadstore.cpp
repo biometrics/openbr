@@ -212,12 +212,13 @@ private:
 
     QString getFileName() const
     {
-        if (!fileName.isEmpty())
+        if (!fileName.isEmpty()) {
             foreach (const QString &file, QStringList() << fileName
                                                         << Globals->sdkPath + "/share/openbr/models/distances/" + fileName
                                                         << Globals->sdkPath + "/../share/openbr/models/distances/" + fileName)
                 if (QFileInfo(file).exists())
                     return file;
+        }
         return QString();
     }
 

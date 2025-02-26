@@ -411,12 +411,12 @@ void showFile(const QString &file)
 
 QString toString(const QVariant &variant)
 {
-    if (variant.canConvert(QVariant::List)) return toString(qvariant_cast<QVariantList>(variant));
-    else if (variant.canConvert(QVariant::String)) return variant.toString();
-    else if (variant.canConvert(QVariant::PointF)) {
+    if (variant.canConvert(QMetaType(QMetaType::QVariantList))) return toString(qvariant_cast<QVariantList>(variant));
+    else if (variant.canConvert(QMetaType(QMetaType::QString))) return variant.toString();
+    else if (variant.canConvert(QMetaType(QMetaType::QPointF))) {
         QPointF point = qvariant_cast<QPointF>(variant);
         return QString("(%1,%2)").arg(QString::number(point.x()),QString::number(point.y()));
-    } else if (variant.canConvert(QVariant::RectF)) {
+    } else if (variant.canConvert(QMetaType(QMetaType::QRectF))) {
         QRectF rect = qvariant_cast<QRectF>(variant);
         return QString("(%1,%2,%3,%4)").arg(QString::number(rect.x()),
                                             QString::number(rect.y()),
