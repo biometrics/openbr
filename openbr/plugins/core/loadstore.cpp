@@ -16,7 +16,7 @@
 
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
-#include <QRegExp>
+#include <QRegularExpression>
 
 namespace br
 {
@@ -63,7 +63,8 @@ private:
     void init()
     {
         if (transform != NULL) return;
-        if (fileName.isEmpty()) fileName = QRegExp("^[_a-zA-Z0-9]+$").exactMatch(transformString) ? transformString : QtUtils::shortTextHash(transformString);
+        if (fileName.isEmpty())
+            fileName = QRegularExpression("^[_a-zA-Z0-9]+$").match(transformString).hasMatch() ? transformString : QtUtils::shortTextHash(transformString);
 
         if (!tryLoad()) {
             transform = make(transformString);

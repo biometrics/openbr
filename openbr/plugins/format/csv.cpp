@@ -19,7 +19,6 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/opencvutils.h>
 #include <openbr/core/qtutils.h>
-#include <QRegExp>
 
 using namespace cv;
 

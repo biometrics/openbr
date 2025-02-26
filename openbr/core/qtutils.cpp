@@ -23,7 +23,6 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QProcessEnvironment>
-#include <QRegExp>
 #include <QRegularExpression>
 #include <QStack>
 #include <QUrl>

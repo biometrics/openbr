@@ -24,7 +24,7 @@
 #include <QPointF>
 #include <QProcess>
 #include <QRect>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QThreadPool>
 #include <QtConcurrentRun>
 #include <algorithm>
@@ -1237,47 +1237,47 @@ QString br::Context::scratchPath()
 QStringList br::Context::objects(const char *abstractions, const char *implementations, bool parameters)
 {
     QStringList objectList;
-    QRegExp abstractionsRegExp(abstractions);
-    QRegExp implementationsRegExp(implementations);
+    QRegularExpression abstractionsRegExp(abstractions);
+    QRegularExpression implementationsRegExp(implementations);
 
-    if (abstractionsRegExp.exactMatch("Abbreviation")) {
+    if (abstractionsRegExp.match("Abbreviation").hasMatch()) {
         foreach (const QString &name, Globals->abbreviations.keys())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Globals->abbreviations[name] : ""));
     }
-    if (abstractionsRegExp.exactMatch("Distance")) {
+    if (abstractionsRegExp.match("Distance").hasMatch()) {
         foreach (const QString &name, Factory<Distance>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Distance>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Format")) {
+    if (abstractionsRegExp.match("Format").hasMatch()) {
         foreach (const QString &name, Factory<Format>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Format>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Initializer")) {
+    if (abstractionsRegExp.match("Initializer").hasMatch()) {
         foreach (const QString &name, Factory<Initializer>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Initializer>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Output")) {
+    if (abstractionsRegExp.match("Output").hasMatch()) {
         foreach (const QString &name, Factory<Output>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Output>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Transform")) {
+    if (abstractionsRegExp.match("Transform").hasMatch()) {
         foreach (const QString &name, Factory<Transform>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Representation")) {
+    if (abstractionsRegExp.match("Representation").hasMatch()) {
         foreach (const QString &name, Factory<Representation>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Representation>::parameters(name) : ""));
     }
-    if (abstractionsRegExp.exactMatch("Classifier")) {
+    if (abstractionsRegExp.match("Classifier").hasMatch()) {
         foreach (const QString &name, Factory<Classifier>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Classifier>::parameters(name) : ""));
     }
     return objectList;

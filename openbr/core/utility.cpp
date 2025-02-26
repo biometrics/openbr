@@ -1,6 +1,6 @@
 #include <openbr/core/qtutils.h>
 #include "utility.h"
-#include <QRegExp>
+#include <QRegularExpression>
 
 QStringList br::getFiles(QDir dir, bool recursive)
 {
@@ -43,12 +43,10 @@ QStringList br::getFiles(const QString &regexp)
 {
     QFileInfo fileInfo(regexp);
     QDir dir(fileInfo.dir());
-    QRegExp re(fileInfo.fileName());
-    re.setPatternSyntax(QRegExp::Wildcard);
-
+    QRegularExpression re = QRegularExpression(QRegularExpression::wildcardToRegularExpression(fileInfo.fileName()));
     QStringList files;
     foreach (const QString &fileName, dir.entryList(QDir::Files))
-        if (re.exactMatch(fileName))
+        if (re.match(fileName).hasMatch())
             files.append(dir.filePath(fileName));
     return files;
 }

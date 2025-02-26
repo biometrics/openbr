@@ -17,7 +17,6 @@
 #include <openbr/plugins/openbr_internal.h>
 #include <openbr/core/qtutils.h>
 #include <openbr/core/common.h>
-#include <QRegExp>
 
 namespace br
 {
