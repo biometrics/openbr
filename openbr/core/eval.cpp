@@ -1273,7 +1273,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
         if (success) QtUtils::showFile("EvalRegression.pdf");
     }
 
-    qDebug("Total Samples = %lli", predicted.size());
+    qDebug("Total Samples = %lld", predicted.size());
     qDebug("RMS Error = %f", sqrt(rms));
     qDebug("MAE = %f", mae);
     qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());

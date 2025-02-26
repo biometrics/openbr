@@ -348,7 +348,7 @@ struct AlgorithmCore
         foreach (const QString &s, tail)
             toRemove.append(s.split(',').at(1));
 
-        QSet<QString> duplicates = QSet<QString>(toRemove.begin(), toRemove.end());
+        QSet<QString> duplicates = QSet<QString>(toRemove.cbegin(), toRemove.cend());
 
         QStringList fileNames = inputFiles.names();
 
