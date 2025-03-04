@@ -311,7 +311,7 @@ function(setup_target_for_coverage_lcov)
         # Generate SonarQube output
         set(GCOVR_XML_CMD
             ${GCOVR_PATH} --sonarqube ${Coverage_NAME}_sonarqube.xml -r ${BASEDIR} ${GCOVR_ADDITIONAL_ARGS}
-            ${GCOVR_EXCLUDE_ARGS} --object-directory=${PROJECT_BINARY_DIR} .
+            ${GCOVR_EXCLUDE_ARGS} .
         )
         set(GCOVR_XML_CMD_COMMAND
             COMMAND ${GCOVR_XML_CMD}
