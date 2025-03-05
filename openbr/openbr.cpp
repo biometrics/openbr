@@ -103,7 +103,12 @@ void br_project(const char *input, const char *gallery)
 
 float br_eval(const char *simmat, const char *mask, const char *csv, int matches)
 {
-    return Evaluate(simmat, mask, csv, matches);
+    return Evaluate({simmat}, mask, csv, matches, QVector<float>(), -1e6, 1e6);
+}
+
+float br_eval_fused(const QStringList &simmats, const char *mask, const char *csv, int matches, const QVector<float> &weights, float lowerBound, float upperBound)
+{
+    return Evaluate(simmats, mask, csv, matches, weights, lowerBound, upperBound);
 }
 
 void br_assert_eval(const char *simmat, const char *mask, const float accuracy)
