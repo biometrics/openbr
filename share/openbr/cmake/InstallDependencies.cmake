@@ -67,7 +67,6 @@ function(install_qt_library lib)
         set(Qt6_LIB_DIR "${Qt6_LIB_DIR}/lib")
       endif()
       install(FILES ${Qt6_LIB_DIR}/libQt6${lib}.so.6.${Qt6_VERSION_MINOR}.${Qt6_VERSION_PATCH} DESTINATION lib)
-      install(FILES ${Qt6_LIB_DIR}/libQt6${lib}.so.6.${Qt6_VERSION_MINOR} DESTINATION lib)
       install(FILES ${Qt6_LIB_DIR}/libQt6${lib}.so.6 DESTINATION lib)
       install(FILES ${Qt6_LIB_DIR}/libQt6${lib}.so DESTINATION lib)
     endif()
@@ -116,14 +115,16 @@ endfunction()
 # Qt SSL Plugins
 function(install_qt_ssl)
   if(${BR_INSTALL_DEPENDENCIES})
+    set(Qt6_tls_DIR "${Qt6_DIR}/../../../plugins/tls")
     if(CMAKE_HOST_APPLE)
-      set(Qt6_tls_DIR "${Qt6_DIR}/../../../plugins/tls")
       install(FILES ${Qt6_tls_DIR}/libqcertonlybackend.dylib ${Qt6_tls_DIR}/libqsecuretransportbackend.dylib
               DESTINATION bin/plugins/tls)
+    elseif(UNIX AND NOT APPLE)
+      install(FILES ${Qt6_tls_DIR}/libqcertonlybackend.so ${Qt6_tls_DIR}/libqopensslbackend.so
+              DESTINATION bin/tls)
     endif()
   endif()
 endfunction()
-
 
 function(install_qt_audio)
   if(${BR_INSTALL_DEPENDENCIES})
