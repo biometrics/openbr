@@ -61,6 +61,7 @@ endif()
 install_qt_misc()
 install_opencv_libraries(OPENCV_DEPENDENCIES)
 install_ffmpeg()
+install_qt_ssl()
 
 set(BR_INSTALL_ICU ON CACHE BOOL "Install Qt ICU libraries")
 if(BR_INSTALL_ICU)
