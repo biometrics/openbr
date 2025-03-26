@@ -1,5 +1,5 @@
 #include <QDir>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 #include <openbr/openbr.h>
 
@@ -35,11 +35,13 @@ void br::Dataset::setAlgorithm(const QString &algorithm)
 {
     this->algorithm = algorithm;
     QStringList datasets;
-    QRegExp re("^" + algorithm + "_(.+).csv$");
-    foreach (const QString &file, QDir(QString("%1/share/openbr/Algorithm_Dataset/").arg(br_sdk_path())).entryList())
-        if (re.indexIn(file) != -1)
-            datasets.append(re.cap(1));
-    qSort(datasets.begin(), datasets.end(), compareDatasets);
+    QRegularExpression re("^" + algorithm + "_(.+).csv$");
+    foreach (const QString &file, QDir(QString("%1/share/openbr/Algorithm_Dataset/").arg(br_sdk_path())).entryList()) {
+        QRegularExpressionMatch match = re.match(file);
+        if (match.hasMatch())
+            datasets.append(match.captured(1));
+    }
+    std::sort(datasets.begin(), datasets.end(), compareDatasets);
     clear();
     addItems(datasets);
     setVisible(!datasets.isEmpty());
