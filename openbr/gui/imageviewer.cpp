@@ -25,7 +25,7 @@
 /*** PUBLIC ***/
 br::ImageViewer::ImageViewer(QWidget *parent)
     : QLabel(parent),
-    mutex(QMutex::Recursive)
+    mutex()
 {
     setAlignment(Qt::AlignCenter);
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

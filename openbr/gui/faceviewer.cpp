@@ -73,7 +73,7 @@ void FaceViewer::setFile(const File &file_)
         landmarks.append(QPointF());
     nearestLandmark = -1;
 
-    QtConcurrent::run(this, &FaceViewer::refreshImage);
+    QtConcurrent::run(&FaceViewer::refreshImage, this);
 }
 
 void FaceViewer::refreshImage()
@@ -207,7 +207,7 @@ void FaceViewer::paintEvent(QPaintEvent *event)
         setCursor(QCursor(Qt::BlankCursor));
 
         QSize reticleSize = src.size() *.1;
-        QSize displaySize = pixmap()->size() *.3;
+        QSize displaySize = pixmap().size() *.3;
 
         QRect reticle = getImageRect(mousePoint, reticleSize);
         QImage reticleImage = src.copy(reticle).scaled(src.size()*2.0, Qt::KeepAspectRatio);

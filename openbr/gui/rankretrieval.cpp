@@ -54,7 +54,7 @@ void RankRetrieval::enroll()
     File targetGallery(targetPath + ".gal");
     targetGallery.set("append", true);
 
-    enrollWatcher.setFuture(QtConcurrent::run(Enroll, target.flat(), targetGallery.flat()));
+    enrollWatcher.setFuture(QtConcurrent::run(qOverload<const File &, const File &>(Enroll), target.flat(), targetGallery.flat()));
 }
 
 void RankRetrieval::compare()
