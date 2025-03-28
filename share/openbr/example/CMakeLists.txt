@@ -15,7 +15,9 @@ else()
   add_executable(Example WIN32 ${SRC})
 endif()
 
-target_link_libraries(Example ${QT_DEPENDENCIES})
+foreach(QT_DEPENDENCY IN LISTS QT_DEPENDENCIES)
+  target_link_libraries(Example "Qt6::${QT_DEPENDENCY}")
+endforeach()
 
 target_link_libraries(Example openbr Qt6::Core)
 
