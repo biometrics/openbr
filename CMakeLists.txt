@@ -76,7 +76,7 @@ endif()
 # Find Qt
 set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Concurrent Core)
 if(NOT BR_EMBEDDED)
-  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} DBus Gui Network Sql Widgets Xml)
 endif()
 
 find_package(Qt6 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
