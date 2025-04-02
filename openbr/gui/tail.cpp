@@ -74,7 +74,7 @@ void Tail::wheelEvent(QWheelEvent *event)
 {
     QWidget::wheelEvent(event);
     event->accept();
-    if (event->delta() < 0) next();
+    if (event->angleDelta().y() < 0) next();
     else                    previous();
 }
 

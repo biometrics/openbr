@@ -162,7 +162,7 @@ void MeanStdDev(const V<T> &vals, double *mean, double *stddev)
 template<template<typename> class C, typename T>
 T Median(C<T> vals, T *q1 = 0, T *q3 = 0)
 {
-    qSort(vals);
+    std::sort(vals.begin(), vals.end());
     if (q1 != 0) *q1 = vals.isEmpty() ? 0 : vals[1*vals.size()/4];
     if (q3 != 0) *q3 = vals.isEmpty() ? 0 : vals[3*vals.size()/4];
     return vals.isEmpty() ? 0 : vals[vals.size()/2];

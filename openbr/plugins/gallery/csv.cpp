@@ -179,7 +179,7 @@ class csvGallery : public FileGallery
             // read header
             QByteArray lineBytes = f.readLine();
             QString line = QString::fromLocal8Bit(lineBytes).trimmed();
-            QRegExp regexp("\\s*,\\s*");
+            QRegularExpression regexp("\\s*,\\s*");
             headers = CSVHeaderList::fromHeaders(line.split(regexp).mid(1));
         }
 
