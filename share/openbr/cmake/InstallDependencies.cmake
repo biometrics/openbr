@@ -55,7 +55,7 @@ function(install_qt_library lib)
         install(FILES ${Qt6_INSTALL_DIR}/bin/Qt6${lib}${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin)
       else()
         # vcpkg installs the libraries to the lib folder
-        install(FILES ${Qt6_INSTALL_DIR}/lib/Qt6${lib}${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll DESTINATION bin)
+        install(FILES ${Qt6_INSTALL_DIR}/lib/Qt6${lib}${BR_INSTALL_DEPENDENCIES_SUFFIX}.lib DESTINATION bin)
       endif()
     elseif(CMAKE_HOST_APPLE)
       if (EXISTS "${Qt6_INSTALL_DIR}/lib/Qt${lib}.framework")
