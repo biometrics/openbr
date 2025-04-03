@@ -60,23 +60,29 @@ def _handle_string_func(func, *moretypes):
 def init_brpy(br_loc='/usr/local/lib'):
     """Initializes all function inputs and outputs for the br ctypes lib object"""
 
-    lib_path = os.environ.get('LD_LIBRARY_PATH')
-    paths = [br_loc]
-    if lib_path:
-        paths.extend(lib_path.split(':'))
+    if br_loc.endswith('.dylib') or br_loc.endswith('.so'):
+        # Full path to the OpenBR library provided
+        br = cdll.LoadLibrary(br_loc)
+        found = True
+    else:
+        # Search provided location and known library paths
+        lib_path = os.environ.get('LD_LIBRARY_PATH')
+        paths = [br_loc]
+        if lib_path:
+            paths.extend(lib_path.split(':'))
 
-    found = False
-    for p in paths:
-        dylib = '%s/%s.%s' % (p, 'libopenbr', 'dylib')
-        so = '%s/%s.%s' % (p, 'libopenbr', 'so')
-        if os.path.exists(dylib):
-            br = cdll.LoadLibrary(dylib)
-            found = True
-            break
-        elif os.path.exists(so):
-            br = cdll.LoadLibrary(so)
-            found = True
-            break
+        found = False
+        for p in paths:
+            dylib = os.path.join(p, f'libopenbr.dylib')
+            so = os.path.join(p, f'libopenbr.so')
+            if os.path.exists(dylib):
+                br = cdll.LoadLibrary(dylib)
+                found = True
+                break
+            elif os.path.exists(so):
+                br = cdll.LoadLibrary(so)
+                found = True
+                break
 
     if not found:
         raise ValueError('Neither .so nor .dylib libopenbr found in %s' % br_loc)
