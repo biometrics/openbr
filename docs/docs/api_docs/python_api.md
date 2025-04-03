@@ -10,8 +10,8 @@ The Python API is a light wrapper of the C API. It creates an object that has [a
     # you may change this by passing a different path to the shared objects
     br = init_brpy(br_loc='/path/to/libopenbr')
     br.br_initialize_default()
-    br.br_set_property('algorithm','CatFaceRecognitionModel') # also made up
-    br.br_set_property('enrollAll','true')
+    br.br_set_property(b'algorithm',b'CatFaceRecognitionModel') # also made up
+    br.br_set_property(b'enrollAll',b'true')
 
     mycatsimg = open('mycats.jpg', 'rb').read() # cat picture not provided =^..^=
     mycatstmpl = br.br_load_img(mycatsimg, len(mycatsimg))
@@ -57,3 +57,9 @@ Some functions were made more pythonic and thus differ slightly from the C API. 
 To enable the module, add `-DBR_INSTALL_BRPY=ON` to your cmake command (or use the ccmake GUI - highly recommended).
 
 Currently only OS X and Linux are supported.
+
+Note that Python2 would pass `str` python objects as `ctypes.c_char_p` arguments, but in Python3 this has changed to `bytes` python objects. 
+
+    alg_string = 'CatFaceRecognitionModel'
+    br.br_set_property('algorithm', alg_string) # Python2
+    br.br_set_property(b'algorithm', bytes(alg_string)) # Python3
