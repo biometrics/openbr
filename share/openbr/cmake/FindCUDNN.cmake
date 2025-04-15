@@ -138,7 +138,13 @@ if(CUDNN_LIBRARY)
 endif()
 
 if(CUDNN_LIBRARY AND CUDNN_INCLUDE_DIR)
-  file(READ ${CUDNN_INCLUDE_DIR}/cudnn.h CUDNN_VERSION_FILE_CONTENTS)
+
+  # Get cuDNN version
+  if(EXISTS ${CUDNN_INCLUDE_PATH}/cudnn_version.h)
+    file(READ ${CUDNN_INCLUDE_PATH}/cudnn_version.h CUDNN_VERSION_FILE_CONTENTS)
+  else()
+    file(READ ${CUDNN_INCLUDE_PATH}/cudnn.h CUDNN_VERSION_FILE_CONTENTS)
+  endif()
   string(REGEX MATCH "define CUDNN_MAJOR * +([0-9]+)"
     CUDNN_MAJOR_VERSION "${CUDNN_VERSION_FILE_CONTENTS}")
   string(REGEX REPLACE "define CUDNN_MAJOR * +([0-9]+)" "\\1"
