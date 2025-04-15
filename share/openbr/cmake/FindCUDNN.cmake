@@ -132,13 +132,12 @@ if(CUDNN_LIBRARY)
   get_filename_component(__found_cudnn_root ${CUDNN_LIBRARY} PATH)
   find_path(CUDNN_INCLUDE_DIR 
     NAMES cudnn.h
-    HINTS ${PC_CUDNN_INCLUDE_DIRS} ${CUDNN_ROOT_DIR} ${CUDA_TOOLKIT_INCLUDE} ${__found_cudnn_root}
-    PATH_SUFFIXES include 
+    HINTS ${PC_CUDNN_INCLUDE_DIRS} ${CUDNN_INCLUDE_DIR} ${CUDNN_ROOT_DIR} ${CUDA_TOOLKIT_INCLUDE} ${__found_cudnn_root} ${CUDAToolkit_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS}
+    PATH_SUFFIXES cuda/include cuda include
     DOC "Path to CUDNN include directory." )
 endif()
 
 if(CUDNN_LIBRARY AND CUDNN_INCLUDE_DIR)
-
   # Get cuDNN version
   if(EXISTS ${CUDNN_INCLUDE_PATH}/cudnn_version.h)
     file(READ ${CUDNN_INCLUDE_PATH}/cudnn_version.h CUDNN_VERSION_FILE_CONTENTS)
