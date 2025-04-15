@@ -127,15 +127,15 @@ find_library(CUDNN_LIBRARY
   DOC "CUDNN library." )
 
 if(CUDNN_LIBRARY)
-  SET(CUDNN_MAJOR_VERSION ${CUDNN_FIND_VERSION_MAJOR})
   set(CUDNN_VERSION ${CUDNN_MAJOR_VERSION})
   get_filename_component(__found_cudnn_root ${CUDNN_LIBRARY} PATH)
-  find_path(CUDNN_INCLUDE_PATH cudnn.h
-            HINTS ${CUDNN_INCLUDE_DIR} ${CUDA_TOOLKIT_INCLUDE} ${CUDAToolkit_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS}
-            PATH_SUFFIXES cuda/include cuda include)
 endif()
 
-if(CUDNN_LIBRARY AND CUDNN_INCLUDE_DIR)
+find_path(CUDNN_INCLUDE_PATH cudnn.h
+            HINTS ${CUDNN_INCLUDE_DIR} ${CUDA_TOOLKIT_INCLUDE} ${CUDAToolkit_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS}
+            PATH_SUFFIXES cuda/include cuda include)
+
+if(CUDNN_INCLUDE_DIR)
   # Get cuDNN version
   if(EXISTS ${CUDNN_INCLUDE_PATH}/cudnn_version.h)
     file(READ ${CUDNN_INCLUDE_PATH}/cudnn_version.h CUDNN_VERSION_FILE_CONTENTS)
