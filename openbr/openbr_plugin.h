@@ -480,6 +480,9 @@ public:
     Q_PROPERTY(QString path READ get_path WRITE set_path RESET reset_path)
     BR_PROPERTY(QString, path, "")
 
+    Q_PROPERTY(int rngseed READ get_rngseed WRITE set_rngseed RESET reset_rngseed)
+    BR_PROPERTY(int, rngseed, 0)
+
     Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
     BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()+1))
 

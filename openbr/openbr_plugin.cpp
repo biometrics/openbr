@@ -1085,6 +1085,8 @@ void br::Context::setProperty(const QString &key, const QString &value)
         QtUtils::touchDir(logFile);
         logFile.open(QFile::Append);
         logFile.write("================================================================================\n");
+    } else if (key == "rngseed") {
+        srand((uint32_t) rngseed);
     }
 }
 

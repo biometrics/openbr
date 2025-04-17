@@ -327,6 +327,26 @@ If this flag is set OpenBR will enable GUI windows to be launched. It must be th
 
 * **wraps:** N/A
 
+### -parallelism {: #parallelism }
+
+Set this flag to limit the number of threads OpenBR will use in the current command. Default is defined by `std::max(1, QThread::idealThreadCount() + 1)`.
+
+* **arguments:**
+
+        br -parallelism <threads>
+
+* **wraps:** N/A
+
+### -rngseed {: #rngseed }
+
+If this flag is set its value will be used to seed the random number generator. This is not guaranteed to be thread-safe, use with caution and verify outputs if you desire repeatability in threaded contexts. Default is `0` for reproducible randomness.
+
+* **arguments:**
+
+        br -rngseed <seed>
+
+* **wraps:** N/A
+
 ### -objects {: #objects }
 
 Returns names and parameters for the requested objects. Each object is newline separated. Arguments are separated from the object name with a tab. This function uses [QRegExp][QRegExp] syntax
