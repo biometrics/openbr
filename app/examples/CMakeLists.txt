@@ -3,7 +3,11 @@ file(GLOB EXAMPLES *.cpp)
 foreach(EXAMPLE ${EXAMPLES})
   get_filename_component(EXAMPLE_BASENAME ${EXAMPLE} NAME_WE)
   add_executable(${EXAMPLE_BASENAME} ${EXAMPLE})
-  qt5_use_modules(${EXAMPLE_BASENAME} ${QT_DEPENDENCIES})
+
+  foreach(QT_DEPENDENCY IN LISTS QT_DEPENDENCIES)
+    target_link_libraries(${EXAMPLE_BASENAME} "Qt6::${QT_DEPENDENCY}")
+  endforeach()
+
   target_link_libraries(${EXAMPLE_BASENAME} openbr ${BR_THIRDPARTY_LIBS})
   install(TARGETS ${EXAMPLE_BASENAME} RUNTIME DESTINATION bin)
   if(BUILD_TESTING)

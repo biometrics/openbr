@@ -100,7 +100,7 @@ class PipeTransform : public CompositeTransform
 
             QFutureSynchronizer<void> futures;
             for (int j=0; j < dataLines.size(); j++)
-                futures.addFuture(QtConcurrent::run(this, &PipeTransform::_projectPartial, &dataLines[j], i, nextTrainableTransform));
+                futures.addFuture(QtConcurrent::run(&PipeTransform::_projectPartial, this, &dataLines[j], i, nextTrainableTransform));
             futures.waitForFinished();
 
             i = nextTrainableTransform;

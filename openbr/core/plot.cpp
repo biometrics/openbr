@@ -78,7 +78,7 @@ struct RPlot
     RPlot(QStringList files, const File &destination)
     {
         if (files.isEmpty()) qFatal("Empty file list.");
-        qSort(files.begin(), files.end(), sortFiles);
+        std::sort(files.begin(), files.end(), sortFiles);
 
         // Parse destination
         QFileInfo fileInfo(destination);
@@ -176,7 +176,7 @@ struct RPlot
 // Does not work if dataset folder starts with a number
 bool Plot(const QStringList &files, const File &destination, bool show)
 {
-    qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
+    qDebug("Plotting %lld file(s) to %s", files.size(), qPrintable(destination));
 
     RPlot p(files, destination);
     p.file.write("\nformatData()\n\n");
@@ -265,7 +265,7 @@ bool filesHaveSinglePoint(const QStringList &files) {
 
 bool PlotDetection(const QStringList &files, const File &destination, bool show)
 {
-    qDebug("Plotting %d detection file(s) to %s", files.size(), qPrintable(destination));
+    qDebug("Plotting %lld detection file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination);
     p.file.write("\nformatData(type=\"detection\")\n\n");
 
@@ -312,7 +312,7 @@ bool PlotDetection(const QStringList &files, const File &destination, bool show)
 
 bool PlotLandmarking(const QStringList &files, const File &destination, bool show)
 {
-    qDebug("Plotting %d landmarking file(s) to %s", files.size(), qPrintable(destination));
+    qDebug("Plotting %lld landmarking file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination);
     p.file.write("\nformatData(type=\"landmarking\")\n\n");
     p.file.write(qPrintable(QString("algs <- unique(Box$%1)\n").arg(p.major.size > 1 ? p.major.header : (p.minor.header.isEmpty() ? p.major.header : p.minor.header))));
@@ -332,7 +332,7 @@ bool PlotLandmarking(const QStringList &files, const File &destination, bool sho
 
 bool PlotMetadata(const QStringList &files, const QString &columns, bool show)
 {
-    qDebug("Plotting %d metadata file(s) for columns %s", files.size(), qPrintable(columns));
+    qDebug("Plotting %lld metadata file(s) for columns %s", files.size(), qPrintable(columns));
 
     RPlot p(files, "PlotMetadata");
     foreach (const QString &column, columns.split(";"))
@@ -342,7 +342,7 @@ bool PlotMetadata(const QStringList &files, const QString &columns, bool show)
 
 bool PlotKNN(const QStringList &files, const File &destination, bool show)
 {
-    qDebug("Plotting %d k-NN file(s) to %s", files.size(), qPrintable(destination));
+    qDebug("Plotting %lld k-NN file(s) to %s", files.size(), qPrintable(destination));
     RPlot p(files, destination);
     p.file.write("\nformatData(type=\"knn\")\n\n");
 
@@ -371,7 +371,7 @@ bool PlotKNN(const QStringList &files, const File &destination, bool show)
 // Does not work if dataset folder starts with a number
 bool PlotEER(const QStringList &files, const File &destination, bool show)
 {
-    qDebug("Plotting %d file(s) to %s", files.size(), qPrintable(destination));
+    qDebug("Plotting %lld file(s) to %s", files.size(), qPrintable(destination));
 
     RPlot p(files, destination);
     p.file.write("\nformatData()\n\n");

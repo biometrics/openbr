@@ -328,7 +328,7 @@ Mat makeMask(const FileList &targets, const FileList &queries, int partition)
 
 void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method)
 {
-    qDebug("Combining %d masks to %s with method %s", inputMasks.size(), qPrintable(outputMask), qPrintable(method));
+    qDebug("Combining %lld masks to %s with method %s", inputMasks.size(), qPrintable(outputMask), qPrintable(method));
 
     bool AND = true;
     if      (method == "And") AND = true;

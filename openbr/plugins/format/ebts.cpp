@@ -58,7 +58,7 @@ class ebtsFormat : public Format
             ok = true;
             size = qFromBigEndian<quint32>((const uchar*)byteArray.mid(from,4).constData());
         } else {
-            int index = byteArray.indexOf(QChar(0x1D), from);
+            int index = byteArray.indexOf(0x1D, from);
             size = byteArray.mid(from, index-from).split(':').last().toInt(&ok);
         }
 
@@ -75,7 +75,7 @@ class ebtsFormat : public Format
             // Continue reading fields until we get all the data
             unsigned int position = record.position;
             while (position < record.position + record.bytes) {
-                int index = byteArray.indexOf(QChar(0x1D), position);
+                int index = byteArray.indexOf(0x1D, position);
                 Field field = parseField(byteArray.mid(position, index-position),QChar(0x1F));
                 if (field.type == 999 ) {
                     // Data begin after the field identifier and the colon

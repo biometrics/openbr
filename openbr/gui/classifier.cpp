@@ -23,7 +23,7 @@ void GUIClassifier::setAlgorithm(const QString &algorithm)
 /*** PUBLIC SLOTS ***/
 void GUIClassifier::classify(const File &file)
 {
-    QtConcurrent::run(this, &GUIClassifier::_classify, file);
+    QtConcurrent::run(&GUIClassifier::_classify, this, file);
 }
 
 /*** PRIVATE SLOTS ***/

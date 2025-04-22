@@ -21,7 +21,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMouseEvent>
-#include <QMutex>
+#include <QRecursiveMutex>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QString>
@@ -34,7 +34,7 @@ namespace br
 class BR_EXPORT ImageViewer : public QLabel
 {
     Q_OBJECT
-    QMutex mutex;
+    QRecursiveMutex mutex;
     QString defaultText;
 
 public:

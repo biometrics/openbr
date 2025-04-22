@@ -125,8 +125,8 @@ namespace OpenCVUtils
 BR_EXPORT QDebug operator<<(QDebug dbg, const cv::Mat &m);
 QDebug operator<<(QDebug dbg, const cv::Point &p);
 QDebug operator<<(QDebug dbg, const cv::Rect &r);
-QDataStream &operator<<(QDataStream &stream, const cv::Mat &m);
-QDataStream &operator>>(QDataStream &stream, cv::Mat &m);
+BR_EXPORT QDataStream &operator<<(QDataStream &stream, const cv::Mat &m);
+BR_EXPORT QDataStream &operator>>(QDataStream &stream, cv::Mat &m);
 QDataStream &operator<<(QDataStream &stream, const cv::Rect &r);
 QDataStream &operator>>(QDataStream &stream, cv::Rect &r);
 QDataStream &operator<<(QDataStream &stream, const cv::Size &s);
