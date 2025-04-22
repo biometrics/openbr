@@ -385,7 +385,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write FRR@FAR Table (FF)
-    foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
+    foreach (float FAR, QList<float>() << 1e-8 << 1e-7 << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
         lines.append(qPrintable(QString("FF,%1,%2").arg(
                                 QString::number(FAR, 'f'),
                                 QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
@@ -450,7 +450,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
 
     QtUtils::writeFile(csv, lines);
     if (maxSize > 0) qDebug("Template Size: %i bytes", (int)maxSize);
-    foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
+    foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6 << 1e-7 << 1e-8) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
     }
