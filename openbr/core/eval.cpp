@@ -535,7 +535,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             qFatal("Didn't read complete mask row!");
 
         // DET
-        int impostorsAboveGenuine(0);
+        QVector<float> impostors;
         bool hasGenuine(false), hasImpostor(false);
         float highestImpostor(-std::numeric_limits<float>::max()), highestGenuine(-std::numeric_limits<float>::max());
         for (size_t j=0; j<simmatCols; j++) {
@@ -549,23 +549,29 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                 hasGenuine = true;
                 genuineCount++;
                 stats[sim_val].truePositive++;
-                if (sim_val > highestImpostor)
-                    impostorsAboveGenuine = 0;
                 if (sim_val > highestGenuine)
                     highestGenuine = sim_val;
             } else {
                 hasImpostor = true;
                 impostorCount++;
+                impostors.push_back(sim_val);
                 stats[sim_val].falsePositive++;
-                if (sim_val >= highestGenuine)
-                    impostorsAboveGenuine++;
                 if (sim_val > highestImpostor)
                     highestImpostor = sim_val;
             }
         }
 
         // CMC
-        firstGenuineReturns[i] = hasGenuine ? impostorsAboveGenuine + 1 : -impostorsAboveGenuine;
+        if (hasGenuine) {
+            int impostorsAboveGenuine(0);
+            std::sort(impostors.begin(), impostors.end(), std::greater<float>());
+            for (int j=0; j<impostors.size(); j++) {
+                if (impostors[j] >= highestGenuine) impostorsAboveGenuine++;
+                else break;
+            }
+            firstGenuineReturns[i] = (highestGenuine == -std::numeric_limits<float>::max()) ? std::numeric_limits<int>::max()
+                                                                                            : impostorsAboveGenuine + 1;
+        }
 
         // IET
         if (hasGenuine) { // true search
