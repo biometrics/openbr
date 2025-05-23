@@ -442,8 +442,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 200;
-    const QList<int> Report_Retrieval_List = QList<int>() << 1 << 5 << 10 << 20 << 50 << 100;
+    const int Max_Retrieval = 1000;
+    const QList<int> Report_Retrieval_List = QList<int>() << 1 << 5 << 10 << 20 << 50 << 100 << 250 << 500;
     for (int i=1; i<=Max_Retrieval; i++) {
         const float retrievalRate = getCMC(firstGenuineReturns, i);
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
