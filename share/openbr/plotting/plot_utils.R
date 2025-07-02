@@ -10,11 +10,7 @@ library("grid")
 # Code to format FAR values
 far_names <- list('0.0001'="FAR = 0.01%", '0.001'="FAR = 0.1%", '0.01'="FAR = 1%")
 far_labeller <- function(variable,value) {
-    if (as.character(value) %in% names(far_names)) {
-        return(far_names[as.character(value)])
-    } else {
-        return(as.character(value))
-    }
+    return(as.character(value))
 }
 
 getScale <- function(mode, title, vals) {
@@ -22,44 +18,6 @@ getScale <- function(mode, title, vals) {
     else if (vals > 11) return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette=(if(seq) "Reds" else "Set3"), type=(if(seq) "seq" else "qual"))))
     else if (vals > 9)  return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette=(if(seq) "Reds" else "Paired"), type=(if(seq) "seq" else "qual"))))
     else                return(do.call(paste("scale", mode, "brewer", sep="_"), list(title, palette=(if(seq) "Reds" else "Set1"), type=(if(seq) "seq" else "qual"))))
-}
-
-plotMetadata <- function(metadata=NULL, title=NULL) {
-    MT <- as.data.frame(metadata[c(1, 2, 3, 4, 5),])
-    par(mfrow=c(4, 1))
-    plot.new()
-    print(title(paste(title, date(), sep="\n")))
-    mat <- matrix(MT$X[c(1, 2)], ncol=2)
-    colnames(mat) <- c("Gallery", "Probe")
-    imageTable <- as.table(mat)
-    print(textplot(imageTable, show.rownames=FALSE))
-    print(title("Images"))
-    mat <- matrix(MT$X[c(3, 4, 5)], ncol=3)
-    colnames(mat) <- c("Genuine", "Impostor", "Ignored")
-    matchTable <- as.table(mat)
-    print(textplot(matchTable, show.rownames=FALSE))
-    print(title("Matches"))
-    plot.new()
-    print(title("Gallery * Probe = Genuine + Impostor + Ignored"))
-}
-
-plotTable <- function(tableData=NULL, name=NULL, labels=NULL) {
-    if (nrow(tableData) == 0) return()
-    if (smooth && confidence != 0) {
-        input = paste(as.character(round(tableData$Y, 3)), round(tableData$ci, 3), sep="\u00b1")
-    } else {
-        input = tableData$Y
-    }
-    mat <- matrix(input, nrow=length(labels), ncol=length(algs), byrow=FALSE)
-    colnames(mat) <- algs
-    rownames(mat) <- labels
-    table <- as.table(mat)
-    if (csv) {
-        write.csv(table, file=paste(paste(basename, deparse(substitute(data)), sep="_"), ".csv", sep=""))
-    } else {
-        print(textplot(table))
-        print(title(name))
-    }
 }
 
 plotFRR <- function(tableData=NULL, operatingPoint=1e-4) {
@@ -96,6 +54,7 @@ plotLandmarkTables <- function(tableData=NULL) {
 }
 
 plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") {
+    if(nrow(lineData) == 0) return()
     textSize <- if("textSize" %in% names(options)) as.numeric(options$textSize) else 12
     p <- qplot(X, if(flipY) 1-Y else Y, data=lineData, main=options$title, geom=geometry, size=if("size" %in% names(options)) I(as.numeric(options$size)) else I(.5), colour=if(majorSize > 1) factor(eval(parse(text=majorHeader))) else NULL, linetype=if(minorSize > 1) factor(eval(parse(text=minorHeader))) else NULL, xlab=options$xTitle, ylab=options$yTitle) + theme_minimal()
     if (smooth && deparse(substitute(lineData)) != "CMC" && confidence != 0) p <- p + geom_errorbar(data=lineData[seq(1, NROW(lineData), by = 29),], aes(x=X, ymin=if(flipY) (1-lower) else lower, ymax=if(flipY) (1-upper) else upper), width=0.1, alpha=I(1/2))
@@ -124,7 +83,8 @@ plotLine <- function(lineData=NULL, options=NULL, flipY=FALSE, geometry="path") 
 }
 
 plotSD <- function(sdData=NULL) {
-    p <- qplot(X, data=sdData, geom="histogram", fill=Y, position="identity", alpha=I(1/2), xlab="Score", ylab="Frequency")
+    if (nrow(sdData) == 0) return()
+    p <- qplot(X, data=sdData, geom="histogram", fill=Y, alpha=I(1/2), xlab="Score", ylab="Frequency")
     p <- p + scale_fill_manual("Ground Truth", values=c("blue", "red")) + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
     if (majorSize > 1) {
         if (minorSize > 1) {
@@ -146,7 +106,7 @@ plotSD <- function(sdData=NULL) {
 
 plotBC <- function(bcData=NULL) {
     factor <- if (majorSmooth) minorHeader else majorHeader
-    plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", position=\"dodge\", weight=Y", sep="")
+    plotString <- paste("qplot(factor(", factor, ")", if(smooth) ", Y" else "", ", data=bcData, ", if(smooth) "geom=\"boxplot\"" else "geom=\"bar\", weight=Y", sep="")
     p <- eval(parse(text=paste(plotString, if(majorSize > 1) paste(", fill=factor(", majorHeader, ")", sep="") else "", ", xlab=\"False Accept Rate\", ylab=\"True Accept Rate\") + theme_minimal()", sep="")))
     if (majorSize > 1) p <- p + getScale("fill", majorHeader, majorSize)
     if (minorSize > 1) p <- p + facet_grid(facets=as.formula(paste(minorHeader, "~", "X")), labeller=far_labeller) else p <- p + facet_grid(. ~ X, labeller=far_labeller)
@@ -156,7 +116,7 @@ plotBC <- function(bcData=NULL) {
 }
 
 plotOverlap <- function(overlapData=NULL) {
-    p <- qplot(X, data=overlapData, geom="histogram", position="identity", xlab="Overlap", ylab="Frequency")
+    p <- qplot(X, data=overlapData, geom="histogram", xlab="Overlap", ylab="Frequency")
     p <- p + theme_minimal() + scale_x_continuous(minor_breaks=NULL) + scale_y_continuous(minor_breaks=NULL) + theme(axis.text.y=element_blank(), axis.ticks=element_blank(), axis.text.x=element_text(angle=-90, hjust=0))
     if (majorSize > 1) {
         if (minorSize > 1) {
@@ -187,7 +147,7 @@ formatData <- function(type="eval") {
         BC <<- data[grep("BC",data$Plot),-c(1)]
         TS <<- data[grep("TS",data$Plot),-c(1)]
         CMC <<- data[grep("CMC",data$Plot),-c(1)]
-    
+
         # Format data
         Metadata$Y<-factor(Metadata$Y, levels=c("Genuine", "Impostor", "Ignored", "Gallery", "Probe"))
         IM$Y <<- as.character(IM$Y)
@@ -196,7 +156,7 @@ formatData <- function(type="eval") {
         IET$Y <<- as.numeric(as.character(IET$Y))
         FAR$Y <<- as.numeric(as.character(FAR$Y))
         FRR$Y <<- as.numeric(as.character(FRR$Y))
-        SD$Y <<- as.factor(unique(as.character(SD$Y)))
+        SD$Y <<- as.factor(as.character(SD$Y))
         FF$Y <<- as.numeric(as.character(FF$Y))
         FT$Y <<- as.numeric(as.character(FT$Y))
         CT$Y <<- as.numeric(as.character(CT$Y))
@@ -368,4 +328,3 @@ plotImage <- function(image, title=NULL, label=NULL) {
     p <- p + labs(title=title) + xlab(label)
     return(p)
 }
-

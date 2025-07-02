@@ -7,7 +7,7 @@
 
 namespace EvalUtils
 {
-    
+
 struct Detection
 {
     QRectF boundingBox;
@@ -41,11 +41,16 @@ struct Detection
 struct SortedDetection
 {
     int truth_idx, predicted_idx;
-    float overlap;
-    SortedDetection() : truth_idx(-1), predicted_idx(-1), overlap(-1) {}
-    SortedDetection(int truth_idx_, int predicted_idx_, float overlap_)
-        : truth_idx(truth_idx_), predicted_idx(predicted_idx_), overlap(overlap_) {}
-    inline bool operator<(const SortedDetection &other) const { return overlap > other.overlap; }
+    float overlap, confidence, truePositiveThreshold;
+    SortedDetection() : truth_idx(-1), predicted_idx(-1), overlap(-1), confidence(-1), truePositiveThreshold(-1) {}
+    SortedDetection(int truth_idx_, int predicted_idx_, float overlap_, float confidence_, float truePositiveThreshold_)
+        : truth_idx(truth_idx_), predicted_idx(predicted_idx_), overlap(overlap_), confidence(confidence_), truePositiveThreshold(truePositiveThreshold_) {}
+    inline bool operator<(const SortedDetection &other) const 
+    { 
+        if (overlap >= truePositiveThreshold && other.overlap >= truePositiveThreshold)
+            return confidence > other.confidence;
+        return overlap > other.overlap; 
+    }
 };
 
 struct ResolvedDetection
@@ -106,8 +111,8 @@ struct DetectionOperatingPoint
     QMap<QString, Detections> getDetections(const br::File &predictedGallery, const br::File &truthGallery);
     QMap<QString, Detections> filterDetections(const QMap<QString, Detections> &allDetections, int threshold, bool useMin = true, float relativeThreshold = 0);
     QMap<QString, Detections> filterLabels(const QMap<QString, Detections> &allDetections, const QString &label);
-    int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets);
-    QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points);
+    int associateGroundTruthDetections(QList<ResolvedDetection> &resolved, QList<ResolvedDetection> &falseNegative, QMap<QString, Detections> &all, QRectF &offsets, float truePositiveThreshold);
+    QStringList computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points, const float truePositiveThreshold);
     inline int getNumberOfImages(const QMap<QString, Detections> detections)
     {
         return detections.keys().size();

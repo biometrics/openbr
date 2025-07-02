@@ -27,12 +27,12 @@ namespace br
     float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv = "", int parition = 0);
     float Evaluate(const cv::Mat &scores, const cv::Mat &masks, const File &csv = "", const QString &target = "", const QString &query = "", unsigned int matches = 0);
     void assertEval(const QString &simmat, const QString &mask, float accuracy); // Check to see if -eval achieves a given TAR @ FAR = 0.001
-    float InplaceEval(const QString & simmat, const QString & target, const QString & query, const QString & csv = "");
+    float InplaceEval(const QString &simmat, const QString &mask, const QString &csv);
 
     void EvalClassification(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
-    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", bool normalize = false, int minSize = 0, int maxSize = 0, float relativeMinSize = 0, const QString &label = ""); // Return average overlap
+    float EvalDetection(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", bool normalize = false, int minSize = 0, int maxSize = 0, float relativeMinSize = 0, const QString &label = "", const float true_positive_threshold = 0.5f); // Return average overlap
     float EvalLandmarking(const QString &predictedGallery, const QString &truthGallery, const QString &csv = "", int normalizationIndexA = 0, int normalizationIndexB = 1, int sampleIndex = 0, int totalExamples = 5); // Return average error
-    void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "");
+    void EvalRegression(const QString &predictedGallery, const QString &truthGallery, QString predictedProperty = "", QString truthProperty = "", bool generatePlots = true);
     void EvalKNN(const QString &knnGraph, const QString &knnTruth, const QString &csv = "");
     void EvalEER(const QString &predictedXML, const QString gt_property = "", const QString distribution_property = "", const QString &csv = "");
     struct Candidate

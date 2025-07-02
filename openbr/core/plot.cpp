@@ -90,15 +90,15 @@ struct RPlot
         bool success = file.open(QFile::WriteOnly);
         if (!success) qFatal("Failed to open %s for writing.", qPrintable(file.fileName()));
 
-        // Copy plot_utils.R into output script with source()
-        QString plotUtilsPath = Globals->sdkPath + "/openbr/share/openbr/plotting/plot_utils.R"; // Handle case when OpenBR is a submodule
-        if (!QFileInfo(plotUtilsPath).exists())
-            plotUtilsPath = Globals->sdkPath + "/share/openbr/plotting/plot_utils.R";
-        file.write(qPrintable(QString("source(\"%1\")\n\n").arg(plotUtilsPath)));
-        file.write("# Read CSVs\n"
-                   "data <- NULL\n");
+        // Copy plot_utils.R into output script
+        QFile plot_utils(":/plotting/plot_utils.R");
+        plot_utils.open(QIODevice::ReadOnly | QFile::Text);
+        QTextStream in(&plot_utils);
+        file.write(qPrintable(in.readAll()));
 
         // Read files and retrieve pivots
+        file.write("# Read CSVs\n"
+                   "data <- NULL\n");
         pivotHeaders = getPivots(files.first(), true);
         pivotItems = QVector< QSet<QString> >(pivotHeaders.size());
         foreach (const QString &fileName, files) {
@@ -109,7 +109,7 @@ struct RPlot
                 pivots.push_back(QFileInfo(fileName).completeBaseName());
                 pivotHeaders.clear();
                 pivotHeaders.push_back("File");
-            } 
+            }
             file.write(qPrintable(QString("tmp <- read.csv(\"%1\")\n").arg(fileName).replace("\\", "\\\\")));
             for (int i=0; i<pivots.size(); i++) {
                 pivotItems[i].insert(pivots[i]);
@@ -197,11 +197,11 @@ bool Plot(const QStringList &files, const File &destination, bool show)
     // Use a br::file for simple storage of plot options
     QMap<QString,File> optMap;
     optMap.insert("rocOptions", File(QString("[xTitle=False Accept Rate,yTitle=True Accept Rate,xLog=true,yLog=false,xLimits=(.0000001,.1)]")));
-    optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.0001,1)]")));
+    optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.00001,1)]")));
     optMap.insert("ietOptions", File(QString("[xTitle=False Positive Identification Rate (FPIR),yTitle=False Negative Identification Rate (FNIR),xLog=true,yLog=true]")));
     optMap.insert("cmcOptions", File(QString("[xTitle=Rank,yTitle=Retrieval Rate,xLog=true,yLog=false,size=1,xLabels=(1,5,10,50,100),xBreaks=(1,5,10,50,100)]")));
     optMap.insert("farOptions", File(QString("[xTitle=Score,yTitle=False Accept Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0000001,1)]")));
-    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0001,1)]")));
+    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.00001,1)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());
@@ -393,7 +393,7 @@ bool PlotEER(const QStringList &files, const File &destination, bool show)
     optMap.insert("rocOptions", File(QString("[xTitle=False Accept Rate,yTitle=True Accept Rate,xLog=true,yLog=false,xLimits=(.0000001,.1)]")));
     optMap.insert("detOptions", File(QString("[xTitle=False Accept Rate,yTitle=False Reject Rate,xLog=true,yLog=true,xLimits=(.0000001,.1),yLimits=(.0001,1)]")));
     optMap.insert("farOptions", File(QString("[xTitle=Score,yTitle=False Accept Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0000001,1)]")));
-    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.0001,1)]")));
+    optMap.insert("frrOptions", File(QString("[xTitle=Score,yTitle=False Reject Rate,xLog=false,yLog=true,xLabels=waiver(),yLimits=(.00001,1)]")));
 
     foreach (const QString &key, optMap.keys()) {
         const QStringList options = destination.get<QStringList>(key, QStringList());

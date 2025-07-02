@@ -37,6 +37,7 @@
 #include <QStringList>
 #include <QThread>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QVariant>
 #include <QVector>
 #include <opencv2/core.hpp>
@@ -63,6 +64,7 @@ struct BR_EXPORT File
     File(const QVariantMap &metadata) : fte(false), m_metadata(metadata) {}
     inline operator QString() const { return name; }
     QString flat() const;
+    QString flat(QStringList keys) const;
     QString hash() const;
 
     inline QStringList localKeys() const { return m_metadata.keys(); }
@@ -478,6 +480,9 @@ public:
     Q_PROPERTY(QString path READ get_path WRITE set_path RESET reset_path)
     BR_PROPERTY(QString, path, "")
 
+    Q_PROPERTY(int rngseed READ get_rngseed WRITE set_rngseed RESET reset_rngseed)
+    BR_PROPERTY(int, rngseed, 0)
+
     Q_PROPERTY(int parallelism READ get_parallelism WRITE set_parallelism RESET reset_parallelism)
     BR_PROPERTY(int, parallelism, std::max(1, QThread::idealThreadCount()+1))
 
@@ -525,7 +530,7 @@ public:
     BR_PROPERTY(QList<QString>, modelSearch, QList<QString>() )
 
     QHash<QString,QString> abbreviations;
-    QTime startTime;
+    QElapsedTimer startTime;
 
     bool contains(const QString &name);
     void printStatus();

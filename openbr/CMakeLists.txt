@@ -16,12 +16,15 @@ if(NOT BR_EMBEDDED)
   install(FILES ${HEADERS} DESTINATION include/openbr/gui)
 endif()
 
+# Plotting library
+qt5_add_resources(BR_PLOTTING ../share/openbr/plotting.qrc)
+
 # Compile third party resources
 if(BR_THIRDPARTY_RESOURCES)
   qt5_add_resources(THIRDPARTY_RESOURCES ${BR_THIRDPARTY_RESOURCES})
 endif()
 
-add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
+add_library(openbr SHARED ${SRC} ${BR_CORE} ${BR_JANUS} ${BR_GUI} ${BR_ICONS} ${BR_PLOTTING} ${BR_THIRDPARTY_SRC} ${BR_RESOURCES} ${NATURALSTRINGCOMPARE_SRC} ${THIRDPARTY_RESOURCES})
 qt5_use_modules(openbr ${QT_DEPENDENCIES})
 set_target_properties(openbr PROPERTIES
                              DEFINE_SYMBOL BR_LIBRARY

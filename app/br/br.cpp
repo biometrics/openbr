@@ -160,14 +160,14 @@ public:
                 check((parc >= 2) && (parc <= 5), "Incorrect parameter count for 'evalClustering'.");
                 br_eval_clustering(parv[0], parv[1], parc > 2 ? parv[2] : "", parc > 3 ? atoi(parv[3]) : 1, parc > 4 ? parv[4] : "");
             } else if (!strcmp(fun, "evalDetection")) {
-                check((parc >= 2) && (parc <= 8), "Incorrect parameter count for 'evalDetection'.");
-                br_eval_detection(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 0, parc >= 6 ? atoi(parv[5]) : 0, parc >= 7 ? atof(parv[6]) : 0, parc >= 8 ? parv[7] : "");
+                check((parc >= 2) && (parc <= 9), "Incorrect parameter count for 'evalDetection'.");
+                br_eval_detection(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 0, parc >= 6 ? atoi(parv[5]) : 0, parc >= 7 ? atof(parv[6]) : 0, parc >= 8 ? parv[7] : "", parc >= 9 ? atof(parv[8]) : 0.5f);
             } else if (!strcmp(fun, "evalLandmarking")) {
                 check((parc >= 2) && (parc <= 7), "Incorrect parameter count for 'evalLandmarking'.");
                 br_eval_landmarking(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? atoi(parv[3]) : 0, parc >= 5 ? atoi(parv[4]) : 1,  parc >= 6 ? atoi(parv[5]) : 0, parc >= 7 ? atoi(parv[6]) : 5);
             } else if (!strcmp(fun, "evalRegression")) {
-                check(parc >= 2 && parc <= 4, "Incorrect parameter count for 'evalRegression'.");
-                br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "");
+                check(parc >= 2 && parc <= 5, "Incorrect parameter count for 'evalRegression'.");
+                br_eval_regression(parv[0], parv[1], parc >= 3 ? parv[2] : "", parc >= 4 ? parv[3] : "", parc >= 5 ? parv[4] : "true");
             } else if (!strcmp(fun, "evalKNN")) {
                 check(parc >= 2 && parc <= 3, "Incorrect parameter count for 'evalKNN'.");
                 br_eval_knn(parv[0], parv[1], parc > 2 ? parv[2] : "");
@@ -178,8 +178,8 @@ public:
                 check((parc >= 2) && (parc <= 3), "Incorrect parameter count for 'pairwiseCompare'.");
                 br_pairwise_compare(parv[0], parv[1], parc == 3 ? parv[2] : "");
             } else if (!strcmp(fun, "inplaceEval")) {
-                check((parc >= 3) && (parc <= 4), "Incorrect parameter count for 'inplaceEval'.");
-                br_inplace_eval(parv[0], parv[1], parv[2], parc == 4 ? parv[3] : "");
+                check(parc == 3, "Incorrect parameter count for 'inplaceEval'.");
+                br_inplace_eval(parv[0], parv[1], parv[2]);
             } else if (!strcmp(fun, "plotDetection")) {
                 check(parc >= 2, "Incorrect parameter count for 'plotDetection'.");
                 br_plot_detection(parc-1, parv, parv[parc-1], true);
@@ -290,12 +290,12 @@ private:
                "-convert (Format|Gallery|Output) <input_file> {output_file}\n"
                "-evalClassification <predicted_gallery> <truth_gallery> <predicted property name> <ground truth proprty name>\n"
                "-evalClustering <clusters> <truth_gallery> [truth_property [cluster_csv [cluster_property]]]\n"
-               "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}] [{label_filter}]\n"
+               "-evalDetection <predicted_gallery> <truth_gallery> [{csv}] [{normalize}] [{minSize}] [{maxSize}] [{relativeMinSize}] [{label_filter}] [{true_positive_threshold}]\n"
                "-evalLandmarking <predicted_gallery> <truth_gallery> [{csv} [<normalization_index_a> <normalization_index_b>] [sample_index] [total_examples]]\n"
                "-evalRegression <predicted_gallery> <truth_gallery> <predicted property name> <ground truth property name>\n"
                "-evalKNN <knn_graph> <knn_truth> [{csv}]\n"
                "-pairwiseCompare <target_gallery> <query_gallery> [{output}]\n"
-               "-inplaceEval <simmat> <target> <query> [{csv}]\n"
+               "-inplaceEval <simmat> <mask> {csv}\n"
                "-assertEval <simmat> <mask> <accuracy>\n"
                "-plotDetection <file> ... <file> {destination}\n"
                "-plotLandmarking <file> ... <file> {destination}\n"

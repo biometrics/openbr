@@ -111,9 +111,9 @@ void br_assert_eval(const char *simmat, const char *mask, const float accuracy)
     assertEval(simmat, mask, accuracy);
 }
 
-float br_inplace_eval(const char *simmat, const char *target, const char *query, const char *csv)
+float br_inplace_eval(const char *simmat, const char *mask, const char *csv)
 {
-    return InplaceEval(simmat, target, query, csv);
+    return InplaceEval(simmat, mask, csv);
 }
 
 void br_eval_classification(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
@@ -126,9 +126,9 @@ void br_eval_clustering(const char *clusters, const char *truth_gallery, const c
     EvalClustering(clusters, truth_gallery, truth_property, cluster_csv, cluster_property);
 }
 
-float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv, bool normalize, int minSize, int maxSize, float relativeMinSize, const char* label)
+float br_eval_detection(const char *predicted_gallery, const char *truth_gallery, const char *csv, bool normalize, int minSize, int maxSize, float relativeMinSize, const char* label, const float true_positive_threshold)
 {
-    return EvalDetection(predicted_gallery, truth_gallery, csv, normalize, minSize, maxSize, relativeMinSize, label);
+    return EvalDetection(predicted_gallery, truth_gallery, csv, normalize, minSize, maxSize, relativeMinSize, label, true_positive_threshold);
 }
 
 float br_eval_landmarking(const char *predicted_gallery, const char *truth_gallery, const char *csv, int normalization_index_a, int normalization_index_b, int sample_index, int total_examples)
@@ -136,9 +136,9 @@ float br_eval_landmarking(const char *predicted_gallery, const char *truth_galle
     return EvalLandmarking(predicted_gallery, truth_gallery, csv, normalization_index_a, normalization_index_b, sample_index, total_examples);
 }
 
-void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property)
+void br_eval_regression(const char *predicted_gallery, const char *truth_gallery, const char *predicted_property, const char *truth_property, const char *generate_plots)
 {
-    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property);
+    EvalRegression(predicted_gallery, truth_gallery, predicted_property, truth_property, strcmp(generate_plots, "true") == 0);
 }
 
 void br_eval_knn(const char *knnGraph, const char *knnTruth, const char *csv)

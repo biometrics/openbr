@@ -11,11 +11,22 @@ Convenience function that allows [Files](file.md) to be used as [QStrings][QStri
 
 ## [QString][QString] flat() {: #flat }
 
-Function to output files in string formats.
+Function to output all fields of files in string formats. See `QString flat(QStringList)` for additional information.
 
 * **function definition:**
 
         QString flat() const
+
+* **parameters:** NONE
+* **output:** ([QString][QString]) returns the [file name](members.md#name) and [metadata](members.md#m_metadata) as a formated string. The format is *filename*[*key1=value1,key2=value2,...keyN=valueN*].
+
+## [QString][QString] flat(QStringList) {: #flat-1 }
+
+Function to output only specified fields of files in string formats.
+
+* **function definition:**
+
+        QString flat(QStringList keys) const
 
 * **parameters:** NONE
 * **output:** ([QString][QString]) returns the [file name](members.md#name) and [metadata](members.md#m_metadata) as a formated string. The format is *filename*[*key1=value1,key2=value2,...keyN=valueN*].
@@ -26,7 +37,6 @@ Function to output files in string formats.
         file.set("Key2", QVariant::fromValue<float>(2));
 
         file.flat(); // returns "picture.jpg[Key1=1,Key2=2]"
-
 
 ## [QString][QString] hash() {: #hash }
 
