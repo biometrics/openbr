@@ -441,8 +441,8 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     }
 
     // Write Cumulative Match Characteristic (CMC) curve
-    const int Max_Retrieval = 200;
-    const QList<int> Report_Retrieval_List = QList<int>() << 1 << 5 << 10 << 20 << 50 << 100;
+    const int Max_Retrieval = 1000;
+    const QList<int> Report_Retrieval_List = QList<int>() << 1 << 5 << 10 << 20 << 50 << 100 << 250 << 500;
     for (int i=1; i<=Max_Retrieval; i++) {
         const float retrievalRate = getCMC(firstGenuineReturns, i);
         lines.append(qPrintable(QString("CMC,%1,%2").arg(QString::number(i), QString::number(retrievalRate))));
@@ -534,7 +534,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
             qFatal("Didn't read complete mask row!");
 
         // DET
-        int impostorsAboveGenuine(0);
+        QVector<float> impostors;
         bool hasGenuine(false), hasImpostor(false);
         float highestImpostor(-std::numeric_limits<float>::max()), highestGenuine(-std::numeric_limits<float>::max());
         for (size_t j=0; j<simmatCols; j++) {
@@ -548,23 +548,29 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
                 hasGenuine = true;
                 genuineCount++;
                 stats[sim_val].truePositive++;
-                if (sim_val > highestImpostor)
-                    impostorsAboveGenuine = 0;
                 if (sim_val > highestGenuine)
                     highestGenuine = sim_val;
             } else {
                 hasImpostor = true;
                 impostorCount++;
+                impostors.push_back(sim_val);
                 stats[sim_val].falsePositive++;
-                if (sim_val >= highestGenuine)
-                    impostorsAboveGenuine++;
                 if (sim_val > highestImpostor)
                     highestImpostor = sim_val;
             }
         }
 
         // CMC
-        firstGenuineReturns[i] = hasGenuine ? impostorsAboveGenuine + 1 : -impostorsAboveGenuine;
+        if (hasGenuine) {
+            int impostorsAboveGenuine(0);
+            std::sort(impostors.begin(), impostors.end(), std::greater<float>());
+            for (int j=0; j<impostors.size(); j++) {
+                if (impostors[j] >= highestGenuine) impostorsAboveGenuine++;
+                else break;
+            }
+            firstGenuineReturns[i] = (highestGenuine == -std::numeric_limits<float>::max()) ? std::numeric_limits<int>::max()
+                                                                                            : impostorsAboveGenuine + 1;
+        }
 
         // IET
         if (hasGenuine) { // true search
@@ -697,7 +703,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
     }
 
     // Write FRR@FAR Table (FF)
-    foreach (float FAR, QList<float>() << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
+    foreach (float FAR, QList<float>() << 1e-8 << 1e-7 << 1e-6 << 1e-5 << 1e-4 << 1e-3 << 1e-2 << 1e-1)
       lines.append(qPrintable(QString("FF,%1,%2").arg(
                               QString::number(FAR, 'f'),
                               QString::number(1-getOperatingPoint(operatingPoints, "FAR", FAR).TAR, 'f', 6))));
@@ -727,7 +733,7 @@ float InplaceEval(const QString &simmat, const QString &mask, const QString &csv
 
     QtUtils::writeFile(csv, lines);
 
-    foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6) {
+    foreach (float FAR, QList<float>() << 1e-1 << 1e-2 << 1e-3 << 1e-4 << 1e-5 << 1e-6 << 1e-7 << 1e-8) {
         const OperatingPoint op = getOperatingPoint(operatingPoints, "FAR", FAR);
         printf("TAR & Similarity @ FAR = %.0e: %.4f %.3f\n", FAR, op.TAR, op.score);
     }
