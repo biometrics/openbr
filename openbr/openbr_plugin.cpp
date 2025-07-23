@@ -1167,6 +1167,8 @@ void br::Context::initialize(int &argc, char **argv, QString sdkPath, bool useGu
     QCoreApplication::setOrganizationName(COMPANY_NAME);
     QCoreApplication::setApplicationName(PRODUCT_NAME);
     QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
+    QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+    QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/../bin/plugins");
 
     qRegisterMetaType<cv::Mat>();
     qRegisterMetaType<cv::RotatedRect>();
