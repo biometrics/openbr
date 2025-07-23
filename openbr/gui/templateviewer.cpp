@@ -63,7 +63,7 @@ void TemplateViewer::setMousePoint(const QPointF &mousePoint)
 void TemplateViewer::setFormat(const QString &format)
 {
     this->format = format;
-    QtConcurrent::run(this, &TemplateViewer::refreshImage);
+    QtConcurrent::run(&TemplateViewer::refreshImage, this);
 }
 
 /*** PRIVATE ***/
@@ -90,8 +90,8 @@ void TemplateViewer::refreshImage()
 QPointF TemplateViewer::getImagePoint(const QPointF &sp) const
 {
     if (!pixmap() || isNull()) return QPointF();
-    QPointF ip = QPointF(imageWidth()*(sp.x() - (width() - pixmap()->width())/2)/pixmap()->width(),
-                        imageHeight()*(sp.y() - (height() - pixmap()->height())/2)/pixmap()->height());
+    QPointF ip = QPointF(imageWidth()*(sp.x() - (width() - pixmap().width())/2)/pixmap().width(),
+                        imageHeight()*(sp.y() - (height() - pixmap().height())/2)/pixmap().height());
     if ((ip.x() < 0) || (ip.x() > imageWidth()) || (ip.y() < 0) || (ip.y() > imageHeight())) return QPointF();
     return ip;
 }
@@ -99,8 +99,8 @@ QPointF TemplateViewer::getImagePoint(const QPointF &sp) const
 QPointF TemplateViewer::getScreenPoint(const QPointF &ip) const
 {
     if (!pixmap() || isNull()) return QPointF();
-    return QPointF(ip.x()*pixmap()->width()/imageWidth() + (width()-pixmap()->width())/2,
-                   ip.y()*pixmap()->height()/imageHeight() + (height()-pixmap()->height())/2);
+    return QPointF(ip.x()*pixmap().width()/imageWidth() + (width()-pixmap().width())/2,
+                   ip.y()*pixmap().height()/imageHeight() + (height()-pixmap().height())/2);
 }
 
 /*** PROTECTED SLOTS ***/
@@ -209,7 +209,7 @@ void TemplateViewer::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         // Add a point
         landmarks[index] = getImagePoint(event->pos());
-        qSort(landmarks.begin(), landmarks.end(), lessThan);
+        std::sort(landmarks.begin(), landmarks.end(), lessThan);
         if (!landmarks.contains(QPointF()))
             emit selectedInput(file.name+QString("[Affine_0_X=%1, Affine_0_Y=%2, Affine_1_X=%3, Affine_1_Y=%4]").arg(QString::number(landmarks[0].x()),
                                                                                                                                       QString::number(landmarks[0].y()),

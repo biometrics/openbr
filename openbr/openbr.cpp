@@ -24,7 +24,7 @@
 #include "core/plot.h"
 #include "core/qtutils.h"
 #include "plugins/openbr_internal.h"
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 
 using namespace br;
@@ -33,7 +33,7 @@ static int partialCopy(const QString &string, char *buffer, int buffer_length)
 {
     const QByteArray byteArray = string.toLocal8Bit();
 
-    int copyLength = std::min(buffer_length-1, byteArray.size());
+    int copyLength = std::min(buffer_length-1, static_cast<int>(byteArray.size()));
     if (copyLength < 0)
         return byteArray.size() + 1;
 

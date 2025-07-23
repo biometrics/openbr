@@ -15,9 +15,11 @@ else()
   add_executable(Example WIN32 ${SRC})
 endif()
 
-qt5_use_modules(Example ${QT_DEPENDENCIES})
+foreach(QT_DEPENDENCY IN LISTS QT_DEPENDENCIES)
+  target_link_libraries(Example "Qt6::${QT_DEPENDENCY}")
+endforeach()
 
-target_link_libraries(Example openbr ${Qt5Core_QTMAIN_LIBRARIES})
+target_link_libraries(Example openbr Qt6::Core)
 
 install(TARGETS Example RUNTIME DESTINATION bin BUNDLE DESTINATION .)
 
@@ -31,7 +33,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/share/openbr/openbr.bib DESTINATION share/open
 if(APPLE)
   set(BUNDLE_DIR "${CMAKE_INSTALL_PREFIX}/Example.app")
 
-  install(FILES ${_qt5Core_install_prefix}/plugins/platforms/libqcocoa.dylib
+  install(FILES ${Qt6_DIR}/../../../plugins/platforms/libqcocoa.dylib
         DESTINATION ${BUNDLE_DIR}/Contents/MacOS/platforms)
 
   install(FILES ${CMAKE_INSTALL_PREFIX}/bin/br
@@ -42,7 +44,7 @@ if(APPLE)
   set(LIBS "platforms/libqcocoa.dylib")
 
   # To simplify things, I'm assuming that OpenCV is installed in /usr/local/
-  set(DIRS "/usr/local/" "${CMAKE_INSTALL_PREFIX}/lib" ${_qt5Core_install_prefix})   # directories to search for prerequisites
+  set(DIRS "/usr/local/" "${CMAKE_INSTALL_PREFIX}/lib" ${_qtCore_install_prefix})   # directories to search for prerequisites
 
   install(CODE "
    include(BundleUtilities)

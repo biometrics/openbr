@@ -15,7 +15,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/
 # Find Qt 5.0.2
 set(QT_DEPENDENCIES Concurrent Core Gui Network Sql Widgets Xml)
 foreach(QT_DEPENDENCY ${QT_DEPENDENCIES})
-  find_package(Qt5${QT_DEPENDENCY})
+  find_package(Qt6${QT_DEPENDENCY})
 endforeach()
 
 # OpenCV 2.4.5
@@ -40,7 +40,7 @@ endif()
 
 qt5_use_modules(stasm ${QT_DEPENDENCIES})
 set(SOURCE ${SOURCE} PARENT_SCOPE)
-target_link_libraries(stasm ${OpenCV_LIBS} ${Qt5Core_QTMAIN_LIBRARIES})
+target_link_libraries(stasm ${OpenCV_LIBS} Qt6::Core)
 
 install(FILES ${HEADERS} DESTINATION include)
 install(TARGETS stasm LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)

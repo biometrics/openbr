@@ -87,7 +87,7 @@ static OperatingPoint getOperatingPoint(const QList<OperatingPoint> &operatingPo
         return operatingPoints[index];
     }
 
-    const int index2 = (key == "Score" ? std::min(index+1, operatingPoints.size()-1) : index-1);
+    const int index2 = (key == "Score" ? std::min(index+1, static_cast<int>(operatingPoints.size())-1) : index-1);
     const float FAR1   = (index == 0 ? 0 : operatingPoints[index2].FAR);
     const float TAR1   = (index == 0 ? 0 : operatingPoints[index2].TAR);
     const float score1 = (index == 0 ? operatingPoints[index].score : operatingPoints[index2].score);
@@ -141,7 +141,7 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
     }
     // otherwise, we fail
     else
-        qFatal("Unable to construct mask for %d by %d score matrix from %d element query set, and %d element target set ", scores.rows, scores.cols, query.length(), target.length());
+        qFatal("Unable to construct mask for %d by %d score matrix from %lld element query set, and %lld element target set ", scores.rows, scores.cols, query.length(), target.length());
 
     return cv::Mat();
 }
@@ -254,7 +254,7 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
     std::vector<float> impostors; impostors.reserve(comparisons.size());
     QVector<int> firstGenuineReturns(simmat.rows, 0);
 
-    size_t falsePositives = 0, previousFalsePositives = 0;
+    size_t falsePositives = 0;
     size_t truePositives = 0, previousTruePositives = 0;
     size_t falseSearches = 0, previousFalseSearches = 0;
     size_t trueSearches = 0, previousTrueSearches = 0;
@@ -307,7 +307,6 @@ float Evaluate(const Mat &simmat, const Mat &mask, const File &csv, const QStrin
             if (EERIndex == 0) {
                 if (floor(float(falsePositives)/impostorCount*100+0.5)/100 == floor((1-float(truePositives)/genuineCount)*100+0.5)/100) EERIndex = index-1;
             }
-            previousFalsePositives = falsePositives;
             previousTruePositives = truePositives;
         }
 
@@ -1279,7 +1278,7 @@ void EvalRegression(const TemplateList predicted, const TemplateList truth, QStr
         if (success) QtUtils::showFile("EvalRegression.pdf");
     }
 
-    qDebug("Total Samples = %i", predicted.size());
+    qDebug("Total Samples = %lld", predicted.size());
     qDebug("RMS Error = %f", sqrt(rms));
     qDebug("MAE = %f", mae);
     qDebug("Correlation (Pearson) = %f", cc.correlation_coefficient());
@@ -1331,13 +1330,14 @@ void readKNNTruth(size_t probeCount, QVector< QList<size_t> > &groundTruth, cons
     size_t i=0;
     while (!truthFile.atEnd()) {
         const QString line = truthFile.readLine().trimmed();
-        if (!line.isEmpty())
+        if (!line.isEmpty()) {
             foreach (const QString &index, line.split('\t')) {
                 bool ok;
                 groundTruth[i].append(index.toLong(&ok));
                 if (!ok)
                     qFatal("Failed to parse long in k-NN ground truth!");
             }
+        }
         i++;
     }
     if (i != probeCount)

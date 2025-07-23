@@ -55,7 +55,7 @@ private:
         // Train on each of the partitions
         QFutureSynchronizer<void> futures;
         for (int i=0; i<distances.size(); i++)
-            futures.addFuture(QtConcurrent::run(distances[i], &Distance::train, partitionedSrc[i]));
+            futures.addFuture(QtConcurrent::run(&Distance::train, distances[i], partitionedSrc[i]));
         futures.waitForFinished();
     }
 

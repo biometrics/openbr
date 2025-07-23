@@ -141,7 +141,7 @@ class IndependentTransform : public MetaTransform
         QList<TemplateList> templatesList;
         foreach (const Template &t, data) {
             if ((templatesList.size() != t.size()) && !templatesList.isEmpty())
-                qWarning("Independent::train (%s) template %s of size %d differs from expected size %d.", qPrintable(objectName()), qPrintable(t.file.name), t.size(), templatesList.size());
+                qWarning("Independent::train (%s) template %s of size %lld differs from expected size %lld.", qPrintable(objectName()), qPrintable(t.file.name), t.size(), templatesList.size());
             while (templatesList.size() < t.size())
                 templatesList.append(TemplateList());
             for (int i=0; i<t.size(); i++)

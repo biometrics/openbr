@@ -38,14 +38,14 @@ class csvFormat : public Format
     {
         QFile f(file.name);
         f.open(QFile::ReadOnly);
-        QStringList lines(QString(f.readAll()).split(QRegularExpression("[\n|\r\n|\r]"), QString::SkipEmptyParts));
+        QStringList lines(QString(f.readAll()).split(QRegularExpression("[\n|\r\n|\r]"), Qt::SkipEmptyParts));
         f.close();
 
         bool isUChar = true;
         QList< QList<float> > valsList;
         foreach (const QString &line, lines) {
             QList<float> vals;
-            foreach (const QString &word, line.split(QRegExp(" *, *"), QString::SkipEmptyParts)) {
+            foreach (const QString &word, line.split(QRegularExpression(" *, *"), Qt::SkipEmptyParts)) {
                 bool ok;
                 const float val = word.toFloat(&ok);
                 vals.append(val);

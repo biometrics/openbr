@@ -105,10 +105,10 @@ class xmlGallery : public FileGallery
                                     && reader.attributes().hasAttribute("height") )
                                 {
                                     // get bounding box properties as attributes, just going to assume this all works
-                                    qreal x = reader.attributes().value("x").string()->toDouble();
-                                    qreal y = reader.attributes().value("y").string()->toDouble();
-                                    qreal width =  reader.attributes().value("width").string()->toDouble();
-                                    qreal height = reader.attributes().value("height").string()->toDouble();
+                                    qreal x = reader.attributes().value("x").toDouble();
+                                    qreal y = reader.attributes().value("y").toDouble();
+                                    qreal width =  reader.attributes().value("width").toDouble();
+                                    qreal height = reader.attributes().value("height").toDouble();
                                     rects += QRectF(x, y, width, height);
                                 }
                             }
@@ -140,7 +140,7 @@ class xmlGallery : public FileGallery
                 if (token != QXmlStreamReader::StartElement)
                     continue;
 
-                QStringRef elName = reader.name();
+                QStringView elName = reader.name();
 
                 // biometric-signature-set is the root element
                 if (elName == "biometric-signature-set")

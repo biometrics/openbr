@@ -24,7 +24,7 @@
 #include <QPointF>
 #include <QProcess>
 #include <QRect>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QThreadPool>
 #include <QtConcurrentRun>
 #include <algorithm>
@@ -61,7 +61,8 @@ static const QMetaObject *getInterface(const QObject *obj)
 // () for lists in which argument order matters (e.g. First_Eye(100.0,100.0)).
 QString File::flat() const
 {
-    QStringList keys = this->localKeys(); qSort(keys);
+    QStringList keys = this->localKeys();
+    keys.sort();
     return this->flat(keys);
 }
 
@@ -117,7 +118,7 @@ QList<File> File::split() const
 QList<File> File::split(const QString &separator) const
 {
     QList<File> files;
-    foreach (const QString &word, name.split(separator, QString::SkipEmptyParts)) {
+    foreach (const QString &word, name.split(separator, Qt::SkipEmptyParts)) {
         File file(word);
         // If file metadata is empty after this constructor, it means that this is the
         // file corresponding to *this.m_metadata, so we append its metadata to get
@@ -132,7 +133,7 @@ QList<File> File::split(const QString &separator) const
 QString File::resolved() const
 {
     if (exists()) return name;
-    QStringList paths = get<QString>("path").split(";", QString::SkipEmptyParts);
+    QStringList paths = get<QString>("path").split(";", Qt::SkipEmptyParts);
     foreach (const QString &path, paths) {
         const File resolved = path + "/" + name;
         if (resolved.exists()) return resolved;
@@ -708,7 +709,7 @@ void Object::store(QDataStream &stream) const
     // Start from 1 to skip QObject::objectName
     for (int i=1; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
-        if (!property.isStored(this))
+        if (!property.isStored())
             continue;
 
         const QString type = property.typeName();
@@ -755,7 +756,7 @@ void Object::load(QDataStream &stream)
     // Start from 1 to skip QObject::objectName
     for (int i=1; i<metaObject()->propertyCount(); i++) {
         QMetaProperty property = metaObject()->property(i);
-        if (!property.isStored(this))
+        if (!property.isStored())
             continue;
 
         const QString type = property.typeName();
@@ -1136,7 +1137,7 @@ void br::Context::initialize(int &argc, char **argv, QString sdkPath, bool useGu
     // Search for SDK
     if (sdkPath.isEmpty()) {
         QStringList checkPaths; checkPaths << QCoreApplication::applicationDirPath() << QDir::currentPath();
-        checkPaths << QString(getenv("PATH")).split(sep, QString::SkipEmptyParts);
+        checkPaths << QString(getenv("PATH")).split(sep, Qt::SkipEmptyParts);
         QSet<QString> checkedPaths; // Avoid infinite loops from symlinks
 
         bool foundSDK = false;
@@ -1166,6 +1167,8 @@ void br::Context::initialize(int &argc, char **argv, QString sdkPath, bool useGu
     QCoreApplication::setOrganizationName(COMPANY_NAME);
     QCoreApplication::setApplicationName(PRODUCT_NAME);
     QCoreApplication::setApplicationVersion(PRODUCT_VERSION);
+    QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+    QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/../bin/plugins");
 
     qRegisterMetaType<cv::Mat>();
     qRegisterMetaType<cv::RotatedRect>();
@@ -1238,49 +1241,49 @@ QString br::Context::scratchPath()
 QStringList br::Context::objects(const char *abstractions, const char *implementations, bool parameters)
 {
     QStringList objectList;
-    QRegExp abstractionsRegExp(abstractions);
-    QRegExp implementationsRegExp(implementations);
+    QRegularExpression abstractionsRegExp(abstractions);
+    QRegularExpression implementationsRegExp(implementations);
 
-    if (abstractionsRegExp.exactMatch("Abbreviation"))
+    if (abstractionsRegExp.match("Abbreviation").hasMatch()) {
         foreach (const QString &name, Globals->abbreviations.keys())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Globals->abbreviations[name] : ""));
-
-    if (abstractionsRegExp.exactMatch("Distance"))
+    }
+    if (abstractionsRegExp.match("Distance").hasMatch()) {
         foreach (const QString &name, Factory<Distance>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Distance>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Format"))
+    }
+    if (abstractionsRegExp.match("Format").hasMatch()) {
         foreach (const QString &name, Factory<Format>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Format>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Initializer"))
+    }
+    if (abstractionsRegExp.match("Initializer").hasMatch()) {
         foreach (const QString &name, Factory<Initializer>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Initializer>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Output"))
+    }
+    if (abstractionsRegExp.match("Output").hasMatch()) {
         foreach (const QString &name, Factory<Output>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Output>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Transform"))
+    }
+    if (abstractionsRegExp.match("Transform").hasMatch()) {
         foreach (const QString &name, Factory<Transform>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Representation"))
+    }
+    if (abstractionsRegExp.match("Representation").hasMatch()) {
         foreach (const QString &name, Factory<Representation>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Representation>::parameters(name) : ""));
-
-    if (abstractionsRegExp.exactMatch("Classifier"))
+    }
+    if (abstractionsRegExp.match("Classifier").hasMatch()) {
         foreach (const QString &name, Factory<Classifier>::names())
-            if (implementationsRegExp.exactMatch(name))
+            if (implementationsRegExp.match(name).hasMatch())
                 objectList.append(name + (parameters ? "\t" + Factory<Classifier>::parameters(name) : ""));
-
+    }
     return objectList;
 }
 
@@ -1628,7 +1631,7 @@ void Distance::compare(const TemplateList &target, const TemplateList &query, Ou
         const TemplateList &queries(stepTarget ? query : TemplateList(query.mid(i, stepSize)));
         const int targetOffset = stepTarget ? i : 0;
         const int queryOffset = stepTarget ? 0 : i;
-        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(this, &Distance::compareBlock, targets, queries, output, targetOffset, queryOffset));
+        if (Globals->parallelism) futures.addFuture(QtConcurrent::run(&Distance::compareBlock, this, targets, queries, output, targetOffset, queryOffset));
         else                                                                           compareBlock (targets, queries, output, targetOffset, queryOffset);
     }
     futures.waitForFinished();

@@ -23,7 +23,6 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QProcessEnvironment>
-#include <QRegExp>
 #include <QRegularExpression>
 #include <QStack>
 #include <QUrl>
@@ -50,7 +49,7 @@ void readFile(const QString &file, QStringList &lines)
 {
     QByteArray data;
     readFile(file, data);
-    lines = QString(data).split(QRegularExpression("[\n|\r\n|\r]"), QString::SkipEmptyParts);
+    lines = QString(data).split(QRegularExpression("[\n|\r\n|\r]"), Qt::SkipEmptyParts);
     for (int i=0; i<lines.size(); i++)
         lines[i] = lines[i].simplified();
 }
@@ -239,8 +238,8 @@ QStringList toStringList(int num_strings, const char *strings[])
 
 QString shortTextHash(QString string)
 {
-    string.remove(QRegExp("[{}<>&]"));
-    return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegExp("[^a-zA-Z1-9]")).left(6);
+    string.remove(QRegularExpression("[{}<>&]"));
+    return QString(QCryptographicHash::hash(qPrintable(string), QCryptographicHash::Md5).toBase64()).remove(QRegularExpression("[^a-zA-Z1-9]")).left(6);
 }
 
 QStringList parse(QString args, char split, bool *ok)
@@ -303,8 +302,8 @@ void checkArgsSize(const QString &name, const QStringList &args, int min, int ma
 {
     if (max == -1) max = std::numeric_limits<int>::max();
     if (max == 0) max = min;
-    if (args.size() < min) qFatal("%s expects at least %d arguments, got %d", qPrintable(name), min, args.size());
-    if (args.size() > max) qFatal("%s expects no more than %d arguments, got %d", qPrintable(name), max, args.size());
+    if (args.size() < min) qFatal("%s expects at least %d arguments, got %lld", qPrintable(name), min, args.size());
+    if (args.size() > max) qFatal("%s expects no more than %d arguments, got %lld", qPrintable(name), max, args.size());
 }
 
 QPointF toPoint(const QString &string, bool *ok)
@@ -411,12 +410,12 @@ void showFile(const QString &file)
 
 QString toString(const QVariant &variant)
 {
-    if (variant.canConvert(QVariant::List)) return toString(qvariant_cast<QVariantList>(variant));
-    else if (variant.canConvert(QVariant::String)) return variant.toString();
-    else if (variant.canConvert(QVariant::PointF)) {
+    if (variant.canConvert(QMetaType(QMetaType::QVariantList))) return toString(qvariant_cast<QVariantList>(variant));
+    else if (variant.canConvert(QMetaType(QMetaType::QString))) return variant.toString();
+    else if (variant.canConvert(QMetaType(QMetaType::QPointF))) {
         QPointF point = qvariant_cast<QPointF>(variant);
         return QString("(%1,%2)").arg(QString::number(point.x()),QString::number(point.y()));
-    } else if (variant.canConvert(QVariant::RectF)) {
+    } else if (variant.canConvert(QMetaType(QMetaType::QRectF))) {
         QRectF rect = qvariant_cast<QRectF>(variant);
         return QString("(%1,%2,%3,%4)").arg(QString::number(rect.x()),
                                             QString::number(rect.y()),
@@ -771,4 +770,3 @@ qint64 BlockCompression::writeData(const char *data, qint64 remaining)
 
 
 }  // namespace QtUtils
-

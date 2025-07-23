@@ -453,7 +453,8 @@ void OpenCVUtils::group(QList<Rect> &rects, QList<float> &confidences, float con
         return;
 
     vector<int> labels;
-    int nClasses = cv::partition(rects.toVector().toStdVector(), labels, SimilarRects(epsilon));
+
+    int nClasses = cv::partition(std::vector<Rect>(rects.cbegin(), rects.cend()), labels, SimilarRects(epsilon));
 
     // Rect for each class (class meaning identity assigned by partition)
     vector<Rect> rrects(nClasses);

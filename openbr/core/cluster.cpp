@@ -131,7 +131,7 @@ Neighborhood br::knnFromSimmat(const QList<cv::Mat> &simmats, int k)
         for (int j=0; j<allNeighbors.size(); j++) {
             Neighbors &val = allNeighbors[j];
             const int cutoff = k; // Number of neighbors to keep
-            int keep = std::min(cutoff, val.size());
+            int keep = std::min(cutoff, static_cast<int>(val.size()));
             std::partial_sort(val.begin(), val.begin()+keep, val.end(), compareNeighbors);
             neighborhood.append((Neighbors)val.mid(0, keep));
         }
@@ -223,19 +223,17 @@ Neighborhood br::loadkNN(const QString &infile)
     file.close();
     int min_idx = INT_MAX;
     int max_idx = -1;
-    int count = 0;
 
     foreach (const QString &line, lines) {
         Neighbors neighbors;
-        count++;
         if (line.trimmed().isEmpty()) {
             neighborhood.append(neighbors);
             continue;
         }
 
-        QStringList list = line.trimmed().split(",", QString::SkipEmptyParts);
+        QStringList list = line.trimmed().split(",", Qt::SkipEmptyParts);
         foreach (const QString &item, list) {
-            QStringList parts = item.trimmed().split(":", QString::SkipEmptyParts);
+            QStringList parts = item.trimmed().split(":", Qt::SkipEmptyParts);
             bool intOK = true;
             bool floatOK = true;
             int idx = parts[0].toInt(&intOK);
@@ -332,7 +330,7 @@ Clusters br::ClusterGraph(Neighborhood neighborhood, float aggressiveness, const
 
         // Construct new clusters
         QHash<int, int> clusterIDLUT;
-        QList<int> allClusterIDs = QSet<int>::fromList(nextClusterIDs.toList()).values();
+        QList<int> allClusterIDs = QSet<int>(nextClusterIDs.cbegin(), nextClusterIDs.cend()).values();
         for (int i=0; i<neighborhood.size(); i++)
             clusterIDLUT[i] = allClusterIDs.indexOf(nextClusterIDs[i]);
 
@@ -376,7 +374,7 @@ Clusters br::ClusterGraph(const QString & knnName, float aggressiveness, const Q
 // Zhu et al. "A Rank-Order Distance based Clustering Algorithm for Face Tagging", CVPR 2011
 br::Clusters br::ClusterSimmat(const QList<cv::Mat> &simmats, float aggressiveness, const QString &csv)
 {
-    qDebug("Clustering %d simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
+    qDebug("Clustering %lld simmat(s), aggressiveness %f", simmats.size(), aggressiveness);
 
     // Read in gallery parts, keeping top neighbors of each template
     Neighborhood neighborhood = knnFromSimmat(simmats);
@@ -441,7 +439,7 @@ float purityMetric(const br::Clusters &clusters, const QVector<int> &truthIdx)
             truthVals.append(truthIdx[templateID]);
         }
         int max = 0;
-        foreach(int clustID, truthVals.toSet()) {
+        foreach(int clustID, QSet<int>(truthVals.cbegin(), truthVals.cend())) {
             int cnt = truthVals.count(clustID);
             if (cnt > max) {
                 max = cnt;
@@ -531,7 +529,7 @@ br::Clusters br::ReadClusters(const QString &csv)
 
     foreach (const QString &line, lines) {
         Cluster cluster;
-        QStringList ids = line.trimmed().split(",", QString::SkipEmptyParts);
+        QStringList ids = line.trimmed().split(",", Qt::SkipEmptyParts);
         foreach (const QString &id, ids) {
             bool ok;
             cluster.append(id.toInt(&ok));
@@ -551,7 +549,7 @@ void br::WriteClusters(const Clusters &clusters, const QString &csv)
     foreach (Cluster cluster, clusters) {
         if (cluster.empty()) continue;
 
-        qSort(cluster);
+        std::sort(cluster.begin(), cluster.end());
         QStringList ids;
         foreach (int id, cluster)
             ids.append(QString::number(id));

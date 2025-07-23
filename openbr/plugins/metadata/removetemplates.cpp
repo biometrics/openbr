@@ -17,7 +17,7 @@
 #include <QRegularExpression>
 
 #include <openbr/plugins/openbr_internal.h>
-
+#include <QRegularExpression>
 namespace br
 {
 
@@ -39,9 +39,8 @@ class RemoveTemplatesTransform : public UntrainableMetaTransform
     void project(const Template &src, Template &dst) const
     {
         dst = src;
-        QRegExp re(regexp);
-        re.setPatternSyntax(QRegExp::Wildcard);
-        bool match = re.exactMatch(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key));
+        QRegularExpression re = QRegularExpression(QRegularExpression::wildcardToRegularExpression(regexp));
+        bool match = re.match(key.isEmpty() ? src.file.suffix() : src.file.get<QString>(key)).hasMatch();
 
         if (keep && !match)
             dst.file.fte = true;

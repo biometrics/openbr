@@ -61,7 +61,7 @@ br::GalleryToolBar::GalleryToolBar(QWidget *parent)
 void br::GalleryToolBar::enroll(const br::File &input)
 {
     if (input.isNull()) return;
-    enrollmentWatcher.setFuture(QtConcurrent::run(this, &GalleryToolBar::_enroll, input));
+    enrollmentWatcher.setFuture(QtConcurrent::run(&GalleryToolBar::_enroll, this, input));
 }
 
 void br::GalleryToolBar::enroll(const QImage &input)
@@ -112,7 +112,7 @@ void br::GalleryToolBar::checkWebcam()
 {
     // Check webcam
     if (!tbWebcam.isChecked()) return;
-    QtConcurrent::run(this, &GalleryToolBar::_checkWebcam);
+    QtConcurrent::run(&GalleryToolBar::_checkWebcam, this);
 }
 
 void br::GalleryToolBar::enrollmentFinished()

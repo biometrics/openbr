@@ -50,7 +50,7 @@ QList<int> Common::RandSample(int n, int max, int min, bool unique)
 
 QList<int> Common::RandSample(int n, const QSet<int> &values, bool unique)
 {
-    QList<int> valueList = values.toList();
+    QList<int> valueList = values.values();
     if (unique && (values.size() <= n)) return valueList;
 
     QList<int> samples; samples.reserve(n);
