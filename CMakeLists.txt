@@ -76,11 +76,11 @@ endif()
 # Find Qt
 set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Concurrent Core)
 if(NOT BR_EMBEDDED)
-  # if(TARGET Qt6::DBus OR Qt6DBus_FOUND)
-    set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml DBus)
-  # else()
-  #   set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
-  # endif()
+  set(QT_DEPENDENCIES ${QT_DEPENDENCIES} Gui Network Sql Widgets Xml)
+  find_package(Qt6 COMPONENTS DBus OPTIONAL)
+  if(TARGET Qt6::DBus OR Qt6DBus_FOUND)
+    set(QT_DEPENDENCIES ${QT_DEPENDENCIES} DBus)
+
 endif()
 
 find_package(Qt6 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
