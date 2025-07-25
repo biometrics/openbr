@@ -81,7 +81,6 @@ if(NOT BR_EMBEDDED)
   if(TARGET Qt6::DBus OR Qt6DBus_FOUND)
     set(QT_DEPENDENCIES ${QT_DEPENDENCIES} DBus)
   endif()
-
 endif()
 
 find_package(Qt6 COMPONENTS ${QT_DEPENDENCIES} REQUIRED)
