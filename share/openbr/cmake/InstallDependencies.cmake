@@ -133,12 +133,30 @@ function(install_qt_ssl)
   endif()
 endfunction()
 
+# Qt Platform Plugins
+function(install_qt_platforms)
+  if(${BR_INSTALL_DEPENDENCIES})
+    set(possible_plugin_dirs
+      "${Qt6_DIR}/../../../plugins/platforms"
+      "${Qt6_DIR}/../../Qt6/plugins/platforms"
+      "${Qt6_DIR}/../../plugins/platforms"
+    )
+    foreach(plugin_dir IN LISTS possible_plugin_dirs)
+      if(EXISTS "${plugin_dir}")
+        install(DIRECTORY "${plugin_dir}" DESTINATION bin/plugins)
+        return()
+      endif()
+    endforeach()
+    message(WARNING "Qt platform plugins directory not found for installation.")
+  endif()
+endfunction()
+
 # Qt Other
 function(install_qt_misc)
   set(Qt6_ROOT_DIR "${Qt6_DIR}/../../..")
 
   if(MSVC)
-  if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+    if(${CMAKE_BUILD_TYPE} MATCHES Debug)
       set(BR_INSTALL_DEPENDENCIES_SUFFIX "d")
     endif()
     if (EXISTS ${Qt6_ROOT_DIR}/bin/libGLESv2${BR_INSTALL_DEPENDENCIES_SUFFIX}.dll)
