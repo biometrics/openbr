@@ -538,8 +538,8 @@ QVariant fromString(const QString &value)
     if (ok) return QVariant::fromValue(rotatedRect);
     const int i = value.toInt(&ok);
     if (ok) return i;
-    const float f = value.toFloat(&ok);
-    if (ok) return f;
+    const double d = value.toDouble(&ok);
+    if (ok) return d;
     const bool b = QtUtils::toBool(value, &ok);
     if (ok) return b;
     return value;
