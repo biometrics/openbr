@@ -701,10 +701,45 @@ void OpenCVUtils::flip(const br::Template &src, br::Template &dst, Axis axis, bo
             }
         }
         dst.file.setPoints(flippedPoints);
+
+        foreach (const QString &key, src.file.localKeys()) { // Update the named points
+            const QVariant variant = src.file.localMetadata()[key];
+            if (variant.canConvert<QPointF>()) { // Can convert to a point
+                const QPointF point = variant.value<QPointF>();
+                if (!qIsNaN(point.x()) && !qIsNaN(point.y())) {
+                    if (axis == X)
+                        dst.file.set(key, QVariant::fromValue(QPointF(point.x(),src.m().rows-point.y())));
+                    else if (axis == Y)
+                        dst.file.set(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),point.y())));
+                    else
+                        dst.file.set(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),src.m().rows-point.y())));
+                }
+            }
+        }
     }
 
-    if (flipRects)
+    if (flipRects) {
         dst.file.setRects(OpenCVUtils::flipRects(src, src.file.rects(), axis));
+
+        foreach (const QString &key, src.file.localKeys()) { // Update the named rects and rotated rects
+            const QVariant variant = src.file.localMetadata()[key];
+            if (variant.canConvert<QRectF>()) { // Can convert to a rect
+                dst.file.set(key, OpenCVUtils::flipRect(src.m(), variant.value<QRectF>(), axis));
+            } else if (variant.canConvert<cv::RotatedRect>()) {
+                const cv::RotatedRect rect = variant.value<cv::RotatedRect>();
+                if (axis == X) {
+                    float angle = int(180 - rect.angle) % 360;
+                    dst.file.set(key, QVariant::fromValue(cv::RotatedRect(Point(rect.center.x,src.m().rows-rect.center.y), cv::Size2f(rect.size.width, rect.size.height), angle)));
+                } else if (axis == Y) {
+                    float angle = int(-rect.angle) % 360;
+                    dst.file.set(key, QVariant::fromValue(cv::RotatedRect(Point(src.m().cols-rect.center.x,rect.center.y), cv::Size2f(rect.size.width, rect.size.height), angle)));
+                } else {
+                    float angle = int(rect.angle + 180) % 360;
+                    dst.file.set(key, QVariant::fromValue(cv::RotatedRect(Point(src.m().cols-rect.center.x,src.m().rows-rect.center.y), cv::Size2f(rect.size.width, rect.size.height), angle)));
+                }
+            }
+        }
+    }
 }
 
 void OpenCVUtils::flip(const br::TemplateList &src, br::TemplateList &dst, Axis axis, bool flipMat, bool flipPoints, bool flipRects)
