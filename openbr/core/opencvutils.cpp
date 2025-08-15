@@ -702,19 +702,32 @@ void OpenCVUtils::flip(const br::Template &src, br::Template &dst, Axis axis, bo
         }
         dst.file.setPoints(flippedPoints);
 
+        QVariantMap namedPoints; // Save into a temporary map so we can correct the names as needed
         foreach (const QString &key, src.file.localKeys()) { // Update the named points
             const QVariant variant = src.file.localMetadata()[key];
             if (variant.canConvert<QPointF>()) { // Can convert to a point
                 const QPointF point = variant.value<QPointF>();
                 if (!qIsNaN(point.x()) && !qIsNaN(point.y())) {
                     if (axis == X)
-                        dst.file.set(key, QVariant::fromValue(QPointF(point.x(),src.m().rows-point.y())));
+                        namedPoints.insert(key, QVariant::fromValue(QPointF(point.x(),src.m().rows-point.y())));
                     else if (axis == Y)
-                        dst.file.set(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),point.y())));
+                        namedPoints.insert(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),point.y())));
                     else
-                        dst.file.set(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),src.m().rows-point.y())));
+                        namedPoints.insert(key, QVariant::fromValue(QPointF(src.m().cols-point.x(),src.m().rows-point.y())));
                 }
             }
+        }
+
+        // Finally resolve names of flipped points to correct named location
+        foreach (const QString key, namedPoints.keys()) {
+            QString newkey = key;
+            if (axis == Y || axis == Both) { // Swap Left and Right names
+                if (key.contains("Left"))
+                    newkey.replace("Left", "Right");
+                else if (key.contains("Right"))
+                    newkey.replace("Right", "Left");
+            }
+            dst.file.set(newkey, namedPoints.value(key));
         }
     }
 
