@@ -32,6 +32,7 @@ class FlipTransform : public UntrainableTransform
     Q_PROPERTY(Axis axis READ get_axis WRITE set_axis RESET reset_axis STORED false)
     Q_PROPERTY(bool flipPoints READ get_flipPoints WRITE set_flipPoints RESET reset_flipPoints STORED false)
     Q_PROPERTY(bool flipRects READ get_flipRects WRITE set_flipRects RESET reset_flipRects STORED false)
+    Q_PROPERTY(QList<int> pointOrder READ get_pointOrder WRITE set_pointOrder RESET reset_pointOrder STORED false)
 
 public:
     enum Axis { X = OpenCVUtils::X,
@@ -42,10 +43,19 @@ private:
     BR_PROPERTY(Axis, axis, Y)
     BR_PROPERTY(bool, flipPoints, true)
     BR_PROPERTY(bool, flipRects, true)
+    BR_PROPERTY(QList<int>, pointOrder, QList<int>())
 
     void project(const Template &src, Template &dst) const
     {
         OpenCVUtils::flip(src, dst, static_cast<OpenCVUtils::Axis>(axis), true, flipPoints, flipRects);
+
+        if (pointOrder.size() > 0) { // Re-order the points based on the provided indices
+            QList<QPointF> orderedPoints;
+            QList<QPointF> points = dst.file.points();
+            foreach(const int index, pointOrder)
+                orderedPoints.append(points[index]);
+            dst.file.setPoints(orderedPoints);
+        }
     }
 };
 
