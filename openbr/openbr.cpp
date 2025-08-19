@@ -182,14 +182,14 @@ bool br_is_classifier(const char *algorithm)
     return IsClassifier(algorithm);
 }
 
-void br_make_mask(const char *target_input, const char *query_input, const char *mask)
+void br_make_mask(const char *target_input, const char *query_input, const char *mask, const char *key)
 {
-    BEE::makeMask(target_input, query_input, mask);
+    BEE::makeMask(target_input, query_input, mask, key);
 }
 
-void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask)
+void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask, const char *key)
 {
-    BEE::makePairwiseMask(target_input, query_input, mask);
+    BEE::makePairwiseMask(target_input, query_input, mask, key);
 }
 
 int br_most_recent_message(char *buffer, int buffer_length)

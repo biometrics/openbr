@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     br_compare("target.gal", "query.gal", "FaceRecognition_MEDS.mtx");
 
     // Make a ground truth "mask" matrix from the sigsets.
-    br_make_mask("../data/MEDS/sigset/MEDS_frontal_target.xml", "../data/MEDS/sigset/MEDS_frontal_query.xml", "MEDS.mask");
+    br_make_mask("../data/MEDS/sigset/MEDS_frontal_target.xml", "../data/MEDS/sigset/MEDS_frontal_query.xml", "MEDS.mask", "name");
 
     // Evaluate the performance of OpenBR's FaceRecognition and a COTS face recognition system.
     br_eval("FaceRecognition_MEDS.mtx", "MEDS.mask", "Algorithm_Dataset/FaceRecognition_MEDS.csv");
