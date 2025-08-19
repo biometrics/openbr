@@ -44,10 +44,10 @@ namespace BEE
     BR_EXPORT void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const QString &querySigset);
 
     // Mask
-    BR_EXPORT void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask);
-    BR_EXPORT cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
-    BR_EXPORT void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask);
-    BR_EXPORT cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, int partition = 0);
+    BR_EXPORT void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask, const QString &key);
+    BR_EXPORT cv::Mat makeMask(const br::FileList &targets, const br::FileList &queries, const QString &key, int partition = 0);
+    BR_EXPORT void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask, const QString &key);
+    BR_EXPORT cv::Mat makePairwiseMask(const br::FileList &targets, const br::FileList &queries, const QString &key, int partition = 0);
     BR_EXPORT void combineMasks(const QStringList &inputMasks, const QString &outputMask, const QString &method);
 }
 

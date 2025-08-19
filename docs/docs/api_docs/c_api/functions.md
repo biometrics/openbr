@@ -509,7 +509,7 @@ Constructs a [mask](../../tutorials.md#the-evaluation-harness) from target and q
 
 * **function definition:**
 
-        void br_make_mask(const char *target_input, const char *query_input, const char *mask)
+        void br_make_mask(const char *target_input, const char *query_input, const char *mask, const char *key)
 
 * **parameters:**
 
@@ -518,6 +518,7 @@ Constructs a [mask](../../tutorials.md#the-evaluation-harness) from target and q
     target_input | const char * | The target [Gallery](../cpp_api/gallery/gallery.md)
     query_input | const char * | The query [Gallery](../cpp_api/gallery/gallery.md)
     mask | const char * | The file to contain the resulting [mask](../../tutorials.md#the-evaluation-harness).
+    key | const char * | The metadata key to use for self-similar detection (ex: FaceID). Defaults to not used.
 
 * **output:** (void)
 * **see:** [br_combine_masks](#br_combine_masks)
@@ -530,7 +531,7 @@ Constructs a [mask](../../tutorials.md#the-evaluation-harness) from target and q
 
 * **function definition:**
 
-        void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask)
+        void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask, const char *key)
 
 * **parameters:**
 
@@ -539,6 +540,7 @@ Parameter | Type | Description
 target_input | const char * | The target [Gallery](../cpp_api/gallery/gallery.md)
 query_input | const char * | The query [Gallery](../cpp_api/gallery/gallery.md)
 mask | const char * | The file to contain the resulting [mask](../../tutorials.md#the-evaluation-harness).
+key | const char * | The metadata key to use for self-similar detection (ex: FaceID). Defaults to not used.
 
 * **output:** (void)
 * **see:** [br_combine_masks](#br_combine_masks)
