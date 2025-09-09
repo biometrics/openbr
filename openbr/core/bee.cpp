@@ -276,7 +276,7 @@ Mat makePairwiseMask(const FileList &targets, const FileList &queries, const QSt
         const int partitionB = targetPartitions[i];
 
         MaskValue val;
-        if      (key == "" ? fileA == fileB : queries[i].get<QString>(key) == targets[i].get<QString>(key))           val = DontCare;
+        if      (key.isEmpty() ? fileA == fileB : queries[i].get<QString>(key) == targets[i].get<QString>(key))           val = DontCare;
         else if (labelA == "-1")           val = DontCare;
         else if (labelB == "-1")           val = DontCare;
         else if (partitionA != partition)  val = DontCare;
@@ -311,7 +311,7 @@ Mat makeMask(const FileList &targets, const FileList &queries, const QString &ke
             const int partitionB = targetPartitions[j];
 
             MaskValue val;
-            if      (key == "" ? fileA == fileB : queries[i].get<QString>(key) == targets[j].get<QString>(key))           val = DontCare;
+            if      (key.isEmpty() ? fileA == fileB : queries[i].get<QString>(key) == targets[j].get<QString>(key))           val = DontCare;
             else if (labelA == "-1")           val = DontCare;
             else if (labelB == "-1")           val = DontCare;
             else if (partitionA != partition)  val = DontCare;
