@@ -136,11 +136,11 @@ public:
                 check(parc >= 3, "Insufficient parameter count for 'cluster'.");
                 br_cluster(parc-2, parv, atof(parv[parc-2]), parv[parc-1]);
             } else if (!strcmp(fun, "makeMask")) {
-                check(parc == 3, "Incorrect parameter count for 'makeMask'.");
-                br_make_mask(parv[0], parv[1], parv[2]);
+                check(parc >= 3, "Incorrect parameter count for 'makeMask'.");
+                br_make_mask(parv[0], parv[1], parv[2], parc == 3 ? "" : parv[3]);
             } else if (!strcmp(fun, "makePairwiseMask")) {
-                check(parc == 3, "Incorrect parameter count for 'makePairwiseMask'.");
-                br_make_pairwise_mask(parv[0], parv[1], parv[2]);
+                check(parc >= 3, "Incorrect parameter count for 'makePairwiseMask'.");
+                br_make_pairwise_mask(parv[0], parv[1], parv[2], parc == 3 ? "" : parv[3]);
             } else if (!strcmp(fun, "combineMasks")) {
                 check(parc >= 4, "Insufficient parameter count for 'combineMasks'.");
                 br_combine_masks(parc-2, parv, parv[parc-2], parv[parc-1]);
@@ -283,8 +283,8 @@ private:
                "==== Other Commands ====\n"
                "-fuse <simmat> ... <simmat> (None|MinMax|ZScore|WScore) (Min|Max|Sum[W1:W2:...:Wn]|Replace|Difference|None) {simmat}\n"
                "-cluster <simmat> ... <simmat> <aggressiveness> {csv}\n"
-               "-makeMask <target_gallery> <query_gallery> {mask}\n"
-               "-makePairwiseMask <target_gallery> <query_gallery> {mask}\n"
+               "-makeMask <target_gallery> <query_gallery> {mask} [{key}]\n"
+               "-makePairwiseMask <target_gallery> <query_gallery> {mask} [{key}]\n"
                "-combineMasks <mask> ... <mask> {mask} (And|Or)\n"
                "-cat <gallery> ... <gallery> {gallery}\n"
                "-convert (Format|Gallery|Output) <input_file> {output_file}\n"

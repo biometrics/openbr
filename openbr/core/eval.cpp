@@ -129,15 +129,15 @@ static float getCMC(const QVector<int> &firstGenuineReturns, int rank, size_t po
 
 // Decide whether to construct a normal mask matrix, or a pairwise mask by comparing the dimensions of
 // scores with the size of the target and query lists
-static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, int partition=0)
+static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &target, const FileList &query, const QString &key, int partition=0)
 {
     // If the dimensions of the score matrix match the sizes of the target and query lists, construct a normal mask matrix
     if (target.size() == scores.cols && query.size() == scores.rows)
-        return BEE::makeMask(target, query, partition);
+        return BEE::makeMask(target, query, key, partition);
     // If this looks like a pairwise comparison (1 column score matrix, equal length target and query sets), construct a
     // mask for that
     else if (scores.cols == 1 && target.size() == query.size()) {
-        return BEE::makePairwiseMask(target, query, partition);
+        return BEE::makePairwiseMask(target, query, key, partition);
     }
     // otherwise, we fail
     else
@@ -148,14 +148,13 @@ static cv::Mat constructMatchingMask(const cv::Mat &scores, const FileList &targ
 
 float Evaluate(const cv::Mat &scores, const FileList &target, const FileList &query, const File &csv, int partition)
 {
-    return Evaluate(scores, constructMatchingMask(scores, target, query, partition), csv, QString(), QString(), 0);
+    return Evaluate(scores, constructMatchingMask(scores, target, query, "", partition), csv, QString(), QString(), 0);
 }
-
 float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsigned int matches)
 {
     qDebug("Evaluating %s%s%s",
            qPrintable(simmat),
-           mask.isEmpty() ? "" : qPrintable(" with " + mask),
+           qPrintable(" with " + mask),
            csv.name.isEmpty() ? "" : qPrintable(" to " + csv));
 
     // Read similarity matrix
@@ -170,20 +169,11 @@ float Evaluate(const QString &simmat, const QString &mask, const File &csv, unsi
 
     // Read mask matrix
     Mat truth;
-    if (mask.isEmpty()) {
-        // Use the galleries specified in the similarity matrix
-        if (target.isEmpty()) qFatal("Unspecified target gallery.");
-        if (query.isEmpty()) qFatal("Unspecified query gallery.");
-
-        truth = constructMatchingMask(scores, TemplateList::fromGallery(target).files(),
-                                              TemplateList::fromGallery(query).files());
-    } else {
-        File maskFile(mask);
-        maskFile.set("rows", scores.rows);
-        maskFile.set("columns", scores.cols);
-        QScopedPointer<Format> format(Factory<Format>::make(maskFile));
-        truth = format->read();
-    }
+    File maskFile(mask);
+    maskFile.set("rows", scores.rows);
+    maskFile.set("columns", scores.cols);
+    QScopedPointer<Format> format(Factory<Format>::make(maskFile));
+    truth = format->read();
 
     return Evaluate(scores, truth, csv, target, query, matches);
 }

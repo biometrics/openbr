@@ -107,7 +107,7 @@ void br::Fuse(const QStringList &inputSimmats, const QString &normalization, con
         foreach (const Mat& matrix, originalMatrices)
             matrices.append(matrix.clone());
 
-        Mat matrix_mask = BEE::makeMask(targetFiles,queryFiles,partition);
+        Mat matrix_mask = BEE::makeMask(targetFiles, queryFiles, "", partition);
         for (int i=0; i<matrices.size(); i++)
             normalizeMatrix(matrices[i], matrix_mask, normalization);
 

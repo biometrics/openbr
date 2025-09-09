@@ -224,39 +224,39 @@ void writeMatrixHeader(const QString &matrix, const QString &targetSigset, const
     writeMatrix(readMatrix(matrix), matrix, targetSigset, querySigset);
 }
 
-void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask)
+void makeMask(const QString &targetInput, const QString &queryInput, const QString &mask, const QString &key)
 {
     qDebug("Making mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
     const FileList targets = TemplateList::fromGallery(targetInput).files();
     const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     const int partitions = targets.first().get<int>("crossValidate");
     if (partitions <= 0) {
-        writeMatrix(makeMask(targets, queries), mask, targetInput, queryInput);
+        writeMatrix(makeMask(targets, queries, key), mask, targetInput, queryInput);
     } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMatrix(makeMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMatrix(makeMask(targets, queries, key, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
 
-void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask)
+void makePairwiseMask(const QString &targetInput, const QString &queryInput, const QString &mask, const QString &key)
 {
     qDebug("Making pairwise mask from %s and %s to %s", qPrintable(targetInput), qPrintable(queryInput), qPrintable(mask));
     const FileList targets = TemplateList::fromGallery(targetInput).files();
     const FileList queries = (queryInput == ".") ? targets : TemplateList::fromGallery(queryInput).files();
     const int partitions = targets.first().get<int>("crossValidate");
     if (partitions <= 0) {
-        writeMatrix(makePairwiseMask(targets, queries), mask, targetInput, queryInput);
+        writeMatrix(makePairwiseMask(targets, queries, key), mask, targetInput, queryInput);
     } else {
         if (!mask.contains("%1")) qFatal("Mask file name missing partition number place marker (%%1)");
         for (int i=0; i<partitions; i++) {
-            writeMatrix(makePairwiseMask(targets, queries, i), mask.arg(i), targetInput, queryInput);
+            writeMatrix(makePairwiseMask(targets, queries, key, i), mask.arg(i), targetInput, queryInput);
         }
     }
 }
 
-Mat makePairwiseMask(const FileList &targets, const FileList &queries, int partition)
+Mat makePairwiseMask(const FileList &targets, const FileList &queries, const QString &key, int partition)
 {
     // TODO: Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
     // doing string comparisons (but that isn't implemented yet for FileList) -cao
@@ -276,7 +276,7 @@ Mat makePairwiseMask(const FileList &targets, const FileList &queries, int parti
         const int partitionB = targetPartitions[i];
 
         MaskValue val;
-        if      (fileA == fileB)           val = DontCare;
+        if      (key.isEmpty() ? fileA == fileB : queries[i].get<QString>(key) == targets[i].get<QString>(key))           val = DontCare;
         else if (labelA == "-1")           val = DontCare;
         else if (labelB == "-1")           val = DontCare;
         else if (partitionA != partition)  val = DontCare;
@@ -290,7 +290,7 @@ Mat makePairwiseMask(const FileList &targets, const FileList &queries, int parti
     return mask;
 }
 
-Mat makeMask(const FileList &targets, const FileList &queries, int partition)
+Mat makeMask(const FileList &targets, const FileList &queries, const QString &key, int partition)
 {
     // TODO: Direct use of "Label" isn't general, also would prefer to use indexProperty, rather than
     // doing string comparisons (but that isn't implemented yet for FileList) -cao
@@ -311,7 +311,7 @@ Mat makeMask(const FileList &targets, const FileList &queries, int partition)
             const int partitionB = targetPartitions[j];
 
             MaskValue val;
-            if      (fileA == fileB)           val = DontCare;
+            if      (key.isEmpty() ? fileA == fileB : queries[i].get<QString>(key) == targets[j].get<QString>(key))           val = DontCare;
             else if (labelA == "-1")           val = DontCare;
             else if (labelB == "-1")           val = DontCare;
             else if (partitionA != partition)  val = DontCare;
