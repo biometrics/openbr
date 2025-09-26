@@ -406,7 +406,8 @@ struct AlgorithmCore
         queryMetadata  = FileList::fromGallery(queryGallery, true);
 
         // Is the target or query set larger? We will use the larger as the rows of our comparison matrix (and transpose the output if necessary)
-        transposeMode = targetMetadata.size() > queryMetadata.size();
+        if (!Globals->file.getBool("noTranspose", false))
+            transposeMode = targetMetadata.size() > queryMetadata.size();
 
         File rowGallery = queryGallery;
         File colGallery = targetGallery;
