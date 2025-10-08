@@ -79,9 +79,9 @@ BR_EXPORT void br_initialize_default();
 
 BR_EXPORT bool br_is_classifier(const char *algorithm);
 
-BR_EXPORT void br_make_mask(const char *target_input, const char *query_input, const char *mask);
+BR_EXPORT void br_make_mask(const char *target_input, const char *query_input, const char *mask, const char *key);
 
-BR_EXPORT void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask);
+BR_EXPORT void br_make_pairwise_mask(const char *target_input, const char *query_input, const char *mask, const char *key);
 
 BR_EXPORT int br_most_recent_message(char * buffer, int buffer_length);
 
