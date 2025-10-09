@@ -175,8 +175,9 @@ function(install_qt_misc)
     install(FILES ${Qt6_ROOT_DIR}/jar/Qt6Android.jar
             DESTINATION java)
   elseif(UNIX AND NOT APPLE)
-    file(GLOB libpng12 "/lib/x86_64-linux-gnu/libpng12.so*")
-    install(FILES ${libpng12} DESTINATION lib)
+    # Find and install libPCRE
+    file(GLOB libpcre "/usr/lib/x86_64-linux-gnu/libpcre.so*")
+    install(FILES ${libpcre} DESTINATION lib)
   endif()
 endfunction()
 
