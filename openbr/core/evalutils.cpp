@@ -254,7 +254,7 @@ int EvalUtils::associateGroundTruthDetections(QList<ResolvedDetection> &resolved
 QStringList EvalUtils::computeDetectionResults(const QList<ResolvedDetection> &detections, int totalTrueDetections, int numImages, bool discrete, QList<DetectionOperatingPoint> &points, const float truePositiveThreshold)
 {
     float TP = 0, FP = 0, prevFP = -1, prevTP = -1;
-    QList<float> FARsToOutput = QList<float>() << 10 << 1 << .5 << .2 << .1 << .02 << .01 << .001;
+    QList<float> FARsToOutput = QList<float>() << 10 << 1 << .5 << .2 << .1 << .02 << .01 << .005 << .001 << .0005 << .0001;
 
     QDebug debug = qDebug();
     debug.noquote();
