@@ -65,6 +65,16 @@ class JustTransform : public UntrainableMetaTransform
                 dst.file.set(key, tmp.file.value(key));
             }
     }
+
+    void docs(int indent) const
+    {
+        print_doc("Just(Transform transform, string[] keys): Preserve the input template and only updated the specified keys", indent);
+        if (!transform) return; // If no inner transform, nothing to do.
+        // We need to create a new instance of the transform for any independent transforms
+        // because they are wrapped by MetaTransform until project() is called.
+        QString description = "." + transform->description(false); // Needs to start with a .
+        Factory<Transform>::make(description)->docs(indent + 4);
+    }
 };
 
 BR_REGISTER(Transform, JustTransform)

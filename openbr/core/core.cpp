@@ -653,6 +653,22 @@ void br::Train(const File &input, const File &model)
     AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
+void br::Docs()
+{
+    AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
+}
+
+void br::AllDocs()
+{
+    QStringList names = Factory<Transform>::names();
+    printf("Registered Transforms: %d\n", names.size());
+
+    foreach (const QString &name, names) {
+        br::Transform* transform = br::Factory<br::Transform>::make("." + name);
+        transform->docs(4);
+    }
+}
+
 void br::Enroll(const File &input, const File &gallery)
 {
     AlgorithmManager::getAlgorithm(gallery.get<QString>("algorithm"))->enroll(input, gallery);

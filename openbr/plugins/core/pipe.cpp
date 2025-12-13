@@ -196,6 +196,16 @@ class PipeTransform : public CompositeTransform
         return result;
     }
 
+    void docs(int indent) const
+    {
+        print_doc("Pipe(Transform transform): Project the output of each Transform into the next", indent);
+        foreach (const Transform *f, transforms) {
+            // We need to create a new instance of the transform for any independent transforms
+            // because they are wrapped by MetaTransform until project() is called.
+            QString description = "." + f->description(false); // Needs to start with a .
+            Factory<Transform>::make(description)->docs(indent + 4);
+        }
+    }
 protected:
     // Template list project -- process templates in parallel through Transform::project
     // or if parallelism is disabled, handle them sequentially

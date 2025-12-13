@@ -71,6 +71,11 @@ private:
         if (dst.file.fte && Globals->verbose)
             qWarning("Error opening %s", qPrintable(src.file.flat()));
     }
+
+    void docs(int indent) const
+    {
+        print_doc("Read(Mode mode): Read the image from disk", indent);
+    }
 };
 
 BR_REGISTER(Transform, ReadTransform)

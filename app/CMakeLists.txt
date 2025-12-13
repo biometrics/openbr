@@ -8,5 +8,7 @@ if(NOT BR_PACKAGE_THIRDPARTY)
 
     # Build additional OpenBR utilities
     add_subdirectory(br-gui)
+
+    add_subdirectory(br-docs)
   endif()
 endif()

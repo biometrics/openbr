@@ -34,6 +34,11 @@ class CvtFloatTransform : public UntrainableTransform
     {
         src.m().convertTo(dst, CV_32F);
     }
+
+    void docs(int indent) const
+    {
+        print_doc("CvtFloat(): Convert the matrix to float32", indent);
+    }
 };
 
 BR_REGISTER(Transform, CvtFloatTransform)

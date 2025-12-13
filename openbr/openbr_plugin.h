@@ -752,6 +752,12 @@ public:
     virtual void train(const TemplateList &data);
     virtual void train(const QList<TemplateList> &data);
 
+    void print_doc(QString doc, int indent) const {
+        printf("%*s%s\n", indent, "", doc.toStdString().c_str());
+    }
+    virtual void docs(int indent) const {
+        print_doc(this->file.name + "Transform->docs() not implemented", indent);
+    }
 
     virtual void project(const Template &src, Template &dst) const = 0;
     virtual void project(const TemplateList &src, TemplateList &dst) const;
@@ -917,6 +923,10 @@ public:
 BR_EXPORT bool IsClassifier(const QString &algorithm);
 
 BR_EXPORT void Train(const File &input, const File &model);
+
+BR_EXPORT void Docs();
+
+BR_EXPORT void AllDocs();
 
 BR_EXPORT void Enroll(const File &input, const File &gallery = File());
 

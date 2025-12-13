@@ -151,6 +151,11 @@ void br_eval_eer(const char *predicted_xml, const char *gt_property, const char 
     EvalEER(predicted_xml, gt_property, distribution_property, pdf);
 }
 
+void br_docs()
+{
+    Docs();
+}
+
 void br_finalize()
 {
     Context::finalize();

@@ -46,6 +46,11 @@ class PrintTransform : public UntrainableMetaTransform
         QString fteString = src.file.fte ? "\n  FTE=true" : QString();
         fprintf(error ? stderr : stdout, "%s%s\n  %s\n%s", qPrintable(nameString), qPrintable(fteString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
+
+    void docs(int indent) const
+    {
+        print_doc("Print(bool error, bool data, string[] keys): Print the specified keys (all if empty)", indent);
+    }
 };
 
 BR_REGISTER(Transform, PrintTransform)

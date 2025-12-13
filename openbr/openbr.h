@@ -26,6 +26,8 @@ extern "C" {
 
 BR_EXPORT const char *br_about();
 
+BR_EXPORT void br_docs();
+
 BR_EXPORT void br_cat(int num_input_galleries, const char *input_galleries[], const char *output_gallery);
 
 BR_EXPORT void br_deduplicate(const char *input_gallery, const char *output_gallery, const char *threshold);

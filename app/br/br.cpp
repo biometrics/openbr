@@ -210,6 +210,9 @@ public:
             else if (!strcmp(fun, "help")) {
                 check(parc == 0, "No parameters expected for 'help'.");
                 help();
+            } else if (!strcmp(fun, "docs")) {
+                check(parc == 0, "No parameters expected for 'docs'.");
+                br_docs();
             } else if (!strcmp(fun, "gui")) {
                 // Do nothing because we checked for this flag prior to initialization
             } else if (!strcmp(fun, "objects")) {
