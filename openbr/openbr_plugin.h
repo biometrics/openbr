@@ -591,7 +591,7 @@ struct Factory
         return object->parameters().join(", ");
     }
 
-    static QString docs(const File &file)
+    static QString docstring(const File &file)
     {
         QString name = file.get<QString>("plugin", "");
         if (name.isEmpty()) name = file.suffix();
@@ -600,18 +600,18 @@ struct Factory
             else if (names().contains("Default"))                 name = "Default";
             else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
         }
-        return registry->value(name)->_docs();
+        return registry->value(name)->_docstring();
     }
 
-    static QStringList allDocs()
+    static QStringList allDocstrings()
     {
-        QStringList docs;
+        QStringList docstrings;
         foreach (const QString &name, names()) {
-            docs.append(QString("=== %1 ===").arg(name));
-            docs.append(registry->value(name)->_docs());
-            docs.append("");
+            docstrings.append(QString("=== %1 ===").arg(name));
+            docstrings.append(registry->value(name)->_docstring());
+            docstrings.append("");
         }
-        return docs;
+        return docstrings;
     }
     
 protected:
@@ -631,7 +631,7 @@ private:
 
     static QString baseClassName() { return QString(T::staticMetaObject.className()).remove("br::"); }
     virtual T *_make() const = 0;
-    virtual QString _docs() const = 0;
+    virtual QString _docstring() const = 0;
 };
 
 template <class T> QMap<QString, Factory<T>*>* Factory<T>::registry = 0;
@@ -641,13 +641,13 @@ class FactoryInstance : public Factory<_Abstraction>
 {
     FactoryInstance() : Factory<_Abstraction>(_Implementation::staticMetaObject.className()) {}
     _Abstraction *_make() const { return new _Implementation(); }
-    QString _docs() const 
+    QString _docstring() const 
     {
         QMetaObject meta = _Implementation::staticMetaObject;
-        if (meta.indexOfMethod("docs") != -1) {
-            return _Implementation::docs();
+        if (meta.indexOfMethod("docstring") != -1) {
+            return _Implementation::docstring();
         } else {
-            return meta.className() + "->docs() not implemented";
+            return QString(meta.className()) + "->docs() not implemented";
         }
     }
 
