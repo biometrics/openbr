@@ -31,6 +31,7 @@
 #include <QPoint>
 #include <QPointF>
 #include <QRectF>
+#include <QRegularExpression>
 #include <QScopedPointer>
 #include <QSharedPointer>
 #include <QString>
@@ -946,7 +947,7 @@ BR_EXPORT void Train(const File &input, const File &model);
 
 BR_EXPORT void Docs();
 
-BR_EXPORT void AllDocs();
+BR_EXPORT void AllDocs(QRegularExpression regex);
 
 BR_EXPORT void Enroll(const File &input, const File &gallery = File());
 

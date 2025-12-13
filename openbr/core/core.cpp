@@ -658,12 +658,14 @@ void br::Docs()
     AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
 }
 
-void br::AllDocs()
+void br::AllDocs(QRegularExpression regex)
 {
     QStringList names = Factory<Transform>::names();
     printf("Registered Transforms: %d\n", names.size());
 
     foreach (const QString &name, names) {
+        if (!regex.pattern().isEmpty() && !regex.match(name).hasMatch())
+            continue;
         br::Transform* transform = br::Factory<br::Transform>::make_docs("." + name);
         transform->docs(4);
     }
