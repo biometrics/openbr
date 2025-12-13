@@ -1005,7 +1005,7 @@ QStringList Object::parse(const QString &string, char split)
 }
 
 /* Object - private methods */
-void Object::init(const File &file_)
+void Object::init(const File &file_, bool docs)
 {
     file = file_;
 
@@ -1044,6 +1044,8 @@ void Object::init(const File &file_)
         setProperty(key, value);
     }
 
+    if (docs)
+        return; // Skip further initialization for docs generation
     init();
 }
 

@@ -664,7 +664,7 @@ void br::AllDocs()
     printf("Registered Transforms: %d\n", names.size());
 
     foreach (const QString &name, names) {
-        br::Transform* transform = br::Factory<br::Transform>::make("." + name);
+        br::Transform* transform = br::Factory<br::Transform>::make_docs("." + name);
         transform->docs(4);
     }
 }
