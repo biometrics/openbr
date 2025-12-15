@@ -89,6 +89,10 @@ public:
         dst.append(ifFalse);
     }
 
+    void docs(int indent) const
+    {
+        print_doc("If(Transform transform, QString key, QString value, QString comparison, bool projectOnEmpty): For each template that pases the comparison, project it thru the transform", indent);
+    }
 };
 BR_REGISTER(Transform, IfTransform)
 

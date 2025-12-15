@@ -33,6 +33,11 @@ class DiscardTransform : public UntrainableMetaTransform
     {
         dst.file = src.file;
     }
+
+    void docs(int indent) const
+    {
+        print_doc("Discard(): Removes all matrices from a template.", indent);
+    }
 };
 
 BR_REGISTER(Transform, DiscardTransform)

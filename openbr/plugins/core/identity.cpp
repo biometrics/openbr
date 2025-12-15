@@ -33,6 +33,11 @@ class IdentityTransform : public UntrainableMetaTransform
     {
         dst = src;
     }
+
+    void docs(int indent) const
+    {
+        print_doc("Identity(): Noop transform", indent);
+    }
 };
 
 BR_REGISTER(Transform, IdentityTransform)

@@ -36,6 +36,11 @@ class SaveMatTransform : public UntrainableMetaTransform
         dst = src;
         dst.file.set(propName, QVariant::fromValue(dst.m()));
     }
+
+    void docs(int indent) const
+    {
+        print_doc("SaveMat(string propName): Save the template matrix into the metadata under the specified key", indent);
+    }
 };
 
 BR_REGISTER(Transform, SaveMatTransform)

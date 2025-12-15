@@ -58,6 +58,11 @@ class EnsureChannelsTransform : public UntrainableTransform
             merge(mv, dst);
         }
     }
+
+    void docs(int indent) const
+    {
+        print_doc("EnsureChannels(int n): Ensure the matrix has n channels by adding or removing channels.", indent);
+    }
 };
 
 BR_REGISTER(Transform, EnsureChannelsTransform)

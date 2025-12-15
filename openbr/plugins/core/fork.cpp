@@ -105,6 +105,17 @@ class ForkTransform : public CompositeTransform
         }
     }
 
+    void docs(int indent) const
+    {
+        print_doc("Fork(Transform[] transforms): Project the input template(s) through each transform and concatenate the results", indent);
+        foreach (const Transform *f, transforms) {
+            // We need to create a new instance of the transform for any independent transforms
+            // because they are wrapped by MetaTransform until project() is called.
+            QString description = "." + f->description(false); // Needs to start with a .
+            Factory<Transform>::make_docs(description)->docs(indent + 4);
+        }
+    }
+
 protected:
 
     // Apply each transform to src, concatenate the results
