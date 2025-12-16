@@ -36,7 +36,7 @@ class DiscardTransform : public UntrainableMetaTransform
 
     void docs(int indent) const
     {
-        print_doc("Discard(): Removes all matrices from a template.", indent);
+        print_doc_header("Removes all matrices from a template.", indent);
     }
 };
 

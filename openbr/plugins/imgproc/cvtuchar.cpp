@@ -36,7 +36,7 @@ class CvtUCharTransform : public UntrainableTransform
 
     void docs(int indent) const
     {
-        print_doc("CvtUChar(): Convert the matrix to uint8", indent);
+        print_doc_header("Convert the matrix to uint8", indent);
     }
 };
 

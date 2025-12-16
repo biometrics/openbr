@@ -49,7 +49,7 @@ class PrintTransform : public UntrainableMetaTransform
 
     void docs(int indent) const
     {
-        print_doc("Print(bool error, bool data, string[] keys): Print the specified keys (all if empty)", indent);
+        print_doc_header("Print the specified keys (all if empty)", indent);
     }
 };
 

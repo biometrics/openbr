@@ -41,7 +41,7 @@ class IndependentTransform : public MetaTransform
 
     QString description(bool expanded) const
     {
-        return transform->description(expanded);
+        return transform != NULL ? transform->description(expanded) : "Identity";
     }
 
     // can't use general setPropertyRecursive because of transforms oddness

@@ -74,7 +74,7 @@ private:
 
     void docs(int indent) const
     {
-        print_doc("Read(Mode mode): Read the image from disk", indent);
+        print_doc_header("Read the image from disk", indent);
     }
 };
 

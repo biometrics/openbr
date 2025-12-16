@@ -107,7 +107,7 @@ class ForkTransform : public CompositeTransform
 
     void docs(int indent) const
     {
-        print_doc("Fork(Transform[] transforms): Project the input template(s) through each transform and concatenate the results", indent);
+        print_doc_header("Project the input template(s) through each transform and concatenate the results", indent);
         foreach (const Transform *f, transforms) {
             // We need to create a new instance of the transform for any independent transforms
             // because they are wrapped by MetaTransform until project() is called.

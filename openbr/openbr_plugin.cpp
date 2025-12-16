@@ -681,7 +681,7 @@ QString Object::argument(int index, bool expanded) const
 
         return "[" + strings.join(",") + "]";
     } else if (type == "br::Transform*") {
-        return variant.value<Transform*>()->description(expanded);
+        return variant.isNull() ? "" : variant.value<Transform*>()->description(expanded);
     } else if (type == "br::Distance*") {
         return variant.value<Distance*>()->description(expanded);
     } else if (type == "br::Representation*") {
@@ -1005,7 +1005,7 @@ QStringList Object::parse(const QString &string, char split)
 }
 
 /* Object - private methods */
-void Object::init(const File &file_, bool docs)
+void Object::_init(const File &file_)
 {
     file = file_;
 
@@ -1043,9 +1043,11 @@ void Object::init(const File &file_, bool docs)
         }
         setProperty(key, value);
     }
+}
 
-    if (docs)
-        return; // Skip further initialization for docs generation
+void Object::init(const File &file_)
+{
+    _init(file_);
     init();
 }
 

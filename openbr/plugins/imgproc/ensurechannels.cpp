@@ -61,7 +61,7 @@ class EnsureChannelsTransform : public UntrainableTransform
 
     void docs(int indent) const
     {
-        print_doc("EnsureChannels(int n): Ensure the matrix has n channels by adding or removing channels.", indent);
+        print_doc_header("Ensure the matrix has n channels by adding or removing channels.", indent);
     }
 };
 

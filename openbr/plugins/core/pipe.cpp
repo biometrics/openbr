@@ -198,7 +198,7 @@ class PipeTransform : public CompositeTransform
 
     void docs(int indent) const
     {
-        print_doc("Pipe(Transform transform): Project the output of each Transform into the next", indent);
+        print_doc_header("Project the output of each Transform into the next", indent);
         foreach (const Transform *f, transforms) {
             // We need to create a new instance of the transform for any independent transforms
             // because they are wrapped by MetaTransform until project() is called.

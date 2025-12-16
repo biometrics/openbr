@@ -458,7 +458,8 @@ public:
 private:
     template <typename T> friend struct Factory;
     friend class Context;
-    void init(const File &file, bool docs=false);
+    void init(const File &file);
+    void _init(const File &file);
 };
 
 
@@ -589,7 +590,7 @@ struct Factory
             else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
         }
         T *object = registry->value(name)->_make();
-        static_cast<Object*>(object)->init(file, true);
+        static_cast<Object*>(object)->_init(file);
         return object;
     }
 
@@ -773,11 +774,18 @@ public:
     virtual void train(const TemplateList &data);
     virtual void train(const QList<TemplateList> &data);
 
+    void print_doc_header(QString doc, int indent) const {
+        QString name = this->file.suffix();
+        QString params = Factory<Transform>::parameters("."+description(false));
+        printf("%*s%s(%s): %s\n", indent, "", name.toStdString().c_str(), params.toStdString().c_str(), doc.toStdString().c_str());
+    }
+
     void print_doc(QString doc, int indent) const {
         printf("%*s%s\n", indent, "", doc.toStdString().c_str());
     }
+
     virtual void docs(int indent) const {
-        print_doc(this->file.name + "Transform->docs() not implemented", indent);
+        print_doc_header("docs() not implemented", indent);
     }
 
     virtual void project(const Template &src, Template &dst) const = 0;

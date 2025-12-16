@@ -37,7 +37,7 @@ class CvtFloatTransform : public UntrainableTransform
 
     void docs(int indent) const
     {
-        print_doc("CvtFloat(): Convert the matrix to float32", indent);
+        print_doc_header("Convert the matrix to float32", indent);
     }
 };
 
