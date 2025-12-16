@@ -785,7 +785,12 @@ public:
     }
 
     virtual void docs(int indent) const {
-        print_doc_header("docs() not implemented", indent);
+        print_doc_header(docs(), indent);
+    }
+
+    virtual const char *docs() const
+    {
+        return "";
     }
 
     virtual void project(const Template &src, Template &dst) const = 0;

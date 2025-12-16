@@ -89,9 +89,9 @@ public:
         dst.append(ifFalse);
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("For each template that pases the comparison, project it thru the transform", indent);
+        return "For each template that pases the comparison, project it thru the transform";
     }
 };
 BR_REGISTER(Transform, IfTransform)

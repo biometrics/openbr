@@ -72,9 +72,9 @@ private:
             qWarning("Error opening %s", qPrintable(src.file.flat()));
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Read the image from disk", indent);
+        return "Read the image from disk";
     }
 };
 

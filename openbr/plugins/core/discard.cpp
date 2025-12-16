@@ -34,9 +34,9 @@ class DiscardTransform : public UntrainableMetaTransform
         dst.file = src.file;
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Removes all matrices from a template.", indent);
+        return "Removes all matrices from a template.";
     }
 };
 

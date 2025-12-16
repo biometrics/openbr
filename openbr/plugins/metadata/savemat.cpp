@@ -37,9 +37,9 @@ class SaveMatTransform : public UntrainableMetaTransform
         dst.file.set(propName, QVariant::fromValue(dst.m()));
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Save the template matrix into the metadata under the specified key", indent);
+        return "Save the template matrix into the metadata under the specified key";
     }
 };
 

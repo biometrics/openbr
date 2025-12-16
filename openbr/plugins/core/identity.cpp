@@ -34,9 +34,9 @@ class IdentityTransform : public UntrainableMetaTransform
         dst = src;
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Noop transform", indent);
+        return "Noop transform";
     }
 };
 

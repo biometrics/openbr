@@ -25,9 +25,9 @@ class RemoveFTETransform : public UntrainableMetaTransform
                 dst.append(src[i]);
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Remove any templates marked FTE", indent);
+        return "Remove any templates marked FTE";
     }
 };
 BR_REGISTER(Transform, RemoveFTETransform)

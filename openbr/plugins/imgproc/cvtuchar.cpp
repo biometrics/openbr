@@ -34,9 +34,9 @@ class CvtUCharTransform : public UntrainableTransform
         OpenCVUtils::cvtUChar(src, dst);
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Convert the matrix to uint8", indent);
+        return "Convert the matrix to uint8";
     }
 };
 

@@ -47,9 +47,9 @@ class PrintTransform : public UntrainableMetaTransform
         fprintf(error ? stderr : stdout, "%s%s\n  %s\n%s", qPrintable(nameString), qPrintable(fteString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 
-    void docs(int indent) const
+    const char *docs() const
     {
-        print_doc_header("Print the specified keys (all if empty)", indent);
+        return "Print the specified keys (all if empty)";
     }
 };
 
