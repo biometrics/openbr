@@ -44,7 +44,8 @@ public:
                   L1,
                   L2,
                   Cosine,
-                  Dot};
+                  Dot,
+                  Default = L2};
 
 private:
     BR_PROPERTY(Metric, metric, L2)

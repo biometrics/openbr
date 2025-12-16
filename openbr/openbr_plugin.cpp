@@ -1275,8 +1275,13 @@ QStringList br::Context::objects(const char *abstractions, const char *implement
     }
     if (abstractionsRegExp.match("Transform").hasMatch()) {
         foreach (const QString &name, Factory<Transform>::names())
-            if (implementationsRegExp.match(name).hasMatch())
-                objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
+            if (implementationsRegExp.match(name).hasMatch()) {
+                try {
+                    objectList.append(name + (parameters ? "\t" + Factory<Transform>::parameters(name) : ""));
+                } catch (...) {
+                    // Exclude transforms that fail to initialize
+                }
+            }
     }
     if (abstractionsRegExp.match("Representation").hasMatch()) {
         foreach (const QString &name, Factory<Representation>::names())
