@@ -34,7 +34,7 @@ class IdentityTransform : public UntrainableMetaTransform
         dst = src;
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Noop transform";
     }

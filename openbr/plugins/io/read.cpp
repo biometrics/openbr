@@ -72,7 +72,7 @@ private:
             qWarning("Error opening %s", qPrintable(src.file.flat()));
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Read the image from disk";
     }

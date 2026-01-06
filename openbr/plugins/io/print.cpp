@@ -47,7 +47,7 @@ class PrintTransform : public UntrainableMetaTransform
         fprintf(error ? stderr : stdout, "%s%s\n  %s\n%s", qPrintable(nameString), qPrintable(fteString), qPrintable(matricies.join(",")), qPrintable(dataString));
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Print the specified keys (all if empty)";
     }

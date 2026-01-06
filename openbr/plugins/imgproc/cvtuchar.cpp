@@ -34,7 +34,7 @@ class CvtUCharTransform : public UntrainableTransform
         OpenCVUtils::cvtUChar(src, dst);
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Convert the matrix to uint8";
     }

@@ -59,7 +59,7 @@ class EnsureChannelsTransform : public UntrainableTransform
         }
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Ensure the matrix has n channels by adding or removing channels.";
     }

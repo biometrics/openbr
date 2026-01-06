@@ -45,12 +45,11 @@ struct AlgorithmCore
 
     AlgorithmCore(const QString &name)
     {
-        if (name == "algorithm") {
-            this->name = Globals->algorithm;
-            init(Globals->algorithm);
-        } else {
-            this->name = name;
-            init(name);
+        this->name = name == "algorithm" ? Globals->algorithm : name;
+        try {
+            init(this->name);
+        } catch (...) {
+            qFatal("Failed to initialize%s: %s", qPrintable(name == "algorithm" ? " algorithm" : ""), qPrintable(this->name));
         }
 
         progressCounter = QSharedPointer<Transform>(Transform::make("ProgressCounter", NULL));
@@ -666,8 +665,12 @@ void br::AllDocs(QRegularExpression regex)
     foreach (const QString &name, names) {
         if (!regex.pattern().isEmpty() && !regex.match(name).hasMatch())
             continue;
-        br::Transform* transform = br::Factory<br::Transform>::make_docs("." + name);
-        transform->docs(4);
+        try {
+            br::Transform* transform = br::Factory<br::Transform>::make("." + name);
+            transform->docs(4);
+        } catch (...) {
+            printf("    %s(???)\n", name.toStdString().c_str());
+        }
     }
 }
 

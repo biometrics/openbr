@@ -886,7 +886,10 @@ void Object::setProperty(const QString &name, QVariant value)
 {
     QString type;
     int index = metaObject()->indexOfProperty(qPrintable(name));
-    if (index != -1) type = metaObject()->property(index).typeName();
+    if (index != -1)
+        type = metaObject()->property(index).typeName();
+    else
+        printf("Object %s does not have property %s! Can not set its value to %s!\n", metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
 
     if (metaObject()->property(index).isEnumType()) {
         // This is necessary because setProperty can only set enums
@@ -995,8 +998,7 @@ void Object::setProperty(const QString &name, QVariant value)
     }
 
     if (!QObject::setProperty(qPrintable(name), value) && !type.isEmpty())
-        qFatal("Failed to set %s %s::%s to: %s",
-               qPrintable(type), metaObject()->className(), qPrintable(name), qPrintable(value.toString()));
+        throw QString("Failed to set %1 %2::%3 to: %4").arg(type).arg(metaObject()->className()).arg(name).arg(value.toString()).toStdString();
 }
 
 QStringList Object::parse(const QString &string, char split)
@@ -1005,7 +1007,7 @@ QStringList Object::parse(const QString &string, char split)
 }
 
 /* Object - private methods */
-void Object::_init(const File &file_)
+void Object::init(const File &file_)
 {
     file = file_;
 
@@ -1043,11 +1045,7 @@ void Object::_init(const File &file_)
         }
         setProperty(key, value);
     }
-}
 
-void Object::init(const File &file_)
-{
-    _init(file_);
     init();
 }
 

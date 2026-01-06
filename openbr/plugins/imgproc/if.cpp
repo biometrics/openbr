@@ -89,7 +89,7 @@ public:
         dst.append(ifFalse);
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "For each template that pases the comparison, project it thru the transform";
     }

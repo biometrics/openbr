@@ -298,7 +298,11 @@ void br_set_header(const char *matrix, const char *target_gallery, const char *q
 
 void br_set_property(const char *key, const char *value)
 {
-    Globals->setProperty(key, value);
+    try {
+        Globals->setProperty(key, value);
+    } catch (...) {
+        qFatal("Failed to set property %s to %s", key, value);
+    }
 }
 
 int br_time_remaining()

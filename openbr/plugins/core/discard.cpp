@@ -34,7 +34,7 @@ class DiscardTransform : public UntrainableMetaTransform
         dst.file = src.file;
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Removes all matrices from a template.";
     }

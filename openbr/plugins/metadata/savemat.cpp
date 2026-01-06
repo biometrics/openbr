@@ -37,7 +37,7 @@ class SaveMatTransform : public UntrainableMetaTransform
         dst.file.set(propName, QVariant::fromValue(dst.m()));
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Save the template matrix into the metadata under the specified key";
     }
@@ -78,7 +78,7 @@ class JustTransform : public UntrainableMetaTransform
         // We need to create a new instance of the transform for any independent transforms
         // because they are wrapped by MetaTransform until project() is called.
         QString description = "." + transform->description(false); // Needs to start with a .
-        Factory<Transform>::make_docs(description)->docs(indent + 4);
+        Factory<Transform>::make(description)->docs(indent + 4);
     }
 };
 

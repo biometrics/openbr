@@ -25,7 +25,7 @@ class RemoveFTETransform : public UntrainableMetaTransform
                 dst.append(src[i]);
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Remove any templates marked FTE";
     }

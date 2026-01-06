@@ -35,7 +35,7 @@ class CvtFloatTransform : public UntrainableTransform
         src.m().convertTo(dst, CV_32F);
     }
 
-    const char *docs() const
+    const QString docs() const
     {
         return "Convert the matrix to float32";
     }

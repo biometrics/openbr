@@ -459,7 +459,6 @@ private:
     template <typename T> friend struct Factory;
     friend class Context;
     void init(const File &file);
-    void _init(const File &file);
 };
 
 
@@ -571,26 +570,6 @@ struct Factory
         }
         T *object = registry->value(name)->_make();
         static_cast<Object*>(object)->init(file);
-        return object;
-    }
-
-    /*
-     * Effectively a copy of make() that does not call init()
-     * on the object. Used for docs generation where init()
-     * may have dependencies that aren't available during
-     * docs generation.
-     */
-    static T *make_docs(const File &file)
-    {
-        QString name = file.get<QString>("plugin", "");
-        if (name.isEmpty()) name = file.suffix();
-        if (!names().contains(name)) {
-            if      (names().contains("Empty") && name.isEmpty()) name = "Empty";
-            else if (names().contains("Default"))                 name = "Default";
-            else    qFatal("%s registry does not contain object named: %s", qPrintable(baseClassName()), qPrintable(name));
-        }
-        T *object = registry->value(name)->_make();
-        static_cast<Object*>(object)->_init(file);
         return object;
     }
 
@@ -776,7 +755,12 @@ public:
 
     void print_doc_header(QString doc, int indent) const {
         QString name = this->file.suffix();
-        QString params = Factory<Transform>::parameters("."+description(false));
+        QString params;
+        try {
+            params = Factory<Transform>::parameters("."+description(false));
+        } catch (...) {
+            params = "???";
+        }
         printf("%*s%s(%s): %s\n", indent, "", name.toStdString().c_str(), params.toStdString().c_str(), doc.toStdString().c_str());
     }
 
@@ -788,7 +772,7 @@ public:
         print_doc_header(docs(), indent);
     }
 
-    virtual const char *docs() const
+    virtual const QString docs() const
     {
         return "";
     }

@@ -112,7 +112,7 @@ class ForkTransform : public CompositeTransform
             // We need to create a new instance of the transform for any independent transforms
             // because they are wrapped by MetaTransform until project() is called.
             QString description = "." + f->description(false); // Needs to start with a .
-            Factory<Transform>::make_docs(description)->docs(indent + 4);
+            Factory<Transform>::make(description)->docs(indent + 4);
         }
     }
 
