@@ -753,23 +753,14 @@ public:
     virtual void train(const TemplateList &data);
     virtual void train(const QList<TemplateList> &data);
 
-    void print_doc_header(QString doc, int indent) const {
-        QString name = this->file.suffix();
-        QString params;
-        try {
-            params = Factory<Transform>::parameters("."+description(false));
-        } catch (...) {
-            params = "???";
-        }
-        printf("%*s%s(%s): %s\n", indent, "", name.toStdString().c_str(), params.toStdString().c_str(), doc.toStdString().c_str());
+    QString get_doc_header(QString doc, int indent) const;
+
+    QString get_doc(QString doc, int indent) const {
+        return QString("%1%2\n").arg(QString(indent, ' ')).arg(doc);
     }
 
-    void print_doc(QString doc, int indent) const {
-        printf("%*s%s\n", indent, "", doc.toStdString().c_str());
-    }
-
-    virtual void docs(int indent) const {
-        print_doc_header(docs(), indent);
+    virtual QString docs(int indent) const {
+        return get_doc_header(docs(), indent);
     }
 
     virtual const QString docs() const

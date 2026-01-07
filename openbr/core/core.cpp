@@ -654,7 +654,8 @@ void br::Train(const File &input, const File &model)
 
 void br::Docs()
 {
-    AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
+    QString docs = AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
+    printf("%s\n", docs.toStdString().c_str());
 }
 
 void br::AllDocs(QRegularExpression regex)
@@ -667,9 +668,10 @@ void br::AllDocs(QRegularExpression regex)
             continue;
         try {
             br::Transform* transform = br::Factory<br::Transform>::make("." + name);
-            transform->docs(4);
+            QString docs = transform->docs(4);
+            printf("%s", docs.toStdString().c_str());
         } catch (...) {
-            printf("    %s(???)\n", name.toStdString().c_str());
+            printf("    %s(?\?\?)\n", name.toStdString().c_str());
         }
     }
 }

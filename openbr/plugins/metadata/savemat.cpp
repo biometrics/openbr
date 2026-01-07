@@ -71,14 +71,17 @@ class JustTransform : public UntrainableMetaTransform
             }
     }
 
-    void docs(int indent) const
+    QString docs(int indent) const
     {
-        print_doc_header("Preserve the input template and only updated the specified keys", indent);
-        if (!transform) return; // If no inner transform, nothing to do.
-        // We need to create a new instance of the transform for any independent transforms
-        // because they are wrapped by MetaTransform until project() is called.
-        QString description = "." + transform->description(false); // Needs to start with a .
-        Factory<Transform>::make(description)->docs(indent + 4);
+        QString docs = get_doc_header("Preserve the input template and only updated the specified keys", indent);
+        if (transform)
+        {
+            // We need to create a new instance of the transform for any independent transforms
+            // because they are wrapped by MetaTransform until project() is called.
+            QString description = "." + transform->description(false); // Needs to start with a .
+            docs += Factory<Transform>::make(description)->docs(indent + 4);
+        }
+        return docs;
     }
 };
 

@@ -1605,6 +1605,19 @@ void Transform::train(const QList<TemplateList> &data)
     train(combined);
 }
 
+
+QString Transform::get_doc_header(QString doc, int indent) const
+{
+    QString name = this->file.suffix();
+    QString params;
+    try {
+        params = Factory<Transform>::parameters("."+description(false));
+    } catch (...) {
+        params = "?\?\?";
+    }
+    return QString("%1%2(%3): %4\n").arg(QString(indent, ' ')).arg(name).arg(params).arg(doc);
+}
+
 /* Distance - public methods */
 Distance *Distance::make(QString str, QObject *parent)
 {
