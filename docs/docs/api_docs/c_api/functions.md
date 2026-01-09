@@ -12,6 +12,19 @@ Calls [Context](../cpp_api/context/context.md)::[about](../cpp_api/context/stati
 
 ---
 
+## br_docs
+
+Generates on-the-fly documentation (formatted using newline and indentation) for the transforms requested in the algorithm.
+
+* **function definition:**
+
+        const char *br_docs()
+
+* **parameters:** None
+* **output:** (const char *) Returns a string including the documentation
+
+---
+
 ## br_cat
 
 Concatenates a list of galleries into 1 gallery.

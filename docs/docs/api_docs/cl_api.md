@@ -367,6 +367,16 @@ Get a string with the name, version, and copyright of the project. This string i
 
 * **wraps:** [br_about](c_api/functions.md#br_about)
 
+### -docs {: #docs }
+
+Get a string with the on-the-fly generated (formatted using newline and indentation) documentation for transforms requested by the algorithm string. This string is suitable for printing or terminal
+
+* **arguments:**
+
+        -docs
+
+* **wraps:** [br_docs](c_api/functions.md#br_docs)
+
 ### -version {: #version }
 
 Get the current OpenBR version

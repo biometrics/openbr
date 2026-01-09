@@ -652,10 +652,9 @@ void br::Train(const File &input, const File &model)
     AlgorithmManager::getAlgorithm(model.get<QString>("algorithm"))->train(input, model);
 }
 
-void br::Docs()
+QString br::Docs()
 {
-    QString docs = AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
-    printf("%s\n", docs.toStdString().c_str());
+    return AlgorithmManager::getAlgorithm("algorithm")->transform->docs(0);
 }
 
 void br::AllDocs(QRegularExpression regex)

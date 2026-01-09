@@ -933,7 +933,7 @@ BR_EXPORT bool IsClassifier(const QString &algorithm);
 
 BR_EXPORT void Train(const File &input, const File &model);
 
-BR_EXPORT void Docs();
+BR_EXPORT QString Docs();
 
 BR_EXPORT void AllDocs(QRegularExpression regex);
 
