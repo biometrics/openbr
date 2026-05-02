@@ -145,7 +145,7 @@ Constructs a mask from target and query inputs considering the target and input 
 
 ### -combineMasks {: #combinemask }
 
-Combines several equal-sized mask matrices. A comparison may not be simultaneously indentified as both a genuine and an imposter by different input masks.
+Combines several equal-sized mask matrices. A comparison may not be simultaneously identified as both a genuine and an imposter by different input masks.
 
 * **arguments:**
 
